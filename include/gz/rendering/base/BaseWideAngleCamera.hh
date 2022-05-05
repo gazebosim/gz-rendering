@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEWIDEANGLECAMERA_HH_
-#define IGNITION_RENDERING_BASE_BASEWIDEANGLECAMERA_HH_
+#ifndef GZ_RENDERING_BASE_BASEWIDEANGLECAMERA_HH_
+#define GZ_RENDERING_BASE_BASEWIDEANGLECAMERA_HH_
 
 #include <string>
 
-#include <ignition/common/Event.hh>
+#include <gz/common/Event.hh>
 
-#include "ignition/rendering/base/BaseCamera.hh"
-#include "ignition/rendering/CameraLens.hh"
-#include "ignition/rendering/WideAngleCamera.hh"
+#include "gz/rendering/base/BaseCamera.hh"
+#include "gz/rendering/CameraLens.hh"
+#include "gz/rendering/WideAngleCamera.hh"
 
 namespace ignition
 {

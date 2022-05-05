@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_GAUSSIANNOISEPASS_HH_
-#define IGNITION_RENDERING_GAUSSIANNOISEPASS_HH_
+#ifndef GZ_RENDERING_GAUSSIANNOISEPASS_HH_
+#define GZ_RENDERING_GAUSSIANNOISEPASS_HH_
 
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
-#include "ignition/rendering/RenderPass.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
+#include "gz/rendering/RenderPass.hh"
 
 namespace ignition
 {
@@ -29,7 +29,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /* \class GaussianNoisePass GaussianNoisePass.hh \
-     * ignition/rendering/GaussianNoisePass.hh
+     * gz/rendering/GaussianNoisePass.hh
      */
     /// \brief A render pass that applies Gaussian noise to the render target
     class IGNITION_RENDERING_VISIBLE GaussianNoisePass

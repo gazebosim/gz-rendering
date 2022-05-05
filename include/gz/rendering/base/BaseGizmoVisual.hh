@@ -15,19 +15,19 @@
  *
  */
 
-#ifndef IGNITION_RENDERING_BASE_BASEGIZMOVISUAL_HH_
-#define IGNITION_RENDERING_BASE_BASEGIZMOVISUAL_HH_
+#ifndef GZ_RENDERING_BASE_BASEGIZMOVISUAL_HH_
+#define GZ_RENDERING_BASE_BASEGIZMOVISUAL_HH_
 
 #include <map>
 #include <string>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include "ignition/rendering/base/BaseScene.hh"
-#include "ignition/rendering/base/BaseNode.hh"
-#include "ignition/rendering/ArrowVisual.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/GizmoVisual.hh"
+#include "gz/rendering/base/BaseScene.hh"
+#include "gz/rendering/base/BaseNode.hh"
+#include "gz/rendering/ArrowVisual.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/GizmoVisual.hh"
 
 namespace ignition
 {
@@ -36,7 +36,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /* \class BaseGizmoVisual BaseGizmoVisuall.hh \
-     * ignition/rendering/base/BaseGizmoVisual.hh
+     * gz/rendering/base/BaseGizmoVisual.hh
      */
     /// \brief A base implementation of the GizmoVisual class
     template <class T>

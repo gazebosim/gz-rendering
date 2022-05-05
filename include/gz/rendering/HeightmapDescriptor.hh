@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_HEIGHTMAPDESCRIPTOR_HH_
-#define IGNITION_RENDERING_HEIGHTMAPDESCRIPTOR_HH_
+#ifndef GZ_RENDERING_HEIGHTMAPDESCRIPTOR_HH_
+#define GZ_RENDERING_HEIGHTMAPDESCRIPTOR_HH_
 
 #include <memory>
 #include <string>
-#include <ignition/common/geospatial/HeightmapData.hh>
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/common/geospatial/HeightmapData.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {
@@ -141,7 +141,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
   };
 
   /// \class HeightmapDescriptor HeightmapDescriptor.hh
-  /// ignition/rendering/HeightmapDescriptor.hh
+  /// gz/rendering/HeightmapDescriptor.hh
   /// \brief Describes how a Heightmap should be loaded
   class IGNITION_RENDERING_VISIBLE HeightmapDescriptor
   {

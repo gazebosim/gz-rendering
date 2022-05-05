@@ -15,16 +15,16 @@
  *
  */
 
-#ifndef IGNITION_RENDERING_RENDERENGINEPLUGIN_HH_
-#define IGNITION_RENDERING_RENDERENGINEPLUGIN_HH_
+#ifndef GZ_RENDERING_RENDERENGINEPLUGIN_HH_
+#define GZ_RENDERING_RENDERENGINEPLUGIN_HH_
 
 #include <memory>
 #include <string>
 
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {

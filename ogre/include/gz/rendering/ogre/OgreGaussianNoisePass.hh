@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGREGAUSSIANNOISEPASS_HH_
-#define IGNITION_RENDERING_OGRE_OGREGAUSSIANNOISEPASS_HH_
+#ifndef GZ_RENDERING_OGRE_OGREGAUSSIANNOISEPASS_HH_
+#define GZ_RENDERING_OGRE_OGREGAUSSIANNOISEPASS_HH_
 
 #include <memory>
 
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include "ignition/rendering/base/BaseGaussianNoisePass.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderPass.hh"
-#include "ignition/rendering/ogre/Export.hh"
+#include "gz/rendering/base/BaseGaussianNoisePass.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreRenderPass.hh"
+#include "gz/rendering/ogre/Export.hh"
 
 namespace ignition
 {
@@ -36,7 +36,7 @@ namespace ignition
     class GaussianNoiseCompositorListener;
 
     /* \class OgreGaussianNoisePass OgreGaussianNoisePass.hh \
-     * ignition/rendering/ogre/OgreGaussianNoisePass.hh
+     * gz/rendering/ogre/OgreGaussianNoisePass.hh
      */
     /// \brief Ogre implementation of the GaussianNoisePass class
     class IGNITION_RENDERING_OGRE_VISIBLE OgreGaussianNoisePass :

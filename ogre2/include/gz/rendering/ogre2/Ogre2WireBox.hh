@@ -15,12 +15,12 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2WIREBOX_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2WIREBOX_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2WIREBOX_HH_
+#define GZ_RENDERING_OGRE2_OGRE2WIREBOX_HH_
 
 #include <memory>
-#include "ignition/rendering/base/BaseWireBox.hh"
-#include "ignition/rendering/ogre2/Ogre2Geometry.hh"
+#include "gz/rendering/base/BaseWireBox.hh"
+#include "gz/rendering/ogre2/Ogre2Geometry.hh"
 
 namespace Ogre
 {

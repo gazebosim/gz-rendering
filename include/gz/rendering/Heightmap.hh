@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_HEIGHTMAP_HH_
-#define IGNITION_RENDERING_HEIGHTMAP_HH_
+#ifndef GZ_RENDERING_HEIGHTMAP_HH_
+#define GZ_RENDERING_HEIGHTMAP_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/HeightmapDescriptor.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/HeightmapDescriptor.hh"
 
 namespace ignition
 {
@@ -27,7 +27,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class Heightmap Heightmap.hh ignition/rendering/Heightmap
+    /// \class Heightmap Heightmap.hh gz/rendering/Heightmap
     /// \brief A terrain defined by a heightfield.
     class Heightmap :
       public virtual Geometry

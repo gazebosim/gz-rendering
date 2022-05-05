@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_LIGHT_HH_
-#define IGNITION_RENDERING_LIGHT_HH_
+#ifndef GZ_RENDERING_LIGHT_HH_
+#define GZ_RENDERING_LIGHT_HH_
 
-#include "ignition/math/Color.hh"
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Node.hh"
+#include "gz/math/Color.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Node.hh"
 
 namespace ignition
 {
@@ -27,7 +27,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class Light Light.hh ignition/rendering/Light.hh
+    /// \class Light Light.hh gz/rendering/Light.hh
     /// \brief Represents a light source in the scene graph
     class IGNITION_RENDERING_VISIBLE Light :
       public virtual Node
@@ -116,7 +116,7 @@ namespace ignition
       public: virtual void SetIntensity(double _intensity) = 0;
     };
 
-    /// \class DirectionalLight Light.hh ignition/rendering/Light.hh
+    /// \class DirectionalLight Light.hh gz/rendering/Light.hh
     /// \brief Represents a infinite directional light
     class IGNITION_RENDERING_VISIBLE DirectionalLight :
       public virtual Light
@@ -139,7 +139,7 @@ namespace ignition
       public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
     };
 
-    /// \class PointLight Light.hh ignition/rendering/Light.hh
+    /// \class PointLight Light.hh gz/rendering/Light.hh
     /// \brief Represents a point light
     class IGNITION_RENDERING_VISIBLE PointLight :
       public virtual Light
@@ -148,7 +148,7 @@ namespace ignition
       public: virtual ~PointLight() { }
     };
 
-    /// \class SpotLight Light.hh ignition/rendering/Light.hh
+    /// \class SpotLight Light.hh gz/rendering/Light.hh
     /// \brief Represents a spotlight
     class IGNITION_RENDERING_VISIBLE SpotLight :
       public virtual Light

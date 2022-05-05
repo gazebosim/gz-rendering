@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEGRID_HH_
-#define IGNITION_RENDERING_BASE_BASEGRID_HH_
+#ifndef GZ_RENDERING_BASE_BASEGRID_HH_
+#define GZ_RENDERING_BASE_BASEGRID_HH_
 
 #include <string>
-#include "ignition/rendering/Grid.hh"
-#include "ignition/rendering/base/BaseObject.hh"
+#include "gz/rendering/Grid.hh"
+#include "gz/rendering/base/BaseObject.hh"
 
 namespace ignition
 {

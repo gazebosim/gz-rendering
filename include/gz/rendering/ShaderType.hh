@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_SHADERTYPE_HH_
-#define IGNITION_RENDERING_SHADERTYPE_HH_
+#ifndef GZ_RENDERING_SHADERTYPE_HH_
+#define GZ_RENDERING_SHADERTYPE_HH_
 
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {
@@ -27,7 +27,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \enum ShaderType ShaderType.hh ignition/rendering/ShaderType.hh
+    /// \enum ShaderType ShaderType.hh gz/rendering/ShaderType.hh
     /// \brief Available types of shaders. Note that not all rendering-engines
     /// will be able to use each type. They will instead default to the closest
     /// alternative.
@@ -52,7 +52,7 @@ namespace ignition
       ST_COUNT    = 5,
     };
 
-    /// \class ShaderUtil ShaderType.hh ignition/rendering/ShaderType.hh
+    /// \class ShaderUtil ShaderType.hh gz/rendering/ShaderType.hh
     /// \brief Provides supporting functions for ShaderType enum
     class IGNITION_RENDERING_VISIBLE ShaderUtil
     {

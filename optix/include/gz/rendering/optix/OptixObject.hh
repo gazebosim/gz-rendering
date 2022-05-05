@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXOBJECT_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXOBJECT_HH_
+#ifndef GZ_RENDERING_OPTIX_OPTIXOBJECT_HH_
+#define GZ_RENDERING_OPTIX_OPTIXOBJECT_HH_
 
-#include "ignition/rendering/base/BaseObject.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
-#include "ignition/rendering/optix/Export.hh"
+#include "gz/rendering/base/BaseObject.hh"
+#include "gz/rendering/optix/OptixRenderTypes.hh"
+#include "gz/rendering/optix/Export.hh"
 
 namespace ignition
 {

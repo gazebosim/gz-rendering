@@ -14,14 +14,14 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_OGRE_OGREDYNAMICRENDERABLE_HH_
-#define IGNITION_RENDERING_OGRE_OGREDYNAMICRENDERABLE_HH_
+#ifndef GZ_RENDERING_OGRE_OGREDYNAMICRENDERABLE_HH_
+#define GZ_RENDERING_OGRE_OGREDYNAMICRENDERABLE_HH_
 
 #include <string>
-#include "ignition/rendering/ogre/Export.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/Marker.hh"
+#include "gz/rendering/ogre/Export.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/Marker.hh"
 
 namespace ignition
 {
@@ -29,7 +29,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /*  \class OgreDynamicRenderable OgreDynamicRenderable.hh \
-     *  ignition/rendering/ogre/OgreDynamicRenderable.hh
+     *  gz/rendering/ogre/OgreDynamicRenderable.hh
      */
     /// \brief Abstract base class providing mechanisms for dynamically
     /// growing hardware buffers.

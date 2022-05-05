@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_GRAPHICSAPI_HH_
-#define IGNITION_RENDERING_GRAPHICSAPI_HH_
+#ifndef GZ_RENDERING_GRAPHICSAPI_HH_
+#define GZ_RENDERING_GRAPHICSAPI_HH_
 
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {

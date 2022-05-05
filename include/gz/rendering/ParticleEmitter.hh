@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_PARTICLEEMITTER_HH_
-#define IGNITION_RENDERING_PARTICLEEMITTER_HH_
+#ifndef GZ_RENDERING_PARTICLEEMITTER_HH_
+#define GZ_RENDERING_PARTICLEEMITTER_HH_
 
 #include <string>
-#include "ignition/math/Color.hh"
-#include "ignition/math/Pose3.hh"
-#include "ignition/math/Vector3.hh"
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Visual.hh"
+#include "gz/math/Color.hh"
+#include "gz/math/Pose3.hh"
+#include "gz/math/Vector3.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Visual.hh"
 
 namespace ignition
 {
@@ -52,7 +52,7 @@ namespace ignition
     };
 
     /// \class ParticleEmitter ParticleEmitter.hh
-    /// ignition/rendering/ParticleEmitter.hh
+    /// gz/rendering/ParticleEmitter.hh
     //
     /// \brief Class to manage a particle emitter.
     class IGNITION_RENDERING_VISIBLE ParticleEmitter :

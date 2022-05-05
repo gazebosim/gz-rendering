@@ -17,14 +17,14 @@
 
 #include <gazebo/common/Events.hh>
 
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/Console.hh>
-#include <ignition/math/Helpers.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/common/Console.hh>
+#include <gz/math/Helpers.hh>
 
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/Capsule.hh>
-#include <ignition/rendering/Scene.hh>
-#include <ignition/rendering/Visual.hh>
+#include <gz/rendering/Camera.hh>
+#include <gz/rendering/Capsule.hh>
+#include <gz/rendering/Scene.hh>
+#include <gz/rendering/Visual.hh>
 
 #include "SceneManager.hh"
 #include "SceneManagerPrivate.hh"

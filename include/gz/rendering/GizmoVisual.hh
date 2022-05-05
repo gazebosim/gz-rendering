@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_GIZMOVISUAL_HH_
-#define IGNITION_RENDERING_GIZMOVISUAL_HH_
+#ifndef GZ_RENDERING_GIZMOVISUAL_HH_
+#define GZ_RENDERING_GIZMOVISUAL_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/CompositeVisual.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Export.hh"
-#include "ignition/rendering/TransformType.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/CompositeVisual.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Export.hh"
+#include "gz/rendering/TransformType.hh"
 
 namespace ignition
 {
@@ -29,7 +29,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class GizmoVisual GizmoVisual.hh ignition/rendering/GizmoVisual.hh
+    /// \class GizmoVisual GizmoVisual.hh gz/rendering/GizmoVisual.hh
     /// \brief A gizmo that contains rotate, translate, and scale visuals
     class IGNITION_RENDERING_VISIBLE GizmoVisual :
       public virtual CompositeVisual

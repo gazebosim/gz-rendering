@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2RENDERPASS_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2RENDERPASS_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2RENDERPASS_HH_
+#define GZ_RENDERING_OGRE2_OGRE2RENDERPASS_HH_
 
 #include <memory>
 #include <string>
 
-#include "ignition/rendering/base/BaseRenderPass.hh"
-#include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2Object.hh"
+#include "gz/rendering/base/BaseRenderPass.hh"
+#include "gz/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Ogre2Object.hh"
 
 namespace ignition
 {
@@ -34,7 +34,7 @@ namespace ignition
     class Ogre2RenderPassPrivate;
 
     /* \class Ogre2RenderPass Ogre2RenderPass.hh \
-     * ignition/rendering/ogre2/Ogre2RenderPass.hh
+     * gz/rendering/ogre2/Ogre2RenderPass.hh
      */
     /// \brief Ogre2 Implementation of a render pass.
     ///

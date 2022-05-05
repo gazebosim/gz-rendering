@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2CONVERSIONS_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2CONVERSIONS_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2CONVERSIONS_HH_
+#define GZ_RENDERING_OGRE2_OGRE2CONVERSIONS_HH_
 
-#include <ignition/math/Color.hh>
-#include <ignition/math/Matrix4.hh>
-#include <ignition/math/Quaternion.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Matrix4.hh>
+#include <gz/math/Quaternion.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/PixelFormat.hh"
-#include "ignition/rendering/ogre2/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/PixelFormat.hh"
+#include "gz/rendering/ogre2/Export.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)

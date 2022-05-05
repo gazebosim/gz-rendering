@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RENDERTYPES_HH_
-#define IGNITION_RENDERING_RENDERTYPES_HH_
+#ifndef GZ_RENDERING_RENDERTYPES_HH_
+#define GZ_RENDERING_RENDERTYPES_HH_
 
 #include <memory>
-#include <ignition/rendering/config.hh>
+#include <gz/rendering/config.hh>
 
 
 /// \typedef IGN_VISIBILITY_ALL

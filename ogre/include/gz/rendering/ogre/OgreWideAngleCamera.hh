@@ -14,20 +14,20 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_OGRE_WIDEANGLECAMERA_HH_
-#define IGNITION_RENDERING_OGRE_WIDEANGLECAMERA_HH_
+#ifndef GZ_RENDERING_OGRE_WIDEANGLECAMERA_HH_
+#define GZ_RENDERING_OGRE_WIDEANGLECAMERA_HH_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include <ignition/utils/ImplPtr.hh>
+#include <gz/utils/ImplPtr.hh>
 
-#include "ignition/rendering/base/BaseWideAngleCamera.hh"
-#include "ignition/rendering/ogre/OgreRenderTarget.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreSensor.hh"
+#include "gz/rendering/base/BaseWideAngleCamera.hh"
+#include "gz/rendering/ogre/OgreRenderTarget.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreSensor.hh"
 
 namespace Ogre
 {

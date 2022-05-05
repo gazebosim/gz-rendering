@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXPRIMITIVE_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXPRIMITIVE_HH_
+#ifndef GZ_RENDERING_OPTIX_OPTIXPRIMITIVE_HH_
+#define GZ_RENDERING_OPTIX_OPTIXPRIMITIVE_HH_
 
 #include <string>
-#include "ignition/rendering/optix/OptixGeometry.hh"
+#include "gz/rendering/optix/OptixGeometry.hh"
 
 namespace ignition
 {

@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_DISTORTIONPASS_HH_
-#define IGNITION_RENDERING_DISTORTIONPASS_HH_
+#ifndef GZ_RENDERING_DISTORTIONPASS_HH_
+#define GZ_RENDERING_DISTORTIONPASS_HH_
 
-#include <ignition/math/Vector2.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector2.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
-#include "ignition/rendering/RenderPass.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
+#include "gz/rendering/RenderPass.hh"
 
 namespace ignition
 {
@@ -31,7 +31,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /* \class DistortionPass DistortionPass.hh \
-     * ignition/rendering/DistortionPass.hh
+     * gz/rendering/DistortionPass.hh
      */
     /// \brief A render pass that applies distortion to the render target
     class IGNITION_RENDERING_VISIBLE DistortionPass

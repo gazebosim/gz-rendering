@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_SCENEMANAGER_HH
-#define IGNITION_RENDERING_EXAMPLES_SCENEMANAGER_HH
+#ifndef GZ_RENDERING_EXAMPLES_SCENEMANAGER_HH
+#define GZ_RENDERING_EXAMPLES_SCENEMANAGER_HH
 
 #if __cplusplus > 201703L
     #include <filesystem>
@@ -27,14 +27,14 @@
 #endif
 
 #include <string>
-#include <ignition/common/SingletonT.hh>
-#include "ignition/rendering/RenderTypes.hh"
+#include <gz/common/SingletonT.hh>
+#include "gz/rendering/RenderTypes.hh"
 
 namespace ignition
 {
   namespace rendering
   {
-    /// \class SceneManager SceneManager.hh ignition/rendering/SceneManager.hh
+    /// \class SceneManager SceneManager.hh gz/rendering/SceneManager.hh
     /// \brief Manages a collection of scenes. The class provides a single
     /// interface for modifications, allowing multiple scenes to stay
     /// synchronized. This class currently consumes Gazebo-specific protobuf

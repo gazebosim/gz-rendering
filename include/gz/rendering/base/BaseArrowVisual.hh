@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEARROWVISUAL_HH_
-#define IGNITION_RENDERING_BASE_BASEARROWVISUAL_HH_
+#ifndef GZ_RENDERING_BASE_BASEARROWVISUAL_HH_
+#define GZ_RENDERING_BASE_BASEARROWVISUAL_HH_
 
 #include <string>
 
-#include <ignition/common/MeshManager.hh>
+#include <gz/common/MeshManager.hh>
 
-#include "ignition/rendering/ArrowVisual.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/ArrowVisual.hh"
+#include "gz/rendering/Scene.hh"
 
 namespace ignition
 {

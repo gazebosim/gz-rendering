@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGREGEOMETRY_HH_
-#define IGNITION_RENDERING_OGRE_OGREGEOMETRY_HH_
+#ifndef GZ_RENDERING_OGRE_OGREGEOMETRY_HH_
+#define GZ_RENDERING_OGRE_OGREGEOMETRY_HH_
 
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include "ignition/rendering/base/BaseGeometry.hh"
-#include "ignition/rendering/ogre/OgreObject.hh"
+#include "gz/rendering/base/BaseGeometry.hh"
+#include "gz/rendering/ogre/OgreObject.hh"
 
 namespace Ogre
 {

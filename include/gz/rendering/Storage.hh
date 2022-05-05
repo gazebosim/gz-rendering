@@ -14,21 +14,21 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_STORAGE_HH_
-#define IGNITION_RENDERING_STORAGE_HH_
+#ifndef GZ_RENDERING_STORAGE_HH_
+#define GZ_RENDERING_STORAGE_HH_
 
 #include <memory>
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/Node.hh"
-#include "ignition/rendering/Light.hh"
-#include "ignition/rendering/Sensor.hh"
-#include "ignition/rendering/Visual.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/Material.hh"
-#include "ignition/rendering/Mesh.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/Node.hh"
+#include "gz/rendering/Light.hh"
+#include "gz/rendering/Sensor.hh"
+#include "gz/rendering/Visual.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/Material.hh"
+#include "gz/rendering/Mesh.hh"
+#include "gz/rendering/Export.hh"
 
 // An X11 header file defines a macro that conflicts with our function name,
 // so undefine it here
@@ -42,7 +42,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class Map Storage.hh ignition/rendering/Storage.hh
+    /// \class Map Storage.hh gz/rendering/Storage.hh
     /// \brief Storage map from std::string to template class T
     /// \tparam T The storage element type
     template <class T>
@@ -104,7 +104,7 @@ namespace ignition
       public: virtual void RemoveAll() = 0;
     };
 
-    /// \class Store Storage.hh ignition/rendering/Storage.hh
+    /// \class Store Storage.hh gz/rendering/Storage.hh
     /// \brief Multi-access storage structure of template class T. Template
     /// class T is expected to have functions GetId, GetName(), Destroy() which
     /// return unsigned int, std::string, and void respectively. This store
@@ -218,8 +218,8 @@ namespace ignition
       public: virtual void DestroyAll() = 0;
     };
 
-    /// \class CompositeStore Storage.hh ignition/rendering/Storage.hh
-    /// ignition/rendering/CompositeStore.hh
+    /// \class CompositeStore Storage.hh gz/rendering/Storage.hh
+    /// gz/rendering/CompositeStore.hh
     /// \brief Represents a collection of Store objects, collectively working as
     /// a single composite store.
     /// \tparam T The storage element type
@@ -280,7 +280,7 @@ namespace ignition
       public: virtual TStorePtr RemoveStore(unsigned int _index) = 0;
     };
 
-    /// \class StoreWrapper Storage.hh ignition/rendering/StoreWrapper.hh
+    /// \class StoreWrapper Storage.hh gz/rendering/StoreWrapper.hh
     /// \brief Simple wrapper class that allows a Store of type Derived to be
     /// treated as a Store of type Base, where Derived is some class derived
     /// from Base. This is useful in storing Stores of different derived types

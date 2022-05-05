@@ -15,13 +15,13 @@
  *
  */
 
-#ifndef IGNITION_RENDERING_BASE_BASEPARTICLEEMITTER_HH_
-#define IGNITION_RENDERING_BASE_BASEPARTICLEEMITTER_HH_
+#ifndef GZ_RENDERING_BASE_BASEPARTICLEEMITTER_HH_
+#define GZ_RENDERING_BASE_BASEPARTICLEEMITTER_HH_
 
 #include <string>
-#include "ignition/rendering/base/BaseScene.hh"
-#include "ignition/rendering/base/BaseNode.hh"
-#include "ignition/rendering/ParticleEmitter.hh"
+#include "gz/rendering/base/BaseScene.hh"
+#include "gz/rendering/base/BaseNode.hh"
+#include "gz/rendering/ParticleEmitter.hh"
 
 namespace ignition
 {
@@ -30,7 +30,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /* \class BaseParticleEmitter BaseParticleEmitter.hh \
-     * ignition/rendering/base/BaseParticleEmitter.hh
+     * gz/rendering/base/BaseParticleEmitter.hh
      */
     /// \brief A base implementation of the ParticleEmitter class
     template <class T>

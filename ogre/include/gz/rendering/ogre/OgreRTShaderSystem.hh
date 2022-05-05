@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRERTSHADERSYSTEM_HH_
-#define IGNITION_RENDERING_OGRE_OGRERTSHADERSYSTEM_HH_
+#ifndef GZ_RENDERING_OGRE_OGRERTSHADERSYSTEM_HH_
+#define GZ_RENDERING_OGRE_OGRERTSHADERSYSTEM_HH_
 
 #include <memory>
 #include <string>
 
-#include <ignition/common/SingletonT.hh>
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/Export.hh"
+#include <gz/common/SingletonT.hh>
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/Export.hh"
 
 namespace ignition
 {

@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRECAMERA_HH_
-#define IGNITION_RENDERING_OGRE_OGRECAMERA_HH_
+#ifndef GZ_RENDERING_OGRE_OGRECAMERA_HH_
+#define GZ_RENDERING_OGRE_OGRECAMERA_HH_
 
 #include <string>
 
-#include "ignition/rendering/base/BaseCamera.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreObjectInterface.hh"
-#include "ignition/rendering/ogre/OgreSensor.hh"
-#include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
+#include "gz/rendering/base/BaseCamera.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/OgreObjectInterface.hh"
+#include "gz/rendering/ogre/OgreSensor.hh"
+#include "gz/rendering/ogre/OgreSelectionBuffer.hh"
 
 namespace Ogre
 {

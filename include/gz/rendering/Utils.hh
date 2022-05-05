@@ -14,21 +14,21 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_UTILS_HH_
-#define IGNITION_RENDERING_UTILS_HH_
+#ifndef GZ_RENDERING_UTILS_HH_
+#define GZ_RENDERING_UTILS_HH_
 
 #include <vector>
 
-#include <ignition/math/Helpers.hh>
-#include <ignition/math/AxisAlignedBox.hh>
-#include <ignition/math/Vector2.hh>
-#include <ignition/math/Vector3.hh>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Helpers.hh>
+#include <gz/math/AxisAlignedBox.hh>
+#include <gz/math/Vector2.hh>
+#include <gz/math/Vector3.hh>
+#include <gz/math/Pose3.hh>
 
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
-#include "ignition/rendering/RayQuery.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
+#include "gz/rendering/RayQuery.hh"
 
 
 namespace ignition

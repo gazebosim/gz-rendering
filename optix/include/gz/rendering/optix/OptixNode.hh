@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXNODE_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXNODE_HH_
+#ifndef GZ_RENDERING_OPTIX_OPTIXNODE_HH_
+#define GZ_RENDERING_OPTIX_OPTIXNODE_HH_
 
-#include "ignition/rendering/base/BaseNode.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
-#include "ignition/rendering/optix/OptixObject.hh"
+#include "gz/rendering/base/BaseNode.hh"
+#include "gz/rendering/optix/OptixIncludes.hh"
+#include "gz/rendering/optix/OptixRenderTypes.hh"
+#include "gz/rendering/optix/OptixObject.hh"
 
 namespace ignition
 {

@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_TEXT_HH_
-#define IGNITION_RENDERING_TEXT_HH_
+#ifndef GZ_RENDERING_TEXT_HH_
+#define GZ_RENDERING_TEXT_HH_
 
 #include <string>
 
-#include <ignition/math/AxisAlignedBox.hh>
-#include <ignition/math/Color.hh>
+#include <gz/math/AxisAlignedBox.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/Object.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/Object.hh"
 
 namespace ignition
 {
@@ -56,7 +56,7 @@ namespace ignition
       TOP = 2
     };
 
-    /// \class Text Text.hh ignition/rendering/Text
+    /// \class Text Text.hh gz/rendering/Text
     /// \brief Represents a billboard text geometry that is always facing the
     /// camera.
     class IGNITION_RENDERING_VISIBLE Text :

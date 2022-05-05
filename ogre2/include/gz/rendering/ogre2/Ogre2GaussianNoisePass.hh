@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2GAUSSIANNOISEPASS_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2GAUSSIANNOISEPASS_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2GAUSSIANNOISEPASS_HH_
+#define GZ_RENDERING_OGRE2_OGRE2GAUSSIANNOISEPASS_HH_
 
 #include <memory>
 
-#include "ignition/rendering/base/BaseGaussianNoisePass.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderPass.hh"
-#include "ignition/rendering/ogre2/Export.hh"
+#include "gz/rendering/base/BaseGaussianNoisePass.hh"
+#include "gz/rendering/ogre2/Ogre2RenderPass.hh"
+#include "gz/rendering/ogre2/Export.hh"
 
 namespace ignition
 {
@@ -33,7 +33,7 @@ namespace ignition
     class Ogre2GaussianNoisePassPrivate;
 
     /* \class Ogre2GaussianNoisePass Ogre2GaussianNoisePass.hh \
-     * ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh
+     * gz/rendering/ogre2/Ogre2GaussianNoisePass.hh
      */
     /// \brief Ogre2 Implementation of a Gaussian noise render pass.
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2GaussianNoisePass :

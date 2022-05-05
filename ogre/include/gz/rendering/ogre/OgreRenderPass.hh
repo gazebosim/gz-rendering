@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRERENDERPASS_HH_
-#define IGNITION_RENDERING_OGRE_OGRERENDERPASS_HH_
+#ifndef GZ_RENDERING_OGRE_OGRERENDERPASS_HH_
+#define GZ_RENDERING_OGRE_OGRERENDERPASS_HH_
 
-#include "ignition/rendering/base/BaseRenderPass.hh"
-#include "ignition/rendering/ogre/Export.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreObject.hh"
+#include "gz/rendering/base/BaseRenderPass.hh"
+#include "gz/rendering/ogre/Export.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreObject.hh"
 
 namespace ignition
 {
@@ -29,7 +29,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /* \class OgreRenderPass OgreRenderPass.hh \
-     * ignition/rendering/ogre/OgreRenderPass.hh
+     * gz/rendering/ogre/OgreRenderPass.hh
      */
     /// \brief Ogre implementation of the RenderPass class
     class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderPass :

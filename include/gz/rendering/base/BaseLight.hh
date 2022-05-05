@@ -14,10 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASELIGHT_HH_
-#define IGNITION_RENDERING_BASE_BASELIGHT_HH_
+#ifndef GZ_RENDERING_BASE_BASELIGHT_HH_
+#define GZ_RENDERING_BASE_BASELIGHT_HH_
 
-#include "ignition/rendering/Light.hh"
+#include "gz/rendering/Light.hh"
 
 namespace ignition
 {

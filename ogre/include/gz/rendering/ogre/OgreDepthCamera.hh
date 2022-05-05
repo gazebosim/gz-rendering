@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE_OGREDEPTHCAMERA_HH_
-#define IGNITION_RENDERING_OGRE_OGREDEPTHCAMERA_HH_
+#ifndef GZ_RENDERING_OGRE_OGREDEPTHCAMERA_HH_
+#define GZ_RENDERING_OGRE_OGREDEPTHCAMERA_HH_
 
 #ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
@@ -27,19 +27,19 @@
 #include <memory>
 #include <string>
 
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/base/BaseDepthCamera.hh"
-#include "ignition/rendering/ogre/OgreConversions.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreObjectInterface.hh"
-#include "ignition/rendering/ogre/OgreRenderTarget.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreSensor.hh"
-#include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/base/BaseDepthCamera.hh"
+#include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreObjectInterface.hh"
+#include "gz/rendering/ogre/OgreRenderTarget.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreSensor.hh"
+#include "gz/rendering/ogre/OgreSelectionBuffer.hh"
 
-#include "ignition/common/Event.hh"
-#include "ignition/common/Console.hh"
+#include "gz/common/Event.hh"
+#include "gz/common/Console.hh"
 
 
 namespace Ogre

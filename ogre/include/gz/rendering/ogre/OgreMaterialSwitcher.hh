@@ -15,18 +15,18 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE_OGREMATERIALSWITCHER_HH_
-#define IGNITION_RENDERING_OGRE_OGREMATERIALSWITCHER_HH_
+#ifndef GZ_RENDERING_OGRE_OGREMATERIALSWITCHER_HH_
+#define GZ_RENDERING_OGRE_OGREMATERIALSWITCHER_HH_
 
 #include <map>
 #include <string>
 
-#include <ignition/utils/SuppressWarning.hh>
-#include <ignition/math/Color.hh>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre/Export.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include <gz/utils/SuppressWarning.hh>
+#include <gz/math/Color.hh>
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre/Export.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
 
 namespace ignition
 {

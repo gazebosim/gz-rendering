@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASELIGHTVISUAL_HH_
-#define IGNITION_RENDERING_BASE_BASELIGHTVISUAL_HH_
+#ifndef GZ_RENDERING_BASE_BASELIGHTVISUAL_HH_
+#define GZ_RENDERING_BASE_BASELIGHTVISUAL_HH_
 
 #include <vector>
 
-#include "ignition/rendering/base/BaseObject.hh"
-#include "ignition/rendering/base/BaseRenderTypes.hh"
-#include "ignition/rendering/LightVisual.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/base/BaseObject.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/LightVisual.hh"
+#include "gz/rendering/Scene.hh"
 
 namespace ignition
 {

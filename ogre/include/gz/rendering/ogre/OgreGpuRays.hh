@@ -15,25 +15,25 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE_OGREGPURAYS_HH_
-#define IGNITION_RENDERING_OGRE_OGREGPURAYS_HH_
+#ifndef GZ_RENDERING_OGRE_OGREGPURAYS_HH_
+#define GZ_RENDERING_OGRE_OGREGPURAYS_HH_
 
 #include <string>
 #include <vector>
 #include <memory>
 #include <sstream>
 
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/base/BaseGpuRays.hh"
-#include "ignition/rendering/ogre/OgreConversions.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderTarget.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreSensor.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/base/BaseGpuRays.hh"
+#include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreRenderTarget.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreSensor.hh"
 
 #ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get

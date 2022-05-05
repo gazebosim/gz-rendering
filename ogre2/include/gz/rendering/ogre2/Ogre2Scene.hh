@@ -14,18 +14,18 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2SCENE_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2SCENE_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2SCENE_HH_
+#define GZ_RENDERING_OGRE2_OGRE2SCENE_HH_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "ignition/rendering/Storage.hh"
-#include "ignition/rendering/base/BaseScene.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/Storage.hh"
+#include "gz/rendering/base/BaseScene.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 
-#include "ignition/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Export.hh"
 
 // This disables warning messages for OGRE
 #ifndef _MSC_VER

@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2LIGHTVISUAL_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2LIGHTVISUAL_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2LIGHTVISUAL_HH_
+#define GZ_RENDERING_OGRE2_OGRE2LIGHTVISUAL_HH_
 
 #include <memory>
 
-#include "ignition/rendering/base/BaseLightVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
+#include "gz/rendering/base/BaseLightVisual.hh"
+#include "gz/rendering/ogre2/Ogre2Visual.hh"
 
 namespace Ogre
 {

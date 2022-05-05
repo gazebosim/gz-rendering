@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_THERMALCAMERA_HH_
-#define IGNITION_RENDERING_THERMALCAMERA_HH_
+#ifndef GZ_RENDERING_THERMALCAMERA_HH_
+#define GZ_RENDERING_THERMALCAMERA_HH_
 
 #include <string>
-#include "ignition/rendering/Camera.hh"
+#include "gz/rendering/Camera.hh"
 
 namespace ignition
 {
@@ -26,7 +26,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /* \class ThermalCamera ThermalCamera.hh \
-      * ignition/rendering/ThermalCamera.hh
+      * gz/rendering/ThermalCamera.hh
      */
     /// \brief Thermal camera that produces temperature data.
     /// An object's temperature can be set through the Visual class

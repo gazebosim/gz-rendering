@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_SEGMENTATIONCAMERA_HH_
-#define IGNITION_RENDERING_SEGMENTATIONCAMERA_HH_
+#ifndef GZ_RENDERING_SEGMENTATIONCAMERA_HH_
+#define GZ_RENDERING_SEGMENTATIONCAMERA_HH_
 
 #include <functional>
 #include <string>
 
-#include <ignition/common/Event.hh>
-#include <ignition/math/Color.hh>
+#include <gz/common/Event.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/Camera.hh"
+#include "gz/rendering/Camera.hh"
 
 
 namespace ignition
@@ -44,7 +44,7 @@ namespace ignition
 
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /// \class SegmentationCamera SegmentationCamera.hh
-    /// ignition/rendering/SegmentationCamera.hh
+    /// gz/rendering/SegmentationCamera.hh
     /// \brief Poseable Segmentation camera used for rendering the scene graph.
     /// This camera is designed to produce segmentation data, instead of a 2D
     /// image.

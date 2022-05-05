@@ -15,13 +15,13 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE_OGREGRID_HH_
-#define IGNITION_RENDERING_OGRE_OGREGRID_HH_
+#ifndef GZ_RENDERING_OGRE_OGREGRID_HH_
+#define GZ_RENDERING_OGRE_OGREGRID_HH_
 
 #include <memory>
-#include "ignition/rendering/base/BaseGrid.hh"
-#include "ignition/rendering/ogre/OgreGeometry.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/base/BaseGrid.hh"
+#include "gz/rendering/ogre/OgreGeometry.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
 
 namespace Ogre
 {

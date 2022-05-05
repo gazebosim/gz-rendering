@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_LIDARVISUAL_HH_
-#define IGNITION_RENDERING_LIDARVISUAL_HH_
+#ifndef GZ_RENDERING_LIDARVISUAL_HH_
+#define GZ_RENDERING_LIDARVISUAL_HH_
 
 #include <vector>
-#include <ignition/math/Color.hh>
-#include <ignition/math/Vector3.hh>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Visual.hh"
-#include "ignition/rendering/Object.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Marker.hh"
+#include <gz/math/Color.hh>
+#include <gz/math/Vector3.hh>
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Visual.hh"
+#include "gz/rendering/Object.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Marker.hh"
 
 namespace ignition
 {
@@ -48,7 +48,7 @@ namespace ignition
       LVT_TRIANGLE_STRIPS = 3
     };
 
-    /// \class LidarVisual LidarVisual.hh ignition/rendering/LidarVisual
+    /// \class LidarVisual LidarVisual.hh gz/rendering/LidarVisual
     /// \brief A LidarVisual geometry class. The visual appearance is based
     /// on the type specified.
     class IGNITION_RENDERING_VISIBLE LidarVisual :

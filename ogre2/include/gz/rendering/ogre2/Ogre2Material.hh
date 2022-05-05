@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2MATERIAL_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2MATERIAL_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2MATERIAL_HH_
+#define GZ_RENDERING_OGRE2_OGRE2MATERIAL_HH_
 
 #include <memory>
 #include <string>
 
-#include "ignition/rendering/base/BaseMaterial.hh"
-#include "ignition/rendering/ogre2/Ogre2Object.hh"
+#include "gz/rendering/base/BaseMaterial.hh"
+#include "gz/rendering/ogre2/Ogre2Object.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)

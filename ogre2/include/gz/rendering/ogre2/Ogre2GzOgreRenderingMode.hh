@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2IGNOGRERENDERINGMODE_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2IGNOGRERENDERINGMODE_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2GZOGRERENDERINGMODE_HH_
+#define GZ_RENDERING_OGRE2_OGRE2GZOGRERENDERINGMODE_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre2/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre2/Export.hh"
 
 namespace ignition
 {

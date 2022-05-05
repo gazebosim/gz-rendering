@@ -14,21 +14,21 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_TRANSFORMCONTROLLER_HH_
-#define IGNITION_RENDERING_TRANSFORMCONTROLLER_HH_
+#ifndef GZ_RENDERING_TRANSFORMCONTROLLER_HH_
+#define GZ_RENDERING_TRANSFORMCONTROLLER_HH_
 
 #include <memory>
 
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include <ignition/math/Quaternion.hh>
-#include <ignition/math/Plane.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Quaternion.hh>
+#include <gz/math/Plane.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/GizmoVisual.hh"
-#include "ignition/rendering/TransformType.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/GizmoVisual.hh"
+#include "gz/rendering/TransformType.hh"
 
 namespace ignition
 {
@@ -40,7 +40,7 @@ namespace ignition
     class TransformControllerPrivate;
 
     /* \class TransformController TransformController.hh \
-     * ignition/rendering/TransformController.hh
+     * gz/rendering/TransformController.hh
      */
     /// \brief An transform tool for translating, rotating, and scaling objects.
     class IGNITION_RENDERING_VISIBLE TransformController

@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGREOBJECTINTERFACE_HH_
-#define IGNITION_RENDERING_OGRE_OGREOBJECTINTERFACE_HH_
+#ifndef GZ_RENDERING_OGRE_OGREOBJECTINTERFACE_HH_
+#define GZ_RENDERING_OGRE_OGREOBJECTINTERFACE_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/Export.hh"
 
 namespace ignition
 {

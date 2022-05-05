@@ -14,10 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXSPHERE_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXSPHERE_HH_
+#ifndef GZ_RENDERING_OPTIX_OPTIXSPHERE_HH_
+#define GZ_RENDERING_OPTIX_OPTIXSPHERE_HH_
 
-#include "ignition/rendering/optix/OptixPrimitive.hh"
+#include "gz/rendering/optix/OptixPrimitive.hh"
 
 namespace ignition
 {

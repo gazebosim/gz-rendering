@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_WAVES_GLUTWINDOW_HH_
-#define IGNITION_RENDERING_EXAMPLES_WAVES_GLUTWINDOW_HH_
+#ifndef GZ_RENDERING_EXAMPLES_WAVES_GLUTWINDOW_HH_
+#define GZ_RENDERING_EXAMPLES_WAVES_GLUTWINDOW_HH_
 
 #include <vector>
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/rendering/RenderTypes.hh"
 
 namespace ir = ignition::rendering;
 

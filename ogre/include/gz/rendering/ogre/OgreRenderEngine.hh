@@ -14,22 +14,22 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRERENDERENGINE_HH_
-#define IGNITION_RENDERING_OGRE_OGRERENDERENGINE_HH_
+#ifndef GZ_RENDERING_OGRE_OGRERENDERENGINE_HH_
+#define GZ_RENDERING_OGRE_OGRERENDERENGINE_HH_
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include <ignition/common/SingletonT.hh>
+#include <gz/common/SingletonT.hh>
 
-#include "ignition/rendering/RenderEnginePlugin.hh"
-#include "ignition/rendering/base/BaseRenderEngine.hh"
-#include "ignition/rendering/base/BaseRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/Export.hh"
+#include "gz/rendering/RenderEnginePlugin.hh"
+#include "gz/rendering/base/BaseRenderEngine.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/Export.hh"
 
 namespace Ogre
 {

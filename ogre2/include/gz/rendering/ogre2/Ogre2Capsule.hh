@@ -15,14 +15,14 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2CAPSULE_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2CAPSULE_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2CAPSULE_HH_
+#define GZ_RENDERING_OGRE2_OGRE2CAPSULE_HH_
 
 #include <memory>
 #include <vector>
 
-#include "ignition/rendering/base/BaseCapsule.hh"
-#include "ignition/rendering/ogre2/Ogre2Geometry.hh"
+#include "gz/rendering/base/BaseCapsule.hh"
+#include "gz/rendering/ogre2/Ogre2Geometry.hh"
 
 namespace Ogre
 {

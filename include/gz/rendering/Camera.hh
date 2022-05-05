@@ -14,19 +14,19 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_CAMERA_HH_
-#define IGNITION_RENDERING_CAMERA_HH_
+#ifndef GZ_RENDERING_CAMERA_HH_
+#define GZ_RENDERING_CAMERA_HH_
 
 #include <string>
 
-#include <ignition/common/Event.hh>
-#include <ignition/math/Matrix4.hh>
+#include <gz/common/Event.hh>
+#include <gz/math/Matrix4.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/PixelFormat.hh"
-#include "ignition/rendering/Sensor.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Image.hh"
+#include "gz/rendering/PixelFormat.hh"
+#include "gz/rendering/Sensor.hh"
+#include "gz/rendering/Scene.hh"
 
 
 namespace ignition
@@ -44,7 +44,7 @@ namespace ignition
       CPT_ORTHOGRAPHIC
     };
 
-    /// \class Camera Camera.hh ignition/rendering/Camera.hh
+    /// \class Camera Camera.hh gz/rendering/Camera.hh
     /// \brief Posable camera used for rendering the scene graph
     class IGNITION_RENDERING_VISIBLE Camera :
       public virtual Sensor

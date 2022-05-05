@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_MESHDESCRIPTOR_HH_
-#define IGNITION_RENDERING_MESHDESCRIPTOR_HH_
+#ifndef GZ_RENDERING_MESHDESCRIPTOR_HH_
+#define GZ_RENDERING_MESHDESCRIPTOR_HH_
 
 #include <string>
 
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {
@@ -39,7 +39,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /// \struct MeshDescriptor MeshDescriptor.hh
-    /// ignition/rendering/MeshDescriptor.hh
+    /// gz/rendering/MeshDescriptor.hh
     /// \brief Describes how a Mesh should be loaded
     struct IGNITION_RENDERING_VISIBLE MeshDescriptor
     {

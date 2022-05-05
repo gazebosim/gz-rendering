@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_SENSOR_HH_
-#define IGNITION_RENDERING_SENSOR_HH_
+#ifndef GZ_RENDERING_SENSOR_HH_
+#define GZ_RENDERING_SENSOR_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Node.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Node.hh"
 
 namespace ignition
 {
@@ -26,7 +26,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class Sensor Sensor.hh ignition/rendering/Sensor.hh
+    /// \class Sensor Sensor.hh gz/rendering/Sensor.hh
     /// \brief Represents a scene sensor. The most obvious example is a camera,
     /// but it can be anything that generates output from the scene.
     class IGNITION_RENDERING_VISIBLE Sensor :

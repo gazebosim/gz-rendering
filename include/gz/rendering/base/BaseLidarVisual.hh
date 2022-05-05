@@ -14,15 +14,15 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_BASELIDARVISUAL_HH_
-#define IGNITION_RENDERING_BASELIDARVISUAL_HH_
+#ifndef GZ_RENDERING_BASELIDARVISUAL_HH_
+#define GZ_RENDERING_BASELIDARVISUAL_HH_
 
 #include <vector>
 
-#include "ignition/rendering/LidarVisual.hh"
-#include "ignition/rendering/base/BaseObject.hh"
-#include "ignition/rendering/base/BaseRenderTypes.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/LidarVisual.hh"
+#include "gz/rendering/base/BaseObject.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/Scene.hh"
 
 namespace ignition
 {

@@ -14,24 +14,24 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_SCENE_HH_
-#define IGNITION_RENDERING_SCENE_HH_
+#ifndef GZ_RENDERING_SCENE_HH_
+#define GZ_RENDERING_SCENE_HH_
 
 #include <array>
 #include <string>
 #include <limits>
 
-#include <ignition/common/Material.hh>
-#include <ignition/common/Mesh.hh>
+#include <gz/common/Material.hh>
+#include <gz/common/Mesh.hh>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/HeightmapDescriptor.hh"
-#include "ignition/rendering/MeshDescriptor.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Storage.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/HeightmapDescriptor.hh"
+#include "gz/rendering/MeshDescriptor.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Storage.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {
@@ -41,7 +41,7 @@ namespace ignition
     //
     class RenderEngine;
 
-    /// \class Scene Scene.hh ignition/rendering/Scene.hh
+    /// \class Scene Scene.hh gz/rendering/Scene.hh
     /// \brief Manages a single scene-graph. This class updates scene-wide
     /// properties and holds the root scene node. A Scene also serves as a
     /// factory for all scene objects.

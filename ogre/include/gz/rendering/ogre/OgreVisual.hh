@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGREVISUAL_HH_
-#define IGNITION_RENDERING_OGRE_OGREVISUAL_HH_
+#ifndef GZ_RENDERING_OGRE_OGREVISUAL_HH_
+#define GZ_RENDERING_OGRE_OGREVISUAL_HH_
 
 #include <memory>
 #include <vector>
 
-#include "ignition/rendering/base/BaseVisual.hh"
-#include "ignition/rendering/ogre/OgreNode.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/base/BaseVisual.hh"
+#include "gz/rendering/ogre/OgreNode.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
 
 namespace ignition
 {

@@ -14,23 +14,23 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASECAMERA_HH_
-#define IGNITION_RENDERING_BASE_BASECAMERA_HH_
+#ifndef GZ_RENDERING_BASE_BASECAMERA_HH_
+#define GZ_RENDERING_BASE_BASECAMERA_HH_
 
 #include <string>
 
-#include <ignition/math/Matrix3.hh>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Matrix3.hh>
+#include <gz/math/Pose3.hh>
 
-#include <ignition/common/Event.hh>
-#include <ignition/common/Console.hh>
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/common/Event.hh>
+#include <gz/common/Console.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/base/BaseRenderTarget.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/Image.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/base/BaseRenderTarget.hh"
 
 namespace ignition
 {

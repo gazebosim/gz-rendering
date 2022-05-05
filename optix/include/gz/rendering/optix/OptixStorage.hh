@@ -14,19 +14,19 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXSTORAGE_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXSTORAGE_HH_
+#ifndef GZ_RENDERING_OPTIX_OPTIXSTORAGE_HH_
+#define GZ_RENDERING_OPTIX_OPTIXSTORAGE_HH_
 
-#include "ignition/rendering/base/BaseStorage.hh"
+#include "gz/rendering/base/BaseStorage.hh"
 
-#include "ignition/rendering/optix/OptixGeometry.hh"
-#include "ignition/rendering/optix/OptixLight.hh"
-#include "ignition/rendering/optix/OptixMaterial.hh"
-#include "ignition/rendering/optix/OptixMesh.hh"
-#include "ignition/rendering/optix/OptixNode.hh"
-#include "ignition/rendering/optix/OptixScene.hh"
-#include "ignition/rendering/optix/OptixSensor.hh"
-#include "ignition/rendering/optix/OptixVisual.hh"
+#include "gz/rendering/optix/OptixGeometry.hh"
+#include "gz/rendering/optix/OptixLight.hh"
+#include "gz/rendering/optix/OptixMaterial.hh"
+#include "gz/rendering/optix/OptixMesh.hh"
+#include "gz/rendering/optix/OptixNode.hh"
+#include "gz/rendering/optix/OptixScene.hh"
+#include "gz/rendering/optix/OptixSensor.hh"
+#include "gz/rendering/optix/OptixVisual.hh"
 
 namespace ignition
 {

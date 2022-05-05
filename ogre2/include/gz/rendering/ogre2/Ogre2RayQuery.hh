@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2RAYQUERY_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2RAYQUERY_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2RAYQUERY_HH_
+#define GZ_RENDERING_OGRE2_OGRE2RAYQUERY_HH_
 
 #include <memory>
 
-#include "ignition/rendering/base/BaseRayQuery.hh"
-#include "ignition/rendering/ogre2/Ogre2Object.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/base/BaseRayQuery.hh"
+#include "gz/rendering/ogre2/Ogre2Object.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 
 namespace ignition
 {
@@ -33,7 +33,7 @@ namespace ignition
     class Ogre2RayQueryPrivate;
 
     /// \class Ogre2RayQuery Ogre2RayQuery.hh
-    /// ignition/rendering/ogre2/Ogre2RayQuery.hh
+    /// gz/rendering/ogre2/Ogre2RayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RayQuery :
         public BaseRayQuery<Ogre2Object>

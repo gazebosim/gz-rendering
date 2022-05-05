@@ -15,13 +15,13 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE_OGRE2COMVISUAL_HH_
-#define IGNITION_RENDERING_OGRE_OGRE2COMVISUAL_HH_
+#ifndef GZ_RENDERING_OGRE_OGRE2COMVISUAL_HH_
+#define GZ_RENDERING_OGRE_OGRE2COMVISUAL_HH_
 
 #include <memory>
 
-#include "ignition/rendering/base/BaseCOMVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
+#include "gz/rendering/base/BaseCOMVisual.hh"
+#include "gz/rendering/ogre2/Ogre2Visual.hh"
 
 namespace Ogre
 {

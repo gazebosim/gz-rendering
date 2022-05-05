@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_WIDEANGLECAMERA_HH_
-#define IGNITION_RENDERING_WIDEANGLECAMERA_HH_
+#ifndef GZ_RENDERING_WIDEANGLECAMERA_HH_
+#define GZ_RENDERING_WIDEANGLECAMERA_HH_
 
 #include <string>
 
-#include <ignition/common/Event.hh>
+#include <gz/common/Event.hh>
 
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/CameraLens.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/CameraLens.hh"
+#include "gz/rendering/Scene.hh"
 
 namespace ignition
 {
@@ -32,7 +32,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /// \class WideAngleCamera WideAngleCamera.hh
-    ///     ignition/rendering/WideAngleCamera.hh
+    ///     gz/rendering/WideAngleCamera.hh
     /// \brief Wide angle camera class
     class IGNITION_RENDERING_VISIBLE WideAngleCamera :
       public virtual Camera

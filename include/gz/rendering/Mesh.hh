@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_MESH_HH_
-#define IGNITION_RENDERING_MESH_HH_
+#ifndef GZ_RENDERING_MESH_HH_
+#define GZ_RENDERING_MESH_HH_
 
 #include <map>
 #include <string>
 #include <unordered_map>
-#include <ignition/math/Matrix4.hh>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/MeshDescriptor.hh"
-#include "ignition/rendering/Object.hh"
+#include <gz/math/Matrix4.hh>
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/MeshDescriptor.hh"
+#include "gz/rendering/Object.hh"
 
 namespace ignition
 {
@@ -32,7 +32,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class Mesh Mesh.hh ignition/rendering/Mesh
+    /// \class Mesh Mesh.hh gz/rendering/Mesh
     /// \brief Represents a collection of mesh geometries
     class IGNITION_RENDERING_VISIBLE Mesh :
       public virtual Geometry
@@ -130,7 +130,7 @@ namespace ignition
       public: virtual const MeshDescriptor &Descriptor() const = 0;
     };
 
-    /// \class SubMesh Mesh.hh ignition/rendering/Mesh.hh
+    /// \class SubMesh Mesh.hh gz/rendering/Mesh.hh
     /// \brief Represents a single mesh geometry
     class IGNITION_RENDERING_VISIBLE SubMesh :
       public virtual Object

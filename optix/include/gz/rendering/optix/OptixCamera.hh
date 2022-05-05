@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXCAMERA_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXCAMERA_HH_
+#ifndef GZ_RENDERING_OPTIX_OPTIXCAMERA_HH_
+#define GZ_RENDERING_OPTIX_OPTIXCAMERA_HH_
 
 #include <string>
-#include "ignition/rendering/base/BaseCamera.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
-#include "ignition/rendering/optix/OptixSensor.hh"
+#include "gz/rendering/base/BaseCamera.hh"
+#include "gz/rendering/optix/OptixRenderTypes.hh"
+#include "gz/rendering/optix/OptixSensor.hh"
 
 namespace ignition
 {

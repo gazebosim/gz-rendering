@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_COMPOSITEVISUAL_HH_
-#define IGNITION_RENDERING_COMPOSITEVISUAL_HH_
+#ifndef GZ_RENDERING_COMPOSITEVISUAL_HH_
+#define GZ_RENDERING_COMPOSITEVISUAL_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Visual.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Visual.hh"
 
 namespace ignition
 {
@@ -27,7 +27,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /// \class CompositeVisual CompositeVisual.hh
-    /// ignition/rendering/CompositeVisual.hh
+    /// gz/rendering/CompositeVisual.hh
     /// \brief Represents a predefined collection of geometries and visuals
     class IGNITION_RENDERING_VISIBLE CompositeVisual :
       public virtual Visual

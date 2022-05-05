@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_MARKER_HH_
-#define IGNITION_RENDERING_MARKER_HH_
+#ifndef GZ_RENDERING_MARKER_HH_
+#define GZ_RENDERING_MARKER_HH_
 
-#include <ignition/math/Color.hh>
-#include <ignition/math/Vector3.hh>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/Object.hh"
-#include "ignition/rendering/RenderTypes.hh"
+#include <gz/math/Color.hh>
+#include <gz/math/Vector3.hh>
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/Object.hh"
+#include "gz/rendering/RenderTypes.hh"
 
 namespace ignition
 {
@@ -70,7 +70,7 @@ namespace ignition
       MT_CAPSULE        = 11,
     };
 
-    /// \class Marker Marker.hh ignition/rendering/Marker
+    /// \class Marker Marker.hh gz/rendering/Marker
     /// \brief A marker geometry class. The marker's visual appearance is based
     /// on the marker type specified.
     class IGNITION_RENDERING_VISIBLE Marker :

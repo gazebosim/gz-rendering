@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_JOINTVISUAL_HH_
-#define IGNITION_RENDERING_JOINTVISUAL_HH_
+#ifndef GZ_RENDERING_JOINTVISUAL_HH_
+#define GZ_RENDERING_JOINTVISUAL_HH_
 
 #include <string>
 
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Object.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Visual.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Object.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Visual.hh"
 
 namespace ignition
 {
@@ -64,7 +64,7 @@ namespace ignition
     };
 
     /// \class JointVisual JointVisual.hh
-    /// ignition/rendering/JointVisual.hh
+    /// gz/rendering/JointVisual.hh
     /// \brief Represents a joint visual
     class IGNITION_RENDERING_VISIBLE JointVisual :
       public virtual Visual

@@ -14,20 +14,20 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRESTORAGE_HH_
-#define IGNITION_RENDERING_OGRE_OGRESTORAGE_HH_
+#ifndef GZ_RENDERING_OGRE_OGRESTORAGE_HH_
+#define GZ_RENDERING_OGRE_OGRESTORAGE_HH_
 
 #include <memory>
-#include "ignition/rendering/base/BaseStorage.hh"
+#include "gz/rendering/base/BaseStorage.hh"
 
-#include "ignition/rendering/ogre/OgreGeometry.hh"
-#include "ignition/rendering/ogre/OgreLight.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreMesh.hh"
-#include "ignition/rendering/ogre/OgreNode.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreSensor.hh"
-#include "ignition/rendering/ogre/OgreVisual.hh"
+#include "gz/rendering/ogre/OgreGeometry.hh"
+#include "gz/rendering/ogre/OgreLight.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreMesh.hh"
+#include "gz/rendering/ogre/OgreNode.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreSensor.hh"
+#include "gz/rendering/ogre/OgreVisual.hh"
 
 namespace ignition
 {

@@ -14,18 +14,18 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_ORBITVIEWCONTROLLER_HH_
-#define IGNITION_RENDERING_ORBITVIEWCONTROLLER_HH_
+#ifndef GZ_RENDERING_ORBITVIEWCONTROLLER_HH_
+#define GZ_RENDERING_ORBITVIEWCONTROLLER_HH_
 
 #include <memory>
 
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/ViewController.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/ViewController.hh"
 
 namespace ignition
 {
@@ -37,7 +37,7 @@ namespace ignition
     class OrbitViewControllerPrivate;
 
     /// \class OrbitViewController OrbitViewController.hh
-    /// ignition/rendering/OrbitViewController.hh
+    /// gz/rendering/OrbitViewController.hh
     /// \brief A camera view controller
     class IGNITION_RENDERING_VISIBLE OrbitViewController
         : public virtual ViewController

@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_MANUALSCENEDEMO_HH_
-#define IGNITION_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_MANUALSCENEDEMO_HH_
+#ifndef GZ_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_MANUALSCENEDEMO_HH_
+#define GZ_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_MANUALSCENEDEMO_HH_
 
 #include <map>
 #include <string>
-#include <ignition/rendering.hh>
+#include <gz/rendering.hh>
 #include "TestTypes.hh"
 
 namespace ignition

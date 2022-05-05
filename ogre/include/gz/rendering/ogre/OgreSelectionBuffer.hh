@@ -14,14 +14,14 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_OGRE_OGRESELECTIONBUFFER_HH_
-#define IGNITION_RENDERING_OGRE_OGRESELECTIONBUFFER_HH_
+#ifndef GZ_RENDERING_OGRE_OGRESELECTIONBUFFER_HH_
+#define GZ_RENDERING_OGRE_OGRESELECTIONBUFFER_HH_
 
 #include <memory>
 #include <string>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre/Export.hh"
 
 namespace Ogre
 {

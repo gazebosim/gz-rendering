@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONCAMERA_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONCAMERA_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2SEGMENTATIONCAMERA_HH_
+#define GZ_RENDERING_OGRE2_OGRE2SEGMENTATIONCAMERA_HH_
 
 #ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
@@ -27,13 +27,13 @@
 #include <memory>
 #include <string>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Event.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Event.hh>
 
-#include "ignition/rendering/base/BaseSegmentationCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2ObjectInterface.hh"
-#include "ignition/rendering/ogre2/Ogre2Sensor.hh"
+#include "gz/rendering/base/BaseSegmentationCamera.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2ObjectInterface.hh"
+#include "gz/rendering/ogre2/Ogre2Sensor.hh"
 
 namespace ignition
 {

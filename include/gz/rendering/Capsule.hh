@@ -15,19 +15,19 @@
  *
  */
 
-#ifndef IGNITION_RENDERING_CAPSULE_HH_
-#define IGNITION_RENDERING_CAPSULE_HH_
+#ifndef GZ_RENDERING_CAPSULE_HH_
+#define GZ_RENDERING_CAPSULE_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/Object.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/Object.hh"
 
 namespace ignition
 {
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    /// \class Capsule Capsule.hh ignition/rendering/Capsule
+    /// \class Capsule Capsule.hh gz/rendering/Capsule
     /// \brief Geometry for a capsule shape.
     class IGNITION_RENDERING_VISIBLE Capsule :
       public virtual Geometry

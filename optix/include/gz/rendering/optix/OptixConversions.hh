@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXCONVERSIONS_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXCONVERSIONS_HH_
+#ifndef GZ_RENDERING_OPTIX_OPTIXCONVERSIONS_HH_
+#define GZ_RENDERING_OPTIX_OPTIXCONVERSIONS_HH_
 
-#include <ignition/math/Color.hh>
-#include <ignition/math/Quaternion.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Quaternion.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/PixelFormat.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
-#include "ignition/rendering/optix/Export.hh"
+#include "gz/rendering/PixelFormat.hh"
+#include "gz/rendering/optix/OptixIncludes.hh"
+#include "gz/rendering/optix/Export.hh"
 
 namespace ignition
 {

@@ -14,18 +14,18 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
-#define IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
+#ifndef GZ_RENDERING_RENDERENGINEMANAGER_HH_
+#define GZ_RENDERING_RENDERENGINEMANAGER_HH_
 
 #include <list>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
-#include <ignition/common/SingletonT.hh>
-#include <ignition/utils/SuppressWarning.hh>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
+#include <gz/common/SingletonT.hh>
+#include <gz/utils/SuppressWarning.hh>
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {
@@ -38,7 +38,7 @@ namespace ignition
     class RenderEngineManagerPrivate;
 
     /// \class RenderEngineManager RenderEngineManager.hh
-    /// ignition/rendering/RenderEngineManager.hh
+    /// gz/rendering/RenderEngineManager.hh
     /// \brief Collection of render-engines. This provides access to all the
     /// render-engines available at runtime. RenderEngine objects should not
     /// be access directly, but instead via the RenderEngineManager to maintain

@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASERENDERPASS_HH_
-#define IGNITION_RENDERING_BASE_BASERENDERPASS_HH_
+#ifndef GZ_RENDERING_BASE_BASERENDERPASS_HH_
+#define GZ_RENDERING_BASE_BASERENDERPASS_HH_
 
 #include <string>
-#include "ignition/rendering/RenderPass.hh"
+#include "gz/rendering/RenderPass.hh"
 
 namespace ignition
 {
@@ -27,7 +27,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /* \class BaseRenderPass BaseRenderPass.hh \
-     * ignition/rendering/base/BaseRenderPass.hh
+     * gz/rendering/base/BaseRenderPass.hh
      */
     /// \brief Base render pass that can be applied to a render target
     template <class T>

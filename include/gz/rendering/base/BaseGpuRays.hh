@@ -14,22 +14,22 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEGPURAYS_HH_
-#define IGNITION_RENDERING_BASE_BASEGPURAYS_HH_
+#ifndef GZ_RENDERING_BASE_BASEGPURAYS_HH_
+#define GZ_RENDERING_BASE_BASEGPURAYS_HH_
 
 #include <string>
 
-#include <ignition/common/Event.hh>
-#include <ignition/common/Console.hh>
+#include <gz/common/Event.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/GpuRays.hh"
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/base/BaseRenderTarget.hh"
-#include "ignition/rendering/base/BaseCamera.hh"
-#include "ignition/rendering/Visual.hh"
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/rendering/GpuRays.hh"
+#include "gz/rendering/Image.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/base/BaseRenderTarget.hh"
+#include "gz/rendering/base/BaseCamera.hh"
+#include "gz/rendering/Visual.hh"
+#include "gz/rendering/RenderTypes.hh"
 
 
 namespace ignition

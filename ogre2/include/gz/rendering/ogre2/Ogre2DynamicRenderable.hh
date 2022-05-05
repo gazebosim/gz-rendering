@@ -14,16 +14,16 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2DYNAMICRENDERABLE_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2DYNAMICRENDERABLE_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2DYNAMICRENDERABLE_HH_
+#define GZ_RENDERING_OGRE2_OGRE2DYNAMICRENDERABLE_HH_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/Marker.hh"
+#include "gz/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/Marker.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -48,7 +48,7 @@ namespace ignition
     class Ogre2DynamicRenderablePrivate;
 
     /*  \class Ogre2DynamicRenderable Ogre2DynamicRenderable.hh \
-     *  ignition/rendering/ogre2/Ogre2DynamicRenderable.hh
+     *  gz/rendering/ogre2/Ogre2DynamicRenderable.hh
      */
     /// \brief Dynamic renderable class that manages hardware buffers for
     /// a dynamic geometry

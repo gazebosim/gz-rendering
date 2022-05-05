@@ -15,16 +15,16 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE_OGREHEIGHTMAP_HH_
-#define IGNITION_RENDERING_OGRE_OGREHEIGHTMAP_HH_
+#ifndef GZ_RENDERING_OGRE_OGREHEIGHTMAP_HH_
+#define GZ_RENDERING_OGRE_OGREHEIGHTMAP_HH_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "ignition/rendering/base/BaseHeightmap.hh"
-#include "ignition/rendering/ogre/OgreGeometry.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/base/BaseHeightmap.hh"
+#include "gz/rendering/ogre/OgreGeometry.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
 
 // Ignoring warning: "non dll-interface class
 // 'ignition::rendering::v5::Heightmap' used as base for dll-interface class"

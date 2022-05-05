@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_WIREBOX_HH_
-#define IGNITION_RENDERING_WIREBOX_HH_
+#ifndef GZ_RENDERING_WIREBOX_HH_
+#define GZ_RENDERING_WIREBOX_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/math/AxisAlignedBox.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/math/AxisAlignedBox.hh"
 
 namespace ignition
 {
@@ -27,7 +27,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class WireBox WireBox.hh ignition/rendering/WireBox
+    /// \class WireBox WireBox.hh gz/rendering/WireBox
     /// \brief Draws a wireframe box.
     class IGNITION_RENDERING_VISIBLE WireBox :
       public virtual Geometry

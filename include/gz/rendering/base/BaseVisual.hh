@@ -14,18 +14,18 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEVISUAL_HH_
-#define IGNITION_RENDERING_BASE_BASEVISUAL_HH_
+#ifndef GZ_RENDERING_BASE_BASEVISUAL_HH_
+#define GZ_RENDERING_BASE_BASEVISUAL_HH_
 
 #include <map>
 #include <string>
 
-#include <ignition/math/AxisAlignedBox.hh>
+#include <gz/math/AxisAlignedBox.hh>
 
-#include "ignition/rendering/Visual.hh"
-#include "ignition/rendering/Storage.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/base/BaseStorage.hh"
+#include "gz/rendering/Visual.hh"
+#include "gz/rendering/Storage.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/base/BaseStorage.hh"
 
 namespace ignition
 {

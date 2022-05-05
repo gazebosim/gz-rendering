@@ -14,10 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEHEIGHTMAP_HH_
-#define IGNITION_RENDERING_BASE_BASEHEIGHTMAP_HH_
+#ifndef GZ_RENDERING_BASE_BASEHEIGHTMAP_HH_
+#define GZ_RENDERING_BASE_BASEHEIGHTMAP_HH_
 
-#include "ignition/rendering/Heightmap.hh"
+#include "gz/rendering/Heightmap.hh"
 
 namespace ignition
 {

@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RENDERTARGET_HH_
-#define IGNITION_RENDERING_RENDERTARGET_HH_
+#ifndef GZ_RENDERING_RENDERTARGET_HH_
+#define GZ_RENDERING_RENDERTARGET_HH_
 
 #include <string>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/Object.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Image.hh"
+#include "gz/rendering/Object.hh"
 
 namespace ignition
 {
@@ -32,7 +32,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class RenderTarget RenderTarget.hh ignition/rendering/RenderTarget.hh
+    /// \class RenderTarget RenderTarget.hh gz/rendering/RenderTarget.hh
     /// \brief Represents a render-target to which cameras can render images.
     class IGNITION_RENDERING_VISIBLE RenderTarget :
       public virtual Object
@@ -96,7 +96,7 @@ namespace ignition
     };
 
     /* \class RenderTexture RenderTexture.hh \
-     * ignition/rendering/RenderTexture.hh
+     * gz/rendering/RenderTexture.hh
      */
     /// \brief Represents a off-screen render-texture to which cameras can
     /// render images.
@@ -119,7 +119,7 @@ namespace ignition
     };
 
     /* \class RenderWindow RenderWindow.hh \
-     * ignition/rendering/RenderWindow.hh
+     * gz/rendering/RenderWindow.hh
      */
     /// \brief Represents a on-screen render-window to which cameras can
     /// render images.

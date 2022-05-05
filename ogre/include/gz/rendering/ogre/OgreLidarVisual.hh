@@ -15,15 +15,15 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE_OGRELIDARVISUAL_HH_
-#define IGNITION_RENDERING_OGRE_OGRELIDARVISUAL_HH_
+#ifndef GZ_RENDERING_OGRE_OGRELIDARVISUAL_HH_
+#define GZ_RENDERING_OGRE_OGRELIDARVISUAL_HH_
 
 #include <vector>
 #include <memory>
-#include "ignition/rendering/base/BaseLidarVisual.hh"
-#include "ignition/rendering/ogre/OgreVisual.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/base/BaseLidarVisual.hh"
+#include "gz/rendering/ogre/OgreVisual.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
 
 namespace ignition
 {

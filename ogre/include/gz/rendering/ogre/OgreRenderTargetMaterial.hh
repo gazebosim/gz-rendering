@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRRENDERTARGETMATERIAL_HH_
-#define IGNITION_RENDERING_OGRE_OGRRENDERTARGETMATERIAL_HH_
+#ifndef GZ_RENDERING_OGRE_OGRRENDERTARGETMATERIAL_HH_
+#define GZ_RENDERING_OGRE_OGRRENDERTARGETMATERIAL_HH_
 
 #include <vector>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/Export.hh"
 
 // Ogre::MaterialManager::Listener isn't a dll-interface class, this may cause
 // issues

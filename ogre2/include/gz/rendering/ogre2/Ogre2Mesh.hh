@@ -14,18 +14,18 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2MESH_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2MESH_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2MESH_HH_
+#define GZ_RENDERING_OGRE2_OGRE2MESH_HH_
 
 #include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include "ignition/rendering/base/BaseMesh.hh"
-#include "ignition/rendering/ogre2/Ogre2Geometry.hh"
-#include "ignition/rendering/ogre2/Ogre2Object.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/base/BaseMesh.hh"
+#include "gz/rendering/ogre2/Ogre2Geometry.hh"
+#include "gz/rendering/ogre2/Ogre2Object.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 
 namespace Ogre
 {

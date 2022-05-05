@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEGEOMETRY_HH_
-#define IGNITION_RENDERING_BASE_BASEGEOMETRY_HH_
+#ifndef GZ_RENDERING_BASE_BASEGEOMETRY_HH_
+#define GZ_RENDERING_BASE_BASEGEOMETRY_HH_
 
 #include <string>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/Scene.hh"
 
 namespace ignition
 {

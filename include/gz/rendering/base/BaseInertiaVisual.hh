@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEINERTIAVISUAL_HH_
-#define IGNITION_RENDERING_BASE_BASEINERTIAVISUAL_HH_
+#ifndef GZ_RENDERING_BASE_BASEINERTIAVISUAL_HH_
+#define GZ_RENDERING_BASE_BASEINERTIAVISUAL_HH_
 
-#include "ignition/common/Console.hh"
+#include "gz/common/Console.hh"
 
-#include "ignition/rendering/base/BaseObject.hh"
-#include "ignition/rendering/base/BaseRenderTypes.hh"
-#include "ignition/rendering/InertiaVisual.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/base/BaseObject.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/InertiaVisual.hh"
+#include "gz/rendering/Scene.hh"
 
 namespace ignition
 {

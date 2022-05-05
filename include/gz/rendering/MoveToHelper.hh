@@ -14,18 +14,18 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_MOVETOHELPER_HH_
-#define IGNITION_RENDERING_MOVETOHELPER_HH_
+#ifndef GZ_RENDERING_MOVETOHELPER_HH_
+#define GZ_RENDERING_MOVETOHELPER_HH_
 
 #include <memory>
 
-#include <ignition/common/Animation.hh>
-#include <ignition/common/KeyFrame.hh>
+#include <gz/common/Animation.hh>
+#include <gz/common/KeyFrame.hh>
 
-#include <ignition/math/Box.hh>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Box.hh>
+#include <gz/math/Pose3.hh>
 
-#include "ignition/rendering/Camera.hh"
+#include "gz/rendering/Camera.hh"
 
 namespace ignition
 {

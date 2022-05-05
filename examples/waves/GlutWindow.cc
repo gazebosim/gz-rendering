@@ -38,11 +38,11 @@
 
 #include <mutex>
 
-#include <ignition/common/Console.hh>
-#include <ignition/rendering.hh>
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/Image.hh>
-#include <ignition/rendering/Scene.hh>
+#include <gz/common/Console.hh>
+#include <gz/rendering.hh>
+#include <gz/rendering/Camera.hh>
+#include <gz/rendering/Image.hh>
+#include <gz/rendering/Scene.hh>
 
 #include "example_config.hh"
 

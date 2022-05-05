@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_GRID_HH_
-#define IGNITION_RENDERING_GRID_HH_
+#ifndef GZ_RENDERING_GRID_HH_
+#define GZ_RENDERING_GRID_HH_
 
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/Object.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/Object.hh"
 
 namespace ignition
 {
@@ -28,7 +28,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class Grid Grid.hh ignition/rendering/Grid
+    /// \class Grid Grid.hh gz/rendering/Grid
     /// \brief Represents a grid geometry drawn along the XY plane.
     /// If vertical cell count is specified then the grid becomes 3D.
     class IGNITION_RENDERING_VISIBLE Grid :

@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASENODE_HH_
-#define IGNITION_RENDERING_BASE_BASENODE_HH_
+#ifndef GZ_RENDERING_BASE_BASENODE_HH_
+#define GZ_RENDERING_BASE_BASENODE_HH_
 
 #include <map>
 #include <string>
 
-#include "ignition/rendering/Node.hh"
-#include "ignition/rendering/Storage.hh"
-#include "ignition/rendering/base/BaseStorage.hh"
+#include "gz/rendering/Node.hh"
+#include "gz/rendering/Storage.hh"
+#include "gz/rendering/base/BaseStorage.hh"
 
 namespace ignition
 {

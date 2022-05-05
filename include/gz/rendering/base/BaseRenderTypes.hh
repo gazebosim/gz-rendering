@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASERENDERTYPES_HH_
-#define IGNITION_RENDERING_BASE_BASERENDERTYPES_HH_
+#ifndef GZ_RENDERING_BASE_BASERENDERTYPES_HH_
+#define GZ_RENDERING_BASE_BASERENDERTYPES_HH_
 
 #include <memory>
 
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/rendering/RenderTypes.hh"
 
 namespace ignition
 {

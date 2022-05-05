@@ -14,20 +14,20 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_DEPTHCAMERA_HH_
-#define IGNITION_RENDERING_DEPTHCAMERA_HH_
+#ifndef GZ_RENDERING_DEPTHCAMERA_HH_
+#define GZ_RENDERING_DEPTHCAMERA_HH_
 
 #include <string>
 
-#include <ignition/common/Event.hh>
-#include "ignition/rendering/Camera.hh"
+#include <gz/common/Event.hh>
+#include "gz/rendering/Camera.hh"
 
 namespace ignition
 {
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    /// \class Camera Camera.hh ignition/rendering/Camera.hh
+    /// \class Camera Camera.hh gz/rendering/Camera.hh
     /// \brief Poseable depth camera used for rendering the scene graph.
     /// This camera is designed to produced depth data, instead of a 2D
     /// image.

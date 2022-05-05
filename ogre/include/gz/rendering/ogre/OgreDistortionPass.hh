@@ -14,19 +14,19 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGREDISTORTIONPASS_HH_
-#define IGNITION_RENDERING_OGRE_OGREDISTORTIONPASS_HH_
+#ifndef GZ_RENDERING_OGRE_OGREDISTORTIONPASS_HH_
+#define GZ_RENDERING_OGRE_OGREDISTORTIONPASS_HH_
 
 #include <memory>
 #include <vector>
 
-#include <ignition/utils/ImplPtr.hh>
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/utils/ImplPtr.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include "ignition/rendering/base/BaseDistortionPass.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderPass.hh"
-#include "ignition/rendering/ogre/Export.hh"
+#include "gz/rendering/base/BaseDistortionPass.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreRenderPass.hh"
+#include "gz/rendering/ogre/Export.hh"
 
 namespace ignition
 {
@@ -38,7 +38,7 @@ namespace ignition
     class DistortionCompositorListener;
 
     /* \class OgreDistortionPass OgreDistortionPass.hh \
-     * ignition/rendering/ogre/OgreDistortionPass.hh
+     * gz/rendering/ogre/OgreDistortionPass.hh
      */
     /// \brief Ogre implementation of the DistortionPass class
     class IGNITION_RENDERING_OGRE_VISIBLE OgreDistortionPass :

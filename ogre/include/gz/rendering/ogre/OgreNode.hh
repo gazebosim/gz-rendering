@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRENODE_HH_
-#define IGNITION_RENDERING_OGRE_OGRENODE_HH_
+#ifndef GZ_RENDERING_OGRE_OGRENODE_HH_
+#define GZ_RENDERING_OGRE_OGRENODE_HH_
 
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include "ignition/rendering/base/BaseNode.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreObject.hh"
+#include "gz/rendering/base/BaseNode.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/OgreObject.hh"
 
 namespace Ogre
 {

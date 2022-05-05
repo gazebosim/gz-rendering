@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASESEGMENTATIONCAMERA_HH_
-#define IGNITION_RENDERING_BASE_BASESEGMENTATIONCAMERA_HH_
+#ifndef GZ_RENDERING_BASE_BASESEGMENTATIONCAMERA_HH_
+#define GZ_RENDERING_BASE_BASESEGMENTATIONCAMERA_HH_
 
 #include <string>
 
-#include <ignition/common/Event.hh>
+#include <gz/common/Event.hh>
 
-#include "ignition/rendering/base/BaseCamera.hh"
-#include "ignition/rendering/SegmentationCamera.hh"
+#include "gz/rendering/base/BaseCamera.hh"
+#include "gz/rendering/SegmentationCamera.hh"
 
 namespace ignition
 {

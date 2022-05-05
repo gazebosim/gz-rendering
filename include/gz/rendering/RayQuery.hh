@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RAYQUERY_HH_
-#define IGNITION_RENDERING_RAYQUERY_HH_
+#ifndef GZ_RENDERING_RAYQUERY_HH_
+#define GZ_RENDERING_RAYQUERY_HH_
 
-#include <ignition/utils/SuppressWarning.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/utils/SuppressWarning.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/Visual.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/Visual.hh"
 
 namespace ignition
 {
@@ -58,7 +58,7 @@ namespace ignition
               }
     };
 
-    /// \class RayQuery RayQuery.hh ignition/rendering/RayQuery.hh
+    /// \class RayQuery RayQuery.hh gz/rendering/RayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
     class IGNITION_RENDERING_VISIBLE RayQuery
         : public virtual Object

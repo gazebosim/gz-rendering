@@ -14,18 +14,18 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BOUNDINGBOXCAMERA_HH_
-#define IGNITION_RENDERING_BOUNDINGBOXCAMERA_HH_
+#ifndef GZ_RENDERING_BOUNDINGBOXCAMERA_HH_
+#define GZ_RENDERING_BOUNDINGBOXCAMERA_HH_
 
 #include <cstdint>
 #include <vector>
 
-#include <ignition/common/Event.hh>
-#include <ignition/math/Color.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/common/Event.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/BoundingBox.hh"
-#include "ignition/rendering/Camera.hh"
+#include "gz/rendering/BoundingBox.hh"
+#include "gz/rendering/Camera.hh"
 
 namespace ignition
 {
@@ -48,7 +48,7 @@ namespace ignition
     };
 
     /// \class BoundingBoxCamera BoundingBoxCamera.hh
-    /// ignition/rendering/BoundingBoxCamera.hh
+    /// gz/rendering/BoundingBoxCamera.hh
     /// \brief Poseable BoundingBox camera used for rendering bounding boxes of
     /// objects in the scene.
     class IGNITION_RENDERING_VISIBLE BoundingBoxCamera :

@@ -14,18 +14,18 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGREMESH_HH_
-#define IGNITION_RENDERING_OGRE_OGREMESH_HH_
+#ifndef GZ_RENDERING_OGRE_OGREMESH_HH_
+#define GZ_RENDERING_OGRE_OGREMESH_HH_
 
 #include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include "ignition/rendering/base/BaseMesh.hh"
-#include "ignition/rendering/ogre/OgreGeometry.hh"
-#include "ignition/rendering/ogre/OgreObject.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/base/BaseMesh.hh"
+#include "gz/rendering/ogre/OgreGeometry.hh"
+#include "gz/rendering/ogre/OgreObject.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
 
 namespace Ogre
 {

@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRESCENE_HH_
-#define IGNITION_RENDERING_OGRE_OGRESCENE_HH_
+#ifndef GZ_RENDERING_OGRE_OGRESCENE_HH_
+#define GZ_RENDERING_OGRE_OGRESCENE_HH_
 
 #include <array>
 #include <string>
-#include "ignition/rendering/base/BaseScene.hh"
-#include "ignition/rendering/ogre/Export.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/base/BaseScene.hh"
+#include "gz/rendering/ogre/Export.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
 
 
 namespace Ogre

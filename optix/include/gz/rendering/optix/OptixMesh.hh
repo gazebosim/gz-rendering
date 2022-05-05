@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXMESH_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXMESH_HH_
+#ifndef GZ_RENDERING_OPTIX_OPTIXMESH_HH_
+#define GZ_RENDERING_OPTIX_OPTIXMESH_HH_
 
 #include <string>
 #include <vector>
-#include "ignition/rendering/base/BaseMesh.hh"
-#include "ignition/rendering/optix/OptixGeometry.hh"
-#include "ignition/rendering/optix/OptixObject.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
+#include "gz/rendering/base/BaseMesh.hh"
+#include "gz/rendering/optix/OptixGeometry.hh"
+#include "gz/rendering/optix/OptixObject.hh"
+#include "gz/rendering/optix/OptixRenderTypes.hh"
 
 namespace ignition
 {

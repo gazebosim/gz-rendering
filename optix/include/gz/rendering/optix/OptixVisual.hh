@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXVISUAL_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXVISUAL_HH_
+#ifndef GZ_RENDERING_OPTIX_OPTIXVISUAL_HH_
+#define GZ_RENDERING_OPTIX_OPTIXVISUAL_HH_
 
-#include "ignition/rendering/base/BaseVisual.hh"
-#include "ignition/rendering/optix/OptixNode.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
+#include "gz/rendering/base/BaseVisual.hh"
+#include "gz/rendering/optix/OptixNode.hh"
+#include "gz/rendering/optix/OptixRenderTypes.hh"
 
 namespace ignition
 {

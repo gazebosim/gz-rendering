@@ -14,17 +14,17 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_OGRE_OGREDYNAMICLINES_HH_
-#define IGNITION_RENDERING_OGRE_OGREDYNAMICLINES_HH_
+#ifndef GZ_RENDERING_OGRE_OGREDYNAMICLINES_HH_
+#define GZ_RENDERING_OGRE_OGREDYNAMICLINES_HH_
 
 #include <memory>
 #include <vector>
 #include <string>
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/ogre/Export.hh"
-#include "ignition/rendering/ogre/OgreConversions.hh"
-#include "ignition/rendering/ogre/OgreDynamicRenderable.hh"
+#include "gz/rendering/ogre/Export.hh"
+#include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreDynamicRenderable.hh"
 
 namespace ignition
 {
@@ -35,7 +35,7 @@ namespace ignition
     class OgreDynamicLinesPrivate;
 
     /*  \class OgreDynamicLines OgreDynamicLines.hh \
-     *  ignition/rendering/ogre/OgreDynamicLines.hh
+     *  gz/rendering/ogre/OgreDynamicLines.hh
      */
     /// \brief Class for drawing lines that can change
     class IGNITION_RENDERING_OGRE_VISIBLE OgreDynamicLines :

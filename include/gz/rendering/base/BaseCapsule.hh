@@ -15,14 +15,14 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_BASECAPSULE_HH_
-#define IGNITION_RENDERING_BASECAPSULE_HH_
+#ifndef GZ_RENDERING_BASECAPSULE_HH_
+#define GZ_RENDERING_BASECAPSULE_HH_
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/Capsule.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/base/BaseObject.hh"
+#include "gz/rendering/Capsule.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/base/BaseObject.hh"
 
 namespace ignition
 {

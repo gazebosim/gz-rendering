@@ -33,9 +33,9 @@
 #include <gazebo/common/Console.hh>
 #include <gazebo/transport/TransportIface.hh>
 
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/Image.hh>
-#include <ignition/rendering/Scene.hh>
+#include <gz/rendering/Camera.hh>
+#include <gz/rendering/Image.hh>
+#include <gz/rendering/Scene.hh>
 
 #include "CameraWindow.hh"
 #include "SceneManager.hh"

@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRECONVERSIONS_HH_
-#define IGNITION_RENDERING_OGRE_OGRECONVERSIONS_HH_
+#ifndef GZ_RENDERING_OGRE_OGRECONVERSIONS_HH_
+#define GZ_RENDERING_OGRE_OGRECONVERSIONS_HH_
 
-#include <ignition/math/Color.hh>
-#include <ignition/math/Matrix4.hh>
-#include <ignition/math/Quaternion.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Matrix4.hh>
+#include <gz/math/Quaternion.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/PixelFormat.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/Export.hh"
+#include "gz/rendering/PixelFormat.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/Export.hh"
 
 namespace ignition
 {

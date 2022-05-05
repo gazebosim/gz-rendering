@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_ARROWVISUAL_HH_
-#define IGNITION_RENDERING_ARROWVISUAL_HH_
+#ifndef GZ_RENDERING_ARROWVISUAL_HH_
+#define GZ_RENDERING_ARROWVISUAL_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/CompositeVisual.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/CompositeVisual.hh"
 
 namespace ignition
 {
@@ -26,7 +26,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class ArrowVisual ArrowVisual.hh ignition/rendering/ArrowVisual.hh
+    /// \class ArrowVisual ArrowVisual.hh gz/rendering/ArrowVisual.hh
     /// \brief Represents a arrow composite visual
     class IGNITION_RENDERING_VISIBLE ArrowVisual :
       public virtual CompositeVisual

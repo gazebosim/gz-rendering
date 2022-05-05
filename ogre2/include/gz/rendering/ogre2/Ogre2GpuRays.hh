@@ -15,22 +15,22 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2GPURAYS_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2GPURAYS_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2GPURAYS_HH_
+#define GZ_RENDERING_OGRE2_OGRE2GPURAYS_HH_
 
 #include <string>
 #include <memory>
 
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/base/BaseGpuRays.hh"
-#include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Sensor.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/base/BaseGpuRays.hh"
+#include "gz/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Sensor.hh"
 
-#include "ignition/common/Event.hh"
-#include "ignition/common/Console.hh"
+#include "gz/common/Event.hh"
+#include "gz/common/Console.hh"
 
 namespace Ogre
 {

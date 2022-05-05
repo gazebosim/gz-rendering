@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_IMAGE_HH_
-#define IGNITION_RENDERING_IMAGE_HH_
+#ifndef GZ_RENDERING_IMAGE_HH_
+#define GZ_RENDERING_IMAGE_HH_
 
 #include <memory>
 
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/PixelFormat.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/PixelFormat.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {
@@ -31,7 +31,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class Image Image.hh ignition/rendering/Image.hh
+    /// \class Image Image.hh gz/rendering/Image.hh
     /// \brief Encapsulates a raw image buffer and relevant properties
     class IGNITION_RENDERING_VISIBLE Image
     {

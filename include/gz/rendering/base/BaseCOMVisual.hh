@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASECOMVISUAL_HH_
-#define IGNITION_RENDERING_BASE_BASECOMVISUAL_HH_
+#ifndef GZ_RENDERING_BASE_BASECOMVISUAL_HH_
+#define GZ_RENDERING_BASE_BASECOMVISUAL_HH_
 
 #include <string>
 
-#include "ignition/common/Console.hh"
+#include "gz/common/Console.hh"
 
-#include "ignition/rendering/base/BaseObject.hh"
-#include "ignition/rendering/base/BaseRenderTypes.hh"
-#include "ignition/rendering/COMVisual.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/base/BaseObject.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/COMVisual.hh"
+#include "gz/rendering/Scene.hh"
 
 namespace ignition
 {

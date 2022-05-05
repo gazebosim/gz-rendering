@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_GPURAYS_HH_
-#define IGNITION_RENDERING_GPURAYS_HH_
+#ifndef GZ_RENDERING_GPURAYS_HH_
+#define GZ_RENDERING_GPURAYS_HH_
 
 #include <string>
 
-#include <ignition/common/Event.hh>
+#include <gz/common/Event.hh>
 
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/Sensor.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/Camera.hh"
+#include "gz/rendering/Image.hh"
+#include "gz/rendering/Sensor.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/Camera.hh"
 
 namespace ignition
 {
@@ -32,7 +32,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class GpuRays GpuRays.hh ignition/rendering/GpuRays.hh
+    /// \class GpuRays GpuRays.hh gz/rendering/GpuRays.hh
     /// \brief Generate depth ray data.
     class IGNITION_RENDERING_VISIBLE GpuRays :
       public virtual Camera

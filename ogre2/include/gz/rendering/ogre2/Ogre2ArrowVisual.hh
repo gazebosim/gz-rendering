@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2ARROWVISUAL_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2ARROWVISUAL_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2ARROWVISUAL_HH_
+#define GZ_RENDERING_OGRE2_OGRE2ARROWVISUAL_HH_
 
-#include "ignition/rendering/base/BaseArrowVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
+#include "gz/rendering/base/BaseArrowVisual.hh"
+#include "gz/rendering/ogre2/Ogre2Visual.hh"
 
 namespace ignition
 {

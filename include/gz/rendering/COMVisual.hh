@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_COMVISUAL_HH_
-#define IGNITION_RENDERING_COMVISUAL_HH_
+#ifndef GZ_RENDERING_COMVISUAL_HH_
+#define GZ_RENDERING_COMVISUAL_HH_
 
 #include <string>
-#include <ignition/math/Inertial.hh>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Object.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Visual.hh"
+#include <gz/math/Inertial.hh>
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Object.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Visual.hh"
 
 namespace ignition
 {
@@ -31,7 +31,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
     /// \class COMVisual COMVisual.hh
-    /// ignition/rendering/COMVisual.hh
+    /// gz/rendering/COMVisual.hh
     /// \brief Represents a center of mass visual
     class IGNITION_RENDERING_VISIBLE COMVisual :
       public virtual Visual

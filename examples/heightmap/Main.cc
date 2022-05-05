@@ -27,11 +27,11 @@
 #include <iostream>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/geospatial/Dem.hh>
-#include <ignition/common/geospatial/HeightmapData.hh>
-#include <ignition/common/geospatial/ImageHeightmap.hh>
-#include <ignition/rendering.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/geospatial/Dem.hh>
+#include <gz/common/geospatial/HeightmapData.hh>
+#include <gz/common/geospatial/ImageHeightmap.hh>
+#include <gz/rendering.hh>
 
 #include "example_config.hh"
 #include "GlutWindow.hh"

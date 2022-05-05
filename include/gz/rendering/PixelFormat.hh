@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_PIXELFORMAT_HH_
-#define IGNITION_RENDERING_PIXELFORMAT_HH_
+#ifndef GZ_RENDERING_PIXELFORMAT_HH_
+#define GZ_RENDERING_PIXELFORMAT_HH_
 
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {
@@ -27,7 +27,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \enum PixelFormat PixelFormat.hh ignition/rendering/PixelFormat.hh
+    /// \enum PixelFormat PixelFormat.hh gz/rendering/PixelFormat.hh
     /// \brief Image pixel format types
     enum IGNITION_RENDERING_VISIBLE PixelFormat
     {
@@ -61,7 +61,7 @@ namespace ignition
       PF_COUNT        = 13
     };
 
-    /// \class PixelUtil PixelFormat.hh ignition/rendering/PixelFormat.hh
+    /// \class PixelUtil PixelFormat.hh gz/rendering/PixelFormat.hh
     /// \brief Provides supporting functions for PixelFormat enum
     class IGNITION_RENDERING_VISIBLE PixelUtil
     {

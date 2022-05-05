@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEMESH_HH_
-#define IGNITION_RENDERING_BASE_BASEMESH_HH_
+#ifndef GZ_RENDERING_BASE_BASEMESH_HH_
+#define GZ_RENDERING_BASE_BASEMESH_HH_
 
 #include <map>
 #include <string>
 #include <unordered_map>
-#include "ignition/rendering/Mesh.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/Storage.hh"
-#include "ignition/rendering/base/BaseObject.hh"
+#include "gz/rendering/Mesh.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/Storage.hh"
+#include "gz/rendering/base/BaseObject.hh"
 
 namespace ignition
 {

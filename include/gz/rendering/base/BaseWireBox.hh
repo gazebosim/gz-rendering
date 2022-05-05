@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_WIREBOX_HH_
-#define IGNITION_RENDERING_BASE_WIREBOX_HH_
+#ifndef GZ_RENDERING_BASE_WIREBOX_HH_
+#define GZ_RENDERING_BASE_WIREBOX_HH_
 
 #include <string>
-#include "ignition/rendering/WireBox.hh"
+#include "gz/rendering/WireBox.hh"
 
 namespace ignition
 {

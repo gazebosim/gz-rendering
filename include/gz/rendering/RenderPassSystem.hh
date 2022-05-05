@@ -14,20 +14,20 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RENDERPASSSYSTEM_HH_
-#define IGNITION_RENDERING_RENDERPASSSYSTEM_HH_
+#ifndef GZ_RENDERING_RENDERPASSSYSTEM_HH_
+#define GZ_RENDERING_RENDERPASSSYSTEM_HH_
 
 #include <map>
 #include <memory>
 #include <string>
 #include <typeinfo>
 
-#include <ignition/utils/SuppressWarning.hh>
+#include <gz/utils/SuppressWarning.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
-#include "ignition/rendering/RenderPass.hh"
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
+#include "gz/rendering/RenderPass.hh"
+#include "gz/rendering/RenderTypes.hh"
 
 namespace ignition
 {
@@ -39,7 +39,7 @@ namespace ignition
     class RenderPassSystemPrivate;
 
     /* \class RenderPassFactory RenderPassSystem.hh \
-     * ignition/rendering/RenderPassSystem.hh
+     * gz/rendering/RenderPassSystem.hh
      */
     /// \brief A factory interface for creating render passes
     class IGNITION_RENDERING_VISIBLE RenderPassFactory
@@ -50,7 +50,7 @@ namespace ignition
     };
 
     /* \class RenderPassSystem RenderPassSystem.hh \
-     * ignition/rendering/RenderPassSystem.hh
+     * gz/rendering/RenderPassSystem.hh
      */
     /// \brief A class for creating and managing render passes
     class IGNITION_RENDERING_VISIBLE RenderPassSystem

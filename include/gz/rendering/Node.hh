@@ -14,20 +14,20 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_NODE_HH_
-#define IGNITION_RENDERING_NODE_HH_
+#ifndef GZ_RENDERING_NODE_HH_
+#define GZ_RENDERING_NODE_HH_
 
 #include <map>
 #include <string>
 #include <variant>
 
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Quaternion.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Quaternion.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Object.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Object.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {
@@ -46,7 +46,7 @@ namespace ignition
       std::variant<std::monostate, int, float, double, std::string, bool,
         unsigned int, int64_t, uint64_t>;
 
-    /// \class Node Node.hh ignition/rendering/Node.hh
+    /// \class Node Node.hh gz/rendering/Node.hh
     /// \brief Represents a single posable node in the scene graph
     class IGNITION_RENDERING_VISIBLE Node :
       public virtual Object

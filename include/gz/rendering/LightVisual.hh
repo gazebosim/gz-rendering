@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_LIGHTVISUAL_HH_
-#define IGNITION_RENDERING_LIGHTVISUAL_HH_
+#ifndef GZ_RENDERING_LIGHTVISUAL_HH_
+#define GZ_RENDERING_LIGHTVISUAL_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Object.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Visual.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Object.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Visual.hh"
 
 namespace ignition
 {
@@ -44,7 +44,7 @@ namespace ignition
         LVT_SPOT                = 3
       };
 
-    /// \class LightVisual LightVisual.hh ignition/rendering/LightVisual.hh
+    /// \class LightVisual LightVisual.hh gz/rendering/LightVisual.hh
     /// \brief Represents a light visual
     class IGNITION_RENDERING_VISIBLE LightVisual :
       public virtual Visual

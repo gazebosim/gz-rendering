@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OBJECT_HH_
-#define IGNITION_RENDERING_OBJECT_HH_
+#ifndef GZ_RENDERING_OBJECT_HH_
+#define GZ_RENDERING_OBJECT_HH_
 
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {
@@ -28,7 +28,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class Object Object.hh ignition/rendering/Object.hh
+    /// \class Object Object.hh gz/rendering/Object.hh
     /// \brief Represents an object present in the scene graph. This includes
     /// sub-meshes, materials, render targets, as well as posable nodes.
     class IGNITION_RENDERING_VISIBLE Object

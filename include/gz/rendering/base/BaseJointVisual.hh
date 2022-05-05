@@ -14,20 +14,20 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEJOINTVISUAL_HH_
-#define IGNITION_RENDERING_BASE_BASEJOINTVISUAL_HH_
+#ifndef GZ_RENDERING_BASE_BASEJOINTVISUAL_HH_
+#define GZ_RENDERING_BASE_BASEJOINTVISUAL_HH_
 
 #include <algorithm>
 #include <string>
 
-#include "ignition/common/Console.hh"
+#include "gz/common/Console.hh"
 
-#include "ignition/rendering/ArrowVisual.hh"
-#include "ignition/rendering/AxisVisual.hh"
-#include "ignition/rendering/JointVisual.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/base/BaseObject.hh"
-#include "ignition/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/ArrowVisual.hh"
+#include "gz/rendering/AxisVisual.hh"
+#include "gz/rendering/JointVisual.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/base/BaseObject.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
 
 namespace ignition
 {

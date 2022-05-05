@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEGAUSSIANNOISEPASS_HH_
-#define IGNITION_RENDERING_BASE_BASEGAUSSIANNOISEPASS_HH_
+#ifndef GZ_RENDERING_BASE_BASEGAUSSIANNOISEPASS_HH_
+#define GZ_RENDERING_BASE_BASEGAUSSIANNOISEPASS_HH_
 
 #include <string>
-#include <ignition/math/Rand.hh>
+#include <gz/math/Rand.hh>
 
-#include "ignition/rendering/GaussianNoisePass.hh"
+#include "gz/rendering/GaussianNoisePass.hh"
 
 namespace ignition
 {
@@ -29,7 +29,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /* \class BaseGaussianNoisePass BaseGaussianNoisePass.hh \
-     * ignition/rendering/base/BaseGaussianNoisePass.hh
+     * gz/rendering/base/BaseGaussianNoisePass.hh
      */
     /// \brief Base Gaussian noise render pass.
     template <class T>

@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_MATERIAL_HH_
-#define IGNITION_RENDERING_MATERIAL_HH_
+#ifndef GZ_RENDERING_MATERIAL_HH_
+#define GZ_RENDERING_MATERIAL_HH_
 
 #include <string>
-#include <ignition/math/Color.hh>
-#include <ignition/common/Material.hh>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Object.hh"
-#include "ignition/rendering/ShaderType.hh"
-#include "ignition/rendering/Export.hh"
+#include <gz/math/Color.hh>
+#include <gz/common/Material.hh>
+#include "gz/rendering/config.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Object.hh"
+#include "gz/rendering/ShaderType.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {
@@ -42,7 +42,7 @@ namespace ignition
       MT_PBS = 1
     };
 
-    /// \class Material Material.hh ignition/rendering/Material.hh
+    /// \class Material Material.hh gz/rendering/Material.hh
     /// \brief Represents a surface material of a Geometry
     class IGNITION_RENDERING_VISIBLE Material :
       public virtual Object

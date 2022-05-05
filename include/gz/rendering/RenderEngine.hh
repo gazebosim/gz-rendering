@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RENDERENGINE_HH_
-#define IGNITION_RENDERING_RENDERENGINE_HH_
+#ifndef GZ_RENDERING_RENDERENGINE_HH_
+#define GZ_RENDERING_RENDERENGINE_HH_
 
 #include <map>
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/GraphicsAPI.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/GraphicsAPI.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {
@@ -30,7 +30,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class RenderEngine RenderEngine.hh ignition/rendering/RenderEngine.hh
+    /// \class RenderEngine RenderEngine.hh gz/rendering/RenderEngine.hh
     /// \brief An abstract interface to a concrete render-engine. A
     /// RenderEngine is responsible for initializing a render-engine as well as
     /// creating, storing, and destroying scenes.

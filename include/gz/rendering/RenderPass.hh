@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RENDERPASS_HH_
-#define IGNITION_RENDERING_RENDERPASS_HH_
+#ifndef GZ_RENDERING_RENDERPASS_HH_
+#define GZ_RENDERING_RENDERPASS_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Object.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Object.hh"
+#include "gz/rendering/Export.hh"
 
 namespace ignition
 {
@@ -27,7 +27,7 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
-    /// \class RenderPass RenderPass.hh ignition/rendering/RenderPass.hh
+    /// \class RenderPass RenderPass.hh gz/rendering/RenderPass.hh
     /// \brief A render pass can be added to a camera to affect how the scene
     /// is rendered. It can be used to add post-processing effects. Multiple
     /// passes can be chained together.

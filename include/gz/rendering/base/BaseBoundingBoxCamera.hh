@@ -14,16 +14,16 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEBOUNDINGBOXCAMERA_HH_
-#define IGNITION_RENDERING_BASE_BASEBOUNDINGBOXCAMERA_HH_
+#ifndef GZ_RENDERING_BASE_BASEBOUNDINGBOXCAMERA_HH_
+#define GZ_RENDERING_BASE_BASEBOUNDINGBOXCAMERA_HH_
 
 #include <vector>
 
-#include <ignition/common/Event.hh>
-#include <ignition/math/Color.hh>
+#include <gz/common/Event.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/base/BaseCamera.hh"
-#include "ignition/rendering/BoundingBoxCamera.hh"
+#include "gz/rendering/base/BaseCamera.hh"
+#include "gz/rendering/BoundingBoxCamera.hh"
 
 namespace ignition
 {

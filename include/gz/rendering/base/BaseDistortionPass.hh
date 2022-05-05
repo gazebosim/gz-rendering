@@ -14,10 +14,10 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASEDISTORTIONPASS_HH_
-#define IGNITION_RENDERING_BASEDISTORTIONPASS_HH_
+#ifndef GZ_RENDERING_BASEDISTORTIONPASS_HH_
+#define GZ_RENDERING_BASEDISTORTIONPASS_HH_
 
-#include "ignition/rendering/DistortionPass.hh"
+#include "gz/rendering/DistortionPass.hh"
 
 namespace ignition
 {
@@ -26,7 +26,7 @@ namespace ignition
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
     /* \class BaseDistortionPass BaseDistortionPass.hh \
-     * ignition/rendering/base/BaseDistortionPass.hh
+     * gz/rendering/base/BaseDistortionPass.hh
      */
     /// \brief Base distortion render pass
     template <class T>

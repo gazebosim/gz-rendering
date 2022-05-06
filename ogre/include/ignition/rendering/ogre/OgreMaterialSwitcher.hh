@@ -44,7 +44,6 @@ namespace ignition
 #ifdef _MSC_VER
   #pragma warning(push)
   #pragma warning(disable:4275)
-  asdf
 #endif
       public Ogre::MaterialManager::Listener,
 #ifdef _MSC_VER

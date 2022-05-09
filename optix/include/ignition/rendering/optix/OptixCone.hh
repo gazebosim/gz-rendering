@@ -14,5 +14,29 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXCONE_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXCONE_HH_
 
-#include <gz/rendering/optix/OptixCone.hh>
+#include "ignition/rendering/optix/OptixPrimitive.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixCone :
+      public OptixPrimitive
+    {
+      protected: OptixCone();
+
+      public: virtual ~OptixCone();
+
+      public: static optix::Geometry CreateOptixGeometry(OptixScenePtr _scene);
+
+      private: friend class OptixScene;
+    };
+    }
+  }
+}
+#endif

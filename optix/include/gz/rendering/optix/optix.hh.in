@@ -1,3 +1,0 @@
-// Automatically generated
-#include <gz/${IGN_PROJECT_NAME}/config.hh>
-${ign_headers}

@@ -14,5 +14,49 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXVISUAL_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXVISUAL_HH_
 
-#include <gz/rendering/optix/OptixVisual.hh>
+#include "ignition/rendering/base/BaseVisual.hh"
+#include "ignition/rendering/optix/OptixNode.hh"
+#include "ignition/rendering/optix/OptixRenderTypes.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixVisual :
+      public BaseVisual<OptixNode>
+    {
+      protected: OptixVisual();
+
+      public: virtual ~OptixVisual();
+
+      public: virtual optix::Group OptixGroup() const;
+
+      public: virtual optix::Acceleration OptixAccel() const;
+
+      public: virtual void PreRender();
+
+      protected: virtual GeometryStorePtr Geometries() const;
+
+      protected: virtual bool AttachGeometry(GeometryPtr _geometry);
+
+      protected: virtual bool DetachGeometry(GeometryPtr _geometry);
+
+      protected: virtual void Init();
+
+      private: void CreateStorage();
+
+      private: OptixVisualPtr SharedThis();
+
+      protected: OptixGeometryStorePtr geometries;
+
+      private: friend class OptixScene;
+    };
+    }
+  }
+}
+#endif

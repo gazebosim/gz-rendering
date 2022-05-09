@@ -33,7 +33,7 @@
 #include <string>
 #include <vector>
 
-#include <gz/rendering.hh>
+#include <ignition/rendering.hh>
 
 #include "ManualSceneDemo.hh"
 #include "DemoWindow.hh"

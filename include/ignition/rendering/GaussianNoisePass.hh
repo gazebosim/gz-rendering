@@ -14,5 +14,64 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_GAUSSIANNOISEPASS_HH_
+#define IGNITION_RENDERING_GAUSSIANNOISEPASS_HH_
 
-#include <gz/rendering/GaussianNoisePass.hh>
+#include <string>
+#include "ignition/rendering/config.hh"
+#include "ignition/rendering/Export.hh"
+#include "ignition/rendering/RenderPass.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    /* \class GaussianNoisePass GaussianNoisePass.hh \
+     * ignition/rendering/GaussianNoisePass.hh
+     */
+    /// \brief A render pass that applies Gaussian noise to the render target
+    class IGNITION_RENDERING_VISIBLE GaussianNoisePass
+      : public virtual RenderPass
+    {
+      /// \brief Constructor
+      public: GaussianNoisePass();
+
+      /// \brief Destructor
+      public: virtual ~GaussianNoisePass();
+
+      /// \brief Accessor for mean.
+      /// \return Mean of Gaussian noise.
+      public: virtual double Mean() const = 0;
+
+      /// \brief Accessor for stddev.
+      /// \return Standard deviation of Gaussian noise.
+      public: virtual double StdDev() const = 0;
+
+      /// \brief Accessor for bias.
+      /// \return Bias on output.
+      public: virtual double Bias() const = 0;
+
+      /// \brief Set mean.
+      /// \param[in] _mean Mean of Gaussian noise.
+      public: virtual void SetMean(double _mean) = 0;
+
+      /// \brief Set stddev.
+      /// \param[in] _stdDev Standard deviation of Gaussian noise.
+      public: virtual void SetStdDev(double _stdDev) = 0;
+
+      /// \brief Set the mean of the bias value. Bias is computed based on
+      /// the bias mean and bias standard deviation.
+      /// \sa SetBiasStdDev
+      public: virtual void SetBiasMean(double _biasMean) = 0;
+
+      /// \brief Set the standard deviation of the bias value. Bias is computed
+      /// based on the bias mean and bias standard deviation.
+      /// \sa SetBiasMean
+      public: virtual void SetBiasStdDev(double _biasStdDev) = 0;
+    };
+    }
+  }
+}
+#endif

@@ -14,5 +14,71 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_MESHDESCRIPTOR_HH_
+#define IGNITION_RENDERING_MESHDESCRIPTOR_HH_
 
-#include <gz/rendering/MeshDescriptor.hh>
+#include <string>
+
+#include <ignition/utils/SuppressWarning.hh>
+
+#include "ignition/rendering/config.hh"
+#include "ignition/rendering/Export.hh"
+
+namespace ignition
+{
+  namespace common
+  {
+    class Mesh;
+  }
+}
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    /// \struct MeshDescriptor MeshDescriptor.hh
+    /// ignition/rendering/MeshDescriptor.hh
+    /// \brief Describes how a Mesh should be loaded
+    struct IGNITION_RENDERING_VISIBLE MeshDescriptor
+    {
+      /// \brief Constructor
+      public: MeshDescriptor();
+
+      /// \brief Constructor. A common::Mesh will be retrieved from the
+      /// MeshManager by the given name upon a call to Normalize.
+      /// \param[in] _meshName Name of the mesh to load
+      public: explicit MeshDescriptor(const std::string &_meshName);
+
+      /// \brief Constructor
+      /// \param[in] _mesh Mesh to load
+      public: explicit MeshDescriptor(const common::Mesh *_mesh);
+
+      /// \brief Ensures both the meshName and mesh member variables have been
+      /// assigned. If mesh is not null, it will be used to override the value
+      /// of meshName.
+      public: void Load();
+
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      /// \brief common::Mesh object
+      public: const common::Mesh *mesh = nullptr;
+
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      /// \brief Name of the registered Mesh
+      public: std::string meshName;
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      /// \brief Name of the sub-mesh to be loaded. An empty string signifies
+      /// all sub-meshes should be loaded.
+      public: std::string subMeshName;
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+
+      /// \brief Denotes if the loaded sub-mesh vertices should be centered
+      public: bool centerSubMesh = false;
+    };
+    }
+  }
+}
+#endif

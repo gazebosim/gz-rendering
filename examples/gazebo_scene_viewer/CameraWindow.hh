@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef GZ_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
-#define GZ_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
+#ifndef IGNITION_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
+#define IGNITION_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
 
 #include <vector>
-#include "gz/rendering/RenderTypes.hh"
+#include "ignition/rendering/RenderTypes.hh"
 
 namespace gz = ignition::rendering;
 

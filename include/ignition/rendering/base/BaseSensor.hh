@@ -14,5 +14,62 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_BASE_BASESENSOR_HH_
+#define IGNITION_RENDERING_BASE_BASESENSOR_HH_
 
-#include <gz/rendering/base/BaseSensor.hh>
+#include "ignition/rendering/Sensor.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    template <class T>
+    class BaseSensor :
+      public virtual Sensor,
+      public virtual T
+    {
+      protected: BaseSensor();
+
+      public: virtual ~BaseSensor();
+
+      // Documentation inherited.
+      public: virtual void SetVisibilityMask(uint32_t _mask) override;
+
+      // Documentation inherited.
+      public: virtual uint32_t VisibilityMask() const override;
+
+      /// \brief Camera's visibility mask
+      protected: uint32_t visibilityMask = IGN_VISIBILITY_ALL;
+    };
+
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseSensor<T>::BaseSensor()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseSensor<T>::~BaseSensor()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseSensor<T>::SetVisibilityMask(uint32_t _mask)
+    {
+      this->visibilityMask = _mask;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    uint32_t BaseSensor<T>::VisibilityMask() const
+    {
+      return this->visibilityMask;
+    }
+    }
+  }
+}
+#endif

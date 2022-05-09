@@ -14,5 +14,26 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_OGRE_OGRESENSOR_HH_
+#define IGNITION_RENDERING_OGRE_OGRESENSOR_HH_
 
-#include <gz/rendering/ogre/OgreSensor.hh>
+#include "ignition/rendering/base/BaseSensor.hh"
+#include "ignition/rendering/ogre/OgreNode.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreSensor :
+      public BaseSensor<OgreNode>
+    {
+      protected: OgreSensor();
+
+      public: virtual ~OgreSensor();
+    };
+    }
+  }
+}
+#endif

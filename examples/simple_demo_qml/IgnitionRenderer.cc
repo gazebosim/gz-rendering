@@ -23,7 +23,7 @@
 #include <QOpenGLContext>
 #include <QQuickWindow>
 
-#include <gz/common/Console.hh>
+#include <ignition/common/Console.hh>
 
 #include <iostream>
 

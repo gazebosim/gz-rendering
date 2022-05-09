@@ -15,13 +15,13 @@
  *
  */
 
-#include <gz/common/SingletonT.hh>
+#include <ignition/common/SingletonT.hh>
 
-#include <gz/plugin/Register.hh>
+#include <ignition/plugin/Register.hh>
 
-#include "gz/rendering/RenderEnginePlugin.hh"
-#include "gz/rendering/base/BaseRenderEngine.hh"
-#include "gz/rendering/base/BaseRenderTypes.hh"
+#include "ignition/rendering/RenderEnginePlugin.hh"
+#include "ignition/rendering/base/BaseRenderEngine.hh"
+#include "ignition/rendering/base/BaseRenderTypes.hh"
 
 namespace mock
 {

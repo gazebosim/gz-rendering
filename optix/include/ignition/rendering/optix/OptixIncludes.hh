@@ -14,5 +14,10 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXINCLUDES_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXINCLUDES_HH_
 
-#include <gz/rendering/optix/OptixIncludes.hh>
+// #include <optixu/optixpp.h>
+#include <optixu/optixpp.h>
+
+#endif

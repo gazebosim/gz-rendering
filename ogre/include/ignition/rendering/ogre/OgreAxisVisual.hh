@@ -14,5 +14,28 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_OGRE_OGREAXISVISUAL_HH_
+#define IGNITION_RENDERING_OGRE_OGREAXISVISUAL_HH_
 
-#include <gz/rendering/ogre/OgreAxisVisual.hh>
+#include "ignition/rendering/base/BaseAxisVisual.hh"
+#include "ignition/rendering/ogre/OgreVisual.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreAxisVisual :
+      public BaseAxisVisual<OgreVisual>
+    {
+      protected: OgreAxisVisual();
+
+      public: virtual ~OgreAxisVisual();
+
+      private: friend class OgreScene;
+    };
+    }
+  }
+}
+#endif

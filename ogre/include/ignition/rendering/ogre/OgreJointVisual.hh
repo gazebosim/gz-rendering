@@ -14,5 +14,31 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_OGRE_OGREJOINTVISUAL_HH_
+#define IGNITION_RENDERING_OGRE_OGREJOINTVISUAL_HH_
 
-#include <gz/rendering/ogre/OgreJointVisual.hh>
+#include "ignition/rendering/base/BaseJointVisual.hh"
+#include "ignition/rendering/ogre/OgreVisual.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreJointVisual :
+      public BaseJointVisual<OgreVisual>
+    {
+      /// \brief Constructor
+      protected: OgreJointVisual();
+
+      /// \brief Destructor
+      public: virtual ~OgreJointVisual();
+
+      /// \brief Only scene can instantiate this class
+      private: friend class OgreScene;
+    };
+    }
+  }
+}
+#endif

@@ -14,5 +14,37 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2OBJECTINTERFACE_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2OBJECTINTERFACE_HH_
 
-#include <gz/rendering/ogre2/Ogre2ObjectInterface.hh>
+#include "ignition/rendering/config.hh"
+#include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "ignition/rendering/ogre2/Export.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+
+    /// \brief Mixin class to provide direct access to Ogre objects.
+    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2ObjectInterface
+    {
+      public: virtual ~Ogre2ObjectInterface();
+
+      /// \brief Access to an Ogre::MovableObject.
+      //
+      /// \param[in] _typename Name of the object type to retrieve.
+      /// \return A pointer to an Ogre::MovableObject. Has default nullptr.
+      public: virtual Ogre::MovableObject *OgreMovableObject(
+          const char* _typename) const;
+
+      /// \brief Access the Ogre::Camera object.
+      //
+      /// \return A pointer to an Ogre::Camera. Has default nullptr.
+      public: virtual Ogre::Camera *OgreCamera() const = 0;
+    };
+    }
+  }
+}
+#endif

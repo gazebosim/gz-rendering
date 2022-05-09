@@ -25,7 +25,7 @@
 #endif
 
 #include <iostream>
-#include <gz/common/Console.hh>
+#include <ignition/common/Console.hh>
 #include "ManualSceneDemo.hh"
 #include "SceneBuilder.hh"
 #include "DemoWindow.hh"

@@ -14,5 +14,41 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXGEOMETRY_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXGEOMETRY_HH_
 
-#include <gz/rendering/optix/OptixGeometry.hh>
+#include "ignition/rendering/base/BaseGeometry.hh"
+#include "ignition/rendering/optix/OptixIncludes.hh"
+#include "ignition/rendering/optix/OptixObject.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    class IGNITION_RENDERING_OPTIX_VISIBLE OptixGeometry :
+      public BaseGeometry<OptixObject>
+    {
+      protected: OptixGeometry();
+
+      public: virtual ~OptixGeometry();
+
+      public: virtual bool HasParent() const;
+
+      public: virtual VisualPtr Parent() const;
+
+      public: virtual optix::GeometryGroup OptixGeometryGroup() const = 0;
+
+      protected: virtual void SetParent(OptixVisualPtr _parent);
+
+      protected: virtual void SetScale(math::Vector3d _scale);
+
+      protected: OptixVisualPtr parent;
+
+      private: friend class OptixVisual;
+    };
+    }
+  }
+}
+#endif

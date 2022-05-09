@@ -14,5 +14,108 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_BASE_BASEWIDEANGLECAMERA_HH_
+#define IGNITION_RENDERING_BASE_BASEWIDEANGLECAMERA_HH_
 
-#include <gz/rendering/base/BaseWideAngleCamera.hh>
+#include <string>
+
+#include <ignition/common/Event.hh>
+
+#include "ignition/rendering/base/BaseCamera.hh"
+#include "ignition/rendering/CameraLens.hh"
+#include "ignition/rendering/WideAngleCamera.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    template <class T>
+    class BaseWideAngleCamera :
+      public virtual WideAngleCamera,
+      public virtual BaseCamera<T>,
+      public virtual T
+    {
+      /// \brief Constructor
+      protected: BaseWideAngleCamera();
+
+      /// \brief Destructor
+      public: virtual ~BaseWideAngleCamera();
+
+      // Documentation inherited.
+      public: virtual void CreateWideAngleTexture();
+
+      // Documentation inherited.
+      public: virtual void SetLens(const CameraLens &_lens) override;
+
+      // Documentation inherited.
+      public: virtual const CameraLens &Lens() const override;
+
+      // Documentation inherited.
+      public: virtual math::Vector3d Project3d(const math::Vector3d &_pt) const
+          override;
+
+      // Documentation inherited.
+      public: virtual common::ConnectionPtr ConnectNewWideAngleFrame(
+          std::function<void(const unsigned char*, unsigned int, unsigned int,
+          unsigned int, const std::string &)>  _subscriber) override;
+
+      /// \brief Camera lens used by this wide angle camera
+      protected: CameraLens lens;
+    };
+
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseWideAngleCamera<T>::BaseWideAngleCamera()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    BaseWideAngleCamera<T>::~BaseWideAngleCamera()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseWideAngleCamera<T>::SetLens(const CameraLens &_lens)
+    {
+      this->lens = _lens;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    const CameraLens &BaseWideAngleCamera<T>::Lens() const
+    {
+      return this->lens;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseWideAngleCamera<T>::CreateWideAngleTexture()
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Vector3d BaseWideAngleCamera<T>:: Project3d(const math::Vector3d &)
+        const
+    {
+      ignerr << "Project3d is not supported for "
+             << "render engine: " << this->Scene()->Engine()->Name()
+             << std::endl;
+      return math::Vector3d();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    common::ConnectionPtr BaseWideAngleCamera<T>::ConnectNewWideAngleFrame(
+          std::function<void(const unsigned char *, unsigned int, unsigned int,
+          unsigned int, const std::string &)>)
+    {
+      return nullptr;
+    }
+  }
+  }
+}
+#endif

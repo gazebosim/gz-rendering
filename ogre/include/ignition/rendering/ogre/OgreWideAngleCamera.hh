@@ -13,6 +13,134 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- */
+*/
+#ifndef IGNITION_RENDERING_OGRE_WIDEANGLECAMERA_HH_
+#define IGNITION_RENDERING_OGRE_WIDEANGLECAMERA_HH_
 
-#include <gz/rendering/ogre/OgreWideAngleCamera.hh>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include <ignition/utils/ImplPtr.hh>
+
+#include "ignition/rendering/base/BaseWideAngleCamera.hh"
+#include "ignition/rendering/ogre/OgreRenderTarget.hh"
+#include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "ignition/rendering/ogre/OgreScene.hh"
+#include "ignition/rendering/ogre/OgreSensor.hh"
+
+namespace Ogre
+{
+  class Material;
+  class RenderTarget;
+  class Viewport;
+}
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    /// \brief Ogre implementation of WideAngleCamera
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreWideAngleCamera :
+        public BaseWideAngleCamera<OgreSensor>,
+        protected Ogre::CompositorInstance::Listener
+    {
+      /// \brief Constructor
+      protected: OgreWideAngleCamera();
+
+      /// \brief Destructor
+      public: virtual ~OgreWideAngleCamera();
+
+      // Documentation inherited
+      public: virtual void Init() override;
+
+      /// \brief Create a texture
+      public: virtual void CreateRenderTexture();
+
+      /// \brief Render the camera
+      public: virtual void PostRender() override;
+
+      // Documentation inherited
+      public: virtual void Destroy() override;
+
+      /// \brief Gets the environment texture size
+      /// \return Texture size
+      public: unsigned int EnvTextureSize() const;
+
+      /// \brief Sets environment texture size
+      /// \param[in] _size Texture size
+      public: void SetEnvTextureSize(int _size);
+
+      /// \brief Set the background color of the camera
+      /// \param[in] _color Color to set the background to
+      /// \return True if the background color is set successfully,
+      /// false otherwise
+      public: bool SetBackgroundColor(const math::Color &_color);
+
+      /// \brief Project 3D world coordinates to screen coordinates
+      /// \param[in] _pt 3D world coodinates
+      /// \return Screen coordinates. Z is the distance of point from camera
+      /// optical center.
+      public: math::Vector3d Project3d(const math::Vector3d &_pt) const
+          override;
+
+      /// \brief Get the list of ogre cameras used to create the cube map for
+      /// generating the wide angle camera image
+      /// \return A list of OGRE cameras
+      public: std::vector<Ogre::Camera *> OgreEnvCameras() const;
+
+      /// \brief Set uniform variables of a shader
+      ///   for the provided material technique pass
+      /// \param[in] _pass Ogre::Pass used for rendering
+      /// \param[in] _ratio Frame aspect ratio
+      /// \param[in] _hfov Horizontal field of view
+      public: void SetUniformVariables(Ogre::Pass *_pass,
+          float _ratio, float _hfov);
+
+      // Documentation inherited.
+      public: virtual void PreRender() override;
+
+      /// \brief Implementation of the render call
+      public: virtual void Render() override;
+
+      // Documentation inherited
+      public: common::ConnectionPtr ConnectNewWideAngleFrame(
+          std::function<void(const unsigned char *, unsigned int, unsigned int,
+          unsigned int, const std::string &)>  _subscriber) override;
+
+      // Documentation inherited.
+      public: virtual void SetVisibilityMask(uint32_t _mask) override;
+
+      /// \brief Set the camera's render target
+      protected: void CreateWideAngleTexture() override;
+
+      /// \brief Create the camera.
+      protected: void CreateCamera();
+
+      /// \brief Creates a set of 6 cameras pointing in different directions
+      protected: void CreateEnvCameras();
+
+      /// \brief Callback that is used to set mapping material uniform values,
+      ///   implements Ogre::CompositorInstance::Listener interface
+      /// \param[in] _pass_id Pass identifier
+      /// \param[in] _material Material whose parameters should be set
+      protected: void notifyMaterialRender(Ogre::uint32 _pass_id,
+          Ogre::MaterialPtr &_material) override;
+
+      /// \brief Get a pointer to the render target.
+      /// \return Pointer to the render target
+      protected: virtual RenderTargetPtr RenderTarget() const override;
+
+      private: friend class OgreScene;
+
+      /// \cond warning
+      /// \brief Private data pointer
+      IGN_UTILS_UNIQUE_IMPL_PTR(dataPtr)
+      /// \endcond
+    };
+    }
+  }
+}
+#endif

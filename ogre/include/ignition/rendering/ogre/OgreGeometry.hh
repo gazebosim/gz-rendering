@@ -14,5 +14,47 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_OGRE_OGREGEOMETRY_HH_
+#define IGNITION_RENDERING_OGRE_OGREGEOMETRY_HH_
 
-#include <gz/rendering/ogre/OgreGeometry.hh>
+#include <ignition/utils/SuppressWarning.hh>
+
+#include "ignition/rendering/base/BaseGeometry.hh"
+#include "ignition/rendering/ogre/OgreObject.hh"
+
+namespace Ogre
+{
+  class MovableObject;
+}
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreGeometry :
+      public BaseGeometry<OgreObject>
+    {
+      protected: OgreGeometry();
+
+      public: virtual ~OgreGeometry();
+
+      public: virtual bool HasParent() const;
+
+      public: virtual VisualPtr Parent() const;
+
+      public: virtual Ogre::MovableObject *OgreObject() const = 0;
+
+      protected: virtual void SetParent(OgreVisualPtr _parent);
+
+      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      protected: OgreVisualPtr parent;
+      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+
+      private: friend class OgreVisual;
+    };
+    }
+  }
+}
+#endif

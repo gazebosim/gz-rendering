@@ -14,5 +14,28 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_OGRE_OGREARROWVISUAL_HH_
+#define IGNITION_RENDERING_OGRE_OGREARROWVISUAL_HH_
 
-#include <gz/rendering/ogre/OgreArrowVisual.hh>
+#include "ignition/rendering/base/BaseArrowVisual.hh"
+#include "ignition/rendering/ogre/OgreVisual.hh"
+
+namespace ignition
+{
+  namespace rendering
+  {
+    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    //
+    class IGNITION_RENDERING_OGRE_VISIBLE OgreArrowVisual :
+      public BaseArrowVisual<OgreVisual>
+    {
+      protected: OgreArrowVisual();
+
+      public: virtual ~OgreArrowVisual();
+
+      private: friend class OgreScene;
+    };
+    }
+  }
+}
+#endif

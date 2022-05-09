@@ -14,5 +14,45 @@
  * limitations under the License.
  *
  */
+#ifndef IGNITION_RENDERING_OPTIX_OPTIXRAYTYPES_HH_
+#define IGNITION_RENDERING_OPTIX_OPTIXRAYTYPES_HH_
 
-#include <gz/rendering/optix/OptixRayTypes.hh>
+#include <optix.h>
+
+#ifndef __CUDA_ARCH__
+namespace ignition
+{
+  namespace rendering
+  {
+  inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+  //
+#endif
+
+  typedef enum OptixRayType_t
+  {
+    RT_RADIANCE = 0,
+    RT_SHADOW   = 1,
+    RT_COUNT    = 2,
+  } OptixRayType;
+
+  struct OptixRadianceRayData
+  {
+    float3 color;
+    // cppcheck-suppress unusedStructMember
+    float importance;
+    // cppcheck-suppress unusedStructMember
+    int depth;
+  };
+
+  struct OptixShadowRayData
+  {
+    float3 attenuation;
+  };
+
+#ifndef __CUDA_ARCH__
+  }
+  }
+}
+#endif
+
+#endif

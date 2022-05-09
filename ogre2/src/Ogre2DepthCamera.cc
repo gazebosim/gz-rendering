@@ -348,7 +348,8 @@ void Ogre2DepthCamera::Destroy()
 
   if (this->dataPtr->particleNoiseListener)
   {
-    this->ogreCamera->removeListener(this->dataPtr->particleNoiseListener.get());
+    this->ogreCamera->removeListener(
+        this->dataPtr->particleNoiseListener.get());
     this->dataPtr->particleNoiseListener.reset();
   }
 

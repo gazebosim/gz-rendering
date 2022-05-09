@@ -22,6 +22,8 @@
   #pragma GCC system_header
 #else
   #pragma warning(push, 0)
+  #pragma warning(disable:4275)
+  #pragma warning(disable:4005)
 #endif
 
 // This prevents some deprecation #warning messages on OSX 10.9

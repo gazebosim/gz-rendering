@@ -196,6 +196,10 @@ class ignition::rendering::Ogre2GpuRaysPrivate
 
   /// \brief Min allowed angle in radians;
   public: const math::Angle kMinAllowedAngle = 1e-4;
+
+  /// \brief Max number of cameras used for creating the cubemap of depth
+  /// textures for generating lidar data
+  public: const unsigned int kCubeCameraCount = 6;
 };
 
 using namespace ignition;
@@ -278,7 +282,7 @@ void Ogre2LaserRetroMaterialSwitcher::cameraPreRenderScene(
           {
             try
             {
-              retroValue = std::get<int>(tempLaserRetro);
+              retroValue = static_cast<float>(std::get<int>(tempLaserRetro));
             }
             catch(std::bad_variant_access &e)
             {
@@ -357,7 +361,7 @@ Ogre2GpuRays::Ogre2GpuRays()
   // r = depth, g = retro, and b = n/a
   this->channels = 3u;
 
-  for (unsigned int i = 0; i < 6u; ++i)
+  for (unsigned int i = 0; i < this->dataPtr->kCubeCameraCount; ++i)
   {
     this->dataPtr->cubeCam[i] = nullptr;
     this->dataPtr->ogreCompositorWorkspace1st[i] = nullptr;
@@ -386,6 +390,9 @@ void Ogre2GpuRays::Init()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Destroy()
 {
+  if (!this->dataPtr->ogreCamera)
+    return;
+
   if (this->dataPtr->gpuRaysBuffer)
   {
     delete [] this->dataPtr->gpuRaysBuffer;
@@ -464,6 +471,33 @@ void Ogre2GpuRays::Destroy()
     ogreCompMgr->removeNodeDefinition(
         this->dataPtr->ogreCompositorNodeDef2nd);
     this->dataPtr->ogreCompositorWorkspaceDef2nd.clear();
+  }
+
+  if (this->scene)
+  {
+    Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
+    if (ogreSceneManager == nullptr)
+    {
+      ignerr << "Scene manager not available. "
+             << "Unable to remove cameras and listeners" << std::endl;
+    }
+    else
+    {
+      for (unsigned int i = 0u; i < this->dataPtr->kCubeCameraCount; ++i)
+      {
+        if (this->dataPtr->cubeCam[i])
+        {
+          this->dataPtr->cubeCam[i]->removeListener(
+              this->dataPtr->particleNoiseListener[i].get());
+          ogreSceneManager->destroyCamera(this->dataPtr->cubeCam[i]);
+          this->dataPtr->cubeCam[i] = nullptr;
+        }
+        this->dataPtr->particleNoiseListener[i].reset();
+        this->dataPtr->laserRetroMaterialSwitcher[i].reset();
+      }
+      ogreSceneManager->destroyCamera(this->dataPtr->ogreCamera);
+      this->dataPtr->ogreCamera = nullptr;
+    }
   }
 }
 
@@ -587,19 +621,19 @@ math::Vector2d Ogre2GpuRays::SampleCubemap(const math::Vector3d &_v,
   math::Vector2d uv;
   if (vAbs.Z() >= vAbs.X() && vAbs.Z() >= vAbs.Y())
   {
-    _faceIndex = _v.Z() < 0.0 ? 5.0 : 4.0;
+    _faceIndex = _v.Z() < 0 ? 5 : 4;
     ma = 0.5 / vAbs.Z();
     uv = math::Vector2d(_v.Z() < 0.0 ? -_v.X() : _v.X(), -_v.Y());
   }
   else if (vAbs.Y() >= vAbs.X())
   {
-    _faceIndex = _v.Y() < 0.0 ? 3.0 : 2.0;
+    _faceIndex = _v.Y() < 0 ? 3 : 2;
     ma = 0.5 / vAbs.Y();
     uv = math::Vector2d(_v.X(), _v.Y() < 0.0 ? -_v.Z() : _v.Z());
   }
   else
   {
-    _faceIndex = _v.X() < 0.0 ? 1.0 : 0.0;
+    _faceIndex = _v.X() < 0 ? 1 : 0;
     ma = 0.5 / vAbs.X();
     uv = math::Vector2d(_v.X() < 0.0 ? _v.Z() : -_v.Z(), -_v.Y());
   }
@@ -689,7 +723,7 @@ void Ogre2GpuRays::CreateSampleTexture()
       // v
       pDest[index++] = uv.Y();
       // face
-      pDest[index++] = faceIdx;
+      pDest[index++] = static_cast<float>(faceIdx);
       // unused
       pDest[index++] = 1.0;
       h += hStep;

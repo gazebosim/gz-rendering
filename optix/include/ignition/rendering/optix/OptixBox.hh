@@ -14,29 +14,5 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXBOX_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXBOX_HH_
 
-#include "ignition/rendering/optix/OptixPrimitive.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixBox :
-      public OptixPrimitive
-    {
-      protected: OptixBox();
-
-      public: virtual ~OptixBox();
-
-      public: static optix::Geometry CreateOptixGeometry(OptixScenePtr _scene);
-
-      private: friend class OptixScene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixBox.hh>

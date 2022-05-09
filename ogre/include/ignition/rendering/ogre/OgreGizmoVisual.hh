@@ -14,31 +14,5 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGREGIZMOVISUAL_HH_
-#define IGNITION_RENDERING_OGRE_OGREGIZMOVISUAL_HH_
 
-#include "ignition/rendering/base/BaseGizmoVisual.hh"
-#include "ignition/rendering/ogre/OgreVisual.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreGizmoVisual :
-      public BaseGizmoVisual<OgreVisual>
-    {
-      /// \brief Constructor
-      protected: OgreGizmoVisual();
-
-      /// \brief Destructor
-      public: virtual ~OgreGizmoVisual();
-
-      /// \brief Only the ogre scene can instanstiate this class
-      private: friend class OgreScene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/ogre/OgreGizmoVisual.hh>

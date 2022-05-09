@@ -15,12 +15,12 @@
  *
  */
 
-#ifndef IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_IGNITION_RENDERER_HH_
-#define IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_IGNITION_RENDERER_HH_
+#ifndef GZ_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_GZ_RENDERER_HH_
+#define GZ_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_GZ_RENDERER_HH_
 
 #include <QSize>
 
-#include <ignition/rendering.hh>
+#include <gz/rendering.hh>
 
 /// \brief Ignition renderer class. This manages  the initialisation
 /// and update of an Ignition rendering engine instance and makes the
@@ -76,4 +76,4 @@ class IgnitionRenderer
   private: ignition::rendering::CameraPtr camera;
 };
 
-#endif // IGNITION_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_IGNITION_RENDERER_HH_
+#endif // GZ_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_GZ_RENDERER_HH_

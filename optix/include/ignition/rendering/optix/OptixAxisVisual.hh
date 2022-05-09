@@ -14,28 +14,5 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXAXISVISUAL_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXAXISVISUAL_HH_
 
-#include "ignition/rendering/base/BaseAxisVisual.hh"
-#include "ignition/rendering/optix/OptixVisual.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixAxisVisual :
-      public BaseAxisVisual<OptixVisual>
-    {
-      protected: OptixAxisVisual();
-
-      public: virtual ~OptixAxisVisual();
-
-      private: friend class OptixScene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixAxisVisual.hh>

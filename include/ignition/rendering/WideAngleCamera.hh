@@ -14,54 +14,5 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_WIDEANGLECAMERA_HH_
-#define IGNITION_RENDERING_WIDEANGLECAMERA_HH_
 
-#include <string>
-
-#include <ignition/common/Event.hh>
-
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/CameraLens.hh"
-#include "ignition/rendering/Scene.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    /// \class WideAngleCamera WideAngleCamera.hh
-    ///     ignition/rendering/WideAngleCamera.hh
-    /// \brief Wide angle camera class
-    class IGNITION_RENDERING_VISIBLE WideAngleCamera :
-      public virtual Camera
-    {
-      /// \brief Destructor
-      public: virtual ~WideAngleCamera() { }
-
-      /// \brief Set the camera lens to use for this wide angle camera
-      /// \param[in] _lens Camera lens to set
-      public: virtual void SetLens(const CameraLens &_lens) = 0;
-
-      /// \brief Get the camera lens used by this wide angle camera
-      /// \return Camera lens set to this wide angle camera
-      public: virtual const CameraLens &Lens() const = 0;
-
-      /// \brief Project 3D world coordinates to screen coordinates
-      /// \param[in] _pt 3D world coodinates
-      /// \return Screen coordinates. Z is the distance of point from camera
-      /// optical center.
-      public: virtual math::Vector3d Project3d(const math::Vector3d &_pt) const
-           = 0;
-
-      /// \brief Subscribes a new listener to this camera's new frame event
-      /// \param[in] _subscriber New camera listener callback
-      public: virtual common::ConnectionPtr ConnectNewWideAngleFrame(
-          std::function<void(const unsigned char *, unsigned int, unsigned int,
-          unsigned int, const std::string &)>  _subscriber) = 0;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/WideAngleCamera.hh>

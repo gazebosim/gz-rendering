@@ -14,21 +14,21 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_SCENEMANAGERPRIVATE_HH
-#define IGNITION_RENDERING_EXAMPLES_SCENEMANAGERPRIVATE_HH
+#ifndef GZ_RENDERING_EXAMPLES_SCENEMANAGERPRIVATE_HH
+#define GZ_RENDERING_EXAMPLES_SCENEMANAGERPRIVATE_HH
 
 #include <map>
 #include <string>
 #include <vector>
 #include <memory>
 
-#include <ignition/common/Time.hh>
+#include <gz/common/Time.hh>
 
-#include <ignition/math/Color.hh>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Pose3.hh>
 
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/ShaderType.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/ShaderType.hh"
 #include "gazebo/transport/Node.hh"
 
 namespace ignition

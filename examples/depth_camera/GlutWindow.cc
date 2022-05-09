@@ -34,18 +34,18 @@
 #include <string>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Image.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Image.hh>
 
-#include <ignition/math/Vector2.hh>
+#include <gz/math/Vector2.hh>
 
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/Image.hh>
-#include <ignition/rendering/OrbitViewController.hh>
-#include <ignition/rendering/RayQuery.hh>
-#include <ignition/rendering/Scene.hh>
-#include <ignition/rendering/SegmentationCamera.hh>
-#include <ignition/rendering/DepthCamera.hh>
+#include <gz/rendering/Camera.hh>
+#include <gz/rendering/Image.hh>
+#include <gz/rendering/OrbitViewController.hh>
+#include <gz/rendering/RayQuery.hh>
+#include <gz/rendering/Scene.hh>
+#include <gz/rendering/SegmentationCamera.hh>
+#include <gz/rendering/DepthCamera.hh>
 
 #include "GlutWindow.hh"
 

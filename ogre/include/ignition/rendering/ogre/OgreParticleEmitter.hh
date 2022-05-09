@@ -14,31 +14,5 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_PARTICLEEMITTER_HH_
-#define IGNITION_RENDERING_OGRE_PARTICLEEMITTER_HH_
 
-#include "ignition/rendering/base/BaseParticleEmitter.hh"
-#include "ignition/rendering/ogre/OgreVisual.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    /// \brief Class to manage a particle emitter.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreParticleEmitter :
-      public BaseParticleEmitter<OgreVisual>
-    {
-      /// \brief Constructor
-      protected: OgreParticleEmitter();
-
-      /// \brief Destructor
-      public: virtual ~OgreParticleEmitter();
-
-      /// \brief Only the ogre scene can instanstiate this class
-      private: friend class OgreScene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/ogre/OgreParticleEmitter.hh>

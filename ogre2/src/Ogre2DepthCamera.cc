@@ -327,6 +327,13 @@ void Ogre2DepthCamera::Destroy()
   {
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->depthMaterial->getName());
+    this->dataPtr->depthMaterial.setNull();
+  }
+  if (this->dataPtr->depthFinalMaterial)
+  {
+    Ogre::MaterialManager::getSingleton().remove(
+        this->dataPtr->depthFinalMaterial->getName());
+    this->dataPtr->depthFinalMaterial.setNull();
   }
 
   if (!this->dataPtr->ogreCompositorWorkspaceDef.empty())
@@ -337,6 +344,13 @@ void Ogre2DepthCamera::Destroy()
         this->dataPtr->ogreCompositorBaseNodeDef);
     ogreCompMgr->removeNodeDefinition(
         this->dataPtr->ogreCompositorFinalNodeDef);
+  }
+
+  if (this->dataPtr->particleNoiseListener)
+  {
+    this->ogreCamera->removeListener(
+        this->dataPtr->particleNoiseListener.get());
+    this->dataPtr->particleNoiseListener.reset();
   }
 
   Ogre::SceneManager *ogreSceneManager;

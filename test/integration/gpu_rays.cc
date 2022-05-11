@@ -881,7 +881,7 @@ void GpuRaysTest::Visibility(const std::string &_renderEngine)
 
   VisualPtr root = scene->RootVisual();
 
-  // Create first ray caster
+  // Create ray caster
   ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0.1),
       ignition::math::Quaterniond::Identity);
 
@@ -898,10 +898,6 @@ void GpuRaysTest::Visibility(const std::string &_renderEngine)
   gpuRays->SetVerticalRayCount(vRayCount);
   root->AddChild(gpuRays);
 
-  // Create a second ray caster rotated
-  ignition::math::Pose3d testPose2(ignition::math::Vector3d(0, 0, 0.1),
-      ignition::math::Quaterniond(IGN_PI/2.0, 0, 0));
-
   // Create testing boxes
   // box in the center
   // GpuRays should see box because default flags have all bits set to 1
@@ -914,7 +910,7 @@ void GpuRaysTest::Visibility(const std::string &_renderEngine)
   root->AddChild(visualBox1);
 
   // box on the right of the first gpu rays caster
-  // GpuRays should see box because mask & flags evalutes to non-zero
+  // GpuRays should see box because mask & flags evaluates to non-zero
   ignition::math::Pose3d box02Pose(ignition::math::Vector3d(0, -5, 0.5),
                                    ignition::math::Quaterniond::Identity);
   VisualPtr visualBox2 = scene->CreateVisual("UnitBox2");
@@ -925,7 +921,7 @@ void GpuRaysTest::Visibility(const std::string &_renderEngine)
   root->AddChild(visualBox2);
 
   // box on the left of the rays caster
-  // GpuRays should not see box because mask & flags evalutes to 0
+  // GpuRays should not see box because mask & flags evaluates to 0
   ignition::math::Pose3d box03Pose(
       ignition::math::Vector3d(0, 5, 0.5),
       ignition::math::Quaterniond::Identity);
@@ -955,7 +951,7 @@ void GpuRaysTest::Visibility(const std::string &_renderEngine)
   double expectedRangeAtMidPointBox1 = abs(box01Pose.Pos().X()) - unitBoxSize/2;
   double expectedRangeAtMidPointBox2 = abs(box02Pose.Pos().Y()) - unitBoxSize/2;
 
-  // rays caster 1 should see box01 and box02
+  // rays caster should see box01 and box02 but not box03
   EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox1, LASER_TOL);
   EXPECT_NEAR(scan[0], expectedRangeAtMidPointBox2, LASER_TOL);
   EXPECT_FLOAT_EQ(scan[last], ignition::math::INF_F);
@@ -963,7 +959,6 @@ void GpuRaysTest::Visibility(const std::string &_renderEngine)
   c.reset();
 
   delete [] scan;
-
   scan = nullptr;
 
   // Clean up

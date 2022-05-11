@@ -853,8 +853,8 @@ void GpuRaysTest::Visibility(const std::string &_renderEngine)
   }
 
   // Test GPU rays with 3 boxes in the world.
-  // then move all 3 boxes out of range and verify range values
-
+  // One of the boxes has visibility flags set to a value that
+  // makes it invisible to the sensor
   const double hMinAngle = -IGN_PI/2.0;
   const double hMaxAngle = IGN_PI/2.0;
   const double minRange = 0.1;

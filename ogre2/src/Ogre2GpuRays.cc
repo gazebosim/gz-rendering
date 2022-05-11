@@ -961,7 +961,7 @@ void Ogre2GpuRays::Setup1stPass()
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue(0, 0, 0));
       // set camera custom visibility mask when rendering laser retro
-      passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
+      passScene->mVisibilityMask = this->VisibilityMask() &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
 

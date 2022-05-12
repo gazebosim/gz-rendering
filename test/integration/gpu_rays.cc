@@ -848,15 +848,15 @@ void GpuRaysTest::Visibility(const std::string &_renderEngine)
   if (_renderEngine == "optix")
   {
     igndbg << "GpuRays visibility mask not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
+           << _renderEngine << std::endl;
     return;
   }
 
   // Test GPU rays with 3 boxes in the world.
   // One of the boxes has visibility flags set to a value that
   // makes it invisible to the sensor
-  const double hMinAngle = -IGN_PI/2.0;
-  const double hMaxAngle = IGN_PI/2.0;
+  const double hMinAngle = -IGN_PI / 2.0;
+  const double hMaxAngle = IGN_PI / 2.0;
   const double minRange = 0.1;
   const double maxRange = 10.0;
   const int hRayCount = 320;
@@ -867,7 +867,7 @@ void GpuRaysTest::Visibility(const std::string &_renderEngine)
   if (!engine)
   {
     igndbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
+           << "' is not supported" << std::endl;
     return;
   }
 
@@ -945,11 +945,13 @@ void GpuRaysTest::Visibility(const std::string &_renderEngine)
   gpuRays->Update();
   scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
 
-  int mid = static_cast<int>(hRayCount/2) * channels;
+  int mid = static_cast<int>(hRayCount / 2) * channels;
   int last = (hRayCount - 1) * channels;
   double unitBoxSize = 1.0;
-  double expectedRangeAtMidPointBox1 = abs(box01Pose.Pos().X()) - unitBoxSize/2;
-  double expectedRangeAtMidPointBox2 = abs(box02Pose.Pos().Y()) - unitBoxSize/2;
+  double expectedRangeAtMidPointBox1 =
+      abs(box01Pose.Pos().X()) - unitBoxSize / 2;
+  double expectedRangeAtMidPointBox2 =
+      abs(box02Pose.Pos().Y()) - unitBoxSize / 2;
 
   // rays caster should see box01 and box02 but not box03
   EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox1, LASER_TOL);

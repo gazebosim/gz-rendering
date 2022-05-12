@@ -7,6 +7,9 @@
 1. Add support for GpuRays (lidar) visibility mask
     * [Pull request #625](https://github.com/ignitionrobotics/ign-rendering/pull/625)
 
+1. Use gz-utils test macros
+    * [Pull request #624](https://github.com/ignitionrobotics/ign-rendering/pull/624)
+
 1. Cleanup depth camera resources on destroy
     * [Pull request #623](https://github.com/ignitionrobotics/ign-rendering/pull/623)
 

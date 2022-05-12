@@ -2,6 +2,23 @@
 
 ### Ignition Rendering 6.X
 
+### Ignition Rendering 6.4.0 (2022-05-12)
+
+1. Add support for GpuRays (lidar) visibility mask
+    * [Pull request #625](https://github.com/ignitionrobotics/ign-rendering/pull/625)
+
+1. Cleanup depth camera resources on destroy
+    * [Pull request #623](https://github.com/ignitionrobotics/ign-rendering/pull/623)
+
+1. Fixed Readme.md typo
+    * [Pull request #620](https://github.com/ignitionrobotics/ign-rendering/pull/620)
+
+1. Destroy root node and clean up sensor resources on exit
+    * [Pull request #617](https://github.com/ignitionrobotics/ign-rendering/pull/617)
+
+1. Add repo specific issue templates
+    * [Pull request #616](https://github.com/ignitionrobotics/ign-rendering/pull/616)
+
 ### Ignition Rendering 6.3.1 (2022-04-13)
 
 1.  Revert OGRE-Next custom support and back to use IgnOGRE2 module

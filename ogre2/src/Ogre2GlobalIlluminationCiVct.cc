@@ -63,6 +63,11 @@ class DETAIL_GZ_RENDERING_OGRE2_HIDDEN
   /// \brief See GlobalIlluminationCiVct::Bind
   public: CameraPtr bindCamera;
 
+  /// \brief See GlobalIlluminationVct::SetParticipatingVisuals
+  public: uint32_t participatingVisuals =
+      GlobalIlluminationBase::ParticipatingVisualsFlags::STATIC_VISUALS |
+      GlobalIlluminationBase::ParticipatingVisualsFlags::DYNAMIC_VISUALS;
+
   /// \brief See GlobalIlluminationCiVct::DebugVisualizationMode
   public: GlobalIlluminationCiVct::DebugVisualizationMode
     debugVisualizationMode = GlobalIlluminationCiVct::DVM_None;
@@ -321,7 +326,10 @@ void Ogre2GlobalIlluminationCiVct::Build()
   cascadedVoxelizer->removeAllItems();
 
   // Add all static Item from Ogre
-  cascadedVoxelizer->addAllItems(sceneManager, 0xffffffff, true);
+  if (this->dataPtr->participatingVisuals & STATIC_VISUALS)
+    cascadedVoxelizer->addAllItems(sceneManager, 0xffffffff, true);
+  if (this->dataPtr->participatingVisuals & DYNAMIC_VISUALS)
+    cascadedVoxelizer->addAllItems(sceneManager, 0xffffffff, false);
 
   sceneManager->updateSceneGraph();
   cascadedVoxelizer->update(sceneManager);
@@ -425,6 +433,18 @@ void Ogre2GlobalIlluminationCiVct::SetBounceCount(uint32_t _bounceCount)
 uint32_t Ogre2GlobalIlluminationCiVct::BounceCount() const
 {
   return this->dataPtr->cascadedVoxelizer->getNumBounces();
+}
+
+//////////////////////////////////////////////////
+void Ogre2GlobalIlluminationCiVct::SetParticipatingVisuals(uint32_t _mask)
+{
+  this->dataPtr->participatingVisuals = _mask;
+}
+
+//////////////////////////////////////////////////
+uint32_t Ogre2GlobalIlluminationCiVct::ParticipatingVisuals() const
+{
+  return this->dataPtr->participatingVisuals;
 }
 
 //////////////////////////////////////////////////

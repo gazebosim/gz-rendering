@@ -189,6 +189,12 @@ namespace gz
       // Documentation inherited.
       public: virtual uint32_t BounceCount() const override;
 
+      // Documentation inherited.
+      public: void SetParticipatingVisuals(uint32_t _mask) override;
+
+      // Documentation inherited.
+      public: uint32_t ParticipatingVisuals() const override;
+
       /// \internal
       /// \brief Retrieves HlmsPbs
       private: Ogre::HlmsPbs* HlmsPbs() const;

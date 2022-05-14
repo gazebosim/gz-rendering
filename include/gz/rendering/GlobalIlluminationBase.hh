@@ -37,6 +37,21 @@ namespace gz
     {
       private: friend class Ogre2Scene;
 
+      /// \brief Bitmask of which objects are considered by GI bounces.
+      /// Note that *all* objects can receive indirect illumination.
+      ///
+      /// However often only static objects can reflect/bounce/cast
+      /// indirect illumination
+      public: enum ParticipatingVisualsFlags
+      {
+        /// \brief Dynamic objects can bounce GI (depending on the solution,
+        /// this may be slow)
+        DYNAMIC_VISUALS = 1u << 0u,
+
+        /// \brief Static objects can bounce GI
+        STATIC_VISUALS = 1u << 1u
+      };
+
       /// \brief Destructor
       public: virtual ~GlobalIlluminationBase() { }
 
@@ -78,6 +93,14 @@ namespace gz
       /// \brief Get number of bounces
       /// \return Number of bounces
       public: virtual uint32_t BounceCount() const = 0;
+
+      /// \brief Set which visuals can bounce GI
+      /// \param[in] _mask See ParticipatingVisualsFlags
+      public: virtual void SetParticipatingVisuals(uint32_t _mask) = 0;
+
+      /// \brief Visuals that can bounce GI
+      /// \return See ParticipatingVisualsFlags
+      public: virtual uint32_t ParticipatingVisuals() const = 0;
     };
     }
   }

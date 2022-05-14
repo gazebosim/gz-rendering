@@ -57,6 +57,10 @@ class gz::rendering::Ogre2GlobalIlluminationVctPrivate
   /// \brief See GlobalIlluminationVct::SetBounceCount
   public: uint32_t bounceCount = 6u;
 
+  /// \brief See GlobalIlluminationVct::SetParticipatingVisuals
+  public: uint32_t participatingVisuals =
+      GlobalIlluminationBase::ParticipatingVisualsFlags::STATIC_VISUALS;
+
   /// \brief See GlobalIlluminationVct::SetThinWallCounter
   public: float thinWallCounter = 1.0f;
 
@@ -164,6 +168,18 @@ uint32_t Ogre2GlobalIlluminationVct::BounceCount() const
 }
 
 //////////////////////////////////////////////////
+void Ogre2GlobalIlluminationVct::SetParticipatingVisuals(uint32_t _mask)
+{
+  this->dataPtr->participatingVisuals = _mask;
+}
+
+//////////////////////////////////////////////////
+uint32_t Ogre2GlobalIlluminationVct::ParticipatingVisuals() const
+{
+  return this->dataPtr->participatingVisuals;
+}
+
+//////////////////////////////////////////////////
 void Ogre2GlobalIlluminationVct::SetHighQuality(bool _highQuality)
 {
   if (this->Enabled())
@@ -230,33 +246,40 @@ void Ogre2GlobalIlluminationVct::Build()
 
   voxelizer->removeAllItems();
 
-  // Add all static Item from Ogre
-  Ogre::ObjectMemoryManager &objMemoryManager =
-    sceneManager->_getEntityMemoryManager(Ogre::SCENE_STATIC);
-
-  const size_t numRenderQueues = objMemoryManager.getNumRenderQueues();
-
-  for (size_t i = 0u; i < numRenderQueues; ++i)
+  for (size_t type = 0; type < 2u; ++type)
   {
-    Ogre::ObjectData objData;
-    const size_t totalObjs = objMemoryManager.getFirstObjectData(objData, i);
+    if (((1u << type) & this->dataPtr->participatingVisuals) == 0u)
+      continue;
 
-    for (size_t j = 0; j < totalObjs; j += ARRAY_PACKED_REALS)
+    // Add all dynamic/static Item from Ogre
+    Ogre::ObjectMemoryManager &objMemoryManager =
+      sceneManager->_getEntityMemoryManager(
+        static_cast<Ogre::SceneMemoryMgrTypes>(type));
+
+    const size_t numRenderQueues = objMemoryManager.getNumRenderQueues();
+
+    for (size_t i = 0u; i < numRenderQueues; ++i)
     {
-      for (size_t k = 0; k < ARRAY_PACKED_REALS; ++k)
+      Ogre::ObjectData objData;
+      const size_t totalObjs = objMemoryManager.getFirstObjectData(objData, i);
+
+      for (size_t j = 0; j < totalObjs; j += ARRAY_PACKED_REALS)
       {
-        // objData.mOwner is guaranteed by Ogre to not be a nullptr
-        if (objData.mOwner[k]->getVisible())
+        for (size_t k = 0; k < ARRAY_PACKED_REALS; ++k)
         {
-          auto item = dynamic_cast<Ogre::Item *>(objData.mOwner[k]);
-          if (item)
+          // objData.mOwner is guaranteed by Ogre to not be a nullptr
+          if (objData.mOwner[k]->getVisible())
           {
-            voxelizer->addItem(item, false);
+            auto item = dynamic_cast<Ogre::Item *>(objData.mOwner[k]);
+            if (item)
+            {
+              voxelizer->addItem(item, false);
+            }
           }
         }
-      }
 
-      objData.advancePack();
+        objData.advancePack();
+      }
     }
   }
 

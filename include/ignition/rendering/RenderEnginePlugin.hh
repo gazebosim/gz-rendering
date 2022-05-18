@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/RenderEnginePlugin.hh>
+#include <ignition/rendering/config.hh>

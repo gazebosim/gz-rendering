@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/COMVisual.hh>
+#include <ignition/rendering/config.hh>

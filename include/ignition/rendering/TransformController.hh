@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/TransformController.hh>
+#include <ignition/rendering/config.hh>

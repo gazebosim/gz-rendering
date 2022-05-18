@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/Material.hh>
+#include <ignition/rendering/config.hh>

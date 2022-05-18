@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/WireBox.hh>
+#include <ignition/rendering/config.hh>

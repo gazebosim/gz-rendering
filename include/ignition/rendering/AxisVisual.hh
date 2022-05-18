@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/AxisVisual.hh>
+#include <ignition/rendering/config.hh>

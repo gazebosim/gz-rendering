@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ThermalCamera.hh>
+#include <ignition/rendering/config.hh>

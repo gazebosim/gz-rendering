@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/GaussianNoisePass.hh>
+#include <ignition/rendering/config.hh>

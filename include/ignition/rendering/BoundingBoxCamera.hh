@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/BoundingBoxCamera.hh>
+#include <ignition/rendering/config.hh>

@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/GraphicsAPI.hh>
+#include <ignition/rendering/config.hh>

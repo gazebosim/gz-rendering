@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/DepthCamera.hh>
+#include <ignition/rendering/config.hh>

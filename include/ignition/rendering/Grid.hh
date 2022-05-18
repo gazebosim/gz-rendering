@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/Grid.hh>
+#include <ignition/rendering/config.hh>

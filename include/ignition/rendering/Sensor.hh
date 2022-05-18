@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/Sensor.hh>
+#include <ignition/rendering/config.hh>

@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/RayQuery.hh>
+#include <ignition/rendering/config.hh>

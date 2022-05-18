@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/MoveToHelper.hh>
+#include <ignition/rendering/config.hh>

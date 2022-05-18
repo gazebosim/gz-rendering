@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/Mesh.hh>
+#include <ignition/rendering/config.hh>

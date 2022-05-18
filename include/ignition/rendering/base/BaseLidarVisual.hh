@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseLidarVisual.hh>
+#include <ignition/rendering/config.hh>

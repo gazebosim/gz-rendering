@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseGpuRays.hh>
+#include <ignition/rendering/config.hh>

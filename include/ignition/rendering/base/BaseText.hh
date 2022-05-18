@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseText.hh>
+#include <ignition/rendering/config.hh>

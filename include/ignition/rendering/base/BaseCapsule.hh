@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseCapsule.hh>
+#include <ignition/rendering/config.hh>

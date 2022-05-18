@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseWideAngleCamera.hh>
+#include <ignition/rendering/config.hh>

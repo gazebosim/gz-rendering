@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseCamera.hh>
+#include <ignition/rendering/config.hh>

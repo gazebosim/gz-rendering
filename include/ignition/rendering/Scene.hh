@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/Scene.hh>
+#include <ignition/rendering/config.hh>

@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseNode.hh>
+#include <ignition/rendering/config.hh>

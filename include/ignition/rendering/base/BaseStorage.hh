@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseStorage.hh>
+#include <ignition/rendering/config.hh>

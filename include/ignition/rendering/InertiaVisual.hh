@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/InertiaVisual.hh>
+#include <ignition/rendering/config.hh>

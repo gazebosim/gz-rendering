@@ -76,4 +76,4 @@ class IgnitionRenderer
   private: ignition::rendering::CameraPtr camera;
 };
 
-#endif // GZ_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_GZ_RENDERER_HH_
+#endif  // GZ_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_GZ_RENDERER_HH_

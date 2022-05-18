@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2GZHLMSPBSPRIVATE_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2GZHLMSPBSPRIVATE_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2GZHLMSPBSPRIVATE_HH_
+#define GZ_RENDERING_OGRE2_OGRE2GZHLMSPBSPRIVATE_HH_
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Export.hh"

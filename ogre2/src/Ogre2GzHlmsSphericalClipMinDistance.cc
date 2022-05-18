@@ -15,7 +15,7 @@
  *
  */
 
-#include "Ogre2IgnHlmsSphericalClipMinDistance.hh"
+#include "Ogre2GzHlmsSphericalClipMinDistance.hh"
 
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 
@@ -35,7 +35,7 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-void Ogre2IgnHlmsSphericalClipMinDistance::preparePassHash(
+void Ogre2GzHlmsSphericalClipMinDistance::preparePassHash(
   const Ogre::CompositorShadowNode * /*_shadowNode*/, bool _casterPass,
   bool /*_dualParaboloid*/, Ogre::SceneManager * /*_sceneManager*/,
   Ogre::Hlms *_hlms)
@@ -61,7 +61,7 @@ void Ogre2IgnHlmsSphericalClipMinDistance::preparePassHash(
 }
 
 //////////////////////////////////////////////////
-Ogre::uint32 Ogre2IgnHlmsSphericalClipMinDistance::getPassBufferSize(
+Ogre::uint32 Ogre2GzHlmsSphericalClipMinDistance::getPassBufferSize(
   const Ogre::CompositorShadowNode * /*_shadowNode*/, bool _casterPass,
   bool /*_dualParaboloid*/, Ogre::SceneManager * /*_sceneManager*/) const
 {
@@ -76,7 +76,7 @@ Ogre::uint32 Ogre2IgnHlmsSphericalClipMinDistance::getPassBufferSize(
 }
 
 //////////////////////////////////////////////////
-float *Ogre2IgnHlmsSphericalClipMinDistance::preparePassBuffer(
+float *Ogre2GzHlmsSphericalClipMinDistance::preparePassBuffer(
   const Ogre::CompositorShadowNode * /*_shadowNode*/, bool _casterPass,
   bool /*_dualParaboloid*/, Ogre::SceneManager *_sceneManager,
   float *_passBufferPtr)

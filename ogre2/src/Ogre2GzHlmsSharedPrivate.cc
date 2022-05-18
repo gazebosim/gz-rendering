@@ -15,7 +15,7 @@
  *
  */
 
-#include "Ogre2IgnHlmsSharedPrivate.hh"
+#include "Ogre2GzHlmsSharedPrivate.hh"
 
 #include <ignition/common/Util.hh>
 
@@ -38,7 +38,7 @@ namespace ignition
   namespace rendering
   {
     /////////////////////////////////////////////////
-    void Ogre2IgnHlmsShared::BindObjectDataBuffer(
+    void Ogre2GzHlmsShared::BindObjectDataBuffer(
       Ogre::CommandBuffer *_commandBuffer, uint16_t _perObjectDataBufferSlot)
     {
       if (this->currPerObjectDataBuffer)
@@ -53,7 +53,7 @@ namespace ignition
     }
 
     /////////////////////////////////////////////////
-    float *Ogre2IgnHlmsShared::MapObjectDataBufferFor(
+    float *Ogre2GzHlmsShared::MapObjectDataBufferFor(
       uint32_t _instanceIdx, Ogre::CommandBuffer *_commandBuffer,
       Ogre::VaoManager *_vaoManager, const ConstBufferPackedVec &_constBuffers,
       uint32_t _currConstBufferIdx, uint32_t *_startMappedConstBuffer,
@@ -105,7 +105,7 @@ namespace ignition
     }
 
     /////////////////////////////////////////////////
-    void Ogre2IgnHlmsShared::UnmapObjectDataBuffer()
+    void Ogre2GzHlmsShared::UnmapObjectDataBuffer()
     {
       if (this->currPerObjectDataBuffer)
       {

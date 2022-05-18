@@ -42,14 +42,14 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
-#include "Ogre2IgnHlmsPbsPrivate.hh"
-#include "Ogre2IgnHlmsTerraPrivate.hh"
-#include "Ogre2IgnHlmsUnlitPrivate.hh"
+#include "Ogre2GzHlmsPbsPrivate.hh"
+#include "Ogre2GzHlmsTerraPrivate.hh"
+#include "Ogre2GzHlmsUnlitPrivate.hh"
 
 #include "Terra/Hlms/OgreHlmsTerra.h"
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 #include "Terra/TerraWorkspaceListener.h"
-#include "Ogre2IgnHlmsSphericalClipMinDistance.hh"
+#include "Ogre2GzHlmsSphericalClipMinDistance.hh"
 
 class IGNITION_RENDERING_OGRE2_HIDDEN
     ignition::rendering::Ogre2RenderEnginePrivate
@@ -65,7 +65,7 @@ class IGNITION_RENDERING_OGRE2_HIDDEN
   public: std::vector<unsigned int> fsaaLevels;
 
   /// \brief Controls Hlms customizations for both PBS and Unlit
-  public: ignition::rendering::Ogre2IgnHlmsSphericalClipMinDistance
+  public: ignition::rendering::Ogre2GzHlmsSphericalClipMinDistance
   sphericalClipMinDistance;
 
   /// \brief Pbs listener that adds terra shadows
@@ -76,13 +76,13 @@ class IGNITION_RENDERING_OGRE2_HIDDEN
   public: std::unique_ptr<Ogre::TerraWorkspaceListener> terraWorkspaceListener;
 
   /// \brief Custom PBS modifications
-  public: Ogre::Ogre2IgnHlmsPbs *ignHlmsPbs{nullptr};
+  public: Ogre::Ogre2GzHlmsPbs *ignHlmsPbs{nullptr};
 
   /// \brief Custom Unlit modifications
-  public: Ogre::Ogre2IgnHlmsUnlit *ignHlmsUnlit{nullptr};
+  public: Ogre::Ogre2GzHlmsUnlit *ignHlmsUnlit{nullptr};
 
   /// \brief Custom Terra modifications
-  public: Ogre::Ogre2IgnHlmsTerra *ignHlmsTerra{nullptr};
+  public: Ogre::Ogre2GzHlmsTerra *ignHlmsTerra{nullptr};
 };
 
 using namespace ignition;
@@ -743,10 +743,10 @@ void Ogre2RenderEngine::RegisterHlms()
       "FileSystem", true);
 
   {
-    Ogre::Ogre2IgnHlmsUnlit *hlmsUnlit = 0;
+    Ogre::Ogre2GzHlmsUnlit *hlmsUnlit = 0;
     // Create & Register HlmsUnlit
     // Get the path to all the subdirectories used by HlmsUnlit
-    Ogre::Ogre2IgnHlmsUnlit::getDefaultPaths(mainFolderPath,
+    Ogre::Ogre2GzHlmsUnlit::getDefaultPaths(mainFolderPath,
                                              libraryFoldersPaths);
     Ogre::Archive *archiveUnlit = archiveManager.load(
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
@@ -765,7 +765,7 @@ void Ogre2RenderEngine::RegisterHlms()
     archiveUnlitLibraryFolders.push_back(customizationsArchiveLibrary);
 
     // Create and register the unlit Hlms
-    hlmsUnlit = OGRE_NEW Ogre::Ogre2IgnHlmsUnlit(
+    hlmsUnlit = OGRE_NEW Ogre::Ogre2GzHlmsUnlit(
       archiveUnlit, &archiveUnlitLibraryFolders,
       &this->dataPtr->sphericalClipMinDistance);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
@@ -778,10 +778,10 @@ void Ogre2RenderEngine::RegisterHlms()
   }
 
   {
-    Ogre::Ogre2IgnHlmsPbs *hlmsPbs = 0;
+    Ogre::Ogre2GzHlmsPbs *hlmsPbs = 0;
     // Create & Register HlmsPbs
     // Do the same for HlmsPbs:
-    Ogre::Ogre2IgnHlmsPbs::GetDefaultPaths(mainFolderPath, libraryFoldersPaths);
+    Ogre::Ogre2GzHlmsPbs::GetDefaultPaths(mainFolderPath, libraryFoldersPaths);
     Ogre::Archive *archivePbs = archiveManager.load(
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
 
@@ -810,7 +810,7 @@ void Ogre2RenderEngine::RegisterHlms()
 
     // Create and register
     hlmsPbs =
-      OGRE_NEW Ogre::Ogre2IgnHlmsPbs(archivePbs, &archivePbsLibraryFolders,
+      OGRE_NEW Ogre::Ogre2GzHlmsPbs(archivePbs, &archivePbsLibraryFolders,
                                      &this->dataPtr->sphericalClipMinDistance,
                                      this->dataPtr->hlmsPbsTerraShadows.get());
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
@@ -823,10 +823,10 @@ void Ogre2RenderEngine::RegisterHlms()
   }
 
   {
-    Ogre::Ogre2IgnHlmsTerra *hlmsTerra = 0;
+    Ogre::Ogre2GzHlmsTerra *hlmsTerra = 0;
     // Create & Register HlmsPbs
     // Do the same for HlmsPbs:
-    Ogre::Ogre2IgnHlmsTerra::GetDefaultPaths(mainFolderPath,
+    Ogre::Ogre2GzHlmsTerra::GetDefaultPaths(mainFolderPath,
                                              libraryFoldersPaths);
     Ogre::Archive *archiveTerra = archiveManager.load(
         rootHlmsFolder + mainFolderPath, "FileSystem", true);
@@ -845,7 +845,7 @@ void Ogre2RenderEngine::RegisterHlms()
     }
 
     // Create and register
-    hlmsTerra = OGRE_NEW Ogre::Ogre2IgnHlmsTerra(
+    hlmsTerra = OGRE_NEW Ogre::Ogre2GzHlmsTerra(
       archiveTerra, &archiveTerraLibraryFolders,
       &this->dataPtr->sphericalClipMinDistance);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsTerra);
@@ -1035,13 +1035,13 @@ std::vector<unsigned int> Ogre2RenderEngine::FSAALevels() const
 }
 
 /////////////////////////////////////////////////
-Ogre2IgnHlmsSphericalClipMinDistance& Ogre2RenderEngine::HlmsCustomizations()
+Ogre2GzHlmsSphericalClipMinDistance& Ogre2RenderEngine::HlmsCustomizations()
 {
   return this->dataPtr->sphericalClipMinDistance;
 }
 
 /////////////////////////////////////////////////
-Ogre2IgnHlmsSphericalClipMinDistance& Ogre2RenderEngine::
+Ogre2GzHlmsSphericalClipMinDistance& Ogre2RenderEngine::
 SphericalClipMinDistance()
 {
   return this->dataPtr->sphericalClipMinDistance;

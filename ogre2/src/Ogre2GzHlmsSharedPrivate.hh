@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2IGNHLMSSHAREDPRIVATE_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2IGNHLMSSHAREDPRIVATE_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2GZHLMSSHAREDPRIVATE_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2GZHLMSSHAREDPRIVATE_HH_
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Export.hh"
@@ -44,7 +44,7 @@ namespace ignition
     /// \brief Implements code shared across all or most of our Hlms
     /// customizations
     /// \internal
-    class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2IgnHlmsShared
+    class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsShared
     {
       /// \brief Binds currPerObjectDataBuffer to the right slot.
       /// Does nothing if it's nullptr
@@ -71,7 +71,7 @@ namespace ignition
       /// for validation (to ensure our implementation isn't out of sync
       /// with Ogre's)
       /// \param[in] _perObjectDataBufferSlot See
-      /// Ogre2IgnHlmsShared::BindObjectDataBuffer
+      /// Ogre2GzHlmsShared::BindObjectDataBuffer
       /// \return Pointer to write data for that instance
       /// \internal
       protected: float *MapObjectDataBufferFor(uint32_t _instanceIdx,

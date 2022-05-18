@@ -26,7 +26,7 @@
 #include "gz/rendering/Geometry.hh"
 #include "gz/rendering/Object.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -91,12 +91,12 @@ namespace ignition
       /// \brief Set the text color.
       /// \param[in] _color Text color.
       /// \sa Color()
-      public: virtual void SetColor(const ignition::math::Color &_color) = 0;
+      public: virtual void SetColor(const gz::math::Color &_color) = 0;
 
       /// \brief Get the text color.
       /// \return Text color.
       /// \sa SetColor()
-      public: virtual ignition::math::Color Color() const = 0;
+      public: virtual gz::math::Color Color() const = 0;
 
       /// \brief Set the height of the character in meters.
       /// \param[in] _height Height of the characters.
@@ -155,7 +155,7 @@ namespace ignition
 
       /// \brief Get the axis aligned bounding box of the text.
       /// \return The axis aligned bounding box.
-      public: virtual ignition::math::AxisAlignedBox AABB() const = 0;
+      public: virtual gz::math::AxisAlignedBox AABB() const = 0;
     };
     }
   }

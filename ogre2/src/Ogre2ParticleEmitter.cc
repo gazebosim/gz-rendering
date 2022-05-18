@@ -33,12 +33,12 @@
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 const uint32_t Ogre2ParticleEmitter::kParticleVisibilityFlags = 0x00100000;
 
-class ignition::rendering::Ogre2ParticleEmitterPrivate
+class gz::rendering::Ogre2ParticleEmitterPrivate
 {
   /// \brief Internal material name.
   public: const std::string kMaterialName = "__particle_emitter_material__";
@@ -138,7 +138,7 @@ void Ogre2ParticleEmitter::SetType(
 }
 
 //////////////////////////////////////////////////
-void Ogre2ParticleEmitter::SetEmitterSize(const ignition::math::Vector3d &_size)
+void Ogre2ParticleEmitter::SetEmitterSize(const gz::math::Vector3d &_size)
 {
   // Sanity check: Size should be non-negative.
   if (_size[0] < 0 || _size[1] < 0 || _size[2] < 0)
@@ -230,7 +230,7 @@ void Ogre2ParticleEmitter::SetEmitting(bool _enable)
 
 //////////////////////////////////////////////////
 void Ogre2ParticleEmitter::SetParticleSize(
-    const ignition::math::Vector3d &_size)
+    const gz::math::Vector3d &_size)
 {
   // Sanity check: Size should be non-negative.
   if (_size[0] < 0 || _size[1] < 0 || _size[2] < 0)
@@ -293,8 +293,8 @@ void Ogre2ParticleEmitter::SetVelocityRange(double _minVelocity,
 
 //////////////////////////////////////////////////
 void Ogre2ParticleEmitter::SetColorRange(
-    const ignition::math::Color &_colorStart,
-    const ignition::math::Color &_colorEnd)
+    const gz::math::Color &_colorStart,
+    const gz::math::Color &_colorEnd)
 {
   // Color interpolator affector.
   if (!this->dataPtr->colorInterpolatorAffector)

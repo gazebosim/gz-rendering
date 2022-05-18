@@ -71,7 +71,7 @@
 
 #include "Terra/Terra.h"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
@@ -158,7 +158,7 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::Camera::Listener
 
 /// \internal
 /// \brief Private data for the Ogre2ThermalCamera class
-class ignition::rendering::Ogre2ThermalCameraPrivate
+class gz::rendering::Ogre2ThermalCameraPrivate
 {
   /// \brief Outgoing thermal data, used by newThermalFrame event.
   public: uint16_t *thermalImage = nullptr;
@@ -188,7 +188,7 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
   public: Ogre::MaterialPtr thermalMaterial;
 
   /// \brief Event used to signal thermal image data
-  public: ignition::common::EventT<void(const uint16_t *,
+  public: gz::common::EventT<void(const uint16_t *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newThermalFrame;
 
@@ -205,7 +205,7 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
   public: unsigned int bitDepth = 16u;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

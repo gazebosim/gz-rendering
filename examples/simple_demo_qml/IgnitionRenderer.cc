@@ -27,11 +27,11 @@
 
 #include <iostream>
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-void BuildScene(ignition::rendering::ScenePtr _scene)
+void BuildScene(gz::rendering::ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
@@ -170,7 +170,7 @@ void BuildScene(ignition::rendering::ScenePtr _scene)
 }
 
 //////////////////////////////////////////////////
-ignition::rendering::CameraPtr CreateCamera(const std::string &_engineName)
+gz::rendering::CameraPtr CreateCamera(const std::string &_engineName)
 {
   // create and populate scene
   std::map<std::string, std::string> params;

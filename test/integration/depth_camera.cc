@@ -76,7 +76,7 @@ void DepthCameraTest::DepthCameraBoxes(
   double aspectRatio_ = imgWidth_/imgHeight_;
 
   double unitBoxSize = 1.0;
-  ignition::math::Vector3d boxPosition(1.8, 0.0, 0.0);
+  gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
 
   // Optix is not supported
   if (_renderEngine.compare("optix") == 0)
@@ -87,7 +87,7 @@ void DepthCameraTest::DepthCameraBoxes(
   }
 
   // Setup ign-rendering with an empty scene
-  auto *engine = ignition::rendering::engine(_renderEngine);
+  auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
     igndbg << "Engine '" << _renderEngine
@@ -95,23 +95,23 @@ void DepthCameraTest::DepthCameraBoxes(
     return;
   }
 
-  ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
 
   // red background
   scene->SetBackgroundColor(1.0, 0.0, 0.0);
 
   // Create an scene with a box in it
   scene->SetAmbientLight(1.0, 1.0, 1.0);
-  ignition::rendering::VisualPtr root = scene->RootVisual();
+  gz::rendering::VisualPtr root = scene->RootVisual();
 
   // create blue material
-  ignition::rendering::MaterialPtr blue = scene->CreateMaterial();
+  gz::rendering::MaterialPtr blue = scene->CreateMaterial();
   blue->SetAmbient(0.0, 0.0, 1.0);
   blue->SetDiffuse(0.0, 0.0, 1.0);
   blue->SetSpecular(0.0, 0.0, 1.0);
 
   // create box visual
-  ignition::rendering::VisualPtr box = scene->CreateVisual();
+  gz::rendering::VisualPtr box = scene->CreateVisual();
   box->AddGeometry(scene->CreateBox());
   box->SetOrigin(0.0, 0.0, 0.0);
   box->SetLocalPosition(boxPosition);
@@ -127,8 +127,8 @@ void DepthCameraTest::DepthCameraBoxes(
     auto depthCamera = scene->CreateDepthCamera("DepthCamera");
     ASSERT_NE(depthCamera, nullptr);
 
-    ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0),
-        ignition::math::Quaterniond::Identity);
+    gz::math::Pose3d testPose(gz::math::Vector3d(0, 0, 0),
+        gz::math::Quaterniond::Identity);
     depthCamera->SetLocalPose(testPose);
 
     // Configure depth camera
@@ -152,7 +152,7 @@ void DepthCameraTest::DepthCameraBoxes(
 
     // Set a callback on the  camera sensor to get a depth camera frame
     float *scan = new float[imgHeight_ * imgWidth_];
-    ignition::common::ConnectionPtr connection =
+    gz::common::ConnectionPtr connection =
       depthCamera->ConnectNewDepthFrame(
           std::bind(&::OnNewDepthFrame, scan,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
@@ -162,7 +162,7 @@ void DepthCameraTest::DepthCameraBoxes(
     unsigned int pointCloudChannelCount = 4u;
     float *pointCloudData = new float[
         imgHeight_ * imgWidth_ * pointCloudChannelCount];
-    ignition::common::ConnectionPtr connection2 =
+    gz::common::ConnectionPtr connection2 =
       depthCamera->ConnectNewRgbPointCloud(
           std::bind(&::OnNewRgbPointCloud, pointCloudData,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
@@ -195,8 +195,8 @@ void DepthCameraTest::DepthCameraBoxes(
         * (depthCamera->ImageWidth() * pointCloudChannelCount)
         - pointCloudChannelCount;
 
-    float minVal = -ignition::math::INF_D;
-    float maxVal = ignition::math::INF_D;
+    float minVal = -gz::math::INF_D;
+    float maxVal = gz::math::INF_D;
 
     // Verify Depth
     // Depth sensor should see box in the middle of the image
@@ -295,7 +295,7 @@ void DepthCameraTest::DepthCameraBoxes(
     }
 
     // Check that for a box really close it returns it is not seen
-    ignition::math::Vector3d boxPositionNear(
+    gz::math::Vector3d boxPositionNear(
         unitBoxSize * 0.5 + nearDist * 0.5, 0.0, 0.0);
     box->SetLocalPosition(boxPositionNear);
 
@@ -352,7 +352,7 @@ void DepthCameraTest::DepthCameraBoxes(
     }
 
     // Check that for a box really far it returns max val
-    ignition::math::Vector3d boxPositionFar(
+    gz::math::Vector3d boxPositionFar(
         unitBoxSize * 0.5 + farDist * 1.5, 0.0, 0.0);
     box->SetLocalPosition(boxPositionFar);
 
@@ -411,7 +411,7 @@ void DepthCameraTest::DepthCameraBoxes(
     }
 
     // Check that the depth values for a box do not warp.
-    ignition::math::Vector3d boxPositionFillFrame(
+    gz::math::Vector3d boxPositionFillFrame(
         unitBoxSize * 0.5 + 0.2, 0.0, 0.0);
     box->SetLocalPosition(boxPositionFillFrame);
 
@@ -477,7 +477,7 @@ void DepthCameraTest::DepthCameraBoxes(
   }
 
   engine->DestroyScene(scene);
-  ignition::rendering::unloadEngine(engine->Name());
+  gz::rendering::unloadEngine(engine->Name());
 }
 
 
@@ -490,8 +490,8 @@ void DepthCameraTest::DepthCameraParticles(
 
   // box should fill camera view
   // we will add particle emitter in between box and depth camera later
-  ignition::math::Vector3d boxSize(1.0, 10.0, 10.0);
-  ignition::math::Vector3d boxPosition(1.8, 0.0, 0.0);
+  gz::math::Vector3d boxSize(1.0, 10.0, 10.0);
+  gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
 
   // particle emitter is only supported in ogre2
   if (_renderEngine.compare("ogre2") != 0)
@@ -502,7 +502,7 @@ void DepthCameraTest::DepthCameraParticles(
   }
 
   // Setup ign-rendering with an empty scene
-  auto *engine = ignition::rendering::engine(_renderEngine);
+  auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
     igndbg << "Engine '" << _renderEngine
@@ -510,23 +510,23 @@ void DepthCameraTest::DepthCameraParticles(
     return;
   }
 
-  ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
 
   // red background
   scene->SetBackgroundColor(1.0, 0.0, 0.0);
 
   // Create an scene with a box in it
   scene->SetAmbientLight(1.0, 1.0, 1.0);
-  ignition::rendering::VisualPtr root = scene->RootVisual();
+  gz::rendering::VisualPtr root = scene->RootVisual();
 
   // create blue material
-  ignition::rendering::MaterialPtr blue = scene->CreateMaterial();
+  gz::rendering::MaterialPtr blue = scene->CreateMaterial();
   blue->SetAmbient(0.0, 0.0, 1.0);
   blue->SetDiffuse(0.0, 0.0, 1.0);
   blue->SetSpecular(0.0, 0.0, 1.0);
 
   // create box visual
-  ignition::rendering::VisualPtr box = scene->CreateVisual();
+  gz::rendering::VisualPtr box = scene->CreateVisual();
   box->AddGeometry(scene->CreateBox());
   box->SetOrigin(0.0, 0.0, 0.0);
   box->SetLocalPosition(boxPosition);
@@ -542,8 +542,8 @@ void DepthCameraTest::DepthCameraParticles(
     auto depthCamera = scene->CreateDepthCamera("DepthCamera");
     ASSERT_NE(depthCamera, nullptr);
 
-    ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0),
-        ignition::math::Quaterniond::Identity);
+    gz::math::Pose3d testPose(gz::math::Vector3d(0, 0, 0),
+        gz::math::Quaterniond::Identity);
     depthCamera->SetLocalPose(testPose);
 
     // Configure depth camera
@@ -567,7 +567,7 @@ void DepthCameraTest::DepthCameraParticles(
 
     // Set a callback on the camera sensor to get a depth camera frame
     float *scan = new float[imgHeight_ * imgWidth_];
-    ignition::common::ConnectionPtr connection =
+    gz::common::ConnectionPtr connection =
       depthCamera->ConnectNewDepthFrame(
           std::bind(&::OnNewDepthFrame, scan,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
@@ -577,7 +577,7 @@ void DepthCameraTest::DepthCameraParticles(
     unsigned int pointCloudChannelCount = 4u;
     float *pointCloudData = new float[
         imgHeight_ * imgWidth_ * pointCloudChannelCount];
-    ignition::common::ConnectionPtr connection2 =
+    gz::common::ConnectionPtr connection2 =
       depthCamera->ConnectNewRgbPointCloud(
           std::bind(&::OnNewRgbPointCloud, pointCloudData,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
@@ -609,17 +609,17 @@ void DepthCameraTest::DepthCameraParticles(
         float d = scan[i * depthCamera->ImageWidth() + j];
         EXPECT_NEAR(expectedDepth, d, DEPTH_TOL);
 
-        pointAvg += ignition::math::Vector3d(x, y, z).Length();
+        pointAvg += gz::math::Vector3d(x, y, z).Length();
         depthAvg += d;
       }
     }
 
     // create particle emitter between depth camera and box
-    ignition::math::Vector3d particlePosition(1.0, 0, 0);
-    ignition::math::Quaterniond particleRotation(
-        ignition::math::Vector3d(0, -1.57, 0));
-    ignition::math::Vector3d particleSize(0.2, 0.2, 0.2);
-    ignition::rendering::ParticleEmitterPtr emitter =
+    gz::math::Vector3d particlePosition(1.0, 0, 0);
+    gz::math::Quaterniond particleRotation(
+        gz::math::Vector3d(0, -1.57, 0));
+    gz::math::Vector3d particleSize(0.2, 0.2, 0.2);
+    gz::rendering::ParticleEmitterPtr emitter =
         scene->CreateParticleEmitter();
     emitter->SetLocalPosition(particlePosition);
     emitter->SetLocalRotation(particleRotation);
@@ -628,8 +628,8 @@ void DepthCameraTest::DepthCameraParticles(
     emitter->SetLifetime(2);
     emitter->SetVelocityRange(0.1, 0.1);
     emitter->SetScaleRate(0.0);
-    emitter->SetColorRange(ignition::math::Color::Red,
-        ignition::math::Color::Black);
+    emitter->SetColorRange(gz::math::Color::Red,
+        gz::math::Color::Black);
     emitter->SetEmitting(true);
     root->AddChild(emitter);
 
@@ -672,19 +672,19 @@ void DepthCameraTest::DepthCameraParticles(
         //   * noisy particle depth (depth camera see particles but values
         //     are affected by noise)
         EXPECT_TRUE(
-            ignition::math::equal(expectedParticleDepth, xd, depthNoiseTol) ||
-            ignition::math::equal(expectedDepth, xd, DEPTH_TOL))
+            gz::math::equal(expectedParticleDepth, xd, depthNoiseTol) ||
+            gz::math::equal(expectedDepth, xd, DEPTH_TOL))
             << "actual vs expected particle depth: "
             << xd << " vs " << expectedParticleDepth;
         float depth = scan[i * depthCamera->ImageWidth() + j];
         double depthd = static_cast<double>(depth);
         EXPECT_TRUE(
-            ignition::math::equal(expectedParticleDepth, depthd, depthNoiseTol)
-            || ignition::math::equal(expectedDepth, depthd, DEPTH_TOL))
+            gz::math::equal(expectedParticleDepth, depthd, depthNoiseTol)
+            || gz::math::equal(expectedDepth, depthd, DEPTH_TOL))
             << "actual vs expected particle depth: "
             << depthd << " vs " << expectedParticleDepth;
 
-        pointParticleAvg += ignition::math::Vector3d(x, y, z).Length();
+        pointParticleAvg += gz::math::Vector3d(x, y, z).Length();
         depthParticleAvg += depthd;
       }
     }
@@ -737,20 +737,20 @@ void DepthCameraTest::DepthCameraParticles(
         //   * noisy particle depth (depth camera see particles but values
         //     are affected by noise)
         EXPECT_TRUE(
-            ignition::math::equal(expectedParticleDepth, xd, depthNoiseTol) ||
-            ignition::math::equal(expectedDepth, xd, DEPTH_TOL))
+            gz::math::equal(expectedParticleDepth, xd, depthNoiseTol) ||
+            gz::math::equal(expectedDepth, xd, DEPTH_TOL))
             << "actual vs expected particle depth: "
             << xd << " vs " << expectedParticleDepth;
         float depth = scan[i * depthCamera->ImageWidth() + j];
         double depthd = static_cast<double>(depth);
         EXPECT_TRUE(
-            ignition::math::equal(expectedParticleDepth, depthd, depthNoiseTol)
-            || ignition::math::equal(expectedDepth, depthd, DEPTH_TOL))
+            gz::math::equal(expectedParticleDepth, depthd, depthNoiseTol)
+            || gz::math::equal(expectedDepth, depthd, DEPTH_TOL))
             << "actual vs expected particle depth: "
             << depthd << " vs " << expectedParticleDepth;
 
         pointParticleLowScatterAvg +=
-            ignition::math::Vector3d(x, y, z).Length();
+            gz::math::Vector3d(x, y, z).Length();
         depthParticleLowScatterAvg += depthd;
       }
     }
@@ -772,7 +772,7 @@ void DepthCameraTest::DepthCameraParticles(
   }
 
   engine->DestroyScene(scene);
-  ignition::rendering::unloadEngine(engine->Name());
+  gz::rendering::unloadEngine(engine->Name());
 }
 
 TEST_P(DepthCameraTest, DepthCameraBoxes)
@@ -786,7 +786,7 @@ TEST_P(DepthCameraTest, DepthCameraParticles)
 }
 
 INSTANTIATE_TEST_CASE_P(DepthCamera, DepthCameraTest,
-    RENDER_ENGINE_VALUES, ignition::rendering::PrintToStringParam());
+    RENDER_ENGINE_VALUES, gz::rendering::PrintToStringParam());
 
 //////////////////////////////////////////////////
 int main(int argc, char **argv)

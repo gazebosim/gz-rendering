@@ -41,7 +41,7 @@
 
 #include "GlutWindow.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -155,20 +155,20 @@ void buildScene(ScenePtr _scene)
 
   // create inertia visual
   InertiaVisualPtr inertiaVisual = _scene->CreateInertiaVisual();
-  ignition::math::MassMatrix3d massMatrix(1.0, {0.1, 0.1, 0.1}, {0.0, 0.0, 0.0});
-  ignition::math::Pose3d p(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-  ignition::math::Inertiald inertial{massMatrix, p};
+  gz::math::MassMatrix3d massMatrix(1.0, {0.1, 0.1, 0.1}, {0.0, 0.0, 0.0});
+  gz::math::Pose3d p(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+  gz::math::Inertiald inertial{massMatrix, p};
   inertiaVisual->SetInertial(inertial);
   inertiaVisual->SetLocalPosition(1.5, -1.0, 0);
   root->AddChild(inertiaVisual);
 
   // create CoM visual
   COMVisualPtr comVisual = _scene->CreateCOMVisual();
-  ignition::math::MassMatrix3d comMassMatrix(
+  gz::math::MassMatrix3d comMassMatrix(
       5.0, {0.1, 0.1, 0.1}, {0.0, 0.0, 0.0});
-  ignition::math::Pose3d comPose(
+  gz::math::Pose3d comPose(
       0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-  ignition::math::Inertiald comVisualInertial{comMassMatrix, comPose};
+  gz::math::Inertiald comVisualInertial{comMassMatrix, comPose};
   comVisual->SetInertial(comVisualInertial);
   box->AddChild(comVisual);
 
@@ -194,10 +194,10 @@ void buildScene(ScenePtr _scene)
   JointVisualPtr jointVisual = _scene->CreateJointVisual();
   jointChildBox->AddChild(jointVisual);
   jointVisual->SetType(JointVisualType::JVT_REVOLUTE2);
-  ignition::math::Vector3d axis2(1.0, 1.0, 1.0);
+  gz::math::Vector3d axis2(1.0, 1.0, 1.0);
   jointVisual->SetAxis(axis2);
 
-  ignition::math::Vector3d axis1(1.0, 0.0, 0.0);
+  gz::math::Vector3d axis1(1.0, 0.0, 0.0);
   jointVisual->SetParentAxis(axis1, jointParentBox->Name(), true);
 
   // create camera

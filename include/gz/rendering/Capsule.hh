@@ -22,7 +22,7 @@
 #include "gz/rendering/Geometry.hh"
 #include "gz/rendering/Object.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

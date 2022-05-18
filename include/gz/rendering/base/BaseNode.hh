@@ -24,7 +24,7 @@
 #include "gz/rendering/Storage.hh"
 #include "gz/rendering/base/BaseStorage.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -207,8 +207,8 @@ namespace ignition
       protected: bool initialLocalPoseSet = false;
 
       /// \brief Initial local pose for this node.
-      protected: ignition::math::Pose3d initialLocalPose =
-          ignition::math::Pose3d::Zero;
+      protected: gz::math::Pose3d initialLocalPose =
+          gz::math::Pose3d::Zero;
 
       /// \brief A map of custom key value data
       protected: std::map<std::string, Variant> userData;

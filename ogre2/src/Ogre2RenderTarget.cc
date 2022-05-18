@@ -27,7 +27,7 @@
 #include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
@@ -75,7 +75,7 @@ class Ogre2RenderTargetCompositorListener :
 }
 
 /// \brief Private data class for Ogre2RenderTarget
-class ignition::rendering::Ogre2RenderTargetPrivate
+class gz::rendering::Ogre2RenderTargetPrivate
 {
   /// \brief Listener for chaning compositor pass properties
   public: Ogre2RenderTargetCompositorListener *rtListener = nullptr;
@@ -101,7 +101,7 @@ class ignition::rendering::Ogre2RenderTargetPrivate
   public: Ogre::TextureGpu *ogreTexture[2] = {nullptr, nullptr};
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

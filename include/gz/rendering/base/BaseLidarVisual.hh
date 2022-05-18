@@ -24,7 +24,7 @@
 #include "gz/rendering/base/BaseRenderTypes.hh"
 #include "gz/rendering/Scene.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -56,7 +56,7 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void SetPoints(const std::vector<double> &_points,
-                            const std::vector<ignition::math::Color> &_colors)
+                            const std::vector<gz::math::Color> &_colors)
                             override;
 
       // Documentation inherited
@@ -121,10 +121,10 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void SetOffset(
-                  const ignition::math::Pose3d _offset) override;
+                  const gz::math::Pose3d _offset) override;
 
       // Documentation inherited
-      public: virtual ignition::math::Pose3d  Offset() const override;
+      public: virtual gz::math::Pose3d  Offset() const override;
 
       // Documentation inherited
       public: virtual unsigned int PointCount() const override;
@@ -187,7 +187,7 @@ namespace ignition
       protected: bool displayNonHitting = true;
 
       /// \brief Offset of visual
-      protected: ignition::math::Pose3d offset = ignition::math::Pose3d::Zero;
+      protected: gz::math::Pose3d offset = gz::math::Pose3d::Zero;
 
       /// \brief Type of lidar visualisation
       protected: LidarVisualType lidarVisualType =
@@ -264,7 +264,7 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseLidarVisual<T>::SetPoints(const std::vector<double> &,
-                                const std::vector<ignition::math::Color> &)
+                                const std::vector<gz::math::Color> &)
     {
       // no op
     }
@@ -415,14 +415,14 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseLidarVisual<T>::SetOffset(const ignition::math::Pose3d _offset)
+    void BaseLidarVisual<T>::SetOffset(const gz::math::Pose3d _offset)
     {
       this->offset = _offset;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    ignition::math::Pose3d BaseLidarVisual<T>::Offset() const
+    gz::math::Pose3d BaseLidarVisual<T>::Offset() const
     {
       return this->offset;
     }

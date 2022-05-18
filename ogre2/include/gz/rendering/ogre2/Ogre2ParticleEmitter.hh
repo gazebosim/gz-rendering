@@ -22,7 +22,7 @@
 #include "gz/rendering/base/BaseParticleEmitter.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -49,7 +49,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetEmitterSize(
-                  const ignition::math::Vector3d &_size) override;
+                  const gz::math::Vector3d &_size) override;
 
       // Documentation inherited.
       public: virtual void SetRate(double _rate) override;
@@ -62,7 +62,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetParticleSize(
-                  const ignition::math::Vector3d &_size) override;
+                  const gz::math::Vector3d &_size) override;
 
       // Documentation inherited.
       public: virtual void SetLifetime(double _lifetime) override;
@@ -76,8 +76,8 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetColorRange(
-                  const ignition::math::Color &_colorStart,
-                  const ignition::math::Color &_colorEnd) override;
+                  const gz::math::Color &_colorStart,
+                  const gz::math::Color &_colorEnd) override;
 
       // Documentation inherited.
       public: virtual void SetScaleRate(double _scaleRate) override;

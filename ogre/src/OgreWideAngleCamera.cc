@@ -40,7 +40,7 @@
 #include "ignition/rendering/ogre/OgreWideAngleCamera.hh"
 
 /// \brief Private data for the WideAngleCamera class
-class ignition::rendering::OgreWideAngleCamera::Implementation
+class gz::rendering::OgreWideAngleCamera::Implementation
 {
   /// \brief Environment texture size
   public: int envTextureSize = 512u;
@@ -89,12 +89,12 @@ class ignition::rendering::OgreWideAngleCamera::Implementation
   public: unsigned char *wideAngleImage = nullptr;
 
   /// \brief Event used to signal camera data
-  public: ignition::common::EventT<void(const unsigned char *,
+  public: gz::common::EventT<void(const unsigned char *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newImageFrame;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -490,7 +490,7 @@ math::Vector3d OgreWideAngleCamera::Project3d(
     const math::Vector3d &_pt) const
 {
   // project onto cubemap face then onto
-  ignition::math::Vector3d screenPos;
+  gz::math::Vector3d screenPos;
   // loop through all env cameras can find the one that sees the 3d world point
   for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
   {
@@ -505,22 +505,22 @@ math::Vector3d OgreWideAngleCamera::Project3d(
     {
       // determine dir vector to projected point from env camera
       // work in y up, z forward, x right clip space
-      ignition::math::Vector3d dir(pos.x, pos.y, 1);
-      ignition::math::Quaterniond rot = ignition::math::Quaterniond::Identity;
+      gz::math::Vector3d dir(pos.x, pos.y, 1);
+      gz::math::Quaterniond rot = gz::math::Quaterniond::Identity;
 
       // rotate dir vector into wide angle camera frame based on the
       // face of the cube. Note: operate in clip space so
       // left handed coordinate system rotation
       if (i == 0)
-        rot = ignition::math::Quaterniond(0.0, IGN_PI * 0.5, 0.0);
+        rot = gz::math::Quaterniond(0.0, IGN_PI * 0.5, 0.0);
       else if (i == 1)
-        rot = ignition::math::Quaterniond(0.0, -IGN_PI * 0.5, 0.0);
+        rot = gz::math::Quaterniond(0.0, -IGN_PI * 0.5, 0.0);
       else if (i == 2)
-        rot = ignition::math::Quaterniond(-IGN_PI * 0.5, 0.0, 0.0);
+        rot = gz::math::Quaterniond(-IGN_PI * 0.5, 0.0, 0.0);
       else if (i == 3)
-        rot = ignition::math::Quaterniond(IGN_PI * 0.5, 0.0, 0.0);
+        rot = gz::math::Quaterniond(IGN_PI * 0.5, 0.0, 0.0);
       else if (i == 5)
-        rot = ignition::math::Quaterniond(0.0, IGN_PI, 0.0);
+        rot = gz::math::Quaterniond(0.0, IGN_PI, 0.0);
       dir = rot * dir;
       dir.Normalize();
 

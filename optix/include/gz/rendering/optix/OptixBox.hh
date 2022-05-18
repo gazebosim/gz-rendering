@@ -19,7 +19,7 @@
 
 #include "gz/rendering/optix/OptixPrimitive.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

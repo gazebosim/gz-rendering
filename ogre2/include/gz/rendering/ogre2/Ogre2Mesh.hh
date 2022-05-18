@@ -33,7 +33,7 @@ namespace Ogre
   class SubItem;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

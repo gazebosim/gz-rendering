@@ -28,13 +28,13 @@
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreThermalCamera.hh"
 
-class ignition::rendering::OgreRayQueryPrivate
+class gz::rendering::OgreRayQueryPrivate
 {
   /// \brief Ogre ray scene query object for computing intersection.
   public: Ogre::RaySceneQuery *rayQuery = nullptr;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -242,7 +242,7 @@ void OgreRayQuery::MeshInformation(const Ogre::Mesh *_mesh,
            ++j, vertex += vbuf->getVertexSize())
      {
         posElem->baseVertexPointerToElement(vertex, &pReal);
-        ignition::math::Vector3d pt(pReal[0], pReal[1], pReal[2]);
+        gz::math::Vector3d pt(pReal[0], pReal[1], pReal[2]);
         _vertices[current_offset + j] =
             OgreConversions::Convert((_orient * (pt * _scale)) + _position);
       }

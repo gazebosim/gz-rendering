@@ -25,7 +25,7 @@
 #include "gz/rendering/CameraLens.hh"
 #include "gz/rendering/WideAngleCamera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

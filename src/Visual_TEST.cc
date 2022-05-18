@@ -29,7 +29,7 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/Visual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class VisualTest : public testing::Test,
@@ -589,13 +589,13 @@ void VisualTest::BoundingBox(const std::string &_renderEngine)
   visual->AddGeometry(box);
   visual->SetWorldPosition(1.0, 2.0, 3.0);
 
-  ignition::math::AxisAlignedBox localBoundingBox = visual->LocalBoundingBox();
-  ignition::math::AxisAlignedBox boundingBox = visual->BoundingBox();
+  gz::math::AxisAlignedBox localBoundingBox = visual->LocalBoundingBox();
+  gz::math::AxisAlignedBox boundingBox = visual->BoundingBox();
 
-  EXPECT_EQ(ignition::math::Vector3d(-0.5, -0.5, -0.5), localBoundingBox.Min());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.5, 0.5), localBoundingBox.Max());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 1.5, 2.5), boundingBox.Min());
-  EXPECT_EQ(ignition::math::Vector3d(1.5, 2.5, 3.5), boundingBox.Max());
+  EXPECT_EQ(gz::math::Vector3d(-0.5, -0.5, -0.5), localBoundingBox.Min());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.5, 0.5), localBoundingBox.Max());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 1.5, 2.5), boundingBox.Min());
+  EXPECT_EQ(gz::math::Vector3d(1.5, 2.5, 3.5), boundingBox.Max());
 
   // Clean up
   engine->DestroyScene(scene);
@@ -784,7 +784,7 @@ TEST_P(VisualTest, Clone)
 
 INSTANTIATE_TEST_CASE_P(Visual, VisualTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

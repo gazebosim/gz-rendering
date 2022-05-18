@@ -18,7 +18,7 @@
 
 #include "ignition/rendering/optix/OptixScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

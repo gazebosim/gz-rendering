@@ -39,7 +39,7 @@ namespace Ogre
   class HlmsUnlitDatablock;
 }  // namespace Ogre
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

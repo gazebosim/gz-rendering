@@ -50,7 +50,7 @@
 
 
 /// \brief Private data for the Ogre2Material class
-class ignition::rendering::Ogre2MaterialPrivate
+class gz::rendering::Ogre2MaterialPrivate
 {
   /// \brief Ogre stores the name using hashes. This variable will
   /// store the material hash name
@@ -103,7 +103,7 @@ class ignition::rendering::Ogre2MaterialPrivate
   }
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

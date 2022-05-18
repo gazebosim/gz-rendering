@@ -23,7 +23,7 @@
 #include "gz/rendering/ogre2/Ogre2Object.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

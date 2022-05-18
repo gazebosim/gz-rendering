@@ -29,7 +29,7 @@
 #include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class RenderTargetTest : public testing::Test,
@@ -205,7 +205,7 @@ TEST_P(RenderTargetTest, AddRemoveRenderPass)
 
 INSTANTIATE_TEST_CASE_P(RenderTarget, RenderTargetTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

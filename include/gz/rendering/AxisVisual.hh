@@ -20,7 +20,7 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/CompositeVisual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

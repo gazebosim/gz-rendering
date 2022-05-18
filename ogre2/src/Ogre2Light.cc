@@ -31,11 +31,11 @@
 #endif
 
 /// \brief Private data for the Ogre2Light class
-class ignition::rendering::Ogre2LightPrivate
+class gz::rendering::Ogre2LightPrivate
 {
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

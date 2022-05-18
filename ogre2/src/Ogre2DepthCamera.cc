@@ -49,7 +49,7 @@
 
 #include "Ogre2ParticleNoiseListener.hh"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
@@ -83,7 +83,7 @@ class Ogre2DepthGaussianNoisePass : public Ogre2GaussianNoisePass
 
 /// \internal
 /// \brief Private data for the Ogre2DepthCamera class
-class ignition::rendering::Ogre2DepthCameraPrivate
+class gz::rendering::Ogre2DepthCameraPrivate
 {
   /// \brief The depth buffer
   public: float *depthBuffer = nullptr;
@@ -95,10 +95,10 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: float *pointCloudImage = nullptr;
 
   /// \brief maximum value used for data outside sensor range
-  public: float dataMaxVal = ignition::math::INF_D;
+  public: float dataMaxVal = gz::math::INF_D;
 
   /// \brief minimum value used for data outside sensor range
-  public: float dataMinVal = -ignition::math::INF_D;
+  public: float dataMinVal = -gz::math::INF_D;
 
   /// \brief 1st pass compositor workspace definition
   public: std::string ogreCompositorWorkspaceDef;
@@ -131,12 +131,12 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: bool renderPassDirty = false;
 
   /// \brief Event used to signal rgb point cloud data
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newRgbPointCloud;
 
   /// \brief Event used to signal depth data
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newDepthFrame;
 
@@ -158,7 +158,7 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -173,9 +173,9 @@ void Ogre2DepthGaussianNoisePass::PreRender()
   if (!this->enabled)
     return;
 
-  Ogre::Vector3 offsets(ignition::math::Rand::DblUniform(0.0, 1.0),
-                        ignition::math::Rand::DblUniform(0.0, 1.0),
-                        ignition::math::Rand::DblUniform(0.0, 1.0));
+  Ogre::Vector3 offsets(gz::math::Rand::DblUniform(0.0, 1.0),
+                        gz::math::Rand::DblUniform(0.0, 1.0),
+                        gz::math::Rand::DblUniform(0.0, 1.0));
 
   Ogre::Pass *pass = this->gaussianNoiseMat->getTechnique(0)->getPass(0);
   Ogre::GpuProgramParametersSharedPtr psParams =
@@ -1154,7 +1154,7 @@ const float *Ogre2DepthCamera::DepthData() const
 }
 
 //////////////////////////////////////////////////
-ignition::common::ConnectionPtr Ogre2DepthCamera::ConnectNewDepthFrame(
+gz::common::ConnectionPtr Ogre2DepthCamera::ConnectNewDepthFrame(
     std::function<void(const float *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {
@@ -1162,7 +1162,7 @@ ignition::common::ConnectionPtr Ogre2DepthCamera::ConnectNewDepthFrame(
 }
 
 //////////////////////////////////////////////////
-ignition::common::ConnectionPtr Ogre2DepthCamera::ConnectNewRgbPointCloud(
+gz::common::ConnectionPtr Ogre2DepthCamera::ConnectNewRgbPointCloud(
     std::function<void(const float *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {

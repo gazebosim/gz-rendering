@@ -31,7 +31,7 @@
 #include "ignition/rendering/ThermalCamera.hh"
 
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class CameraTest: public testing::Test,
@@ -40,7 +40,7 @@ class CameraTest: public testing::Test,
   // Documentation inherited
   public: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    gz::common::Console::SetVerbosity(4);
   }
 
   // Test and verify camera tracking
@@ -60,7 +60,7 @@ class CameraTest: public testing::Test,
 
   // Path to test media directory
   public: const std::string TEST_MEDIA_PATH =
-          ignition::common::joinPaths(std::string(PROJECT_SOURCE_PATH),
+          gz::common::joinPaths(std::string(PROJECT_SOURCE_PATH),
                 "test", "media");
 };
 
@@ -628,13 +628,13 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
 
   // create shader materials
   // path to look for vertex and fragment shader parameters
-  std::string vertexShaderPath = ignition::common::joinPaths(
+  std::string vertexShaderPath = gz::common::joinPaths(
       TEST_MEDIA_PATH, "materials", "programs", vertexShaderFile);
-  std::string fragmentShaderPath = ignition::common::joinPaths(
+  std::string fragmentShaderPath = gz::common::joinPaths(
       TEST_MEDIA_PATH, "materials", "programs", fragmentShaderFile);
 
   // create shader material
-  ignition::rendering::MaterialPtr shader = scene->CreateMaterial();
+  gz::rendering::MaterialPtr shader = scene->CreateMaterial();
   shader->SetVertexShader(vertexShaderPath);
   shader->SetFragmentShader(fragmentShaderPath);
 
@@ -811,7 +811,7 @@ TEST_P(CameraTest, ShaderSelection)
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -26,10 +26,10 @@
   #pragma warning(pop)
 #endif
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
-class ignition::rendering::Ogre2LightVisualPrivate
+class gz::rendering::Ogre2LightVisualPrivate
 {
   /// \brief light visual materal
   public: Ogre2MaterialPtr material = nullptr;
@@ -93,7 +93,7 @@ void Ogre2LightVisual::CreateVisual()
     this->SetMaterial(defaultMat, false);
   }
 
-  std::vector<ignition::math::Vector3d> positions = this->CreateVisualLines();
+  std::vector<gz::math::Vector3d> positions = this->CreateVisualLines();
 
   for (const auto &p : positions)
   {

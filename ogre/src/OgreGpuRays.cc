@@ -29,7 +29,7 @@
 
 /// \internal
 /// \brief Private data for the OgreGpuRays class
-class ignition::rendering::OgreGpuRaysPrivate
+class gz::rendering::OgreGpuRaysPrivate
 {
   /// \brief Event triggered when new gpu rays range data are available.
   /// \param[in] _frame New frame containing raw gpu rays data.
@@ -37,7 +37,7 @@ class ignition::rendering::OgreGpuRaysPrivate
   /// \param[in] _height Height of frame.
   /// \param[in] _channels Number of channels
   /// \param[in] _format Format of frame.
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
                unsigned int, unsigned int, unsigned int,
                const std::string &)> newGpuRaysFrame;
 
@@ -129,7 +129,7 @@ class ignition::rendering::OgreGpuRaysPrivate
   public: const math::Angle kMinAllowedAngle = 1e-4;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -716,7 +716,7 @@ void OgreGpuRays::CreateOrthoCam()
   }
 
   Ogre::SceneNode *rootSceneNode = std::dynamic_pointer_cast<
-      ignition::rendering::OgreNode>(this->scene->RootVisual())->Node();
+      gz::rendering::OgreNode>(this->scene->RootVisual())->Node();
   this->dataPtr->pitchNodeOrtho = rootSceneNode->createChildSceneNode();
   this->dataPtr->pitchNodeOrtho->attachObject(this->dataPtr->orthoCam);
 
@@ -899,7 +899,7 @@ void OgreGpuRays::CreateCanvas()
       this->Name() + "second_pass_canvas");
 
   Ogre::SceneNode *visualSceneNode =  std::dynamic_pointer_cast<
-    ignition::rendering::OgreNode>(this->dataPtr->visual)->Node();
+    gz::rendering::OgreNode>(this->dataPtr->visual)->Node();
 
   Ogre::Node *visualParent = visualSceneNode->getParent();
   if (visualParent != nullptr)
@@ -919,7 +919,7 @@ void OgreGpuRays::CreateCanvas()
 
   MaterialPtr canvasMaterial =
     this->scene->CreateMaterial(this->Name() + "_green");
-  canvasMaterial->SetAmbient(ignition::math::Color(0, 1, 0, 1));
+  canvasMaterial->SetAmbient(gz::math::Color(0, 1, 0, 1));
   this->dataPtr->visual->SetMaterial(canvasMaterial);
 
   this->dataPtr->visual->SetVisible(true);
@@ -981,7 +981,7 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
 }
 
 //////////////////////////////////////////////////
-ignition::common::ConnectionPtr OgreGpuRays::ConnectNewGpuRaysFrame(
+gz::common::ConnectionPtr OgreGpuRays::ConnectNewGpuRaysFrame(
     std::function<void(const float *_frame, unsigned int _width,
     unsigned int _height, unsigned int _channels,
     const std::string &/*_format*/)> _subscriber)

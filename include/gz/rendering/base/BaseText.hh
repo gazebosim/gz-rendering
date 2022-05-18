@@ -21,7 +21,7 @@
 #include "gz/rendering/Text.hh"
 #include "gz/rendering/base/BaseObject.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -58,11 +58,11 @@ namespace ignition
       public: virtual std::string TextString() const override;
 
       // Documentation inherited.
-      public: virtual void SetColor(const ignition::math::Color &_color)
+      public: virtual void SetColor(const gz::math::Color &_color)
           override;
 
       // Documentation inherited.
-      public: virtual ignition::math::Color Color() const override;
+      public: virtual gz::math::Color Color() const override;
 
       // Documentation inherited.
       public: virtual void SetCharHeight(const float _height) override;
@@ -98,7 +98,7 @@ namespace ignition
       public: virtual bool ShowOnTop() const override;
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox AABB() const override;
+      public: virtual gz::math::AxisAlignedBox AABB() const override;
 
       /// \brief Font name, such as "Liberation Sans"
       protected: std::string fontName = "Liberation Sans";
@@ -107,7 +107,7 @@ namespace ignition
       protected: std::string text;
 
       /// \brief Text color
-      protected: ignition::math::Color color = ignition::math::Color::White;
+      protected: gz::math::Color color = gz::math::Color::White;
 
       /// \brief Character height in meters
       protected: float charHeight = 1.0;
@@ -179,14 +179,14 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::Color BaseText<T>::Color() const
+    gz::math::Color BaseText<T>::Color() const
     {
       return this->color;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseText<T>::SetColor(const ignition::math::Color &_color)
+    void BaseText<T>::SetColor(const gz::math::Color &_color)
     {
       this->color = _color;
       this->textDirty = true;
@@ -278,7 +278,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::AxisAlignedBox BaseText<T>::AABB() const
+    gz::math::AxisAlignedBox BaseText<T>::AABB() const
     {
       math::AxisAlignedBox box;
       return box;

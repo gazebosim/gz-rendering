@@ -52,20 +52,20 @@
 #include "Ogre2GzHlmsSphericalClipMinDistance.hh"
 
 class IGNITION_RENDERING_OGRE2_HIDDEN
-    ignition::rendering::Ogre2RenderEnginePrivate
+    gz::rendering::Ogre2RenderEnginePrivate
 {
 #if !defined(__APPLE__) && !defined(_WIN32)
   public: GLXFBConfig* dummyFBConfigs = nullptr;
 #endif
 
   /// \brief The graphics API to use
-  public: ignition::rendering::GraphicsAPI graphicsAPI{GraphicsAPI::OPENGL};
+  public: gz::rendering::GraphicsAPI graphicsAPI{GraphicsAPI::OPENGL};
 
   /// \brief A list of supported fsaa levels
   public: std::vector<unsigned int> fsaaLevels;
 
   /// \brief Controls Hlms customizations for both PBS and Unlit
-  public: ignition::rendering::Ogre2GzHlmsSphericalClipMinDistance
+  public: gz::rendering::Ogre2GzHlmsSphericalClipMinDistance
   sphericalClipMinDistance;
 
   /// \brief Pbs listener that adds terra shadows
@@ -85,7 +85,7 @@ class IGNITION_RENDERING_OGRE2_HIDDEN
   public: Ogre::Ogre2GzHlmsTerra *ignHlmsTerra{nullptr};
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -384,7 +384,7 @@ void Ogre2RenderEngine::CreateLogger()
 {
   // create log file path
   std::string logPath;
-  ignition::common::env(IGN_HOMEDIR, logPath);
+  gz::common::env(IGN_HOMEDIR, logPath);
   logPath = common::joinPaths(logPath, ".ignition", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre2.log");
@@ -1076,5 +1076,5 @@ Ogre::CompositorWorkspaceListener *Ogre2RenderEngine::TerraWorkspaceListener()
 }
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(ignition::rendering::Ogre2RenderEnginePlugin,
-                    ignition::rendering::RenderEnginePlugin)
+IGNITION_ADD_PLUGIN(gz::rendering::Ogre2RenderEnginePlugin,
+                    gz::rendering::RenderEnginePlugin)

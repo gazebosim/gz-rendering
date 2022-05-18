@@ -25,7 +25,7 @@ namespace Ogre
   class MovableObject;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

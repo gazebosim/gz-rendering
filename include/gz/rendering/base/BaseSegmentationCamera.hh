@@ -24,7 +24,7 @@
 #include "gz/rendering/base/BaseCamera.hh"
 #include "gz/rendering/SegmentationCamera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -49,7 +49,7 @@ namespace ignition
       public: virtual uint8_t *SegmentationData() const override;
 
       // Documentation inherited
-      public: virtual ignition::common::ConnectionPtr
+      public: virtual gz::common::ConnectionPtr
         ConnectNewSegmentationFrame(
           std::function<void(const uint8_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
@@ -128,7 +128,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::common::ConnectionPtr BaseSegmentationCamera<T>::
+    gz::common::ConnectionPtr BaseSegmentationCamera<T>::
       ConnectNewSegmentationFrame(
           std::function<void(const uint8_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)>)

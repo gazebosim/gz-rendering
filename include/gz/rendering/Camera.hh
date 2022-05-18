@@ -29,7 +29,7 @@
 #include "gz/rendering/Scene.hh"
 
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -146,7 +146,7 @@ namespace ignition
       /// \brief Get the visual for a given mouse position
       /// param[in] _mousePos mouse position
       //  \return visual for that position, null if no visual was found
-      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+      public: virtual VisualPtr VisualAt(const gz::math::Vector2i
                   &_mousePos) = 0;
 
       /// \brief Renders a new frame.

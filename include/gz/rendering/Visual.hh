@@ -22,7 +22,7 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Node.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -136,11 +136,11 @@ namespace ignition
 
       /// \brief Get the bounding box in world frame coordinates.
       /// \return The axis aligned bounding box
-      public: virtual ignition::math::AxisAlignedBox BoundingBox() const = 0;
+      public: virtual gz::math::AxisAlignedBox BoundingBox() const = 0;
 
       /// \brief Get the local bounding box of the visual.
       /// \return The local bounding box
-      public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
+      public: virtual gz::math::AxisAlignedBox LocalBoundingBox()
               const = 0;
 
       /// \brief Clone the visual (and its children) with a new name.

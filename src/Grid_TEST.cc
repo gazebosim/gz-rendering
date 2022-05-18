@@ -25,7 +25,7 @@
 #include "ignition/rendering/Grid.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class GridTest : public testing::Test,
@@ -96,7 +96,7 @@ TEST_P(GridTest, Grid)
 
 INSTANTIATE_TEST_CASE_P(Grid, GridTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

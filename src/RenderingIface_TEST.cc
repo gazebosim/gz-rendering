@@ -25,7 +25,7 @@
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 /////////////////////////////////////////////////

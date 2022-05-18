@@ -25,7 +25,7 @@
 #include "ignition/rendering/optix/OptixStorage.hh"
 #include "ignition/rendering/optix/OptixRenderEngine.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -134,5 +134,5 @@ bool OptixRenderEngine::InitImpl()
 }
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(ignition::rendering::OptixRenderEnginePlugin,
-                    ignition::rendering::RenderEnginePlugin)
+IGNITION_ADD_PLUGIN(gz::rendering::OptixRenderEnginePlugin,
+                    gz::rendering::RenderEnginePlugin)

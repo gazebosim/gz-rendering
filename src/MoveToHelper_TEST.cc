@@ -27,7 +27,7 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class MoveToHelperTest : public testing::Test,
@@ -148,7 +148,7 @@ TEST_P(MoveToHelperTest, MoveToHelper)
 
 INSTANTIATE_TEST_CASE_P(MoveToHelper, MoveToHelperTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

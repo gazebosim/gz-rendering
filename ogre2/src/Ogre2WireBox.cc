@@ -22,10 +22,10 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
-class ignition::rendering::Ogre2WireBoxPrivate
+class gz::rendering::Ogre2WireBoxPrivate
 {
   /// \brief Wirebox material
   public: Ogre2MaterialPtr material;
@@ -81,8 +81,8 @@ void Ogre2WireBox::Create()
 
   this->dataPtr->wireBox->SetOperationType(MarkerType::MT_LINE_LIST);
 
-  ignition::math::Vector3d max = this->box.Max();
-  ignition::math::Vector3d min = this->box.Min();
+  gz::math::Vector3d max = this->box.Max();
+  gz::math::Vector3d min = this->box.Min();
 
   // line 0
   this->dataPtr->wireBox->AddPoint({min.X(), min.Y(), min.Z()});

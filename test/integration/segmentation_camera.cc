@@ -30,7 +30,7 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/SegmentationCamera.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -42,7 +42,7 @@ class SegmentationCameraTest: public testing::Test,
   // Documentation inherited
   protected: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    gz::common::Console::SetVerbosity(4);
   }
 };
 
@@ -104,7 +104,7 @@ void BuildScene(rendering::ScenePtr scene)
   root->AddChild(box1);
 
   // create box visual of different label
-  ignition::rendering::VisualPtr box2 = scene->CreateVisual("box_mid");
+  gz::rendering::VisualPtr box2 = scene->CreateVisual("box_mid");
   box2->AddGeometry(scene->CreateBox());
   box2->SetOrigin(0.0, 0.0, 0.0);
   box2->SetLocalPosition(middlePosition);
@@ -126,14 +126,14 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   }
 
   // Setup ign-rendering with an empty scene
-  auto *engine = ignition::rendering::engine(_renderEngine);
+  auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
     ignerr << "Engine '" << _renderEngine
               << "' was unable to be retrieved" << std::endl;
     return;
   }
-  ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   BuildScene(scene);
 
@@ -168,7 +168,7 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   scene->RootVisual()->AddChild(camera);
 
   // Set a callback on the  camera sensor to get a Segmentation camera frame
-  ignition::common::ConnectionPtr connection =
+  gz::common::ConnectionPtr connection =
       camera->ConnectNewSegmentationFrame(
           std::bind(OnNewSegmentationFrame,
           std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
@@ -239,7 +239,7 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
 
   // Clean up
   engine->DestroyScene(scene);
-  ignition::rendering::unloadEngine(engine->Name());
+  gz::rendering::unloadEngine(engine->Name());
 }
 
 TEST_P(SegmentationCameraTest, SegmentationCameraBoxes)
@@ -248,7 +248,7 @@ TEST_P(SegmentationCameraTest, SegmentationCameraBoxes)
 }
 
 INSTANTIATE_TEST_CASE_P(SegmentationCamera, SegmentationCameraTest,
-    RENDER_ENGINE_VALUES, ignition::rendering::PrintToStringParam());
+    RENDER_ENGINE_VALUES, gz::rendering::PrintToStringParam());
 
 //////////////////////////////////////////////////
 int main(int argc, char **argv)

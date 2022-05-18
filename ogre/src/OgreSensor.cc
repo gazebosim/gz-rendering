@@ -16,7 +16,7 @@
  */
 #include "ignition/rendering/ogre/OgreSensor.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

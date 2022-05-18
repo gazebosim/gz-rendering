@@ -46,7 +46,7 @@ namespace Ogre
   class CompositorWorkspaceListener;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

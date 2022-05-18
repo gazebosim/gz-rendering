@@ -21,7 +21,7 @@
 
 #include "ignition/rendering/PixelFormat.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 /////////////////////////////////////////////////

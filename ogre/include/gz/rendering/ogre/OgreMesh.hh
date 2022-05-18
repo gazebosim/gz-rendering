@@ -33,7 +33,7 @@ namespace Ogre
   class SubEntity;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

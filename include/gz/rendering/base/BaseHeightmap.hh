@@ -19,7 +19,7 @@
 
 #include "gz/rendering/Heightmap.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -21,7 +21,7 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Node.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -19,7 +19,7 @@
 
 #include "gz/rendering/DistortionPass.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -33,7 +33,7 @@ namespace Ogre
   class Texture;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

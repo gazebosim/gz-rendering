@@ -24,7 +24,7 @@
 #include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
 #include "ignition/rendering/Utils.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -201,7 +201,7 @@ void OgreCamera::SetSelectionBuffer()
 }
 
 //////////////////////////////////////////////////
-VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i
+VisualPtr OgreCamera::VisualAt(const gz::math::Vector2i
     &_mousePos)
 {
   VisualPtr result;
@@ -217,7 +217,7 @@ VisualPtr OgreCamera::VisualAt(const ignition::math::Vector2i
   }
 
   float ratio = screenScalingFactor();
-  ignition::math::Vector2i mousePos(
+  gz::math::Vector2i mousePos(
       static_cast<int>(std::rint(ratio * _mousePos.X())),
       static_cast<int>(std::rint(ratio * _mousePos.Y())));
 

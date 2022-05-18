@@ -44,7 +44,7 @@
 #endif
 
 //////////////////////////////////////////////////
-class ignition::rendering::Ogre2HeightmapPrivate
+class gz::rendering::Ogre2HeightmapPrivate
 {
   /// \brief Skirt min height. Leave it at -1 for automatic.
   /// Leave it at 0 for maximum skirt size (high performance hit)
@@ -64,7 +64,7 @@ class ignition::rendering::Ogre2HeightmapPrivate
   public: std::unique_ptr<Ogre::Terra> terra{nullptr};
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

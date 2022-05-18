@@ -56,7 +56,7 @@
   #pragma warning(pop)
 #endif
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
@@ -104,7 +104,7 @@ class IGNITION_RENDERING_OGRE2_HIDDEN
 
 /// \internal
 /// \brief Private data for the Ogre2GpuRays class
-class IGNITION_RENDERING_OGRE2_HIDDEN ignition::rendering::Ogre2GpuRaysPrivate
+class IGNITION_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2GpuRaysPrivate
 {
   /// \brief Event triggered when new gpu rays range data are available.
   /// \param[in] _frame New frame containing raw gpu rays data.
@@ -112,7 +112,7 @@ class IGNITION_RENDERING_OGRE2_HIDDEN ignition::rendering::Ogre2GpuRaysPrivate
   /// \param[in] _height Height of frame.
   /// \param[in] _channel Number of channels
   /// \param[in] _format Format of frame.
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
                unsigned int, unsigned int, unsigned int,
                const std::string &)> newGpuRaysFrame;
 
@@ -198,7 +198,7 @@ class IGNITION_RENDERING_OGRE2_HIDDEN ignition::rendering::Ogre2GpuRaysPrivate
   public: const math::Angle kMinAllowedAngle = 1e-4;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 // Arbitrary value
@@ -1548,7 +1548,7 @@ void Ogre2GpuRays::SetRangeCount(
 }
 
 //////////////////////////////////////////////////
-ignition::common::ConnectionPtr Ogre2GpuRays::ConnectNewGpuRaysFrame(
+gz::common::ConnectionPtr Ogre2GpuRays::ConnectNewGpuRaysFrame(
     std::function<void(const float *_frame, unsigned int _width,
     unsigned int _height, unsigned int _channels,
     const std::string &/*_format*/)> _subscriber)

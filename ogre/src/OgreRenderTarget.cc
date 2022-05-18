@@ -45,7 +45,7 @@
 #include "ignition/rendering/ogre/OgreCamera.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

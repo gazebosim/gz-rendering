@@ -24,7 +24,7 @@
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 
-class ignition::rendering::OgreMarkerPrivate
+class gz::rendering::OgreMarkerPrivate
 {
   /// \brief Marker material
   public: OgreMaterialPtr material = nullptr;
@@ -36,7 +36,7 @@ class ignition::rendering::OgreMarkerPrivate
   public: OgreGeometryPtr geom{nullptr};
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -223,14 +223,14 @@ MaterialPtr OgreMarker::Material() const
 
 //////////////////////////////////////////////////
 void OgreMarker::SetPoint(unsigned int _index,
-    const ignition::math::Vector3d &_value)
+    const gz::math::Vector3d &_value)
 {
   this->dataPtr->dynamicRenderable->SetPoint(_index, _value);
 }
 
 //////////////////////////////////////////////////
-void OgreMarker::AddPoint(const ignition::math::Vector3d &_pt,
-    const ignition::math::Color &_color)
+void OgreMarker::AddPoint(const gz::math::Vector3d &_pt,
+    const gz::math::Color &_color)
 {
   this->dataPtr->dynamicRenderable->AddPoint(_pt, _color);
 }

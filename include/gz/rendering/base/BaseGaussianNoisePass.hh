@@ -22,7 +22,7 @@
 
 #include "gz/rendering/GaussianNoisePass.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -155,11 +155,11 @@ namespace ignition
     void BaseGaussianNoisePass<T>::SampleBias()
     {
       this->bias =
-          ignition::math::Rand::DblNormal(this->biasMean, this->biasStdDev);
+          gz::math::Rand::DblNormal(this->biasMean, this->biasStdDev);
       // With equal probability, we pick a negative bias (by convention,
       // rateBiasMean should be positive, though it would work fine if
       // negative).
-      if (ignition::math::Rand::DblUniform() < 0.5)
+      if (gz::math::Rand::DblUniform() < 0.5)
         this->bias = -this->bias;
     }
     }

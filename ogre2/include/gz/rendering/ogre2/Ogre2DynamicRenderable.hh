@@ -38,7 +38,7 @@ namespace Ogre
   class MovableObject;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -76,10 +76,10 @@ namespace ignition
       public: Ogre::MovableObject *OgreObject() const;
 
       /// \brief Add a point to the point list
-      /// \param[in] _pt ignition::math::Vector3d point
-      /// \param[in] _color ignition::math::Color Point color
-      public: void AddPoint(const ignition::math::Vector3d &_pt,
-            const ignition::math::Color &_color = ignition::math::Color::White);
+      /// \param[in] _pt gz::math::Vector3d point
+      /// \param[in] _color gz::math::Color Point color
+      public: void AddPoint(const gz::math::Vector3d &_pt,
+            const gz::math::Color &_color = gz::math::Color::White);
 
       /// \brief Add a point to the point list.
       /// \param[in] _x X position
@@ -87,27 +87,27 @@ namespace ignition
       /// \param[in] _z Z position
       /// \param[in] _color Point color
       public: void AddPoint(const double _x, const double _y, const double _z,
-            const ignition::math::Color &_color = ignition::math::Color::White);
+            const gz::math::Color &_color = gz::math::Color::White);
 
       /// \brief Change the location of an existing point in the point list
       /// \param[in] _index Index of the point to set
       /// \param[in] _value Position of the point
       public: void SetPoint(unsigned int _index,
-                            const ignition::math::Vector3d &_value);
+                            const gz::math::Vector3d &_value);
 
       /// \brief Change the color of an existing point in the point list
       /// \param[in] _index Index of the point to set
       /// \param[in] _color color to set the point to
       public: void SetColor(unsigned int _index,
-                            const ignition::math::Color &_color);
+                            const gz::math::Color &_color);
 
       /// \brief Return the position of an existing point in the point list
       /// \param[in] _index Get the point at this index
       /// \return position of point. A vector of
-      /// [ignition::math::INF_D, ignition::math::INF_D, ignition::math::INF_D]
+      /// [gz::math::INF_D, gz::math::INF_D, gz::math::INF_D]
       /// is returned when then the _index is out of bounds.
-      /// ignition::math::INF_D==std::numeric_limits<double>::infinity()
-      public: ignition::math::Vector3d Point(unsigned int _index) const;
+      /// gz::math::INF_D==std::numeric_limits<double>::infinity()
+      public: gz::math::Vector3d Point(unsigned int _index) const;
 
       /// \brief Return the total number of points in the point list
       /// \return Number of points

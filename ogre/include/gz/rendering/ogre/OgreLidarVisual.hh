@@ -25,7 +25,7 @@
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/OgreScene.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -63,7 +63,7 @@ namespace ignition
       // Documentation inherited
       // This only affects lidar visuals with type LVT_POINTS
       public: virtual void SetPoints(const std::vector<double> &_points,
-                        const std::vector<ignition::math::Color> &_colors)
+                        const std::vector<gz::math::Color> &_colors)
                                     override;
 
       // Documentation inherited

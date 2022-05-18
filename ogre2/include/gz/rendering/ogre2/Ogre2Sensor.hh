@@ -20,7 +20,7 @@
 #include "gz/rendering/base/BaseSensor.hh"
 #include "gz/rendering/ogre2/Ogre2Node.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

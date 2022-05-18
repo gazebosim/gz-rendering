@@ -27,7 +27,7 @@
 
 #include "test_config.h"  // NOLINT(build/include)
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class UtilTest : public testing::Test,
@@ -36,7 +36,7 @@ class UtilTest : public testing::Test,
   // Documentation inherited
   public: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    gz::common::Console::SetVerbosity(4);
   }
 
   public: void ClickToScene(const std::string &_renderEngine);
@@ -66,7 +66,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
 
   const int halfWidth  = static_cast<int>(width / 2);
   const int halfHeight = static_cast<int>(height / 2);
-  ignition::math::Vector2i centerClick(halfWidth, halfHeight);
+  gz::math::Vector2i centerClick(halfWidth, halfHeight);
 
   RayQueryPtr rayQuery = scene->CreateRayQuery();
   EXPECT_TRUE(rayQuery != nullptr);
@@ -129,7 +129,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   // the screenToPlane tests to fail so only modifying the pos here, and the
   // cause of test failure need to be investigated.
   if (_renderEngine == "ogre2")
-    centerClick = ignition::math::Vector2i(halfWidth-1, halfHeight-1);
+    centerClick = gz::math::Vector2i(halfWidth-1, halfHeight-1);
 
   // API without RayQueryResult and default max distance
   result = screenToScene(centerClick, camera, rayQuery, rayResult);
@@ -174,7 +174,7 @@ TEST_P(UtilTest, ClickToScene)
 
 INSTANTIATE_TEST_CASE_P(ClickToScene, UtilTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

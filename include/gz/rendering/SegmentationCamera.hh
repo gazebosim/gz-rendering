@@ -26,7 +26,7 @@
 #include "gz/rendering/Camera.hh"
 
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -68,7 +68,7 @@ namespace ignition
       /// The callback function arguments are:
       /// <segmentation data, width, height, channels, format>
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr
+      public: virtual gz::common::ConnectionPtr
         ConnectNewSegmentationFrame(
           std::function<void(const uint8_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) = 0;

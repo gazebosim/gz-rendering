@@ -16,7 +16,7 @@
  */
 #include "ignition/rendering/base/BaseObject.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

@@ -26,7 +26,7 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class OrthoViewControllerTest : public testing::Test,
@@ -240,7 +240,7 @@ TEST_P(OrthoViewControllerTest, Control)
 
 INSTANTIATE_TEST_CASE_P(OrthoViewController, OrthoViewControllerTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

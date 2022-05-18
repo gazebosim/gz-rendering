@@ -36,7 +36,7 @@ namespace Ogre
   class Viewport;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

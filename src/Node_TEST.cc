@@ -28,7 +28,7 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/Visual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class NodeTest : public testing::Test,
@@ -132,7 +132,7 @@ TEST_P(NodeTest, Pose)
 
 INSTANTIATE_TEST_CASE_P(Node, NodeTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

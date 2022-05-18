@@ -25,7 +25,7 @@
 
 #include "ignition/rendering/Camera.hh"
 
-class ignition::rendering::MoveToHelperPrivate
+class gz::rendering::MoveToHelperPrivate
 {
   /// \brief Pose animation object
   public: std::unique_ptr<common::PoseAnimation> poseAnim;
@@ -40,7 +40,7 @@ class ignition::rendering::MoveToHelperPrivate
   public: math::Pose3d initCameraPose;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 ////////////////////////////////////////////////
@@ -54,7 +54,7 @@ MoveToHelper::~MoveToHelper() = default;
 
 ////////////////////////////////////////////////
 void MoveToHelper::MoveTo(const rendering::CameraPtr &_camera,
-    const ignition::math::Pose3d &_target,
+    const gz::math::Pose3d &_target,
     double _duration, std::function<void()> _onAnimationComplete)
 {
   this->dataPtr->camera = _camera;
@@ -146,7 +146,7 @@ void MoveToHelper::LookDirection(const rendering::CameraPtr &_camera,
 
   // Calculate camera orientation
   math::Quaterniond endRot =
-    ignition::math::Matrix4d::LookAt(endPos, _lookAt).Rotation();
+    gz::math::Matrix4d::LookAt(endPos, _lookAt).Rotation();
 
   // Move camera to that pose
   common::PoseKeyFrame *key = this->dataPtr->poseAnim->CreateKeyFrame(0);

@@ -25,7 +25,7 @@
 #include "ignition/rendering/WireBox.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class WireBoxTest : public testing::Test,
@@ -56,11 +56,11 @@ void WireBoxTest::WireBox(const std::string &_renderEngine)
   WireBoxPtr wireBox = scene->CreateWireBox();
   ASSERT_NE(nullptr, wireBox);
 
-  ignition::math::AxisAlignedBox box(math::Vector3d(0.1, 0.2, 0.3),
+  gz::math::AxisAlignedBox box(math::Vector3d(0.1, 0.2, 0.3),
                                      math::Vector3d(5.1, 5.2, 5.3));
 
   wireBox->SetBox(box);
-  ignition::math::AxisAlignedBox aabb = wireBox->Box();
+  gz::math::AxisAlignedBox aabb = wireBox->Box();
   EXPECT_EQ(math::Vector3d(0.1, 0.2, 0.3), aabb.Min());
   EXPECT_EQ(math::Vector3d(5.1, 5.2, 5.3), aabb.Max());
 
@@ -90,7 +90,7 @@ TEST_P(WireBoxTest, WireBox)
 
 INSTANTIATE_TEST_CASE_P(WireBox, WireBoxTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -24,7 +24,7 @@
 #include "ignition/rendering/LidarVisual.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 using namespace std::chrono_literals;
 
@@ -111,7 +111,7 @@ void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
   lidar->SetSize(12.0);
   EXPECT_DOUBLE_EQ(12.0, lidar->Size());
 
-  ignition::math::Pose3d p(0.5, 2.56, 3.67, 1.4, 2, 4.5);
+  gz::math::Pose3d p(0.5, 2.56, 3.67, 1.4, 2, 4.5);
   lidar->SetOffset(p);
   EXPECT_EQ(lidar->Offset(), p);
 
@@ -137,7 +137,7 @@ TEST_P(LidarVisualTest, LidarVisual)
 
 INSTANTIATE_TEST_CASE_P(LidarVisual, LidarVisualTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

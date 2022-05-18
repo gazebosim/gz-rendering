@@ -20,7 +20,7 @@
 #include "ignition/rendering/optix/OptixScene.hh"
 #include "ignition/rendering/optix/OptixVisual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

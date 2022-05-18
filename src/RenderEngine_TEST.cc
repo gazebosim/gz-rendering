@@ -25,7 +25,7 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/RenderEngine.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class RenderEngineTest : public testing::Test,
@@ -141,7 +141,7 @@ TEST_P(RenderEngineTest, RenderEngine)
 
 INSTANTIATE_TEST_CASE_P(RenderEngine, RenderEngineTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

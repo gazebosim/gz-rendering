@@ -29,7 +29,7 @@
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/GizmoVisual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

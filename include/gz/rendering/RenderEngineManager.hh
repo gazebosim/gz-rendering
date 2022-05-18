@@ -27,7 +27,7 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -141,7 +141,7 @@ namespace ignition
       IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief required SingletonT friendship
-      private: friend class ignition::common::SingletonT<RenderEngineManager>;
+      private: friend class gz::common::SingletonT<RenderEngineManager>;
     };
     }
   }

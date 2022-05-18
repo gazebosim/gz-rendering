@@ -25,7 +25,7 @@
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

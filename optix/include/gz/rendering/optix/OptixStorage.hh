@@ -28,7 +28,7 @@
 #include "gz/rendering/optix/OptixSensor.hh"
 #include "gz/rendering/optix/OptixVisual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

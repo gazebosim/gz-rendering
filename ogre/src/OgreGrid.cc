@@ -21,7 +21,7 @@
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 
-class ignition::rendering::OgreGridPrivate
+class gz::rendering::OgreGridPrivate
 {
   /// \brief Grid materal
   public: OgreMaterialPtr material;
@@ -30,7 +30,7 @@ class ignition::rendering::OgreGridPrivate
   public: Ogre::ManualObject *manualObject = nullptr;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

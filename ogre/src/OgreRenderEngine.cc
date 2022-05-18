@@ -44,7 +44,7 @@
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
 
-class ignition::rendering::OgreRenderEnginePrivate
+class gz::rendering::OgreRenderEnginePrivate
 {
 #if !defined(__APPLE__) && !defined(_WIN32)
   public: XVisualInfo *dummyVisual = nullptr;
@@ -54,7 +54,7 @@ class ignition::rendering::OgreRenderEnginePrivate
   public: std::vector<unsigned int> fsaaLevels;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -334,7 +334,7 @@ void OgreRenderEngine::CreateLogger()
 {
   // create log file path
   std::string logPath;
-  ignition::common::env(IGN_HOMEDIR, logPath);
+  gz::common::env(IGN_HOMEDIR, logPath);
   logPath = common::joinPaths(logPath, ".ignition", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre.log");
@@ -822,5 +822,5 @@ Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
 #endif
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(ignition::rendering::OgreRenderEnginePlugin,
-                    ignition::rendering::RenderEnginePlugin)
+IGNITION_ADD_PLUGIN(gz::rendering::OgreRenderEnginePlugin,
+                    gz::rendering::RenderEnginePlugin)

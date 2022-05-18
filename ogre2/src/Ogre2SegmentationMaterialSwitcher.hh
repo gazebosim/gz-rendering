@@ -33,7 +33,7 @@
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/SegmentationCamera.hh"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
@@ -142,6 +142,6 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
 };
 }
 }  // namespace rendering
-}  // namespace ignition
+}  // namespace gz
 
 #endif  // GZ_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_

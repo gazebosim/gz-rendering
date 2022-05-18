@@ -33,7 +33,7 @@
 
 #include <algorithm>
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -118,4 +118,4 @@ namespace ignition
       }
     }
   }  // namespace rendering
-}  // namespace ignition
+}  // namespace gz

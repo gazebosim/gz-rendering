@@ -19,7 +19,7 @@
 
 #include "gz/rendering/Light.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

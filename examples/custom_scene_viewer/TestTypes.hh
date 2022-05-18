@@ -20,7 +20,7 @@
 #include <vector>
 #include <gz/rendering.hh>
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -74,7 +74,7 @@
 #endif
 
 /// \brief Private data for the Ogre2Scene class
-class ignition::rendering::Ogre2ScenePrivate
+class gz::rendering::Ogre2ScenePrivate
 {
   /// \brief Flag to indicate if shadows need to be updated
   public: bool shadowsDirty = true;
@@ -100,7 +100,7 @@ class ignition::rendering::Ogre2ScenePrivate
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

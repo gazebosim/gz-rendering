@@ -17,11 +17,11 @@
 #include "ignition/rendering/ogre2/Ogre2RenderPass.hh"
 
 /// \brief Private data for the Ogre2RenderPass class
-class ignition::rendering::Ogre2RenderPassPrivate
+class gz::rendering::Ogre2RenderPassPrivate
 {
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

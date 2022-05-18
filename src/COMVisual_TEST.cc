@@ -27,7 +27,7 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class COMVisualTest : public testing::Test,
@@ -54,16 +54,16 @@ void COMVisualTest::COMVisual(const std::string &_renderEngine)
   COMVisualPtr comVisual = scene->CreateCOMVisual();
   ASSERT_NE(nullptr, comVisual);
 
-  ignition::math::MassMatrix3d massMatrix(
+  gz::math::MassMatrix3d massMatrix(
       0.0, {2.0, 1.5, 1.0}, {0.0, 0.0, 0.0});
-  ignition::math::Pose3d p(0.0, 1.0, 2.5, 1.0, 0.4, 0.4);
-  ignition::math::Inertiald inertial;
+  gz::math::Pose3d p(0.0, 1.0, 2.5, 1.0, 0.4, 0.4);
+  gz::math::Inertiald inertial;
   inertial.SetMassMatrix(massMatrix);
   inertial.SetPose(p);
 
   // check initial values
   EXPECT_EQ(nullptr, comVisual->SphereVisual());
-  EXPECT_EQ(ignition::math::Pose3d::Zero, comVisual->InertiaPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, comVisual->InertiaPose());
   EXPECT_DOUBLE_EQ(1.0, comVisual->Mass());
 
   // set invalid mass
@@ -71,7 +71,7 @@ void COMVisualTest::COMVisual(const std::string &_renderEngine)
   comVisual->PreRender();
   EXPECT_EQ(nullptr, comVisual->SphereVisual());
   EXPECT_DOUBLE_EQ(1.0, comVisual->Mass());
-  EXPECT_EQ(ignition::math::Pose3d::Zero, comVisual->InertiaPose());
+  EXPECT_EQ(gz::math::Pose3d::Zero, comVisual->InertiaPose());
 
   // set invalid inertial
   comVisual->SetInertial(inertial);
@@ -104,7 +104,7 @@ TEST_P(COMVisualTest, COMVisual)
 
 INSTANTIATE_TEST_CASE_P(Visual, COMVisualTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

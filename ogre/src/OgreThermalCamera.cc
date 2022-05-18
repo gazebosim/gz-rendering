@@ -31,7 +31,7 @@
 #include "ignition/rendering/ogre/OgreMaterial.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
@@ -90,7 +90,7 @@ class OgreThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener,
 
 /// \internal
 /// \brief Private data for the OgreThermalCamera class
-class ignition::rendering::OgreThermalCameraPrivate
+class gz::rendering::OgreThermalCameraPrivate
 {
   /// \brief The thermal material
   public: Ogre::MaterialPtr thermalMaterial;
@@ -123,7 +123,7 @@ class ignition::rendering::OgreThermalCameraPrivate
   public: uint16_t dataMinVal = 0u;
 
   /// \brief Event used to signal thermal image data
-  public: ignition::common::EventT<void(const uint16_t *,
+  public: gz::common::EventT<void(const uint16_t *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newThermalFrame;
 
@@ -132,7 +132,7 @@ class ignition::rendering::OgreThermalCameraPrivate
       thermalMaterialSwitcher;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 

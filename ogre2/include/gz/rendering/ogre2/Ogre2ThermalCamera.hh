@@ -43,7 +43,7 @@ namespace Ogre
   class Viewport;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -78,7 +78,7 @@ namespace ignition
       /// \brief Connect to the new thermal image event
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr ConnectNewThermalFrame(
+      public: virtual gz::common::ConnectionPtr ConnectNewThermalFrame(
           std::function<void(const uint16_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
 

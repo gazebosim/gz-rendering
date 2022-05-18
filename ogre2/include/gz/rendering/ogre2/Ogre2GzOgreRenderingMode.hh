@@ -20,7 +20,7 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/ogre2/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -52,6 +52,6 @@ namespace ignition
       };
     }  // namespace IGNITION_RENDERING_VERSION_NAMESPACE
   }    // namespace rendering
-}  // namespace ignition
+}  // namespace gz
 
 #endif

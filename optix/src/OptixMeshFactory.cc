@@ -22,7 +22,7 @@
 #include "ignition/rendering/optix/OptixMesh.hh"
 #include "ignition/rendering/optix/OptixStorage.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

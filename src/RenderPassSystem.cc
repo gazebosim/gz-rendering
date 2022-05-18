@@ -19,11 +19,11 @@
 
 #include "ignition/rendering/RenderPassSystem.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 /// \brief Private implementation of the RenderPassSystem class
-class ignition::rendering::RenderPassSystemPrivate
+class gz::rendering::RenderPassSystemPrivate
 {
 };
 

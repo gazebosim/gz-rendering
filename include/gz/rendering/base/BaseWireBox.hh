@@ -20,7 +20,7 @@
 #include <string>
 #include "gz/rendering/WireBox.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -45,13 +45,13 @@ namespace ignition
       public: virtual void Destroy();
 
       // Documentation inherited.
-      public: virtual void SetBox(const ignition::math::AxisAlignedBox &_box);
+      public: virtual void SetBox(const gz::math::AxisAlignedBox &_box);
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox Box() const;
+      public: virtual gz::math::AxisAlignedBox Box() const;
 
       // \brief Underlying axis aligned box that the wire box reflects.
-      protected: ignition::math::AxisAlignedBox box;
+      protected: gz::math::AxisAlignedBox box;
 
       /// \brief Flag to indicate WireBox properties have changed
       protected: bool wireBoxDirty = false;
@@ -87,7 +87,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseWireBox<T>::SetBox(const ignition::math::AxisAlignedBox &_box)
+    void BaseWireBox<T>::SetBox(const gz::math::AxisAlignedBox &_box)
     {
       this->box = _box;
       this->wireBoxDirty = true;
@@ -95,7 +95,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::AxisAlignedBox BaseWireBox<T>::Box() const
+    gz::math::AxisAlignedBox BaseWireBox<T>::Box() const
     {
       return this->box;
     }

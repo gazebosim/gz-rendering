@@ -27,14 +27,14 @@
 #include "gz/rendering/ogre/OgreIncludes.hh"
 
 // Ignoring warning: "non dll-interface class
-// 'ignition::rendering::v5::Heightmap' used as base for dll-interface class"
+// 'gz::rendering::v5::Heightmap' used as base for dll-interface class"
 // because `Heightmap` and `BaseHeightmap` are header-only
 #ifdef _MSC_VER
  #pragma warning(push)
  #pragma warning(disable:4275)
 #endif
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

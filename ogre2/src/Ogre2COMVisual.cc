@@ -27,7 +27,7 @@
   #pragma warning(pop)
 #endif
 
-class ignition::rendering::Ogre2COMVisualPrivate
+class gz::rendering::Ogre2COMVisualPrivate
 {
   /// \brief Grid materal
   public: Ogre2MaterialPtr material = nullptr;
@@ -39,7 +39,7 @@ class ignition::rendering::Ogre2COMVisualPrivate
   public: VisualPtr sphereVis = nullptr;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -116,14 +116,14 @@ void Ogre2COMVisual::CreateVisual()
   }
 
   double sphereRadius = this->SphereRadius();
-  this->dataPtr->sphereVis->SetLocalScale(ignition::math::Vector3d(
+  this->dataPtr->sphereVis->SetLocalScale(gz::math::Vector3d(
       sphereRadius*2, sphereRadius*2, sphereRadius*2));
   this->dataPtr->sphereVis->SetLocalPosition(this->InertiaPose().Pos());
   this->dataPtr->sphereVis->SetLocalRotation(this->InertiaPose().Rot());
 
   // Get the bounding box of the parent visual
   VisualPtr vis = this->Scene()->VisualByName(this->parentName);
-  ignition::math::AxisAlignedBox box;
+  gz::math::AxisAlignedBox box;
   if (vis)
     box = vis->LocalBoundingBox();
 
@@ -140,19 +140,19 @@ void Ogre2COMVisual::CreateVisual()
   }
 
   // CoM position indicator
-  ignition::math::Vector3d p1(0, 0,
+  gz::math::Vector3d p1(0, 0,
       box.Min().Z() - this->InertiaPose().Pos().Z());
-  ignition::math::Vector3d p2(0, 0,
+  gz::math::Vector3d p2(0, 0,
       box.Max().Z() - this->InertiaPose().Pos().Z());
 
-  ignition::math::Vector3d p3(0,
+  gz::math::Vector3d p3(0,
       box.Min().Y() - this->InertiaPose().Pos().Y(), 0);
-  ignition::math::Vector3d p4(0,
+  gz::math::Vector3d p4(0,
       box.Max().Y() - this->InertiaPose().Pos().Y(), 0);
 
-  ignition::math::Vector3d p5(
+  gz::math::Vector3d p5(
       box.Min().X() - this->InertiaPose().Pos().X(), 0, 0);
-  ignition::math::Vector3d p6(
+  gz::math::Vector3d p6(
       box.Max().X() - this->InertiaPose().Pos().X(), 0, 0);
 
   p1 += this->InertiaPose().Pos();

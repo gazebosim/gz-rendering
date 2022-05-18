@@ -35,7 +35,7 @@
 #include "Ogre2SegmentationMaterialSwitcher.hh"
 
 /// \brief Private data for the Ogre2SegmentationCamera class
-class ignition::rendering::Ogre2SegmentationCameraPrivate
+class gz::rendering::Ogre2SegmentationCameraPrivate
 {
   /// \brief buffer to store render texture data & to be sent to listeners
   public: uint8_t *buffer {nullptr};
@@ -61,7 +61,7 @@ class ignition::rendering::Ogre2SegmentationCameraPrivate
   /// \param[in] _height Height of the image
   /// \param[in] _channels Number of channels
   /// \param[in] _format Image Format
-  public: ignition::common::EventT<void(const uint8_t *_data,
+  public: gz::common::EventT<void(const uint8_t *_data,
     unsigned int _width, unsigned int _height, unsigned int _channels,
     const std::string &_format)> newSegmentationFrame;
 
@@ -71,7 +71,7 @@ class ignition::rendering::Ogre2SegmentationCameraPrivate
           materialSwitcher {nullptr};
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 /////////////////////////////////////////////////
@@ -298,7 +298,7 @@ void Ogre2SegmentationCamera::PostRender()
 }
 
 /////////////////////////////////////////////////
-ignition::common::ConnectionPtr
+gz::common::ConnectionPtr
   Ogre2SegmentationCamera::ConnectNewSegmentationFrame(
   std::function<void(const uint8_t *, unsigned int, unsigned int,
   unsigned int, const std::string &)>  _subscriber)

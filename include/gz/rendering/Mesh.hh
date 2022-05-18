@@ -26,7 +26,7 @@
 #include "gz/rendering/MeshDescriptor.hh"
 #include "gz/rendering/Object.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

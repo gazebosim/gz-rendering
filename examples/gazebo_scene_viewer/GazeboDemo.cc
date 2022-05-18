@@ -37,7 +37,7 @@
 #include "CameraWindow.hh"
 #include "SceneManager.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 void Connect()

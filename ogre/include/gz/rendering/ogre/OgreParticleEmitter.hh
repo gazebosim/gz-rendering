@@ -20,7 +20,7 @@
 #include "gz/rendering/base/BaseParticleEmitter.hh"
 #include "gz/rendering/ogre/OgreVisual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

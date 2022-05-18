@@ -16,7 +16,7 @@
  */
 #include "ignition/rendering/ogre2/Ogre2AxisVisual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

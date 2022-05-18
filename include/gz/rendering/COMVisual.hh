@@ -24,7 +24,7 @@
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -42,7 +42,7 @@ namespace ignition
       /// \brief Set the inertial component of the visual
       /// \param[in] _inertial Inertial component of the visual
       public: virtual void SetInertial(
-                  const ignition::math::Inertiald &_inertial) = 0;
+                  const gz::math::Inertiald &_inertial) = 0;
 
       /// \brief Set the mass of the parent
       /// \param[in] _mass Parent mass
@@ -54,7 +54,7 @@ namespace ignition
 
       /// \brief Get the inertia pose
       /// \return Inertia pose in parent frame.
-      public: virtual ignition::math::Pose3d InertiaPose() const = 0;
+      public: virtual gz::math::Pose3d InertiaPose() const = 0;
 
       /// \brief Get the sphere visual
       /// \return Pointer to the sphere visual

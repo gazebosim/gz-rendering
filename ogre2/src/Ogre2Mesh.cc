@@ -39,19 +39,19 @@
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 /// brief Private implementation of the Ogre2Mesh class
-class ignition::rendering::Ogre2MeshPrivate
+class gz::rendering::Ogre2MeshPrivate
 {
 };
 
 /// brief Private implementation of the Ogre2SubMesh class
-class ignition::rendering::Ogre2SubMeshPrivate
+class gz::rendering::Ogre2SubMeshPrivate
 {
   /// \brief name of the mesh inside the mesh manager to be able to
   /// remove it
   public: std::string subMeshName;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -102,7 +102,7 @@ bool Ogre2Mesh::HasSkeleton() const
 //////////////////////////////////////////////////
 std::map<std::string, math::Matrix4d> Ogre2Mesh::SkeletonLocalTransforms() const
 {
-  std::map<std::string, ignition::math::Matrix4d> mapTfs;
+  std::map<std::string, gz::math::Matrix4d> mapTfs;
   if (this->ogreItem->hasSkeleton())
   {
     auto skel = this->ogreItem->getSkeletonInstance();

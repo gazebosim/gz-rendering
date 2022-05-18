@@ -20,7 +20,7 @@
 #include <string>
 #include "gz/rendering/RenderPass.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

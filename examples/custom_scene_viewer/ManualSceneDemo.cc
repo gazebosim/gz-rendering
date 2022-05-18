@@ -30,7 +30,7 @@
 #include "SceneBuilder.hh"
 #include "DemoWindow.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

@@ -44,7 +44,7 @@ namespace Ogre
   class SceneManager;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -27,7 +27,7 @@
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/base/BaseStorage.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -107,11 +107,11 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox BoundingBox()
+      public: virtual gz::math::AxisAlignedBox BoundingBox()
               const override;
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
+      public: virtual gz::math::AxisAlignedBox LocalBoundingBox()
               const override;
 
       // Documentation inherited.
@@ -135,7 +135,7 @@ namespace ignition
       protected: uint32_t visibilityFlags = IGN_VISIBILITY_ALL;
 
       /// \brief The bounding box of the visual
-      protected: ignition::math::AxisAlignedBox boundingBox;
+      protected: gz::math::AxisAlignedBox boundingBox;
 
       /// \brief True if wireframe mode is enabled else false
       protected: bool wireframe = false;
@@ -266,7 +266,7 @@ namespace ignition
       _material = (_unique && count > 0) ? _material->Clone() : _material;
 
       auto children_ =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!children_)
       {
@@ -326,7 +326,7 @@ namespace ignition
     void BaseVisual<T>::PreRenderChildren()
     {
       auto children_ =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!children_)
       {
@@ -379,13 +379,13 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::AxisAlignedBox BaseVisual<T>::LocalBoundingBox() const
+    gz::math::AxisAlignedBox BaseVisual<T>::LocalBoundingBox() const
     {
-      ignition::math::AxisAlignedBox box;
+      gz::math::AxisAlignedBox box;
 
       // Recursively loop through child visuals
       auto childNodes =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!childNodes)
       {
@@ -398,7 +398,7 @@ namespace ignition
         VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
         if (visual)
         {
-          ignition::math::AxisAlignedBox aabb = visual->LocalBoundingBox();
+          gz::math::AxisAlignedBox aabb = visual->LocalBoundingBox();
           if (aabb.Min().IsFinite() && aabb.Max().IsFinite())
             box.Merge(aabb);
         }
@@ -408,13 +408,13 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::AxisAlignedBox BaseVisual<T>::BoundingBox() const
+    gz::math::AxisAlignedBox BaseVisual<T>::BoundingBox() const
     {
-      ignition::math::AxisAlignedBox box;
+      gz::math::AxisAlignedBox box;
 
       // Recursively loop through child visuals
       auto childNodes =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!childNodes)
       {
@@ -453,7 +453,7 @@ namespace ignition
 
       // recursively set child visuals' visibility flags
       auto childNodes =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!childNodes)
       {
@@ -516,7 +516,7 @@ namespace ignition
 
       // if the visual that was cloned has child visuals, clone those as well
       auto children_ =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!children_)
       {

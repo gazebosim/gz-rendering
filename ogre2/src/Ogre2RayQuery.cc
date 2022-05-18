@@ -43,7 +43,7 @@
 #endif
 
 /// \brief Private data class for Ogre2RayQuery
-class ignition::rendering::Ogre2RayQueryPrivate
+class gz::rendering::Ogre2RayQueryPrivate
 {
   /// \brief Ogre ray scene query object for computing intersection.
   public: Ogre::RaySceneQuery *rayQuery = nullptr;
@@ -58,7 +58,7 @@ class ignition::rendering::Ogre2RayQueryPrivate
   public: std::thread::id threadId;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -245,11 +245,11 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
           if (indexCount <= k+2)
             continue;
 
-          ignition::math::Vector3d vertexA =
+          gz::math::Vector3d vertexA =
             submesh->Vertex(submesh->Index(k));
-          ignition::math::Vector3d vertexB =
+          gz::math::Vector3d vertexB =
             submesh->Vertex(submesh->Index(k+1));
-          ignition::math::Vector3d vertexC =
+          gz::math::Vector3d vertexC =
             submesh->Vertex(submesh->Index(k+2));
 
           Ogre::Vector3 worldVertexA =

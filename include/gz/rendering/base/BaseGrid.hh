@@ -21,7 +21,7 @@
 #include "gz/rendering/Grid.hh"
 #include "gz/rendering/base/BaseObject.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -25,7 +25,7 @@
 #include "gz/rendering/base/BaseCamera.hh"
 #include "gz/rendering/BoundingBoxCamera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -47,7 +47,7 @@ namespace ignition
       public: virtual const std::vector<BoundingBox> &BoundingBoxData() const;
 
       // Documentation inherited
-      public: virtual ignition::common::ConnectionPtr ConnectNewBoundingBoxes(
+      public: virtual gz::common::ConnectionPtr ConnectNewBoundingBoxes(
         std::function<void(const std::vector<BoundingBox> &)> _subscriber) = 0;
 
       // Documentation inherited

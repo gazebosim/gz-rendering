@@ -48,10 +48,10 @@
   #pragma warning(pop)
 #endif
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
-class ignition::rendering::Ogre2SelectionBufferPrivate
+class gz::rendering::Ogre2SelectionBufferPrivate
 {
   /// \brief This is a material listener and a RenderTargetListener.
   /// The material switcher is applied to only the selection camera
@@ -471,7 +471,7 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
   math::Pose3d p(pos, rot);
   point = rot * point + pos;
 
-  ignition::math::Color cv;
+  gz::math::Color cv;
   cv.A(1.0);
   cv.R(r / 255.0);
   cv.G(g / 255.0);

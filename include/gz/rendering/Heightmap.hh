@@ -21,7 +21,7 @@
 #include "gz/rendering/Geometry.hh"
 #include "gz/rendering/HeightmapDescriptor.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

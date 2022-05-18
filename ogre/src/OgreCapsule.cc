@@ -26,7 +26,7 @@
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
 
-class ignition::rendering::OgreCapsulePrivate
+class gz::rendering::OgreCapsulePrivate
 {
   /// \brief Capsule materal
   public: OgreMaterialPtr material{nullptr};
@@ -35,7 +35,7 @@ class ignition::rendering::OgreCapsulePrivate
   public: OgreMeshPtr ogreMesh{nullptr};
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

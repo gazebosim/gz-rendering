@@ -19,7 +19,7 @@
 
 #include "TestTypes.hh"
 
-namespace ir = ignition::rendering;
+namespace ir = gz::rendering;
 
 /// \brief Run the demo
 /// \param[in] _Pointer to demo

@@ -19,7 +19,7 @@
 
 #include "ignition/rendering/ShaderParam.hh"
 
-using namespace ignition::rendering;
+using namespace gz::rendering;
 
 
 /////////////////////////////////////////////////

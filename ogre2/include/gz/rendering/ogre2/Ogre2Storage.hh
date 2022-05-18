@@ -29,7 +29,7 @@
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

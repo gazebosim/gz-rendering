@@ -51,7 +51,7 @@
   #pragma warning(pop)
 #endif
 
-class ignition::rendering::Ogre2MarkerPrivate
+class gz::rendering::Ogre2MarkerPrivate
 {
   /// \brief Marker material
   public: Ogre2MaterialPtr material = nullptr;
@@ -67,7 +67,7 @@ class ignition::rendering::Ogre2MarkerPrivate
   public: std::shared_ptr<Ogre2DynamicRenderable> dynamicRenderable;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -287,14 +287,14 @@ MaterialPtr Ogre2Marker::Material() const
 
 //////////////////////////////////////////////////
 void Ogre2Marker::SetPoint(unsigned int _index,
-    const ignition::math::Vector3d &_value)
+    const gz::math::Vector3d &_value)
 {
   this->dataPtr->dynamicRenderable->SetPoint(_index, _value);
 }
 
 //////////////////////////////////////////////////
-void Ogre2Marker::AddPoint(const ignition::math::Vector3d &_pt,
-    const ignition::math::Color &_color)
+void Ogre2Marker::AddPoint(const gz::math::Vector3d &_pt,
+    const gz::math::Color &_color)
 {
   this->dataPtr->dynamicRenderable->AddPoint(_pt, _color);
 }

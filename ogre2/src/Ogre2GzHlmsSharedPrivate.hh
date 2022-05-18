@@ -32,13 +32,13 @@
 
 #include <vector>
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
     {
-    typedef ignition::rendering::IgnOgreRenderingMode IgnOgreRenderingMode;
+    typedef gz::rendering::IgnOgreRenderingMode IgnOgreRenderingMode;
     typedef Ogre::vector<Ogre::ConstBufferPacked*>::type ConstBufferPackedVec;
 
     /// \brief Implements code shared across all or most of our Hlms

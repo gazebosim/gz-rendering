@@ -25,7 +25,7 @@
 #include "gz/rendering/Storage.hh"
 #include "gz/rendering/base/BaseObject.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -189,7 +189,7 @@ namespace ignition
     std::map<std::string, math::Matrix4d>
           BaseMesh<T>::SkeletonLocalTransforms() const
     {
-      std::map<std::string, ignition::math::Matrix4d> tmpMap;
+      std::map<std::string, gz::math::Matrix4d> tmpMap;
       return tmpMap;
     }
 

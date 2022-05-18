@@ -24,7 +24,7 @@
 #include "ignition/rendering/Text.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class TextTest : public testing::Test,
@@ -122,7 +122,7 @@ TEST_P(TextTest, Text)
 
 INSTANTIATE_TEST_CASE_P(Text, TextTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

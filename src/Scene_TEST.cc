@@ -25,7 +25,7 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class SceneTest : public testing::Test,
@@ -34,7 +34,7 @@ class SceneTest : public testing::Test,
   // Documentation inherited
   public: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    gz::common::Console::SetVerbosity(4);
   }
 
   public: void Scene(const std::string &_renderEngine);
@@ -828,7 +828,7 @@ TEST_P(SceneTest, Sky)
 
 INSTANTIATE_TEST_CASE_P(Scene, SceneTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -28,7 +28,7 @@
 #include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/Utils.hh"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
@@ -91,7 +91,7 @@ math::Vector3d screenToPlane(
   _rayQuery->SetFromCamera(
       _camera, math::Vector2d(nx, ny));
 
-  ignition::math::Planed plane(ignition::math::Vector3d(0, 0, 1), offset);
+  gz::math::Planed plane(gz::math::Vector3d(0, 0, 1), offset);
 
   math::Vector3d origin = _rayQuery->Origin();
   math::Vector3d direction = _rayQuery->Direction();
@@ -164,37 +164,37 @@ float screenScalingFactor()
 }
 
 /////////////////////////////////////////////////
-ignition::math::AxisAlignedBox transformAxisAlignedBox(
-    const ignition::math::AxisAlignedBox &_bbox,
-    const ignition::math::Pose3d &_pose)
+gz::math::AxisAlignedBox transformAxisAlignedBox(
+    const gz::math::AxisAlignedBox &_bbox,
+    const gz::math::Pose3d &_pose)
 {
   auto center = _bbox.Center();
 
   // Get the 8 corners of the bounding box.
-  std::vector<ignition::math::Vector3d> vertices;
-  vertices.push_back(center + ignition::math::Vector3d(-_bbox.XLength()/2.0,
+  std::vector<gz::math::Vector3d> vertices;
+  vertices.push_back(center + gz::math::Vector3d(-_bbox.XLength()/2.0,
                                                        _bbox.YLength()/2.0,
                                                        _bbox.ZLength()/2.0));
-  vertices.push_back(center + ignition::math::Vector3d(_bbox.XLength()/2.0,
+  vertices.push_back(center + gz::math::Vector3d(_bbox.XLength()/2.0,
                                                        _bbox.YLength()/2.0,
                                                        _bbox.ZLength()/2.0));
-  vertices.push_back(center + ignition::math::Vector3d(-_bbox.XLength()/2.0,
+  vertices.push_back(center + gz::math::Vector3d(-_bbox.XLength()/2.0,
                                                        -_bbox.YLength()/2.0,
                                                        _bbox.ZLength()/2.0));
-  vertices.push_back(center + ignition::math::Vector3d(_bbox.XLength()/2.0,
+  vertices.push_back(center + gz::math::Vector3d(_bbox.XLength()/2.0,
                                                        -_bbox.YLength()/2.0,
                                                        _bbox.ZLength()/2.0));
 
-  vertices.push_back(center + ignition::math::Vector3d(-_bbox.XLength()/2.0,
+  vertices.push_back(center + gz::math::Vector3d(-_bbox.XLength()/2.0,
                                                        _bbox.YLength()/2.0,
                                                        -_bbox.ZLength()/2.0));
-  vertices.push_back(center + ignition::math::Vector3d(_bbox.XLength()/2.0,
+  vertices.push_back(center + gz::math::Vector3d(_bbox.XLength()/2.0,
                                                        _bbox.YLength()/2.0,
                                                        -_bbox.ZLength()/2.0));
-  vertices.push_back(center + ignition::math::Vector3d(-_bbox.XLength()/2.0,
+  vertices.push_back(center + gz::math::Vector3d(-_bbox.XLength()/2.0,
                                                        -_bbox.YLength()/2.0,
                                                        -_bbox.ZLength()/2.0));
-  vertices.push_back(center + ignition::math::Vector3d(_bbox.XLength()/2.0,
+  vertices.push_back(center + gz::math::Vector3d(_bbox.XLength()/2.0,
                                                        -_bbox.YLength()/2.0,
                                                        -_bbox.ZLength()/2.0));
 
@@ -206,8 +206,8 @@ ignition::math::AxisAlignedBox transformAxisAlignedBox(
     v = _pose.Rot() * v + _pose.Pos();
   }
 
-  ignition::math::Vector3d min = vertices[0];
-  ignition::math::Vector3d max = vertices[0];
+  gz::math::Vector3d min = vertices[0];
+  gz::math::Vector3d max = vertices[0];
 
   // find min / max of vertices
   for (unsigned int i = 1; i < vertices.size(); ++i)
@@ -227,7 +227,7 @@ ignition::math::AxisAlignedBox transformAxisAlignedBox(
     if (max.Z() < v.Z())
       max.Z() = v.Z();
   }
-  return ignition::math::AxisAlignedBox(min, max);
+  return gz::math::AxisAlignedBox(min, max);
 }
 }
 }

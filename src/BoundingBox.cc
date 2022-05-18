@@ -18,11 +18,11 @@
 
 #include "ignition/rendering/BoundingBox.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-class ignition::rendering::BoundingBoxPrivate
+class gz::rendering::BoundingBoxPrivate
 {
 };
 

@@ -29,7 +29,7 @@
 #include "SceneManager.hh"
 #include "SceneManagerPrivate.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

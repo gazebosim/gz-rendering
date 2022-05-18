@@ -22,7 +22,7 @@
 #include "gz/rendering/optix/OptixIncludes.hh"
 #include "gz/rendering/optix/OptixLightTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -35,15 +35,15 @@ namespace ignition
 
       public: virtual ~OptixLight();
 
-      public: virtual ignition::math::Color DiffuseColor() const;
+      public: virtual gz::math::Color DiffuseColor() const;
 
       public: virtual void SetDiffuseColor(
-          const ignition::math::Color &_color);
+          const gz::math::Color &_color);
 
-      public: virtual ignition::math::Color SpecularColor() const;
+      public: virtual gz::math::Color SpecularColor() const;
 
       public: virtual void SetSpecularColor(
-          const ignition::math::Color &_color);
+          const gz::math::Color &_color);
 
       public: virtual double AttenuationConstant() const;
 
@@ -81,9 +81,9 @@ namespace ignition
 
       public: virtual ~OptixDirectionalLight();
 
-      public: virtual ignition::math::Vector3d Direction() const;
+      public: virtual gz::math::Vector3d Direction() const;
 
-      public: virtual void SetDirection(const ignition::math::Vector3d &_dir);
+      public: virtual void SetDirection(const gz::math::Vector3d &_dir);
 
       public: virtual OptixDirectionalLightData Data() const;
 
@@ -129,17 +129,17 @@ namespace ignition
 
       public: virtual ~OptixSpotLight();
 
-      public: virtual ignition::math::Vector3d Direction() const;
+      public: virtual gz::math::Vector3d Direction() const;
 
-      public: virtual void SetDirection(const ignition::math::Vector3d &_dir);
+      public: virtual void SetDirection(const gz::math::Vector3d &_dir);
 
-      public: virtual ignition::math::Angle InnerAngle() const;
+      public: virtual gz::math::Angle InnerAngle() const;
 
-      public: virtual void SetInnerAngle(const ignition::math::Angle &_angle);
+      public: virtual void SetInnerAngle(const gz::math::Angle &_angle);
 
-      public: virtual ignition::math::Angle OuterAngle() const;
+      public: virtual gz::math::Angle OuterAngle() const;
 
-      public: virtual void SetOuterAngle(const ignition::math::Angle &_angle);
+      public: virtual void SetOuterAngle(const gz::math::Angle &_angle);
 
       public: virtual double Falloff() const;
 

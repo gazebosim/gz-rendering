@@ -71,7 +71,7 @@ release will remove the deprecated code.
 
 ### Deprecations
 
-1. **ignition::common::Time** deprecated in favor of **std::chrono::steady_clock::duration**
+1. **gz::common::Time** deprecated in favor of **std::chrono::steady_clock::duration**
     + Deprecated: `void BaseScene::SetSimTime(const common::Time &_time)`
     + Replacement: `void BaseScene::SetTime(const std::chrono::steady_clock::duration &_time)`
     + Deprecated: `common::Time SimTime() const`

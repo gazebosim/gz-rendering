@@ -25,7 +25,7 @@
 #include "gz/rendering/ogre/OgreRenderTypes.hh"
 #include "gz/rendering/ogre/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

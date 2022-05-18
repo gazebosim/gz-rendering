@@ -26,7 +26,7 @@
 #include "gz/rendering/optix/OptixMesh.hh"
 #include "gz/rendering/optix/OptixIncludes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

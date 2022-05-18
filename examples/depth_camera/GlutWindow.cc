@@ -58,7 +58,7 @@ unsigned int imgh = 0;
 
 ir::CameraPtr g_camera;
 ir::ImagePtr g_image;
-ignition::common::ConnectionPtr g_connection;
+gz::common::ConnectionPtr g_connection;
 
 bool g_initContext = false;
 
@@ -181,7 +181,7 @@ void handleMouse()
   if (g_mouse.motionDirty)
   {
     g_mouse.motionDirty = false;
-    auto drag = ignition::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
+    auto drag = gz::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
 
     // left mouse button pan
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)

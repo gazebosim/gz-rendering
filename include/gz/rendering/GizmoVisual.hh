@@ -23,7 +23,7 @@
 #include "gz/rendering/Export.hh"
 #include "gz/rendering/TransformType.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

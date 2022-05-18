@@ -27,7 +27,7 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class JointVisualTest : public testing::Test,
@@ -109,7 +109,7 @@ TEST_P(JointVisualTest, JointVisual)
 
 INSTANTIATE_TEST_CASE_P(Visual, JointVisualTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

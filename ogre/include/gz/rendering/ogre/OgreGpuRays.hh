@@ -41,7 +41,7 @@
   #include <Winsock2.h>
 #endif
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

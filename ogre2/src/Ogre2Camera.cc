@@ -33,11 +33,11 @@
 #endif
 
 /// \brief Private data for the Ogre2Camera class
-class ignition::rendering::Ogre2CameraPrivate
+class gz::rendering::Ogre2CameraPrivate
 {
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -255,7 +255,7 @@ Ogre2SelectionBuffer *Ogre2Camera::SelectionBuffer() const
 }
 
 //////////////////////////////////////////////////
-VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
+VisualPtr Ogre2Camera::VisualAt(const gz::math::Vector2i &_mousePos)
 {
   VisualPtr result;
 
@@ -275,7 +275,7 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
   }
 
   float ratio = screenScalingFactor();
-  ignition::math::Vector2i mousePos(
+  gz::math::Vector2i mousePos(
       static_cast<int>(std::rint(ratio * _mousePos.X())),
       static_cast<int>(std::rint(ratio * _mousePos.Y())));
   Ogre::Item *ogreItem = this->selectionBuffer->OnSelectionClick(

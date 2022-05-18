@@ -27,7 +27,7 @@
 
 #include "Ogre2ParticleNoiseListener.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -87,7 +87,7 @@ void Ogre2ParticleNoiseListener::cameraPreRenderScene(
       psParams->setNamedConstant("particleStddev",
           static_cast<float>(particleStddev));
       psParams->setNamedConstant("rnd",
-          static_cast<float>(ignition::math::Rand::DblUniform(0.0, 1.0)));
+          static_cast<float>(gz::math::Rand::DblUniform(0.0, 1.0)));
 
       // get particle scatter ratio value from particle emitter user data
       // and pass that to the shaders

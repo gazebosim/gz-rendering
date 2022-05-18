@@ -22,7 +22,7 @@
 #include <gz/rendering.hh>
 #include "TestTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

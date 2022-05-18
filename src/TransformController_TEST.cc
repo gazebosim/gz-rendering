@@ -27,7 +27,7 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/TransformController.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class TransformControllerTest : public testing::Test,
@@ -369,7 +369,7 @@ TEST_P(TransformControllerTest, Control2d)
 
 INSTANTIATE_TEST_CASE_P(TransformController, TransformControllerTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

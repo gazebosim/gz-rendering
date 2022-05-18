@@ -26,7 +26,7 @@
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -76,12 +76,12 @@ namespace ignition
       /// \param[in] _axis Axis vector.
       /// \param[in] _useParentFrame True if axis vector is expressed in
       /// parent frame.
-      public: virtual void SetAxis(const ignition::math::Vector3d &_axis,
+      public: virtual void SetAxis(const gz::math::Vector3d &_axis,
           bool _useParentFrame = false) = 0;
 
       /// \brief Get axis vector.
       /// \return The axis vector.
-      public: virtual ignition::math::Vector3d Axis() const = 0;
+      public: virtual gz::math::Vector3d Axis() const = 0;
 
       /// \brief Create a parent axis for hinge2 and universal joint types
       /// and attach it to the joint visual.
@@ -90,20 +90,20 @@ namespace ignition
       /// \param[in] _useParentFrame True if axis vector is expressed in
       /// parent frame.
       public: virtual void SetParentAxis(
-          const ignition::math::Vector3d &_axis,
+          const gz::math::Vector3d &_axis,
           const std::string &_parentName,
           bool _useParentFrame = false) = 0;
 
       /// \brief Get parent axis vector.
       /// \return The parent axis vector.
-      public: virtual ignition::math::Vector3d ParentAxis() const = 0;
+      public: virtual gz::math::Vector3d ParentAxis() const = 0;
 
       /// \brief Update an axis' arrow visual.
       /// \param[in] _axis Axis vector.
       /// \param[in] _useParentFrame True if axis vector is expressed in
       /// parent frame.
       /// \return True if axis was updated else false.
-      public: virtual bool UpdateAxis(const ignition::math::Vector3d &_axis,
+      public: virtual bool UpdateAxis(const gz::math::Vector3d &_axis,
           bool _useParentFrame = false) = 0;
 
       /// \brief Update the parent axis' arrow visual if it exists.
@@ -112,7 +112,7 @@ namespace ignition
       /// parent frame.
       /// \return True if parent axis was updated else false.
       public: virtual bool UpdateParentAxis(
-          const ignition::math::Vector3d &_axis,
+          const gz::math::Vector3d &_axis,
           bool _useParentFrame = false) = 0;
 
       /// \brief Set type for joint visual.

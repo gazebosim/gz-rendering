@@ -24,7 +24,7 @@
 #include "ignition/rendering/Marker.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 using namespace std::chrono_literals;
 
@@ -126,7 +126,7 @@ TEST_P(MarkerTest, Marker)
 
 INSTANTIATE_TEST_CASE_P(Marker, MarkerTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

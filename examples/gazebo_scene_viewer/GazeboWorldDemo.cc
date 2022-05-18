@@ -37,12 +37,12 @@
 #include "CameraWindow.hh"
 #include "SceneManager.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 void Connect()
 {
-  ignition::common::Console::SetVerbosity(4);
+  gz::common::Console::SetVerbosity(4);
   gazebo::transport::init();
   gazebo::transport::run();
 

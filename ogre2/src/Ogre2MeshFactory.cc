@@ -56,7 +56,7 @@
 #endif
 
 /// \brief Private data for the Ogre2MeshFactory class
-class ignition::rendering::Ogre2MeshFactoryPrivate
+class gz::rendering::Ogre2MeshFactoryPrivate
 {
   /// \brief Vector with the template materials, we keep the pointer to be
   /// able to remove it when nobody is using it.
@@ -64,11 +64,11 @@ class ignition::rendering::Ogre2MeshFactoryPrivate
 };
 
 /// \brief Private data for the Ogre2SubMeshStoreFactory class
-class ignition::rendering::Ogre2SubMeshStoreFactoryPrivate
+class gz::rendering::Ogre2SubMeshStoreFactoryPrivate
 {
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

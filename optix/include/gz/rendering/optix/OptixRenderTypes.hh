@@ -19,7 +19,7 @@
 
 #include "gz/rendering/base/BaseRenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

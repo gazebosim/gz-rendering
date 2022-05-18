@@ -20,7 +20,7 @@
 #include <string>
 #include "gz/rendering/optix/OptixGeometry.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

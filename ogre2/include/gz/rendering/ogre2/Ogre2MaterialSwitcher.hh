@@ -38,7 +38,7 @@
   #pragma warning(pop)
 #endif
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -60,7 +60,7 @@ namespace ignition
       /// \brief Get the entity with a specific color
       /// \param[in] _color The entity's color.
       public: std::string EntityName(
-              const ignition::math::Color &_color) const;
+              const gz::math::Color &_color) const;
 
       /// \brief Reset the color value incrementor
       public: void Reset();
@@ -77,7 +77,7 @@ namespace ignition
       public: virtual void cameraPostRenderScene(Ogre::Camera *_cam) override;
 
       /// \brief Current unique color value
-      private: ignition::math::Color currentColor;
+      private: gz::math::Color currentColor;
 
       /// \brief Color dictionary that maps the unique color value to
       /// renderable name

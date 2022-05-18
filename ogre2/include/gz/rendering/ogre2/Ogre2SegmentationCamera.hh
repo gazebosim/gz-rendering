@@ -35,7 +35,7 @@
 #include "gz/rendering/ogre2/Ogre2ObjectInterface.hh"
 #include "gz/rendering/ogre2/Ogre2Sensor.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -69,7 +69,7 @@ namespace ignition
       public: virtual void PostRender() override;
 
       // Documentation inherited
-      public: virtual ignition::common::ConnectionPtr
+      public: virtual gz::common::ConnectionPtr
         ConnectNewSegmentationFrame(
         std::function<void(const uint8_t *, unsigned int, unsigned int,
         unsigned int, const std::string &)>  _subscriber) override;

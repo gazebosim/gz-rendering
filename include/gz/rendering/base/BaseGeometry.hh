@@ -24,7 +24,7 @@
 #include "gz/rendering/Geometry.hh"
 #include "gz/rendering/Scene.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

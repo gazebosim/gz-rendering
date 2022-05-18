@@ -29,7 +29,7 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class SkyTest: public testing::Test,
@@ -38,7 +38,7 @@ class SkyTest: public testing::Test,
   // Documentation inherited
   public: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    gz::common::Console::SetVerbosity(4);
   }
 
   // Test and verify sky is created
@@ -152,7 +152,7 @@ TEST_P(SkyTest, Sky)
 
 INSTANTIATE_TEST_CASE_P(Sky, SkyTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

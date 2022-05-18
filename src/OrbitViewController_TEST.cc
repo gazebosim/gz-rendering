@@ -26,7 +26,7 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class OrbitViewControllerTest : public testing::Test,
@@ -237,7 +237,7 @@ TEST_P(OrbitViewControllerTest, Control)
 
 INSTANTIATE_TEST_CASE_P(OrbitViewController, OrbitViewControllerTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

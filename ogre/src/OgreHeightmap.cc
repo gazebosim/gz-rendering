@@ -310,7 +310,7 @@ class DummyPageProvider : public Ogre::PageProvider
 };
 
 //////////////////////////////////////////////////
-class ignition::rendering::OgreHeightmapPrivate
+class gz::rendering::OgreHeightmapPrivate
 {
   /// \brief Global options - in some Ogre versions, this is enforced as a
   /// singleton.
@@ -409,9 +409,9 @@ class ignition::rendering::OgreHeightmapPrivate
 };
 
 Ogre::TerrainGlobalOptions
-    *ignition::rendering::OgreHeightmapPrivate::terrainGlobals = nullptr;
+    *gz::rendering::OgreHeightmapPrivate::terrainGlobals = nullptr;
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -419,7 +419,7 @@ OgreHeightmap::OgreHeightmap(const HeightmapDescriptor &_desc)
     : BaseHeightmap(_desc), dataPtr(std::make_unique<OgreHeightmapPrivate>())
 {
   std::string home;
-  ignition::common::env(IGN_HOMEDIR, home);
+  gz::common::env(IGN_HOMEDIR, home);
 
   this->dataPtr->pagingDir =
       common::joinPaths(home, ".ignition", "rendering",

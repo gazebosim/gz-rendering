@@ -37,7 +37,7 @@ namespace Ogre
   class Root;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

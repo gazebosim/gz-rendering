@@ -47,7 +47,7 @@
   #pragma warning(pop)
 #endif
 
-class ignition::rendering::Ogre2LidarVisualPrivate
+class gz::rendering::Ogre2LidarVisualPrivate
 {
   /// \brief Non Hitting DynamicLines Object to display
   public: std::vector<std::shared_ptr<Ogre2DynamicRenderable>> noHitRayStrips;
@@ -85,7 +85,7 @@ class ignition::rendering::Ogre2LidarVisualPrivate
   public: Ogre::MaterialPtr pointsMat;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -313,7 +313,7 @@ void Ogre2LidarVisual::Update()
           this->ogreNode->attachObject(renderable->OgreObject());
           this->dataPtr->deadZoneRayFans.push_back(renderable);
           this->dataPtr->deadZoneRayFans[j]->AddPoint(
-                      ignition::math::Vector3d::Zero);
+                      gz::math::Vector3d::Zero);
 
           renderable = std::shared_ptr<Ogre2DynamicRenderable>(
                                   new Ogre2DynamicRenderable(this->Scene()));
@@ -365,28 +365,28 @@ void Ogre2LidarVisual::Update()
       double r = this->dataPtr->lidarPoints[ j * this->horizontalCount + i];
 
       bool inf = (std::isinf(r) || r >= this->maxRange);
-      ignition::math::Quaterniond ray(
-        ignition::math::Vector3d(0.0, -verticalAngle, horizontalAngle));
+      gz::math::Quaterniond ray(
+        gz::math::Vector3d(0.0, -verticalAngle, horizontalAngle));
 
-      ignition::math::Vector3d axis = this->offset.Rot() * ray *
-        ignition::math::Vector3d(1.0, 0.0, 0.0);
+      gz::math::Vector3d axis = this->offset.Rot() * ray *
+        gz::math::Vector3d(1.0, 0.0, 0.0);
 
       // Check for infinite range, which indicates the ray did not
       // intersect an object.
       double hitRange = inf ? 0 : r;
 
       // Compute the start point of the ray
-      ignition::math::Vector3d startPt =
+      gz::math::Vector3d startPt =
                   (axis * this->minRange) + this->offset.Pos();
 
       // Compute the end point of the ray
-      ignition::math::Vector3d pt =
+      gz::math::Vector3d pt =
                   (axis * hitRange) + this->offset.Pos();
 
       double noHitRange = inf ? this->maxRange : hitRange;
 
       // Compute the end point of the no-hit ray
-      ignition::math::Vector3d noHitPt =
+      gz::math::Vector3d noHitPt =
                   (axis * noHitRange) + this->offset.Pos();
 
       // Update the lines and strips that represent each simulated ray.

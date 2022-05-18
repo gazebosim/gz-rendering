@@ -37,7 +37,7 @@
   #pragma warning(disable:4275)
 #endif
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

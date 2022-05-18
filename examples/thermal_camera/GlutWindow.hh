@@ -20,7 +20,7 @@
 #include <vector>
 #include "gz/rendering/RenderTypes.hh"
 
-namespace ir = ignition::rendering;
+namespace ir = gz::rendering;
 
 /// \brief Run the demo and render the scene from the cameras
 /// \param[in] _cameras Cameras in the scene

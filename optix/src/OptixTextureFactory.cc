@@ -21,7 +21,7 @@
 #include "ignition/rendering/optix/OptixTextureFactory.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 // TODO: clone texture sampler, reuse texture buffers

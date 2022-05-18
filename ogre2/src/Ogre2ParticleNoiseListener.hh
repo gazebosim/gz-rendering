@@ -17,7 +17,7 @@
 #ifndef GZ_RENDERING_OGRE2_OGRE2PARTICLENOISELISTENER_HH_
 #define GZ_RENDERING_OGRE2_OGRE2PARTICLENOISELISTENER_HH_
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

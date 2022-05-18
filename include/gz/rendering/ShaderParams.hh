@@ -25,7 +25,7 @@
 #include "gz/rendering/Export.hh"
 #include "gz/rendering/ShaderParam.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

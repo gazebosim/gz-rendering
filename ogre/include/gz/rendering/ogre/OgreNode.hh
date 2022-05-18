@@ -28,7 +28,7 @@ namespace Ogre
   class SceneNode;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

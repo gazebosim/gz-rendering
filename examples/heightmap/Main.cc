@@ -36,7 +36,7 @@
 #include "example_config.hh"
 #include "GlutWindow.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 const std::string RESOURCE_PATH =

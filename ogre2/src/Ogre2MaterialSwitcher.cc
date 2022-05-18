@@ -39,13 +39,13 @@
   #pragma warning(pop)
 #endif
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 /////////////////////////////////////////////////
 Ogre2MaterialSwitcher::Ogre2MaterialSwitcher(Ogre2ScenePtr _scene)
 {
-  this->currentColor = ignition::math::Color(0.0, 0.0, 0.1);
+  this->currentColor = gz::math::Color(0.0, 0.0, 0.1);
   this->scene = _scene;
 }
 
@@ -239,7 +239,7 @@ void Ogre2MaterialSwitcher::cameraPostRenderScene(
 
 /////////////////////////////////////////////////
 std::string Ogre2MaterialSwitcher::EntityName(
-    const ignition::math::Color &_color) const
+    const gz::math::Color &_color) const
 {
   auto iter = this->colorDict.find(_color.AsRGBA());
 
@@ -260,7 +260,7 @@ void Ogre2MaterialSwitcher::NextColor()
 /////////////////////////////////////////////////
 void Ogre2MaterialSwitcher::Reset()
 {
-  this->currentColor = ignition::math::Color(
+  this->currentColor = gz::math::Color(
       0.0, 0.0, 0.0);
   this->colorDict.clear();
 }

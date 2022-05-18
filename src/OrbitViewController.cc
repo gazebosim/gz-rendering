@@ -21,7 +21,7 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/Visual.hh"
 
-class ignition::rendering::OrbitViewControllerPrivate
+class gz::rendering::OrbitViewControllerPrivate
 {
   /// \brief Pointer to camera
   public: CameraPtr camera;
@@ -38,7 +38,7 @@ class ignition::rendering::OrbitViewControllerPrivate
   public: double NormalizePitch(double _pitch);
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 static const float PITCH_LIMIT_LOW = -static_cast<float>(IGN_PI)*0.5f + 0.001f;
@@ -128,7 +128,7 @@ void OrbitViewController::Pan(const math::Vector2d &_value)
   double vfov = 2.0f * atan(tan(hfov / 2.0f) /
         this->dataPtr->camera->AspectRatio());
 
-  ignition::math::Vector3d translation;
+  gz::math::Vector3d translation;
 
   double factor = 2.0;
 

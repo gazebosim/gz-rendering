@@ -35,7 +35,7 @@
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 
-class ignition::rendering::OgreRTShaderSystemPrivate
+class gz::rendering::OgreRTShaderSystemPrivate
 {
   /// \brief The shader generator.
   public: Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
@@ -75,7 +75,7 @@ class ignition::rendering::OgreRTShaderSystemPrivate
   public: std::thread::id threadId;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -716,7 +716,7 @@ void OgreRTShaderSystem::Update()
 bool OgreRTShaderSystem::SetShadowTextureSize(const unsigned int _size)
 {
   // check if texture size is a power of 2
-  if (!ignition::math::isPowerOfTwo(_size))
+  if (!gz::math::isPowerOfTwo(_size))
   {
     ignerr << "Shadow texture size must be a power of 2" << std::endl;
     return false;

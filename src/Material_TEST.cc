@@ -30,7 +30,7 @@
 #include "ignition/rendering/ShaderType.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class MaterialTest : public testing::Test,
@@ -39,7 +39,7 @@ class MaterialTest : public testing::Test,
   // Documentation inherited
   public: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    gz::common::Console::SetVerbosity(4);
   }
 
   /// \brief Test material basic API
@@ -510,7 +510,7 @@ TEST_P(MaterialTest, Copy)
 
 INSTANTIATE_TEST_CASE_P(Material, MaterialTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

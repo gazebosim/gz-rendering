@@ -23,11 +23,11 @@
 #include "ignition/rendering/ogre/OgreStorage.hh"
 #include "ignition/rendering/Utils.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 /// \brief Private data for the Ogre2Visual class
-class ignition::rendering::OgreVisualPrivate
+class gz::rendering::OgreVisualPrivate
 {
   /// \brief True if wireframe mode is enabled
   public: bool wireframe;
@@ -196,31 +196,31 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
 }
 
 //////////////////////////////////////////////////
-ignition::math::AxisAlignedBox OgreVisual::LocalBoundingBox() const
+gz::math::AxisAlignedBox OgreVisual::LocalBoundingBox() const
 {
-  ignition::math::AxisAlignedBox box;
+  gz::math::AxisAlignedBox box;
   this->BoundsHelper(box, true /* local frame */);
   return box;
 }
 
 //////////////////////////////////////////////////
-ignition::math::AxisAlignedBox OgreVisual::BoundingBox() const
+gz::math::AxisAlignedBox OgreVisual::BoundingBox() const
 {
-  ignition::math::AxisAlignedBox box;
+  gz::math::AxisAlignedBox box;
   this->BoundsHelper(box, false /* world frame */);
   return box;
 }
 
 //////////////////////////////////////////////////
-void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
+void OgreVisual::BoundsHelper(gz::math::AxisAlignedBox &_box,
     bool _local) const
 {
   this->BoundsHelper(_box, _local, this->WorldPose());
 }
 
 //////////////////////////////////////////////////
-void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
-    bool _local, const ignition::math::Pose3d &_pose) const
+void OgreVisual::BoundsHelper(gz::math::AxisAlignedBox &_box,
+    bool _local, const gz::math::Pose3d &_pose) const
 {
   if (!this->ogreNode)
     return;
@@ -228,7 +228,7 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
   this->ogreNode->_updateBounds();
   this->ogreNode->_update(false, true);
 
-  ignition::math::Vector3d scale = this->WorldScale();
+  gz::math::Vector3d scale = this->WorldScale();
 
   for (int i = 0; i < this->ogreNode->numAttachedObjects(); i++)
   {
@@ -238,15 +238,15 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
     {
       Ogre::AxisAlignedBox bb = obj->getBoundingBox();
 
-      ignition::math::Vector3d min(0, 0, 0);
-      ignition::math::Vector3d max(0, 0, 0);
-      ignition::math::AxisAlignedBox box(min, max);
+      gz::math::Vector3d min(0, 0, 0);
+      gz::math::Vector3d max(0, 0, 0);
+      gz::math::AxisAlignedBox box(min, max);
 
       // Ogre does not return a valid bounding box for lights.
       if (obj->getMovableType() == Ogre::LightFactory::FACTORY_TYPE_NAME)
       {
-        box.Min() = ignition::math::Vector3d(-0.5, -0.5, -0.5);
-        box.Max()  = ignition::math::Vector3d(0.5, 0.5, 0.5);
+        box.Min() = gz::math::Vector3d(-0.5, -0.5, -0.5);
+        box.Max()  = gz::math::Vector3d(0.5, 0.5, 0.5);
       }
       else
       {
@@ -254,22 +254,22 @@ void OgreVisual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
         Ogre::Vector3 ogreMax = bb.getMaximum();
 
         // Get ogre bounding boxes and size to object's scale
-        min = scale * ignition::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
-        max = scale * ignition::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
+        min = scale * gz::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
+        max = scale * gz::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
         box.Min() = min,
         box.Max() = max;
 
         // Assume world transform
-        ignition::math::Pose3d transform = _pose;
+        gz::math::Pose3d transform = _pose;
 
         // If local frame, calculate transform matrix and set
         if (_local)
         {
-          ignition::math::Pose3d worldPose = this->WorldPose();
-          ignition::math::Vector3d parentPos = _pose.Pos();
-          ignition::math::Quaternion parentRotInv = _pose.Rot().Inverse();
-          ignition::math::Pose3d localTransform =
-            ignition::math::Pose3d(
+          gz::math::Pose3d worldPose = this->WorldPose();
+          gz::math::Vector3d parentPos = _pose.Pos();
+          gz::math::Quaternion parentRotInv = _pose.Rot().Inverse();
+          gz::math::Pose3d localTransform =
+            gz::math::Pose3d(
                 (parentRotInv * (worldPose.Pos() - parentPos)),
                 (parentRotInv * worldPose.Rot()));
           transform = localTransform;

@@ -24,7 +24,7 @@
 #include "gz/rendering/optix/OptixObject.hh"
 #include "gz/rendering/optix/OptixRenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

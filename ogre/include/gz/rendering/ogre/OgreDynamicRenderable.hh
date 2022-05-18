@@ -23,7 +23,7 @@
 #include "gz/rendering/ogre/OgreRenderTypes.hh"
 #include "gz/rendering/Marker.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

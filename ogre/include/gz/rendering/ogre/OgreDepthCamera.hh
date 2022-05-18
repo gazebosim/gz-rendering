@@ -50,7 +50,7 @@ namespace Ogre
   class Viewport;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -89,14 +89,14 @@ namespace ignition
       /// \brief Connect a to the new depth image signal
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr ConnectNewDepthFrame(
+      public: virtual gz::common::ConnectionPtr ConnectNewDepthFrame(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
 
       /// \brief Connect a to the new rgb point cloud signal
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr ConnectNewRgbPointCloud(
+      public: virtual gz::common::ConnectionPtr ConnectNewRgbPointCloud(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
 

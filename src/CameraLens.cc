@@ -27,7 +27,7 @@
 #include "ignition/rendering/CameraLens.hh"
 
 /// \brief Private fields of camera lens
-class ignition::rendering::CameraLens::Implementation
+class gz::rendering::CameraLens::Implementation
 {
   /// \brief Linear scale factor
   public: double c1 = 1.0;
@@ -89,7 +89,7 @@ class ignition::rendering::CameraLens::Implementation
               throw std::invalid_argument("Unknown angle function");
             }
 
-            /// \brief Cast to ignition::math::Vector3d,
+            /// \brief Cast to gz::math::Vector3d,
             ///   this vector is passed to shader to avoid branching
             /// \return Vector3 Vector whose one component is 1
             ///   and the rest are nulls
@@ -137,7 +137,7 @@ class ignition::rendering::CameraLens::Implementation
   public: MapFunctionEnum fun = MapFunctionEnum(AFT_IDENTITY);
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

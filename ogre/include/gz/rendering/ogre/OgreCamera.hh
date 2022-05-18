@@ -30,7 +30,7 @@ namespace Ogre
   class Camera;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -103,7 +103,7 @@ namespace ignition
       public: double FarClip() const;
 
       // Documentation inherited
-      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+      public: virtual VisualPtr VisualAt(const gz::math::Vector2i
                   &_mousePos) override;
 
       // Documentation Inherited.

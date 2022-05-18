@@ -20,7 +20,7 @@
 #include "gz/rendering/base/BaseJointVisual.hh"
 #include "gz/rendering/ogre/OgreVisual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -16,7 +16,7 @@
  */
 #include "ignition/rendering/optix/OptixCone.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

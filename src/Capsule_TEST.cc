@@ -27,7 +27,7 @@
 #include "ignition/rendering/Capsule.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class CapsuleTest : public testing::Test,
@@ -117,7 +117,7 @@ TEST_P(CapsuleTest, Capsule)
 
 INSTANTIATE_TEST_CASE_P(Capsule, CapsuleTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

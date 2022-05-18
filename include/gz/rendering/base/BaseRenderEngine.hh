@@ -24,7 +24,7 @@
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/Storage.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

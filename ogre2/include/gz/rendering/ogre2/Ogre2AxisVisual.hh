@@ -20,7 +20,7 @@
 #include "gz/rendering/base/BaseAxisVisual.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -26,7 +26,7 @@
   #pragma warning(pop)
 #endif
 
-using namespace ignition::rendering;
+using namespace gz::rendering;
 
 
 //////////////////////////////////////////////////

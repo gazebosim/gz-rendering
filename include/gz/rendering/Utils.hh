@@ -31,7 +31,7 @@
 #include "gz/rendering/RayQuery.hh"
 
 
-namespace ignition
+namespace gz
 {
   /// \brief Rendering classes and function useful in robot applications.
   namespace rendering
@@ -94,9 +94,9 @@ namespace ignition
     /// \return Vertices of the transformed bounding box in
     /// world coordinates.
     IGNITION_RENDERING_VISIBLE
-    ignition::math::AxisAlignedBox transformAxisAlignedBox(
-        const ignition::math::AxisAlignedBox &_box,
-        const ignition::math::Pose3d &_pose);
+    gz::math::AxisAlignedBox transformAxisAlignedBox(
+        const gz::math::AxisAlignedBox &_box,
+        const gz::math::Pose3d &_pose);
     }
   }
 }

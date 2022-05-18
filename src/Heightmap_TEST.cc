@@ -27,7 +27,7 @@
 #include "ignition/rendering/Heightmap.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class HeightmapTest : public testing::Test,
@@ -174,8 +174,8 @@ TEST_P(HeightmapTest, MoveConstructor)
   descriptor.SetSampling(123u);
 
   HeightmapDescriptor descriptor2(std::move(descriptor));
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
   EXPECT_TRUE(descriptor2.UseTerrainPaging());
   EXPECT_EQ(123u, descriptor2.Sampling());
 
@@ -208,8 +208,8 @@ TEST_P(HeightmapTest, CopyConstructor)
   descriptor.SetSampling(123u);
 
   HeightmapDescriptor descriptor2(descriptor);
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
   EXPECT_TRUE(descriptor2.UseTerrainPaging());
   EXPECT_EQ(123u, descriptor2.Sampling());
 
@@ -243,8 +243,8 @@ TEST_P(HeightmapTest, CopyAssignmentOperator)
 
   HeightmapDescriptor descriptor2;
   descriptor2 = descriptor;
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
   EXPECT_TRUE(descriptor2.UseTerrainPaging());
   EXPECT_EQ(123u, descriptor2.Sampling());
 
@@ -280,8 +280,8 @@ TEST_P(HeightmapTest, MoveAssignmentOperator)
 
   HeightmapDescriptor descriptor2;
   descriptor2 = std::move(descriptor);
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
   EXPECT_TRUE(descriptor2.UseTerrainPaging());
   EXPECT_EQ(123u, descriptor2.Sampling());
 
@@ -355,7 +355,7 @@ TEST_P(HeightmapTest, CopyAssignmentAfterMove)
 // https://github.com/ignitionrobotics/ign-rendering/issues/187
 INSTANTIATE_TEST_CASE_P(Heightmap, HeightmapTest,
     ::testing::ValuesIn({"ogre"}),
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 /////////////////////////////////////////////////
 int main(int argc, char **argv)

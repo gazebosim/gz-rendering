@@ -20,7 +20,7 @@
 #include "gz/rendering/base/BaseAxisVisual.hh"
 #include "gz/rendering/optix/OptixVisual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -61,12 +61,12 @@ namespace Ogre
   class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsPbs final
     : public HlmsPbs,
       public HlmsListener,
-      public ignition::rendering::Ogre2GzHlmsShared
+      public gz::rendering::Ogre2GzHlmsShared
   {
     /// \brief Constructor. Asks for modular listeners so we can add
     /// them in the proper order
     public: Ogre2GzHlmsPbs(Archive *dataFolder, ArchiveVec *libraryFolders,
-                            ignition::rendering::
+                            gz::rendering::
                             Ogre2GzHlmsSphericalClipMinDistance
                             *_sphericalClipMinDistance,
                             Ogre::HlmsPbsTerraShadows *terraShadows);

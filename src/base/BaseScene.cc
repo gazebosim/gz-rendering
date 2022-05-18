@@ -48,7 +48,7 @@
 #include "ignition/rendering/base/BaseStorage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -57,7 +57,7 @@ BaseScene::BaseScene(unsigned int _id, const std::string &_name) :
   name(_name),
   loaded(false),
   initialized(false),
-  nextObjectId(ignition::math::MAX_UI16),
+  nextObjectId(gz::math::MAX_UI16),
   nodes(nullptr)
 {
 }
@@ -137,7 +137,7 @@ void BaseScene::SetTime(const std::chrono::steady_clock::duration &_time)
 
 //////////////////////////////////////////////////
 VisualPtr BaseScene::VisualAt(const CameraPtr &_camera,
-                              const ignition::math::Vector2i &_mousePos)
+                              const gz::math::Vector2i &_mousePos)
 {
   VisualPtr visual;
   RayQueryPtr rayQuery = this->CreateRayQuery();
@@ -1418,7 +1418,7 @@ void BaseScene::Clear()
 {
   this->nodes->DestroyAll();
   this->DestroyMaterials();
-  this->nextObjectId = ignition::math::MAX_UI16;
+  this->nextObjectId = gz::math::MAX_UI16;
 }
 
 //////////////////////////////////////////////////

@@ -30,7 +30,7 @@
 #include "gz/rendering/GizmoVisual.hh"
 #include "gz/rendering/TransformType.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -134,8 +134,8 @@ namespace ignition
       /// \param[in] _sensitivity Sensitivity of point snapping, in terms of a
       /// percentage of the interval.
       /// \return Snapped 3D point.
-      public: static ignition::math::Vector3d SnapPoint(
-          const ignition::math::Vector3d &_point, const double _interval = 1.0,
+      public: static gz::math::Vector3d SnapPoint(
+          const gz::math::Vector3d &_point, const double _interval = 1.0,
           const double _sensitivity = 0.4);
 
       /// \brief Start the transform process. To be used with helper functions

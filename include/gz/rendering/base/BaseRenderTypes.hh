@@ -21,7 +21,7 @@
 
 #include "gz/rendering/RenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

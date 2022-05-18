@@ -32,7 +32,7 @@
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/base/BaseRenderTarget.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -105,7 +105,7 @@ namespace ignition
       public: virtual RenderWindowPtr CreateRenderWindow() override;
 
       // Documentation inherited.
-      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+      public: virtual VisualPtr VisualAt(const gz::math::Vector2i
                   &_mousePos) override;
 
       // Documentation inherited.
@@ -631,7 +631,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    VisualPtr BaseCamera<T>::VisualAt(const ignition::math::Vector2i
+    VisualPtr BaseCamera<T>::VisualAt(const gz::math::Vector2i
         &/*_mousePos*/)
     {
       ignerr << "VisualAt not implemented for the render engine" << std::endl;

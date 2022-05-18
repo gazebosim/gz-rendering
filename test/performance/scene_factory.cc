@@ -30,7 +30,7 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 
@@ -192,7 +192,7 @@ TEST_P(SceneFactoryTest, VisualMemoryLeak)
 
 INSTANTIATE_TEST_CASE_P(SceneFactory, SceneFactoryTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -21,7 +21,7 @@
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreDynamicLines.hh"
 
-class ignition::rendering::OgreWireBoxPrivate
+class gz::rendering::OgreWireBoxPrivate
 {
   /// \brief WireBox materal
   public: OgreMaterialPtr material;
@@ -30,7 +30,7 @@ class ignition::rendering::OgreWireBoxPrivate
   public: Ogre::ManualObject *manualObject = nullptr;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -93,8 +93,8 @@ void OgreWireBox::Create()
   this->dataPtr->manualObject->begin(materialName,
       Ogre::RenderOperation::OT_LINE_LIST);
 
-  ignition::math::Vector3d max = this->box.Max();
-  ignition::math::Vector3d min = this->box.Min();
+  gz::math::Vector3d max = this->box.Max();
+  gz::math::Vector3d min = this->box.Min();
 
   // line 0
   this->dataPtr->manualObject->position(min.X(), min.Y(), min.Z());

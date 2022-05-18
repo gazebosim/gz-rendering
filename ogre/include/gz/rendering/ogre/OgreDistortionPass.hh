@@ -28,7 +28,7 @@
 #include "gz/rendering/ogre/OgreRenderPass.hh"
 #include "gz/rendering/ogre/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -70,9 +70,9 @@ namespace ignition
       /// \param[in] _width Width of the image texture in pixels.
       /// \param[in] _f Focal length in pixels.
       /// \return Distorted coordinate.
-      public: static ignition::math::Vector2d Distort(
-                  const ignition::math::Vector2d &_in,
-                  const ignition::math::Vector2d &_center,
+      public: static gz::math::Vector2d Distort(
+                  const gz::math::Vector2d &_in,
+                  const gz::math::Vector2d &_center,
                   double _k1, double _k2, double _k3,
                   double _p1, double _p2,
                   unsigned int _width, double _f);
@@ -81,7 +81,7 @@ namespace ignition
       /// \param[in] _x X component of map.
       /// \param[in] _y Y component of map.
       /// \return the distortion map value at the specified index.
-      protected: ignition::math::Vector2d
+      protected: gz::math::Vector2d
         DistortionMapValueClamped(int _x, int _y) const;
 
       /// \brief calculate the correct scale factor to "zoom" the render,

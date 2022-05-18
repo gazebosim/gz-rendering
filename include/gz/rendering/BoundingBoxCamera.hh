@@ -27,7 +27,7 @@
 #include "gz/rendering/BoundingBox.hh"
 #include "gz/rendering/Camera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -65,7 +65,7 @@ namespace ignition
       /// \brief Connect to the new BoundingBox info
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr ConnectNewBoundingBoxes(
+      public: virtual gz::common::ConnectionPtr ConnectNewBoundingBoxes(
         std::function<void(const std::vector<BoundingBox> &)> _subscriber) = 0;
 
       /// \brief Set BoundingBox Type (Visible / Full)

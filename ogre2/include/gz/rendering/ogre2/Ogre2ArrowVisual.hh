@@ -20,7 +20,7 @@
 #include "gz/rendering/base/BaseArrowVisual.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

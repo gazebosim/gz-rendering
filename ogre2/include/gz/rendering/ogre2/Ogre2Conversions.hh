@@ -38,7 +38,7 @@
   #pragma warning(pop)
 #endif
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

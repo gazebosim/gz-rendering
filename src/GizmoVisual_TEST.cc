@@ -27,7 +27,7 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class GizmoVisualTest : public testing::Test,
@@ -210,7 +210,7 @@ TEST_P(GizmoVisualTest, Material)
 
 INSTANTIATE_TEST_CASE_P(Visual, GizmoVisualTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

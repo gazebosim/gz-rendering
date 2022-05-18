@@ -16,7 +16,7 @@
  */
 #include "ignition/rendering/optix/OptixBox.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

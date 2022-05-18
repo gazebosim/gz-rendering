@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2IGNHLMSCUSTOMIZATIONS_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2IGNHLMSCUSTOMIZATIONS_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2GZHLMSCUSTOMIZATIONS_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2GZHLMSCUSTOMIZATIONS_HH_
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Export.hh"
@@ -46,10 +46,10 @@ namespace ignition
     /// \internal
     /// \remark Public variables take effect immediately (i.e. for the
     /// next render)
-    class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2IgnHlmsSphericalClipMinDistance
+    class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsSphericalClipMinDistance
       final : public Ogre::HlmsListener
     {
-      public: virtual ~Ogre2IgnHlmsSphericalClipMinDistance() = default;
+      public: virtual ~Ogre2GzHlmsSphericalClipMinDistance() = default;
 
       /// \brief
       /// \return Returns true if spherical clipping customizations should
@@ -72,7 +72,7 @@ namespace ignition
       /// bigger to fit our data we need to send
       ///
       /// This data is sent in
-      /// Ogre2IgnHlmsSphericalClipMinDistance::preparePassBuffer
+      /// Ogre2GzHlmsSphericalClipMinDistance::preparePassBuffer
       /// \param _casterPass
       /// \param _hlms
       private: virtual Ogre::uint32 getPassBufferSize(
@@ -82,7 +82,7 @@ namespace ignition
 
       /// \brief Sends our custom data to GPU buffers that our
       /// pieces activated in
-      /// Ogre2IgnHlmsSphericalClipMinDistance::preparePassHash will need.
+      /// Ogre2GzHlmsSphericalClipMinDistance::preparePassHash will need.
       ///
       /// Bytes written must not exceed what we informed in getPassBufferSize
       /// \param _casterPass

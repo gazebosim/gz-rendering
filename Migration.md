@@ -10,8 +10,8 @@ release will remove the deprecated code.
 ### Deprecations
 
 1. **ogre2/include/ignition/rendering/ogre2/Ogre2RenderEngine.hh**
-    + Deprecated: `Ogre2IgnHlmsSphericalClipMinDistance &HlmsCustomizations()`
-    + Replacement: `Ogre2IgnHlmsSphericalClipMinDistance &SphericalClipMinDistance()`
+    + Deprecated: `Ogre2GzHlmsSphericalClipMinDistance &HlmsCustomizations()`
+    + Replacement: `Ogre2GzHlmsSphericalClipMinDistance &SphericalClipMinDistance()`
 
 ## Ignition Rendering 6.2.1 to 6.X
 

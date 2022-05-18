@@ -34,7 +34,7 @@
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
-#include "Ogre2IgnHlmsSphericalClipMinDistance.hh"
+#include "Ogre2GzHlmsSphericalClipMinDistance.hh"
 #include "Ogre2ParticleNoiseListener.hh"
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 
@@ -1409,7 +1409,7 @@ void Ogre2GpuRays::Render()
   // These customization can be used to implement multi-tiered
   // "near plane distances" as proposed in:
   // https://github.com/ignitionrobotics/ign-rendering/issues/395
-  Ogre2IgnHlmsSphericalClipMinDistance &hlmsCustomizations =
+  Ogre2GzHlmsSphericalClipMinDistance &hlmsCustomizations =
       engine->SphericalClipMinDistance();
 
   hlmsCustomizations.minDistanceClip =

@@ -14,19 +14,19 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2IGNHLMSUNLITPRIVATE_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2IGNHLMSUNLITPRIVATE_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2GZHLMSPBSPRIVATE_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2GZHLMSPBSPRIVATE_HH_
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 
-#include "Ogre2IgnHlmsSphericalClipMinDistance.hh"
-#include "Ogre2IgnHlmsSharedPrivate.hh"
+#include "Ogre2GzHlmsSphericalClipMinDistance.hh"
+#include "Ogre2GzHlmsSharedPrivate.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
-#include <Hlms/Unlit/OgreHlmsUnlit.h>
+#include <Hlms/Pbs/OgreHlmsPbs.h>
 #include <OgreHlmsListener.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
@@ -36,6 +36,8 @@
 
 namespace Ogre
 {
+  class HlmsPbsTerraShadows;
+
   /// \brief Controls custom shader snippets of Hlms:
   ///
   ///   - Toggles them on/off
@@ -44,7 +46,7 @@ namespace Ogre
   /// This listener requires Hlms to have been created with the piece data
   /// files in ogre2/src/media/Hlms/Ignition registered
   ///
-  /// We need to derive from HlmsUnlit/HlmsUnlit (rather than just using
+  /// We need to derive from HlmsPbs/HlmsUnlit (rather than just using
   /// HlmsListener) when we need to use code that sends data
   /// *per object*
   ///
@@ -56,26 +58,27 @@ namespace Ogre
   /// \internal
   /// \remark Public variables take effect immediately (i.e. for the
   /// next render)
-  class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2IgnHlmsUnlit final
-    : public HlmsUnlit,
+  class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsPbs final
+    : public HlmsPbs,
       public HlmsListener,
-      public ignition::rendering::Ogre2IgnHlmsShared
+      public ignition::rendering::Ogre2GzHlmsShared
   {
     /// \brief Constructor. Asks for modular listeners so we can add
     /// them in the proper order
-    public: Ogre2IgnHlmsUnlit(Archive *dataFolder, ArchiveVec *libraryFolders,
-                              ignition::rendering::
-                              Ogre2IgnHlmsSphericalClipMinDistance
-                              *_sphericalClipMinDistance);
+    public: Ogre2GzHlmsPbs(Archive *dataFolder, ArchiveVec *libraryFolders,
+                            ignition::rendering::
+                            Ogre2GzHlmsSphericalClipMinDistance
+                            *_sphericalClipMinDistance,
+                            Ogre::HlmsPbsTerraShadows *terraShadows);
 
     /// \brief Destructor. Virtual to silence warnings
-    public: virtual ~Ogre2IgnHlmsUnlit() override = default;
+    public: virtual ~Ogre2GzHlmsPbs() override = default;
 
     // Documentation inherited
-    public: using HlmsUnlit::preparePassHash;
+    public: using HlmsPbs::preparePassHash;
 
     /// \brief Override HlmsListener to add customizations.
-    /// We can't override HlmsUnlit because adding properties before
+    /// We can't override HlmsPbs because adding properties before
     /// calling it will be cleared. And adding it afterwards is too late.
     /// The listener gets called right in the middle
     ///
@@ -125,7 +128,7 @@ namespace Ogre
         const HlmsCache &_passCache, const HlmsPropertyVec &_properties,
         const QueuedRenderable &_queuedRenderable) override;
 
-    /// \brief Override to calculate which slots are used
+      /// \brief Override to calculate which slots are used
     public: virtual void notifyPropertiesMergedPreGenerationStep() override;
 
     /// \brief Override HlmsListener::hlmsTypeChanged so we can
@@ -133,7 +136,7 @@ namespace Ogre
     /// \param[in] _casterPass true if this is a caster pass
     /// \param[in] _commandBuffer command buffer so we can add commands
     /// \param[in] _datablock material of the object that caused
-    /// Ogre2IgnHlmsUnlit to be bound again
+    /// Ogre2GzHlmsPbs to be bound again
     public: virtual void hlmsTypeChanged(
         bool _casterPass,
         CommandBuffer *_commandBuffer,
@@ -160,7 +163,7 @@ namespace Ogre
     // Documentation inherited
     public: virtual void frameEnded() override;
 
-    //// \brief Same as HlmsUnlit::getDefaultPaths, but we also append
+    //// \brief Same as HlmsPbs::getDefaultPaths, but we also append
     /// our own paths with customizations
     /// \param[out] _outDataFolderPath Path (as a String) used for
     /// creating the "dataFolder" Archive the constructor will need

@@ -54,7 +54,7 @@ namespace ignition
     //
     // forward declaration
     class Ogre2RenderEnginePrivate;
-    class Ogre2IgnHlmsSphericalClipMinDistance;
+    class Ogre2GzHlmsSphericalClipMinDistance;
 
     /// \brief Plugin for loading ogre render engine
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderEnginePlugin :
@@ -180,12 +180,12 @@ namespace ignition
       public: std::vector<unsigned int> FSAALevels() const;
 
       /// \brief Deprecated. Use SphericalClipMinDistance instead
-      public: Ogre2IgnHlmsSphericalClipMinDistance IGN_DEPRECATED(7) &
+      public: Ogre2GzHlmsSphericalClipMinDistance IGN_DEPRECATED(7) &
           HlmsCustomizations();
 
       /// \brief Retrieves Hlms customizations for tweaking them
       /// \return Ogre HLMS customizations
-      public: Ogre2IgnHlmsSphericalClipMinDistance &SphericalClipMinDistance();
+      public: Ogre2GzHlmsSphericalClipMinDistance &SphericalClipMinDistance();
 
       /// \internal
       /// \brief Get a pointer to the Ogre overlay system.
@@ -194,7 +194,7 @@ namespace ignition
 
       /// \internal
       /// \brief Sets the current rendering mode. See IgnOgreRenderingMode
-      /// and see Ogre::IgnHlmsPbs
+      /// and see Ogre::GzHlmsPbs
       /// \param[in] renderingMode
       public: void SetIgnOgreRenderingMode(IgnOgreRenderingMode renderingMode);
 

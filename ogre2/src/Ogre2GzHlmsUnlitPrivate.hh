@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Open Source Robotics Foundation
+ * Copyright (C) 2021 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,22 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2IGNHLMSTERRAPRIVATE_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2IGNHLMSTERRAPRIVATE_HH_
+#ifndef IGNITION_RENDERING_OGRE2_OGRE2GZHLMSUNLITPRIVATE_HH_
+#define IGNITION_RENDERING_OGRE2_OGRE2GZHLMSUNLITPRIVATE_HH_
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 
-#include "Ogre2IgnHlmsSharedPrivate.hh"
-#include "Ogre2IgnHlmsSphericalClipMinDistance.hh"
-#include "Terra/Hlms/OgreHlmsTerra.h"
+#include "Ogre2GzHlmsSphericalClipMinDistance.hh"
+#include "Ogre2GzHlmsSharedPrivate.hh"
 
 #ifdef _MSC_VER
-#  pragma warning(push, 0)
+  #pragma warning(push, 0)
 #endif
+#include <Hlms/Unlit/OgreHlmsUnlit.h>
 #include <OgreHlmsListener.h>
 #ifdef _MSC_VER
-#  pragma warning(pop)
+  #pragma warning(pop)
 #endif
 
 #include <vector>
@@ -44,7 +44,7 @@ namespace Ogre
   /// This listener requires Hlms to have been created with the piece data
   /// files in ogre2/src/media/Hlms/Ignition registered
   ///
-  /// We need to derive from HlmsTerra (rather than just using
+  /// We need to derive from HlmsUnlit/HlmsUnlit (rather than just using
   /// HlmsListener) when we need to use code that sends data
   /// *per object*
   ///
@@ -56,26 +56,26 @@ namespace Ogre
   /// \internal
   /// \remark Public variables take effect immediately (i.e. for the
   /// next render)
-  class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2IgnHlmsTerra final
-    : public HlmsTerra,
+  class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsUnlit final
+    : public HlmsUnlit,
       public HlmsListener,
-      public ignition::rendering::Ogre2IgnHlmsShared
+      public ignition::rendering::Ogre2GzHlmsShared
   {
     /// \brief Constructor. Asks for modular listeners so we can add
     /// them in the proper order
-    public: Ogre2IgnHlmsTerra(Archive *dataFolder, ArchiveVec *libraryFolders,
+    public: Ogre2GzHlmsUnlit(Archive *dataFolder, ArchiveVec *libraryFolders,
                               ignition::rendering::
-                              Ogre2IgnHlmsSphericalClipMinDistance
+                              Ogre2GzHlmsSphericalClipMinDistance
                               *_sphericalClipMinDistance);
 
-      /// \brief Destructor. Virtual to silence warnings
-    public: virtual ~Ogre2IgnHlmsTerra() override = default;
+    /// \brief Destructor. Virtual to silence warnings
+    public: virtual ~Ogre2GzHlmsUnlit() override = default;
 
     // Documentation inherited
-    public: using HlmsTerra::preparePassHash;
+    public: using HlmsUnlit::preparePassHash;
 
     /// \brief Override HlmsListener to add customizations.
-    /// We can't override HlmsTerra because adding properties before
+    /// We can't override HlmsUnlit because adding properties before
     /// calling it will be cleared. And adding it afterwards is too late.
     /// The listener gets called right in the middle
     ///
@@ -114,10 +114,10 @@ namespace Ogre
     /// \param[in] _passBufferPtr see base class
     /// \return The pointer where Ogre should continue appending more data
     private: virtual float* preparePassBuffer(
-        const Ogre::CompositorShadowNode *_shadowNode,
-        bool _casterPass, bool _dualParaboloid,
-        Ogre::SceneManager *_sceneManager,
-        float *_passBufferPtr) override;
+          const Ogre::CompositorShadowNode *_shadowNode,
+          bool _casterPass, bool _dualParaboloid,
+          Ogre::SceneManager *_sceneManager,
+          float *_passBufferPtr) override;
 
     /// \brief See HlmsListener::shaderCacheEntryCreated
     public: virtual void shaderCacheEntryCreated(
@@ -133,7 +133,7 @@ namespace Ogre
     /// \param[in] _casterPass true if this is a caster pass
     /// \param[in] _commandBuffer command buffer so we can add commands
     /// \param[in] _datablock material of the object that caused
-    /// Ogre2IgnHlmsTerra to be bound again
+    /// Ogre2GzHlmsUnlit to be bound again
     public: virtual void hlmsTypeChanged(
         bool _casterPass,
         CommandBuffer *_commandBuffer,
@@ -141,17 +141,17 @@ namespace Ogre
 
     // Documentation inherited
     public: virtual uint32 fillBuffersForV1(
-        const HlmsCache *_cache,
-        const QueuedRenderable &_queuedRenderable,
-        bool _casterPass, uint32 _lastCacheHash,
-        CommandBuffer *_commandBuffer ) override;
+      const HlmsCache *_cache,
+      const QueuedRenderable &_queuedRenderable,
+      bool _casterPass, uint32 _lastCacheHash,
+      CommandBuffer *_commandBuffer ) override;
 
     // Documentation inherited
     public: virtual uint32 fillBuffersForV2(
-        const HlmsCache *_cache,
-        const QueuedRenderable &_queuedRenderable,
-        bool _casterPass, uint32 _lastCacheHash,
-        CommandBuffer *_commandBuffer ) override;
+      const HlmsCache *_cache,
+      const QueuedRenderable &_queuedRenderable,
+      bool _casterPass, uint32 _lastCacheHash,
+      CommandBuffer *_commandBuffer ) override;
 
     // Documentation inherited
     public: virtual void preCommandBufferExecution(
@@ -160,7 +160,7 @@ namespace Ogre
     // Documentation inherited
     public: virtual void frameEnded() override;
 
-    //// \brief Same as HlmsTerra::getDefaultPaths, but we also append
+    //// \brief Same as HlmsUnlit::getDefaultPaths, but we also append
     /// our own paths with customizations
     /// \param[out] _outDataFolderPath Path (as a String) used for
     /// creating the "dataFolder" Archive the constructor will need

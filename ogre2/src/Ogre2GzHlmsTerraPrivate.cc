@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,16 @@
  *
  */
 
-#include "Ogre2IgnHlmsUnlitPrivate.hh"
+#include "Ogre2GzHlmsTerraPrivate.hh"
 
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Util.hh>
 
+#include "Terra/Terra.h"
+
 #ifdef _MSC_VER
-  #pragma warning(push, 0)
+#  pragma warning(push, 0)
 #endif
 #include <CommandBuffer/OgreCbShaderBuffer.h>
 #include <CommandBuffer/OgreCommandBuffer.h>
@@ -30,7 +32,7 @@
 #include <Vao/OgreConstBufferPacked.h>
 #include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
-  #pragma warning(pop)
+#  pragma warning(pop)
 #endif
 
 using namespace ignition;
@@ -39,26 +41,31 @@ using namespace rendering;
 namespace Ogre
 {
   /// \brief The slot where to bind currPerObjectDataBuffer
-  /// Note it's different from HlmsPbs!
+  /// HlmsPbs might consume slot 3, so we always use slot 4 for simplicity
   /// \internal
-  static const uint16 kPerObjectDataBufferSlot = 3u;
+  static const uint16 kPerObjectDataBufferSlot = 4u;
 
-  Ogre2IgnHlmsUnlit::Ogre2IgnHlmsUnlit(
+  Ogre2GzHlmsTerra::Ogre2GzHlmsTerra(
     Archive *dataFolder, ArchiveVec *libraryFolders,
-    Ogre2IgnHlmsSphericalClipMinDistance *_sphericalClipMinDistance) :
-    HlmsUnlit(dataFolder, libraryFolders)
+    Ogre2GzHlmsSphericalClipMinDistance *_sphericalClipMinDistance) :
+    HlmsTerra(dataFolder, libraryFolders)
   {
     this->customizations.push_back(_sphericalClipMinDistance);
   }
 
   /////////////////////////////////////////////////
-  void Ogre2IgnHlmsUnlit::preparePassHash(
+  void Ogre2GzHlmsTerra::preparePassHash(
     const CompositorShadowNode *_shadowNode, bool _casterPass,
     bool _dualParaboloid, SceneManager *_sceneManager, Hlms *_hlms)
   {
-    if (!_casterPass && this->ignOgreRenderingMode == IORM_SOLID_COLOR)
+    if (!_casterPass &&
+        (this->ignOgreRenderingMode == IORM_SOLID_COLOR ||
+         this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED))
     {
       _hlms->_setProperty("ign_render_solid_color", 1);
+
+      if (this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED)
+        _hlms->_setProperty("ign_render_solid_color_textured", 1);
     }
 
     // Allow additional listener-only customizations to inject their stuff
@@ -70,7 +77,7 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  uint32 Ogre2IgnHlmsUnlit::getPassBufferSize(
+  uint32 Ogre2GzHlmsTerra::getPassBufferSize(
     const Ogre::CompositorShadowNode *_shadowNode, bool _casterPass,
     bool _dualParaboloid, Ogre::SceneManager *_sceneManager) const
   {
@@ -86,7 +93,7 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  float *Ogre2IgnHlmsUnlit::preparePassBuffer(
+  float *Ogre2GzHlmsTerra::preparePassBuffer(
     const Ogre::CompositorShadowNode *_shadowNode, bool _casterPass,
     bool _dualParaboloid, Ogre::SceneManager *_sceneManager,
     float *_passBufferPtr)
@@ -102,7 +109,7 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void Ogre2IgnHlmsUnlit::shaderCacheEntryCreated(
+  void Ogre2GzHlmsTerra::shaderCacheEntryCreated(
     const String &_shaderProfile, const HlmsCache *_hlmsCacheEntry,
     const HlmsCache &_passCache, const HlmsPropertyVec &_properties,
     const QueuedRenderable &_queuedRenderable)
@@ -117,15 +124,15 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void Ogre2IgnHlmsUnlit::notifyPropertiesMergedPreGenerationStep()
+  void Ogre2GzHlmsTerra::notifyPropertiesMergedPreGenerationStep()
   {
-    HlmsUnlit::notifyPropertiesMergedPreGenerationStep();
+    HlmsTerra::notifyPropertiesMergedPreGenerationStep();
 
     setProperty("IgnPerObjectDataSlot", kPerObjectDataBufferSlot);
   }
 
   /////////////////////////////////////////////////
-  void Ogre2IgnHlmsUnlit::hlmsTypeChanged(bool _casterPass,
+  void Ogre2GzHlmsTerra::hlmsTypeChanged(bool _casterPass,
                                           CommandBuffer *_commandBuffer,
                                           const HlmsDatablock *_datablock)
   {
@@ -135,7 +142,9 @@ namespace Ogre
       listener->hlmsTypeChanged(_casterPass, _commandBuffer, _datablock);
     }
 
-    if (_casterPass || this->ignOgreRenderingMode != IORM_SOLID_COLOR)
+    if (_casterPass ||
+        (this->ignOgreRenderingMode != IORM_SOLID_COLOR &&
+         this->ignOgreRenderingMode != IORM_SOLID_THERMAL_COLOR_TEXTURED))
     {
       return;
     }
@@ -144,25 +153,91 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  uint32 Ogre2IgnHlmsUnlit::fillBuffersForV1(
+  uint32 Ogre2GzHlmsTerra::fillBuffersForV1(
     const HlmsCache *_cache, const QueuedRenderable &_queuedRenderable,
     bool _casterPass, uint32 _lastCacheHash, CommandBuffer *_commandBuffer)
   {
-    const uint32 instanceIdx = HlmsUnlit::fillBuffersForV1(
+    const uint32 instanceIdx = HlmsTerra::fillBuffersForV1(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if (this->ignOgreRenderingMode == IORM_SOLID_COLOR && !_casterPass)
+    if ((this->ignOgreRenderingMode == IORM_SOLID_COLOR ||
+         this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED) &&
+        !_casterPass)
     {
+      const Ogre::Terra *terra =
+        static_cast<const Ogre::Terra *>(_queuedRenderable.movableObject);
+
       Vector4 customParam;
       try
       {
-        customParam = _queuedRenderable.renderable->getCustomParameter(1u);
+        customParam = terra->SolidColor(1u);
       }
       catch (ItemIdentityException &)
       {
         // This error can trigger for two reasons:
         //
-        //  1. We forgot to call setCustomParameter(1u, ...)
+        //  1. We forgot to call setSolidColor(1u, ...)
+        //  2. This object should not be rendered and we should've called
+        //     movableObject->setVisible(false) or use RenderQueue IDs
+        //     or visibility flags to prevent rendering it
+        ignerr << "A module is trying to render an object without "
+                  "specifying a parameter. Please report this bug at "
+                  "https://github.com/ignitionrobotics/ign-rendering/issues\n";
+        throw;
+      }
+      float *dataPtr = this->MapObjectDataBufferFor(
+        instanceIdx, _commandBuffer, this->mVaoManager, this->mConstBuffers,
+        this->mCurrentConstBuffer, this->mStartMappedConstBuffer,
+        kPerObjectDataBufferSlot);
+      dataPtr[0] = customParam.x;
+      dataPtr[1] = customParam.y;
+      dataPtr[2] = customParam.z;
+
+      if (this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED &&
+          terra->HasSolidColor(2u))
+      {
+        IGN_ASSERT(customParam.w >= 0.0f,
+                   "customParam.w can't be negative for "
+                   "IORM_SOLID_THERMAL_COLOR_TEXTURED");
+
+        // Negate customParam.w to tell the shader we wish to multiply
+        // against the diffuse texture. We substract 0.5f to avoid -0.0 = 0.0
+        dataPtr[3] = -customParam.w - 0.5f;
+      }
+      else
+      {
+        dataPtr[3] = customParam.w;
+      }
+    }
+
+    return instanceIdx;
+  }
+
+  /////////////////////////////////////////////////
+  uint32 Ogre2GzHlmsTerra::fillBuffersForV2(
+    const HlmsCache *_cache, const QueuedRenderable &_queuedRenderable,
+    bool _casterPass, uint32 _lastCacheHash, CommandBuffer *_commandBuffer)
+  {
+    const uint32 instanceIdx = HlmsTerra::fillBuffersForV2(
+      _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
+
+    if ((this->ignOgreRenderingMode == IORM_SOLID_COLOR ||
+         this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED) &&
+        !_casterPass)
+    {
+      const Ogre::Terra *terra =
+        static_cast<const Ogre::Terra *>(_queuedRenderable.movableObject);
+
+      Vector4 customParam;
+      try
+      {
+        customParam = terra->SolidColor(1u);
+      }
+      catch (ItemIdentityException &)
+      {
+        // This error can trigger for two reasons:
+        //
+        //  1. We forgot to call setSolidColor(1u, ...)
         //  2. This object should not be rendered and we should've called
         //     movableObject->setVisible(false) or use RenderQueue IDs
         //     or visibility flags to prevent rendering it
@@ -179,48 +254,39 @@ namespace Ogre
       dataPtr[1] = customParam.y;
       dataPtr[2] = customParam.z;
       dataPtr[3] = customParam.w;
+
+      if (this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED &&
+          terra->HasSolidColor(2u))
+      {
+        IGN_ASSERT(customParam.w >= 0.0f,
+                   "customParam.w can't be negative for "
+                   "IORM_SOLID_THERMAL_COLOR_TEXTURED");
+
+        // Negate customParam.w to tell the shader we wish to multiply
+        // against the diffuse texture. We substract 0.5f to avoid -0.0 = 0.0
+        dataPtr[3] = -customParam.w - 0.5f;
+      }
+      else
+      {
+        dataPtr[3] = customParam.w;
+      }
     }
 
     return instanceIdx;
   }
 
   /////////////////////////////////////////////////
-  uint32 Ogre2IgnHlmsUnlit::fillBuffersForV2(
-    const HlmsCache *_cache, const QueuedRenderable &_queuedRenderable,
-    bool _casterPass, uint32 _lastCacheHash, CommandBuffer *_commandBuffer)
-  {
-    const uint32 instanceIdx = HlmsUnlit::fillBuffersForV2(
-      _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
-
-    if (this->ignOgreRenderingMode == IORM_SOLID_COLOR && !_casterPass)
-    {
-      Vector4 customParam =
-        _queuedRenderable.renderable->getCustomParameter(1u);
-      float *dataPtr = this->MapObjectDataBufferFor(
-        instanceIdx, _commandBuffer, this->mVaoManager, this->mConstBuffers,
-        this->mCurrentConstBuffer, this->mStartMappedConstBuffer,
-        kPerObjectDataBufferSlot);
-      dataPtr[0] = customParam.x;
-      dataPtr[1] = customParam.y;
-      dataPtr[2] = customParam.z;
-      dataPtr[3] = customParam.w;
-    }
-
-    return instanceIdx;
-  }
-
-  /////////////////////////////////////////////////
-  void Ogre2IgnHlmsUnlit::preCommandBufferExecution(
+  void Ogre2GzHlmsTerra::preCommandBufferExecution(
     CommandBuffer *_commandBuffer)
   {
     this->UnmapObjectDataBuffer();
-    HlmsUnlit::preCommandBufferExecution(_commandBuffer);
+    HlmsTerra::preCommandBufferExecution(_commandBuffer);
   }
 
   /////////////////////////////////////////////////
-  void Ogre2IgnHlmsUnlit::frameEnded()
+  void Ogre2GzHlmsTerra::frameEnded()
   {
-    HlmsUnlit::frameEnded();
+    HlmsTerra::frameEnded();
 
     this->currPerObjectDataBuffer = nullptr;
     this->lastMainConstBuffer = nullptr;
@@ -228,15 +294,17 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
-  void Ogre2IgnHlmsUnlit::GetDefaultPaths(String &_outDataFolderPath,
+  void Ogre2GzHlmsTerra::GetDefaultPaths(String &_outDataFolderPath,
                                           StringVector &_outLibraryFoldersPaths)
   {
-    HlmsUnlit::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
+    HlmsTerra::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
 
     _outLibraryFoldersPaths.push_back(
       common::joinPaths("Hlms", "Ignition", "SolidColor"));
     _outLibraryFoldersPaths.push_back(
       common::joinPaths("Hlms", "Ignition", "SphericalClipMinDistance"));
+    _outLibraryFoldersPaths.push_back(
+      common::joinPaths("Hlms", "Terra", "ign"));
     _outLibraryFoldersPaths.push_back(
       common::joinPaths("Hlms", "Ignition", "Pbs"));
   }

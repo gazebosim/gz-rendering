@@ -120,7 +120,7 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   // Currently, only ogre2 supports segmentation cameras
   if (_renderEngine.compare("ogre2") != 0)
   {
-    ignerr << "Engine '" << _renderEngine
+    gzerr << "Engine '" << _renderEngine
               << "' doesn't support segmentation cameras" << std::endl;
     return;
   }
@@ -129,7 +129,7 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
-    ignerr << "Engine '" << _renderEngine
+    gzerr << "Engine '" << _renderEngine
               << "' was unable to be retrieved" << std::endl;
     return;
   }

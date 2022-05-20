@@ -139,14 +139,14 @@ ScenePtr sceneFromFirstRenderEngine()
   auto engineName = loadedEngNames[0];
   if (loadedEngNames.size() > 1)
   {
-    ignwarn << "More than one engine is available. "
+    gzwarn << "More than one engine is available. "
       << "Using engine [" << engineName << "]" << std::endl;
   }
 
   auto engine = gz::rendering::engine(engineName);
   if (!engine)
   {
-    ignerr << "Internal error: failed to load engine [" << engineName
+    gzerr << "Internal error: failed to load engine [" << engineName
       << "]." << std::endl;
     return nullptr;
   }
@@ -160,13 +160,13 @@ ScenePtr sceneFromFirstRenderEngine()
   auto scene = engine->SceneByIndex(0);
   if (nullptr == scene)
   {
-    ignerr << "Internal error: scene is null." << std::endl;
+    gzerr << "Internal error: scene is null." << std::endl;
     return nullptr;
   }
 
   if (engine->SceneCount() > 1)
   {
-    ignwarn << "More than one scene is available. "
+    gzwarn << "More than one scene is available. "
       << "Using scene [" << scene->Name() << "]" << std::endl;
   }
 

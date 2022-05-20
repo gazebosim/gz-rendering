@@ -166,7 +166,7 @@ namespace Ogre
         //  2. This object should not be rendered and we should've called
         //     movableObject->setVisible(false) or use RenderQueue IDs
         //     or visibility flags to prevent rendering it
-        ignerr << "A module is trying to render an object without "
+        gzerr << "A module is trying to render an object without "
                   "specifying a parameter. Please report this bug at "
                   "https://github.com/gazebosim/gz-rendering/issues\n";
         throw;

@@ -116,7 +116,7 @@ namespace gz
     {
       if (!this->Scene())
       {
-        ignerr << "Cloning a Capsule failed because the capsule to be "
+        gzerr << "Cloning a Capsule failed because the capsule to be "
           << "cloned does not belong to a scene.\n";
         return nullptr;
       }

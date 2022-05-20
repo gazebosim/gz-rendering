@@ -173,7 +173,7 @@ namespace gz
 
       if (!rawPose.IsFinite())
       {
-        ignerr << "Unable to set pose of a node: "
+        gzerr << "Unable to set pose of a node: "
                << "non-finite (nan, inf) values detected." << std::endl;
         return;
       }
@@ -270,7 +270,7 @@ namespace gz
           this->Children());
       if (!children_)
       {
-        ignerr << "Cast failed in BaseVisual::SetChildMaterial" << std::endl;
+        gzerr << "Cast failed in BaseVisual::SetChildMaterial" << std::endl;
         return;
       }
       for (auto it = children_->Begin(); it != children_->End(); ++it)
@@ -330,7 +330,7 @@ namespace gz
           this->Children());
       if (!children_)
       {
-        ignerr << "Cast failed in BaseVisual::PreRenderChildren" << std::endl;
+        gzerr << "Cast failed in BaseVisual::PreRenderChildren" << std::endl;
         return;
       }
       for (auto it = children_->Begin(); it != children_->End(); ++it)
@@ -363,7 +363,7 @@ namespace gz
     template <class T>
     void BaseVisual<T>::SetWireframe(bool _show)
     {
-      ignerr << "SetWireframe(" << _show << ") not supported for "
+      gzerr << "SetWireframe(" << _show << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
     }
@@ -372,7 +372,7 @@ namespace gz
     template <class T>
     void BaseVisual<T>::SetVisible(bool _visible)
     {
-      ignerr << "SetVisible(" << _visible << ") not supported for "
+      gzerr << "SetVisible(" << _visible << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
     }
@@ -389,7 +389,7 @@ namespace gz
           this->Children());
       if (!childNodes)
       {
-        ignerr << "Cast failed in BaseVisual::LocalBoundingBox" << std::endl;
+        gzerr << "Cast failed in BaseVisual::LocalBoundingBox" << std::endl;
         return box;
       }
       for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
@@ -418,7 +418,7 @@ namespace gz
           this->Children());
       if (!childNodes)
       {
-        ignerr << "Cast failed in BaseVisual::BoundingBox" << std::endl;
+        gzerr << "Cast failed in BaseVisual::BoundingBox" << std::endl;
         return box;
       }
       for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
@@ -457,7 +457,7 @@ namespace gz
           this->Children());
       if (!childNodes)
       {
-        ignerr << "Cast failed in BaseVisual::SetVisibiltyFlags" << std::endl;
+        gzerr << "Cast failed in BaseVisual::SetVisibiltyFlags" << std::endl;
         return;
       }
       for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
@@ -484,7 +484,7 @@ namespace gz
       ScenePtr scene_ = this->Scene();
       if (nullptr == scene_)
       {
-        ignerr << "Cloning a visual failed because the visual to be cloned is "
+        gzerr << "Cloning a visual failed because the visual to be cloned is "
           << "not attached to a scene.\n";
         return nullptr;
       }
@@ -499,7 +499,7 @@ namespace gz
         auto parentScene = _newParent->Scene();
         if (nullptr != parentScene && parentScene->Id() != scene_->Id())
         {
-          ignerr << "Cloning a visual failed because the desired parent of the "
+          gzerr << "Cloning a visual failed because the desired parent of the "
             << "cloned visual belongs to a different scene.\n";
           scene_->DestroyVisual(result);
           return nullptr;
@@ -520,7 +520,7 @@ namespace gz
           this->Children());
       if (!children_)
       {
-        ignerr << "Cast failed in BaseVisual::Clone\n";
+        gzerr << "Cast failed in BaseVisual::Clone\n";
         scene_->DestroyVisual(result);
         return nullptr;
       }
@@ -532,7 +532,7 @@ namespace gz
         // retrieved, or if cloning the child visual failed
         if (!visual || !visual->Clone("", result))
         {
-          ignerr << "Cloning a child visual failed.\n";
+          gzerr << "Cloning a child visual failed.\n";
           scene_->DestroyVisual(result, true);
           return nullptr;
         }

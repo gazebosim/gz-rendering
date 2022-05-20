@@ -179,7 +179,7 @@ void OgreLight::CreateLight()
   }
   catch (Ogre::Exception &ex)
   {
-    ignerr << "Unabled to create light: " << ex.getFullDescription() <<
+    gzerr << "Unabled to create light: " << ex.getFullDescription() <<
         std::endl;
   }
 }

@@ -247,7 +247,7 @@ namespace gz
     {
       if (_child->Id() == this->Id())
       {
-        ignerr << "Cannot add self as a child node" << std::endl;
+        gzerr << "Cannot add self as a child node" << std::endl;
         return;
       }
 
@@ -341,7 +341,7 @@ namespace gz
 
       if (!pose.IsFinite())
       {
-        ignerr << "Unable to set pose of a node: "
+        gzerr << "Unable to set pose of a node: "
                << "non-finite (nan, inf) values detected." << std::endl;
         return;
       }

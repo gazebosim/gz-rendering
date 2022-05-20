@@ -120,7 +120,7 @@ void Ogre2ParticleEmitter::SetType(
   // Sanity check: Make sure that the emitter type is valid.
   if (_type == EmitterType::EM_NUM_EMITTERS)
   {
-    ignerr << "SetType() error: You shouldn't use EM_NUM_EMITTERS as a type."
+    gzerr << "SetType() error: You shouldn't use EM_NUM_EMITTERS as a type."
            << std::endl;
     return;
   }
@@ -143,7 +143,7 @@ void Ogre2ParticleEmitter::SetEmitterSize(const gz::math::Vector3d &_size)
   // Sanity check: Size should be non-negative.
   if (_size[0] < 0 || _size[1] < 0 || _size[2] < 0)
   {
-    ignerr << "SetEmitterSize() error: Invalid size " << _size << ". "
+    gzerr << "SetEmitterSize() error: Invalid size " << _size << ". "
            << "Emitter size values should be non-negative." << std::endl;
     return;
   }
@@ -175,7 +175,7 @@ void Ogre2ParticleEmitter::SetEmitterSize(const gz::math::Vector3d &_size)
         // We skip EM_POINT.
         if (!this->dataPtr->emitter->setParameter(param,  value))
         {
-          ignerr << "SetEmitterSize() error for "
+          gzerr << "SetEmitterSize() error for "
                  << this->dataPtr->emitter->getType()
                  << " emitter because SetParameter(" << param << " " << value
                  << ") failed." << std::endl;
@@ -186,7 +186,7 @@ void Ogre2ParticleEmitter::SetEmitterSize(const gz::math::Vector3d &_size)
     }
     default:
     {
-      ignerr << "Unsupported particle emitter type [" << this->type
+      gzerr << "Unsupported particle emitter type [" << this->type
              << "]" << std::endl;
       return;
     }
@@ -201,7 +201,7 @@ void Ogre2ParticleEmitter::SetRate(double _rate)
   // Sanity check: Rate should be non-negative.
   if (_rate < 0)
   {
-    ignerr << "SetRate() error: Invalid rate [" << _rate << "]. "
+    gzerr << "SetRate() error: Invalid rate [" << _rate << "]. "
            << "The rate should be non-negative." << std::endl;
     return;
   }
@@ -235,7 +235,7 @@ void Ogre2ParticleEmitter::SetParticleSize(
   // Sanity check: Size should be non-negative.
   if (_size[0] < 0 || _size[1] < 0 || _size[2] < 0)
   {
-    ignerr << "SetParticleSize() error: Invalid size " << _size << ". "
+    gzerr << "SetParticleSize() error: Invalid size " << _size << ". "
            << "Particle size values should be non-negative." << std::endl;
     return;
   }
@@ -255,7 +255,7 @@ void Ogre2ParticleEmitter::SetLifetime(double _lifetime)
   // Sanity check: Lifetime should be non-negative.
   if (_lifetime < 0)
   {
-    ignerr << "SetLifetime() error: Invalid lifetime [" << _lifetime << "]. "
+    gzerr << "SetLifetime() error: Invalid lifetime [" << _lifetime << "]. "
            << "The lifetime should be non-negative." << std::endl;
     return;
   }
@@ -271,7 +271,7 @@ void Ogre2ParticleEmitter::SetMaterial(const MaterialPtr &_material)
   // Sanity check: The material cannot be nullptr.
   if (!_material)
   {
-    ignerr << "SetMaterial error: material is NULL" << std::endl;
+    gzerr << "SetMaterial error: material is NULL" << std::endl;
     return;
   }
 
@@ -326,7 +326,7 @@ void Ogre2ParticleEmitter::SetColorRange(
   {
     if (!this->dataPtr->colorInterpolatorAffector->setParameter(param,  value))
     {
-      ignerr << "Ignoring SetColorRange() because SetParameter("
+      gzerr << "Ignoring SetColorRange() because SetParameter("
              << param << " " << value << ") failed." << std::endl;
       return;
     }
@@ -342,7 +342,7 @@ void Ogre2ParticleEmitter::SetScaleRate(double _scaleRate)
   // Sanity check: The rate should be non-negative.
   if (_scaleRate < 0)
   {
-    ignerr << "SetScaleRate() error: Invalid rate [" << _scaleRate << "]. "
+    gzerr << "SetScaleRate() error: Invalid rate [" << _scaleRate << "]. "
            << "The rate should be non-negative." << std::endl;
     return;
   }
@@ -363,7 +363,7 @@ void Ogre2ParticleEmitter::SetScaleRate(double _scaleRate)
   {
     if (!this->dataPtr->scalerAffector->setParameter(param,  value))
     {
-      ignerr << "Ignoring SetScaleRate() because SetParameter("
+      gzerr << "Ignoring SetScaleRate() because SetParameter("
              << param << " " << value << ") failed." << std::endl;
       return;
     }
@@ -378,7 +378,7 @@ void Ogre2ParticleEmitter::SetColorRangeImage(const std::string &_image)
   // Sanity check: Make sure that the texture can be found.
   if (!common::exists(_image) || !common::isFile(_image))
   {
-    ignerr << "SetColorRangeImage() error: Texture [" << _image << "] not found"
+    gzerr << "SetColorRangeImage() error: Texture [" << _image << "] not found"
            << std::endl;
     return;
   }
@@ -417,7 +417,7 @@ void Ogre2ParticleEmitter::SetColorRangeImage(const std::string &_image)
   {
     if (!this->dataPtr->colorImageAffector->setParameter(param,  value))
     {
-      ignerr << "Ignoring SetColorRangeImage() because SetParameter("
+      gzerr << "Ignoring SetColorRangeImage() because SetParameter("
              << param << " " << value << ") failed." << std::endl;
       return;
     }

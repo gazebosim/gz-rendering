@@ -39,7 +39,7 @@ bool BaseRenderEngine::Load(const std::map<std::string, std::string> &_params)
 {
   if (this->loaded)
   {
-    ignwarn << "Render-engine has already been loaded" << std::endl;
+    gzwarn << "Render-engine has already been loaded" << std::endl;
     return true;
   }
 
@@ -52,13 +52,13 @@ bool BaseRenderEngine::Init()
 {
   if (!this->loaded)
   {
-    ignerr << "Render-engine must be loaded first" << std::endl;
+    gzerr << "Render-engine must be loaded first" << std::endl;
     return false;
   }
 
   if (this->initialized)
   {
-    ignwarn << "Render-engine has already been initialized" << std::endl;
+    gzwarn << "Render-engine has already been initialized" << std::endl;
     return true;
   }
 
@@ -212,19 +212,19 @@ ScenePtr BaseRenderEngine::CreateScene(unsigned int _id,
 {
   if (!this->IsInitialized())
   {
-    ignerr << "Render-engine has not been initialized" << std::endl;
+    gzerr << "Render-engine has not been initialized" << std::endl;
     return nullptr;
   }
 
   if (this->HasSceneId(_id))
   {
-    ignerr << "Scene already exists with id: " << _id << std::endl;
+    gzerr << "Scene already exists with id: " << _id << std::endl;
     return nullptr;
   }
 
   if (this->HasSceneName(_name))
   {
-    ignerr << "Scene already exists with id: " << _id << std::endl;
+    gzerr << "Scene already exists with id: " << _id << std::endl;
     return nullptr;
   }
 
@@ -280,7 +280,7 @@ RenderPassSystemPtr BaseRenderEngine::RenderPassSystem() const
 {
   if (!this->renderPassSystem)
   {
-    ignerr << "Render pass not supported by the requested render engine"
+    gzerr << "Render pass not supported by the requested render engine"
         << std::endl;
     return RenderPassSystemPtr();
   }

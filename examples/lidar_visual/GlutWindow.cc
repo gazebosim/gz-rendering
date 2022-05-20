@@ -158,7 +158,7 @@ void handleMouse()
     g_rayQuery = rayCamera->Scene()->CreateRayQuery();
     if (!g_rayQuery)
     {
-      ignerr << "Failed to create Ray Query" << std::endl;
+      gzerr << "Failed to create Ray Query" << std::endl;
       return;
     }
   }
@@ -349,28 +349,28 @@ void keyboardCB(unsigned char _key, int, int)
   {
     g_lidarVisType = LidarVisualType::LVT_NONE;
     g_lidarVisualUpdateDirty = true;
-    ignmsg << "Set lidar visual type to NONE"
+    gzmsg << "Set lidar visual type to NONE"
            << std::endl;
   }
   else if (_key == '1')
   {
     g_lidarVisType = LidarVisualType::LVT_RAY_LINES;
     g_lidarVisualUpdateDirty = true;
-    ignmsg << "Set lidar visual type to RAY_LINES"
+    gzmsg << "Set lidar visual type to RAY_LINES"
            << std::endl;
   }
   else if (_key == '2')
   {
     g_lidarVisType = LidarVisualType::LVT_POINTS;
     g_lidarVisualUpdateDirty = true;
-    ignmsg << "Set lidar visual type to POINTS"
+    gzmsg << "Set lidar visual type to POINTS"
            << std::endl;
   }
   else if (_key == '3')
   {
     g_lidarVisType = LidarVisualType::LVT_TRIANGLE_STRIPS;
     g_lidarVisualUpdateDirty = true;
-    ignmsg << "Set lidar visual type to TRIANGLE_STRIPS"
+    gzmsg << "Set lidar visual type to TRIANGLE_STRIPS"
            << std::endl;
   }
   else if (_key == KEY_TAB)
@@ -440,7 +440,7 @@ void run(std::vector<ir::CameraPtr> _cameras,
 {
   if (_cameras.empty())
   {
-    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    gzerr << "No cameras found. Scene will not be rendered" << std::endl;
     return;
   }
 

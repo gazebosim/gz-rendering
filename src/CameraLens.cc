@@ -182,7 +182,7 @@ void CameraLens::SetCustomMappingFunction(double _c1, double _c2,
   }
   catch(const std::exception &ex)
   {
-    ignerr << "Angle functionis not known, "
+    gzerr << "Angle functionis not known, "
            << "[tan] will be used instead" << std::endl;
 
     this->dataPtr->fun = CameraLens::Implementation::MapFunctionEnum(AFT_TAN);
@@ -269,7 +269,7 @@ void CameraLens::SetType(MappingFunctionType _type)
   }
   catch(...)
   {
-    ignerr << "Unknown lens type." << std::endl;
+    gzerr << "Unknown lens type." << std::endl;
     return;
   }
 
@@ -297,7 +297,7 @@ void CameraLens::SetType(MappingFunctionType _type)
     }
     catch(const std::exception &ex)
     {
-      ignerr << "`fun` value [" << std::get<4>(params)
+      gzerr << "`fun` value [" << std::get<4>(params)
              << "] is not known, keeping the old one" << std::endl;
     }
   }
@@ -351,7 +351,7 @@ void CameraLens::SetAngleFunction(AngleFunctionType _fun)
   }
   catch(const std::exception &ex)
   {
-    ignerr << "`Fun` value [" << _fun << "] is not known, "
+    gzerr << "`Fun` value [" << _fun << "] is not known, "
            << "keeping the old one" << std::endl;
     return;
   }

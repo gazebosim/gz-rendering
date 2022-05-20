@@ -138,7 +138,7 @@ void OgreInertiaVisual::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

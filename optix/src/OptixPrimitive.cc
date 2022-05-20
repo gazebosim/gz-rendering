@@ -53,7 +53,7 @@ void OptixPrimitive::SetMaterial(MaterialPtr _material, bool unique)
 
   if (!_material)
   {
-    ignerr << "Cannot assign null material" << std::endl;
+    gzerr << "Cannot assign null material" << std::endl;
     return;
   }
 
@@ -64,7 +64,7 @@ void OptixPrimitive::SetMaterial(MaterialPtr _material, bool unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
            << std::endl;
 
     return;

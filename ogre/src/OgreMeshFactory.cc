@@ -267,7 +267,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       else if (subMesh.SubMeshPrimitiveType() == common::SubMesh::POINTS)
         ogreSubMesh->operationType = Ogre::RenderOperation::OT_POINT_LIST;
       else
-        ignerr << "Unknown primitive type["
+        gzerr << "Unknown primitive type["
               << subMesh.SubMeshPrimitiveType() << "]\n";
 
       ogreSubMesh->vertexData = new Ogre::VertexData();
@@ -448,13 +448,13 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
     if (!max.IsFinite())
     {
-      ignerr << "Max bounding box is not finite[" << max << "]" << std::endl;
+      gzerr << "Max bounding box is not finite[" << max << "]" << std::endl;
       return false;
     }
 
     if (!min.IsFinite())
     {
-      ignerr << "Min bounding box is not finite[" << min << "]" << std::endl;
+      gzerr << "Min bounding box is not finite[" << min << "]" << std::endl;
       return false;
     }
 
@@ -468,7 +468,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
   }
   catch(Ogre::Exception &e)
   {
-    ignerr << "Unable to insert mesh[" << e.getDescription() << "]"
+    gzerr << "Unable to insert mesh[" << e.getDescription() << "]"
         << std::endl;
     return false;
   }
@@ -479,7 +479,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
     if (!_desc.subMeshName.empty())
       msg += ", submesh: '" + _desc.subMeshName + "'";
     msg += ". Mesh will be empty.";
-    ignwarn << msg << std::endl;
+    gzwarn << msg << std::endl;
   }
 
   return true;
@@ -500,19 +500,19 @@ bool OgreMeshFactory::Validate(const MeshDescriptor &_desc)
 {
   if (!_desc.mesh && _desc.meshName.empty())
   {
-    ignerr << "Invalid mesh-descriptor, no mesh specified" << std::endl;
+    gzerr << "Invalid mesh-descriptor, no mesh specified" << std::endl;
     return false;
   }
 
   if (!_desc.mesh)
   {
-    ignerr << "Cannot load null mesh" << std::endl;
+    gzerr << "Cannot load null mesh" << std::endl;
     return false;
   }
 
   if (_desc.mesh->SubMeshCount() == 0)
   {
-    ignerr << "Cannot load mesh with zero sub-meshes" << std::endl;
+    gzerr << "Cannot load mesh with zero sub-meshes" << std::endl;
     return false;
   }
 

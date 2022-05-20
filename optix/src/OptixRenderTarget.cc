@@ -46,7 +46,7 @@ void OptixRenderTarget::Copy(Image &_image) const
 
   if (_image.Width() != this->width || _image.Height() != this->height)
   {
-    ignerr << "Invalid image dimensions" << std::endl;
+    gzerr << "Invalid image dimensions" << std::endl;
     return;
   }
 

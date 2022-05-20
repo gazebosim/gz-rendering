@@ -225,7 +225,7 @@ void OgreGpuRays::CreateCamera()
   Ogre::SceneManager *ogreSceneManager  = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
@@ -233,7 +233,7 @@ void OgreGpuRays::CreateCamera()
       this->Name() + "_Camera");
   if (this->dataPtr->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -255,7 +255,7 @@ void OgreGpuRays::ConfigureCameras()
   if (this->HFOV().Radian() > 2.0 * IGN_PI)
   {
     this->SetHFOV(2.0 * IGN_PI);
-    ignwarn << "Horizontal FOV for GPU rays is capped at 180 degrees.\n";
+    gzwarn << "Horizontal FOV for GPU rays is capped at 180 degrees.\n";
   }
 
   this->SetHorzHalfAngle((this->AngleMax() + this->AngleMin()).Radian() / 2.0);
@@ -302,7 +302,7 @@ void OgreGpuRays::ConfigureCameras()
 
     if (this->VerticalAngleMax() != this->VerticalAngleMin())
     {
-      ignwarn << "Only one vertical ray but vertical min. and max. angle "
+      gzwarn << "Only one vertical ray but vertical min. and max. angle "
           "are not equal. Min. angle is used.\n";
       this->SetVerticalAngleMax(this->VerticalAngleMin().Radian());
     }
@@ -311,7 +311,7 @@ void OgreGpuRays::ConfigureCameras()
   if (vfovAngle > IGN_PI / 2.0)
   {
     vfovAngle = IGN_PI / 2.0;
-    ignwarn << "Vertical FOV for GPU laser is capped at 90 degrees.\n";
+    gzwarn << "Vertical FOV for GPU laser is capped at 90 degrees.\n";
   }
 
   this->SetVFOV(vfovAngle);
@@ -332,7 +332,7 @@ void OgreGpuRays::ConfigureCameras()
 
   if (vfovCamera > 2.8)
   {
-    ignerr << "Vertical FOV of internal camera exceeds 2.8 radians.\n";
+    gzerr << "Vertical FOV of internal camera exceeds 2.8 radians.\n";
   }
 
   this->SetCosVertFOV(vfovCamera);
@@ -703,7 +703,7 @@ void OgreGpuRays::CreateOrthoCam()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
@@ -711,7 +711,7 @@ void OgreGpuRays::CreateOrthoCam()
       this->Name() + "_Ortho_Camera");
   if (this->dataPtr->orthoCam == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 

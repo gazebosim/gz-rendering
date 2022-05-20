@@ -208,7 +208,7 @@ Ogre::Technique *OgreThermalCameraMaterialSwitcher::handleSchemeNotFound(
     }
     catch(Ogre::Exception &e)
     {
-      ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+      gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
     }
     ogreVisual = std::dynamic_pointer_cast<OgreVisual>(result);
   }
@@ -240,7 +240,7 @@ Ogre::Technique *OgreThermalCameraMaterialSwitcher::handleSchemeNotFound(
         }
         catch(std::bad_variant_access &e)
         {
-          ignerr << "Error casting user data: " << e.what() << "\n";
+          gzerr << "Error casting user data: " << e.what() << "\n";
           temp = -1.0;
         }
       }
@@ -316,7 +316,7 @@ void OgreThermalCamera::Destroy()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
   }
   else
   {
@@ -345,7 +345,7 @@ void OgreThermalCamera::CreateCamera()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
@@ -353,7 +353,7 @@ void OgreThermalCamera::CreateCamera()
       this->name);
   if (this->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -377,7 +377,7 @@ void OgreThermalCamera::CreateThermalTexture()
 {
   if (this->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 

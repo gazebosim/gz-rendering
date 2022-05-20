@@ -76,7 +76,7 @@ bool OptixVisual::AttachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    ignerr << "Cannot attach geometry created by another render-engine"
+    gzerr << "Cannot attach geometry created by another render-engine"
           << std::endl;
 
     return false;
@@ -97,7 +97,7 @@ bool OptixVisual::DetachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    ignerr << "Cannot detach geometry created by another render-engine"
+    gzerr << "Cannot detach geometry created by another render-engine"
           << std::endl;
 
     return false;

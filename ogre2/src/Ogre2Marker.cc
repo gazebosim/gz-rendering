@@ -179,7 +179,7 @@ Ogre::MovableObject *Ogre2Marker::OgreObject() const
       return nullptr;
     }
     default:
-      ignerr << "Invalid Marker type " << this->markerType << "\n";
+      gzerr << "Invalid Marker type " << this->markerType << "\n";
       return nullptr;
   }
 }
@@ -208,7 +208,7 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
 {
   if (nullptr == _material)
   {
-    ignerr << "Cannot assign null material" << std::endl;
+    gzerr << "Cannot assign null material" << std::endl;
     return;
   }
 
@@ -219,7 +219,7 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
       << std::endl;
 
     return;
@@ -246,7 +246,7 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
       }
       else
       {
-        ignerr << "Failed to set material, null geometry." << std::endl;
+        gzerr << "Failed to set material, null geometry." << std::endl;
       }
       break;
     }
@@ -263,12 +263,12 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
       }
       else
       {
-        ignerr << "Failed to set material, null renderable." << std::endl;
+        gzerr << "Failed to set material, null renderable." << std::endl;
       }
       break;
     }
     default:
-      ignerr << "Invalid Marker type " << this->markerType << "\n";
+      gzerr << "Invalid Marker type " << this->markerType << "\n";
       break;
   }
 
@@ -357,7 +357,7 @@ void Ogre2Marker::SetType(MarkerType _markerType)
       this->dataPtr->dynamicRenderable->SetOperationType(_markerType);
       break;
     default:
-      ignerr << "Invalid Marker type [" << _markerType << "]" << std::endl;
+      gzerr << "Invalid Marker type [" << _markerType << "]" << std::endl;
       break;
   }
 
@@ -366,7 +366,7 @@ void Ogre2Marker::SetType(MarkerType _markerType)
     this->dataPtr->geom = std::dynamic_pointer_cast<Ogre2Geometry>(newGeom);
     if (nullptr == this->dataPtr->geom)
     {
-      ignerr << "Failed to cast to [Ogre2Geom], type [" << _markerType << "]"
+      gzerr << "Failed to cast to [Ogre2Geom], type [" << _markerType << "]"
              << std::endl;
     }
     else if (visual)
@@ -377,7 +377,7 @@ void Ogre2Marker::SetType(MarkerType _markerType)
   }
   else if (isGeom)
   {
-    ignerr << "Failed to create geometry for marker type [" << _markerType
+    gzerr << "Failed to create geometry for marker type [" << _markerType
            << "]" << std::endl;
   }
 }

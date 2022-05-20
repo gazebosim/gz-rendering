@@ -356,7 +356,7 @@ void Ogre2RenderTarget::Copy(Image &_image) const
 
   if (_image.Width() != this->width || _image.Height() != this->height)
   {
-    ignerr << "Invalid image dimensions" << std::endl;
+    gzerr << "Invalid image dimensions" << std::endl;
     return;
   }
 
@@ -582,7 +582,7 @@ uint8_t Ogre2RenderTarget::TargetFSAA() const
       }
       os << "]";
 
-      ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
+      gzwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
               << "is not supported; valid FSAA levels are: " << os.str()
               << ". Setting to 0" << std::endl;
       targetFSAA = 0u;
@@ -653,7 +653,7 @@ void Ogre2RenderTarget::UpdateBackgroundMaterial()
       auto skyboxMat = matManager.getByName(this->dataPtr->kSkyboxMaterialName);
       if (!skyboxMat)
       {
-        ignerr << "Unable to find skybox material" << std::endl;
+        gzerr << "Unable to find skybox material" << std::endl;
         return;
       }
       mat = skyboxMat->clone(skyMatName);

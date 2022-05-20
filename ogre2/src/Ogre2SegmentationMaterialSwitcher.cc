@@ -286,7 +286,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
       }
       catch(Ogre::Exception &e)
       {
-        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+        gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
       }
 
       const Ogre::Vector4 customParameter =

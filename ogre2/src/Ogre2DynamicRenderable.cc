@@ -405,7 +405,7 @@ void Ogre2DynamicRenderable::SetOperationType(MarkerType _opType)
       break;
 
     default:
-      ignerr << "Unknown render operation type[" << _opType << "]\n";
+      gzerr << "Unknown render operation type[" << _opType << "]\n";
       return;
   }
 }
@@ -473,7 +473,7 @@ void Ogre2DynamicRenderable::SetPoint(unsigned int _index,
 {
   if (_index >= this->dataPtr->vertices.size())
   {
-    ignerr << "Point index[" << _index << "] is out of bounds[0-"
+    gzerr << "Point index[" << _index << "] is out of bounds[0-"
            << this->dataPtr->vertices.size()-1 << "]\n";
     return;
   }
@@ -489,7 +489,7 @@ void Ogre2DynamicRenderable::SetColor(unsigned int _index,
 {
   if (_index >= this->dataPtr->colors.size())
   {
-    ignerr << "Point color index[" << _index << "] is out of bounds[0-"
+    gzerr << "Point color index[" << _index << "] is out of bounds[0-"
            << this->dataPtr->colors.size()-1 << "]\n";
     return;
   }
@@ -510,7 +510,7 @@ gz::math::Vector3d Ogre2DynamicRenderable::Point(
 {
   if (_index >= this->dataPtr->vertices.size())
   {
-    ignerr << "Point index[" << _index << "] is out of bounds[0-"
+    gzerr << "Point index[" << _index << "] is out of bounds[0-"
            << this->dataPtr->vertices.size()-1 << "]\n";
 
     return gz::math::Vector3d(gz::math::INF_D,
@@ -548,7 +548,7 @@ void Ogre2DynamicRenderable::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

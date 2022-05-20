@@ -430,7 +430,7 @@ void OgreMaterial::SetVertexShader(const std::string &_path)
 
   if (!common::exists(_path))
   {
-    ignerr << "Vertex shader path does not exist: " << _path << std::endl;
+    gzerr << "Vertex shader path does not exist: " << _path << std::endl;
     return;
   }
 
@@ -479,7 +479,7 @@ void OgreMaterial::SetFragmentShader(const std::string &_path)
 
   if (!common::exists(_path))
   {
-    ignerr << "Fragment shader path does not exist: " << _path << std::endl;
+    gzerr << "Fragment shader path does not exist: " << _path << std::endl;
     return;
   }
 
@@ -548,12 +548,12 @@ void OgreMaterial::LoadOneImage(const std::string &_name, Ogre::Image &_image)
         _image.load(path, this->ogreGroup);
       }
       else
-        ignerr << "Unable to find texture image: " << _name << std::endl;
+        gzerr << "Unable to find texture image: " << _name << std::endl;
     }
   }
   catch (const Ogre::Exception &ex)
   {
-    ignerr << "Unable to load texture image: " << ex.what() << std::endl;
+    gzerr << "Unable to load texture image: " << ex.what() << std::endl;
   }
 }
 

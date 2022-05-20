@@ -117,7 +117,7 @@ bool OgreRTShaderSystem::Init()
     std::string coreLibsPath, cachePath;
     if (!this->Paths(coreLibsPath, cachePath))
     {
-      ignerr << "Cannot find OGRE rtshaderlib. "
+      gzerr << "Cannot find OGRE rtshaderlib. "
              << "Shadows will be disabled." << std::endl;
       return false;
     }
@@ -138,7 +138,7 @@ bool OgreRTShaderSystem::Init()
   }
   else
   {
-    ignerr << "RT Shader system failed to initialize" << std::endl;
+    gzerr << "RT Shader system failed to initialize" << std::endl;
     return false;
   }
   return false;
@@ -353,7 +353,7 @@ void OgreRTShaderSystem::RemoveShaders(OgreSubMesh *_subMesh)
     }
     catch(Ogre::Exception &e)
     {
-      ignerr << "Unable to remove shader technique for material["
+      gzerr << "Unable to remove shader technique for material["
         << curMaterialName << "]\n";
     }
   }
@@ -399,7 +399,7 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
     }
     catch(Ogre::Exception &e)
     {
-      ignerr << "Unable to create shader technique for material["
+      gzerr << "Unable to create shader technique for material["
         << curMaterialName << "]\n";
       success = false;
     }
@@ -522,7 +522,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
       // Create the directory
       if (!common::createDirectories(cachePath))
       {
-        ignerr << "Unable to create ogre RTShader cache directories: "
+        gzerr << "Unable to create ogre RTShader cache directories: "
             << cachePath << std::endl;
       }
       break;
@@ -532,7 +532,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
   // Core shader lib not found -> shader generating will fail.
   if (coreLibsPath.empty())
   {
-    ignerr << "Unable to find shader lib. Shader generating will fail."
+    gzerr << "Unable to find shader lib. Shader generating will fail."
       << std::endl;
     return false;
   }
@@ -718,7 +718,7 @@ bool OgreRTShaderSystem::SetShadowTextureSize(const unsigned int _size)
   // check if texture size is a power of 2
   if (!gz::math::isPowerOfTwo(_size))
   {
-    ignerr << "Shadow texture size must be a power of 2" << std::endl;
+    gzerr << "Shadow texture size must be a power of 2" << std::endl;
     return false;
   }
 

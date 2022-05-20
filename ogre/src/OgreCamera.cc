@@ -48,7 +48,7 @@ void OgreCamera::Destroy()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
   }
   else
   {
@@ -142,13 +142,13 @@ void OgreCamera::CreateCamera()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
   }
 
   this->ogreCamera = ogreSceneManager->createCamera(this->name);
   if (ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
   }
 
   this->ogreNode->attachObject(this->ogreCamera);
@@ -237,7 +237,7 @@ VisualPtr OgreCamera::VisualAt(const gz::math::Vector2i
       }
       catch(Ogre::Exception &e)
       {
-        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+        gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
       }
     }
   }

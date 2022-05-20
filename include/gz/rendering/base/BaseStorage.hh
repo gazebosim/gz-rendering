@@ -446,19 +446,19 @@ namespace gz
     {
       if (_key.empty())
       {
-        ignerr << "Cannot store item with empty key" << std::endl;
+        gzerr << "Cannot store item with empty key" << std::endl;
         return false;
       }
 
       if (!_value)
       {
-        ignerr << "Cannot store null pointer value" << std::endl;
+        gzerr << "Cannot store null pointer value" << std::endl;
         return false;
       }
 
       if (this->ContainsKey(_key))
       {
-        ignerr << "Item already registered with key: " << _key << std::endl;
+        gzerr << "Item already registered with key: " << _key << std::endl;
         return false;
       }
 
@@ -466,7 +466,7 @@ namespace gz
 
       if (!derived)
       {
-        ignerr << "Cannot add item created by another render-engine"
+        gzerr << "Cannot add item created by another render-engine"
               << std::endl;
 
         return false;
@@ -529,7 +529,7 @@ namespace gz
     {
       if (_index >= this->Size())
       {
-        ignerr << "Invalid index: " << _index << std::endl;
+        gzerr << "Invalid index: " << _index << std::endl;
         return nullptr;
       }
 
@@ -634,7 +634,7 @@ namespace gz
     {
       if (!_object)
       {
-        ignerr << "Cannot add null pointer" << std::endl;
+        gzerr << "Cannot add null pointer" << std::endl;
         return false;
       }
 
@@ -642,7 +642,7 @@ namespace gz
 
       if (!derived)
       {
-        ignerr << "Cannot add item created by another render-engine"
+        gzerr << "Cannot add item created by another render-engine"
               << std::endl;
 
         return false;
@@ -768,7 +768,7 @@ namespace gz
     {
       if (!_object)
       {
-        ignerr << "Cannot add null pointer" << std::endl;
+        gzerr << "Cannot add null pointer" << std::endl;
         return false;
       }
 
@@ -864,7 +864,7 @@ namespace gz
     {
       if (_index >= this->Size())
       {
-        ignerr << "Invalid index: " << _index << std::endl;
+        gzerr << "Invalid index: " << _index << std::endl;
         return this->store.end();
       }
 
@@ -918,13 +918,13 @@ namespace gz
 
       if (this->ContainsId(id))
       {
-        ignerr << "Another item already exists with id: " << id << std::endl;
+        gzerr << "Another item already exists with id: " << id << std::endl;
         return false;
       }
 
       if (this->ContainsName(name))
       {
-        ignerr << "Another item already exists with name: " << name
+        gzerr << "Another item already exists with name: " << name
             << std::endl;
         return false;
       }
@@ -1077,7 +1077,7 @@ namespace gz
         _index -= size;
       }
 
-      ignerr << "Invalid index: " << origIndex << std::endl;
+      gzerr << "Invalid index: " << origIndex << std::endl;
       return nullptr;
     }
 
@@ -1085,7 +1085,7 @@ namespace gz
     template <class T>
     bool BaseCompositeStore<T>::Add(TPtr)
     {
-      ignerr << "Adding to BaseCompositeStore not supported" << std::endl;
+      gzerr << "Adding to BaseCompositeStore not supported" << std::endl;
       return false;
     }
 
@@ -1241,7 +1241,7 @@ namespace gz
     {
       if (_index >= this->GetStoreCount())
       {
-        ignerr << "Invalid store index: " << _index << std::endl;
+        gzerr << "Invalid store index: " << _index << std::endl;
         return nullptr;
       }
 
@@ -1254,13 +1254,13 @@ namespace gz
     {
       if (!_store)
       {
-        ignerr << "Cannot all null store pointer" << std::endl;
+        gzerr << "Cannot all null store pointer" << std::endl;
         return false;
       }
 
       if (this->ContainsStore(_store))
       {
-        ignerr << "Store has already been added" << std::endl;
+        gzerr << "Store has already been added" << std::endl;
         return false;
       }
 
@@ -1286,7 +1286,7 @@ namespace gz
     {
       if (_index >= this->GetStoreCount())
       {
-        ignerr << "Invalid store index: " << _index << std::endl;
+        gzerr << "Invalid store index: " << _index << std::endl;
         return nullptr;
       }
 

@@ -132,14 +132,14 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 {
   if (!_geometry)
   {
-    ignerr << "Cannot attach null geometry." << std::endl;
+    gzerr << "Cannot attach null geometry." << std::endl;
 
     return false;
   }
 
   if (!this->ogreNode)
   {
-    ignerr << "Cannot attach geometry, null Ogre node." << std::endl;
+    gzerr << "Cannot attach geometry, null Ogre node." << std::endl;
     return false;
   }
 
@@ -148,7 +148,7 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    ignerr << "Cannot attach geometry created by another render-engine"
+    gzerr << "Cannot attach geometry created by another render-engine"
           << std::endl;
 
     return false;
@@ -174,7 +174,7 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
 {
   if (!this->ogreNode)
   {
-    ignerr << "Cannot detach geometry, null Ogre node." << std::endl;
+    gzerr << "Cannot detach geometry, null Ogre node." << std::endl;
     return false;
   }
 
@@ -183,7 +183,7 @@ bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    ignerr << "Cannot detach geometry created by another render-engine"
+    gzerr << "Cannot detach geometry created by another render-engine"
           << std::endl;
 
     return false;

@@ -143,7 +143,7 @@ void handleMouse()
     g_rayQuery = rayCamera->Scene()->CreateRayQuery();
     if (!g_rayQuery)
     {
-      ignerr << "Failed to create Ray Query" << std::endl;
+      gzerr << "Failed to create Ray Query" << std::endl;
       return;
     }
   }
@@ -353,7 +353,7 @@ void run(ir::CameraPtr _camera)
 {
   if (!_camera)
   {
-    ignerr << "No camera found. Scene will not be rendered" << std::endl;
+    gzerr << "No camera found. Scene will not be rendered" << std::endl;
     return;
   }
 

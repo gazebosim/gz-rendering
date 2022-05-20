@@ -267,7 +267,7 @@ namespace gz
     {
       if (_index > this->renderPasses.size())
       {
-        ignerr << "RenderPass index out of range: " << _index << std::endl;
+        gzerr << "RenderPass index out of range: " << _index << std::endl;
         return RenderPassPtr();
       }
       return this->renderPasses[_index];

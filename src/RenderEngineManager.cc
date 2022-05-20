@@ -224,7 +224,7 @@ RenderEngine *RenderEngineManager::EngineAt(unsigned int _index,
 {
   if (_index >= this->EngineCount())
   {
-    ignerr << "Invalid render-engine index: " << _index << std::endl;
+    gzerr << "Invalid render-engine index: " << _index << std::endl;
     return nullptr;
   }
 
@@ -251,7 +251,7 @@ bool RenderEngineManager::UnloadEngine(const std::string &_name)
 
     if (iter == this->dataPtr->engines.end())
     {
-      ignerr << "No render-engine registered with name: " << _name << std::endl;
+      gzerr << "No render-engine registered with name: " << _name << std::endl;
       return false;
     }
   }
@@ -264,7 +264,7 @@ bool RenderEngineManager::UnloadEngineAt(unsigned int _index)
 {
   if (_index >= this->EngineCount())
   {
-    ignerr << "Invalid render-engine index: " << _index << std::endl;
+    gzerr << "Invalid render-engine index: " << _index << std::endl;
     return false;
   }
 
@@ -280,13 +280,13 @@ void RenderEngineManager::RegisterEngine(const std::string &_name,
 {
   if (!_engine)
   {
-    ignerr << "Render-engine cannot be null" << std::endl;
+    gzerr << "Render-engine cannot be null" << std::endl;
     return;
   }
 
   if (this->HasEngine(_name))
   {
-    ignerr << "Render-engine already registered with name: "
+    gzerr << "Render-engine already registered with name: "
           << _name << std::endl;
 
     return;
@@ -333,7 +333,7 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 {
   if (_index >= this->EngineCount())
   {
-    ignerr << "Invalid render-engine index: " << _index << std::endl;
+    gzerr << "Invalid render-engine index: " << _index << std::endl;
     return;
   }
 
@@ -439,7 +439,7 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
 bool RenderEngineManagerPrivate::LoadEnginePlugin(
     const std::string &_filename, const std::string &_path)
 {
-  ignmsg << "Loading plugin [" << _filename << "]" << std::endl;
+  gzmsg << "Loading plugin [" << _filename << "]" << std::endl;
 
   gz::common::SystemPaths systemPaths;
   systemPaths.SetPluginPathEnv(this->pluginPathEnv);
@@ -458,7 +458,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   auto pathToLib = systemPaths.FindSharedLibrary(_filename);
   if (pathToLib.empty())
   {
-    ignerr << "Failed to load plugin [" << _filename <<
+    gzerr << "Failed to load plugin [" << _filename <<
               "] : couldn't find shared library." << std::endl;
     return false;
   }
@@ -467,7 +467,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   auto pluginNames = this->pluginLoader.LoadLib(pathToLib);
   if (pluginNames.empty())
   {
-    ignerr << "Failed to load plugin [" << _filename <<
+    gzerr << "Failed to load plugin [" << _filename <<
               "] : couldn't load library on path [" << pathToLib <<
               "]." << std::endl;
     return false;
@@ -486,7 +486,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
     {
       error << "- " << pluginName << std::endl;
     }
-    ignerr << error.str();
+    gzerr << error.str();
     return false;
   }
 
@@ -502,13 +502,13 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
       warn << "- " << pluginName << std::endl;
     }
     warn << "Loading [" << engineName << "]." << std::endl;
-    ignwarn << warn.str();
+    gzwarn << warn.str();
   }
 
   auto plugin = pluginLoader.Instantiate(engineName);
   if (!plugin)
   {
-    ignerr << "Failed to instantiate plugin [" << engineName << "]"
+    gzerr << "Failed to instantiate plugin [" << engineName << "]"
            << std::endl;
     return false;
   }
@@ -518,7 +518,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
 
   if (!renderPlugin)
   {
-    ignerr << "Failed to query interface from [" << engineName << "]"
+    gzerr << "Failed to query interface from [" << engineName << "]"
            << std::endl;
     return false;
   }
@@ -542,7 +542,7 @@ bool RenderEngineManagerPrivate::UnloadEnginePlugin(
   auto it = this->enginePlugins.find(_engineName);
   if (it == this->enginePlugins.end())
   {
-    ignmsg << "Skip unloading engine plugin. [" << _engineName << "] "
+    gzmsg << "Skip unloading engine plugin. [" << _engineName << "] "
            << "not loaded from plugin." << std::endl;
     return false;
   }
@@ -555,7 +555,7 @@ bool RenderEngineManagerPrivate::UnloadEnginePlugin(
   // see issue #45
   if (!this->pluginLoader.ForgetLibraryOfPlugin(pluginName))
   {
-    ignerr << "Failed to unload plugin: " << pluginName << std::endl;
+    gzerr << "Failed to unload plugin: " << pluginName << std::endl;
   }
 #endif
 

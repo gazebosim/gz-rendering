@@ -99,7 +99,7 @@ namespace gz
     template <class T>
     GeometryPtr BaseGeometry<T>::Clone() const
     {
-      ignwarn << "Clone functionality for Geometry does not exist yet.\n";
+      gzwarn << "Clone functionality for Geometry does not exist yet.\n";
       return nullptr;
     }
 

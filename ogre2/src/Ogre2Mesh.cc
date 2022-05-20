@@ -206,7 +206,7 @@ void Ogre2Mesh::SetSkeletonAnimationEnabled(const std::string &_name,
 
   if (!skel->hasAnimation(_name))
   {
-    ignerr << "Skeleton animation name not found: " << _name << std::endl;
+    gzerr << "Skeleton animation name not found: " << _name << std::endl;
     return;
   }
 
@@ -260,7 +260,7 @@ bool Ogre2Mesh::SkeletonAnimationEnabled(const std::string &_name) const
   Ogre::SkeletonInstance *skel = this->ogreItem->getSkeletonInstance();
   if (!skel->hasAnimation(_name))
   {
-    ignerr << "Skeleton animation name not found: " << _name << std::endl;
+    gzerr << "Skeleton animation name not found: " << _name << std::endl;
     return false;
   }
 
@@ -340,7 +340,7 @@ void Ogre2SubMesh::SetMaterialImpl(MaterialPtr _material)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

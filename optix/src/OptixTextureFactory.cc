@@ -55,7 +55,7 @@ optix::Buffer OptixTextureFactory::CreateBuffer(const std::string &_filename)
 {
   if (_filename.empty())
   {
-    ignerr << "Cannot load texture from empty filename" << std::endl;
+    gzerr << "Cannot load texture from empty filename" << std::endl;
     return this->CreateBuffer();
   }
 
@@ -64,7 +64,7 @@ optix::Buffer OptixTextureFactory::CreateBuffer(const std::string &_filename)
 
   if (!image)
   {
-    ignerr << "Unable to load texture: " << _filename << std::endl;
+    gzerr << "Unable to load texture: " << _filename << std::endl;
     return this->CreateBuffer();
   }
 

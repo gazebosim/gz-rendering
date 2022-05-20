@@ -169,7 +169,7 @@ void OgreLidarVisual::SetPoints(const std::vector<double> &_points,
 {
   if (_points.size() != _colors.size())
   {
-    ignerr << "Unequal size of point and color vector."
+    gzerr << "Unequal size of point and color vector."
            << "Setting all point colors blue." << std::endl;
     this->SetPoints(_points);
   }
@@ -189,7 +189,7 @@ void OgreLidarVisual::Update()
 
   if (!this->dataPtr->receivedData || this->dataPtr->lidarPoints.size() == 0)
   {
-    ignwarn << "New lidar data not received. Exiting update function"
+    gzwarn << "New lidar data not received. Exiting update function"
             << std::endl;
     return;
   }
@@ -236,7 +236,7 @@ void OgreLidarVisual::Update()
   if (this->dataPtr->lidarPoints.size() !=
                   this->verticalCount * this->horizontalCount)
   {
-    ignwarn << "Size of lidar data inconsistent with rays."
+    gzwarn << "Size of lidar data inconsistent with rays."
             << " Exiting update function."
             << std::endl;
     return;

@@ -116,13 +116,13 @@ void OgreGaussianNoisePass::CreateRenderPass()
 {
   if (!this->ogreCamera)
   {
-    ignerr << "No camera set for applying Gaussian Noise Pass" << std::endl;
+    gzerr << "No camera set for applying Gaussian Noise Pass" << std::endl;
     return;
   }
 
   if (this->gaussianNoiseInstance || this->gaussianNoiseCompositorListener)
   {
-    ignerr << "Gaussian Noise pass already created. " << std::endl;
+    gzerr << "Gaussian Noise pass already created. " << std::endl;
     return;
   }
 

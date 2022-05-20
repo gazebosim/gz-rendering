@@ -108,7 +108,7 @@ void OptixScene::SetGradientBackgroundColor(
   this->gradientBackgroundColor = _colors;
   this->isGradientBackgroundColor = true;
 
-  ignwarn << "SetGradientBackgroundColor not implemented for Optix"
+  gzwarn << "SetGradientBackgroundColor not implemented for Optix"
           << std::endl;
 }
 
@@ -116,7 +116,7 @@ void OptixScene::SetGradientBackgroundColor(
 void OptixScene::RemoveGradientBackgroundColor()
 {
   this->isGradientBackgroundColor = false;
-  ignwarn << "RemoveGradientBackgroundColor not implemented for Optix"
+  gzwarn << "RemoveGradientBackgroundColor not implemented for Optix"
           << std::endl;
 }
 
@@ -483,7 +483,7 @@ void OptixScene::CreateRootVisual()
   // check if root visual created successfully
   if (!this->InitObject(this->rootVisual, rootId, rootName))
   {
-    ignerr << "Unable to create root visual" << std::endl;
+    gzerr << "Unable to create root visual" << std::endl;
     this->rootVisual = nullptr;
   }
 

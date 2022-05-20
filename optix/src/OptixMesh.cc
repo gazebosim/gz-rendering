@@ -81,7 +81,7 @@ void OptixSubMesh::SetMaterialImpl(MaterialPtr _material)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

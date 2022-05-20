@@ -128,13 +128,13 @@ namespace gz
         // Unrealistic mass, load with default mass
         if (_mass < 0)
         {
-          ignlog << "The parent " << this->parentName
+          gzlog << "The parent " << this->parentName
               << " has unrealistic mass, "
               << "unable to visualize sphere of equivalent mass.\n";
         }
         else
         {
-          ignlog << "The parent " << this->parentName
+          gzlog << "The parent " << this->parentName
               << " is static or has mass of 0, "
               << "so a sphere of equivalent mass will not be shown.\n";
         }

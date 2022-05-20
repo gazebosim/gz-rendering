@@ -114,7 +114,7 @@ Ogre2SelectionBuffer::Ogre2SelectionBuffer(const std::string &_cameraName,
       _cameraName);
   if (!this->dataPtr->camera)
   {
-    ignerr << "No camera found. Unable to create Ogre 2 selection buffer "
+    gzerr << "No camera found. Unable to create Ogre 2 selection buffer "
            << std::endl;
     return;
   }

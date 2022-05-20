@@ -269,13 +269,13 @@ void IgnitionRenderer::InitEngine()
 
   if (!this->camera)
   {
-    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    gzerr << "No cameras found. Scene will not be rendered" << std::endl;
     return;
   }
 
   // quick check on sizing...
-  ignmsg << "imageW: " << this->camera->ImageWidth() << "\n";
-  ignmsg << "imageH: " << this->camera->ImageHeight() << "\n";
+  gzmsg << "imageW: " << this->camera->ImageWidth() << "\n";
+  gzmsg << "imageH: " << this->camera->ImageHeight() << "\n";
 
   // pre-render will force texture creation and may update texture id
   this->camera->PreRender();

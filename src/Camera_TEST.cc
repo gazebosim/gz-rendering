@@ -293,7 +293,7 @@ void CameraTest::AddRemoveRenderPass(const std::string &_renderEngine)
   RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
   if (!rpSystem)
   {
-    ignwarn << "Render engin '" << _renderEngine << "' does not support "
+    gzwarn << "Render engin '" << _renderEngine << "' does not support "
             << "render pass system" << std::endl;
     return;
   }

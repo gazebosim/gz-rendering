@@ -73,13 +73,13 @@ void getMemInfo(double &_resident, double &_share)
                                 (task_info_t)&t_info,
                                 &t_info_count))
   {
-    ignerr << "failure calling task_info\n";
+    gzerr << "failure calling task_info\n";
     return;
   }
   _resident = static_cast<double>(t_info.resident_size/1024);
   _share = static_cast<double>(t_info.virtual_size/1024);
 #else
-  ignerr << "Unsupported architecture\n";
+  gzerr << "Unsupported architecture\n";
   return;
 #endif
 }

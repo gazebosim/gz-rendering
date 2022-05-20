@@ -98,7 +98,7 @@ Ogre::Technique *OgreMaterialSwitcher::handleSchemeNotFound(
           overlayMaterial->getTechnique(0);
       if (!this->overlayTechnique || !this->overlayTechnique->getPass(0))
       {
-        ignerr << "Problem creating the selection buffer overlay material"
+        gzerr << "Problem creating the selection buffer overlay material"
             << std::endl;
         return nullptr;
       }

@@ -212,7 +212,7 @@ void Ogre2LidarVisual::Update()
 
   if (!this->dataPtr->receivedData || this->dataPtr->lidarPoints.size() == 0)
   {
-    ignwarn << "New lidar data not received. Exiting update function"
+    gzwarn << "New lidar data not received. Exiting update function"
             << std::endl;
     return;
   }
@@ -259,7 +259,7 @@ void Ogre2LidarVisual::Update()
   if (this->dataPtr->lidarPoints.size() !=
                   this->verticalCount * this->horizontalCount)
   {
-    ignwarn << "Size of lidar data inconsistent with rays."
+    gzwarn << "Size of lidar data inconsistent with rays."
             << " Exiting update function."
             << std::endl;
     return;

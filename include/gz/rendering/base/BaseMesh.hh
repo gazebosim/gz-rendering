@@ -213,7 +213,7 @@ namespace gz
     void BaseMesh<T>::SetSkeletonWeights(
           const std::unordered_map<std::string, float> &)
     {
-      ignerr << "SetSkeletonWeights not supported for render engine: "
+      gzerr << "SetSkeletonWeights not supported for render engine: "
              << this->Scene()->Engine()->Name() << std::endl;
     }
 
@@ -333,13 +333,13 @@ namespace gz
     {
       if (!this->Scene())
       {
-        ignerr << "Cloning a mesh failed because the mesh to be "
+        gzerr << "Cloning a mesh failed because the mesh to be "
           << "cloned does not belong to a scene.\n";
         return nullptr;
       }
       else if (this->meshDescriptor.meshName.empty())
       {
-        ignerr << "Cloning a geometry failed because the name of the mesh is "
+        gzerr << "Cloning a geometry failed because the name of the mesh is "
           << "missing.\n";
         return nullptr;
       }

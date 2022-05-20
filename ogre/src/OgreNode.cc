@@ -136,21 +136,21 @@ void OgreNode::Init()
 {
   if (nullptr == this->scene)
   {
-    ignerr << "Failed to initialize node: scene is NULL" << std::endl;
+    gzerr << "Failed to initialize node: scene is NULL" << std::endl;
     return;
   }
 
   auto sceneManager = this->scene->OgreSceneManager();
   if (nullptr == sceneManager)
   {
-    ignerr << "Failed to initialize node: scene manager is NULL" << std::endl;
+    gzerr << "Failed to initialize node: scene manager is NULL" << std::endl;
     return;
   }
 
   this->ogreNode = sceneManager->createSceneNode(this->name);
   if (nullptr == this->ogreNode)
   {
-    ignerr << "Failed to create Ogre node" << std::endl;
+    gzerr << "Failed to create Ogre node" << std::endl;
     return;
   }
   this->ogreNode->setInheritScale(true);
@@ -173,7 +173,7 @@ bool OgreNode::AttachChild(NodePtr _child)
 
   if (!derived)
   {
-    ignerr << "Cannot attach node created by another render-engine"
+    gzerr << "Cannot attach node created by another render-engine"
         << std::endl;
     return false;
   }
@@ -193,7 +193,7 @@ bool OgreNode::DetachChild(NodePtr _child)
 
   if (!derived)
   {
-    ignerr << "Cannot detach node created by another render-engine"
+    gzerr << "Cannot detach node created by another render-engine"
         << std::endl;
     return false;
   }

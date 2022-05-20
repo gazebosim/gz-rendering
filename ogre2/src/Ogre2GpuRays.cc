@@ -255,7 +255,7 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
       }
       catch(Ogre::Exception &e)
       {
-        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+        gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
       }
       Ogre2VisualPtr ogreVisual =
           std::dynamic_pointer_cast<Ogre2Visual>(result);
@@ -283,7 +283,7 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
             }
             catch(std::bad_variant_access &e)
             {
-              ignerr << "Error casting user data: " << e.what() << "\n";
+              gzerr << "Error casting user data: " << e.what() << "\n";
             }
           }
         }
@@ -404,7 +404,7 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
             }
             catch (std::bad_variant_access &e)
             {
-              ignerr << "Error casting user data: " << e.what() << "\n";
+              gzerr << "Error casting user data: " << e.what() << "\n";
             }
           }
         }
@@ -627,7 +627,7 @@ void Ogre2GpuRays::CreateCamera()
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
@@ -635,7 +635,7 @@ void Ogre2GpuRays::CreateCamera()
       this->Name() + "_Camera");
   if (this->dataPtr->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -670,7 +670,7 @@ void Ogre2GpuRays::ConfigureCamera()
 
     if (this->VerticalAngleMax() != this->VerticalAngleMin())
     {
-      ignwarn << "Only one vertical ray but vertical min. and max. angle "
+      gzwarn << "Only one vertical ray but vertical min. and max. angle "
           "are not equal. Min. angle is used.\n";
       this->SetVerticalAngleMax(this->VerticalAngleMin().Radian());
     }
@@ -1122,7 +1122,7 @@ void Ogre2GpuRays::Setup1stPass()
 
   if (!wsDef)
   {
-    ignerr << "Unable to add workspace definition [" << wsDefName << "] "
+    gzerr << "Unable to add workspace definition [" << wsDefName << "] "
            << " for " << this->Name();
   }
 
@@ -1327,7 +1327,7 @@ void Ogre2GpuRays::Setup2ndPass()
       ogreCompMgr->getWorkspaceDefinition(wsDefName);
   if (!wsDef)
   {
-    ignerr << "Unable to add workspace definition [" << wsDefName << "] "
+    gzerr << "Unable to add workspace definition [" << wsDefName << "] "
            << " for " << this->Name();
   }
 

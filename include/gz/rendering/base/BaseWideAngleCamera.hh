@@ -101,7 +101,7 @@ namespace gz
     math::Vector3d BaseWideAngleCamera<T>:: Project3d(const math::Vector3d &)
         const
     {
-      ignerr << "Project3d is not supported for "
+      gzerr << "Project3d is not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
       return math::Vector3d();

@@ -489,7 +489,7 @@ namespace gz
     RenderWindowPtr BaseCamera<T>::CreateRenderWindow()
     {
       // Does nothing by default
-      ignerr << "Render window not supported for render engine: " <<
+      gzerr << "Render window not supported for render engine: " <<
           this->Scene()->Engine()->Name() << std::endl;
       return RenderWindowPtr();
     }
@@ -556,7 +556,7 @@ namespace gz
       }
       else
       {
-        ignerr << "Unknown camera projection type: " << this->projectionType
+        gzerr << "Unknown camera projection type: " << this->projectionType
                << std::endl;
       }
 
@@ -634,7 +634,7 @@ namespace gz
     VisualPtr BaseCamera<T>::VisualAt(const gz::math::Vector2i
         &/*_mousePos*/)
     {
-      ignerr << "VisualAt not implemented for the render engine" << std::endl;
+      gzerr << "VisualAt not implemented for the render engine" << std::endl;
       return VisualPtr();
     }
 
@@ -795,7 +795,7 @@ namespace gz
     template <class T>
     void BaseCamera<T>::SetMaterial(const MaterialPtr &/*_material*/)
     {
-      ignerr << "SetMaterial not implemented for current render"
+      gzerr << "SetMaterial not implemented for current render"
           << " engine" << std::endl;
     }
 
@@ -803,7 +803,7 @@ namespace gz
     template <class T>
     unsigned int BaseCamera<T>::RenderTextureGLId() const
     {
-      ignerr << "RenderTextureGLId is not supported by current render"
+      gzerr << "RenderTextureGLId is not supported by current render"
           << " engine" << std::endl;
       return 0u;
     }
@@ -812,7 +812,7 @@ namespace gz
     template <class T>
     void BaseCamera<T>::RenderTextureMetalId(void *) const
     {
-      ignerr << "RenderTextureMetalId is not supported by current render"
+      gzerr << "RenderTextureMetalId is not supported by current render"
           << " engine" << std::endl;
     }
 

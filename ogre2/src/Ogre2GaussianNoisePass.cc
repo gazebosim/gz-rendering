@@ -113,7 +113,7 @@ void Ogre2GaussianNoisePass::CreateRenderPass()
       Ogre::MaterialManager::getSingleton().getByName(matName);
   if (!ogreMat)
   {
-    ignerr << "Gaussian noise material not found: '" << matName << "'"
+    gzerr << "Gaussian noise material not found: '" << matName << "'"
            << std::endl;
     return;
   }

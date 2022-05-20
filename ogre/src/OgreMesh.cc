@@ -144,7 +144,7 @@ void OgreMesh::SetSkeletonAnimationEnabled(const std::string &_name,
 {
   if (!this->ogreEntity->hasAnimationState(_name))
   {
-    ignerr << "Skeleton animation name not found: " << _name << std::endl;
+    gzerr << "Skeleton animation name not found: " << _name << std::endl;
     return;
   }
 
@@ -235,7 +235,7 @@ bool OgreMesh::SkeletonAnimationEnabled(const std::string &_name) const
 {
   if (!this->ogreEntity->hasAnimationState(_name))
   {
-    ignerr << "Skeleton animation name not found: " << _name << std::endl;
+    gzerr << "Skeleton animation name not found: " << _name << std::endl;
     return false;
   }
 
@@ -322,7 +322,7 @@ void OgreSubMesh::SetMaterialImpl(MaterialPtr _material)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

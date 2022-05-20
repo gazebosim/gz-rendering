@@ -130,7 +130,7 @@ void RenderPassTest::GaussianNoise(const std::string &_renderEngine)
   }
   else
   {
-    ignwarn << "Engine '" << _renderEngine << "' does not support "
+    gzwarn << "Engine '" << _renderEngine << "' does not support "
             << "render pass  system" << std::endl;
     return;
   }
@@ -277,7 +277,7 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
     }
     else
     {
-      ignwarn << "Engine '" << _renderEngine << "' does not support "
+      gzwarn << "Engine '" << _renderEngine << "' does not support "
               << "render pass  system" << std::endl;
       return;
     }
@@ -499,7 +499,7 @@ void RenderPassTest::Distortion(const std::string &_renderEngine)
   }
   else
   {
-    ignwarn << "Engine '" << _renderEngine << "' does not support "
+    gzwarn << "Engine '" << _renderEngine << "' does not support "
             << "render pass  system" << std::endl;
     return;
   }

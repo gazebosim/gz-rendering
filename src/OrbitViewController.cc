@@ -94,7 +94,7 @@ void OrbitViewController::Zoom(const double _value)
 {
   if (!this->dataPtr->camera)
   {
-    ignerr << "Camera is NULL" << std::endl;
+    gzerr << "Camera is NULL" << std::endl;
     return;
   }
 
@@ -115,7 +115,7 @@ void OrbitViewController::Pan(const math::Vector2d &_value)
 {
   if (!this->dataPtr->camera)
   {
-    ignerr << "Camera is NULL" << std::endl;
+    gzerr << "Camera is NULL" << std::endl;
     return;
   }
 
@@ -150,7 +150,7 @@ void OrbitViewController::Orbit(const math::Vector2d &_value)
 {
   if (!this->dataPtr->camera)
   {
-    ignerr << "Camera is NULL" << std::endl;
+    gzerr << "Camera is NULL" << std::endl;
     return;
   }
 

@@ -102,7 +102,7 @@ namespace gz
       if (!m.EquivalentBox(boxScale, boxRot))
       {
         // Invalid inertia, load with default scale
-        ignlog << "The link is static or has unrealistic "
+        gzlog << "The link is static or has unrealistic "
             << "inertia, so the equivalent inertia box will not be shown.\n";
       }
       else

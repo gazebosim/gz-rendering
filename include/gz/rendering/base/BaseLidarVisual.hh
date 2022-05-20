@@ -314,7 +314,7 @@ namespace gz
     {
       if (_verticalRayCount == 0)
       {
-        ignwarn << "Cannot have zero vertical rays. Setting value to 1."
+        gzwarn << "Cannot have zero vertical rays. Setting value to 1."
                << std::endl;
         this->verticalCount = 1;
       }
@@ -368,7 +368,7 @@ namespace gz
     {
       if (_horizontalRayCount == 0)
       {
-        ignwarn << "Cannot have zero horizontal rays. Setting value to 1."
+        gzwarn << "Cannot have zero horizontal rays. Setting value to 1."
                << std::endl;
         this->horizontalCount = 1u;
       }

@@ -53,12 +53,12 @@ void MeshDescriptor::Load()
     this->mesh = common::MeshManager::Instance()->MeshByName(this->meshName);
     if (!this->mesh)
     {
-      ignerr << "Mesh manager can't find mesh named [" << this->meshName << "]"
+      gzerr << "Mesh manager can't find mesh named [" << this->meshName << "]"
              << std::endl;
     }
   }
   else
   {
-    ignerr << "Missing mesh or mesh name" << std::endl;
+    gzerr << "Missing mesh or mesh name" << std::endl;
   }
 }

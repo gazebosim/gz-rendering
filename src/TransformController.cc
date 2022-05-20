@@ -265,7 +265,7 @@ void TransformController::Translate(
 {
   if (!this->dataPtr->node)
   {
-    ignerr << "No node attached for transformation" << std::endl;
+    gzerr << "No node attached for transformation" << std::endl;
     return;
   }
 
@@ -306,13 +306,13 @@ math::Vector3d TransformController::TranslationFrom2d(
 {
   if (!this->dataPtr->node)
   {
-    ignerr << "No node attached" << std::endl;
+    gzerr << "No node attached" << std::endl;
     return math::Vector3d::Zero;
   }
 
   if (!this->dataPtr->camera)
   {
-    ignerr << "Camera not set" << std::endl;
+    gzerr << "Camera not set" << std::endl;
     return math::Vector3d::Zero;
   }
 
@@ -386,13 +386,13 @@ math::Vector3d TransformController::ScaleFrom2d(
 {
   if (!this->dataPtr->node)
   {
-    ignerr << "No node attached" << std::endl;
+    gzerr << "No node attached" << std::endl;
     return math::Vector3d::Zero;
   }
 
   if (!this->dataPtr->camera)
   {
-    ignerr << "Camera not set" << std::endl;
+    gzerr << "Camera not set" << std::endl;
     return math::Vector3d::Zero;
   }
 
@@ -530,7 +530,7 @@ void TransformController::Rotate(const math::Quaterniond &_rotation, bool _snap)
 {
   if (!this->dataPtr->node)
   {
-    ignerr << "No node attached for transformation" << std::endl;
+    gzerr << "No node attached for transformation" << std::endl;
     return;
   }
 
@@ -564,7 +564,7 @@ void TransformController::Scale(const math::Vector3d &_scale, bool _snap)
 {
   if (!this->dataPtr->node)
   {
-    ignerr << "No node attached for transformation" << std::endl;
+    gzerr << "No node attached for transformation" << std::endl;
     return;
   }
 
@@ -597,14 +597,14 @@ gz::math::Vector3d TransformController::SnapPoint(
 {
   if (_interval < 0)
   {
-    ignerr << "Interval distance must be greater than or equal to 0"
+    gzerr << "Interval distance must be greater than or equal to 0"
         << std::endl;
     return gz::math::Vector3d::Zero;
   }
 
   if (_sensitivity < 0 || _sensitivity > 1.0)
   {
-    ignerr << "Sensitivity must be between 0 and 1" << std::endl;
+    gzerr << "Sensitivity must be between 0 and 1" << std::endl;
     return gz::math::Vector3d::Zero;
   }
 

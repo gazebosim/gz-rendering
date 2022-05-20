@@ -114,7 +114,7 @@ PixelFormat PixelUtil::Sanitize(PixelFormat _format)
   // check if value within enum bounds
   if (!PixelUtil::IsValid(_format))
   {
-    ignerr << "Invalid PixelFormat value: " << _format << std::endl;
+    gzerr << "Invalid PixelFormat value: " << _format << std::endl;
     return PF_UNKNOWN;
   }
 

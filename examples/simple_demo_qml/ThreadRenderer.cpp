@@ -165,27 +165,27 @@ void RenderThread::Print(const QSurfaceFormat &_format)
     };
 
     // surface format info
-    ignmsg << "version: "
+    gzmsg << "version: "
         << _format.version().first << "."
         << _format.version().second << "\n";
-    ignmsg << "profile: "
+    gzmsg << "profile: "
         << openGLContextProfileToString(_format.profile()) << "\n";
-    ignmsg << "options: "
+    gzmsg << "options: "
         << formatOptionsToString(_format.options()) << "\n";
-    ignmsg << "renderableType: "
+    gzmsg << "renderableType: "
         << renderableTypeToString(_format.renderableType()) << "\n";
-    ignmsg << "hasAlpha: " << _format.hasAlpha() << "\n";
-    ignmsg << "redBufferSize: " << _format.redBufferSize() << "\n";
-    ignmsg << "greenBufferSize: " << _format.greenBufferSize() << "\n";
-    ignmsg << "blueBufferSize: " << _format.blueBufferSize() << "\n";
-    ignmsg << "alphaBufferSize: " << _format.alphaBufferSize() << "\n";
-    ignmsg << "depthBufferSize: " << _format.depthBufferSize() << "\n";
-    ignmsg << "stencilBufferSize: " << _format.stencilBufferSize() << "\n";
-    ignmsg << "samples: " << _format.samples() << "\n";
-    ignmsg << "swapBehavior: "
+    gzmsg << "hasAlpha: " << _format.hasAlpha() << "\n";
+    gzmsg << "redBufferSize: " << _format.redBufferSize() << "\n";
+    gzmsg << "greenBufferSize: " << _format.greenBufferSize() << "\n";
+    gzmsg << "blueBufferSize: " << _format.blueBufferSize() << "\n";
+    gzmsg << "alphaBufferSize: " << _format.alphaBufferSize() << "\n";
+    gzmsg << "depthBufferSize: " << _format.depthBufferSize() << "\n";
+    gzmsg << "stencilBufferSize: " << _format.stencilBufferSize() << "\n";
+    gzmsg << "samples: " << _format.samples() << "\n";
+    gzmsg << "swapBehavior: "
         << swapBehaviorToString(_format.swapBehavior()) << "\n";
-    ignmsg << "swapInterval: " << _format.swapInterval() << "\n";
-    ignmsg << "\n";
+    gzmsg << "swapInterval: " << _format.swapInterval() << "\n";
+    gzmsg << "\n";
 }
 
 //-----------------------------------------------------------------------
@@ -231,7 +231,7 @@ void RenderThread::RenderNext()
     // check if engine has been successfully initialized
     if (!this->renderer->Initialised())
     {
-        ignerr << "Unable to initialize renderer" << std::endl;
+        gzerr << "Unable to initialize renderer" << std::endl;
         return;
     }
 

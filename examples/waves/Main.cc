@@ -185,7 +185,7 @@ int main(int _argc, char** _argv)
         // todo(anyone) Passing textures to custom shaders is currently
         // only available in ogre2
         engineName = "ogre2";
-        ignerr << "Only ogre2 engine is supported. Switching to use ogre2."
+        gzerr << "Only ogre2 engine is supported. Switching to use ogre2."
                << std::endl;
       }
 

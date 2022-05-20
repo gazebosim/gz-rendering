@@ -62,7 +62,7 @@ void Ogre2Camera::Destroy()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
   }
   if (ogreSceneManager->findCameraNoThrow(this->name) != nullptr)
   {
@@ -294,7 +294,7 @@ VisualPtr Ogre2Camera::VisualAt(const gz::math::Vector2i &_mousePos)
       }
       catch(Ogre::Exception &e)
       {
-        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+        gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
       }
     }
   }

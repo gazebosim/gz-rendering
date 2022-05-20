@@ -125,7 +125,7 @@ Ogre::MovableObject *OgreMarker::OgreObject() const
       return std::dynamic_pointer_cast<Ogre::MovableObject>
         (this->dataPtr->dynamicRenderable).get();
     default:
-      ignerr << "Invalid Marker type " << this->markerType << "\n";
+      gzerr << "Invalid Marker type " << this->markerType << "\n";
       return nullptr;
   }
 }
@@ -154,7 +154,7 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
 {
   if (nullptr == _material)
   {
-    ignerr << "Cannot assign null material" << std::endl;
+    gzerr << "Cannot assign null material" << std::endl;
     return;
   }
 
@@ -165,7 +165,7 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
       << std::endl;
 
     return;
@@ -193,7 +193,7 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
       }
       else
       {
-        ignerr << "Failed to set material, null geometry." << std::endl;
+        gzerr << "Failed to set material, null geometry." << std::endl;
       }
       break;
     }
@@ -210,7 +210,7 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
 #endif
       break;
     default:
-      ignerr << "Invalid Marker type " << this->markerType << "\n";
+      gzerr << "Invalid Marker type " << this->markerType << "\n";
       break;
   }
 }
@@ -274,7 +274,7 @@ void OgreMarker::SetType(MarkerType _markerType)
       this->dataPtr->dynamicRenderable->SetOperationType(_markerType);
       break;
     default:
-      ignerr << "Invalid Marker type\n";
+      gzerr << "Invalid Marker type\n";
       break;
   }
 }

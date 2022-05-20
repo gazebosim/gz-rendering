@@ -106,7 +106,7 @@ void OgreCapsule::Update()
   meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
   if (meshDescriptor.mesh == nullptr)
   {
-    ignerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;
+    gzerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;
     return;
   }
 
@@ -145,7 +145,7 @@ void OgreCapsule::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

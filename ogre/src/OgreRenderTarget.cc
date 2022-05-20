@@ -76,7 +76,7 @@ void OgreRenderTarget::Copy(Image &_image) const
 
   if (_image.Width() != this->width || _image.Height() != this->height)
   {
-    ignerr << "Invalid image dimensions" << std::endl;
+    gzerr << "Invalid image dimensions" << std::endl;
     return;
   }
 
@@ -248,7 +248,7 @@ Ogre::Viewport *OgreRenderTarget::Viewport(const int _viewportId) const
 
   if (nullptr == ogreRenderTarget)
   {
-    ignerr << "Failed to get viewport: null render target" << std::endl;
+    gzerr << "Failed to get viewport: null render target" << std::endl;
     return nullptr;
   }
 
@@ -262,7 +262,7 @@ Ogre::Viewport *OgreRenderTarget::AddViewport(Ogre::Camera *_camera)
 
   if (nullptr == ogreRenderTarget)
   {
-    ignerr << "Failed to add viewport: null render target" << std::endl;
+    gzerr << "Failed to add viewport: null render target" << std::endl;
     return nullptr;
   }
 
@@ -276,7 +276,7 @@ void OgreRenderTarget::SetAutoUpdated(const bool _value)
 
   if (nullptr == ogreRenderTarget)
   {
-    ignerr << "Failed to set auto update: null render target" << std::endl;
+    gzerr << "Failed to set auto update: null render target" << std::endl;
     return;
   }
 
@@ -290,7 +290,7 @@ void OgreRenderTarget::SetUpdate(const bool _value)
 
   if (nullptr == ogreRenderTarget)
   {
-    ignerr << "Failed to set update: null render target" << std::endl;
+    gzerr << "Failed to set update: null render target" << std::endl;
     return;
   }
 
@@ -374,7 +374,7 @@ void OgreRenderTexture::BuildTarget()
     static bool ogreFSAAWarn = false;
     if (ogreFSAAWarn)
     {
-      ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
+      gzwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
               << "is not supported. Setting to 0" << std::endl;
       ogreFSAAWarn = true;
     }
@@ -416,7 +416,7 @@ void OgreRenderTexture::Buffer(float *_buffer)
 
   if (nullptr == ogreRenderTarget)
   {
-    ignerr << "Failed to set buffer: null render target" << std::endl;
+    gzerr << "Failed to set buffer: null render target" << std::endl;
     return;
   }
 
@@ -473,7 +473,7 @@ void OgreRenderWindow::RebuildTarget()
 
   if (nullptr == window)
   {
-    ignerr << "Failed to cast render window." << std::endl;
+    gzerr << "Failed to cast render window." << std::endl;
     return;
   }
 
@@ -494,7 +494,7 @@ void OgreRenderWindow::BuildTarget()
 
   if (renderTargetName.empty())
   {
-    ignerr << "Failed to build target." << std::endl;
+    gzerr << "Failed to build target." << std::endl;
     return;
   }
 

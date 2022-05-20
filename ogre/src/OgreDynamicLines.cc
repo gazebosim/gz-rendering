@@ -78,7 +78,7 @@ void OgreDynamicLines::SetPoint(unsigned int _index,
 {
   if (_index >= this->dataPtr->points.size())
   {
-    ignerr << "Point index[" << _index << "] is out of bounds[0-"
+    gzerr << "Point index[" << _index << "] is out of bounds[0-"
            << this->dataPtr->points.size()-1 << "]\n";
     return;
   }
@@ -102,7 +102,7 @@ gz::math::Vector3d OgreDynamicLines::Point(
 {
   if (_index >= this->dataPtr->points.size())
   {
-    ignerr << "Point index[" << _index << "] is out of bounds[0-"
+    gzerr << "Point index[" << _index << "] is out of bounds[0-"
            << this->dataPtr->points.size()-1 << "]\n";
 
     return gz::math::Vector3d(gz::math::INF_D,

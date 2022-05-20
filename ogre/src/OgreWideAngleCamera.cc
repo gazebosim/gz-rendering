@@ -203,7 +203,7 @@ void OgreWideAngleCamera::CreateCamera()
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
@@ -211,7 +211,7 @@ void OgreWideAngleCamera::CreateCamera()
       this->Name() + "_Camera");
   if (this->dataPtr->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -293,7 +293,7 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
 {
   if (this->dataPtr->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -338,7 +338,7 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
     static bool ogreFSAAWarn = false;
     if (ogreFSAAWarn)
     {
-      ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
+      gzwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
               << "is not supported. Setting to 0" << std::endl;
       ogreFSAAWarn = true;
     }

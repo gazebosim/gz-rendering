@@ -241,14 +241,14 @@ void OgreScene::SetGradientBackgroundColor(
   auto coloredRectangle2D = backgroundNodePtr->getAttachedObject(0);
   if (!coloredRectangle2D)
   {
-    ignerr << "Unable to find the background attached object" << std::endl;
+    gzerr << "Unable to find the background attached object" << std::endl;
     return;
   }
 
   rect = dynamic_cast<ColoredRectangle2D *>(coloredRectangle2D);
   if (!rect)
   {
-    ignerr << "Unable to cast from Ogre::MovableObject to ColouredRectangle2D"
+    gzerr << "Unable to cast from Ogre::MovableObject to ColouredRectangle2D"
            << std::endl;
     return;
   }
@@ -707,7 +707,7 @@ void OgreScene::CreateRootVisual()
   // check if root visual created successfully
   if (!this->InitObject(this->rootVisual, rootId, rootName))
   {
-    ignerr << "Unable to create root visual" << std::endl;
+    gzerr << "Unable to create root visual" << std::endl;
     this->rootVisual = nullptr;
   }
 

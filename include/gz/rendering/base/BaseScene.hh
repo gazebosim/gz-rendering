@@ -635,7 +635,7 @@ namespace gz
                    // The following two lines will avoid doxygen warnings
                    (void)_id;
                    (void)_name;
-                   ignerr << "Thermal camera not supported by: "
+                   gzerr << "Thermal camera not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return ThermalCameraPtr();
                  }
@@ -650,7 +650,7 @@ namespace gz
                    // The following two lines will avoid doxygen warnings
                    (void)_id;
                    (void)_name;
-                   ignerr << "BoundingBox camera not supported by: "
+                   gzerr << "BoundingBox camera not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return BoundingBoxCameraPtr();
                  }
@@ -666,7 +666,7 @@ namespace gz
                    // The following two lines will avoid doxygen warnings
                    (void)_id;
                    (void)_name;
-                   ignerr << "Segmentation camera not supported by: "
+                   gzerr << "Segmentation camera not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return SegmentationCameraPtr();
                  }
@@ -682,7 +682,7 @@ namespace gz
                    // The following two lines will avoid doxygen warnings
                    (void)_id;
                    (void)_name;
-                   ignerr << "Wide angle camera not supported by: "
+                   gzerr << "Wide angle camera not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return WideAngleCameraPtr();
                  }
@@ -695,7 +695,7 @@ namespace gz
                  {
                    (void)_id;
                    (void)_name;
-                   ignerr << "GpuRays not supported by: "
+                   gzerr << "GpuRays not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return GpuRaysPtr();
                  }
@@ -717,7 +717,7 @@ namespace gz
                  {
                    (void)_id;
                    (void)_name;
-                   ignerr << "GizmoVisual not supported by: "
+                   gzerr << "GizmoVisual not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return GizmoVisualPtr();
                  }
@@ -818,7 +818,7 @@ namespace gz
                  {
                    (void)_id;
                    (void)_name;
-                   ignerr << "ParticleEmitter not supported by: "
+                   gzerr << "ParticleEmitter not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return ParticleEmitterPtr();
                  }

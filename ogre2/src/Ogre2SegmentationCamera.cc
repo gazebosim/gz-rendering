@@ -141,7 +141,7 @@ void Ogre2SegmentationCamera::Destroy()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
   }
   else
   {
@@ -168,14 +168,14 @@ void Ogre2SegmentationCamera::CreateCamera()
   auto ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
   this->ogreCamera = ogreSceneManager->createCamera(this->Name());
   if (this->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 

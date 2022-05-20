@@ -151,7 +151,7 @@ bool OptixNode::AttachChild(NodePtr _child)
 
   if (!derived)
   {
-    ignerr << "Cannot attach node created by another render-engine"
+    gzerr << "Cannot attach node created by another render-engine"
         << std::endl;
     return false;
   }

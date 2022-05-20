@@ -698,7 +698,7 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
             (ShaderParam::PARAM_TEXTURE == name_param.second.Type() ||
              ShaderParam::PARAM_TEXTURE_CUBE == name_param.second.Type())))
     {
-      ignwarn << "Unable to find GPU program parameter: "
+      gzwarn << "Unable to find GPU program parameter: "
               << name_param.first << std::endl;
       continue;
     }
@@ -766,7 +766,7 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       }
       else
       {
-        ignerr << "Shader param texture not found: " << value << std::endl;
+        gzerr << "Shader param texture not found: " << value << std::endl;
         continue;
       }
 
@@ -812,7 +812,7 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       }
       else
       {
-        ignerr << "Unrecognized texture type set for shader param: "
+        gzerr << "Unrecognized texture type set for shader param: "
                << name_param.first << std::endl;
         continue;
       }
@@ -938,7 +938,7 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
       auto tex = textureMgr->findTextureNoThrow(rgbTexName);
       if (!tex)
       {
-        ignmsg << "Grayscale emissive texture detected. Converting to RGB: "
+        gzmsg << "Grayscale emissive texture detected. Converting to RGB: "
                << rgbTexName << std::endl;
         // need to be 4 channels for gpu texture
         unsigned int channels = 4u;
@@ -1056,7 +1056,7 @@ void Ogre2Material::Init()
 
   if (!this->ogreHlmsPbs)
   {
-    ignerr << "Ogre HLMS PBS not ready. Is Ogre2 Render Engine initiallized?"
+    gzerr << "Ogre HLMS PBS not ready. Is Ogre2 Render Engine initiallized?"
            << std::endl;
     return;
   }
@@ -1122,7 +1122,7 @@ Ogre::HlmsUnlitDatablock *Ogre2Material::UnlitDatablock()
         hlmsManager->getHlms(Ogre::HLMS_UNLIT));
     if (!ogreHlmsUnlit)
     {
-      ignerr << "Ogre HLMS UNLIT not ready. Is Ogre2 Render Engine "
+      gzerr << "Ogre HLMS UNLIT not ready. Is Ogre2 Render Engine "
              << "initiallized?" << std::endl;
       return nullptr;
     }
@@ -1177,7 +1177,7 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
 
   if (!common::exists(_path))
   {
-    ignerr << "Vertex shader path does not exist: " << _path << std::endl;
+    gzerr << "Vertex shader path does not exist: " << _path << std::endl;
     return;
   }
 
@@ -1231,7 +1231,7 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
 
   if(this->dataPtr->ogreSolidColorMat->getNumSupportedTechniques() == 0u)
   {
-    ignwarn
+    gzwarn
       << "Material '" << this->Name()
       << "' could not be paired with special pixel shader '"
       << this->dataPtr->ogreSolidColorShader->getSourceFile()
@@ -1267,7 +1267,7 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
 
   if (!common::exists(_path))
   {
-    ignerr << "Fragment shader path does not exist: " << _path << std::endl;
+    gzerr << "Fragment shader path does not exist: " << _path << std::endl;
     return;
   }
 

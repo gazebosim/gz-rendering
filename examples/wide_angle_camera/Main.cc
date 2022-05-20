@@ -143,7 +143,7 @@ CameraPtr createCamera(const std::string &_engineName)
   RenderEngine *engine = rendering::engine(_engineName);
   if (!engine)
   {
-    ignwarn << "Engine '" << _engineName
+    gzwarn << "Engine '" << _engineName
               << "' is not supported" << std::endl;
     return CameraPtr();
   }

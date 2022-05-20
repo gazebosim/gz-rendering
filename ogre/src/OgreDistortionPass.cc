@@ -133,13 +133,13 @@ void OgreDistortionPass::CreateRenderPass()
 {
   if (!this->ogreCamera)
   {
-    ignerr << "No camera set for applying Distortion Pass" << std::endl;
+    gzerr << "No camera set for applying Distortion Pass" << std::endl;
     return;
   }
 
   if (this->dataPtr->distortionInstance)
   {
-    ignerr << "Distortion pass already created. " << std::endl;
+    gzerr << "Distortion pass already created. " << std::endl;
     return;
   }
 
@@ -533,7 +533,7 @@ void OgreDistortionPass::CalculateAndApplyDistortionScale()
     // If distortionScale is extremely small, don't crop
     if (newScale.X() < 1e-7 || newScale.Y() < 1e-7)
     {
-       ignerr << "Distortion model attempted to apply a scale parameter of ("
+       gzerr << "Distortion model attempted to apply a scale parameter of ("
              << this->dataPtr->distortionScale.X() << ", "
              << this->dataPtr->distortionScale.Y()
              << ", which is invalid.\n";

@@ -59,7 +59,7 @@ void OgreRayQuery::SetFromCamera(const CameraPtr &_camera,
       std::dynamic_pointer_cast<OgreObjectInterface>(_camera);
   if (!ogreObjectInterface)
   {
-    ignwarn << "Camera does not support ray query\n";
+    gzwarn << "Camera does not support ray query\n";
     return;
   }
 

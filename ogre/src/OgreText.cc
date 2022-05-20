@@ -362,7 +362,7 @@ void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
 
     if (!ogreFont)
     {
-      ignerr << "Could not find font " + _newFontName << std::endl;
+      gzerr << "Could not find font " + _newFontName << std::endl;
     }
     this->font = ogreFont;
     this->fontName = _newFontName;
@@ -945,7 +945,7 @@ void OgreText::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign ogreMaterial created by another render-engine"
+    gzerr << "Cannot assign ogreMaterial created by another render-engine"
         << std::endl;
 
     return;

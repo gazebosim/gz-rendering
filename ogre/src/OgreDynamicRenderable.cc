@@ -95,7 +95,7 @@ void OgreDynamicRenderable::SetOperationType(MarkerType _opType)
       break;
 
     default:
-      ignerr << "Unknown render operation type[" << _opType << "]\n";
+      gzerr << "Unknown render operation type[" << _opType << "]\n";
       break;
   }
 }

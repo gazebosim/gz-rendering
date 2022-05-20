@@ -306,7 +306,7 @@ namespace gz
       if (this->Type() != JointVisualType::JVT_REVOLUTE2 &&
           this->Type() != JointVisualType::JVT_UNIVERSAL)
       {
-        ignlog << "Joint visual is not of type Revolute2 or "
+        gzlog << "Joint visual is not of type Revolute2 or "
                << " Universal "
                << " so the parent axis will not be shown\n";
         return;
@@ -325,7 +325,7 @@ namespace gz
       auto jointParentVis = this->Scene()->NodeByName(this->jointParentName);
       if (jointParentVis == nullptr)
       {
-        ignlog << "Joint parent with name " << this->jointParentName
+        gzlog << "Joint parent with name " << this->jointParentName
                << " does not exist"
                << " so the parent axis will not be shown\n";
         return;

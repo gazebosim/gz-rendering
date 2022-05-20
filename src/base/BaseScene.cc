@@ -81,7 +81,7 @@ void BaseScene::Init()
 {
   if (!this->loaded)
   {
-    ignerr << "Scene must be loaded first" << std::endl;
+    gzerr << "Scene must be loaded first" << std::endl;
     return;
   }
 
@@ -292,7 +292,7 @@ void BaseScene::DestroyNodeRecursive(NodePtr _node,
   // check if we have visited this node before
   if (_nodeIds.find(_node->Id()) != _nodeIds.end())
   {
-    ignwarn << "Detected loop in scene tree while recursively destroying nodes."
+    gzwarn << "Detected loop in scene tree while recursively destroying nodes."
             << " Breaking loop." << std::endl;
     _node->RemoveParent();
     return;
@@ -1373,7 +1373,7 @@ void BaseScene::SetSkyEnabled(bool _enabled)  // NOLINT(readability/casting)
   // no op, let derived class implement this.
   if (_enabled)
   {
-    ignerr << "Sky not supported by: "
+    gzerr << "Sky not supported by: "
            << this->Engine()->Name() << std::endl;
   }
 }

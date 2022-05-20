@@ -211,7 +211,7 @@ void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
 
   if (path.empty())
   {
-    ignerr << "URI doesn't exist[" << _uri << "]\n";
+    gzerr << "URI doesn't exist[" << _uri << "]\n";
     return;
   }
 
@@ -268,7 +268,7 @@ void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
             }
             catch(Ogre::Exception&)
             {
-              ignerr << "Unable to parse material file[" << fullPath << "]\n";
+              gzerr << "Unable to parse material file[" << fullPath << "]\n";
             }
             stream->close();
           }
@@ -278,7 +278,7 @@ void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
   }
   catch(Ogre::Exception &)
   {
-    ignerr << "Unable to load Ogre Resources.\nMake sure the"
+    gzerr << "Unable to load Ogre Resources.\nMake sure the"
         "resources path in the world file is set correctly." << std::endl;
   }
 }
@@ -338,12 +338,12 @@ bool Ogre2RenderEngine::LoadImpl(
   }
   catch (Ogre::Exception &ex)
   {
-    ignerr << ex.what() << std::endl;
+    gzerr << ex.what() << std::endl;
     return false;
   }
   catch (...)
   {
-    ignerr << "Failed to load render-engine" << std::endl;
+    gzerr << "Failed to load render-engine" << std::endl;
     return false;
   }
 }
@@ -358,7 +358,7 @@ bool Ogre2RenderEngine::InitImpl()
   }
   catch (...)
   {
-    ignerr << "Failed to initialize render-engine" << std::endl;
+    gzerr << "Failed to initialize render-engine" << std::endl;
     return false;
   }
 }
@@ -411,7 +411,7 @@ void Ogre2RenderEngine::CreateContext()
   {
     // Not able to create a Xwindow, try to run in headless mode
     this->SetHeadless(true);
-    ignwarn << "Unable to open display: " << XDisplayName(0)
+    gzwarn << "Unable to open display: " << XDisplayName(0)
             << ". Trying to run in headless mode." << std::endl;
     return;
   }
@@ -434,7 +434,7 @@ void Ogre2RenderEngine::CreateContext()
 
   if (nelements <= 0)
   {
-    ignerr << "Unable to create glx fbconfig" << std::endl;
+    gzerr << "Unable to create glx fbconfig" << std::endl;
     return;
   }
 
@@ -461,7 +461,7 @@ void Ogre2RenderEngine::CreateContext()
   }
   else
   {
-    ignwarn << "glXCreateContextAttribsARB() not found" << std::endl;
+    gzwarn << "glXCreateContextAttribsARB() not found" << std::endl;
     this->dummyContext = glXCreateNewContext(x11Display,
                                              this->dataPtr->dummyFBConfigs[0],
                                              GLX_RGBA_TYPE, nullptr, 1);
@@ -471,7 +471,7 @@ void Ogre2RenderEngine::CreateContext()
 
   if (!this->dummyContext)
   {
-    ignerr << "Unable to create glx context" << std::endl;
+    gzerr << "Unable to create glx context" << std::endl;
     return;
   }
 
@@ -489,7 +489,7 @@ void Ogre2RenderEngine::CreateRoot()
   }
   catch (Ogre::Exception &)
   {
-    ignerr << "Unable to create Ogre root" << std::endl;
+    gzerr << "Unable to create Ogre root" << std::endl;
   }
 }
 
@@ -541,7 +541,7 @@ void Ogre2RenderEngine::LoadPlugins()
         {
           if ((*piter).find("RenderSystem") != std::string::npos)
           {
-            ignerr << "Unable to find Ogre Plugin[" << *piter
+            gzerr << "Unable to find Ogre Plugin[" << *piter
                    << "]. Rendering will not be possible."
                    << "Make sure you have installed OGRE properly.\n";
           }
@@ -559,7 +559,7 @@ void Ogre2RenderEngine::LoadPlugins()
       {
         if ((*piter).find("RenderSystem") != std::string::npos)
         {
-          ignerr << "Unable to load Ogre Plugin[" << *piter
+          gzerr << "Unable to load Ogre Plugin[" << *piter
                  << "]. Rendering will not be possible."
                  << "Make sure you have installed OGRE properly.\n";
         }
@@ -601,7 +601,7 @@ void Ogre2RenderEngine::CreateRenderSystem()
 
   if (renderSys == nullptr)
   {
-    ignerr << "unable to find " << targetRenderSysName << ". OGRE is probably "
+    gzerr << "unable to find " << targetRenderSysName << ". OGRE is probably "
             "installed incorrectly. Double check the OGRE cmake output, "
             "and make sure OpenGL is enabled." << std::endl;
   }
@@ -902,7 +902,7 @@ void Ogre2RenderEngine::CreateResources()
       }
       catch(Ogre::Exception &/*_e*/)
       {
-        ignerr << "Unable to load Ogre Resources. Make sure the resources "
+        gzerr << "Unable to load Ogre Resources. Make sure the resources "
             "path in the world file is set correctly." << std::endl;
       }
     }
@@ -917,7 +917,7 @@ void Ogre2RenderEngine::CreateRenderWindow()
       1, 1, 1, 0);
   if (res.empty())
   {
-    ignerr << "Failed to create dummy render window." << std::endl;
+    gzerr << "Failed to create dummy render window." << std::endl;
   }
 }
 
@@ -988,7 +988,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     }
     catch(const std::exception &_e)
     {
-      ignerr << " Unable to create the rendering window: " << _e.what()
+      gzerr << " Unable to create the rendering window: " << _e.what()
              << std::endl;
       window = nullptr;
     }
@@ -996,7 +996,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   if (attempts >= 10)
   {
-    ignerr << "Unable to create the rendering window after [" << attempts
+    gzerr << "Unable to create the rendering window after [" << attempts
            << "] attempts." << std::endl;
     return std::string();
   }

@@ -85,7 +85,7 @@ void WideAngleCameraTest::WideAngleCamera(
   // Currently, only ogre supports wide angle cameras
   if (_renderEngine.compare("ogre") != 0)
   {
-    ignerr << "Engine '" << _renderEngine
+    gzerr << "Engine '" << _renderEngine
            << "' doesn't support wide angle cameras" << std::endl;
     return;
   }
@@ -93,7 +93,7 @@ void WideAngleCameraTest::WideAngleCamera(
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
-    ignerr << "Engine '" << _renderEngine
+    gzerr << "Engine '" << _renderEngine
            << "' was unable to be retrieved" << std::endl;
     return;
   }
@@ -236,7 +236,7 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
   // Currently, only ogre supports wideAngle cameras
   if (_renderEngine.compare("ogre") != 0)
   {
-    ignerr << "Engine '" << _renderEngine
+    gzerr << "Engine '" << _renderEngine
            << "' doesn't support wide angle cameras" << std::endl;
     return;
   }
@@ -245,7 +245,7 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
-    ignerr << "Engine '" << _renderEngine
+    gzerr << "Engine '" << _renderEngine
               << "' was unable to be retrieved" << std::endl;
     return;
   }

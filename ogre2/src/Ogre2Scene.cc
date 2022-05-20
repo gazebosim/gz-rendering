@@ -226,7 +226,7 @@ void Ogre2Scene::PostRender()
 
   if (dataPtr->cameraPassCountPerGpuFlush == 0u)
   {
-    ignwarn << "Calling Scene::PostRender but "
+    gzwarn << "Calling Scene::PostRender but "
                "SetCameraPassCountPerGpuFlush is 0 (legacy mode for clients"
                " not calling PostRender)."
                "Read the documentation on SetCameraPassCountPerGpuFlush, "
@@ -573,7 +573,7 @@ void Ogre2Scene::UpdateShadowNode()
         dirLightCount);
     spotPointLightCount = std::min(
         std::max(maxShadowMaps - dirLightCount * 3, 0u), spotPointLightCount);
-    ignwarn << "Number of shadow-casting lights exceeds the limit supported by "
+    gzwarn << "Number of shadow-casting lights exceeds the limit supported by "
             << "the underlying rendering engine ogre2. Limiting to "
             << dirLightCount << " directional lights and "
             << spotPointLightCount << " point / spot lights" << std::endl;
@@ -1341,7 +1341,7 @@ void Ogre2Scene::CreateRootVisual()
   // check if root visual created successfully
   if (!this->InitObject(this->rootVisual, rootId, rootName))
   {
-    ignerr << "Unable to create root visual" << std::endl;
+    gzerr << "Unable to create root visual" << std::endl;
     this->rootVisual = nullptr;
     return;
   }

@@ -211,7 +211,7 @@ void Ogre2DepthGaussianNoisePass::CreateRenderPass()
       Ogre::MaterialManager::getSingleton().getByName(matName);
   if (!ogreMat)
   {
-    ignerr << "Gaussian noise material not found: '" << matName << "'"
+    gzerr << "Gaussian noise material not found: '" << matName << "'"
            << std::endl;
     return;
   }
@@ -343,7 +343,7 @@ void Ogre2DepthCamera::Destroy()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
   }
   else
   {
@@ -363,14 +363,14 @@ void Ogre2DepthCamera::CreateCamera()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
   this->ogreCamera = ogreSceneManager->createCamera(this->name);
   if (this->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -495,7 +495,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
       auto skyboxMat = matManager.getByName(this->dataPtr->kSkyboxMaterialName);
       if (!skyboxMat)
       {
-        ignerr << "Unable to find skybox material" << std::endl;
+        gzerr << "Unable to find skybox material" << std::endl;
         return;
       }
       mat = skyboxMat->clone(skyMatName);
@@ -882,7 +882,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
 
   if (!wsDef)
   {
-    ignerr << "Unable to add workspace definition [" << wsDefName << "] "
+    gzerr << "Unable to add workspace definition [" << wsDefName << "] "
            << " for " << this->Name();
   }
 
@@ -1246,7 +1246,7 @@ void Ogre2DepthCamera::AddRenderPass(const RenderPassPtr &_pass)
       std::dynamic_pointer_cast<Ogre2GaussianNoisePass>(_pass);
   if (!pass)
   {
-    ignerr << "Depth camera currently only supports a gaussian noise pass"
+    gzerr << "Depth camera currently only supports a gaussian noise pass"
            << std::endl;
     return;
   }

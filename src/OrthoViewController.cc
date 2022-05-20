@@ -192,7 +192,7 @@ void OrthoViewController::Pan(const math::Vector2d &_value)
 {
   if (!this->dataPtr->camera)
   {
-    ignerr << "Camera is NULL" << std::endl;
+    gzerr << "Camera is NULL" << std::endl;
     return;
   }
 
@@ -224,7 +224,7 @@ void OrthoViewController::Orbit(const math::Vector2d &_value)
 {
   if (!this->dataPtr->camera)
   {
-    ignerr << "Camera is NULL" << std::endl;
+    gzerr << "Camera is NULL" << std::endl;
     return;
   }
 

@@ -117,7 +117,7 @@ void OgreDepthCamera::Destroy()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
   }
   else
   {
@@ -146,7 +146,7 @@ void OgreDepthCamera::CreateCamera()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
@@ -154,7 +154,7 @@ void OgreDepthCamera::CreateCamera()
       this->name);
   if (this->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -228,7 +228,7 @@ void OgreDepthCamera::CreateDepthTexture()
 {
   if (this->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
   }
 
   if (this->depthTexture == nullptr)

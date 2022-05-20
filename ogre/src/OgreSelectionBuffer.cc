@@ -145,7 +145,7 @@ void OgreSelectionBuffer::CreateRTTBuffer()
   catch(...)
   {
     this->dataPtr->renderTexture = nullptr;
-    ignerr << "Unable to create selection buffer.\n";
+    gzerr << "Unable to create selection buffer.\n";
     return;
   }
 
@@ -234,7 +234,7 @@ Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(const int _x, const int _y)
   gz::math::Color::BGRA color(0);
   if (!this->dataPtr->buffer)
   {
-    ignerr << "Selection buffer is null.\n";
+    gzerr << "Selection buffer is null.\n";
     return nullptr;
   }
   memcpy(static_cast<void *>(&color), this->dataPtr->buffer + posInStream, 4);
@@ -289,7 +289,7 @@ void OgreSelectionBuffer::CreateRTTOverlays()
   }
   else
   {
-    ignlog << "Unable to create selection buffer overlay. "
+    gzlog << "Unable to create selection buffer overlay. "
       "This will not effect ignition-rendering unless you're trying to debug "
       "the selection buffer.\n";
   }
@@ -307,6 +307,6 @@ void OgreSelectionBuffer::ShowOverlay(const bool _show)
 #else
 void OgreSelectionBuffer::ShowOverlay(const bool _show)
 {
-  ignerr << "Selection debug overlay disabled for Ogre > 1.9\n";
+  gzerr << "Selection debug overlay disabled for Ogre > 1.9\n";
 }
 #endif

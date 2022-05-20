@@ -103,7 +103,7 @@ void Ogre2ParticleNoiseListener::cameraPreRenderScene(
         }
         catch(Ogre::Exception &e)
         {
-          ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+          gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
         }
         Ogre2ParticleEmitterPtr emitterPtr =
           std::dynamic_pointer_cast<Ogre2ParticleEmitter>(result);

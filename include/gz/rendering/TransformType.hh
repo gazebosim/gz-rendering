@@ -31,7 +31,7 @@ namespace gz
     //
     /// \enum TransformAxis
     /// \brief Unique identifiers for transformation axes.
-    enum IGNITION_RENDERING_VISIBLE TransformAxis
+    enum GZ_RENDERING_VISIBLE TransformAxis
     {
       /// \brief No axis
       TA_NONE = 0,
@@ -57,7 +57,7 @@ namespace gz
 
     /// \enum TransformMode
     /// \brief Unique identifiers for transformation modes.
-    enum IGNITION_RENDERING_VISIBLE TransformMode
+    enum GZ_RENDERING_VISIBLE TransformMode
     {
       /// \brief Inactive state
       TM_NONE = 0,
@@ -71,7 +71,7 @@ namespace gz
 
     /// \enum TransformSpace
     /// \brief Unique identifiers for transformation spaces.
-    enum IGNITION_RENDERING_VISIBLE TransformSpace
+    enum GZ_RENDERING_VISIBLE TransformSpace
     {
       /// \brief transformation in local frame
       TS_LOCAL,

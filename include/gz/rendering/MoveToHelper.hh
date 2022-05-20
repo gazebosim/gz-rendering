@@ -38,7 +38,7 @@ namespace gz
 
       /// \brief Helper class for animating a user camera to move to a target
       /// entity
-      class IGNITION_RENDERING_VISIBLE MoveToHelper
+      class GZ_RENDERING_VISIBLE MoveToHelper
       {
         public: MoveToHelper();
 

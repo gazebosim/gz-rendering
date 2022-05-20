@@ -33,7 +33,7 @@ namespace gz
      */
     /// \brief Abstract base class providing mechanisms for dynamically
     /// growing hardware buffers.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreDynamicRenderable :
+    class GZ_RENDERING_OGRE_VISIBLE OgreDynamicRenderable :
       public Ogre::SimpleRenderable
     {
       /// \brief Constructor

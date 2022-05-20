@@ -48,7 +48,7 @@ namespace gz
 
     /// \class Node Node.hh gz/rendering/Node.hh
     /// \brief Represents a single posable node in the scene graph
-    class IGNITION_RENDERING_VISIBLE Node :
+    class GZ_RENDERING_VISIBLE Node :
       public virtual Object
     {
       /// \brief Destructor

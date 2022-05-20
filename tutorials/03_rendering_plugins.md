@@ -24,7 +24,7 @@ Finally, for your custom rendering engine to actually have any functionality and
 
 Once you have your own rendering plugin written, you can build it similarly to how the example is built.  It may be helpful to look at the [`CMakeLists.txt`](https://github.com/ignitionrobotics/ign-rendering/tree/main/examples/hello_world_plugin) from the example as it contains the boilerplate code needed to get a custom rendering engine plugin built.
 
-After you have your plugin built, you will need to set the `IGN_GAZEBO_RENDER_ENGINE_PATH` environment variable to the path in which your built shared library resides.  Note that you will need to do this for every command line instance unless you add the line to your startup shell script (`.bashrc`, `.zshrc`, etc.).
+After you have your plugin built, you will need to set the `GZ_SIM_RENDER_ENGINE_PATH` environment variable to the path in which your built shared library resides.  Note that you will need to do this for every command line instance unless you add the line to your startup shell script (`.bashrc`, `.zshrc`, etc.).
 
 From here, you should be able to reference your rendering plugin within Ignition Gazebo by the name of the generated shared library file (without the `lib` prefix or the file extension, i.e., libHelloWorldPlugin.so -> HelloWorldPlugin).
 

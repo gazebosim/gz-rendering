@@ -39,7 +39,7 @@ namespace gz
     // forward declaration
     class OgreSelectionBuffer;
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreCamera :
+    class GZ_RENDERING_OGRE_VISIBLE OgreCamera :
       public virtual BaseCamera<OgreSensor>,
       public virtual OgreObjectInterface
     {

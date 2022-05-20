@@ -59,7 +59,7 @@ namespace gz
     /// \class Text Text.hh gz/rendering/Text
     /// \brief Represents a billboard text geometry that is always facing the
     /// camera.
-    class IGNITION_RENDERING_VISIBLE Text :
+    class GZ_RENDERING_VISIBLE Text :
       public virtual Geometry
     {
       /// \brief Constructor

@@ -38,7 +38,7 @@ namespace gz
     class ShaderParamPrivate;
 
     /// \brief a variant type that holds params that can be passed to a shader
-    class IGNITION_RENDERING_VISIBLE ShaderParam
+    class GZ_RENDERING_VISIBLE ShaderParam
     {
       public: enum ParamType : uint16_t
       {

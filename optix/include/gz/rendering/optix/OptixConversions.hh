@@ -37,7 +37,7 @@ namespace gz
     /// \brief Conversions Conversions.hh rendering/Conversions.hh
     /// \brief A set of utility function to convert between Gazebo and Optix
     /// data types
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixConversions
+    class GZ_RENDERING_OPTIX_VISIBLE OptixConversions
     {
       /// \brief Return the equivalent optix color
       /// \param[in] _color Gazebo color to convert

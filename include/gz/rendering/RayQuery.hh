@@ -32,7 +32,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief A class that stores ray query intersection results.
-    class IGNITION_RENDERING_VISIBLE RayQueryResult
+    class GZ_RENDERING_VISIBLE RayQueryResult
     {
       /// \brief Intersection distance
       public: double distance = -1;
@@ -60,7 +60,7 @@ namespace gz
 
     /// \class RayQuery RayQuery.hh gz/rendering/RayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
-    class IGNITION_RENDERING_VISIBLE RayQuery
+    class GZ_RENDERING_VISIBLE RayQuery
         : public virtual Object
     {
       /// \brief Destructor

@@ -29,7 +29,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreObject :
+    class GZ_RENDERING_OGRE_VISIBLE OgreObject :
       public BaseObject
     {
       protected: OgreObject();

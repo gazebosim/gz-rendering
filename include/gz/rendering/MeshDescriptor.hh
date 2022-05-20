@@ -41,7 +41,7 @@ namespace gz
     /// \struct MeshDescriptor MeshDescriptor.hh
     /// gz/rendering/MeshDescriptor.hh
     /// \brief Describes how a Mesh should be loaded
-    struct IGNITION_RENDERING_VISIBLE MeshDescriptor
+    struct GZ_RENDERING_VISIBLE MeshDescriptor
     {
       /// \brief Constructor
       public: MeshDescriptor();

@@ -42,7 +42,7 @@ namespace gz
     ///
     /// This class allows Gazebo to generate per-pixel shaders for every
     /// material at run-time.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRTShaderSystem :
+    class GZ_RENDERING_OGRE_VISIBLE OgreRTShaderSystem :
       public common::SingletonT<OgreRTShaderSystem>
     {
       /// \enum LightingModel

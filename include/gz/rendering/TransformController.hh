@@ -43,7 +43,7 @@ namespace gz
      * gz/rendering/TransformController.hh
      */
     /// \brief An transform tool for translating, rotating, and scaling objects.
-    class IGNITION_RENDERING_VISIBLE TransformController
+    class GZ_RENDERING_VISIBLE TransformController
     {
       /// \brief Constructor
       public: TransformController();

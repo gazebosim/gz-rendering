@@ -29,7 +29,7 @@ namespace gz
     //
     /// \class Light Light.hh gz/rendering/Light.hh
     /// \brief Represents a light source in the scene graph
-    class IGNITION_RENDERING_VISIBLE Light :
+    class GZ_RENDERING_VISIBLE Light :
       public virtual Node
     {
       /// \brief Destructor
@@ -118,7 +118,7 @@ namespace gz
 
     /// \class DirectionalLight Light.hh gz/rendering/Light.hh
     /// \brief Represents a infinite directional light
-    class IGNITION_RENDERING_VISIBLE DirectionalLight :
+    class GZ_RENDERING_VISIBLE DirectionalLight :
       public virtual Light
     {
       /// \brief Destructor
@@ -141,7 +141,7 @@ namespace gz
 
     /// \class PointLight Light.hh gz/rendering/Light.hh
     /// \brief Represents a point light
-    class IGNITION_RENDERING_VISIBLE PointLight :
+    class GZ_RENDERING_VISIBLE PointLight :
       public virtual Light
     {
       /// \brief Destructor
@@ -150,7 +150,7 @@ namespace gz
 
     /// \class SpotLight Light.hh gz/rendering/Light.hh
     /// \brief Represents a spotlight
-    class IGNITION_RENDERING_VISIBLE SpotLight :
+    class GZ_RENDERING_VISIBLE SpotLight :
       public virtual Light
     {
       /// \brief Destructor

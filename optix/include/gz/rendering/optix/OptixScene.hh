@@ -31,7 +31,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixScene :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixScene :
       public BaseScene
     {
       protected: OptixScene(unsigned int _id, const std::string &_name);

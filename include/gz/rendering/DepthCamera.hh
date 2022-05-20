@@ -31,7 +31,7 @@ namespace gz
     /// \brief Poseable depth camera used for rendering the scene graph.
     /// This camera is designed to produced depth data, instead of a 2D
     /// image.
-    class IGNITION_RENDERING_VISIBLE DepthCamera :
+    class GZ_RENDERING_VISIBLE DepthCamera :
       public virtual Camera
     {
       /// \brief Callback function for new frame render event listeners

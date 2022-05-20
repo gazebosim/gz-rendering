@@ -32,7 +32,7 @@ namespace gz
     /// \class InertiaVisual InertiaVisual.hh
     /// gz/rendering/InertiaVisual.hh
     /// \brief Represents a inertia visual
-    class IGNITION_RENDERING_VISIBLE InertiaVisual :
+    class GZ_RENDERING_VISIBLE InertiaVisual :
       public virtual Visual
     {
       /// \brief Destructor

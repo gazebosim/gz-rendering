@@ -32,7 +32,7 @@ namespace gz
      * gz/rendering/ogre/OgreRenderPass.hh
      */
     /// \brief Ogre implementation of the RenderPass class
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderPass :
+    class GZ_RENDERING_OGRE_VISIBLE OgreRenderPass :
       public BaseRenderPass<OgreObject>
     {
       /// \brief Constructor

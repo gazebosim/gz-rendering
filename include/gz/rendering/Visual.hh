@@ -30,7 +30,7 @@ namespace gz
     /// \class Visual Visual.hh gz/rendering/Visual.hh
     /// \brief Represents a visual node in a scene graph. A Visual is the only
     /// node that can have Geometry and other Visual children.
-    class IGNITION_RENDERING_VISIBLE Visual :
+    class GZ_RENDERING_VISIBLE Visual :
       public virtual Node
     {
       /// \brief Destructor

@@ -36,7 +36,7 @@ namespace gz
      * gz/rendering/ogre2/Ogre2GaussianNoisePass.hh
      */
     /// \brief Ogre2 Implementation of a Gaussian noise render pass.
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2GaussianNoisePass :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2GaussianNoisePass :
       public BaseGaussianNoisePass<Ogre2RenderPass>
     {
       /// \brief Constructor

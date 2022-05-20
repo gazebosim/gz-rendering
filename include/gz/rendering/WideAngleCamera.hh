@@ -34,7 +34,7 @@ namespace gz
     /// \class WideAngleCamera WideAngleCamera.hh
     ///     gz/rendering/WideAngleCamera.hh
     /// \brief Wide angle camera class
-    class IGNITION_RENDERING_VISIBLE WideAngleCamera :
+    class GZ_RENDERING_VISIBLE WideAngleCamera :
       public virtual Camera
     {
       /// \brief Destructor

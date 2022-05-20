@@ -47,7 +47,7 @@ namespace gz
     class OgreRenderEnginePrivate;
 
     /// \brief Plugin for loading ogre render engine
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderEnginePlugin :
+    class GZ_RENDERING_OGRE_VISIBLE OgreRenderEnginePlugin :
       public RenderEnginePlugin
     {
       /// \brief Constructor
@@ -65,7 +65,7 @@ namespace gz
       public: RenderEngine *Engine() const;
     };
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderEngine :
+    class GZ_RENDERING_OGRE_VISIBLE OgreRenderEngine :
       public virtual BaseRenderEngine,
       public common::SingletonT<OgreRenderEngine>
     {

@@ -27,7 +27,7 @@ find_package(OpenGL)
 set_property(
   SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc OgreGpuRays.cc OgreMaterial.cc OgreDepthCamera.cc OgreThermalCamera.cc
   PROPERTY COMPILE_DEFINITIONS
-  IGN_RENDERING_RESOURCE_PATH="${IGN_RENDERING_RESOURCE_PATH}"
+  GZ_RENDERING_RESOURCE_PATH="${GZ_RENDERING_RESOURCE_PATH}"
   OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
 )
 
@@ -44,7 +44,7 @@ target_link_libraries(${ogre_target}
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre_target})
 
 # Note that plugins are currently being installed in 2 places: /lib and the engine-plugins dir
-install(TARGETS ${ogre_target} DESTINATION ${IGNITION_RENDERING_ENGINE_INSTALL_DIR})
+install(TARGETS ${ogre_target} DESTINATION ${GZ_RENDERING_ENGINE_INSTALL_DIR})
 
 if(WIN32)
   # tests needs .dll in the same directory
@@ -60,11 +60,11 @@ if (WIN32)
   # disable MSVC inherit via dominance warning
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4250")
   INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy
-  ${IGNITION_RENDERING_ENGINE_INSTALL_DIR}\/${versioned}
-  ${IGNITION_RENDERING_ENGINE_INSTALL_DIR}\/${unversioned})")
+  ${GZ_RENDERING_ENGINE_INSTALL_DIR}\/${versioned}
+  ${GZ_RENDERING_ENGINE_INSTALL_DIR}\/${unversioned})")
 else()
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink ${versioned} ${unversioned})
-  INSTALL(FILES ${PROJECT_BINARY_DIR}/${unversioned} DESTINATION ${IGNITION_RENDERING_ENGINE_INSTALL_DIR})
+  INSTALL(FILES ${PROJECT_BINARY_DIR}/${unversioned} DESTINATION ${GZ_RENDERING_ENGINE_INSTALL_DIR})
 endif()
 
 add_subdirectory(media)

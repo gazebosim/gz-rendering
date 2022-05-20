@@ -26,7 +26,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixArrowVisual :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixArrowVisual :
       public BaseArrowVisual<OptixVisual>
     {
       protected: OptixArrowVisual();

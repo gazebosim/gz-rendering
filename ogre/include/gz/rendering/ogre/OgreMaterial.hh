@@ -36,7 +36,7 @@ namespace gz
     const std::string depth_fragment_shader_file =
       "depth_fragment_shader.glsl";
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreMaterial :
+    class GZ_RENDERING_OGRE_VISIBLE OgreMaterial :
       public BaseMaterial<OgreObject>
     {
       protected: OgreMaterial();

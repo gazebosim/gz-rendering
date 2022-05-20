@@ -39,7 +39,7 @@ namespace gz
     class OgreTextPrivate;
 
     /// \brief Ogre implementation of text geometry
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreText
+    class GZ_RENDERING_OGRE_VISIBLE OgreText
         : public BaseText<OgreGeometry>
     {
       /// \brief Constructor

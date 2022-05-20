@@ -37,7 +37,7 @@ namespace gz
     class Ogre2LightVisualPrivate;
 
     /// \brief Ogre2.x implementation of the light visual class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2LightVisual :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2LightVisual :
       public BaseLightVisual<Ogre2Visual>
     {
       /// \brief Constructor

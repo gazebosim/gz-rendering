@@ -39,7 +39,7 @@ namespace gz
     // Forward declaration
     class OgreCOMVisualPrivate;
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreCOMVisual :
+    class GZ_RENDERING_OGRE_VISIBLE OgreCOMVisual :
       public BaseCOMVisual<OgreVisual>
     {
       /// \brief Constructor

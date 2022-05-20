@@ -31,7 +31,7 @@ namespace gz
     /// \class Grid Grid.hh gz/rendering/Grid
     /// \brief Represents a grid geometry drawn along the XY plane.
     /// If vertical cell count is specified then the grid becomes 3D.
-    class IGNITION_RENDERING_VISIBLE Grid :
+    class GZ_RENDERING_VISIBLE Grid :
       public virtual Geometry
     {
       /// \brief Destructor

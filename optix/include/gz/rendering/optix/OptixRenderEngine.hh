@@ -32,7 +32,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Plugin for loading optix render engine
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderEnginePlugin :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixRenderEnginePlugin :
       public RenderEnginePlugin
     {
       /// \brief Constructor
@@ -50,7 +50,7 @@ namespace gz
       public: RenderEngine *Engine() const;
     };
 
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderEngine :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixRenderEngine :
       public virtual BaseRenderEngine,
       public common::SingletonT<OptixRenderEngine>
     {

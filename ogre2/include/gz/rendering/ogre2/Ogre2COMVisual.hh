@@ -37,7 +37,7 @@ namespace gz
     // Forward declaration
     class Ogre2COMVisualPrivate;
 
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2COMVisual :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2COMVisual :
       public BaseCOMVisual<Ogre2Visual>
     {
       /// \brief Constructor

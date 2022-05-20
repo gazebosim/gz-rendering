@@ -52,7 +52,7 @@ namespace gz
      */
     /// \brief Dynamic renderable class that manages hardware buffers for
     /// a dynamic geometry
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2DynamicRenderable
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2DynamicRenderable
     {
       /// \brief Constructor
       /// \param[in] _scene Pointer to scene

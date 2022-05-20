@@ -28,7 +28,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
      /// \brief The graphics API used by the render engine
-    enum class IGNITION_RENDERING_VISIBLE GraphicsAPI : uint16_t
+    enum class GZ_RENDERING_VISIBLE GraphicsAPI : uint16_t
     {
       /// \internal
       /// \brief Indicator used to create an iterator over the
@@ -57,7 +57,7 @@ namespace gz
     };
 
     /// \brief Utils to convert GraphicsAPI to and from strings
-    class IGNITION_RENDERING_VISIBLE GraphicsAPIUtils
+    class GZ_RENDERING_VISIBLE GraphicsAPIUtils
     {
       /// \brief Convert enum value to string.
       /// \param[in] _e Enum value to convert.

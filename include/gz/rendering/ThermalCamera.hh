@@ -37,7 +37,7 @@ namespace gz
     /// are modeled as a function of depth (which is not how a real thermal
     /// sensor works). Ideally we support heatmaps for visuals in order to
     /// produce more realistic temperature output.
-    class IGNITION_RENDERING_VISIBLE ThermalCamera :
+    class GZ_RENDERING_VISIBLE ThermalCamera :
       public virtual Camera
     {
       /// \brief Destructor

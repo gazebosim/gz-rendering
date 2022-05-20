@@ -45,7 +45,7 @@ inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 ///
 /// Hlms customizations take care of running custom code that outputs
 /// a flat colour
-class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
+class GZ_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   public Ogre::Camera::Listener
 {
   /// \brief Constructor

@@ -26,7 +26,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreJointVisual :
+    class GZ_RENDERING_OGRE_VISIBLE OgreJointVisual :
       public BaseJointVisual<OgreVisual>
     {
       /// \brief Constructor

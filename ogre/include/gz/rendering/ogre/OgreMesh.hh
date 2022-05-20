@@ -42,7 +42,7 @@ namespace gz
     // forward declarations
     class OgreMeshPrivate;
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreMesh :
+    class GZ_RENDERING_OGRE_VISIBLE OgreMesh :
       public BaseMesh<OgreGeometry>
     {
       typedef std::vector<std::string> NameList;
@@ -101,7 +101,7 @@ namespace gz
       private: std::unique_ptr<OgreMeshPrivate> dataPtr;
     };
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreSubMesh :
+    class GZ_RENDERING_OGRE_VISIBLE OgreSubMesh :
       public BaseSubMesh<OgreObject>
     {
       protected: OgreSubMesh();

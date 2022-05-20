@@ -32,7 +32,7 @@ namespace gz
      * gz/rendering/GaussianNoisePass.hh
      */
     /// \brief A render pass that applies Gaussian noise to the render target
-    class IGNITION_RENDERING_VISIBLE GaussianNoisePass
+    class GZ_RENDERING_VISIBLE GaussianNoisePass
       : public virtual RenderPass
     {
       /// \brief Constructor

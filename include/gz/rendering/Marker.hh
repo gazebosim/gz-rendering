@@ -31,7 +31,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Enum for marker types
-    enum IGNITION_RENDERING_VISIBLE MarkerType
+    enum GZ_RENDERING_VISIBLE MarkerType
     {
       /// \brief No type
       MT_NONE           = 0,
@@ -73,7 +73,7 @@ namespace gz
     /// \class Marker Marker.hh gz/rendering/Marker
     /// \brief A marker geometry class. The marker's visual appearance is based
     /// on the marker type specified.
-    class IGNITION_RENDERING_VISIBLE Marker :
+    class GZ_RENDERING_VISIBLE Marker :
       public virtual Geometry
     {
       protected: Marker();

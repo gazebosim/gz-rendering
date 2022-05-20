@@ -32,7 +32,7 @@ namespace gz
     //
     /// \class Geometry Geometry.hh gz/rendering/Geometry.hh
     /// \brief Represents a geometric shape to be rendered
-    class IGNITION_RENDERING_VISIBLE Geometry :
+    class GZ_RENDERING_VISIBLE Geometry :
       public virtual Object
     {
       /// \brief Destructor

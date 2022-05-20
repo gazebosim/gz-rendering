@@ -26,7 +26,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /// \brief Class to manage a particle emitter.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreParticleEmitter :
+    class GZ_RENDERING_OGRE_VISIBLE OgreParticleEmitter :
       public BaseParticleEmitter<OgreVisual>
     {
       /// \brief Constructor

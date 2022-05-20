@@ -46,7 +46,7 @@ namespace gz
     /// \internal
     /// \remark Public variables take effect immediately (i.e. for the
     /// next render)
-    class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsSphericalClipMinDistance
+    class GZ_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsSphericalClipMinDistance
       final : public Ogre::HlmsListener
     {
       public: virtual ~Ogre2GzHlmsSphericalClipMinDistance() = default;

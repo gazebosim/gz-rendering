@@ -34,7 +34,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreNode :
+    class GZ_RENDERING_OGRE_VISIBLE OgreNode :
       public BaseNode<OgreObject>
     {
       protected: OgreNode();

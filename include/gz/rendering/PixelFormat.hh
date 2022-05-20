@@ -29,7 +29,7 @@ namespace gz
     //
     /// \enum PixelFormat PixelFormat.hh gz/rendering/PixelFormat.hh
     /// \brief Image pixel format types
-    enum IGNITION_RENDERING_VISIBLE PixelFormat
+    enum GZ_RENDERING_VISIBLE PixelFormat
     {
       /// < Unknown or errant type
       PF_UNKNOWN      = 0,
@@ -63,7 +63,7 @@ namespace gz
 
     /// \class PixelUtil PixelFormat.hh gz/rendering/PixelFormat.hh
     /// \brief Provides supporting functions for PixelFormat enum
-    class IGNITION_RENDERING_VISIBLE PixelUtil
+    class GZ_RENDERING_VISIBLE PixelUtil
     {
       /// \brief Determine if given format is valid PixelFormat enum
       /// \param[in] _format Enum value to be evaluated

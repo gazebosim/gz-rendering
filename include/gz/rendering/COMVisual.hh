@@ -33,7 +33,7 @@ namespace gz
     /// \class COMVisual COMVisual.hh
     /// gz/rendering/COMVisual.hh
     /// \brief Represents a center of mass visual
-    class IGNITION_RENDERING_VISIBLE COMVisual :
+    class GZ_RENDERING_VISIBLE COMVisual :
       public virtual Visual
     {
       /// \brief Destructor

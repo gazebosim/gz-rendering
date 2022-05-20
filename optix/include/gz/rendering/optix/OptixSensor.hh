@@ -26,7 +26,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixSensor :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixSensor :
       public BaseSensor<OptixNode>
     {
       protected: OptixSensor();

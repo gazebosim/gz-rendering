@@ -37,7 +37,7 @@ namespace gz
     class Ogre2InertiaVisualPrivate;
 
     /// \brief Ogre2.x implementation of the inertia visual class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2InertiaVisual :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2InertiaVisual :
       public BaseInertiaVisual<Ogre2Visual>
     {
       /// \brief Constructor

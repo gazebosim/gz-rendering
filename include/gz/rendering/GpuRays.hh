@@ -34,7 +34,7 @@ namespace gz
     //
     /// \class GpuRays GpuRays.hh gz/rendering/GpuRays.hh
     /// \brief Generate depth ray data.
-    class IGNITION_RENDERING_VISIBLE GpuRays :
+    class GZ_RENDERING_VISIBLE GpuRays :
       public virtual Camera
     {
       /// \brief Callback function for new frame render event listeners

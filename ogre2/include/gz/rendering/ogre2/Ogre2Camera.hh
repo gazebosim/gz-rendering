@@ -41,7 +41,7 @@ namespace gz
     class Ogre2SelectionBuffer;
 
     /// \brief Ogre2.x implementation of the camera class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Camera :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Camera :
       public virtual BaseCamera<Ogre2Sensor>,
       public virtual Ogre2ObjectInterface
     {

@@ -39,7 +39,7 @@ namespace gz
     // Forward declaration
     class OgreLightVisualPrivate;
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreLightVisual :
+    class GZ_RENDERING_OGRE_VISIBLE OgreLightVisual :
       public BaseLightVisual<OgreVisual>
     {
       /// \brief Constructor

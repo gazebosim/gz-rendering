@@ -35,7 +35,7 @@ namespace gz
     class OgreLidarVisualPrivate;
 
     /// \brief Ogre implementation of a Lidar Visual.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreLidarVisual
+    class GZ_RENDERING_OGRE_VISIBLE OgreLidarVisual
       : public BaseLidarVisual<OgreVisual>
     {
       /// \brief Constructor

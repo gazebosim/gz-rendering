@@ -28,7 +28,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
     /// \brief Mixin class to provide direct access to Ogre objects.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreObjectInterface
+    class GZ_RENDERING_OGRE_VISIBLE OgreObjectInterface
     {
       public: virtual ~OgreObjectInterface();
 

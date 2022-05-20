@@ -33,7 +33,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Ogre2.x implementation of the Node class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Node :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Node :
       public BaseNode<Ogre2Object>
     {
       /// \brief Constructor

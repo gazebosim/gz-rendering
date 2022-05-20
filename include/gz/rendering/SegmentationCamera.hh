@@ -48,7 +48,7 @@ namespace gz
     /// \brief Poseable Segmentation camera used for rendering the scene graph.
     /// This camera is designed to produce segmentation data, instead of a 2D
     /// image.
-    class IGNITION_RENDERING_VISIBLE SegmentationCamera :
+    class GZ_RENDERING_VISIBLE SegmentationCamera :
       public virtual Camera
     {
       /// \brief Destructor

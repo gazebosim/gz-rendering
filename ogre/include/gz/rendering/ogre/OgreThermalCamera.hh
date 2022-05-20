@@ -61,7 +61,7 @@ namespace gz
      * rendering/ogre/OgreThermalCamera.hh
     **/
     /// \brief Depth camera used to render thermal data into an image buffer
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreThermalCamera :
+    class GZ_RENDERING_OGRE_VISIBLE OgreThermalCamera :
       public virtual BaseThermalCamera<OgreSensor>,
       public virtual OgreObjectInterface
     {

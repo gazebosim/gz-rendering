@@ -35,7 +35,7 @@ inline namespace GZ_RENDERING_VERSION_NAMESPACE {
   class HeightmapBlendPrivate;
 
   /// \brief Texture to be used on heightmaps.
-  class IGNITION_RENDERING_VISIBLE HeightmapTexture
+  class GZ_RENDERING_VISIBLE HeightmapTexture
   {
     /// \brief Constructor
     public: HeightmapTexture();
@@ -92,7 +92,7 @@ inline namespace GZ_RENDERING_VERSION_NAMESPACE {
   };
 
   /// \brief Blend information to be used between textures on heightmaps.
-  class IGNITION_RENDERING_VISIBLE HeightmapBlend
+  class GZ_RENDERING_VISIBLE HeightmapBlend
   {
     /// \brief Constructor
     public: HeightmapBlend();
@@ -143,7 +143,7 @@ inline namespace GZ_RENDERING_VERSION_NAMESPACE {
   /// \class HeightmapDescriptor HeightmapDescriptor.hh
   /// gz/rendering/HeightmapDescriptor.hh
   /// \brief Describes how a Heightmap should be loaded
-  class IGNITION_RENDERING_VISIBLE HeightmapDescriptor
+  class GZ_RENDERING_VISIBLE HeightmapDescriptor
   {
     /// \brief Constructor
     public: HeightmapDescriptor();

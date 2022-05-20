@@ -34,7 +34,7 @@ namespace gz
      * gz/rendering/DistortionPass.hh
      */
     /// \brief A render pass that applies distortion to the render target
-    class IGNITION_RENDERING_VISIBLE DistortionPass
+    class GZ_RENDERING_VISIBLE DistortionPass
       : public virtual RenderPass
     {
       /// \brief Constructor

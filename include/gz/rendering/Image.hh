@@ -33,7 +33,7 @@ namespace gz
     //
     /// \class Image Image.hh gz/rendering/Image.hh
     /// \brief Encapsulates a raw image buffer and relevant properties
-    class IGNITION_RENDERING_VISIBLE Image
+    class GZ_RENDERING_VISIBLE Image
     {
       /// \brief Shared pointer to raw image buffer
       typedef std::shared_ptr<unsigned char> DataPtr;

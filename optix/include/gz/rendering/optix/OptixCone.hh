@@ -25,7 +25,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixCone :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixCone :
       public OptixPrimitive
     {
       protected: OptixCone();

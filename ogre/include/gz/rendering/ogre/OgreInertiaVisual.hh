@@ -39,7 +39,7 @@ namespace gz
     // Forward declaration
     class OgreInertiaVisualPrivate;
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreInertiaVisual :
+    class GZ_RENDERING_OGRE_VISIBLE OgreInertiaVisual :
       public BaseInertiaVisual<OgreVisual>
     {
       /// \brief Constructor

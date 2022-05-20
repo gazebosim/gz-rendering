@@ -33,7 +33,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Enum for LidarVisual types
-    enum IGNITION_RENDERING_VISIBLE LidarVisualType
+    enum GZ_RENDERING_VISIBLE LidarVisualType
     {
       /// \brief No type
       LVT_NONE           = 0,
@@ -51,7 +51,7 @@ namespace gz
     /// \class LidarVisual LidarVisual.hh gz/rendering/LidarVisual
     /// \brief A LidarVisual geometry class. The visual appearance is based
     /// on the type specified.
-    class IGNITION_RENDERING_VISIBLE LidarVisual :
+    class GZ_RENDERING_VISIBLE LidarVisual :
       public virtual Visual
     {
       protected: LidarVisual();

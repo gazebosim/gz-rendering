@@ -33,7 +33,7 @@ namespace gz
     // forward declaration
     class OgreVisualPrivate;
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreVisual :
+    class GZ_RENDERING_OGRE_VISIBLE OgreVisual :
       public BaseVisual<OgreNode>
     {
       protected: OgreVisual();

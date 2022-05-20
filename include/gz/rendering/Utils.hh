@@ -46,7 +46,7 @@ namespace gz
     /// \param[in] _rayQuery Ray query for mouse clicks
     /// \param[in] _maxDistance maximum distance to check the collision
     /// \return 3D coordinates of a point in the 3D scene.
-    IGNITION_RENDERING_VISIBLE
+    GZ_RENDERING_VISIBLE
     math::Vector3d screenToScene(
         const math::Vector2i &_screenPos,
         const CameraPtr &_camera,
@@ -61,7 +61,7 @@ namespace gz
     /// \param[inout] _rayResult Ray query result
     /// \param[in] _maxDistance maximum distance to check the collision
     /// \return 3D coordinates of a point in the 3D scene.
-    IGNITION_RENDERING_VISIBLE
+    GZ_RENDERING_VISIBLE
     math::Vector3d screenToScene(
         const math::Vector2i &_screenPos,
         const CameraPtr &_camera,
@@ -76,7 +76,7 @@ namespace gz
     /// \param[in] _rayQuery Ray query for mouse clicks
     /// \param[in] _offset Offset along the plane normal
     /// \return 3D coordinates of a point in the 3D scene.
-    IGNITION_RENDERING_VISIBLE
+    GZ_RENDERING_VISIBLE
     math::Vector3d screenToPlane(
       const math::Vector2i &_screenPos,
       const CameraPtr &_camera,
@@ -85,7 +85,7 @@ namespace gz
 
     /// \brief Get the screen scaling factor.
     /// \return The screen scaling factor.
-    IGNITION_RENDERING_VISIBLE
+    GZ_RENDERING_VISIBLE
     float screenScalingFactor();
 
     /// \brief Transform a bounding box.
@@ -93,7 +93,7 @@ namespace gz
     /// \param[in] _pose Pose used to transform the bounding box.
     /// \return Vertices of the transformed bounding box in
     /// world coordinates.
-    IGNITION_RENDERING_VISIBLE
+    GZ_RENDERING_VISIBLE
     gz::math::AxisAlignedBox transformAxisAlignedBox(
         const gz::math::AxisAlignedBox &_box,
         const gz::math::Pose3d &_pose);

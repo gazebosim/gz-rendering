@@ -28,7 +28,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_VISIBLE BaseObject :
+    class GZ_RENDERING_VISIBLE BaseObject :
       IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public virtual std::enable_shared_from_this<BaseObject>,
       IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING

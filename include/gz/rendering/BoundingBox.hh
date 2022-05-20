@@ -33,7 +33,7 @@ inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
   /// \brief 2D or 3D Bounding box. It stores the
   /// position / orientation / size info of the box and its label
-  class IGNITION_RENDERING_VISIBLE BoundingBox
+  class GZ_RENDERING_VISIBLE BoundingBox
   {
     /// \brief Constructor
     public: BoundingBox();

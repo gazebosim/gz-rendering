@@ -41,7 +41,7 @@ namespace gz
      * gz/rendering/ogre/OgreDistortionPass.hh
      */
     /// \brief Ogre implementation of the DistortionPass class
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreDistortionPass :
+    class GZ_RENDERING_OGRE_VISIBLE OgreDistortionPass :
       public BaseDistortionPass<OgreRenderPass>
     {
       /// \brief Constructor

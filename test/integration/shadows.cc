@@ -44,7 +44,7 @@ void ShadowsTest::Shadows(const std::string &_renderEngine)
 {
   // override and make sure not to look for resources in installed share dir
   std::string projectSrcPath = PROJECT_SOURCE_PATH;
-  std::string env = "IGN_RENDERING_RESOURCE_PATH=" + projectSrcPath;
+  std::string env = "GZ_RENDERING_RESOURCE_PATH=" + projectSrcPath;
   putenv(const_cast<char *>(env.c_str()));
 
   // create and populate scene

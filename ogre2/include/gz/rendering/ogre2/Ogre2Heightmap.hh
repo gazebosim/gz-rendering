@@ -47,7 +47,7 @@ namespace gz
     class Ogre2HeightmapPrivate;
 
     /// \brief Ogre implementation of a heightmap geometry.
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Heightmap
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Heightmap
       : public BaseHeightmap<Ogre2Geometry>
     {
       /// \brief Constructor

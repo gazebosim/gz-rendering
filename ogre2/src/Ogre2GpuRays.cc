@@ -64,7 +64,7 @@ inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 //
 /// \brief Helper class for switching the ogre item's material to laser retro
 /// source material when a thermal camera is being rendered.
-class IGNITION_RENDERING_OGRE2_HIDDEN
+class GZ_RENDERING_OGRE2_HIDDEN
     Ogre2LaserRetroMaterialSwitcher : public Ogre::CompositorWorkspaceListener
 {
   /// \brief constructor
@@ -104,7 +104,7 @@ class IGNITION_RENDERING_OGRE2_HIDDEN
 
 /// \internal
 /// \brief Private data for the Ogre2GpuRays class
-class IGNITION_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2GpuRaysPrivate
+class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2GpuRaysPrivate
 {
   /// \brief Event triggered when new gpu rays range data are available.
   /// \param[in] _frame New frame containing raw gpu rays data.

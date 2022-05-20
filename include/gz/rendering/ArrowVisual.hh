@@ -28,7 +28,7 @@ namespace gz
     //
     /// \class ArrowVisual ArrowVisual.hh gz/rendering/ArrowVisual.hh
     /// \brief Represents a arrow composite visual
-    class IGNITION_RENDERING_VISIBLE ArrowVisual :
+    class GZ_RENDERING_VISIBLE ArrowVisual :
       public virtual CompositeVisual
     {
       /// \brief Destructor

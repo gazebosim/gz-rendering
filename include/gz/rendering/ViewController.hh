@@ -32,7 +32,7 @@ namespace gz
     /// \class ViewController ViewController.hh
     ///   gz/rendering/ViewController.hh
     /// \brief A camera view controller
-    class IGNITION_RENDERING_VISIBLE ViewController
+    class GZ_RENDERING_VISIBLE ViewController
     {
       /// \brief Destructor
       public: virtual ~ViewController() { }

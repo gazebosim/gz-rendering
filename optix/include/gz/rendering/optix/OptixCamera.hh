@@ -28,7 +28,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixCamera :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixCamera :
       public BaseCamera<OptixSensor>
     {
       protected: OptixCamera();

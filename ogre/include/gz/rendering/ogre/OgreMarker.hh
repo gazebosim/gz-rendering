@@ -33,7 +33,7 @@ namespace gz
     class OgreMarkerPrivate;
 
     /// \brief Ogre implementation of a marker geometry.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreMarker
+    class GZ_RENDERING_OGRE_VISIBLE OgreMarker
       : public BaseMarker<OgreGeometry>
     {
       /// \brief Constructor

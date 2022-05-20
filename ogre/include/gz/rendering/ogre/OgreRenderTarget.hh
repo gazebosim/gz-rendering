@@ -39,7 +39,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderTarget :
+    class GZ_RENDERING_OGRE_VISIBLE OgreRenderTarget :
       public virtual BaseRenderTarget<OgreObject>
     {
       protected: OgreRenderTarget();
@@ -128,7 +128,7 @@ namespace gz
       protected: uint32_t visibilityMask = IGN_VISIBILITY_ALL;
     };
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderTexture :
+    class GZ_RENDERING_OGRE_VISIBLE OgreRenderTexture :
       public virtual BaseRenderTexture<OgreRenderTarget>
     {
       protected: OgreRenderTexture();
@@ -161,7 +161,7 @@ namespace gz
       private: friend class OgreScene;
     };
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderWindow :
+    class GZ_RENDERING_OGRE_VISIBLE OgreRenderWindow :
       public virtual BaseRenderWindow<OgreRenderTarget>
     {
       protected: OgreRenderWindow();

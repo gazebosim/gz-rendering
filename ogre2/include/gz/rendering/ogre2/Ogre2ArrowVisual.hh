@@ -27,7 +27,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Ogre2.x implementation of the arrow visual class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2ArrowVisual :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2ArrowVisual :
       public BaseArrowVisual<Ogre2Visual>
     {
       /// \brief Constructor

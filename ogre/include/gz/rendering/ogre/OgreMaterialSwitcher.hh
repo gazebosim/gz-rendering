@@ -38,7 +38,7 @@ namespace gz
     class OgreSelectionBuffer;
 
     /// \brief Helper class to assign unique colors to renderables
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreMaterialSwitcher :
+    class GZ_RENDERING_OGRE_VISIBLE OgreMaterialSwitcher :
 // Ogre::MaterialManager::Listener isn't a dll-interface class, this may cause
 // issues
 #ifdef _MSC_VER

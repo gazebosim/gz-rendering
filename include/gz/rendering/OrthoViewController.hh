@@ -34,7 +34,7 @@ namespace gz
 
     /// \class OrthoViewController OrthoViewController.hh
     /// \brief Orthographic view controller
-    class IGNITION_RENDERING_VISIBLE OrthoViewController
+    class GZ_RENDERING_VISIBLE OrthoViewController
         : public virtual ViewController
     {
       /// \brief Constructor

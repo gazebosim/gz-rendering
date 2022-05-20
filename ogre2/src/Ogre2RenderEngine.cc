@@ -51,7 +51,7 @@
 #include "Terra/TerraWorkspaceListener.h"
 #include "Ogre2GzHlmsSphericalClipMinDistance.hh"
 
-class IGNITION_RENDERING_OGRE2_HIDDEN
+class GZ_RENDERING_OGRE2_HIDDEN
     gz::rendering::Ogre2RenderEnginePrivate
 {
 #if !defined(__APPLE__) && !defined(_WIN32)
@@ -671,9 +671,9 @@ void Ogre2RenderEngine::CreateRenderSystem()
 
 void Ogre2RenderEngine::RegisterHlms()
 {
-  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
-      IGN_RENDERING_RESOURCE_PATH;
+      GZ_RENDERING_RESOURCE_PATH;
   // install path
   std::string mediaPath = common::joinPaths(resourcePath, "ogre2", "media");
   if (!common::exists(mediaPath))
@@ -864,9 +864,9 @@ void Ogre2RenderEngine::RegisterHlms()
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::CreateResources()
 {
-  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
-      IGN_RENDERING_RESOURCE_PATH;
+      GZ_RENDERING_RESOURCE_PATH;
   // install path
   std::string mediaPath = common::joinPaths(resourcePath, "ogre2", "media");
   if (!common::exists(mediaPath))

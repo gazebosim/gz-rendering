@@ -63,7 +63,7 @@ namespace gz
      * rendering/ogre/OgreDepthCamera.hh
     **/
     /// \brief Depth camera used to render depth data into an image buffer
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreDepthCamera :
+    class GZ_RENDERING_OGRE_VISIBLE OgreDepthCamera :
       public virtual BaseDepthCamera<OgreSensor>,
       public virtual OgreObjectInterface
     {

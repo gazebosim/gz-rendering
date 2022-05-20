@@ -53,7 +53,7 @@ namespace gz
     class Ogre2ThermalCameraPrivate;
 
     /// \brief Thermal camera used to render thermal data into an image buffer
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2ThermalCamera :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2ThermalCamera :
       public virtual BaseThermalCamera<Ogre2Sensor>,
       public virtual Ogre2ObjectInterface
     {

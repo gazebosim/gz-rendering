@@ -28,7 +28,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderTarget :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixRenderTarget :
       public virtual BaseRenderTarget<OptixObject>
     {
       protected: OptixRenderTarget();
@@ -44,7 +44,7 @@ namespace gz
       protected: float *hostData;
     };
 
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderTexture :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixRenderTexture :
       public virtual BaseRenderTexture<OptixRenderTarget>
     {
       protected: OptixRenderTexture();
@@ -65,7 +65,7 @@ namespace gz
     };
 
     /// \brief Render window mocked using a render texture.
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderWindow :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixRenderWindow :
       public virtual BaseRenderWindow<OptixRenderTexture>
     {
       /// \brief Constructor

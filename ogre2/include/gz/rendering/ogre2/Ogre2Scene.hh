@@ -54,7 +54,7 @@ namespace gz
     class Ogre2ScenePrivate;
     //
     /// \brief Ogre2.x implementation of the scene class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Scene :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Scene :
       public BaseScene
     {
       /// \brief Constructor

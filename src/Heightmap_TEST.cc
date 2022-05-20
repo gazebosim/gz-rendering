@@ -19,7 +19,7 @@
 
 #include <gz/common/Console.hh>
 #include <gz/common/geospatial/ImageHeightmap.hh>
-#include <gz/utilities/ExtraTestMacros.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 #include "gz/rendering/RenderEngine.hh"

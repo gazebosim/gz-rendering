@@ -26,7 +26,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreSensor :
+    class GZ_RENDERING_OGRE_VISIBLE OgreSensor :
       public BaseSensor<OgreNode>
     {
       protected: OgreSensor();

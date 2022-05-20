@@ -31,7 +31,7 @@ namespace gz
     /// \class Object Object.hh gz/rendering/Object.hh
     /// \brief Represents an object present in the scene graph. This includes
     /// sub-meshes, materials, render targets, as well as posable nodes.
-    class IGNITION_RENDERING_VISIBLE Object
+    class GZ_RENDERING_VISIBLE Object
     {
       /// \brief Destructor
       public: virtual ~Object() { }

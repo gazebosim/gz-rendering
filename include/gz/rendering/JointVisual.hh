@@ -33,7 +33,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Enum for JointVisual types
-    enum IGNITION_RENDERING_VISIBLE JointVisualType
+    enum GZ_RENDERING_VISIBLE JointVisualType
     {
       /// \brief No type
       JVT_NONE           = 0,
@@ -66,7 +66,7 @@ namespace gz
     /// \class JointVisual JointVisual.hh
     /// gz/rendering/JointVisual.hh
     /// \brief Represents a joint visual
-    class IGNITION_RENDERING_VISIBLE JointVisual :
+    class GZ_RENDERING_VISIBLE JointVisual :
       public virtual Visual
     {
       /// \brief Destructor

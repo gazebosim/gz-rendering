@@ -38,7 +38,7 @@ namespace gz
      *  gz/rendering/ogre/OgreDynamicLines.hh
      */
     /// \brief Class for drawing lines that can change
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreDynamicLines :
+    class GZ_RENDERING_OGRE_VISIBLE OgreDynamicLines :
       public OgreDynamicRenderable
     {
       /// \brief Constructor

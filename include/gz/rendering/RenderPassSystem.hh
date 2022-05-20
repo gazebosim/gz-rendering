@@ -42,7 +42,7 @@ namespace gz
      * gz/rendering/RenderPassSystem.hh
      */
     /// \brief A factory interface for creating render passes
-    class IGNITION_RENDERING_VISIBLE RenderPassFactory
+    class GZ_RENDERING_VISIBLE RenderPassFactory
     {
       /// \brief Instantiate new render pass
       /// \return New render pass
@@ -53,7 +53,7 @@ namespace gz
      * gz/rendering/RenderPassSystem.hh
      */
     /// \brief A class for creating and managing render passes
-    class IGNITION_RENDERING_VISIBLE RenderPassSystem
+    class GZ_RENDERING_VISIBLE RenderPassSystem
     {
       /// \brief Constructor
       public: RenderPassSystem();

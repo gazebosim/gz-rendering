@@ -28,3 +28,5 @@ TEST(Deprecated, IgnitionNamespace)
 {
   ignition::camera::Camera camera;
 }
+
+#undef SUPPRESS_IGNITION_HEADER_DEPRECATION

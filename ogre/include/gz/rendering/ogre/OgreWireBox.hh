@@ -38,7 +38,7 @@ namespace gz
     class OgreWireBoxPrivate;
 
     /// \brief Ogre implementation of a wire box geometry.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreWireBox
+    class GZ_RENDERING_OGRE_VISIBLE OgreWireBox
       : public BaseWireBox<OgreGeometry>
     {
       /// \brief Constructor

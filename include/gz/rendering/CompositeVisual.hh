@@ -29,7 +29,7 @@ namespace gz
     /// \class CompositeVisual CompositeVisual.hh
     /// gz/rendering/CompositeVisual.hh
     /// \brief Represents a predefined collection of geometries and visuals
-    class IGNITION_RENDERING_VISIBLE CompositeVisual :
+    class GZ_RENDERING_VISIBLE CompositeVisual :
       public virtual Visual
     {
       /// \brief Destructor

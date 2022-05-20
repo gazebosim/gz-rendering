@@ -29,7 +29,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /// \class Capsule Capsule.hh gz/rendering/Capsule
     /// \brief Geometry for a capsule shape.
-    class IGNITION_RENDERING_VISIBLE Capsule :
+    class GZ_RENDERING_VISIBLE Capsule :
       public virtual Geometry
     {
       /// \brief Destructor

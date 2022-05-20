@@ -46,7 +46,7 @@ namespace gz
     /// \brief Storage map from std::string to template class T
     /// \tparam T The storage element type
     template <class T>
-    class IGNITION_RENDERING_VISIBLE Map
+    class GZ_RENDERING_VISIBLE Map
     {
       /// \typedef TPtr
       /// \brief Shared pointer to T
@@ -111,7 +111,7 @@ namespace gz
     /// will ensure that each element's name and ID are unique.
     /// \tparam T The storage element type
     template <class T>
-    class IGNITION_RENDERING_VISIBLE Store
+    class GZ_RENDERING_VISIBLE Store
     {
       /// \typedef TPtr
       /// \brief Shared pointer to T
@@ -224,7 +224,7 @@ namespace gz
     /// a single composite store.
     /// \tparam T The storage element type
     template <class T>
-    class IGNITION_RENDERING_VISIBLE CompositeStore :
+    class GZ_RENDERING_VISIBLE CompositeStore :
       public Store<T>
     {
       /// \typedef TPtr
@@ -288,7 +288,7 @@ namespace gz
     /// \tparam T New storage type
     /// \tparam U Some derived class of T
     template <class T, class U>
-    class IGNITION_RENDERING_VISIBLE StoreWrapper :
+    class GZ_RENDERING_VISIBLE StoreWrapper :
       public Store<T>
     {
       public: virtual ~StoreWrapper() { }

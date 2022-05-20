@@ -48,7 +48,7 @@ namespace gz
     class Ogre2SelectionBuffer;
 
     /// \brief Helper class to assign unique colors to renderables
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2MaterialSwitcher :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2MaterialSwitcher :
       public Ogre::Camera::Listener
     {
       /// \brief Constructor

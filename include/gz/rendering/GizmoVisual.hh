@@ -31,7 +31,7 @@ namespace gz
     //
     /// \class GizmoVisual GizmoVisual.hh gz/rendering/GizmoVisual.hh
     /// \brief A gizmo that contains rotate, translate, and scale visuals
-    class IGNITION_RENDERING_VISIBLE GizmoVisual :
+    class GZ_RENDERING_VISIBLE GizmoVisual :
       public virtual CompositeVisual
     {
       /// \brief Destructor

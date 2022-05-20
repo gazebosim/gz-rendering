@@ -33,7 +33,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreGeometry :
+    class GZ_RENDERING_OGRE_VISIBLE OgreGeometry :
       public BaseGeometry<OgreObject>
     {
       protected: OgreGeometry();

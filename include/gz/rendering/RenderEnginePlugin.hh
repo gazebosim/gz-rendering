@@ -37,7 +37,7 @@ namespace gz
     class RenderEnginePluginPrivate;
 
     /// \brief Base plugin class for render engines
-    class IGNITION_RENDERING_VISIBLE RenderEnginePlugin
+    class GZ_RENDERING_VISIBLE RenderEnginePlugin
     {
       /// \brief Constructor
       public: RenderEnginePlugin();

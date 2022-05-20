@@ -36,7 +36,7 @@ namespace gz
     /// \class OgreRayQuery OgreRayQuery.hh
     /// gz/rendering/base/OgreRayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRayQuery :
+    class GZ_RENDERING_OGRE_VISIBLE OgreRayQuery :
         public BaseRayQuery<OgreObject>
     {
       /// \brief Constructor

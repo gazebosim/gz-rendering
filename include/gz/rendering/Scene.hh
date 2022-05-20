@@ -45,7 +45,7 @@ namespace gz
     /// \brief Manages a single scene-graph. This class updates scene-wide
     /// properties and holds the root scene node. A Scene also serves as a
     /// factory for all scene objects.
-    class IGNITION_RENDERING_VISIBLE Scene
+    class GZ_RENDERING_VISIBLE Scene
     {
       /// \brief Destructor
       public: virtual ~Scene() { }

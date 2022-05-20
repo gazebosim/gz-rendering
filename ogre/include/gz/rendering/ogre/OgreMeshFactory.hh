@@ -35,7 +35,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreMeshFactory
+    class GZ_RENDERING_OGRE_VISIBLE OgreMeshFactory
     {
       public: explicit OgreMeshFactory(OgreScenePtr _scene);
 
@@ -67,7 +67,7 @@ namespace gz
       protected: std::vector<MaterialPtr> materialCache;
     };
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreSubMeshStoreFactory
+    class GZ_RENDERING_OGRE_VISIBLE OgreSubMeshStoreFactory
     {
       typedef std::vector<std::string> NameList;
 

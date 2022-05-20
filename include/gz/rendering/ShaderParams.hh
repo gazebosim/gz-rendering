@@ -35,14 +35,14 @@ namespace gz
     class ShaderParamsPrivate;
 
     /// \brief a map that holds params to be passed to a shader
-    class IGNITION_RENDERING_VISIBLE ShaderParams
+    class GZ_RENDERING_VISIBLE ShaderParams
     {
       /// \brief forward declaration
       class IteratorPrivate;
 
       /// \brief Iterator for looping through params
       /// \remarks implements a forward-iterator
-      class IGNITION_RENDERING_VISIBLE Iterator
+      class GZ_RENDERING_VISIBLE Iterator
       {
         /// \brief Default constructor
         public: Iterator();

@@ -29,7 +29,7 @@ namespace gz
     //
     /// \class WireBox WireBox.hh gz/rendering/WireBox
     /// \brief Draws a wireframe box.
-    class IGNITION_RENDERING_VISIBLE WireBox :
+    class GZ_RENDERING_VISIBLE WireBox :
       public virtual Geometry
     {
       /// \brief Constructor

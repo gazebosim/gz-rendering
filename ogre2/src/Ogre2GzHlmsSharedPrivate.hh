@@ -19,7 +19,7 @@
 
 #include "gz/rendering/config.hh"
 #include "gz/rendering/ogre2/Export.hh"
-#include "gz/rendering/ogre2/Ogre2IgnOgreRenderingMode.hh"
+#include "gz/rendering/ogre2/Ogre2GzOgreRenderingMode.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -44,7 +44,7 @@ namespace gz
     /// \brief Implements code shared across all or most of our Hlms
     /// customizations
     /// \internal
-    class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsShared
+    class GZ_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsShared
     {
       /// \brief Binds currPerObjectDataBuffer to the right slot.
       /// Does nothing if it's nullptr

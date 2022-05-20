@@ -56,7 +56,7 @@ namespace Ogre
   /// \internal
   /// \remark Public variables take effect immediately (i.e. for the
   /// next render)
-  class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsUnlit final
+  class GZ_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsUnlit final
     : public HlmsUnlit,
       public HlmsListener,
       public gz::rendering::Ogre2GzHlmsShared

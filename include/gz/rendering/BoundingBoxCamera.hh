@@ -51,7 +51,7 @@ namespace gz
     /// gz/rendering/BoundingBoxCamera.hh
     /// \brief Poseable BoundingBox camera used for rendering bounding boxes of
     /// objects in the scene.
-    class IGNITION_RENDERING_VISIBLE BoundingBoxCamera :
+    class GZ_RENDERING_VISIBLE BoundingBoxCamera :
       public virtual Camera
     {
       /// \brief Destructor

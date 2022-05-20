@@ -30,7 +30,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_VISIBLE BaseRenderEngine :
+    class GZ_RENDERING_VISIBLE BaseRenderEngine :
       public virtual RenderEngine
     {
       protected: BaseRenderEngine();

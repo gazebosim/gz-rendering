@@ -33,7 +33,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Enum for emitter types.
-    enum IGNITION_RENDERING_VISIBLE EmitterType
+    enum GZ_RENDERING_VISIBLE EmitterType
     {
       /// \brief Point emitter.
       EM_POINT            = 0,
@@ -55,7 +55,7 @@ namespace gz
     /// gz/rendering/ParticleEmitter.hh
     //
     /// \brief Class to manage a particle emitter.
-    class IGNITION_RENDERING_VISIBLE ParticleEmitter :
+    class GZ_RENDERING_VISIBLE ParticleEmitter :
       public virtual Visual
     {
       /// \brief Destructor

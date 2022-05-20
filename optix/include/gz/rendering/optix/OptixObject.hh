@@ -27,7 +27,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixObject :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixObject :
       public BaseObject
     {
       protected: OptixObject();

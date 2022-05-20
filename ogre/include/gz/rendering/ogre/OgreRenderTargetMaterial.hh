@@ -49,7 +49,7 @@ namespace gz
     /// Every time ogre tries to get a technique for a material it will call
     /// handleSchemeNotFound which returns the first supported technique on the
     /// material provided to this class's constructor.
-    class IGNITION_RENDERING_OGRE_VISIBLE  OgreRenderTargetMaterial :
+    class GZ_RENDERING_OGRE_VISIBLE  OgreRenderTargetMaterial :
       public Ogre::RenderTargetListener,
       public Ogre::MaterialManager::Listener
     {

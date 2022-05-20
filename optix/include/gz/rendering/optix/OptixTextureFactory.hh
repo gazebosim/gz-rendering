@@ -28,7 +28,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixTextureFactory
+    class GZ_RENDERING_OPTIX_VISIBLE OptixTextureFactory
     {
       public: explicit OptixTextureFactory(OptixScenePtr _scene);
 

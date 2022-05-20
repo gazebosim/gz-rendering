@@ -54,7 +54,7 @@ namespace gz
      * rendering/ogre/OgreGpuRays.hh
     **/
     /// \brief Gpu Rays used to render depth data into an image buffer
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreGpuRays :
+    class GZ_RENDERING_OGRE_VISIBLE OgreGpuRays :
       public BaseGpuRays<OgreSensor>, public Ogre::RenderObjectListener
     {
       /// \brief Constructor

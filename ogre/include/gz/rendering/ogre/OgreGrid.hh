@@ -38,7 +38,7 @@ namespace gz
     class OgreGridPrivate;
 
     /// \brief Ogre implementation of a grid geometry.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreGrid
+    class GZ_RENDERING_OGRE_VISIBLE OgreGrid
       : public BaseGrid<OgreGeometry>
     {
       /// \brief Constructor

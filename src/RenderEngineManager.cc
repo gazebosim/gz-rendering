@@ -96,7 +96,7 @@ class gz::rendering::RenderEngineManagerPrivate
   public: gz::plugin::Loader pluginLoader;
 
   /// \brief Environment variable which holds paths to look for plugins
-  public: std::string pluginPathEnv = "IGN_RENDERING_PLUGIN_PATH";
+  public: std::string pluginPathEnv = "GZ_RENDERING_PLUGIN_PATH";
 
   /// \brief List which holds paths to look for engine plugins.
   public: std::list<std::string> pluginPaths;
@@ -445,8 +445,8 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   systemPaths.SetPluginPathEnv(this->pluginPathEnv);
 
   // Add default install folder.
-  systemPaths.AddPluginPaths(std::string(IGN_RENDERING_PLUGIN_PATH));
-  systemPaths.AddPluginPaths({IGNITION_RENDERING_ENGINE_INSTALL_DIR});
+  systemPaths.AddPluginPaths(std::string(GZ_RENDERING_PLUGIN_PATH));
+  systemPaths.AddPluginPaths({GZ_RENDERING_ENGINE_INSTALL_DIR});
 
   // Add any preset plugin paths.
   for (const auto &path : this->pluginPaths)

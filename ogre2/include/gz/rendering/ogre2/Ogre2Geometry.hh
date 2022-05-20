@@ -32,7 +32,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Ogre2.x implementation of the geometry class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Geometry :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Geometry :
       public BaseGeometry<Ogre2Object>
     {
       /// \brief Constructor

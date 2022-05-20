@@ -566,9 +566,9 @@ void OgreRenderEngine::CreateResources()
 
   // TODO(anyone) support loading resources from user specified paths
   std::list<std::string> paths;
-  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
-      IGN_RENDERING_RESOURCE_PATH;
+      GZ_RENDERING_RESOURCE_PATH;
   // install path
   std::string mediaPath = common::joinPaths(resourcePath, "ogre", "media");
   paths.push_back(mediaPath);

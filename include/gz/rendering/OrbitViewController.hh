@@ -39,7 +39,7 @@ namespace gz
     /// \class OrbitViewController OrbitViewController.hh
     /// gz/rendering/OrbitViewController.hh
     /// \brief A camera view controller
-    class IGNITION_RENDERING_VISIBLE OrbitViewController
+    class GZ_RENDERING_VISIBLE OrbitViewController
         : public virtual ViewController
     {
       /// \brief Destructor

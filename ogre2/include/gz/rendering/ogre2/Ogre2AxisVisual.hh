@@ -27,7 +27,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Ogre2.x implementation of the axis visual class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2AxisVisual :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2AxisVisual :
       public BaseAxisVisual<Ogre2Visual>
     {
       /// \brief Constructor

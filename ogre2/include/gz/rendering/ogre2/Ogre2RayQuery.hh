@@ -35,7 +35,7 @@ namespace gz
     /// \class Ogre2RayQuery Ogre2RayQuery.hh
     /// gz/rendering/ogre2/Ogre2RayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RayQuery :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2RayQuery :
         public BaseRayQuery<Ogre2Object>
     {
       /// \brief Constructor

@@ -34,7 +34,7 @@ namespace gz
     /// \brief An abstract interface to a concrete render-engine. A
     /// RenderEngine is responsible for initializing a render-engine as well as
     /// creating, storing, and destroying scenes.
-    class IGNITION_RENDERING_VISIBLE RenderEngine
+    class GZ_RENDERING_VISIBLE RenderEngine
     {
       /// \brief Destructor
       public: virtual ~RenderEngine() { }

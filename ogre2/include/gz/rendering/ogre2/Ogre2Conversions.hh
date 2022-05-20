@@ -50,7 +50,7 @@ namespace gz
     /// \brief Conversions Conversions.hh rendering/Conversions.hh
     /// \brief A set of utility function to convert between Ignition and Ogre
     /// data types
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Conversions
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Conversions
     {
       /// \brief Return the equivalent ogre color
       /// \param[in] _color ign-math color to convert

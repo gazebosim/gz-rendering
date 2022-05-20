@@ -37,7 +37,7 @@ namespace gz
       class OgreCapsulePrivate;
 
       /// \brief Ogre 2.x implementation of a Capsule Visual.
-      class IGNITION_RENDERING_OGRE_VISIBLE OgreCapsule
+      class GZ_RENDERING_OGRE_VISIBLE OgreCapsule
         : public BaseCapsule<OgreGeometry>
       {
         /// \brief Constructor

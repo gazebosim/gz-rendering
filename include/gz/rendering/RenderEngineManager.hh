@@ -43,7 +43,7 @@ namespace gz
     /// render-engines available at runtime. RenderEngine objects should not
     /// be access directly, but instead via the RenderEngineManager to maintain
     /// a flexible render-engine agnostic design.
-    class IGNITION_RENDERING_VISIBLE RenderEngineManager :
+    class GZ_RENDERING_VISIBLE RenderEngineManager :
       public virtual common::SingletonT<RenderEngineManager>
     {
       /// \brief Constructor

@@ -660,9 +660,9 @@ void OgreMaterial::SetDepthMaterial(const double _far,
 
   // TODO(anyone): convert depth configuration into a ShaderType
   // Get shader parameters path
-  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
-      IGN_RENDERING_RESOURCE_PATH;
+      GZ_RENDERING_RESOURCE_PATH;
 
   // path to look for vertex and fragment shader parameters
   std::string depth_vertex_shader_path = common::joinPaths(

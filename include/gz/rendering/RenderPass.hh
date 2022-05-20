@@ -31,7 +31,7 @@ namespace gz
     /// \brief A render pass can be added to a camera to affect how the scene
     /// is rendered. It can be used to add post-processing effects. Multiple
     /// passes can be chained together.
-    class IGNITION_RENDERING_VISIBLE RenderPass
+    class GZ_RENDERING_VISIBLE RenderPass
       : public virtual Object
     {
       /// \brief Destructor

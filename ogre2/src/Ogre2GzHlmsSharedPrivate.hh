@@ -17,9 +17,9 @@
 #ifndef GZ_RENDERING_OGRE2_OGRE2GZHLMSSHAREDPRIVATE_HH_
 #define GZ_RENDERING_OGRE2_OGRE2GZHLMSSHAREDPRIVATE_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2IgnOgreRenderingMode.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Ogre2IgnOgreRenderingMode.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -36,7 +36,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE
     {
     typedef gz::rendering::IgnOgreRenderingMode IgnOgreRenderingMode;
     typedef Ogre::vector<Ogre::ConstBufferPacked*>::type ConstBufferPackedVec;

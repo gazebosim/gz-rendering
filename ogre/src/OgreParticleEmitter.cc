@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre/OgreParticleEmitter.hh"
+#include "gz/rendering/ogre/OgreParticleEmitter.hh"
 
 using namespace gz;
 using namespace rendering;

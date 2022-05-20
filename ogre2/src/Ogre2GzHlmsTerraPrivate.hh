@@ -17,8 +17,8 @@
 #ifndef GZ_RENDERING_OGRE2_OGRE2GZHLMSTERRAPRIVATE_HH_
 #define GZ_RENDERING_OGRE2_OGRE2GZHLMSTERRAPRIVATE_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre2/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre2/Export.hh"
 
 #include "Ogre2GzHlmsSharedPrivate.hh"
 #include "Ogre2GzHlmsSphericalClipMinDistance.hh"

@@ -17,9 +17,9 @@
 
 #include "Ogre2GzHlmsUnlitPrivate.hh"
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)

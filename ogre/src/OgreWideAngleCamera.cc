@@ -32,12 +32,12 @@
 #endif
 #endif
 
-#include "ignition/rendering/CameraLens.hh"
+#include "gz/rendering/CameraLens.hh"
 
-#include "ignition/rendering/ogre/OgreConversions.hh"
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
-#include "ignition/rendering/ogre/OgreWideAngleCamera.hh"
+#include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreRenderEngine.hh"
+#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
+#include "gz/rendering/ogre/OgreWideAngleCamera.hh"
 
 /// \brief Private data for the WideAngleCamera class
 class gz::rendering::OgreWideAngleCamera::Implementation

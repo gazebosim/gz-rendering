@@ -21,7 +21,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Helper class for updating particle noise params
     class Ogre2ParticleNoiseListener : public Ogre::Camera::Listener

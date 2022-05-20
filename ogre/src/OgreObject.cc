@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre/OgreObject.hh"
+#include "gz/rendering/ogre/OgreObject.hh"
 
-#include "ignition/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
 
 using namespace gz;
 using namespace rendering;

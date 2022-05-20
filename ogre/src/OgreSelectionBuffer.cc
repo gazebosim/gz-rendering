@@ -16,13 +16,13 @@
 */
 
 #include <memory>
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreMaterialSwitcher.hh"
-#include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
+#include "gz/common/Console.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreMaterialSwitcher.hh"
+#include "gz/rendering/ogre/OgreSelectionBuffer.hh"
 
 using namespace gz;
 using namespace rendering;

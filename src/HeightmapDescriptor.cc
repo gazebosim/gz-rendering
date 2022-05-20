@@ -16,7 +16,7 @@
  */
 
 
-#include "ignition/rendering/HeightmapDescriptor.hh"
+#include "gz/rendering/HeightmapDescriptor.hh"
 
 using namespace gz;
 using namespace rendering;

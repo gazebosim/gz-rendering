@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre/OgreRenderPass.hh"
+#include "gz/rendering/ogre/OgreRenderPass.hh"
 
 
 using namespace gz;

@@ -16,7 +16,7 @@
  */
 
 
-#include "ignition/rendering/BoundingBox.hh"
+#include "gz/rendering/BoundingBox.hh"
 
 using namespace gz;
 using namespace rendering;

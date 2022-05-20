@@ -15,12 +15,12 @@
  *
  */
 
-#include <ignition/common/Console.hh>
-#include "ignition/rendering/ogre/OgreDynamicLines.hh"
-#include "ignition/rendering/ogre/OgreLidarVisual.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreMarker.hh"
-#include "ignition/rendering/ogre/OgreGeometry.hh"
+#include <gz/common/Console.hh>
+#include "gz/rendering/ogre/OgreDynamicLines.hh"
+#include "gz/rendering/ogre/OgreLidarVisual.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreMarker.hh"
+#include "gz/rendering/ogre/OgreGeometry.hh"
 
 
 class gz::rendering::OgreLidarVisualPrivate

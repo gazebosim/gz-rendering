@@ -15,10 +15,10 @@
  *
  */
 
-#include "ignition/rendering/ogre/OgreInertiaVisual.hh"
-#include "ignition/rendering/ogre/OgreDynamicLines.hh"
+#include "gz/rendering/ogre/OgreInertiaVisual.hh"
+#include "gz/rendering/ogre/OgreDynamicLines.hh"
 
-#include "ignition/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
 
 class gz::rendering::OgreInertiaVisualPrivate
 {

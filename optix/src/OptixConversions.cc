@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/optix/OptixConversions.hh"
+#include "gz/rendering/optix/OptixConversions.hh"
 
 using namespace gz;
 using namespace rendering;

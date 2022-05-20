@@ -15,9 +15,9 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ShaderType.hh"
+#include "gz/rendering/ShaderType.hh"
 
 using namespace gz;
 using namespace rendering;

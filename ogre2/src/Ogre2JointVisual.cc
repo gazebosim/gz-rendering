@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre2/Ogre2JointVisual.hh"
+#include "gz/rendering/ogre2/Ogre2JointVisual.hh"
 
 using namespace gz;
 using namespace rendering;

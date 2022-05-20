@@ -16,7 +16,7 @@
  */
 
 
-#include "ignition/rendering/LidarVisual.hh"
+#include "gz/rendering/LidarVisual.hh"
 
 using namespace gz;
 using namespace rendering;

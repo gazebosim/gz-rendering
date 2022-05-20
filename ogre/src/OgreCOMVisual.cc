@@ -15,10 +15,10 @@
  *
  */
 
-#include "ignition/rendering/ogre/OgreCOMVisual.hh"
-#include "ignition/rendering/ogre/OgreDynamicLines.hh"
+#include "gz/rendering/ogre/OgreCOMVisual.hh"
+#include "gz/rendering/ogre/OgreDynamicLines.hh"
 
-#include "ignition/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
 
 class gz::rendering::OgreCOMVisualPrivate
 {

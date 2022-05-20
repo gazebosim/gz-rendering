@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/optix/OptixCylinder.hh"
+#include "gz/rendering/optix/OptixCylinder.hh"
 
 using namespace gz;
 using namespace rendering;

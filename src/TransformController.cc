@@ -15,14 +15,14 @@
  *
  */
 
-#include <ignition/common/Console.hh>
-#include <ignition/math/Plane.hh>
+#include <gz/common/Console.hh>
+#include <gz/math/Plane.hh>
 
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/GizmoVisual.hh"
-#include "ignition/rendering/RayQuery.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/TransformController.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/GizmoVisual.hh"
+#include "gz/rendering/RayQuery.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/TransformController.hh"
 
 /// \brief Private data class for TransformController
 class gz::rendering::TransformControllerPrivate

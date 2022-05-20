@@ -16,17 +16,17 @@
  */
 
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/RenderPassSystem.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreDistortionPass.hh"
+#include "gz/rendering/RenderPassSystem.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreDistortionPass.hh"
 
 namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     class OgreDistortionPass::Implementation
     {
       /// \brief Scale applied to distorted image.
@@ -55,7 +55,7 @@ namespace gz
       public: unsigned int distortionTexHeight = 0u;
 
       /// \brief Distortion compositor listener
-      /// uses <ignition/utils/ImplPtr.hh> from ign-rendering7
+      /// uses <gz/utils/ImplPtr.hh> from ign-rendering7
       IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: std::shared_ptr<DistortionCompositorListener>
           distortionCompositorListener;

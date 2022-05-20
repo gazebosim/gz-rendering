@@ -15,7 +15,7 @@
  *
  */
 
-#include "ignition/rendering/ShaderParams.hh"
+#include "gz/rendering/ShaderParams.hh"
 
 #include <unordered_map>
 

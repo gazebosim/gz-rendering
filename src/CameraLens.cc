@@ -21,10 +21,10 @@
 #include <utility>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/common/Console.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/CameraLens.hh"
+#include "gz/rendering/CameraLens.hh"
 
 /// \brief Private fields of camera lens
 class gz::rendering::CameraLens::Implementation

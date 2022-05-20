@@ -20,19 +20,19 @@
 #include <X11/Xresource.h>
 #endif
 
-#include "ignition/math/Plane.hh"
-#include "ignition/math/Vector2.hh"
-#include "ignition/math/Vector3.hh"
+#include "gz/math/Plane.hh"
+#include "gz/math/Vector2.hh"
+#include "gz/math/Vector3.hh"
 
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/RayQuery.hh"
-#include "ignition/rendering/Utils.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/RayQuery.hh"
+#include "gz/rendering/Utils.hh"
 
 namespace gz
 {
 namespace rendering
 {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 //
 /////////////////////////////////////////////////
 math::Vector3d screenToScene(

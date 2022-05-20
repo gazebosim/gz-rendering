@@ -15,12 +15,12 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre2/Ogre2Light.hh"
+#include "gz/rendering/ogre2/Ogre2Light.hh"
 
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)

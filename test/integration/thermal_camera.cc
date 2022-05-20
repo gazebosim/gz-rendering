@@ -17,20 +17,20 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Event.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Event.hh>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/ParticleEmitter.hh"
-#include "ignition/rendering/PixelFormat.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/ThermalCamera.hh"
+#include "gz/rendering/ParticleEmitter.hh"
+#include "gz/rendering/PixelFormat.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/ThermalCamera.hh"
 
 #define DEPTH_TOL 1e-4
 #define DOUBLE_TOL 1e-6

@@ -16,11 +16,11 @@
  */
 
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/RenderPassSystem.hh"
-#include "ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/RenderPassSystem.hh"
+#include "gz/rendering/ogre2/Ogre2GaussianNoisePass.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)

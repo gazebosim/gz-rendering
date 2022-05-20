@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre2/Ogre2RenderPass.hh"
+#include "gz/rendering/ogre2/Ogre2RenderPass.hh"
 
 /// \brief Private data for the Ogre2RenderPass class
 class gz::rendering::Ogre2RenderPassPrivate

@@ -17,7 +17,7 @@
 
 #include "Ogre2GzHlmsSphericalClipMinDistance.hh"
 
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 
 #ifdef _MSC_VER
 #  pragma warning(push, 0)

@@ -17,7 +17,7 @@
 
 #include "Ogre2GzHlmsSharedPrivate.hh"
 
-#include <ignition/common/Util.hh>
+#include <gz/common/Util.hh>
 
 #ifdef _MSC_VER
 #  pragma warning(push, 0)

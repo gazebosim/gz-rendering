@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/optix/OptixCone.hh"
+#include "gz/rendering/optix/OptixCone.hh"
 
 using namespace gz;
 using namespace rendering;

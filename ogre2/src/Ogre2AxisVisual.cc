@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre2/Ogre2AxisVisual.hh"
+#include "gz/rendering/ogre2/Ogre2AxisVisual.hh"
 
 using namespace gz;
 using namespace rendering;

@@ -14,10 +14,10 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre/OgreGeometry.hh"
+#include "gz/rendering/ogre/OgreGeometry.hh"
 
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreVisual.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreVisual.hh"
 
 using namespace gz;
 using namespace rendering;

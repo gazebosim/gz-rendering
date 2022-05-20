@@ -15,11 +15,11 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/optix/OptixPrimitive.hh"
-#include "ignition/rendering/optix/OptixMaterial.hh"
-#include "ignition/rendering/optix/OptixScene.hh"
+#include "gz/rendering/optix/OptixPrimitive.hh"
+#include "gz/rendering/optix/OptixMaterial.hh"
+#include "gz/rendering/optix/OptixScene.hh"
 
 using namespace gz;
 using namespace rendering;

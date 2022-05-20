@@ -33,7 +33,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /* \class BaseGizmoVisual BaseGizmoVisuall.hh \
      * gz/rendering/base/BaseGizmoVisual.hh

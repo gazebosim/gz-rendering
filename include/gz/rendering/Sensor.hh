@@ -24,7 +24,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Sensor Sensor.hh gz/rendering/Sensor.hh
     /// \brief Represents a scene sensor. The most obvious example is a camera,

@@ -26,7 +26,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /// \class Visual Visual.hh gz/rendering/Visual.hh
     /// \brief Represents a visual node in a scene graph. A Visual is the only
     /// node that can have Geometry and other Visual children.

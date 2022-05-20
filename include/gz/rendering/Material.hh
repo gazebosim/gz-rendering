@@ -30,7 +30,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief An enum for the type of material
     enum IGNITION_RENDERING_VISIBLE MaterialType

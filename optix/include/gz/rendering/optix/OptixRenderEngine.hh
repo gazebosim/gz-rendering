@@ -29,7 +29,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Plugin for loading optix render engine
     class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderEnginePlugin :

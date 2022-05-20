@@ -24,7 +24,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class AxisVisual AxisVisual.hh gz/rendering/AxisVisual.hh
     /// \brief Represents a axis composite visual

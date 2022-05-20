@@ -28,7 +28,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// TODO Not implemented yet!
     /// \brief Optix implementation of a grid geometry

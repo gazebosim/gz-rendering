@@ -25,7 +25,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Heightmap Heightmap.hh gz/rendering/Heightmap
     /// \brief A terrain defined by a heightfield.

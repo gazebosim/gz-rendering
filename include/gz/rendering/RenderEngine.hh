@@ -28,7 +28,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class RenderEngine RenderEngine.hh gz/rendering/RenderEngine.hh
     /// \brief An abstract interface to a concrete render-engine. A

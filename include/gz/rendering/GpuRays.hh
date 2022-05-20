@@ -30,7 +30,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class GpuRays GpuRays.hh gz/rendering/GpuRays.hh
     /// \brief Generate depth ray data.

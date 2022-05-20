@@ -24,7 +24,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class ArrowVisual ArrowVisual.hh gz/rendering/ArrowVisual.hh
     /// \brief Represents a arrow composite visual

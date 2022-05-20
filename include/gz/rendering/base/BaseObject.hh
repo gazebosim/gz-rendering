@@ -26,7 +26,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     class IGNITION_RENDERING_VISIBLE BaseObject :
       IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING

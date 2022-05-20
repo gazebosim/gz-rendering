@@ -26,7 +26,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /// \class Capsule Capsule.hh gz/rendering/Capsule
     /// \brief Geometry for a capsule shape.
     class IGNITION_RENDERING_VISIBLE Capsule :

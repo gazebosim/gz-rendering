@@ -26,7 +26,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /// \class Camera Camera.hh gz/rendering/Camera.hh
     /// \brief Poseable depth camera used for rendering the scene graph.
     /// This camera is designed to produced depth data, instead of a 2D

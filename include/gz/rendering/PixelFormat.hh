@@ -25,7 +25,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \enum PixelFormat PixelFormat.hh gz/rendering/PixelFormat.hh
     /// \brief Image pixel format types

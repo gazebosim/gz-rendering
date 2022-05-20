@@ -25,7 +25,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class WireBox WireBox.hh gz/rendering/WireBox
     /// \brief Draws a wireframe box.

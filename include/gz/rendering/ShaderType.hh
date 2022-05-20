@@ -25,7 +25,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \enum ShaderType ShaderType.hh gz/rendering/ShaderType.hh
     /// \brief Available types of shaders. Note that not all rendering-engines

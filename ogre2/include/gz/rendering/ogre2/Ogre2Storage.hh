@@ -33,7 +33,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 // armhf failed to build with this code. It can not be removed for the rest
 // of arches to keep ABI but should be removed in major versions unreleased

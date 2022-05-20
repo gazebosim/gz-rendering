@@ -29,7 +29,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     // TODO(anyone): use a better way to find shader configurations
     const std::string depth_vertex_shader_file =
       "depth_vertex_shader.glsl";

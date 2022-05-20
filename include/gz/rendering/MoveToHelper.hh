@@ -32,7 +32,7 @@ namespace gz
   namespace rendering
   {
     // Inline bracket to help doxygen filtering.
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
       // forward declaration
       class MoveToHelperPrivate;
 

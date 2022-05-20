@@ -28,7 +28,7 @@ namespace gz
 {
 namespace rendering
 {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
   class BoundingBoxPrivate;
 
   /// \brief 2D or 3D Bounding box. It stores the

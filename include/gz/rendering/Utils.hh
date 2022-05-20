@@ -37,7 +37,7 @@ namespace gz
   namespace rendering
   {
     // Inline bracket to help doxygen filtering.
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Retrieve the first point on a surface in the 3D scene hit by a
     /// ray cast from the given 2D screen coordinates.

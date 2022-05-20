@@ -28,7 +28,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Geometry Geometry.hh gz/rendering/Geometry.hh
     /// \brief Represents a geometric shape to be rendered

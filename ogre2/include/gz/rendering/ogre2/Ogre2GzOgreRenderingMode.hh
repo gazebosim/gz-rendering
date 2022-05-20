@@ -24,7 +24,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE
     {
       /// \brief Rendering modes so that GzHlms implementations
       /// follow alternate code paths or extra customizations

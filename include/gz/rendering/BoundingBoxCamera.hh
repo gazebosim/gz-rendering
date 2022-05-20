@@ -31,7 +31,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief BoundingBox types for Visible / Full 2D Boxes / 3D Boxes
     enum class BoundingBoxType

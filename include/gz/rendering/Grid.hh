@@ -26,7 +26,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Grid Grid.hh gz/rendering/Grid
     /// \brief Represents a grid geometry drawn along the XY plane.

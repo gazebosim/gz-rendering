@@ -35,7 +35,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Causes all objects in a scene to be rendered with the same
     /// material when rendered by a given RenderTarget.

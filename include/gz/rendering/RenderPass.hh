@@ -25,7 +25,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class RenderPass RenderPass.hh gz/rendering/RenderPass.hh
     /// \brief A render pass can be added to a camera to affect how the scene

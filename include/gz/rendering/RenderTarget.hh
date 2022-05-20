@@ -30,7 +30,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class RenderTarget RenderTarget.hh gz/rendering/RenderTarget.hh
     /// \brief Represents a render-target to which cameras can render images.

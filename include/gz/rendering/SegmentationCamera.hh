@@ -42,7 +42,7 @@ namespace gz
       ST_PANOPTIC = 1
     };
 
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /// \class SegmentationCamera SegmentationCamera.hh
     /// gz/rendering/SegmentationCamera.hh
     /// \brief Poseable Segmentation camera used for rendering the scene graph.

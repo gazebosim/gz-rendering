@@ -30,7 +30,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Mesh Mesh.hh gz/rendering/Mesh
     /// \brief Represents a collection of mesh geometries

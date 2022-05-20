@@ -27,7 +27,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class GizmoVisual GizmoVisual.hh gz/rendering/GizmoVisual.hh
     /// \brief A gizmo that contains rotate, translate, and scale visuals

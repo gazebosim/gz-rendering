@@ -33,7 +33,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Alias for a variant that can hold various types of data.
     /// The first type of the variant is std::monostate in order to prevent

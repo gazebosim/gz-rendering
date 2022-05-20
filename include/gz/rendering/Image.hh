@@ -29,7 +29,7 @@ namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Image Image.hh gz/rendering/Image.hh
     /// \brief Encapsulates a raw image buffer and relevant properties

@@ -1,17 +1,17 @@
-## Ignition Rendering
+## Gazebo Rendering
 
-### Ignition Rendering 7.X
+### Gazebo Rendering 7.X
 
-### Ignition Rendering 7.0.0 (202X-XX-XX)
+### Gazebo Rendering 7.0.0 (202X-XX-XX)
 
-### Ignition Rendering 6.X
+### Gazebo Rendering 6.X
 
-### Ignition Rendering 6.3.1 (2022-04-13)
+### Gazebo Rendering 6.3.1 (2022-04-13)
 
 1.  Revert OGRE-Next custom support and back to use IgnOGRE2 module
     * [Pull request #605](https://github.com/gazebosim/gz-rendering/pull/605)
 
-### Ignition Rendering 6.3.0 (2022-04-06)
+### Gazebo Rendering 6.3.0 (2022-04-06)
 
 1. Flip heightmap's Y position on Ogre 2 and add sanity checks for NaN
     * [Pull request #585](https://github.com/gazebosim/gz-rendering/pull/585)
@@ -46,7 +46,7 @@
 1. Remove unnecessary error message when headless rendering is enabled
     * [Pull request #569](https://github.com/gazebosim/gz-rendering/pull/569)
 
-### Ignition Rendering 6.2.1 (2022-02-24)
+### Gazebo Rendering 6.2.1 (2022-02-24)
 
 1. Restore format conversion in Ogre2RenderTarget::Copy
     * [Pull request #564](https://github.com/gazebosim/gz-rendering/pull/564)
@@ -60,7 +60,7 @@
 1. Backport wave changes
     * [Pull request #557](https://github.com/gazebosim/gz-rendering/pull/557)
 
-### Ignition Rendering 6.2.0 (2022-01-28)
+### Gazebo Rendering 6.2.0 (2022-01-28)
 
 1. Fix missing terrain shadows casted on objects
     * [Pull request #547](https://github.com/gazebosim/gz-rendering/pull/547)
@@ -106,7 +106,7 @@
 1. RenderOrder is in different scale in Reverse Z
     * [Pull request #514](https://github.com/gazebosim/gz-rendering/pull/514)
 
-### Ignition Rendering 6.1.0 (2021-12-09)
+### Gazebo Rendering 6.1.0 (2021-12-09)
 
 1. Check for OpenGL backend before calling GL APIs
     * [Pull request #509](https://github.com/gazebosim/gz-rendering/pull/509)
@@ -177,12 +177,12 @@
 1. Fix ray query distance calculation
     * [Pull request #438](https://github.com/gazebosim/gz-rendering/pull/438)
 
-### Ignition Rendering 6.0.1 (2021-10-01)
+### Gazebo Rendering 6.0.1 (2021-10-01)
 
 1. Disable using selection buffer for ray queries
     * [Pull request #447](https://github.com/gazebosim/gz-rendering/pull/447)
 
-### Ignition Rendering 6.0.0 (2021-09-30)
+### Gazebo Rendering 6.0.0 (2021-09-30)
 
 1. Avoid configure warning when checking ogre-1.10
     * [Pull request #411](https://github.com/gazebosim/gz-rendering/pull/411)
@@ -272,12 +272,12 @@
 1. Infrastructure
     * [Pull request #318](https://github.com/gazebosim/gz-rendering/pull/318)
 
-### Ignition Rendering 5.2.1 (2022-03-35)
+### Gazebo Rendering 5.2.1 (2022-03-35)
 
 1. Silence CMake policy CMP0072
     * [Pull request #528](https://github.com/gazebosim/gz-rendering/pull/528)
 
-### Ignition Rendering 5.2.0 (2021-11-02)
+### Gazebo Rendering 5.2.0 (2021-11-02)
 
 1. Fix context attributes of glXCreateContextAttribsARB.
     * [Pull request #460](https://github.com/gazebosim/gz-rendering/pull/460)
@@ -350,7 +350,7 @@
 1. More nullptr checking on Node classes
     * [Pull request #364](https://github.com/gazebosim/gz-rendering/pull/364)
 
-### Ignition Rendering 5.1.0 (2021-06-22)
+### Gazebo Rendering 5.1.0 (2021-06-22)
 
 1. add ifdef for apple in integration test
     * [Pull request #349](https://github.com/gazebosim/gz-rendering/pull/349)
@@ -433,7 +433,7 @@
 1. Added command line argument to pick version of Ogre
     * [Pull request #277](https://github.com/gazebosim/gz-rendering/pull/277)
 
-### Ignition Rendering 5.0.0 (2021-03-30)
+### Gazebo Rendering 5.0.0 (2021-03-30)
 
 1. Add ogre2 skybox support
     * [Pull request #168](https://github.com/gazebosim/gz-rendering/pull/168)
@@ -479,9 +479,9 @@
     * [Pull request #287](https://github.com/gazebosim/gz-rendering/pull/287)
     * [Pull request #286](https://github.com/gazebosim/gz-rendering/pull/286)
 
-### Ignition Rendering 4.X
+### Gazebo Rendering 4.X
 
-### Ignition Rendering 4.9.0 (2021-09-15)
+### Gazebo Rendering 4.9.0 (2021-09-15)
 
 1. Output warning message if a mesh with zero submeshes is created
     * [Pull request #391](https://github.com/gazebosim/gz-rendering/pull/391)
@@ -500,7 +500,7 @@
     * [Pull request #382](https://github.com/gazebosim/gz-rendering/pull/382)
     * [Pull request #398](https://github.com/gazebosim/gz-rendering/pull/398)
 
-### Ignition Rendering 4.8.0 (2021-06-18)
+### Gazebo Rendering 4.8.0 (2021-06-18)
 
 1. relax gaussian test tolerance
     * [Pull request #344](https://github.com/gazebosim/gz-rendering/pull/344)
@@ -542,7 +542,7 @@
 1. Added command line argument to pick version of Ogre
     * [Pull request #277](https://github.com/gazebosim/gz-rendering/pull/277)
 
-### Ignition Rendering 4.7.0 (2021-03-17)
+### Gazebo Rendering 4.7.0 (2021-03-17)
 
 1. Enable depth write in particles example
     * [Pull Request #217](https://github.com/gazebosim/gz-rendering/pull/217)
@@ -565,7 +565,7 @@
 1. Handle non-positive object temperatures
     * [Pull Request #243](https://github.com/gazebosim/gz-rendering/pull/243)
 
-### Ignition Rendering 4.6.0 (2021-03-01)
+### Gazebo Rendering 4.6.0 (2021-03-01)
 
 1. Improve particle scattering noise
     * [Pull Request #261](https://github.com/gazebosim/gz-rendering/pull/261)
@@ -573,7 +573,7 @@
 1. Fix custom_scene_viewer for macOS
     * [Pull Request #256](https://github.com/gazebosim/gz-rendering/pull/256)
 
-### Ignition Rendering 4.5.0 (2021-02-17)
+### Gazebo Rendering 4.5.0 (2021-02-17)
 
 1. More verbose messages when failing to load render engines
     * [Pull Request #236](https://github.com/gazebosim/gz-rendering/pull/236)
@@ -590,19 +590,19 @@
 1. Apply particle scattering effect to depth cameras
     * [Pull Request #251](https://github.com/gazebosim/gz-rendering/pull/251)
 
-### Ignition Rendering 4.4.0 (2021-02-11)
+### Gazebo Rendering 4.4.0 (2021-02-11)
 
 1. Add support for 8 bit thermal camera image format
     * [Pull Request #235](https://github.com/gazebosim/gz-rendering/pull/235)
 
 1. All changes up to version 3.4.0
 
-### Ignition Rendering 4.3.1 (2021-02-03)
+### Gazebo Rendering 4.3.1 (2021-02-03)
 
 1. Fix converting Pbs to Unlit material conversion (#230)
     * [Pull Request #230](https://github.com/gazebosim/gz-rendering/pull/230)
 
-### Ignition Rendering 4.3.0 (2021-02-02)
+### Gazebo Rendering 4.3.0 (2021-02-02)
 
 1. Tutorial: Transform FBX to Collada and change its origin
     * [Pull request #195](https://github.com/gazebosim/gz-rendering/pull/195)
@@ -621,7 +621,7 @@
 1. Add laser retro support in Ogre2
     * [Pull request #194](https://github.com/gazebosim/gz-rendering/pull/194)
 
-### Ignition Rendering 4.2.0 (2021-01-22)
+### Gazebo Rendering 4.2.0 (2021-01-22)
 
 1. Remove some windows warnings.
     * [Pull request #183](https://github.com/gazebosim/gz-rendering/pull/183)
@@ -634,7 +634,7 @@
 
 1. All changes up to version 3.3.0.
 
-### Ignition Rendering 4.1.0 (2020-11-04)
+### Gazebo Rendering 4.1.0 (2020-11-04)
 
 1. Improve fork experience
     * [Pull request #165](https://github.com/gazebosim/gz-rendering/pull/165)
@@ -658,7 +658,7 @@
 1. Add support for Gaussian noise render pass in Ogre2DepthCamera
     * [Pull Request 122](https://github.com/gazebosim/gz-rendering/pull/122)
 
-### Ignition Rendering 4.0.0 (2020-09-29)
+### Gazebo Rendering 4.0.0 (2020-09-29)
 
 1. Update tutorials
     * [Pull request #151](https://github.com/gazebosim/gz-rendering/pull/151)
@@ -729,7 +729,7 @@
 1. Add support for transparency based on textures alpha channel for ogre1 and ogre2
     * [BitBucket pull request 229](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/229)
 
-### Ignition Rendering 3.6.0 (2021-10-15)
+### Gazebo Rendering 3.6.0 (2021-10-15)
 
 1. Avoid symbol redefition to fix armel builds
     * [Pull request 457](https://github.com/gazebosim/gz-rendering/pull/457)
@@ -758,7 +758,7 @@
    To disable the new warning, it is enough to enable the cmake option USE_UNOFFICIAL_OGRE_VERSIONS
     * [Pull request 376](https://github.com/gazebosim/gz-rendering/pull/376)
 
-### Ignition Rendering 3.5.0 (2021-05-25)
+### Gazebo Rendering 3.5.0 (2021-05-25)
 
 1. Include MoveTo Helper class to ign-rendering
     * [Pull request 311](https://github.com/gazebosim/gz-rendering/pull/311)
@@ -784,7 +784,7 @@
 1. More verbose messages when failing to load render engine (#236)
     * [Pull request 236](https://github.com/gazebosim/gz-rendering/pull/236)
 
-### Ignition Rendering 3.4.0 (2021-02-09)
+### Gazebo Rendering 3.4.0 (2021-02-09)
 
 1. Clear all Windows warnings
     * [Pull request 206](https://github.com/gazebosim/gz-rendering/pull/206)
@@ -794,7 +794,7 @@
 1. Add laser_retro support
     * [Pull request 194](https://github.com/gazebosim/gz-rendering/pull/194)
 
-### Ignition Rendering 3.3.0 (2021-01-22)
+### Gazebo Rendering 3.3.0 (2021-01-22)
 
 1. Add Windows installation.
     * [Pull request 196](https://github.com/gazebosim/gz-rendering/pull/196)
@@ -811,7 +811,7 @@
 1. Improve fork experience.
     * [Pull request 165](https://github.com/gazebosim/gz-rendering/pull/165)
 
-### Ignition Rendering 3.2.0 (2020-10-13)
+### Gazebo Rendering 3.2.0 (2020-10-13)
 
 1. Add Custom Render Engine support
     * [Pull request 161](https://github.com/gazebosim/gz-rendering/pull/161)
@@ -833,7 +833,7 @@
 
 1. Includes all changes up to and including those in version 2.5.1
 
-### Ignition Rendering 3.1.0 (2020-03-05)
+### Gazebo Rendering 3.1.0 (2020-03-05)
 
 1. Use default material properties from ign-common PBR material when loading a mesh
     * [BitBucket pull request 242](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/242)
@@ -862,7 +862,7 @@
 1. Add API to check which engines are loaded
     * [BitBucket pull request 233](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/233)
 
-### Ignition Rendering 3.0.0 (2019-12-10)
+### Gazebo Rendering 3.0.0 (2019-12-10)
 
 1. Support setting cast shadows
     * [BitBucket pull request 209](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/209)
@@ -894,7 +894,7 @@
     * [BitBucket pull request 199](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/199)
     * [BitBucket pull request 204](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/204)
 
-### Ignition Rendering 2.5.1 (2020-10-05)
+### Gazebo Rendering 2.5.1 (2020-10-05)
 
 1. Limit number of shadow casting lights in ogre2
     * [Pull Request 155](https://github.com/gazebosim/gz-rendering/pull/155)
@@ -902,12 +902,12 @@
 1. Backport ogre2 depth camera fix
     * [Pull Request 138](https://github.com/gazebosim/gz-rendering/pull/138)
 
-### Ignition Rendering 2.5.0 (2020-08-07)
+### Gazebo Rendering 2.5.0 (2020-08-07)
 
 1. Add support for Gaussian noise render pass in Ogre2DepthCamera
     * [Pull Request 122](https://github.com/gazebosim/gz-rendering/pull/122)
 
-### Ignition Rendering 2.4.0 (2020-04-17)
+### Gazebo Rendering 2.4.0 (2020-04-17)
 
 1. Fix flaky VisualAt test
     * [BitBucket pull request 248](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/248)
@@ -921,7 +921,7 @@
 1. Backport transparency setting based on diffuse alpha
     * [BitBucket pull request 247](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/247)
 
-### Ignition Rendering 2.3.0 (2020-02-19)
+### Gazebo Rendering 2.3.0 (2020-02-19)
 
 1. Add API to check which engines are loaded
     * [BitBucket pull request 233](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/233)
@@ -933,7 +933,7 @@
     * [BitBucket pull request 222](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/222)
     * [BitBucket pull request 223](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/223)
 
-### Ignition Rendering 2.2.0 (2019-11-20)
+### Gazebo Rendering 2.2.0 (2019-11-20)
 
 1. Backport setting cast shadows
     * [BitBucket pull request 210](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/210)
@@ -941,17 +941,17 @@
 1. Ogre2: Add more shadow maps
     * [BitBucket pull request 203](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/203)
 
-### Ignition Rendering 2.1.2 (2019-09-10)
+### Gazebo Rendering 2.1.2 (2019-09-10)
 
 1. Enable gamma write on color texture in depth camera
     * [BitBucket pull request 193](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/193)
 
-### Ignition Rendering 2.1.1 (2019-09-06)
+### Gazebo Rendering 2.1.1 (2019-09-06)
 
 1. Add checks on mouse selection
     * [BitBucket pull request 191](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/191)
 
-### Ignition Rendering 2.1.0 (2019-08-27)
+### Gazebo Rendering 2.1.0 (2019-08-27)
 
 1. Support generating point cloud data in DepthCamera
     * [BitBucket pull request 187](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/187)
@@ -962,13 +962,13 @@
 1. Fix PixelFormat FLOAT32 byte and channel count
     * [BitBucket pull request 186](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/186)
 
-### Ignition Rendering 2.0.1 (2019-07-16)
+### Gazebo Rendering 2.0.1 (2019-07-16)
 
 1. Clean up camera objects when destroying scene
     * [BitBucket pull request 174](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/174)
     * [BitBucket pull request 180](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/180)
 
-### Ignition Rendering 2.0.0 (2019-05-20)
+### Gazebo Rendering 2.0.0 (2019-05-20)
 
 1. More ogre2 error messages for debugging mesh loading.
     * [BitBucket pull request 170](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/170)
@@ -999,7 +999,7 @@
     * [BitBucket pull request 154](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/154)
     * [BitBucket pull request 155](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/155)
 
-### Ignition Rendering 1.X
+### Gazebo Rendering 1.X
 
 1. Ogre2: Fix loading mesh with large index count
     * [BitBucket pull request 156](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/156)
@@ -1007,4 +1007,4 @@
 1. Move OgreDepthCameraPrivate class to src file so it is not installed.
     * [BitBucket pull request 150](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/150)
 
-### Ignition Rendering 1.0.0 (2019-02-28)
+### Gazebo Rendering 1.0.0 (2019-02-28)

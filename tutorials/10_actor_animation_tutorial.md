@@ -1,6 +1,6 @@
 \page actor_animation Actor animation tutorial
 
-This tutorial will show you how to use the Ignition Rendering library to create an actor animation.
+This tutorial will show you how to use the Gazebo Rendering library to create an actor animation.
 
 ## Compile and run the example
 

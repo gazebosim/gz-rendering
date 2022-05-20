@@ -1,6 +1,6 @@
 \page gazebo_scene_viewer Gazebo scene viewer
 
-The Gazebo scene viewer examples allow us to visualize Gazebo simulation using the Ignition Rendering library.
+The Gazebo scene viewer examples allow us to visualize Gazebo simulation using the Gazebo Rendering library.
 
 ## Compile and run the example
 

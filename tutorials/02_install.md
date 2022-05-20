@@ -1,6 +1,6 @@
 \page installation Installation
 
-These instructions are for installing only Ignition Rendering.
+These instructions are for installing only Gazebo Rendering.
 If you're interested in using all the Ignition libraries, check out this [Ignition installation](https://ignitionrobotics.org/docs/latest/install).
 
 We recommend following the Binary Install instructions to get up and running as quickly and painlessly as possible.
@@ -65,7 +65,7 @@ sudo apt install -y \
 
 ### Supported Rendering Engines
 
-Ignition Rendering will look for rendering libraries installed in the system and
+Gazebo Rendering will look for rendering libraries installed in the system and
 build the relevant plugins if dependencies are found.
 
 **OGRE 1.x**
@@ -204,7 +204,7 @@ On macOS, add OSRF packages:
   brew tap osrf/simulation
   ```
 
-Install Ignition Rendering:
+Install Gazebo Rendering:
   ```
   brew install ignition-rendering<#>
   ```

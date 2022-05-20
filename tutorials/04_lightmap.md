@@ -87,7 +87,7 @@ When baking we have the option to either bake in all the lighting, both indirect
 Lightmaps can be applied to a mesh in Ignition the same way as other texture maps. Create an `gz::rendering::Material` and specify a light map texture by calling
 [SetLightMap](https://ignitionrobotics.org/api/rendering/5.0/classignition_1_1rendering_1_1Material.html#addc6eb6206e0a17ab82aeaea543e8c71). Recall that when creating the light map UV texture in Step 2, we typically use a secondary UV set for light maps. Make sure to specify the index of the light map UV set as the second argument to this function.
 
-There are existing example models on Ignition Fuel that use light maps. The [Depot](https://app.ignitionrobotics.org/OpenRobotics/fuel/models/Depot) model mentioned earlier is one such example, and another one is the [Indoor Lightmap](https://app.ignitionrobotics.org/OpenRobotics/fuel/models/Indoor%20light map) model. To see the Indoor Lightmap model with [Ignition Gazebo](https://ignitionrobotics.org/docs/all/getstarted), you can run the following command (requires Ignition Edifice or above):
+There are existing example models on Gazebo Fuel that use light maps. The [Depot](https://app.ignitionrobotics.org/OpenRobotics/fuel/models/Depot) model mentioned earlier is one such example, and another one is the [Indoor Lightmap](https://app.ignitionrobotics.org/OpenRobotics/fuel/models/Indoor%20light map) model. To see the Indoor Lightmap model with [Gazebo](https://ignitionrobotics.org/docs/all/getstarted), you can run the following command (requires Gazebo Edifice or above):
 
 ```
 ign gazebo -v lightmap.sdf

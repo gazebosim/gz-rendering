@@ -7,7 +7,7 @@ This tutorial will show you how to use the Ignition Rendering library to create 
 Clone the source code, Create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
-git clone https://github.com/ignitionrobotics/ign-rendering
+git clone https://github.com/gazebosim/gz-rendering
 cd ign-rendering/examples/actor_animation
 mkdir build
 cd build

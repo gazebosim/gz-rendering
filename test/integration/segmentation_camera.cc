@@ -232,7 +232,7 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   // instance count
   // the instance count for the right box is 1 and the instance count for the
   // left box is 2 because of how items are sorted when material switching:
-  // https://github.com/ignitionrobotics/ign-rendering/blob/c4e06851605bda75e2ca45a35f0e9bd86fbd7f2f/ogre2/src/Ogre2SegmentationMaterialSwitcher.cc#L171-L179
+  // https://github.com/gazebosim/gz-rendering/blob/c4e06851605bda75e2ca45a35f0e9bd86fbd7f2f/ogre2/src/Ogre2SegmentationMaterialSwitcher.cc#L171-L179
   EXPECT_EQ(1, middleCount);
   EXPECT_EQ(1, rightCount);
   EXPECT_EQ(2, leftCount);

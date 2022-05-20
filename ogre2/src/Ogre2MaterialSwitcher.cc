@@ -102,7 +102,7 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
         // We need to keep the material's vertex shader
         // to keep vertex deformation consistent; so we use
         // a cloned material with a different pixel shader
-        // https://github.com/ignitionrobotics/ign-rendering/issues/544
+        // https://github.com/gazebosim/gz-rendering/issues/544
         //
         // material may be a nullptr if we called setMaterial directly
         // (i.e. it's not using Ogre2Material interface).

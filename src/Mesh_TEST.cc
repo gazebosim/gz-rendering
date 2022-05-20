@@ -273,7 +273,7 @@ void MeshTest::MeshClone(const std::string &_renderEngine)
   {
     // since the "top level mesh" has a material, the submesh materials are not
     // unique copies:
-    // https://github.com/ignitionrobotics/ign-rendering/blob/8f961d0c4cc755b6a2ca217d5a73de268ef95514/include/ignition/rendering/base/BaseMesh.hh#L293
+    // https://github.com/gazebosim/gz-rendering/blob/8f961d0c4cc755b6a2ca217d5a73de268ef95514/include/ignition/rendering/base/BaseMesh.hh#L293
     auto clonedSubMesh = clonedMesh->SubMeshByIndex(i);
     auto originalSubMesh = clonedMesh->SubMeshByIndex(i);
     compareMaterials(clonedSubMesh->Material(), originalSubMesh->Material(),

@@ -26,7 +26,7 @@ release will remove the deprecated code.
 	+ Mostly affects Particles.
 	+ Also may affect gaussian postprocessing and other filters dependant on time.
 	+ Previous behavior was using real time instead of simulation time, which is wrong.
-	+ See https://github.com/ignitionrobotics/ign-rendering/issues/556 for details.
+	+ See https://github.com/gazebosim/gz-rendering/issues/556 for details.
 
 ## Ignition Rendering 5.x to 6.x
 

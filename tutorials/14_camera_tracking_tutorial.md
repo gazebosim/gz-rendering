@@ -7,7 +7,7 @@ This example shows a camera tracking a moving target. You can use the keyboard t
 Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
-git clone https://github.com/ignitionrobotics/ign-rendering
+git clone https://github.com/gazebosim/gz-rendering
 cd ign-rendering/examples/camera_tracking
 mkdir build
 cd build

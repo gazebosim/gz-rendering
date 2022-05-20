@@ -104,7 +104,7 @@ namespace gz
       ///
       /// Set to a negative value to disable (0 does NOT disable it!)
       ///
-      /// See https://github.com/ignitionrobotics/ign-rendering/pull/356
+      /// See https://github.com/gazebosim/gz-rendering/pull/356
       public: float minDistanceClip = -1.0f;
 
       /// \brief When true, we're currently dealing with HlmsUnlit

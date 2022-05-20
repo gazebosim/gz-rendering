@@ -256,7 +256,7 @@ void DepthCameraTest::DepthCameraBoxes(
       EXPECT_EQ(0u, mr);
       EXPECT_EQ(0u, mg);
 #ifndef __APPLE__
-      // https://github.com/ignitionrobotics/ign-rendering/issues/332
+      // https://github.com/gazebosim/gz-rendering/issues/332
       EXPECT_GT(mb, 0u);
 #endif
 
@@ -288,7 +288,7 @@ void DepthCameraTest::DepthCameraBoxes(
       // drivers are free to fill it with any value they want.
       // This should be fixed in ogre 2.2 in ign-rendering6 which forbids
       // the use of RGB format.
-      // see https://github.com/ignitionrobotics/ign-rendering/issues/315
+      // see https://github.com/gazebosim/gz-rendering/issues/315
       EXPECT_TRUE(255u == ma || 0u == ma);
       EXPECT_TRUE(255u == la || 0u == la);
       EXPECT_TRUE(255u == ra || 0u == ra);
@@ -461,7 +461,7 @@ void DepthCameraTest::DepthCameraBoxes(
           EXPECT_EQ(0u, r);
           EXPECT_EQ(0u, g);
 #ifndef __APPLE__
-          // https://github.com/ignitionrobotics/ign-rendering/issues/332
+          // https://github.com/gazebosim/gz-rendering/issues/332
           EXPECT_GT(b, 0u);
           EXPECT_EQ(255u, a);
 #endif

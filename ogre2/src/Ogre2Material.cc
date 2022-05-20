@@ -345,7 +345,7 @@ void Ogre2Material::SetRenderOrder(const float _renderOrder)
   if (renderSystem->isReverseDepth())
   {
     // Reverse depth needs 100x scale AND ends up being superior
-    // See https://github.com/ignitionrobotics/ign-rendering/
+    // See https://github.com/gazebosim/gz-rendering/
     // issues/427#issuecomment-991800352
     // and see https://www.youtube.com/watch?v=s2XdH3fYUac
     macroblock.mDepthBiasConstant = _renderOrder * 100.0f;
@@ -804,7 +804,7 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
         texUnit->setCubicTextureName(baseName, true);
         // must apply this check for Metal rendering to work
         // (i.e. not segfault). See the discussion in:
-        // https://github.com/ignitionrobotics/ign-rendering/pull/541
+        // https://github.com/gazebosim/gz-rendering/pull/541
         if (texUnit->isLoaded())
         {
           texUnit->_load();
@@ -882,7 +882,7 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   Ogre::PbsTextureTypes _type)
 {
   // FIXME(anyone) need to keep baseName = _texture for all meshes. Refer to
-  // https://github.com/ignitionrobotics/ign-rendering/issues/139
+  // https://github.com/gazebosim/gz-rendering/issues/139
   // for more details
   std::string baseName = _texture;
   if (common::isFile(_texture))
@@ -1238,7 +1238,7 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
       << "' See Ogre.log for details. This shader is used for special "
          "rendering in sensors (e.g. Lidar, Thermal). Your vertex shader "
          "must have a compatible signature if you want it to work.\n"
-         "See https://github.com/ignitionrobotics/ign-rendering/issues/544\n"
+         "See https://github.com/gazebosim/gz-rendering/issues/544\n"
          "If this issue isn't fixed, sensor rendering MIGHT not be correct"
          "if your vertex shader performs custom geometry deformation";
   }

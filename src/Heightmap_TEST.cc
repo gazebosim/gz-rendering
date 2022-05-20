@@ -352,7 +352,7 @@ TEST_P(HeightmapTest, CopyAssignmentAfterMove)
 }
 
 // TODO(anyone) Running test with Ogre1. Update once Ogre2 is supported.
-// https://github.com/ignitionrobotics/ign-rendering/issues/187
+// https://github.com/gazebosim/gz-rendering/issues/187
 INSTANTIATE_TEST_CASE_P(Heightmap, HeightmapTest,
     ::testing::ValuesIn({"ogre"}),
     gz::rendering::PrintToStringParam());

@@ -224,7 +224,7 @@ namespace Ogre
         //     or visibility flags to prevent rendering it
         ignerr << "A module is trying to render an object without "
                   "specifying a parameter. Please report this bug at "
-                  "https://github.com/ignitionrobotics/ign-rendering/issues\n";
+                  "https://github.com/gazebosim/gz-rendering/issues\n";
         throw;
       }
       float *dataPtr = this->MapObjectDataBufferFor(

@@ -9,7 +9,7 @@ It loads 2 different heightmaps (image and Digital Elevation Model (DEM)) with d
 Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
-git clone https://github.com/ignitionrobotics/ign-rendering
+git clone https://github.com/gazebosim/gz-rendering
 cd ign-rendering/examples/heightmap
 mkdir build
 cd build

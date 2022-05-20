@@ -9,1002 +9,1002 @@
 ### Ignition Rendering 6.3.1 (2022-04-13)
 
 1.  Revert OGRE-Next custom support and back to use IgnOGRE2 module
-    * [Pull request #605](https://github.com/ignitionrobotics/ign-rendering/pull/605)
+    * [Pull request #605](https://github.com/gazebosim/gz-rendering/pull/605)
 
 ### Ignition Rendering 6.3.0 (2022-04-06)
 
 1. Flip heightmap's Y position on Ogre 2 and add sanity checks for NaN
-    * [Pull request #585](https://github.com/ignitionrobotics/ign-rendering/pull/585)
+    * [Pull request #585](https://github.com/gazebosim/gz-rendering/pull/585)
 
 1. Use custom simulation time variants for Ogre
-    * [Pull request #584](https://github.com/ignitionrobotics/ign-rendering/pull/584)
+    * [Pull request #584](https://github.com/gazebosim/gz-rendering/pull/584)
 
 1. Add Ubuntu Jammy CI
-    * [Pull request #577](https://github.com/ignitionrobotics/ign-rendering/pull/577)
+    * [Pull request #577](https://github.com/gazebosim/gz-rendering/pull/577)
 
 1. Fix shaders for other sensors that require material switching (ogre2)
-    * [Pull request #579](https://github.com/ignitionrobotics/ign-rendering/pull/579)
+    * [Pull request #579](https://github.com/gazebosim/gz-rendering/pull/579)
 
 1. fix render pass demo
-    * [Pull request #576](https://github.com/ignitionrobotics/ign-rendering/pull/576)
+    * [Pull request #576](https://github.com/gazebosim/gz-rendering/pull/576)
 
 1. Fix objects using shaders when there is a lidar in the scene (ogre2)
-    * [Pull request #575](https://github.com/ignitionrobotics/ign-rendering/pull/575)
+    * [Pull request #575](https://github.com/gazebosim/gz-rendering/pull/575)
 
 1. Do not set shader constants for textures on non-OpenGL graphics API
-    * [Pull request #574](https://github.com/ignitionrobotics/ign-rendering/pull/574)
+    * [Pull request #574](https://github.com/gazebosim/gz-rendering/pull/574)
 
 1. Use pose multiplication instead of addition
-    * [Pull request #573](https://github.com/ignitionrobotics/ign-rendering/pull/573)
+    * [Pull request #573](https://github.com/gazebosim/gz-rendering/pull/573)
 
 1. Fix sky background compositor setup
-    * [Pull request #571](https://github.com/ignitionrobotics/ign-rendering/pull/571)
+    * [Pull request #571](https://github.com/gazebosim/gz-rendering/pull/571)
 
 1. Backport OgreRTShaderSystem segfault fix
-    * [Pull request #570](https://github.com/ignitionrobotics/ign-rendering/pull/570)
+    * [Pull request #570](https://github.com/gazebosim/gz-rendering/pull/570)
 
 1. Remove unnecessary error message when headless rendering is enabled
-    * [Pull request #569](https://github.com/ignitionrobotics/ign-rendering/pull/569)
+    * [Pull request #569](https://github.com/gazebosim/gz-rendering/pull/569)
 
 ### Ignition Rendering 6.2.1 (2022-02-24)
 
 1. Restore format conversion in Ogre2RenderTarget::Copy
-    * [Pull request #564](https://github.com/ignitionrobotics/ign-rendering/pull/564)
+    * [Pull request #564](https://github.com/gazebosim/gz-rendering/pull/564)
 
 1. Increase particle emitter quota
-    * [Pull request #562](https://github.com/ignitionrobotics/ign-rendering/pull/562)
+    * [Pull request #562](https://github.com/gazebosim/gz-rendering/pull/562)
 
 1. Make sure shader param exists before setting its value
-    * [Pull request #558](https://github.com/ignitionrobotics/ign-rendering/pull/558)
+    * [Pull request #558](https://github.com/gazebosim/gz-rendering/pull/558)
 
 1. Backport wave changes
-    * [Pull request #557](https://github.com/ignitionrobotics/ign-rendering/pull/557)
+    * [Pull request #557](https://github.com/gazebosim/gz-rendering/pull/557)
 
 ### Ignition Rendering 6.2.0 (2022-01-28)
 
 1. Fix missing terrain shadows casted on objects
-    * [Pull request #547](https://github.com/ignitionrobotics/ign-rendering/pull/547)
+    * [Pull request #547](https://github.com/gazebosim/gz-rendering/pull/547)
 
 1. Add waves
-    * [Pull request #541](https://github.com/ignitionrobotics/ign-rendering/pull/541)
+    * [Pull request #541](https://github.com/gazebosim/gz-rendering/pull/541)
 
 1. Fix crash when hovering the cursor in heightmap.sdf
-    * [Pull request #536](https://github.com/ignitionrobotics/ign-rendering/pull/536)
+    * [Pull request #536](https://github.com/gazebosim/gz-rendering/pull/536)
 
 1. Fix material switching for objects using shaders (ogre2)
-    * [Pull request #533](https://github.com/ignitionrobotics/ign-rendering/pull/533)
+    * [Pull request #533](https://github.com/gazebosim/gz-rendering/pull/533)
 
 1. [Metal] Fix depth camera
-    * [Pull request #535](https://github.com/ignitionrobotics/ign-rendering/pull/535)
+    * [Pull request #535](https://github.com/gazebosim/gz-rendering/pull/535)
     * A contribution from Rhys Mainwaring <rhys.mainwaring@me.com>
 
 1. Bind shader uniforms to constants from ogre
-    * [Pull request #531](https://github.com/ignitionrobotics/ign-rendering/pull/531)
+    * [Pull request #531](https://github.com/gazebosim/gz-rendering/pull/531)
 
 1. Silence CMake policy CMP0072
-    * [Pull request #528](https://github.com/ignitionrobotics/ign-rendering/pull/528)
+    * [Pull request #528](https://github.com/gazebosim/gz-rendering/pull/528)
 
 1. Fix various issues with Ogre2GpuRays
-    * [Pull request #522](https://github.com/ignitionrobotics/ign-rendering/pull/522)
-    * [Pull request #527](https://github.com/ignitionrobotics/ign-rendering/pull/527)
+    * [Pull request #522](https://github.com/gazebosim/gz-rendering/pull/522)
+    * [Pull request #527](https://github.com/gazebosim/gz-rendering/pull/527)
 
 1. Fix Ogre2ThermalCamera using garbage depth data
-    * [Pull request #523](https://github.com/ignitionrobotics/ign-rendering/pull/523)
+    * [Pull request #523](https://github.com/gazebosim/gz-rendering/pull/523)
 
 1. Performance optimization by avoiding unnecessary passes
-    * [Pull request #524](https://github.com/ignitionrobotics/ign-rendering/pull/524)
+    * [Pull request #524](https://github.com/gazebosim/gz-rendering/pull/524)
 
 1. Support using custom shader materials and updating uniform variables (ogre2)
-    * [Pull request #520](https://github.com/ignitionrobotics/ign-rendering/pull/520)
+    * [Pull request #520](https://github.com/gazebosim/gz-rendering/pull/520)
 
 1. Port Camera Distortion effect from gazebo11
-    * [Pull request #502](https://github.com/ignitionrobotics/ign-rendering/pull/502)
+    * [Pull request #502](https://github.com/gazebosim/gz-rendering/pull/502)
 
 1. Fix sky background in RGBD camera
-    * [Pull request #515](https://github.com/ignitionrobotics/ign-rendering/pull/515)
+    * [Pull request #515](https://github.com/gazebosim/gz-rendering/pull/515)
 
 1. RenderOrder is in different scale in Reverse Z
-    * [Pull request #514](https://github.com/ignitionrobotics/ign-rendering/pull/514)
+    * [Pull request #514](https://github.com/gazebosim/gz-rendering/pull/514)
 
 ### Ignition Rendering 6.1.0 (2021-12-09)
 
 1. Check for OpenGL backend before calling GL APIs
-    * [Pull request #509](https://github.com/ignitionrobotics/ign-rendering/pull/509)
+    * [Pull request #509](https://github.com/gazebosim/gz-rendering/pull/509)
 
 1. Fix loading grayscale emissive map
-    * [Pull request #503](https://github.com/ignitionrobotics/ign-rendering/pull/503)
-    * [Pull request #501](https://github.com/ignitionrobotics/ign-rendering/pull/501)
+    * [Pull request #503](https://github.com/gazebosim/gz-rendering/pull/503)
+    * [Pull request #501](https://github.com/gazebosim/gz-rendering/pull/501)
 
 1. Fixes to selection buffer
-    * [Pull request #446](https://github.com/ignitionrobotics/ign-rendering/pull/446)
-    * [Pull request #510](https://github.com/ignitionrobotics/ign-rendering/pull/510)
-    * [Pull request #498](https://github.com/ignitionrobotics/ign-rendering/pull/498)
+    * [Pull request #446](https://github.com/gazebosim/gz-rendering/pull/446)
+    * [Pull request #510](https://github.com/gazebosim/gz-rendering/pull/510)
+    * [Pull request #498](https://github.com/gazebosim/gz-rendering/pull/498)
 
 1. Add Metal support for the Ogre2 Render Engine
-    * [Pull request #463](https://github.com/ignitionrobotics/ign-rendering/pull/463)
+    * [Pull request #463](https://github.com/gazebosim/gz-rendering/pull/463)
 
 1. Add a depth camera example
-    * [Pull request #467](https://github.com/ignitionrobotics/ign-rendering/pull/467)
+    * [Pull request #467](https://github.com/gazebosim/gz-rendering/pull/467)
 
 1. More nullptr checking on visuals and base axis
-    * [Pull request #486](https://github.com/ignitionrobotics/ign-rendering/pull/486)
+    * [Pull request #486](https://github.com/gazebosim/gz-rendering/pull/486)
 
 1. Fix Utils unit test
-    * [Pull request #481](https://github.com/ignitionrobotics/ign-rendering/pull/481)
+    * [Pull request #481](https://github.com/gazebosim/gz-rendering/pull/481)
 
 1. Fix context attributes of glXCreateContextAttribsARB.
-    * [Pull request #460](https://github.com/ignitionrobotics/ign-rendering/pull/460)
+    * [Pull request #460](https://github.com/gazebosim/gz-rendering/pull/460)
 
 1. [Ogre2] fix invalid anti-aliasing level warning
-    * [Pull request #470](https://github.com/ignitionrobotics/ign-rendering/pull/470)
+    * [Pull request #470](https://github.com/gazebosim/gz-rendering/pull/470)
 
 1. Avoid symbol redefinition to fix armel builds
-    * [Pull request #457](https://github.com/ignitionrobotics/ign-rendering/pull/457)
+    * [Pull request #457](https://github.com/gazebosim/gz-rendering/pull/457)
 
 1. fix grayscale albedo map
-    * [Pull request #466](https://github.com/ignitionrobotics/ign-rendering/pull/466)
+    * [Pull request #466](https://github.com/gazebosim/gz-rendering/pull/466)
 
 1. Fix selection buffer material script
-    * [Pull request #456](https://github.com/ignitionrobotics/ign-rendering/pull/456)
+    * [Pull request #456](https://github.com/gazebosim/gz-rendering/pull/456)
 
 1. [macOS] modify definition of bufferFetch1 to work when GL_ARB_texture_buffer_range is not available
-    * [Pull request #462](https://github.com/ignitionrobotics/ign-rendering/pull/462)
+    * [Pull request #462](https://github.com/gazebosim/gz-rendering/pull/462)
 
 1. Fix compilation against Ogre 1.10.12
-    * [Pull request #390](https://github.com/ignitionrobotics/ign-rendering/pull/390)
+    * [Pull request #390](https://github.com/gazebosim/gz-rendering/pull/390)
 
 1. Fix logic on warning for ogre versions different than 1.9.x
-    * [Pull request #465](https://github.com/ignitionrobotics/ign-rendering/pull/465)
+    * [Pull request #465](https://github.com/gazebosim/gz-rendering/pull/465)
 
 1. Fix point cloud material syntax error
-    * [Pull request #433](https://github.com/ignitionrobotics/ign-rendering/pull/433)
+    * [Pull request #433](https://github.com/gazebosim/gz-rendering/pull/433)
 
 1. Run ogre2 particles by default
-    * [Pull request #430](https://github.com/ignitionrobotics/ign-rendering/pull/430)
+    * [Pull request #430](https://github.com/gazebosim/gz-rendering/pull/430)
 
 1. Ogre: Do not assume that ogre plugins have lib prefix on macOS
-    * [Pull request #454](https://github.com/ignitionrobotics/ign-rendering/pull/454)
+    * [Pull request #454](https://github.com/gazebosim/gz-rendering/pull/454)
 
 1. Fix heightmap crash if only shadow casting spotlights are one scene
-    * [Pull request #451](https://github.com/ignitionrobotics/ign-rendering/pull/451)
+    * [Pull request #451](https://github.com/gazebosim/gz-rendering/pull/451)
 
 1. Added macOS instructions
-    * [Pull request #448](https://github.com/ignitionrobotics/ign-rendering/pull/448)
+    * [Pull request #448](https://github.com/gazebosim/gz-rendering/pull/448)
 
 1. Ogre: Add missing required Paging component
-    * [Pull request #452](https://github.com/ignitionrobotics/ign-rendering/pull/452)
+    * [Pull request #452](https://github.com/gazebosim/gz-rendering/pull/452)
 
 1. Fix ray query distance calculation
-    * [Pull request #438](https://github.com/ignitionrobotics/ign-rendering/pull/438)
+    * [Pull request #438](https://github.com/gazebosim/gz-rendering/pull/438)
 
 ### Ignition Rendering 6.0.1 (2021-10-01)
 
 1. Disable using selection buffer for ray queries
-    * [Pull request #447](https://github.com/ignitionrobotics/ign-rendering/pull/447)
+    * [Pull request #447](https://github.com/gazebosim/gz-rendering/pull/447)
 
 ### Ignition Rendering 6.0.0 (2021-09-30)
 
 1. Avoid configure warning when checking ogre-1.10
-    * [Pull request #411](https://github.com/ignitionrobotics/ign-rendering/pull/411)
-    * [Pull request #413](https://github.com/ignitionrobotics/ign-rendering/pull/413)
+    * [Pull request #411](https://github.com/gazebosim/gz-rendering/pull/411)
+    * [Pull request #413](https://github.com/gazebosim/gz-rendering/pull/413)
 
 1. Use selection buffer in ray queries (ogre2)
-    * [Pull request #378](https://github.com/ignitionrobotics/ign-rendering/pull/378)
+    * [Pull request #378](https://github.com/gazebosim/gz-rendering/pull/378)
 
 1. Fix particle effect randomness
-    * [Pull request #388](https://github.com/ignitionrobotics/ign-rendering/pull/388)
+    * [Pull request #388](https://github.com/gazebosim/gz-rendering/pull/388)
 
 1. Update test config to run ogre 1.x tests in ign-rendering6 on macOS
-    * [Pull request #407](https://github.com/ignitionrobotics/ign-rendering/pull/407)
-    * [Pull request #409](https://github.com/ignitionrobotics/ign-rendering/pull/409)
-    * [Pull request #409](https://github.com/ignitionrobotics/ign-rendering/pull/409)
+    * [Pull request #407](https://github.com/gazebosim/gz-rendering/pull/407)
+    * [Pull request #409](https://github.com/gazebosim/gz-rendering/pull/409)
+    * [Pull request #409](https://github.com/gazebosim/gz-rendering/pull/409)
 
 1. Clone visuals and geometries
-    * [Pull request #397](https://github.com/ignitionrobotics/ign-rendering/pull/397)
-    * [Pull request #434](https://github.com/ignitionrobotics/ign-rendering/pull/434)
+    * [Pull request #397](https://github.com/gazebosim/gz-rendering/pull/397)
+    * [Pull request #434](https://github.com/gazebosim/gz-rendering/pull/434)
 
 1. Add SetSize API for LidarVisual and markers
-    * [Pull request #392](https://github.com/ignitionrobotics/ign-rendering/pull/392)
+    * [Pull request #392](https://github.com/gazebosim/gz-rendering/pull/392)
 
 1. Add Ogre2Heightmap functionality
-    * [Pull request #386](https://github.com/ignitionrobotics/ign-rendering/pull/386)
-    * [Pull request #416](https://github.com/ignitionrobotics/ign-rendering/pull/416)
+    * [Pull request #386](https://github.com/gazebosim/gz-rendering/pull/386)
+    * [Pull request #416](https://github.com/gazebosim/gz-rendering/pull/416)
 
 1. Prevent default-constructed variants from holding a type
-    * [Pull request #371](https://github.com/ignitionrobotics/ign-rendering/pull/371)
-    * [Pull request #396](https://github.com/ignitionrobotics/ign-rendering/pull/396)
+    * [Pull request #371](https://github.com/gazebosim/gz-rendering/pull/371)
+    * [Pull request #396](https://github.com/gazebosim/gz-rendering/pull/396)
 
 1. Temporarily set number of camera pass count per flush to 0 in ogre2 to prevent downstream build failures
-    * [Pull request #367](https://github.com/ignitionrobotics/ign-rendering/pull/367)
+    * [Pull request #367](https://github.com/gazebosim/gz-rendering/pull/367)
 
 1. New visuals
     1. Joint visual
-        * [Pull request #366](https://github.com/ignitionrobotics/ign-rendering/pull/366)
-        * [Pull request #387](https://github.com/ignitionrobotics/ign-rendering/pull/387)
+        * [Pull request #366](https://github.com/gazebosim/gz-rendering/pull/366)
+        * [Pull request #387](https://github.com/gazebosim/gz-rendering/pull/387)
 
     1. Center of mass visual
-        * [Pull request #345](https://github.com/ignitionrobotics/ign-rendering/pull/345)
+        * [Pull request #345](https://github.com/gazebosim/gz-rendering/pull/345)
 
     1. Inertia visual
-        * [Pull request #326](https://github.com/ignitionrobotics/ign-rendering/pull/326)
+        * [Pull request #326](https://github.com/gazebosim/gz-rendering/pull/326)
 
 1. UserData methods moved from Visual to Node
-    * [Pull request #358](https://github.com/ignitionrobotics/ign-rendering/pull/358)
+    * [Pull request #358](https://github.com/gazebosim/gz-rendering/pull/358)
 
 1. Replace renderOneFrame for per-workspace update calls
-    * [Pull request #353](https://github.com/ignitionrobotics/ign-rendering/pull/353)
+    * [Pull request #353](https://github.com/gazebosim/gz-rendering/pull/353)
 
 1. Segmentation Camera
-    * [Pull request #329](https://github.com/ignitionrobotics/ign-rendering/pull/329)
-    * [Pull request #419](https://github.com/ignitionrobotics/ign-rendering/pull/419)
-    * [Pull request #443](https://github.com/ignitionrobotics/ign-rendering/pull/443)
+    * [Pull request #329](https://github.com/gazebosim/gz-rendering/pull/329)
+    * [Pull request #419](https://github.com/gazebosim/gz-rendering/pull/419)
+    * [Pull request #443](https://github.com/gazebosim/gz-rendering/pull/443)
 
 1. Stub bounding box camera APIs
-    * [Pull request #420](https://github.com/ignitionrobotics/ign-rendering/pull/420)
+    * [Pull request #420](https://github.com/gazebosim/gz-rendering/pull/420)
 
 1. Changed calculation for range clipping
-    * [Pull request #325](https://github.com/ignitionrobotics/ign-rendering/pull/325)
+    * [Pull request #325](https://github.com/gazebosim/gz-rendering/pull/325)
 
 1. Destroy material when a mesh is deleted
-    * [Pull request #324](https://github.com/ignitionrobotics/ign-rendering/pull/324)
+    * [Pull request #324](https://github.com/gazebosim/gz-rendering/pull/324)
 
 1. Add orthographic view controller
-    * [Pull request #322](https://github.com/ignitionrobotics/ign-rendering/pull/322)
-    * [Pull request #361](https://github.com/ignitionrobotics/ign-rendering/pull/361)
+    * [Pull request #322](https://github.com/gazebosim/gz-rendering/pull/322)
+    * [Pull request #361](https://github.com/gazebosim/gz-rendering/pull/361)
 
 1. Visualize wireframes
-    * [Pull request #314](https://github.com/ignitionrobotics/ign-rendering/pull/314)
+    * [Pull request #314](https://github.com/gazebosim/gz-rendering/pull/314)
 
 1. Add environment map tutorial
-    * [Pull request #295](https://github.com/ignitionrobotics/ign-rendering/pull/295)
+    * [Pull request #295](https://github.com/gazebosim/gz-rendering/pull/295)
 
 1. From Ogre 2.1 to Ogre 2.2
-    * [Pull request #272](https://github.com/ignitionrobotics/ign-rendering/pull/272)
-    * [Pull request #393](https://github.com/ignitionrobotics/ign-rendering/pull/393)
-    * [Pull request #436](https://github.com/ignitionrobotics/ign-rendering/pull/436)
-    * [Pull request #426](https://github.com/ignitionrobotics/ign-rendering/pull/426)
-    * [Pull request #440](https://github.com/ignitionrobotics/ign-rendering/pull/440)
+    * [Pull request #272](https://github.com/gazebosim/gz-rendering/pull/272)
+    * [Pull request #393](https://github.com/gazebosim/gz-rendering/pull/393)
+    * [Pull request #436](https://github.com/gazebosim/gz-rendering/pull/436)
+    * [Pull request #426](https://github.com/gazebosim/gz-rendering/pull/426)
+    * [Pull request #440](https://github.com/gazebosim/gz-rendering/pull/440)
 
 1. Documentation updates
-    * [Pull request #425](https://github.com/ignitionrobotics/ign-rendering/pull/425)
-    * [Pull request #431](https://github.com/ignitionrobotics/ign-rendering/pull/431)
+    * [Pull request #425](https://github.com/gazebosim/gz-rendering/pull/425)
+    * [Pull request #431](https://github.com/gazebosim/gz-rendering/pull/431)
 
 1. Infrastructure
-    * [Pull request #318](https://github.com/ignitionrobotics/ign-rendering/pull/318)
+    * [Pull request #318](https://github.com/gazebosim/gz-rendering/pull/318)
 
 ### Ignition Rendering 5.2.1 (2022-03-35)
 
 1. Silence CMake policy CMP0072
-    * [Pull request #528](https://github.com/ignitionrobotics/ign-rendering/pull/528)
+    * [Pull request #528](https://github.com/gazebosim/gz-rendering/pull/528)
 
 ### Ignition Rendering 5.2.0 (2021-11-02)
 
 1. Fix context attributes of glXCreateContextAttribsARB.
-    * [Pull request #460](https://github.com/ignitionrobotics/ign-rendering/pull/460)
+    * [Pull request #460](https://github.com/gazebosim/gz-rendering/pull/460)
 
 1. Fix logic on warning for ogre versions different than 1.9.x
-    * [Pull request #465](https://github.com/ignitionrobotics/ign-rendering/pull/465)
+    * [Pull request #465](https://github.com/gazebosim/gz-rendering/pull/465)
 
 1. Avoid symbol redefition to fix armel builds
-    * [Pull request #457](https://github.com/ignitionrobotics/ign-rendering/pull/457)
+    * [Pull request #457](https://github.com/gazebosim/gz-rendering/pull/457)
 
 1. Fix selection buffer material script
-    * [Pull request #456](https://github.com/ignitionrobotics/ign-rendering/pull/456)
+    * [Pull request #456](https://github.com/gazebosim/gz-rendering/pull/456)
 
 1. Fix compilation against Ogre 1.10.12
-    * [Pull request #390](https://github.com/ignitionrobotics/ign-rendering/pull/390)
+    * [Pull request #390](https://github.com/gazebosim/gz-rendering/pull/390)
 
 1. ogre: Do not assume that ogre plugins have lib prefix on macOS
-    * [Pull request #454](https://github.com/ignitionrobotics/ign-rendering/pull/454)
+    * [Pull request #454](https://github.com/gazebosim/gz-rendering/pull/454)
 
 1. ogre: Add missing required Paging component
-    * [Pull request #452](https://github.com/ignitionrobotics/ign-rendering/pull/452)
+    * [Pull request #452](https://github.com/gazebosim/gz-rendering/pull/452)
 
 1. Fix ray query distance calculation
-    * [Pull request #438](https://github.com/ignitionrobotics/ign-rendering/pull/438)
+    * [Pull request #438](https://github.com/gazebosim/gz-rendering/pull/438)
 
 1. Fix the spelling of USE_UNOFFICIAL_OGRE_VERSIONS flag
-    * [Pull request #413](https://github.com/ignitionrobotics/ign-rendering/pull/413)
+    * [Pull request #413](https://github.com/gazebosim/gz-rendering/pull/413)
 
 1. Avoid configure warning when checking ogre-1.10
-    * [Pull request #411](https://github.com/ignitionrobotics/ign-rendering/pull/411)
+    * [Pull request #411](https://github.com/gazebosim/gz-rendering/pull/411)
 
 1. Use selection buffer in ray queries (ogre2)
-    * [Pull request #378](https://github.com/ignitionrobotics/ign-rendering/pull/378)
+    * [Pull request #378](https://github.com/gazebosim/gz-rendering/pull/378)
 
 1. Fix particle effect randomness
-    * [Pull request #388](https://github.com/ignitionrobotics/ign-rendering/pull/388)
+    * [Pull request #388](https://github.com/gazebosim/gz-rendering/pull/388)
 
 1. Update simple_demo_qml coding style
-    * [Pull request #404](https://github.com/ignitionrobotics/ign-rendering/pull/404)
+    * [Pull request #404](https://github.com/gazebosim/gz-rendering/pull/404)
 
 1. Disabling flaky depth and thermal camera tests on mac
-    * [Pull request #405](https://github.com/ignitionrobotics/ign-rendering/pull/405)
+    * [Pull request #405](https://github.com/gazebosim/gz-rendering/pull/405)
 
 1. [macOS] add a QML version of simple_demo
-    * [Pull request #373](https://github.com/ignitionrobotics/ign-rendering/pull/373)
+    * [Pull request #373](https://github.com/gazebosim/gz-rendering/pull/373)
 
 1. Fix single ray gpu lidar
-    * [Pull request #384](https://github.com/ignitionrobotics/ign-rendering/pull/384)
+    * [Pull request #384](https://github.com/gazebosim/gz-rendering/pull/384)
 
 1. Warn about non-existent submesh
-    * [Pull request #391](https://github.com/ignitionrobotics/ign-rendering/pull/391)
+    * [Pull request #391](https://github.com/gazebosim/gz-rendering/pull/391)
 
 1. Improved doxygen
-    * [Pull request #398](https://github.com/ignitionrobotics/ign-rendering/pull/398)
-    * [Pull request #389](https://github.com/ignitionrobotics/ign-rendering/pull/389)
+    * [Pull request #398](https://github.com/gazebosim/gz-rendering/pull/398)
+    * [Pull request #389](https://github.com/gazebosim/gz-rendering/pull/389)
 
 1. Set OGRE minimal version to 1.8. Warn on versions not supported (ign-rendering3)
-    * [Pull request #376](https://github.com/ignitionrobotics/ign-rendering/pull/376)
+    * [Pull request #376](https://github.com/gazebosim/gz-rendering/pull/376)
 
 1. 👩‍🌾 Remove bitbucket-pipelines.yml
-    * [Pull request #385](https://github.com/ignitionrobotics/ign-rendering/pull/385)
+    * [Pull request #385](https://github.com/gazebosim/gz-rendering/pull/385)
 
 1. [macOS] support OpenGL < 4.2 in PBS shader
-    * [Pull request #377](https://github.com/ignitionrobotics/ign-rendering/pull/377)
+    * [Pull request #377](https://github.com/gazebosim/gz-rendering/pull/377)
 
 1. Moved ScreenToPlane and ScreenToScene from ign-gui to ign-rendering
-    * [Pull request #363](https://github.com/ignitionrobotics/ign-rendering/pull/363)
-    * [Pull request #368](https://github.com/ignitionrobotics/ign-rendering/pull/368)
+    * [Pull request #363](https://github.com/gazebosim/gz-rendering/pull/363)
+    * [Pull request #368](https://github.com/gazebosim/gz-rendering/pull/368)
 
 1. More nullptr checking on Node classes
-    * [Pull request #364](https://github.com/ignitionrobotics/ign-rendering/pull/364)
+    * [Pull request #364](https://github.com/gazebosim/gz-rendering/pull/364)
 
 ### Ignition Rendering 5.1.0 (2021-06-22)
 
 1. add ifdef for apple in integration test
-    * [Pull request #349](https://github.com/ignitionrobotics/ign-rendering/pull/349)
+    * [Pull request #349](https://github.com/gazebosim/gz-rendering/pull/349)
 
 1. Update light map tutorial
-    * [Pull request #346](https://github.com/ignitionrobotics/ign-rendering/pull/346)
+    * [Pull request #346](https://github.com/gazebosim/gz-rendering/pull/346)
 
 1. relax gaussian test tolerance
-    * [Pull request #344](https://github.com/ignitionrobotics/ign-rendering/pull/344)
+    * [Pull request #344](https://github.com/gazebosim/gz-rendering/pull/344)
 
 1. Fix custom shaders uniforms ign version number
-    * [Pull request #343](https://github.com/ignitionrobotics/ign-rendering/pull/343)
+    * [Pull request #343](https://github.com/gazebosim/gz-rendering/pull/343)
 
 1. recreate node only when needed
-    * [Pull request #342](https://github.com/ignitionrobotics/ign-rendering/pull/342)
+    * [Pull request #342](https://github.com/gazebosim/gz-rendering/pull/342)
 
 1. Backport memory fixes found by ASAN
-    * [Pull request #340](https://github.com/ignitionrobotics/ign-rendering/pull/340)
+    * [Pull request #340](https://github.com/gazebosim/gz-rendering/pull/340)
 
 1. Fix FSAA in UI and lower VRAM consumption
-    * [Pull request #313](https://github.com/ignitionrobotics/ign-rendering/pull/313)
+    * [Pull request #313](https://github.com/gazebosim/gz-rendering/pull/313)
 
 1. Fix depth alpha
-    * [Pull request #316](https://github.com/ignitionrobotics/ign-rendering/pull/316)
+    * [Pull request #316](https://github.com/gazebosim/gz-rendering/pull/316)
 
 1. Fix floating point precision bug handling alpha channel (#332)
-    * [Pull request #333](https://github.com/ignitionrobotics/ign-rendering/pull/333)
+    * [Pull request #333](https://github.com/gazebosim/gz-rendering/pull/333)
 
 1. Fix heap overflow when reading
-    * [Pull request #337](https://github.com/ignitionrobotics/ign-rendering/pull/337)
+    * [Pull request #337](https://github.com/gazebosim/gz-rendering/pull/337)
 
 1. Fix new [] / delete mismatch
-    * [Pull request #338](https://github.com/ignitionrobotics/ign-rendering/pull/338)
+    * [Pull request #338](https://github.com/gazebosim/gz-rendering/pull/338)
 
 1. Test re-enabling depth camera integration test on mac
-    * [Pull request #335](https://github.com/ignitionrobotics/ign-rendering/pull/335)
+    * [Pull request #335](https://github.com/gazebosim/gz-rendering/pull/335)
 
 1. Include MoveTo Helper class to ign-rendering
-    * [Pull request #311](https://github.com/ignitionrobotics/ign-rendering/pull/311)
+    * [Pull request #311](https://github.com/gazebosim/gz-rendering/pull/311)
 
 1. Remove `tools/code_check` and update codecov
-    * [Pull request #321](https://github.com/ignitionrobotics/ign-rendering/pull/321)
+    * [Pull request #321](https://github.com/gazebosim/gz-rendering/pull/321)
 
 1. [OGRE 1.x] Uniform buffer shader support
-    * [Pull request #294](https://github.com/ignitionrobotics/ign-rendering/pull/294)
+    * [Pull request #294](https://github.com/gazebosim/gz-rendering/pull/294)
 
 1. Helper function to get a scene
-    * [Pull request #320](https://github.com/ignitionrobotics/ign-rendering/pull/320)
+    * [Pull request #320](https://github.com/gazebosim/gz-rendering/pull/320)
 
 1. fix capsule mouse picking
-    * [Pull request #319](https://github.com/ignitionrobotics/ign-rendering/pull/319)
+    * [Pull request #319](https://github.com/gazebosim/gz-rendering/pull/319)
 
 1. Fix depth alpha
-    * [Pull request #316](https://github.com/ignitionrobotics/ign-rendering/pull/316)
+    * [Pull request #316](https://github.com/gazebosim/gz-rendering/pull/316)
 
 1. Add shadows to Ogre2DepthCamera without crashing
-    * [Pull request #303](https://github.com/ignitionrobotics/ign-rendering/pull/303)
+    * [Pull request #303](https://github.com/gazebosim/gz-rendering/pull/303)
 
 1. Reduce lidar data discretization
-    * [Pull request #296](https://github.com/ignitionrobotics/ign-rendering/pull/296)
+    * [Pull request #296](https://github.com/gazebosim/gz-rendering/pull/296)
 
 1. update light visual size
-    * [Pull request #306](https://github.com/ignitionrobotics/ign-rendering/pull/306)
+    * [Pull request #306](https://github.com/gazebosim/gz-rendering/pull/306)
 
 1. Improve build times by reducing included headers
-    * [Pull request #299](https://github.com/ignitionrobotics/ign-rendering/pull/299)
+    * [Pull request #299](https://github.com/gazebosim/gz-rendering/pull/299)
 
 1. Add light map tutorial
-    * [Pull request #302](https://github.com/ignitionrobotics/ign-rendering/pull/302)
+    * [Pull request #302](https://github.com/gazebosim/gz-rendering/pull/302)
 
 1. Prevent console warnings when multiple texture coordinates are present
-    * [Pull request #301](https://github.com/ignitionrobotics/ign-rendering/pull/301)
+    * [Pull request #301](https://github.com/gazebosim/gz-rendering/pull/301)
 
 1. Fix gazebo scene viewer build
-    * [Pull request #289](https://github.com/ignitionrobotics/ign-rendering/pull/289)
+    * [Pull request #289](https://github.com/gazebosim/gz-rendering/pull/289)
 
 1. Silence noisy sky error
-    * [Pull request #282](https://github.com/ignitionrobotics/ign-rendering/pull/282)
+    * [Pull request #282](https://github.com/gazebosim/gz-rendering/pull/282)
 
 1. Added command line argument to pick version of Ogre
-    * [Pull request #277](https://github.com/ignitionrobotics/ign-rendering/pull/277)
+    * [Pull request #277](https://github.com/gazebosim/gz-rendering/pull/277)
 
 ### Ignition Rendering 5.0.0 (2021-03-30)
 
 1. Add ogre2 skybox support
-    * [Pull request #168](https://github.com/ignitionrobotics/ign-rendering/pull/168)
+    * [Pull request #168](https://github.com/gazebosim/gz-rendering/pull/168)
 
 1. Add light visual support
-    * [Pull request #202](https://github.com/ignitionrobotics/ign-rendering/pull/202)
-    * [Pull request #228](https://github.com/ignitionrobotics/ign-rendering/pull/228)
+    * [Pull request #202](https://github.com/gazebosim/gz-rendering/pull/202)
+    * [Pull request #228](https://github.com/gazebosim/gz-rendering/pull/228)
 
 1. Add API for particle emitter scatter ratio
-    * [Pull request #275](https://github.com/ignitionrobotics/ign-rendering/pull/275)
+    * [Pull request #275](https://github.com/gazebosim/gz-rendering/pull/275)
 
 1. Added capsule geometry
-    * [Pull request #200](https://github.com/ignitionrobotics/ign-rendering/pull/200)
-    * [Pull request #278](https://github.com/ignitionrobotics/ign-rendering/pull/278)
+    * [Pull request #200](https://github.com/gazebosim/gz-rendering/pull/200)
+    * [Pull request #278](https://github.com/gazebosim/gz-rendering/pull/278)
 
 1. Added ellipsoid Geometry
-    * [Pull request #203](https://github.com/ignitionrobotics/ign-rendering/pull/203)
+    * [Pull request #203](https://github.com/gazebosim/gz-rendering/pull/203)
 
 1. ogre2: explicitly request OpenGL 3.3 core profile context.
-    * [Pull request #244](https://github.com/ignitionrobotics/ign-rendering/pull/244)
+    * [Pull request #244](https://github.com/gazebosim/gz-rendering/pull/244)
 
 1. Bump in edifice: ign-common4
-    * [Pull request #209](https://github.com/ignitionrobotics/ign-rendering/pull/209)
+    * [Pull request #209](https://github.com/gazebosim/gz-rendering/pull/209)
 
 1. Support setting horizontal and vertical resolution for GpuRays
-    * [Pull request #229](https://github.com/ignitionrobotics/ign-rendering/pull/229)
+    * [Pull request #229](https://github.com/gazebosim/gz-rendering/pull/229)
 
 1. Added Light Intensity
-    * [Pull request #233](https://github.com/ignitionrobotics/ign-rendering/pull/233)
-    * [Pull request #284](https://github.com/ignitionrobotics/ign-rendering/pull/284)
+    * [Pull request #233](https://github.com/gazebosim/gz-rendering/pull/233)
+    * [Pull request #284](https://github.com/gazebosim/gz-rendering/pull/284)
 
 1. Heightmap for Ogre 1
-    * [Pull request #180](https://github.com/ignitionrobotics/ign-rendering/pull/180)
+    * [Pull request #180](https://github.com/gazebosim/gz-rendering/pull/180)
 
 1. Added render order to material
-    * [Pull request #188](https://github.com/ignitionrobotics/ign-rendering/pull/188)
+    * [Pull request #188](https://github.com/gazebosim/gz-rendering/pull/188)
 
 1. Add support for lightmaps in ogre2
-    * [Pull request #182](https://github.com/ignitionrobotics/ign-rendering/pull/182)
+    * [Pull request #182](https://github.com/gazebosim/gz-rendering/pull/182)
 
 1. Documentation updates
-    * [Pull request #288](https://github.com/ignitionrobotics/ign-rendering/pull/288)
-    * [Pull request #287](https://github.com/ignitionrobotics/ign-rendering/pull/287)
-    * [Pull request #286](https://github.com/ignitionrobotics/ign-rendering/pull/286)
+    * [Pull request #288](https://github.com/gazebosim/gz-rendering/pull/288)
+    * [Pull request #287](https://github.com/gazebosim/gz-rendering/pull/287)
+    * [Pull request #286](https://github.com/gazebosim/gz-rendering/pull/286)
 
 ### Ignition Rendering 4.X
 
 ### Ignition Rendering 4.9.0 (2021-09-15)
 
 1. Output warning message if a mesh with zero submeshes is created
-    * [Pull request #391](https://github.com/ignitionrobotics/ign-rendering/pull/391)
+    * [Pull request #391](https://github.com/gazebosim/gz-rendering/pull/391)
 
 1. Fix particle effect randomness
-    * [Pull request #388](https://github.com/ignitionrobotics/ign-rendering/pull/388)
+    * [Pull request #388](https://github.com/gazebosim/gz-rendering/pull/388)
 
 1. Fix single ray gpu lidar
-    * [Pull request #384](https://github.com/ignitionrobotics/ign-rendering/pull/384)
+    * [Pull request #384](https://github.com/gazebosim/gz-rendering/pull/384)
 
 1. Use selection buffer in ray queries (ogre2)
-    * [Pull request #378](https://github.com/ignitionrobotics/ign-rendering/pull/378)
-    * [Pull request #383](https://github.com/ignitionrobotics/ign-rendering/pull/383)
+    * [Pull request #378](https://github.com/gazebosim/gz-rendering/pull/378)
+    * [Pull request #383](https://github.com/gazebosim/gz-rendering/pull/383)
 
 1. All changes merged forward from ign-rendering3
-    * [Pull request #382](https://github.com/ignitionrobotics/ign-rendering/pull/382)
-    * [Pull request #398](https://github.com/ignitionrobotics/ign-rendering/pull/398)
+    * [Pull request #382](https://github.com/gazebosim/gz-rendering/pull/382)
+    * [Pull request #398](https://github.com/gazebosim/gz-rendering/pull/398)
 
 ### Ignition Rendering 4.8.0 (2021-06-18)
 
 1. relax gaussian test tolerance
-    * [Pull request #344](https://github.com/ignitionrobotics/ign-rendering/pull/344)
+    * [Pull request #344](https://github.com/gazebosim/gz-rendering/pull/344)
 
 1. recreate node only when needed
-    * [Pull request #342](https://github.com/ignitionrobotics/ign-rendering/pull/342)
+    * [Pull request #342](https://github.com/gazebosim/gz-rendering/pull/342)
 
 1. Backport memory fixes found by ASAN
-    * [Pull request #340](https://github.com/ignitionrobotics/ign-rendering/pull/340)
+    * [Pull request #340](https://github.com/gazebosim/gz-rendering/pull/340)
 
 1. Re-enable part of depth camera test on macOS
-    * [Pull request #335](https://github.com/ignitionrobotics/ign-rendering/pull/335)
-    * [Pull request #347](https://github.com/ignitionrobotics/ign-rendering/pull/347)
+    * [Pull request #335](https://github.com/gazebosim/gz-rendering/pull/335)
+    * [Pull request #347](https://github.com/gazebosim/gz-rendering/pull/347)
 
 1. Fix depth alpha
-    * [Pull request #316](https://github.com/ignitionrobotics/ign-rendering/pull/316)
+    * [Pull request #316](https://github.com/gazebosim/gz-rendering/pull/316)
 
 1. Fix floating point precision bug handling alpha channel (#332)
-    * [Pull request #333](https://github.com/ignitionrobotics/ign-rendering/pull/333)
+    * [Pull request #333](https://github.com/gazebosim/gz-rendering/pull/333)
 
 1. Include MoveTo Helper class to ign-rendering
-    * [Pull request #311](https://github.com/ignitionrobotics/ign-rendering/pull/311)
+    * [Pull request #311](https://github.com/gazebosim/gz-rendering/pull/311)
 
 1. Remove `tools/code_check` and update codecov
-    * [Pull request #321](https://github.com/ignitionrobotics/ign-rendering/pull/321)
+    * [Pull request #321](https://github.com/gazebosim/gz-rendering/pull/321)
 
 1. [OGRE 1.x] Uniform buffer shader support
-    * [Pull request #294](https://github.com/ignitionrobotics/ign-rendering/pull/294)
+    * [Pull request #294](https://github.com/gazebosim/gz-rendering/pull/294)
 
 1. Helper function to get a scene
-    * [Pull request #320](https://github.com/ignitionrobotics/ign-rendering/pull/320)
+    * [Pull request #320](https://github.com/gazebosim/gz-rendering/pull/320)
 
 1. Reduce lidar data discretization
-    * [Pull request #296](https://github.com/ignitionrobotics/ign-rendering/pull/296)
+    * [Pull request #296](https://github.com/gazebosim/gz-rendering/pull/296)
 
 1. Prevent console warnings when multiple texture coordinates are present
-    * [Pull request #301](https://github.com/ignitionrobotics/ign-rendering/pull/301)
+    * [Pull request #301](https://github.com/gazebosim/gz-rendering/pull/301)
 
 1. Added command line argument to pick version of Ogre
-    * [Pull request #277](https://github.com/ignitionrobotics/ign-rendering/pull/277)
+    * [Pull request #277](https://github.com/gazebosim/gz-rendering/pull/277)
 
 ### Ignition Rendering 4.7.0 (2021-03-17)
 
 1. Enable depth write in particles example
-    * [Pull Request #217](https://github.com/ignitionrobotics/ign-rendering/pull/217)
+    * [Pull Request #217](https://github.com/gazebosim/gz-rendering/pull/217)
 
 1. Fix gazebo_scene_viewer for macOS and ensure clean exit
-    * [Pull Request #259](https://github.com/ignitionrobotics/ign-rendering/pull/259)
+    * [Pull Request #259](https://github.com/gazebosim/gz-rendering/pull/259)
 
 1. Master branch updates
-    * [Pull Request #268](https://github.com/ignitionrobotics/ign-rendering/pull/268)
+    * [Pull Request #268](https://github.com/gazebosim/gz-rendering/pull/268)
 
 1. Expose particle scatter ratio parameter
-    * [Pull Request #269](https://github.com/ignitionrobotics/ign-rendering/pull/269)
+    * [Pull Request #269](https://github.com/gazebosim/gz-rendering/pull/269)
 
 1. Fix overriding blend mode
-    * [Pull Request #266](https://github.com/ignitionrobotics/ign-rendering/pull/266)
+    * [Pull Request #266](https://github.com/gazebosim/gz-rendering/pull/266)
 
 1. Fix DepthGaussianNoise test
-    * [Pull Request #271](https://github.com/ignitionrobotics/ign-rendering/pull/271)
+    * [Pull Request #271](https://github.com/gazebosim/gz-rendering/pull/271)
 
 1. Handle non-positive object temperatures
-    * [Pull Request #243](https://github.com/ignitionrobotics/ign-rendering/pull/243)
+    * [Pull Request #243](https://github.com/gazebosim/gz-rendering/pull/243)
 
 ### Ignition Rendering 4.6.0 (2021-03-01)
 
 1. Improve particle scattering noise
-    * [Pull Request #261](https://github.com/ignitionrobotics/ign-rendering/pull/261)
+    * [Pull Request #261](https://github.com/gazebosim/gz-rendering/pull/261)
 
 1. Fix custom_scene_viewer for macOS
-    * [Pull Request #256](https://github.com/ignitionrobotics/ign-rendering/pull/256)
+    * [Pull Request #256](https://github.com/gazebosim/gz-rendering/pull/256)
 
 ### Ignition Rendering 4.5.0 (2021-02-17)
 
 1. More verbose messages when failing to load render engines
-    * [Pull Request #236](https://github.com/ignitionrobotics/ign-rendering/pull/236)
+    * [Pull Request #236](https://github.com/gazebosim/gz-rendering/pull/236)
 
 1. Fixed OBJ textures with the same name
-    * [Pull Request #239](https://github.com/ignitionrobotics/ign-rendering/pull/239)
+    * [Pull Request #239](https://github.com/gazebosim/gz-rendering/pull/239)
 
 1. Fix setting particle size
-    * [Pull Request #241](https://github.com/ignitionrobotics/ign-rendering/pull/241)
+    * [Pull Request #241](https://github.com/gazebosim/gz-rendering/pull/241)
 
 1. Make particle emitter invisible in thermal camera image
-    * [Pull Request #240](https://github.com/ignitionrobotics/ign-rendering/pull/240)
+    * [Pull Request #240](https://github.com/gazebosim/gz-rendering/pull/240)
 
 1. Apply particle scattering effect to depth cameras
-    * [Pull Request #251](https://github.com/ignitionrobotics/ign-rendering/pull/251)
+    * [Pull Request #251](https://github.com/gazebosim/gz-rendering/pull/251)
 
 ### Ignition Rendering 4.4.0 (2021-02-11)
 
 1. Add support for 8 bit thermal camera image format
-    * [Pull Request #235](https://github.com/ignitionrobotics/ign-rendering/pull/235)
+    * [Pull Request #235](https://github.com/gazebosim/gz-rendering/pull/235)
 
 1. All changes up to version 3.4.0
 
 ### Ignition Rendering 4.3.1 (2021-02-03)
 
 1. Fix converting Pbs to Unlit material conversion (#230)
-    * [Pull Request #230](https://github.com/ignitionrobotics/ign-rendering/pull/230)
+    * [Pull Request #230](https://github.com/gazebosim/gz-rendering/pull/230)
 
 ### Ignition Rendering 4.3.0 (2021-02-02)
 
 1. Tutorial: Transform FBX to Collada and change its origin
-    * [Pull request #195](https://github.com/ignitionrobotics/ign-rendering/pull/195)
+    * [Pull request #195](https://github.com/gazebosim/gz-rendering/pull/195)
 
 1. Remove Windows Warnings
-    * [Pull request #206](https://github.com/ignitionrobotics/ign-rendering/pull/206)
-    * [Pull request #213](https://github.com/ignitionrobotics/ign-rendering/pull/213)
-    * [Pull request #215](https://github.com/ignitionrobotics/ign-rendering/pull/215)
+    * [Pull request #206](https://github.com/gazebosim/gz-rendering/pull/206)
+    * [Pull request #213](https://github.com/gazebosim/gz-rendering/pull/213)
+    * [Pull request #215](https://github.com/gazebosim/gz-rendering/pull/215)
 
 1. Fix spelling Desconstructor -> Destructor
-    * [Pull request #220](https://github.com/ignitionrobotics/ign-rendering/pull/220)
+    * [Pull request #220](https://github.com/gazebosim/gz-rendering/pull/220)
 
 1. Thermal Camera: Visualize objects with a heat signature
-    * [Pull request #189](https://github.com/ignitionrobotics/ign-rendering/pull/189)
+    * [Pull request #189](https://github.com/gazebosim/gz-rendering/pull/189)
 
 1. Add laser retro support in Ogre2
-    * [Pull request #194](https://github.com/ignitionrobotics/ign-rendering/pull/194)
+    * [Pull request #194](https://github.com/gazebosim/gz-rendering/pull/194)
 
 ### Ignition Rendering 4.2.0 (2021-01-22)
 
 1. Remove some windows warnings.
-    * [Pull request #183](https://github.com/ignitionrobotics/ign-rendering/pull/183)
+    * [Pull request #183](https://github.com/gazebosim/gz-rendering/pull/183)
 
 1. Fix transparency issue for textures without alpha channel.
-    * [Pull request #186](https://github.com/ignitionrobotics/ign-rendering/pull/186)
+    * [Pull request #186](https://github.com/gazebosim/gz-rendering/pull/186)
 
 1. Call XCloseDisplay in screenScalingFactor.
-    * [Pull request #204](https://github.com/ignitionrobotics/ign-rendering/pull/204)
+    * [Pull request #204](https://github.com/gazebosim/gz-rendering/pull/204)
 
 1. All changes up to version 3.3.0.
 
 ### Ignition Rendering 4.1.0 (2020-11-04)
 
 1. Improve fork experience
-    * [Pull request #165](https://github.com/ignitionrobotics/ign-rendering/pull/165)
+    * [Pull request #165](https://github.com/gazebosim/gz-rendering/pull/165)
 
 1. Add Custom Render Engine support
-    * [Pull request 161](https://github.com/ignitionrobotics/ign-rendering/pull/161)
-    * [Pull request 154](https://github.com/ignitionrobotics/ign-rendering/pull/154)
-    * [Pull request 142](https://github.com/ignitionrobotics/ign-rendering/pull/142)
-    * [Pull request 141](https://github.com/ignitionrobotics/ign-rendering/pull/141)
+    * [Pull request 161](https://github.com/gazebosim/gz-rendering/pull/161)
+    * [Pull request 154](https://github.com/gazebosim/gz-rendering/pull/154)
+    * [Pull request 142](https://github.com/gazebosim/gz-rendering/pull/142)
+    * [Pull request 141](https://github.com/gazebosim/gz-rendering/pull/141)
 
 1. Update tutorials
-    * [Pull request #159](https://github.com/ignitionrobotics/ign-rendering/pull/159)
-    * [Pull request #153](https://github.com/ignitionrobotics/ign-rendering/pull/153)
+    * [Pull request #159](https://github.com/gazebosim/gz-rendering/pull/159)
+    * [Pull request #153](https://github.com/gazebosim/gz-rendering/pull/153)
 
 1. Limit number of shadow casting lights in ogre2
-    * [Pull Request 155](https://github.com/ignitionrobotics/ign-rendering/pull/155)
+    * [Pull Request 155](https://github.com/gazebosim/gz-rendering/pull/155)
 
 1. Ogre2 depth camera fix
-    * [Pull Request 138](https://github.com/ignitionrobotics/ign-rendering/pull/138)
+    * [Pull Request 138](https://github.com/gazebosim/gz-rendering/pull/138)
 
 1. Add support for Gaussian noise render pass in Ogre2DepthCamera
-    * [Pull Request 122](https://github.com/ignitionrobotics/ign-rendering/pull/122)
+    * [Pull Request 122](https://github.com/gazebosim/gz-rendering/pull/122)
 
 ### Ignition Rendering 4.0.0 (2020-09-29)
 
 1. Update tutorials
-    * [Pull request #151](https://github.com/ignitionrobotics/ign-rendering/pull/151)
-    * [Pull request #150](https://github.com/ignitionrobotics/ign-rendering/pull/150)
-    * [Pull request #149](https://github.com/ignitionrobotics/ign-rendering/pull/149)
-    * [Pull request #148](https://github.com/ignitionrobotics/ign-rendering/pull/148)
-    * [Pull request #147](https://github.com/ignitionrobotics/ign-rendering/pull/147)
-    * [Pull request #146](https://github.com/ignitionrobotics/ign-rendering/pull/146)
-    * [Pull request #145](https://github.com/ignitionrobotics/ign-rendering/pull/145)
-    * [Pull request #144](https://github.com/ignitionrobotics/ign-rendering/pull/144)
-    * [Pull request #143](https://github.com/ignitionrobotics/ign-rendering/pull/143)
-    * [Pull request #125](https://github.com/ignitionrobotics/ign-rendering/pull/125)
+    * [Pull request #151](https://github.com/gazebosim/gz-rendering/pull/151)
+    * [Pull request #150](https://github.com/gazebosim/gz-rendering/pull/150)
+    * [Pull request #149](https://github.com/gazebosim/gz-rendering/pull/149)
+    * [Pull request #148](https://github.com/gazebosim/gz-rendering/pull/148)
+    * [Pull request #147](https://github.com/gazebosim/gz-rendering/pull/147)
+    * [Pull request #146](https://github.com/gazebosim/gz-rendering/pull/146)
+    * [Pull request #145](https://github.com/gazebosim/gz-rendering/pull/145)
+    * [Pull request #144](https://github.com/gazebosim/gz-rendering/pull/144)
+    * [Pull request #143](https://github.com/gazebosim/gz-rendering/pull/143)
+    * [Pull request #125](https://github.com/gazebosim/gz-rendering/pull/125)
 
 1. Pimpl'ize ogre2 classes
-    * [Pull request #137](https://github.com/ignitionrobotics/ign-rendering/pull/137)
+    * [Pull request #137](https://github.com/gazebosim/gz-rendering/pull/137)
 
 1. Replace common::Time with std::chrono
-    * [Pull request #135](https://github.com/ignitionrobotics/ign-rendering/pull/135)
+    * [Pull request #135](https://github.com/gazebosim/gz-rendering/pull/135)
 
 1. Add Ogre2 particle system
-    * [Pull request #126](https://github.com/ignitionrobotics/ign-rendering/pull/126)
-    * [Pull request #117](https://github.com/ignitionrobotics/ign-rendering/pull/117)
-    * [Pull request #113](https://github.com/ignitionrobotics/ign-rendering/pull/113)
-    * [Pull request #107](https://github.com/ignitionrobotics/ign-rendering/pull/107)
+    * [Pull request #126](https://github.com/gazebosim/gz-rendering/pull/126)
+    * [Pull request #117](https://github.com/gazebosim/gz-rendering/pull/117)
+    * [Pull request #113](https://github.com/gazebosim/gz-rendering/pull/113)
+    * [Pull request #107](https://github.com/gazebosim/gz-rendering/pull/107)
 
 1. Add LidarVisual point colors for Ogre1
-    * [Pull request #124](https://github.com/ignitionrobotics/ign-rendering/pull/124)
+    * [Pull request #124](https://github.com/gazebosim/gz-rendering/pull/124)
 
 1. Added Lidar Visual for Ogre2
-    * [Pull request #116](https://github.com/ignitionrobotics/ign-rendering/pull/116)
+    * [Pull request #116](https://github.com/gazebosim/gz-rendering/pull/116)
 
 1. Added Lidar Visual Types for Ogre1
-    * [Pull request #114](https://github.com/ignitionrobotics/ign-rendering/pull/114)
+    * [Pull request #114](https://github.com/gazebosim/gz-rendering/pull/114)
 
 1. Added Lidar Visualisation for Ogre1
-    * [Pull request #103](https://github.com/ignitionrobotics/ign-rendering/pull/103)
+    * [Pull request #103](https://github.com/gazebosim/gz-rendering/pull/103)
 
 1. Add environment variables to locate plugins
-    * [Pull request #104](https://github.com/ignitionrobotics/ign-rendering/pull/104)
+    * [Pull request #104](https://github.com/gazebosim/gz-rendering/pull/104)
 
 1. Added a method to show the head on arrows and axis
-    * [Pull request #95](https://github.com/ignitionrobotics/ign-rendering/pull/95)
+    * [Pull request #95](https://github.com/gazebosim/gz-rendering/pull/95)
 
 1. Complete Shaft and Head methods in BaseArrowVisual
-    * [Pull request #95](https://github.com/ignitionrobotics/ign-rendering/pull/94)
+    * [Pull request #95](https://github.com/gazebosim/gz-rendering/pull/94)
 
 1. Scale BaseAxis properly
-    * [Pull request #88](https://github.com/ignitionrobotics/ign-rendering/pull/88)
+    * [Pull request #88](https://github.com/gazebosim/gz-rendering/pull/88)
 
 1. Add ogre2 AxisVisual and ArrowVisual
-    * [Pull request 87](https://github.com/ignitionrobotics/ign-rendering/pull/87)
+    * [Pull request 87](https://github.com/gazebosim/gz-rendering/pull/87)
 
 1. Support setting skeleton node weights
-    * [BitBucket pull request 256](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/256)
+    * [BitBucket pull request 256](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/256)
 
 1. Add support for setting visibility mask and flags
-    * [BitBucket pull request 252](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/252)
+    * [BitBucket pull request 252](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/252)
 
 1. Increase precision of Ogre2 mesh vertices from half to full precision float
-    * [BitBucket pull request 254](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/254)
+    * [BitBucket pull request 254](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/254)
 
 1. Update transparency based on diffuse alpha channel for ogre2
-    * [BitBucket pull request 243](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/243)
+    * [BitBucket pull request 243](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/243)
 
 1. Skeleton animation updates
-    * [BitBucket pull request 235](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/235)
+    * [BitBucket pull request 235](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/235)
 
 1. Add support for transparency based on textures alpha channel for ogre1 and ogre2
-    * [BitBucket pull request 229](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/229)
+    * [BitBucket pull request 229](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/229)
 
 ### Ignition Rendering 3.6.0 (2021-10-15)
 
 1. Avoid symbol redefition to fix armel builds
-    * [Pull request 457](https://github.com/ignitionrobotics/ign-rendering/pull/457)
+    * [Pull request 457](https://github.com/gazebosim/gz-rendering/pull/457)
 
 1. Fix floating point precision bug handling alpha channel
-    * [Pull request 322](https://github.com/ignitionrobotics/ign-rendering/pull/322)
-    * [Pull request 333](https://github.com/ignitionrobotics/ign-rendering/pull/333)
+    * [Pull request 322](https://github.com/gazebosim/gz-rendering/pull/322)
+    * [Pull request 333](https://github.com/gazebosim/gz-rendering/pull/333)
 
 1. Ogre: Do not assume that ogre plugins have lib prefix on macOS
-    * [Pull request 454](https://github.com/ignitionrobotics/ign-rendering/pull/454)
+    * [Pull request 454](https://github.com/gazebosim/gz-rendering/pull/454)
 
 1. Moved ScreenToPlane and ScreenToScene from ign-gui to ign-rendering
-    * [Pull request 363](https://github.com/ignitionrobotics/ign-rendering/pull/363)
-    * [Pull request 368](https://github.com/ignitionrobotics/ign-rendering/pull/368)
+    * [Pull request 363](https://github.com/gazebosim/gz-rendering/pull/363)
+    * [Pull request 368](https://github.com/gazebosim/gz-rendering/pull/368)
 
 1. Relax Gaussian noise test tolerance to fix flaky test
-    * [Pull request 344](https://github.com/ignitionrobotics/ign-rendering/pull/344)
+    * [Pull request 344](https://github.com/gazebosim/gz-rendering/pull/344)
 
 1. Fix ogre2 render pass high GPU usage
-    * [Pull request 342](https://github.com/ignitionrobotics/ign-rendering/pull/342)
+    * [Pull request 342](https://github.com/gazebosim/gz-rendering/pull/342)
 
 1. Backport memory fixes found by ASAN
-    * [Pull request 340](https://github.com/ignitionrobotics/ign-rendering/pull/340)
+    * [Pull request 340](https://github.com/gazebosim/gz-rendering/pull/340)
 
 1. CMake warning on Ogre versions that are not officially supported.
    To disable the new warning, it is enough to enable the cmake option USE_UNOFFICIAL_OGRE_VERSIONS
-    * [Pull request 376](https://github.com/ignitionrobotics/ign-rendering/pull/376)
+    * [Pull request 376](https://github.com/gazebosim/gz-rendering/pull/376)
 
 ### Ignition Rendering 3.5.0 (2021-05-25)
 
 1. Include MoveTo Helper class to ign-rendering
-    * [Pull request 311](https://github.com/ignitionrobotics/ign-rendering/pull/311)
+    * [Pull request 311](https://github.com/gazebosim/gz-rendering/pull/311)
 
 1. Remove tools/code_check and update codecov
-    * [Pull request 321](https://github.com/ignitionrobotics/ign-rendering/pull/321)
+    * [Pull request 321](https://github.com/gazebosim/gz-rendering/pull/321)
 
 1. Helper function to get a scene (#320)
-    * [Pull request 320](https://github.com/ignitionrobotics/ign-rendering/pull/320)
+    * [Pull request 320](https://github.com/gazebosim/gz-rendering/pull/320)
 
 1. Fix DepthGaussianNoise test (#271)
-    * [Pull request 271](https://github.com/ignitionrobotics/ign-rendering/pull/271)
+    * [Pull request 271](https://github.com/gazebosim/gz-rendering/pull/271)
 
 1. Master branch updates (#268)
-    * [Pull request 268](https://github.com/ignitionrobotics/ign-rendering/pull/268)
+    * [Pull request 268](https://github.com/gazebosim/gz-rendering/pull/268)
 
 1. 👩🌾 Make GitHub actions tests that are flaky due to display more verbose information (#255)
-    * [Pull request 255](https://github.com/ignitionrobotics/ign-rendering/pull/255)
+    * [Pull request 255](https://github.com/gazebosim/gz-rendering/pull/255)
 
 1. Fixed OBJ textures with the same name (#239)
-    * [Pull request 239](https://github.com/ignitionrobotics/ign-rendering/pull/239)
+    * [Pull request 239](https://github.com/gazebosim/gz-rendering/pull/239)
 
 1. More verbose messages when failing to load render engine (#236)
-    * [Pull request 236](https://github.com/ignitionrobotics/ign-rendering/pull/236)
+    * [Pull request 236](https://github.com/gazebosim/gz-rendering/pull/236)
 
 ### Ignition Rendering 3.4.0 (2021-02-09)
 
 1. Clear all Windows warnings
-    * [Pull request 206](https://github.com/ignitionrobotics/ign-rendering/pull/206)
-    * [Pull request 215](https://github.com/ignitionrobotics/ign-rendering/pull/215)
-    * [Pull request 225](https://github.com/ignitionrobotics/ign-rendering/pull/225)
+    * [Pull request 206](https://github.com/gazebosim/gz-rendering/pull/206)
+    * [Pull request 215](https://github.com/gazebosim/gz-rendering/pull/215)
+    * [Pull request 225](https://github.com/gazebosim/gz-rendering/pull/225)
 
 1. Add laser_retro support
-    * [Pull request 194](https://github.com/ignitionrobotics/ign-rendering/pull/194)
+    * [Pull request 194](https://github.com/gazebosim/gz-rendering/pull/194)
 
 ### Ignition Rendering 3.3.0 (2021-01-22)
 
 1. Add Windows installation.
-    * [Pull request 196](https://github.com/ignitionrobotics/ign-rendering/pull/196)
+    * [Pull request 196](https://github.com/gazebosim/gz-rendering/pull/196)
 
 1. Make flaky VisualAt test more verbose.
-    * [Pull request 174](https://github.com/ignitionrobotics/ign-rendering/pull/174)
+    * [Pull request 174](https://github.com/gazebosim/gz-rendering/pull/174)
 
 1. Resolve updated codecheck issues.
-    * [Pull request 173](https://github.com/ignitionrobotics/ign-rendering/pull/173)
+    * [Pull request 173](https://github.com/gazebosim/gz-rendering/pull/173)
 
 1. Fix crash due to NaN pose values.
-    * [Pull request 169](https://github.com/ignitionrobotics/ign-rendering/pull/169)
+    * [Pull request 169](https://github.com/gazebosim/gz-rendering/pull/169)
 
 1. Improve fork experience.
-    * [Pull request 165](https://github.com/ignitionrobotics/ign-rendering/pull/165)
+    * [Pull request 165](https://github.com/gazebosim/gz-rendering/pull/165)
 
 ### Ignition Rendering 3.2.0 (2020-10-13)
 
 1. Add Custom Render Engine support
-    * [Pull request 161](https://github.com/ignitionrobotics/ign-rendering/pull/161)
-    * [Pull request 154](https://github.com/ignitionrobotics/ign-rendering/pull/154)
-    * [Pull request 142](https://github.com/ignitionrobotics/ign-rendering/pull/142)
-    * [Pull request 141](https://github.com/ignitionrobotics/ign-rendering/pull/141)
+    * [Pull request 161](https://github.com/gazebosim/gz-rendering/pull/161)
+    * [Pull request 154](https://github.com/gazebosim/gz-rendering/pull/154)
+    * [Pull request 142](https://github.com/gazebosim/gz-rendering/pull/142)
+    * [Pull request 141](https://github.com/gazebosim/gz-rendering/pull/141)
 
 1. Add getter for Ogre2Camera
-    * [Pull request 97](https://github.com/ignitionrobotics/ign-rendering/pull/97)
+    * [Pull request 97](https://github.com/gazebosim/gz-rendering/pull/97)
 
 1. Update test configuration to use ogre2
-    * [Pull request 83](https://github.com/ignitionrobotics/ign-rendering/pull/83)
+    * [Pull request 83](https://github.com/gazebosim/gz-rendering/pull/83)
 
 1. Ogre2 GPU Ray: Cleanup all resources on destruction
-    * [BitBucket pull request 258](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/258)
+    * [BitBucket pull request 258](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/258)
 
 1. Ogre2: Add Grid
-    * [BitBucket pull request 246](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/246)
+    * [BitBucket pull request 246](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/246)
 
 1. Includes all changes up to and including those in version 2.5.1
 
 ### Ignition Rendering 3.1.0 (2020-03-05)
 
 1. Use default material properties from ign-common PBR material when loading a mesh
-    * [BitBucket pull request 242](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/242)
+    * [BitBucket pull request 242](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/242)
 
 1. Fix build for ogre version >= 1.12.0
-    * [BitBucket pull request 241](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/241)
+    * [BitBucket pull request 241](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/241)
 
 1. Add Ogre2 DynamicRenderable class
-    * [BitBucket pull request 226](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/226)
+    * [BitBucket pull request 226](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/226)
 
 1. Skeletons for Ogre2
-    * [BitBucket pull request 224](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/224)
+    * [BitBucket pull request 224](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/224)
 
 1. Fixed gazebo scene viewer example
-    * [BitBucket pull request 228](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/228)
+    * [BitBucket pull request 228](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/228)
 
 1. Ogre2: Fix shadows by dynamically generating shadow maps
-    * [BitBucket pull request 222](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/222)
+    * [BitBucket pull request 222](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/222)
 
 1. Ogre2: Destroy resources before recreating shadows
-    * [BitBucket pull request 223](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/223)
+    * [BitBucket pull request 223](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/223)
 
 1. Fix custom shaders example
-    * [BitBucket pull request 230](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/230)
+    * [BitBucket pull request 230](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/230)
 
 1. Add API to check which engines are loaded
-    * [BitBucket pull request 233](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/233)
+    * [BitBucket pull request 233](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/233)
 
 ### Ignition Rendering 3.0.0 (2019-12-10)
 
 1. Support setting cast shadows
-    * [BitBucket pull request 209](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/209)
+    * [BitBucket pull request 209](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/209)
 
 1. Add Thermal Camera
-    * [BitBucket pull request 202](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/202)
+    * [BitBucket pull request 202](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/202)
 
 1. Add support for emissive map
-    * [BitBucket pull request 207](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/207)
+    * [BitBucket pull request 207](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/207)
 
 1. Add Marker class and port ogre dynamic lines and renderable
-    * [BitBucket pull request 195](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/195)
-    * [BitBucket pull request 208](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/208)
+    * [BitBucket pull request 195](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/195)
+    * [BitBucket pull request 208](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/208)
 
 1. Support storing user data in Visual
-    * [BitBucket pull request 200](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/200)
+    * [BitBucket pull request 200](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/200)
 
 1. Add 16 bit format
-    * [BitBucket pull request 201](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/201)
+    * [BitBucket pull request 201](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/201)
 
 1. Destroy camera when the scene is destroyed
-    * [BitBucket pull request 175](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/175)
+    * [BitBucket pull request 175](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/175)
 
 1. Added function to get the number of channels from a GpuRay.
-    * [BitBucket pull request 178](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/178)
+    * [BitBucket pull request 178](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/178)
 
 1. Ogre 1.x skeletal animation changes
-    * [BitBucket pull request 184](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/184)
-    * [BitBucket pull request 199](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/199)
-    * [BitBucket pull request 204](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/204)
+    * [BitBucket pull request 184](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/184)
+    * [BitBucket pull request 199](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/199)
+    * [BitBucket pull request 204](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/204)
 
 ### Ignition Rendering 2.5.1 (2020-10-05)
 
 1. Limit number of shadow casting lights in ogre2
-    * [Pull Request 155](https://github.com/ignitionrobotics/ign-rendering/pull/155)
+    * [Pull Request 155](https://github.com/gazebosim/gz-rendering/pull/155)
 
 1. Backport ogre2 depth camera fix
-    * [Pull Request 138](https://github.com/ignitionrobotics/ign-rendering/pull/138)
+    * [Pull Request 138](https://github.com/gazebosim/gz-rendering/pull/138)
 
 ### Ignition Rendering 2.5.0 (2020-08-07)
 
 1. Add support for Gaussian noise render pass in Ogre2DepthCamera
-    * [Pull Request 122](https://github.com/ignitionrobotics/ign-rendering/pull/122)
+    * [Pull Request 122](https://github.com/gazebosim/gz-rendering/pull/122)
 
 ### Ignition Rendering 2.4.0 (2020-04-17)
 
 1. Fix flaky VisualAt test
-    * [BitBucket pull request 248](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/248)
+    * [BitBucket pull request 248](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/248)
 
 1. Port windows fixes
-    * [BitBucket pull request 253](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/253)
+    * [BitBucket pull request 253](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/253)
 
 1. Backport ogre2 mesh vertices precision change.
-    * [BitBucket pull request 255](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/255)
+    * [BitBucket pull request 255](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/255)
 
 1. Backport transparency setting based on diffuse alpha
-    * [BitBucket pull request 247](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/247)
+    * [BitBucket pull request 247](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/247)
 
 ### Ignition Rendering 2.3.0 (2020-02-19)
 
 1. Add API to check which engines are loaded
-    * [BitBucket pull request 233](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/233)
+    * [BitBucket pull request 233](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/233)
 
 1. Fix custom shaders example
-    * [BitBucket pull request 230](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/230)
+    * [BitBucket pull request 230](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/230)
 
 1. Ogre2: Fix shadows by dynamically generating shadow maps
-    * [BitBucket pull request 222](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/222)
-    * [BitBucket pull request 223](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/223)
+    * [BitBucket pull request 222](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/222)
+    * [BitBucket pull request 223](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/223)
 
 ### Ignition Rendering 2.2.0 (2019-11-20)
 
 1. Backport setting cast shadows
-    * [BitBucket pull request 210](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/210)
+    * [BitBucket pull request 210](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/210)
 
 1. Ogre2: Add more shadow maps
-    * [BitBucket pull request 203](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/203)
+    * [BitBucket pull request 203](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/203)
 
 ### Ignition Rendering 2.1.2 (2019-09-10)
 
 1. Enable gamma write on color texture in depth camera
-    * [BitBucket pull request 193](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/193)
+    * [BitBucket pull request 193](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/193)
 
 ### Ignition Rendering 2.1.1 (2019-09-06)
 
 1. Add checks on mouse selection
-    * [BitBucket pull request 191](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/191)
+    * [BitBucket pull request 191](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/191)
 
 ### Ignition Rendering 2.1.0 (2019-08-27)
 
 1. Support generating point cloud data in DepthCamera
-    * [BitBucket pull request 187](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/187)
+    * [BitBucket pull request 187](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/187)
 
 1. Fix GizmoVisual material memory leak
-    * [BitBucket pull request 185](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/185)
+    * [BitBucket pull request 185](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/185)
 
 1. Fix PixelFormat FLOAT32 byte and channel count
-    * [BitBucket pull request 186](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/186)
+    * [BitBucket pull request 186](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/186)
 
 ### Ignition Rendering 2.0.1 (2019-07-16)
 
 1. Clean up camera objects when destroying scene
-    * [BitBucket pull request 174](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/174)
-    * [BitBucket pull request 180](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/180)
+    * [BitBucket pull request 174](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/174)
+    * [BitBucket pull request 180](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/180)
 
 ### Ignition Rendering 2.0.0 (2019-05-20)
 
 1. More ogre2 error messages for debugging mesh loading.
-    * [BitBucket pull request 170](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/170)
+    * [BitBucket pull request 170](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/170)
 
 1. Support for ogre 1.11 on windows
-    * [BitBucket pull request 167](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/167)
+    * [BitBucket pull request 167](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/167)
 
 1. Fix ogre mouse picking after window resize
-    * [BitBucket pull request 168](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/168)
+    * [BitBucket pull request 168](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/168)
 
 1. Ogre2: Support mouse picking for objects with overlay material
-    * [BitBucket pull request 165](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/165)
-    * [BitBucket pull request 166](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/166)
+    * [BitBucket pull request 165](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/165)
+    * [BitBucket pull request 166](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/166)
 
 1. Add GizmoVisual class
-    * [BitBucket pull request 163](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/163)
+    * [BitBucket pull request 163](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/163)
 
 1. Add Transform Controller for translating, rotating, and scaling nodes.
-    * [BitBucket pull request 162](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/162)
+    * [BitBucket pull request 162](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/162)
 
 1. Add depth check and depth write properties to Material
-    * [BitBucket pull request 160](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/160)
+    * [BitBucket pull request 160](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/160)
 
 1. Move scale functions from Visual to Node class.
-    * [BitBucket pull request 159](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/159)
+    * [BitBucket pull request 159](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/159)
 
 1. Add support for Render Passes and implement Gaussian Noise pass
-    * [BitBucket pull request 154](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/154)
-    * [BitBucket pull request 155](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/155)
+    * [BitBucket pull request 154](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/154)
+    * [BitBucket pull request 155](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/155)
 
 ### Ignition Rendering 1.X
 
 1. Ogre2: Fix loading mesh with large index count
-    * [BitBucket pull request 156](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/156)
+    * [BitBucket pull request 156](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/156)
 
 1. Move OgreDepthCameraPrivate class to src file so it is not installed.
-    * [BitBucket pull request 150](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/150)
+    * [BitBucket pull request 150](https://osrf-migration.github.io/ignition-gh-pages/#!/gazebosim/gz-rendering/pull-requests/150)
 
 ### Ignition Rendering 1.0.0 (2019-02-28)

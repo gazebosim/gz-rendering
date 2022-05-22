@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixBox.hh>
+#include <ignition/rendering/config.hh>

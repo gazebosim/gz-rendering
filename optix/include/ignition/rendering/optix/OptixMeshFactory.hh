@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixMeshFactory.hh>
+#include <ignition/rendering/config.hh>

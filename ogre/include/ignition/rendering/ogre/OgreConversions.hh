@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreConversions.hh>
+#include <ignition/rendering/config.hh>

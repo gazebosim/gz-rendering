@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixStorage.hh>
+#include <ignition/rendering/config.hh>

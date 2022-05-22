@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreArrowVisual.hh>
+#include <ignition/rendering/config.hh>

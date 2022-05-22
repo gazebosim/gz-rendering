@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreDynamicLines.hh>
+#include <ignition/rendering/config.hh>

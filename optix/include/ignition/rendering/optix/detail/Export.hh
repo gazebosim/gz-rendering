@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/Export.hh>
+#include <ignition/rendering/config.hh>

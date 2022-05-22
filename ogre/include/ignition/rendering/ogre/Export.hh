@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/Export.hh>
+#include <ignition/rendering/config.hh>

@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreDistortionPass.hh>
+#include <ignition/rendering/config.hh>

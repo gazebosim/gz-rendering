@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixCylinder.hh>
+#include <ignition/rendering/config.hh>

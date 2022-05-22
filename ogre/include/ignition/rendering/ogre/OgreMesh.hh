@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreMesh.hh>
+#include <ignition/rendering/config.hh>

@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreStorage.hh>
+#include <ignition/rendering/config.hh>

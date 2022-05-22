@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixAxisVisual.hh>
+#include <ignition/rendering/config.hh>

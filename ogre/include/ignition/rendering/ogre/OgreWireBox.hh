@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreWireBox.hh>
+#include <ignition/rendering/config.hh>

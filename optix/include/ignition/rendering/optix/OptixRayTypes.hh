@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixRayTypes.hh>
+#include <ignition/rendering/config.hh>

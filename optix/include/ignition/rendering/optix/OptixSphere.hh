@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixSphere.hh>
+#include <ignition/rendering/config.hh>

@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixNode.hh>
+#include <ignition/rendering/config.hh>

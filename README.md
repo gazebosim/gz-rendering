@@ -47,12 +47,12 @@ of libraries designed to rapidly develop robot applications.
 
 # Install
 
-See the [installation tutorial](https://ignitionrobotics.org/api/rendering/5.0/installation.html).
+See the [installation tutorial](https://gazebosim.org/api/rendering/5.0/installation.html).
 
 # Usage
 
 The Ign Rendering API can be found in the documentation. See the
-[installation tutorial](https://ignitionrobotics.org/api/rendering/5.0/installation.html)
+[installation tutorial](https://gazebosim.org/api/rendering/5.0/installation.html)
 on how to build the documentation files using Doxygen.
 
 You can also take a look at the sample applications in the `examples` folder.
@@ -81,7 +81,7 @@ Rendering engine plugin implementation code is stored in their own folders
 # Contributing
 
 Please see
-[CONTRIBUTING.md](https://ignitionrobotics.org/docs/all/contributing).
+[CONTRIBUTING.md](https://gazebosim.org/docs/all/contributing).
 
 # Code of Conduct
 
@@ -90,7 +90,7 @@ Please see
 
 # Versioning
 
-This library uses [Semantic Versioning](https://semver.org/). Additionally, this library is part of the [Gazebo project](https://ignitionrobotics.org) which periodically releases a versioned set of compatible and complimentary libraries. See the [Gazebo website](https://ignitionrobotics.org) for version and release information.
+This library uses [Semantic Versioning](https://semver.org/). Additionally, this library is part of the [Gazebo project](https://gazebosim.org) which periodically releases a versioned set of compatible and complimentary libraries. See the [Gazebo website](https://gazebosim.org) for version and release information.
 
 # License
 

@@ -682,7 +682,7 @@ void Ogre2Material::UpdateShaderParams()
 void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
     Ogre::GpuProgramParametersSharedPtr _ogreParams)
 {
-  for (const auto name_param : *_params)
+  for (const auto &name_param : *_params)
   {
     auto *constantDef =
         Ogre::GpuProgramParameters::getAutoConstantDefinition(name_param.first);

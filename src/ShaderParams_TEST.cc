@@ -66,7 +66,7 @@ TEST(ShaderParams, ConstRangeForLoopDoesNotDirty)
   params["some_parameter"] = 4.0f;
   params.ClearDirty();
 
-  for (const auto name_param : params)
+  for (const auto &name_param : params)
   {
     EXPECT_EQ(std::string("some_parameter"), name_param.first);
   }

@@ -95,6 +95,10 @@ class gz::rendering::RenderEngineManagerPrivate
   /// \brief Plugin loader for managing render engine plugin libraries.
   public: gz::plugin::Loader pluginLoader;
 
+  /// \brief Deprecated environment variable which holds paths to look for
+  /// plugins
+  public: std::string pluginPathEnvDeprecated = "IGN_RENDERING_PLUGIN_PATH";
+
   /// \brief Environment variable which holds paths to look for plugins
   public: std::string pluginPathEnv = "GZ_RENDERING_PLUGIN_PATH";
 
@@ -458,9 +462,23 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   auto pathToLib = systemPaths.FindSharedLibrary(_filename);
   if (pathToLib.empty())
   {
-    gzerr << "Failed to load plugin [" << _filename <<
-              "] : couldn't find shared library." << std::endl;
-    return false;
+    // Try deprecated environment variable
+    common::SystemPaths systemPathsDep;
+    systemPathsDep.SetPluginPathEnv(this->dataPtr->pluginPathEnvDeprecated);
+    pathToLib = systemPathsDep.FindSharedLibrary(_filename);
+    if (pathToLib.empty())
+    {
+      gzerr << "Failed to load plugin [" << _filename <<
+               "] : couldn't find shared library." << std::endl;
+      return false;
+    }
+    else
+    {
+      gzwarn << "Found plugin [" << _filename
+             << "] using deprecated environment variable ["
+             << this->dataPtr->pluginPathEnvDeprecated << "]. Please use ["
+             << this->dataPtr->pluginPathEnv << "] instead." << std::endl;
+    }
   }
 
   // Load plugin

@@ -22,11 +22,11 @@ and `HelloWorldPlugin.dll` on Windows.
 
 ## Run
 
-Be sure to have the `GZ_SIM_RENDER_ENGINE_PATH` environment variable set to the path
+Be sure to have the `IGN_GAZEBO_RENDER_ENGINE_PATH` environment variable set to the path
 where your plugin is located.  From within the `build` directory of this example, you can run
 
 ~~~
-export GZ_SIM_RENDER_ENGINE_PATH=$PWD
+export IGN_GAZEBO_RENDER_ENGINE_PATH=$PWD
 ~~~
 
 to set the environment variable accordingly.

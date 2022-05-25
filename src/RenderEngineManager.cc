@@ -464,7 +464,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   {
     // Try deprecated environment variable
     common::SystemPaths systemPathsDep;
-    systemPathsDep.SetPluginPathEnv(this->dataPtr->pluginPathEnvDeprecated);
+    systemPathsDep.SetPluginPathEnv(this->pluginPathEnvDeprecated);
     pathToLib = systemPathsDep.FindSharedLibrary(_filename);
     if (pathToLib.empty())
     {
@@ -476,8 +476,8 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
     {
       gzwarn << "Found plugin [" << _filename
              << "] using deprecated environment variable ["
-             << this->dataPtr->pluginPathEnvDeprecated << "]. Please use ["
-             << this->dataPtr->pluginPathEnv << "] instead." << std::endl;
+             << this->pluginPathEnvDeprecated << "]. Please use ["
+             << this->pluginPathEnv << "] instead." << std::endl;
     }
   }
 

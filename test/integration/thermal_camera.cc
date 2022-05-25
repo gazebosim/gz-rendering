@@ -95,14 +95,14 @@ void ThermalCameraTest::ThermalCameraBoxes(
   // Optix is not supported
   if (_renderEngine.compare("optix") == 0)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' doesn't support thermal cameras" << std::endl;
     return;
   }
   // Only ogre2 supports heat signatures
   else if (_useHeatSignature && (_renderEngine.compare("ogre2") != 0))
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' doesn't support heat signatures" << std::endl;
     return;
   }
@@ -111,7 +111,7 @@ void ThermalCameraTest::ThermalCameraBoxes(
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -283,7 +283,7 @@ void ThermalCameraTest::ThermalCameraBoxes8Bit(
   // Only ogre2 supports 8 bit image format
   if (_renderEngine.compare("ogre2") != 0)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' doesn't support 8 bit thermal cameras" << std::endl;
     return;
   }
@@ -292,7 +292,7 @@ void ThermalCameraTest::ThermalCameraBoxes8Bit(
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -471,7 +471,7 @@ void ThermalCameraTest::ThermalCameraParticles(
   // Only ogre2 supports 8 bit image format
   if (_renderEngine.compare("ogre2") != 0)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
            << "' doesn't support 8 bit thermal cameras" << std::endl;
     return;
   }
@@ -480,7 +480,7 @@ void ThermalCameraTest::ThermalCameraParticles(
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }

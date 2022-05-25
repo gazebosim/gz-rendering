@@ -52,7 +52,7 @@ TEST_P(HeightmapTest, IGN_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   std::string renderEngine{this->GetParam()};
   if (renderEngine != "ogre")
   {
-    igndbg << "Heightmap not supported yet in rendering engine: "
+    gzdbg << "Heightmap not supported yet in rendering engine: "
             << renderEngine << std::endl;
     return;
   }
@@ -60,7 +60,7 @@ TEST_P(HeightmapTest, IGN_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   auto engine = rendering::engine(renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << renderEngine
+    gzdbg << "Engine '" << renderEngine
            << "' is not supported" << std::endl;
     return;
   }

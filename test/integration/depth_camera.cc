@@ -81,7 +81,7 @@ void DepthCameraTest::DepthCameraBoxes(
   // Optix is not supported
   if (_renderEngine.compare("optix") == 0)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' doesn't support depth cameras" << std::endl;
     return;
   }
@@ -90,7 +90,7 @@ void DepthCameraTest::DepthCameraBoxes(
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -496,7 +496,7 @@ void DepthCameraTest::DepthCameraParticles(
   // particle emitter is only supported in ogre2
   if (_renderEngine.compare("ogre2") != 0)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' doesn't support depth cameras" << std::endl;
     return;
   }
@@ -505,7 +505,7 @@ void DepthCameraTest::DepthCameraParticles(
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }

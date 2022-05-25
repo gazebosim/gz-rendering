@@ -545,14 +545,14 @@ void OgreThermalCamera::PostRender()
       this->dataPtr->thermalBuffer, width, height, 1, "L16");
 
   // Uncomment to debug thermal output
-  // igndbg << "wxh: " << width << " x " << height << std::endl;
+  // gzdbg << "wxh: " << width << " x " << height << std::endl;
   // for (unsigned int i = 0; i < height; ++i)
   // {
   //   for (unsigned int j = 0; j < width; ++j)
   //   {
-  //     igndbg << "[" << this->dataPtr->thermalImage[i*width + j] << "]";
+  //     gzdbg << "[" << this->dataPtr->thermalImage[i*width + j] << "]";
   //   }
-  //   igndbg << std::endl;
+  //   gzdbg << std::endl;
   // }
 }
 

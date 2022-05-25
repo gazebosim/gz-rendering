@@ -132,7 +132,7 @@ ScenePtr sceneFromFirstRenderEngine()
   auto loadedEngNames = gz::rendering::loadedEngines();
   if (loadedEngNames.empty())
   {
-    igndbg << "No rendering engine is loaded yet" << std::endl;
+    gzdbg << "No rendering engine is loaded yet" << std::endl;
     return nullptr;
   }
 
@@ -153,7 +153,7 @@ ScenePtr sceneFromFirstRenderEngine()
 
   if (engine->SceneCount() == 0)
   {
-    igndbg << "No scene has been created yet" << std::endl;
+    gzdbg << "No scene has been created yet" << std::endl;
     return nullptr;
   }
 
@@ -172,7 +172,7 @@ ScenePtr sceneFromFirstRenderEngine()
 
   if (!scene->IsInitialized() || nullptr == scene->RootVisual())
   {
-    igndbg << "Scene is not initialized yet" << std::endl;
+    gzdbg << "Scene is not initialized yet" << std::endl;
     return nullptr;
   }
 

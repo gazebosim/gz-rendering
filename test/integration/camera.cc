@@ -71,7 +71,7 @@ void CameraTest::Track(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -201,7 +201,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
 {
   if (_renderEngine == "optix")
   {
-    igndbg << "VisualAt not supported yet in rendering engine: "
+    gzdbg << "VisualAt not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -210,7 +210,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -330,7 +330,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -452,7 +452,7 @@ void CameraTest::Visibility(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -582,7 +582,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
 {
   if (_renderEngine == "optix")
   {
-    igndbg << "Custom shaders are not supported yet in rendering engine: "
+    gzdbg << "Custom shaders are not supported yet in rendering engine: "
            << _renderEngine << std::endl;
     return;
   }
@@ -595,7 +595,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
            << "' is not supported" << std::endl;
     return;
   }

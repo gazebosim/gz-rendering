@@ -69,7 +69,7 @@ void RenderPassTest::GaussianNoise(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -192,7 +192,7 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
   // Optix is not supported
   if (_renderEngine != "ogre2")
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
            << "' doesn't support render pass for depth cameras " << std::endl;
     return;
   }
@@ -201,7 +201,7 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -409,14 +409,14 @@ void RenderPassTest::Distortion(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
 
   if (_renderEngine == "ogre2")
   {
-    igndbg << "Distortion is currently not supported in OGRE2" << std::endl;
+    gzdbg << "Distortion is currently not supported in OGRE2" << std::endl;
     return;
 
   }

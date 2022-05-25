@@ -825,7 +825,7 @@ void Ogre2GpuRays::CreateSampleTexture()
       unsigned int faceIdx;
       math::Vector2d uv = this->SampleCubemap(dir, faceIdx);
       this->dataPtr->cubeFaceIdx.insert(faceIdx);
-      // igndbg << "p(" << pitch << ") y(" << yaw << "): " << dir << " | "
+      // gzdbg << "p(" << pitch << ") y(" << yaw << "): " << dir << " | "
       //       << uv << " | " << faceIdx << std::endl;
       // u
       pDest[index++] = uv.X();

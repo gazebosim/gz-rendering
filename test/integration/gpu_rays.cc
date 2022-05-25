@@ -75,7 +75,7 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 {
   if (_renderEngine == "optix")
   {
-    igndbg << "GpuRays not supported yet in rendering engine: "
+    gzdbg << "GpuRays not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -84,7 +84,7 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -172,7 +172,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   if (_renderEngine == "optix")
   {
-    igndbg << "GpuRays not supported yet in rendering engine: "
+    gzdbg << "GpuRays not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -193,7 +193,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -363,7 +363,7 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 
   if (_renderEngine == "optix")
   {
-    igndbg << "GpuRays not supported yet in rendering engine: "
+    gzdbg << "GpuRays not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -385,7 +385,7 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -505,7 +505,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
 
   if (_renderEngine != "ogre2")
   {
-    igndbg << "GpuRays with particle effect is not supported yet in rendering "
+    gzdbg << "GpuRays with particle effect is not supported yet in rendering "
            << "engine: " << _renderEngine << std::endl;
     return;
   }
@@ -524,7 +524,7 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -722,7 +722,7 @@ void GpuRaysTest::SingleRay(const std::string &_renderEngine)
 
   if (_renderEngine == "optix")
   {
-    igndbg << "GpuRays not supported yet in rendering engine: "
+    gzdbg << "GpuRays not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -742,7 +742,7 @@ void GpuRaysTest::SingleRay(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }

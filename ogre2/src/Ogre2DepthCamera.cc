@@ -1116,34 +1116,34 @@ void Ogre2DepthCamera::PostRender()
     //     unsigned int r = *rgba >> 24 & 0xFF;
     //     unsigned int g = *rgba >> 16 & 0xFF;
     //     unsigned int b = *rgba >> 8 & 0xFF;
-    //     igndbg << "[" << r << "]" << "[" << g << "]" << "[" << b << "],";
+    //     gzdbg << "[" << r << "]" << "[" << g << "]" << "[" << b << "],";
     //   }
-    //   igndbg << std::endl;
+    //   gzdbg << std::endl;
     // }
 
     // Uncomment to debug xyz output
-    // igndbg << "wxh: " << width << " x " << height << std::endl;
+    // gzdbg << "wxh: " << width << " x " << height << std::endl;
     // for (unsigned int i = 0; i < height; ++i)
     // {
     //   for (unsigned int j = 0; j < width; ++j)
     //   {
-    //     igndbg << "[" << this->dataPtr->pointCloudImage[i*width*4+j*4] << "]"
+    //     gzdbg << "[" << this->dataPtr->pointCloudImage[i*width*4+j*4] << "]"
     //       << "[" << this->dataPtr->pointCloudImage[i*width*4+j*4+1] << "]"
     //       << "[" << this->dataPtr->pointCloudImage[i*width*4+j*4+2] << "],";
     //   }
-    //   igndbg << std::endl;
+    //   gzdbg << std::endl;
     // }
   }
 
   // Uncomment to debug depth output
-  // igndbg << "wxh: " << width << " x " << height << std::endl;
+  // gzdbg << "wxh: " << width << " x " << height << std::endl;
   // for (unsigned int i = 0; i < height; ++i)
   // {
   //   for (unsigned int j = 0; j < width; ++j)
   //   {
-  //     igndbg << "[" << this->dataPtr->depthImage[i*width + j] << "]";
+  //     gzdbg << "[" << this->dataPtr->depthImage[i*width + j] << "]";
   //   }
-  //   igndbg << std::endl;
+  //   gzdbg << std::endl;
   // }
 }
 

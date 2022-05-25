@@ -91,7 +91,7 @@ void checkMemLeak(const std::string &_renderEngine,
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
     return;
   }
 
@@ -119,9 +119,9 @@ void checkMemLeak(const std::string &_renderEngine,
   double resPercentChange = (residentEnd - residentStart) / residentStart;
   double sharePercentChange = (shareEnd - shareStart) / shareStart;
 
-  igndbg << "ResPercentChange[" << resPercentChange << "] "
+  gzdbg << "ResPercentChange[" << resPercentChange << "] "
     << "ResMaxPercentChange[" << resMaxPercentChange << "]" << std::endl;
-  igndbg << "SharePercentChange[" << sharePercentChange << "] "
+  gzdbg << "SharePercentChange[" << sharePercentChange << "] "
     << "ShareMaxPercentChange[" << shareMaxPercentChange << "]" << std::endl;
 
   EXPECT_LT(resPercentChange, resMaxPercentChange);

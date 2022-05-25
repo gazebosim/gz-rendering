@@ -39,7 +39,7 @@ void WireBoxTest::WireBox(const std::string &_renderEngine)
 {
   if (_renderEngine != "ogre" && _renderEngine != "ogre2")
   {
-    igndbg << "WireBox not supported yet in rendering engine: "
+    gzdbg << "WireBox not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -47,7 +47,7 @@ void WireBoxTest::WireBox(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
            << "' is not supported" << std::endl;
     return;
   }

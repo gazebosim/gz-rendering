@@ -623,7 +623,7 @@ void OgreWideAngleCamera::PostRender()
       this->dataPtr->wideAngleImage, width, height, channelCount, "PF_R8G8B8");
 
   // Uncomment to debug wide angle cameraoutput
-  // igndbg << "wxh: " << width << " x " << height << std::endl;
+  // gzdbg << "wxh: " << width << " x " << height << std::endl;
   // for (unsigned int i = 0; i < height; ++i)
   // {
   //   for (unsigned int j = 0; j < width * channelCount; j += channelCount)

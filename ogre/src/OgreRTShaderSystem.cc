@@ -486,6 +486,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
     std::string &cachePath)
 {
   const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
+  env = (env) ? env : std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
       GZ_RENDERING_RESOURCE_PATH;
 

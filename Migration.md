@@ -23,7 +23,7 @@ release will remove the deprecated code.
 
 1. Ogre 2 heightmaps: the Y position sign was flipped
 
-1. `Scene::SetTime` is often unset. Ignition's `Ogre2` now defaults to 60hz otherwise rendering won't advance forward.
+1. `Scene::SetTime` is often unset. Gazebo's `Ogre2` now defaults to 60hz otherwise rendering won't advance forward.
 	+ Mostly affects Particles.
 	+ Also may affect gaussian postprocessing and other filters dependant on time.
 	+ Previous behavior was using real time instead of simulation time, which is wrong.

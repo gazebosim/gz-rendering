@@ -789,6 +789,33 @@ ThermalCameraPtr BaseScene::CreateThermalCamera(const unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+DopplerVelocityLogPtr BaseScene::CreateDopplerVelocityLog()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateDopplerVelocityLog(objId);
+}
+//////////////////////////////////////////////////
+DopplerVelocityLogPtr BaseScene::CreateDopplerVelocityLog(const unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "DopplerVelocityLog");
+  return this->CreateDopplerVelocityLog(_id, objName);
+}
+//////////////////////////////////////////////////
+DopplerVelocityLogPtr BaseScene::CreateDopplerVelocityLog(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateDopplerVelocityLog(objId, _name);
+}
+//////////////////////////////////////////////////
+DopplerVelocityLogPtr BaseScene::CreateDopplerVelocityLog(const unsigned int _id,
+    const std::string &_name)
+{
+  DopplerVelocityLogPtr camera = this->CreateDopplerVelocityLogImpl(_id, _name);
+  bool result = this->RegisterSensor(camera);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
 BoundingBoxCameraPtr BaseScene::CreateBoundingBoxCamera()
 {
   unsigned int objId = this->CreateObjectId();

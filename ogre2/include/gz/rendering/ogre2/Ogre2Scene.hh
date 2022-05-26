@@ -236,6 +236,10 @@ namespace ignition
                      const std::string &_name) override;
 
       // Documentation inherited
+      protected: virtual DopplerVelocityLogPtr CreateDopplerVelocityLogImpl(
+                     unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited
       protected: virtual ThermalCameraPtr CreateThermalCameraImpl(
                      unsigned int _id, const std::string &_name) override;
 

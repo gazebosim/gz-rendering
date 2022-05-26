@@ -334,6 +334,21 @@ namespace ignition
                   const unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited.
+      public: virtual DopplerVelocityLogPtr CreateDopplerVelocityLog() override;
+
+      // Documentation inherited.
+      public: virtual DopplerVelocityLogPtr CreateDopplerVelocityLog(
+                  const unsigned int _id) override;
+
+      // Documentation inherited.
+      public: virtual DopplerVelocityLogPtr CreateDopplerVelocityLog(
+                  const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual DopplerVelocityLogPtr CreateDopplerVelocityLog(
+                  const unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual BoundingBoxCameraPtr CreateBoundingBoxCamera() override;
 
       // Documentation inherited.
@@ -625,6 +640,20 @@ namespace ignition
 
       protected: virtual DepthCameraPtr CreateDepthCameraImpl(unsigned int _id,
                      const std::string &_name) = 0;
+
+      /// \brief Implementation for creating a DopplerVelocityLog.
+      /// \param[in] _id Unique id
+      /// \param[in] _name Name of thermal camera
+      protected: virtual DopplerVelocityLogPtr CreateDopplerVelocityLogImpl(
+                     unsigned int _id, const std::string &_name)
+                 {
+                   // The following two lines will avoid doxygen warnings
+                   (void)_id;
+                   (void)_name;
+                   ignerr << "Doppler Velocity not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                   return DopplerVelocityLogPtr();
+                 }
 
       /// \brief Implementation for creating a thermal camera.
       /// \param[in] _id Unique id

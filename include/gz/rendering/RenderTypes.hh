@@ -55,6 +55,7 @@ namespace ignition
     class DepthCamera;
     class DirectionalLight;
     class DistortionPass;
+    class DopplerVelocityLog;
     class GaussianNoisePass;
     class Geometry;
     class GizmoVisual;
@@ -110,6 +111,10 @@ namespace ignition
     /// \typedef DepthCameraPtr
     /// \brief Shared pointer to DepthCamera
     typedef shared_ptr<DepthCamera> DepthCameraPtr;
+
+    /// \typedef DopplerVelocityLogPtr
+    /// \brief Shared pointer to DopplerVelocityLog
+    typedef shared_ptr<DopplerVelocityLog> DopplerVelocityLogPtr;
 
     /// \typedef ThermalCameraPtr
     /// \brief Shared pointer to ThermalCamera
@@ -292,6 +297,10 @@ namespace ignition
     /// \typedef const DepthCameraPtr
     /// \brief Shared pointer to const DepthCamera
     typedef shared_ptr<const DepthCamera> ConstDepthCameraPtr;
+
+    /// \typedef const DopplerVeloctyLogPtr
+    /// \brief Shared pointer to const DepthCamera
+    typedef shared_ptr<const DopplerVelocityLog> ConstDopplerVeloctyLogPtr;
 
     /// \typedef const ThermalCameraPtr
     /// \brief Shared pointer to const ThermalCamera

@@ -49,6 +49,8 @@
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/ogre2/Ogre2WireBox.hh"
 
+#include "gz/rendering/ogre2/.hh"
+
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
@@ -1010,6 +1012,16 @@ DepthCameraPtr Ogre2Scene::CreateDepthCameraImpl(const unsigned int _id,
     const std::string &_name)
 {
   Ogre2DepthCameraPtr camera(new Ogre2DepthCamera);
+  bool result = this->InitObject(camera, _id, _name);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+DopplerVelocityLogPtr Ogre2Scene::CreateDopplerVelocityLogImpl(
+  const unsigned int _id,
+  const std::string &_name)
+{
+  Ogre2DopplerVelocityLogPtr camera(new Ogre2DopplerVelocityLog);
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : nullptr;
 }

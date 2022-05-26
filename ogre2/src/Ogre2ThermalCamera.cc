@@ -613,8 +613,7 @@ void Ogre2ThermalCamera::CreateRenderTexture()
 void Ogre2ThermalCamera::CreateThermalTexture()
 {
   // set aspect ratio and fov
-  double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / this->aspect);
-  this->ogreCamera->setAspectRatio(this->aspect);
+  double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / this->AspectRatio());
   this->ogreCamera->setFOVy(Ogre::Radian(vfov));
 
   // Load thermal material

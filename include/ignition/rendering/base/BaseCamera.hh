@@ -217,6 +217,7 @@ namespace ignition
       protected: double farClip = 1000.0;
 
       /// \brief Aspect ratio
+      /// Do not use this variable. Use ApsectRatio() instead.
       protected: double aspect = 1.3333333;
 
       /// \brief Horizontal camera field of view

@@ -383,7 +383,7 @@ void OgreMaterial::UpdateShaderParams()
 void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
     Ogre::GpuProgramParametersSharedPtr _ogreParams)
 {
-  for (const auto name_param : *_params)
+  for (const auto &name_param : *_params)
   {
     if (ShaderParam::PARAM_FLOAT == name_param.second.Type())
     {

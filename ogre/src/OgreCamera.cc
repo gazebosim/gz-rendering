@@ -67,6 +67,15 @@ void OgreCamera::Destroy()
 }
 
 //////////////////////////////////////////////////
+math::Angle OgreCamera::HFOV() const
+{
+  double vfov = this->ogreCamera->getFOVy().valueRadians();
+  double hFOV;
+  hFOV = 2.0 * atan(tan(vfov / 2.0) * this->ImageWidth() / this->ImageHeight());
+  return math::Angle(hFOV);
+}
+
+//////////////////////////////////////////////////
 void OgreCamera::SetHFOV(const math::Angle &_angle)
 {
   BaseCamera::SetHFOV(_angle);

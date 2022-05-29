@@ -26,13 +26,13 @@
 #include "gz/rendering/optix/OptixMesh.hh"
 #include "gz/rendering/optix/OptixIncludes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixSubMeshStoreFactory
+    class GZ_RENDERING_OPTIX_VISIBLE OptixSubMeshStoreFactory
     {
       // cppcheck-suppress noExplicitConstructor
       public: OptixSubMeshStoreFactory(OptixScenePtr _scene);
@@ -52,7 +52,7 @@ namespace ignition
       protected: OptixScenePtr scene;
     };
 
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixMeshFactory
+    class GZ_RENDERING_OPTIX_VISIBLE OptixMeshFactory
     {
       // cppcheck-suppress noExplicitConstructor
       public: OptixMeshFactory(OptixScenePtr _scene);
@@ -68,7 +68,7 @@ namespace ignition
       protected: OptixScenePtr scene;
     };
 
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixMeshGeometryFactory
+    class GZ_RENDERING_OPTIX_VISIBLE OptixMeshGeometryFactory
     {
       public: OptixMeshGeometryFactory(OptixScenePtr _scene,
                   const common::SubMesh &_subMesh);

@@ -37,11 +37,11 @@
 /// \brief Render visuals that are selectable mask.
 #define IGN_VISIBILITY_SELECTABLE      0x00000002
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     template <class T>
     using shared_ptr = std::shared_ptr<T>;

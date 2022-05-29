@@ -25,11 +25,11 @@
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/base/BaseRenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     template <class T>
     class BaseRenderTarget :
@@ -267,7 +267,7 @@ namespace ignition
     {
       if (_index > this->renderPasses.size())
       {
-        ignerr << "RenderPass index out of range: " << _index << std::endl;
+        gzerr << "RenderPass index out of range: " << _index << std::endl;
         return RenderPassPtr();
       }
       return this->renderPasses[_index];

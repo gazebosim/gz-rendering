@@ -37,17 +37,17 @@ namespace Ogre
   class Root;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
     class OgreRenderEnginePrivate;
 
     /// \brief Plugin for loading ogre render engine
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderEnginePlugin :
+    class GZ_RENDERING_OGRE_VISIBLE OgreRenderEnginePlugin :
       public RenderEnginePlugin
     {
       /// \brief Constructor
@@ -65,7 +65,7 @@ namespace ignition
       public: RenderEngine *Engine() const;
     };
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderEngine :
+    class GZ_RENDERING_OGRE_VISIBLE OgreRenderEngine :
       public virtual BaseRenderEngine,
       public common::SingletonT<OgreRenderEngine>
     {

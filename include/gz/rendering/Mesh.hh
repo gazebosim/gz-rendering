@@ -26,15 +26,15 @@
 #include "gz/rendering/MeshDescriptor.hh"
 #include "gz/rendering/Object.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Mesh Mesh.hh gz/rendering/Mesh
     /// \brief Represents a collection of mesh geometries
-    class IGNITION_RENDERING_VISIBLE Mesh :
+    class GZ_RENDERING_VISIBLE Mesh :
       public virtual Geometry
     {
       /// \brief Destructor
@@ -132,7 +132,7 @@ namespace ignition
 
     /// \class SubMesh Mesh.hh gz/rendering/Mesh.hh
     /// \brief Represents a single mesh geometry
-    class IGNITION_RENDERING_VISIBLE SubMesh :
+    class GZ_RENDERING_VISIBLE SubMesh :
       public virtual Object
     {
       /// \brief Destructor

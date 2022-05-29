@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2GZHLMSSHAREDPRIVATE_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2GZHLMSSHAREDPRIVATE_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2GZHLMSSHAREDPRIVATE_HH_
+#define GZ_RENDERING_OGRE2_OGRE2GZHLMSSHAREDPRIVATE_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2IgnOgreRenderingMode.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Ogre2GzOgreRenderingMode.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -32,19 +32,19 @@
 
 #include <vector>
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE
     {
-    typedef ignition::rendering::IgnOgreRenderingMode IgnOgreRenderingMode;
+    typedef gz::rendering::IgnOgreRenderingMode IgnOgreRenderingMode;
     typedef Ogre::vector<Ogre::ConstBufferPacked*>::type ConstBufferPackedVec;
 
     /// \brief Implements code shared across all or most of our Hlms
     /// customizations
     /// \internal
-    class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsShared
+    class GZ_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsShared
     {
       /// \brief Binds currPerObjectDataBuffer to the right slot.
       /// Does nothing if it's nullptr

@@ -28,16 +28,16 @@ namespace Ogre
   class MovableObject;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
       // Forward declaration
       class OgreCapsulePrivate;
 
       /// \brief Ogre 2.x implementation of a Capsule Visual.
-      class IGNITION_RENDERING_OGRE_VISIBLE OgreCapsule
+      class GZ_RENDERING_OGRE_VISIBLE OgreCapsule
         : public BaseCapsule<OgreGeometry>
       {
         /// \brief Constructor

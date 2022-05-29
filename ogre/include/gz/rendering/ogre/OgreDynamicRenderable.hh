@@ -23,17 +23,17 @@
 #include "gz/rendering/ogre/OgreRenderTypes.hh"
 #include "gz/rendering/Marker.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /*  \class OgreDynamicRenderable OgreDynamicRenderable.hh \
      *  gz/rendering/ogre/OgreDynamicRenderable.hh
      */
     /// \brief Abstract base class providing mechanisms for dynamically
     /// growing hardware buffers.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreDynamicRenderable :
+    class GZ_RENDERING_OGRE_VISIBLE OgreDynamicRenderable :
       public Ogre::SimpleRenderable
     {
       /// \brief Constructor

@@ -25,17 +25,17 @@
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/OgreScene.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
     class OgreLidarVisualPrivate;
 
     /// \brief Ogre implementation of a Lidar Visual.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreLidarVisual
+    class GZ_RENDERING_OGRE_VISIBLE OgreLidarVisual
       : public BaseLidarVisual<OgreVisual>
     {
       /// \brief Constructor
@@ -63,7 +63,7 @@ namespace ignition
       // Documentation inherited
       // This only affects lidar visuals with type LVT_POINTS
       public: virtual void SetPoints(const std::vector<double> &_points,
-                        const std::vector<ignition::math::Color> &_colors)
+                        const std::vector<gz::math::Color> &_colors)
                                     override;
 
       // Documentation inherited

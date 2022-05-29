@@ -24,11 +24,11 @@
 #include "gz/rendering/LightVisual.hh"
 #include "gz/rendering/Scene.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Base implementation of a light visual
     template <class T>
@@ -64,7 +64,7 @@ namespace ignition
       public: virtual double OuterAngle() override;
 
       /// \brief Draw the light visual using dynamic renderables
-      public: std::vector<ignition::math::Vector3d> CreateVisualLines();
+      public: std::vector<gz::math::Vector3d> CreateVisualLines();
 
       // Documentation inherited
       public: virtual LightVisualType Type() override;
@@ -154,67 +154,67 @@ namespace ignition
     }
 
     template <class T>
-    std::vector<ignition::math::Vector3d>
+    std::vector<gz::math::Vector3d>
     BaseLightVisual<T>::CreateVisualLines()
     {
-      std::vector<ignition::math::Vector3d> positions;
+      std::vector<gz::math::Vector3d> positions;
 
       if (this->type == LightVisualType::LVT_DIRECTIONAL)
       {
         float s = 0.5;
-        positions.emplace_back(ignition::math::Vector3d(-s, -s, 0));
-        positions.emplace_back(ignition::math::Vector3d(-s, s, 0));
+        positions.emplace_back(gz::math::Vector3d(-s, -s, 0));
+        positions.emplace_back(gz::math::Vector3d(-s, s, 0));
 
-        positions.emplace_back(ignition::math::Vector3d(-s, s, 0));
-        positions.emplace_back(ignition::math::Vector3d(s, s, 0));
+        positions.emplace_back(gz::math::Vector3d(-s, s, 0));
+        positions.emplace_back(gz::math::Vector3d(s, s, 0));
 
-        positions.emplace_back(ignition::math::Vector3d(s, s, 0));
-        positions.emplace_back(ignition::math::Vector3d(s, -s, 0));
+        positions.emplace_back(gz::math::Vector3d(s, s, 0));
+        positions.emplace_back(gz::math::Vector3d(s, -s, 0));
 
-        positions.emplace_back(ignition::math::Vector3d(s, -s, 0));
-        positions.emplace_back(ignition::math::Vector3d(-s, -s, 0));
+        positions.emplace_back(gz::math::Vector3d(s, -s, 0));
+        positions.emplace_back(gz::math::Vector3d(-s, -s, 0));
 
-        positions.emplace_back(ignition::math::Vector3d(0, 0, 0));
-        positions.emplace_back(ignition::math::Vector3d(0, 0, -s));
+        positions.emplace_back(gz::math::Vector3d(0, 0, 0));
+        positions.emplace_back(gz::math::Vector3d(0, 0, -s));
       }
       else if (this->type == LightVisualType::LVT_POINT)
       {
         float s = 0.1f;
-        positions.emplace_back(ignition::math::Vector3d(-s, -s, 0));
-        positions.emplace_back(ignition::math::Vector3d(-s, s, 0));
+        positions.emplace_back(gz::math::Vector3d(-s, -s, 0));
+        positions.emplace_back(gz::math::Vector3d(-s, s, 0));
 
-        positions.emplace_back(ignition::math::Vector3d(-s, s, 0));
-        positions.emplace_back(ignition::math::Vector3d(s, s, 0));
+        positions.emplace_back(gz::math::Vector3d(-s, s, 0));
+        positions.emplace_back(gz::math::Vector3d(s, s, 0));
 
-        positions.emplace_back(ignition::math::Vector3d(s, s, 0));
-        positions.emplace_back(ignition::math::Vector3d(s, -s, 0));
+        positions.emplace_back(gz::math::Vector3d(s, s, 0));
+        positions.emplace_back(gz::math::Vector3d(s, -s, 0));
 
-        positions.emplace_back(ignition::math::Vector3d(s, -s, 0));
-        positions.emplace_back(ignition::math::Vector3d(-s, -s, 0));
+        positions.emplace_back(gz::math::Vector3d(s, -s, 0));
+        positions.emplace_back(gz::math::Vector3d(-s, -s, 0));
 
-        positions.emplace_back(ignition::math::Vector3d(-s, -s, 0));
-        positions.emplace_back(ignition::math::Vector3d(0, 0, s));
+        positions.emplace_back(gz::math::Vector3d(-s, -s, 0));
+        positions.emplace_back(gz::math::Vector3d(0, 0, s));
 
-        positions.emplace_back(ignition::math::Vector3d(-s, s, 0));
-        positions.emplace_back(ignition::math::Vector3d(0, 0, s));
+        positions.emplace_back(gz::math::Vector3d(-s, s, 0));
+        positions.emplace_back(gz::math::Vector3d(0, 0, s));
 
-        positions.emplace_back(ignition::math::Vector3d(s, s, 0));
-        positions.emplace_back(ignition::math::Vector3d(0, 0, s));
+        positions.emplace_back(gz::math::Vector3d(s, s, 0));
+        positions.emplace_back(gz::math::Vector3d(0, 0, s));
 
-        positions.emplace_back(ignition::math::Vector3d(s, -s, 0));
-        positions.emplace_back(ignition::math::Vector3d(0, 0, s));
+        positions.emplace_back(gz::math::Vector3d(s, -s, 0));
+        positions.emplace_back(gz::math::Vector3d(0, 0, s));
 
-        positions.emplace_back(ignition::math::Vector3d(-s, -s, 0));
-        positions.emplace_back(ignition::math::Vector3d(0, 0, -s));
+        positions.emplace_back(gz::math::Vector3d(-s, -s, 0));
+        positions.emplace_back(gz::math::Vector3d(0, 0, -s));
 
-        positions.emplace_back(ignition::math::Vector3d(-s, s, 0));
-        positions.emplace_back(ignition::math::Vector3d(0, 0, -s));
+        positions.emplace_back(gz::math::Vector3d(-s, s, 0));
+        positions.emplace_back(gz::math::Vector3d(0, 0, -s));
 
-        positions.emplace_back(ignition::math::Vector3d(s, s, 0));
-        positions.emplace_back(ignition::math::Vector3d(0, 0, -s));
+        positions.emplace_back(gz::math::Vector3d(s, s, 0));
+        positions.emplace_back(gz::math::Vector3d(0, 0, -s));
 
-        positions.emplace_back(ignition::math::Vector3d(s, -s, 0));
-        positions.emplace_back(ignition::math::Vector3d(0, 0, -s));
+        positions.emplace_back(gz::math::Vector3d(s, -s, 0));
+        positions.emplace_back(gz::math::Vector3d(0, 0, -s));
       }
       else if (this->type == LightVisualType::LVT_SPOT)
       {
@@ -224,46 +224,46 @@ namespace ignition
         angles[1] = range * tan(innerAngle / 2.0);
 
         unsigned int i = 0;
-        positions.emplace_back(ignition::math::Vector3d(0, 0, 0));
+        positions.emplace_back(gz::math::Vector3d(0, 0, 0));
         positions.emplace_back(
-            ignition::math::Vector3d(angles[i], angles[i], -range));
+            gz::math::Vector3d(angles[i], angles[i], -range));
 
         for (i = 0; i < 2; i++)
         {
-          positions.emplace_back(ignition::math::Vector3d(0, 0, 0));
-          positions.emplace_back(ignition::math::Vector3d(
+          positions.emplace_back(gz::math::Vector3d(0, 0, 0));
+          positions.emplace_back(gz::math::Vector3d(
                 angles[i], angles[i], -range));
 
-          positions.emplace_back(ignition::math::Vector3d(0, 0, 0));
-          positions.emplace_back(ignition::math::Vector3d(
+          positions.emplace_back(gz::math::Vector3d(0, 0, 0));
+          positions.emplace_back(gz::math::Vector3d(
                 -angles[i], -angles[i], -range));
 
-          positions.emplace_back(ignition::math::Vector3d(0, 0, 0));
-          positions.emplace_back(ignition::math::Vector3d(
+          positions.emplace_back(gz::math::Vector3d(0, 0, 0));
+          positions.emplace_back(gz::math::Vector3d(
                 angles[i], -angles[i], -range));
 
-          positions.emplace_back(ignition::math::Vector3d(0, 0, 0));
-          positions.emplace_back(ignition::math::Vector3d(
+          positions.emplace_back(gz::math::Vector3d(0, 0, 0));
+          positions.emplace_back(gz::math::Vector3d(
                 -angles[i], angles[i], -range));
 
-          positions.emplace_back(ignition::math::Vector3d(
+          positions.emplace_back(gz::math::Vector3d(
                 angles[i], angles[i], -range));
-          positions.emplace_back(ignition::math::Vector3d(
+          positions.emplace_back(gz::math::Vector3d(
                 -angles[i], angles[i], -range));
 
-          positions.emplace_back(ignition::math::Vector3d(
+          positions.emplace_back(gz::math::Vector3d(
                 -angles[i], angles[i], -range));
-          positions.emplace_back(ignition::math::Vector3d(
+          positions.emplace_back(gz::math::Vector3d(
                 -angles[i], -angles[i], -range));
 
-          positions.emplace_back(ignition::math::Vector3d(
+          positions.emplace_back(gz::math::Vector3d(
                 -angles[i], -angles[i], -range));
-          positions.emplace_back(ignition::math::Vector3d(
+          positions.emplace_back(gz::math::Vector3d(
                 angles[i], -angles[i], -range));
 
-          positions.emplace_back(ignition::math::Vector3d(
+          positions.emplace_back(gz::math::Vector3d(
                 angles[i], -angles[i], -range));
-          positions.emplace_back(ignition::math::Vector3d(
+          positions.emplace_back(gz::math::Vector3d(
                 angles[i], angles[i], -range));
         }
       }

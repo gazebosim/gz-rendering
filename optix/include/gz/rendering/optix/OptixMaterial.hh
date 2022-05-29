@@ -22,13 +22,13 @@
 #include "gz/rendering/optix/OptixObject.hh"
 #include "gz/rendering/optix/OptixIncludes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixMaterial :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixMaterial :
       public BaseMaterial<OptixObject>
     {
       protected: OptixMaterial();

@@ -21,15 +21,15 @@
 #include "gz/rendering/Geometry.hh"
 #include "gz/math/AxisAlignedBox.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class WireBox WireBox.hh gz/rendering/WireBox
     /// \brief Draws a wireframe box.
-    class IGNITION_RENDERING_VISIBLE WireBox :
+    class GZ_RENDERING_VISIBLE WireBox :
       public virtual Geometry
     {
       /// \brief Constructor
@@ -41,11 +41,11 @@ namespace ignition
       /// \brief Set the axis aligned box
       /// \param[in] _box The axis aligned box
       public: virtual void SetBox(
-                  const ignition::math::AxisAlignedBox &_box) = 0;
+                  const gz::math::AxisAlignedBox &_box) = 0;
 
       /// \brief Get the wireframe box.
       /// \return The wireframe box.
-      public: virtual ignition::math::AxisAlignedBox Box() const = 0;
+      public: virtual gz::math::AxisAlignedBox Box() const = 0;
     };
     }
   }

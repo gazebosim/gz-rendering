@@ -26,11 +26,11 @@
 #include "gz/rendering/ogre/OgreRenderPass.hh"
 #include "gz/rendering/ogre/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
     class GaussianNoiseCompositorListener;
@@ -39,7 +39,7 @@ namespace ignition
      * gz/rendering/ogre/OgreGaussianNoisePass.hh
      */
     /// \brief Ogre implementation of the GaussianNoisePass class
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreGaussianNoisePass :
+    class GZ_RENDERING_OGRE_VISIBLE OgreGaussianNoisePass :
       public BaseGaussianNoisePass<OgreRenderPass>
     {
       /// \brief Constructor

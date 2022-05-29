@@ -17,38 +17,38 @@
 
 #include <sstream>
 
-#include <ignition/math/Helpers.hh>
+#include <gz/math/Helpers.hh>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/MeshManager.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/MeshManager.hh>
 
-#include "ignition/rendering/ArrowVisual.hh"
-#include "ignition/rendering/AxisVisual.hh"
-#include "ignition/rendering/BoundingBoxCamera.hh"
-#include "ignition/rendering/COMVisual.hh"
-#include "ignition/rendering/InertiaVisual.hh"
-#include "ignition/rendering/JointVisual.hh"
-#include "ignition/rendering/LidarVisual.hh"
-#include "ignition/rendering/LightVisual.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/Capsule.hh"
-#include "ignition/rendering/DepthCamera.hh"
-#include "ignition/rendering/GizmoVisual.hh"
-#include "ignition/rendering/GpuRays.hh"
-#include "ignition/rendering/Grid.hh"
-#include "ignition/rendering/ParticleEmitter.hh"
-#include "ignition/rendering/RayQuery.hh"
-#include "ignition/rendering/RenderTarget.hh"
-#include "ignition/rendering/Text.hh"
-#include "ignition/rendering/ThermalCamera.hh"
-#include "ignition/rendering/SegmentationCamera.hh"
-#include "ignition/rendering/Visual.hh"
-#include "ignition/rendering/WideAngleCamera.hh"
-#include "ignition/rendering/base/BaseStorage.hh"
-#include "ignition/rendering/base/BaseScene.hh"
+#include "gz/rendering/ArrowVisual.hh"
+#include "gz/rendering/AxisVisual.hh"
+#include "gz/rendering/BoundingBoxCamera.hh"
+#include "gz/rendering/COMVisual.hh"
+#include "gz/rendering/InertiaVisual.hh"
+#include "gz/rendering/JointVisual.hh"
+#include "gz/rendering/LidarVisual.hh"
+#include "gz/rendering/LightVisual.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/Capsule.hh"
+#include "gz/rendering/DepthCamera.hh"
+#include "gz/rendering/GizmoVisual.hh"
+#include "gz/rendering/GpuRays.hh"
+#include "gz/rendering/Grid.hh"
+#include "gz/rendering/ParticleEmitter.hh"
+#include "gz/rendering/RayQuery.hh"
+#include "gz/rendering/RenderTarget.hh"
+#include "gz/rendering/Text.hh"
+#include "gz/rendering/ThermalCamera.hh"
+#include "gz/rendering/SegmentationCamera.hh"
+#include "gz/rendering/Visual.hh"
+#include "gz/rendering/WideAngleCamera.hh"
+#include "gz/rendering/base/BaseStorage.hh"
+#include "gz/rendering/base/BaseScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -57,7 +57,7 @@ BaseScene::BaseScene(unsigned int _id, const std::string &_name) :
   name(_name),
   loaded(false),
   initialized(false),
-  nextObjectId(ignition::math::MAX_UI16),
+  nextObjectId(gz::math::MAX_UI16),
   nodes(nullptr)
 {
 }
@@ -81,7 +81,7 @@ void BaseScene::Init()
 {
   if (!this->loaded)
   {
-    ignerr << "Scene must be loaded first" << std::endl;
+    gzerr << "Scene must be loaded first" << std::endl;
     return;
   }
 
@@ -137,7 +137,7 @@ void BaseScene::SetTime(const std::chrono::steady_clock::duration &_time)
 
 //////////////////////////////////////////////////
 VisualPtr BaseScene::VisualAt(const CameraPtr &_camera,
-                              const ignition::math::Vector2i &_mousePos)
+                              const gz::math::Vector2i &_mousePos)
 {
   VisualPtr visual;
   RayQueryPtr rayQuery = this->CreateRayQuery();
@@ -292,7 +292,7 @@ void BaseScene::DestroyNodeRecursive(NodePtr _node,
   // check if we have visited this node before
   if (_nodeIds.find(_node->Id()) != _nodeIds.end())
   {
-    ignwarn << "Detected loop in scene tree while recursively destroying nodes."
+    gzwarn << "Detected loop in scene tree while recursively destroying nodes."
             << " Breaking loop." << std::endl;
     _node->RemoveParent();
     return;
@@ -1373,7 +1373,7 @@ void BaseScene::SetSkyEnabled(bool _enabled)  // NOLINT(readability/casting)
   // no op, let derived class implement this.
   if (_enabled)
   {
-    ignerr << "Sky not supported by: "
+    gzerr << "Sky not supported by: "
            << this->Engine()->Name() << std::endl;
   }
 }
@@ -1418,7 +1418,7 @@ void BaseScene::Clear()
 {
   this->nodes->DestroyAll();
   this->DestroyMaterials();
-  this->nextObjectId = ignition::math::MAX_UI16;
+  this->nextObjectId = gz::math::MAX_UI16;
 }
 
 //////////////////////////////////////////////////
@@ -1547,9 +1547,10 @@ void BaseScene::CreateMaterials()
   material->SetReceiveShadows(true);
   material->SetLightingEnabled(true);
 
-  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
+  env = (env) ? env : std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
-      IGN_RENDERING_RESOURCE_PATH;
+      GZ_RENDERING_RESOURCE_PATH;
 
   // path to look for CoM material texture
   std::string com_material_texture_path = common::joinPaths(

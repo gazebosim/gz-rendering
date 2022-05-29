@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixMaterial.hh>
+#include <ignition/rendering/config.hh>

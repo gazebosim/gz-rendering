@@ -41,11 +41,11 @@
   #include <Winsock2.h>
 #endif
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
     class OgreGpuRaysPrivate;
@@ -54,7 +54,7 @@ namespace ignition
      * rendering/ogre/OgreGpuRays.hh
     **/
     /// \brief Gpu Rays used to render depth data into an image buffer
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreGpuRays :
+    class GZ_RENDERING_OGRE_VISIBLE OgreGpuRays :
       public BaseGpuRays<OgreSensor>, public Ogre::RenderObjectListener
     {
       /// \brief Constructor

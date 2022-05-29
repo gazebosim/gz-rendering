@@ -15,13 +15,13 @@
  *
  */
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/MeshManager.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/MeshManager.hh>
 
-#include "ignition/rendering/MeshDescriptor.hh"
+#include "gz/rendering/MeshDescriptor.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -53,12 +53,12 @@ void MeshDescriptor::Load()
     this->mesh = common::MeshManager::Instance()->MeshByName(this->meshName);
     if (!this->mesh)
     {
-      ignerr << "Mesh manager can't find mesh named [" << this->meshName << "]"
+      gzerr << "Mesh manager can't find mesh named [" << this->meshName << "]"
              << std::endl;
     }
   }
   else
   {
-    ignerr << "Missing mesh or mesh name" << std::endl;
+    gzerr << "Missing mesh or mesh name" << std::endl;
   }
 }

@@ -33,18 +33,18 @@ namespace Ogre
   class SubItem;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
     class Ogre2MeshPrivate;
     class Ogre2SubMeshPrivate;
 
     /// \brief Ogre2.x implementation of the mesh class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Mesh :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Mesh :
       public BaseMesh<Ogre2Geometry>
     {
       /// \brief Constructor
@@ -110,7 +110,7 @@ namespace ignition
     };
 
     /// \brief Ogre2.x implementation of the submesh class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SubMesh :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2SubMesh :
       public BaseSubMesh<Ogre2Object>
     {
       /// \brief Constructor

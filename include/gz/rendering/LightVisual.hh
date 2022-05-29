@@ -22,14 +22,14 @@
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
       /// \brief Enum for LightVisual types
-      enum IGNITION_RENDERING_VISIBLE LightVisualType
+      enum GZ_RENDERING_VISIBLE LightVisualType
       {
         /// \brief No type
         LVT_EMPTY                = 0,
@@ -46,7 +46,7 @@ namespace ignition
 
     /// \class LightVisual LightVisual.hh gz/rendering/LightVisual.hh
     /// \brief Represents a light visual
-    class IGNITION_RENDERING_VISIBLE LightVisual :
+    class GZ_RENDERING_VISIBLE LightVisual :
       public virtual Visual
     {
       /// \brief Descructor

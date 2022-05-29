@@ -27,11 +27,11 @@
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/base/BaseStorage.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     template <class T>
     class BaseVisual :
@@ -107,11 +107,11 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox BoundingBox()
+      public: virtual gz::math::AxisAlignedBox BoundingBox()
               const override;
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
+      public: virtual gz::math::AxisAlignedBox LocalBoundingBox()
               const override;
 
       // Documentation inherited.
@@ -135,7 +135,7 @@ namespace ignition
       protected: uint32_t visibilityFlags = IGN_VISIBILITY_ALL;
 
       /// \brief The bounding box of the visual
-      protected: ignition::math::AxisAlignedBox boundingBox;
+      protected: gz::math::AxisAlignedBox boundingBox;
 
       /// \brief True if wireframe mode is enabled else false
       protected: bool wireframe = false;
@@ -173,7 +173,7 @@ namespace ignition
 
       if (!rawPose.IsFinite())
       {
-        ignerr << "Unable to set pose of a node: "
+        gzerr << "Unable to set pose of a node: "
                << "non-finite (nan, inf) values detected." << std::endl;
         return;
       }
@@ -266,11 +266,11 @@ namespace ignition
       _material = (_unique && count > 0) ? _material->Clone() : _material;
 
       auto children_ =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!children_)
       {
-        ignerr << "Cast failed in BaseVisual::SetChildMaterial" << std::endl;
+        gzerr << "Cast failed in BaseVisual::SetChildMaterial" << std::endl;
         return;
       }
       for (auto it = children_->Begin(); it != children_->End(); ++it)
@@ -326,11 +326,11 @@ namespace ignition
     void BaseVisual<T>::PreRenderChildren()
     {
       auto children_ =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!children_)
       {
-        ignerr << "Cast failed in BaseVisual::PreRenderChildren" << std::endl;
+        gzerr << "Cast failed in BaseVisual::PreRenderChildren" << std::endl;
         return;
       }
       for (auto it = children_->Begin(); it != children_->End(); ++it)
@@ -363,7 +363,7 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::SetWireframe(bool _show)
     {
-      ignerr << "SetWireframe(" << _show << ") not supported for "
+      gzerr << "SetWireframe(" << _show << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
     }
@@ -372,24 +372,24 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::SetVisible(bool _visible)
     {
-      ignerr << "SetVisible(" << _visible << ") not supported for "
+      gzerr << "SetVisible(" << _visible << ") not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::AxisAlignedBox BaseVisual<T>::LocalBoundingBox() const
+    gz::math::AxisAlignedBox BaseVisual<T>::LocalBoundingBox() const
     {
-      ignition::math::AxisAlignedBox box;
+      gz::math::AxisAlignedBox box;
 
       // Recursively loop through child visuals
       auto childNodes =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!childNodes)
       {
-        ignerr << "Cast failed in BaseVisual::LocalBoundingBox" << std::endl;
+        gzerr << "Cast failed in BaseVisual::LocalBoundingBox" << std::endl;
         return box;
       }
       for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
@@ -398,7 +398,7 @@ namespace ignition
         VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
         if (visual)
         {
-          ignition::math::AxisAlignedBox aabb = visual->LocalBoundingBox();
+          gz::math::AxisAlignedBox aabb = visual->LocalBoundingBox();
           if (aabb.Min().IsFinite() && aabb.Max().IsFinite())
             box.Merge(aabb);
         }
@@ -408,17 +408,17 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::AxisAlignedBox BaseVisual<T>::BoundingBox() const
+    gz::math::AxisAlignedBox BaseVisual<T>::BoundingBox() const
     {
-      ignition::math::AxisAlignedBox box;
+      gz::math::AxisAlignedBox box;
 
       // Recursively loop through child visuals
       auto childNodes =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!childNodes)
       {
-        ignerr << "Cast failed in BaseVisual::BoundingBox" << std::endl;
+        gzerr << "Cast failed in BaseVisual::BoundingBox" << std::endl;
         return box;
       }
       for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
@@ -453,11 +453,11 @@ namespace ignition
 
       // recursively set child visuals' visibility flags
       auto childNodes =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!childNodes)
       {
-        ignerr << "Cast failed in BaseVisual::SetVisibiltyFlags" << std::endl;
+        gzerr << "Cast failed in BaseVisual::SetVisibiltyFlags" << std::endl;
         return;
       }
       for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
@@ -484,7 +484,7 @@ namespace ignition
       ScenePtr scene_ = this->Scene();
       if (nullptr == scene_)
       {
-        ignerr << "Cloning a visual failed because the visual to be cloned is "
+        gzerr << "Cloning a visual failed because the visual to be cloned is "
           << "not attached to a scene.\n";
         return nullptr;
       }
@@ -499,7 +499,7 @@ namespace ignition
         auto parentScene = _newParent->Scene();
         if (nullptr != parentScene && parentScene->Id() != scene_->Id())
         {
-          ignerr << "Cloning a visual failed because the desired parent of the "
+          gzerr << "Cloning a visual failed because the desired parent of the "
             << "cloned visual belongs to a different scene.\n";
           scene_->DestroyVisual(result);
           return nullptr;
@@ -516,11 +516,11 @@ namespace ignition
 
       // if the visual that was cloned has child visuals, clone those as well
       auto children_ =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!children_)
       {
-        ignerr << "Cast failed in BaseVisual::Clone\n";
+        gzerr << "Cast failed in BaseVisual::Clone\n";
         scene_->DestroyVisual(result);
         return nullptr;
       }
@@ -532,7 +532,7 @@ namespace ignition
         // retrieved, or if cloning the child visual failed
         if (!visual || !visual->Clone("", result))
         {
-          ignerr << "Cloning a child visual failed.\n";
+          gzerr << "Cloning a child visual failed.\n";
           scene_->DestroyVisual(result, true);
           return nullptr;
         }

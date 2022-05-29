@@ -17,15 +17,15 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/RenderEngine.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class RenderEngineTest : public testing::Test,
@@ -41,7 +41,7 @@ void RenderEngineTest::RenderEngine(const std::string &_renderEngine)
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
            << "' is not supported" << std::endl;
     return;
   }
@@ -141,7 +141,7 @@ TEST_P(RenderEngineTest, RenderEngine)
 
 INSTANTIATE_TEST_CASE_P(RenderEngine, RenderEngineTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

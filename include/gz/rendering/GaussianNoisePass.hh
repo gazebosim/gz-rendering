@@ -22,17 +22,17 @@
 #include "gz/rendering/Export.hh"
 #include "gz/rendering/RenderPass.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /* \class GaussianNoisePass GaussianNoisePass.hh \
      * gz/rendering/GaussianNoisePass.hh
      */
     /// \brief A render pass that applies Gaussian noise to the render target
-    class IGNITION_RENDERING_VISIBLE GaussianNoisePass
+    class GZ_RENDERING_VISIBLE GaussianNoisePass
       : public virtual RenderPass
     {
       /// \brief Constructor

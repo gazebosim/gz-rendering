@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixCamera.hh>
+#include <ignition/rendering/config.hh>

@@ -23,11 +23,11 @@
 #include "gz/rendering/base/BaseNode.hh"
 #include "gz/rendering/ParticleEmitter.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /* \class BaseParticleEmitter BaseParticleEmitter.hh \
      * gz/rendering/base/BaseParticleEmitter.hh
@@ -60,11 +60,11 @@ namespace ignition
       public: virtual void SetType(const EmitterType _type) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::Vector3d EmitterSize() const override;
+      public: virtual gz::math::Vector3d EmitterSize() const override;
 
       // Documentation inherited.
       public: virtual void SetEmitterSize(
-                  const ignition::math::Vector3d &_size) override;
+                  const gz::math::Vector3d &_size) override;
 
       // Documentation inherited.
       public: virtual double Rate() const override;
@@ -85,11 +85,11 @@ namespace ignition
       public: virtual void SetEmitting(bool _enable) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::Vector3d ParticleSize() const override;
+      public: virtual gz::math::Vector3d ParticleSize() const override;
 
       // Documentation inherited.
       public: virtual void SetParticleSize(
-                  const ignition::math::Vector3d &_size) override;
+                  const gz::math::Vector3d &_size) override;
 
       // Documentation inherited.
       public: virtual double Lifetime() const override;
@@ -114,15 +114,15 @@ namespace ignition
                                             double _maxVelocity) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::Color ColorStart() const override;
+      public: virtual gz::math::Color ColorStart() const override;
 
       // Documentation inherited.
-      public: virtual ignition::math::Color ColorEnd() const override;
+      public: virtual gz::math::Color ColorEnd() const override;
 
       // Documentation inherited.
       public: virtual void SetColorRange(
-                  const ignition::math::Color &_colorStart,
-                  const ignition::math::Color &_colorEnd) override;
+                  const gz::math::Color &_colorStart,
+                  const gz::math::Color &_colorEnd) override;
 
       // Documentation inherited.
       public: virtual double ScaleRate() const override;
@@ -147,8 +147,8 @@ namespace ignition
       protected: EmitterType type = EM_POINT;
 
       /// \brief Emitter size.
-      protected: ignition::math::Vector3d emitterSize =
-          ignition::math::Vector3d::One;
+      protected: gz::math::Vector3d emitterSize =
+          gz::math::Vector3d::One;
 
       /// \brief Rate of emission.
       protected: double rate = 10;
@@ -160,7 +160,7 @@ namespace ignition
       protected: bool emitting = false;
 
       /// \brief Particle size.
-      protected: ignition::math::Vector3d particleSize = {1, 1, 1};
+      protected: gz::math::Vector3d particleSize = {1, 1, 1};
 
       /// \brief Particle lifetime.
       protected: double lifetime = 5;
@@ -175,12 +175,12 @@ namespace ignition
       protected: double maxVelocity = 1;
 
       /// \brief The start color of a particle to choose from.
-      protected: ignition::math::Color colorStart =
-          ignition::math::Color::White;
+      protected: gz::math::Color colorStart =
+          gz::math::Color::White;
 
       /// \brief The end color of a particle to choose from.
-      protected: ignition::math::Color colorEnd =
-          ignition::math::Color::White;
+      protected: gz::math::Color colorEnd =
+          gz::math::Color::White;
 
       /// \brief The scale rate.
       protected: double scaleRate = 1;
@@ -248,7 +248,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::Vector3d BaseParticleEmitter<T>::EmitterSize() const
+    gz::math::Vector3d BaseParticleEmitter<T>::EmitterSize() const
     {
       return this->emitterSize;
     }
@@ -256,7 +256,7 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseParticleEmitter<T>::SetEmitterSize(
-                const ignition::math::Vector3d &_size)
+                const gz::math::Vector3d &_size)
     {
       this->emitterSize = _size;
     }
@@ -305,7 +305,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::Vector3d BaseParticleEmitter<T>::ParticleSize() const
+    gz::math::Vector3d BaseParticleEmitter<T>::ParticleSize() const
     {
       return this->particleSize;
     }
@@ -313,7 +313,7 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseParticleEmitter<T>::SetParticleSize(
-                const ignition::math::Vector3d &_size)
+                const gz::math::Vector3d &_size)
     {
       this->particleSize = _size;
     }
@@ -371,14 +371,14 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::Color BaseParticleEmitter<T>::ColorStart() const
+    gz::math::Color BaseParticleEmitter<T>::ColorStart() const
     {
       return this->colorStart;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::Color BaseParticleEmitter<T>::ColorEnd() const
+    gz::math::Color BaseParticleEmitter<T>::ColorEnd() const
     {
       return this->colorEnd;
     }
@@ -386,8 +386,8 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseParticleEmitter<T>::SetColorRange(
-                  const ignition::math::Color &_colorStart,
-                  const ignition::math::Color &_colorEnd)
+                  const gz::math::Color &_colorStart,
+                  const gz::math::Color &_colorEnd)
     {
       this->colorStart = _colorStart;
       this->colorEnd = _colorEnd;

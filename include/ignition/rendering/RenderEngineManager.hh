@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/RenderEngineManager.hh>
+#include <ignition/rendering/config.hh>

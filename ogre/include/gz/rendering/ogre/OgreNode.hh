@@ -28,13 +28,13 @@ namespace Ogre
   class SceneNode;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreNode :
+    class GZ_RENDERING_OGRE_VISIBLE OgreNode :
       public BaseNode<OgreObject>
     {
       protected: OgreNode();

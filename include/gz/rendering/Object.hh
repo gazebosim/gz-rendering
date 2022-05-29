@@ -22,16 +22,16 @@
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Object Object.hh gz/rendering/Object.hh
     /// \brief Represents an object present in the scene graph. This includes
     /// sub-meshes, materials, render targets, as well as posable nodes.
-    class IGNITION_RENDERING_VISIBLE Object
+    class GZ_RENDERING_VISIBLE Object
     {
       /// \brief Destructor
       public: virtual ~Object() { }

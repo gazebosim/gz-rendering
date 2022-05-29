@@ -21,11 +21,11 @@
 
 #include "gz/rendering/RenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     class BaseNodeCompositeStore;
     typedef shared_ptr<BaseNodeCompositeStore>   BaseNodeCompositeStorePtr;

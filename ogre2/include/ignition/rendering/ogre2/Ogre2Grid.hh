@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre2/Ogre2Grid.hh>
+#include <ignition/rendering/config.hh>

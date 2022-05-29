@@ -20,11 +20,11 @@
 #include <optix_math.h>
 
 #ifndef __CUDA_ARCH__
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-  inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+  inline namespace GZ_RENDERING_VERSION_NAMESPACE {
   //
 #endif
 

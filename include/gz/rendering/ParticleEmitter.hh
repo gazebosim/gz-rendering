@@ -26,14 +26,14 @@
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Enum for emitter types.
-    enum IGNITION_RENDERING_VISIBLE EmitterType
+    enum GZ_RENDERING_VISIBLE EmitterType
     {
       /// \brief Point emitter.
       EM_POINT            = 0,
@@ -55,7 +55,7 @@ namespace ignition
     /// gz/rendering/ParticleEmitter.hh
     //
     /// \brief Class to manage a particle emitter.
-    class IGNITION_RENDERING_VISIBLE ParticleEmitter :
+    class GZ_RENDERING_VISIBLE ParticleEmitter :
       public virtual Visual
     {
       /// \brief Destructor
@@ -78,7 +78,7 @@ namespace ignition
       /// \return The emitter size. See SetEmitterSize() for the interpretation
       /// of the dimensions depending on the emitter type.
       /// \sa SetEmitterSize
-      public: virtual ignition::math::Vector3d EmitterSize() const = 0;
+      public: virtual gz::math::Vector3d EmitterSize() const = 0;
 
       /// \brief Set the size of the emitter where the particles are sampled.
       /// Default value is (1, 1, 1).
@@ -96,7 +96,7 @@ namespace ignition
       /// \param[in] _size Size of the emitter (width, height, depth).
       /// \sa EmitterSize
       public: virtual void SetEmitterSize(
-                  const ignition::math::Vector3d &_size) = 0;
+                  const gz::math::Vector3d &_size) = 0;
 
       /// \brief Get how many particles per second should be emitted.
       /// \return Particles per second.
@@ -136,14 +136,14 @@ namespace ignition
       /// \brief Get the particle dimensions (width, height, depth).
       /// \return Particle dimensions.
       /// \sa SetParticleSize
-      public: virtual ignition::math::Vector3d ParticleSize() const = 0;
+      public: virtual gz::math::Vector3d ParticleSize() const = 0;
 
       /// \brief Set the particle dimensions (width, height, depth).
       /// Default value is {1, 1, 1}.
       /// \param[in] _size Particle dimensions.
       /// \sa ParticleSize
       public: virtual void SetParticleSize(
-                  const ignition::math::Vector3d &_size) = 0;
+                  const gz::math::Vector3d &_size) = 0;
 
       /// \brief Get the number of seconds each particle will ’live’ for before
       /// being destroyed.
@@ -194,13 +194,13 @@ namespace ignition
       /// \return Start color.
       /// \sa ColorEnd
       /// \sa SetColorRange
-      public: virtual ignition::math::Color ColorStart() const = 0;
+      public: virtual gz::math::Color ColorStart() const = 0;
 
       /// \brief Get the end color of the particles.
       /// \return End color.
       /// \sa ColorStart
       /// \sa SetColorRange
-      public: virtual ignition::math::Color ColorEnd() const = 0;
+      public: virtual gz::math::Color ColorEnd() const = 0;
 
       /// \brief Sets a color for all particle emitted.
       /// The actual color will be interpolated between these two colors
@@ -213,8 +213,8 @@ namespace ignition
       /// \sa ColorStart
       /// \sa ColorEnd
       public: virtual void SetColorRange(
-                  const ignition::math::Color &_colorStart,
-                  const ignition::math::Color &_colorEnd) = 0;
+                  const gz::math::Color &_colorStart,
+                  const gz::math::Color &_colorEnd) = 0;
 
       /// \brief Get the amount by which to scale the particles in both x and y
       /// direction per second.

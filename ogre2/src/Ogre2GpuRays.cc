@@ -15,24 +15,24 @@
  *
 */
 
-#include <ignition/math/Vector2.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector2.hh>
+#include <gz/math/Vector3.hh>
 
-#include <ignition/common/Console.hh>
-#include <ignition/math/Helpers.hh>
+#include <gz/common/Console.hh>
+#include <gz/math/Helpers.hh>
 
-#include "ignition/rendering/ogre2/Ogre2Camera.hh"
-#include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
-#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Sensor.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
+#include "gz/rendering/ogre2/Ogre2Camera.hh"
+#include "gz/rendering/ogre2/Ogre2GpuRays.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Heightmap.hh"
+#include "gz/rendering/ogre2/Ogre2ParticleEmitter.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Sensor.hh"
+#include "gz/rendering/ogre2/Ogre2Visual.hh"
 
 #include "Ogre2GzHlmsSphericalClipMinDistance.hh"
 #include "Ogre2ParticleNoiseListener.hh"
@@ -56,15 +56,15 @@
   #pragma warning(pop)
 #endif
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 //
 /// \brief Helper class for switching the ogre item's material to laser retro
 /// source material when a thermal camera is being rendered.
-class IGNITION_RENDERING_OGRE2_HIDDEN
+class GZ_RENDERING_OGRE2_HIDDEN
     Ogre2LaserRetroMaterialSwitcher : public Ogre::CompositorWorkspaceListener
 {
   /// \brief constructor
@@ -104,7 +104,7 @@ class IGNITION_RENDERING_OGRE2_HIDDEN
 
 /// \internal
 /// \brief Private data for the Ogre2GpuRays class
-class IGNITION_RENDERING_OGRE2_HIDDEN ignition::rendering::Ogre2GpuRaysPrivate
+class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2GpuRaysPrivate
 {
   /// \brief Event triggered when new gpu rays range data are available.
   /// \param[in] _frame New frame containing raw gpu rays data.
@@ -112,7 +112,7 @@ class IGNITION_RENDERING_OGRE2_HIDDEN ignition::rendering::Ogre2GpuRaysPrivate
   /// \param[in] _height Height of frame.
   /// \param[in] _channel Number of channels
   /// \param[in] _format Format of frame.
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
                unsigned int, unsigned int, unsigned int,
                const std::string &)> newGpuRaysFrame;
 
@@ -198,7 +198,7 @@ class IGNITION_RENDERING_OGRE2_HIDDEN ignition::rendering::Ogre2GpuRaysPrivate
   public: const math::Angle kMinAllowedAngle = 1e-4;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 // Arbitrary value
@@ -255,7 +255,7 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
       }
       catch(Ogre::Exception &e)
       {
-        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+        gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
       }
       Ogre2VisualPtr ogreVisual =
           std::dynamic_pointer_cast<Ogre2Visual>(result);
@@ -283,7 +283,7 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
             }
             catch(std::bad_variant_access &e)
             {
-              ignerr << "Error casting user data: " << e.what() << "\n";
+              gzerr << "Error casting user data: " << e.what() << "\n";
             }
           }
         }
@@ -314,7 +314,7 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
         // We need to keep the material's vertex shader
         // to keep vertex deformation consistent; so we use
         // a cloned material with a different pixel shader
-        // https://github.com/ignitionrobotics/ign-rendering/issues/544
+        // https://github.com/gazebosim/gz-rendering/issues/544
         //
         // material may be a nullptr if we called setMaterial directly
         // (i.e. it's not using Ogre2Material interface).
@@ -404,7 +404,7 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
             }
             catch (std::bad_variant_access &e)
             {
-              ignerr << "Error casting user data: " << e.what() << "\n";
+              gzerr << "Error casting user data: " << e.what() << "\n";
             }
           }
         }
@@ -627,7 +627,7 @@ void Ogre2GpuRays::CreateCamera()
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
@@ -635,7 +635,7 @@ void Ogre2GpuRays::CreateCamera()
       this->Name() + "_Camera");
   if (this->dataPtr->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -670,7 +670,7 @@ void Ogre2GpuRays::ConfigureCamera()
 
     if (this->VerticalAngleMax() != this->VerticalAngleMin())
     {
-      ignwarn << "Only one vertical ray but vertical min. and max. angle "
+      gzwarn << "Only one vertical ray but vertical min. and max. angle "
           "are not equal. Min. angle is used.\n";
       this->SetVerticalAngleMax(this->VerticalAngleMin().Radian());
     }
@@ -825,7 +825,7 @@ void Ogre2GpuRays::CreateSampleTexture()
       unsigned int faceIdx;
       math::Vector2d uv = this->SampleCubemap(dir, faceIdx);
       this->dataPtr->cubeFaceIdx.insert(faceIdx);
-      // igndbg << "p(" << pitch << ") y(" << yaw << "): " << dir << " | "
+      // gzdbg << "p(" << pitch << ") y(" << yaw << "): " << dir << " | "
       //       << uv << " | " << faceIdx << std::endl;
       // u
       pDest[index++] = uv.X();
@@ -1122,7 +1122,7 @@ void Ogre2GpuRays::Setup1stPass()
 
   if (!wsDef)
   {
-    ignerr << "Unable to add workspace definition [" << wsDefName << "] "
+    gzerr << "Unable to add workspace definition [" << wsDefName << "] "
            << " for " << this->Name();
   }
 
@@ -1327,7 +1327,7 @@ void Ogre2GpuRays::Setup2ndPass()
       ogreCompMgr->getWorkspaceDefinition(wsDefName);
   if (!wsDef)
   {
-    ignerr << "Unable to add workspace definition [" << wsDefName << "] "
+    gzerr << "Unable to add workspace definition [" << wsDefName << "] "
            << " for " << this->Name();
   }
 
@@ -1408,7 +1408,7 @@ void Ogre2GpuRays::Render()
   // clamping as it clips before sending vertices to the pixel shader.
   // These customization can be used to implement multi-tiered
   // "near plane distances" as proposed in:
-  // https://github.com/ignitionrobotics/ign-rendering/issues/395
+  // https://github.com/gazebosim/gz-rendering/issues/395
   Ogre2GzHlmsSphericalClipMinDistance &hlmsCustomizations =
       engine->SphericalClipMinDistance();
 
@@ -1548,7 +1548,7 @@ void Ogre2GpuRays::SetRangeCount(
 }
 
 //////////////////////////////////////////////////
-ignition::common::ConnectionPtr Ogre2GpuRays::ConnectNewGpuRaysFrame(
+gz::common::ConnectionPtr Ogre2GpuRays::ConnectNewGpuRaysFrame(
     std::function<void(const float *_frame, unsigned int _width,
     unsigned int _height, unsigned int _channels,
     const std::string &/*_format*/)> _subscriber)

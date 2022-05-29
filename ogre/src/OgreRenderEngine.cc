@@ -30,21 +30,21 @@
 
 # include <sstream>
 
-#include <ignition/plugin/Register.hh>
+#include <gz/plugin/Register.hh>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
 
-#include "ignition/rendering/RenderEngineManager.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreStorage.hh"
+#include "gz/rendering/RenderEngineManager.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreRenderEngine.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreStorage.hh"
 
-class ignition::rendering::OgreRenderEnginePrivate
+class gz::rendering::OgreRenderEnginePrivate
 {
 #if !defined(__APPLE__) && !defined(_WIN32)
   public: XVisualInfo *dummyVisual = nullptr;
@@ -54,7 +54,7 @@ class ignition::rendering::OgreRenderEnginePrivate
   public: std::vector<unsigned int> fsaaLevels;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -167,7 +167,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
 
   if (path.empty())
   {
-    ignerr << "URI doesn't exist[" << _uri << "]\n";
+    gzerr << "URI doesn't exist[" << _uri << "]\n";
     return;
   }
 
@@ -230,7 +230,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
             }
             catch(Ogre::Exception& e)
             {
-              ignerr << "Unable to parse material file[" << fullPath << "]\n";
+              gzerr << "Unable to parse material file[" << fullPath << "]\n";
             }
             stream->close();
           }
@@ -240,7 +240,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
   }
   catch(Ogre::Exception &/*_e*/)
   {
-    ignerr << "Unable to load Ogre Resources.\nMake sure the"
+    gzerr << "Unable to load Ogre Resources.\nMake sure the"
         "resources path in the world file is set correctly." << std::endl;
   }
 }
@@ -288,12 +288,12 @@ bool OgreRenderEngine::LoadImpl(
   }
   catch (Ogre::Exception &ex)
   {
-    ignerr << ex.what() << std::endl;
+    gzerr << ex.what() << std::endl;
     return false;
   }
   catch (...)
   {
-    ignerr << "Failed to load render-engine" << std::endl;
+    gzerr << "Failed to load render-engine" << std::endl;
     return false;
   }
 }
@@ -308,7 +308,7 @@ bool OgreRenderEngine::InitImpl()
   }
   catch (...)
   {
-    ignerr << "Failed to initialize render-engine" << std::endl;
+    gzerr << "Failed to initialize render-engine" << std::endl;
     return false;
   }
 }
@@ -334,7 +334,7 @@ void OgreRenderEngine::CreateLogger()
 {
   // create log file path
   std::string logPath;
-  ignition::common::env(IGN_HOMEDIR, logPath);
+  gz::common::env(IGN_HOMEDIR, logPath);
   logPath = common::joinPaths(logPath, ".ignition", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre.log");
@@ -354,7 +354,7 @@ void OgreRenderEngine::CreateContext()
 
   if (!this->dummyDisplay)
   {
-    ignerr << "Unable to open display: " << XDisplayName(0) << std::endl;
+    gzerr << "Unable to open display: " << XDisplayName(0) << std::endl;
     return;
   }
 
@@ -369,7 +369,7 @@ void OgreRenderEngine::CreateContext()
 
   if (!this->dataPtr->dummyVisual)
   {
-    ignerr << "Unable to create glx visual" << std::endl;
+    gzerr << "Unable to create glx visual" << std::endl;
     return;
   }
 
@@ -384,7 +384,7 @@ void OgreRenderEngine::CreateContext()
 
   if (!this->dummyContext)
   {
-    ignerr << "Unable to create glx context" << std::endl;
+    gzerr << "Unable to create glx context" << std::endl;
     return;
   }
 
@@ -402,7 +402,7 @@ void OgreRenderEngine::CreateRoot()
   }
   catch (Ogre::Exception &ex)
   {
-    ignerr << "Unable to create Ogre root" << std::endl;
+    gzerr << "Unable to create Ogre root" << std::endl;
   }
 }
 
@@ -465,7 +465,7 @@ void OgreRenderEngine::LoadPlugins()
         {
           if ((*piter).find("RenderSystem") != std::string::npos)
           {
-            ignerr << "Unable to load Ogre Plugin[" << *piter
+            gzerr << "Unable to load Ogre Plugin[" << *piter
                   << "]. Rendering will not be possible."
                   << "Make sure you have installed OGRE properly.\n";
           }
@@ -508,7 +508,7 @@ void OgreRenderEngine::CreateRenderSystem()
 
   if (renderSys == nullptr)
   {
-    ignerr << "unable to find OpenGL rendering system. OGRE is probably "
+    gzerr << "unable to find OpenGL rendering system. OGRE is probably "
             "installed incorrectly. Double check the OGRE cmake output, "
             "and make sure OpenGL is enabled." << std::endl;
   }
@@ -566,9 +566,10 @@ void OgreRenderEngine::CreateResources()
 
   // TODO(anyone) support loading resources from user specified paths
   std::list<std::string> paths;
-  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
+  env = (env) ? env : std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
-      IGN_RENDERING_RESOURCE_PATH;
+      GZ_RENDERING_RESOURCE_PATH;
   // install path
   std::string mediaPath = common::joinPaths(resourcePath, "ogre", "media");
   paths.push_back(mediaPath);
@@ -606,7 +607,7 @@ void OgreRenderEngine::CreateResources()
     }
     catch(Ogre::Exception &/*_e*/)
     {
-      ignerr << "Unable to load Ogre Resources. Make sure the resources "
+      gzerr << "Unable to load Ogre Resources. Make sure the resources "
           "path in the world file is set correctly." << std::endl;
     }
   }
@@ -620,7 +621,7 @@ void OgreRenderEngine::CreateRenderWindow()
       1, 0);
   if (res.empty())
   {
-    ignerr << "Failed to create dummy render window." << std::endl;
+    gzerr << "Failed to create dummy render window." << std::endl;
   }
 }
 
@@ -677,7 +678,7 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
     }
     catch(Ogre::Exception &_e)
     {
-      ignerr << "Unable to create the rendering window. Attempt [" << attempts
+      gzerr << "Unable to create the rendering window. Attempt [" << attempts
              << "]. Exception [" << _e.what() << "]" << std::endl;
       window = nullptr;
     }
@@ -686,7 +687,7 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
 
   if (attempts >= 10)
   {
-    ignerr << "Unable to create the rendering window after [" << attempts
+    gzerr << "Unable to create the rendering window after [" << attempts
            << "] attempts." << std::endl;
     return std::string();
   }
@@ -708,7 +709,7 @@ void OgreRenderEngine::CheckCapabilities()
 {
   if (nullptr == this->ogreRoot ||nullptr == this->ogreRoot->getRenderSystem())
   {
-    ignerr << "No ogreRoot or render system" << std::endl;
+    gzerr << "No ogreRoot or render system" << std::endl;
     return;
   }
 
@@ -719,7 +720,7 @@ void OgreRenderEngine::CheckCapabilities()
   capabilities = this->ogreRoot->getRenderSystem()->getCapabilities();
   if (nullptr == capabilities)
   {
-    ignerr << "Failed to get capabilities" << std::endl;
+    gzerr << "Failed to get capabilities" << std::endl;
     return;
   }
 
@@ -745,20 +746,20 @@ void OgreRenderEngine::CheckCapabilities()
 
   if (!hasFragmentPrograms || !hasVertexPrograms)
   {
-    ignwarn << "Vertex and fragment shaders are missing. "
+    gzwarn << "Vertex and fragment shaders are missing. "
            << "Fixed function rendering will be used.\n";
   }
 
   if (!hasGLSL)
   {
-    ignwarn << "GLSL is missing."
+    gzwarn << "GLSL is missing."
            << "Fixed function rendering will be used.\n";
   }
 
   // cppcheck-suppress knownConditionTrueFalse
   if (!hasFBO)
   {
-    ignwarn << "Frame Buffer Objects (FBO) is missing. "
+    gzwarn << "Frame Buffer Objects (FBO) is missing. "
            << "Rendering will be disabled.\n";
   }
 
@@ -779,7 +780,7 @@ void OgreRenderEngine::InitAttempt()
 {
   if (this->renderPathType == NONE)
   {
-    ignwarn << "Cannot initialize render engine since "
+    gzwarn << "Cannot initialize render engine since "
            << "render path type is NONE. Ignore this warning if"
            << "rendering has been turned off on purpose.\n";
     return;
@@ -822,5 +823,5 @@ Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
 #endif
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(ignition::rendering::OgreRenderEnginePlugin,
-                    ignition::rendering::RenderEnginePlugin)
+IGNITION_ADD_PLUGIN(gz::rendering::OgreRenderEnginePlugin,
+                    gz::rendering::RenderEnginePlugin)

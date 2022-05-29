@@ -29,14 +29,14 @@
 #include "gz/rendering/Scene.hh"
 
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Enum for projection types
-    enum IGNITION_RENDERING_VISIBLE CameraProjectionType
+    enum GZ_RENDERING_VISIBLE CameraProjectionType
     {
       /// \brief Perspective projection
       CPT_PERSPECTIVE,
@@ -46,7 +46,7 @@ namespace ignition
 
     /// \class Camera Camera.hh gz/rendering/Camera.hh
     /// \brief Posable camera used for rendering the scene graph
-    class IGNITION_RENDERING_VISIBLE Camera :
+    class GZ_RENDERING_VISIBLE Camera :
       public virtual Sensor
     {
       /// \brief Callback function for new frame render event listeners
@@ -146,7 +146,7 @@ namespace ignition
       /// \brief Get the visual for a given mouse position
       /// param[in] _mousePos mouse position
       //  \return visual for that position, null if no visual was found
-      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+      public: virtual VisualPtr VisualAt(const gz::math::Vector2i
                   &_mousePos) = 0;
 
       /// \brief Renders a new frame.

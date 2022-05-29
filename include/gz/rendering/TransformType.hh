@@ -23,15 +23,15 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \enum TransformAxis
     /// \brief Unique identifiers for transformation axes.
-    enum IGNITION_RENDERING_VISIBLE TransformAxis
+    enum GZ_RENDERING_VISIBLE TransformAxis
     {
       /// \brief No axis
       TA_NONE = 0,
@@ -57,7 +57,7 @@ namespace ignition
 
     /// \enum TransformMode
     /// \brief Unique identifiers for transformation modes.
-    enum IGNITION_RENDERING_VISIBLE TransformMode
+    enum GZ_RENDERING_VISIBLE TransformMode
     {
       /// \brief Inactive state
       TM_NONE = 0,
@@ -71,7 +71,7 @@ namespace ignition
 
     /// \enum TransformSpace
     /// \brief Unique identifiers for transformation spaces.
-    enum IGNITION_RENDERING_VISIBLE TransformSpace
+    enum GZ_RENDERING_VISIBLE TransformSpace
     {
       /// \brief transformation in local frame
       TS_LOCAL,

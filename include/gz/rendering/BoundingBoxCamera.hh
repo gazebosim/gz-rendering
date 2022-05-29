@@ -27,11 +27,11 @@
 #include "gz/rendering/BoundingBox.hh"
 #include "gz/rendering/Camera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief BoundingBox types for Visible / Full 2D Boxes / 3D Boxes
     enum class BoundingBoxType
@@ -51,7 +51,7 @@ namespace ignition
     /// gz/rendering/BoundingBoxCamera.hh
     /// \brief Poseable BoundingBox camera used for rendering bounding boxes of
     /// objects in the scene.
-    class IGNITION_RENDERING_VISIBLE BoundingBoxCamera :
+    class GZ_RENDERING_VISIBLE BoundingBoxCamera :
       public virtual Camera
     {
       /// \brief Destructor
@@ -65,7 +65,7 @@ namespace ignition
       /// \brief Connect to the new BoundingBox info
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr ConnectNewBoundingBoxes(
+      public: virtual gz::common::ConnectionPtr ConnectNewBoundingBoxes(
         std::function<void(const std::vector<BoundingBox> &)> _subscriber) = 0;
 
       /// \brief Set BoundingBox Type (Visible / Full)

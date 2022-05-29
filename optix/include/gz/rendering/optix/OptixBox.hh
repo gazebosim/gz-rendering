@@ -19,13 +19,13 @@
 
 #include "gz/rendering/optix/OptixPrimitive.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixBox :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixBox :
       public OptixPrimitive
     {
       protected: OptixBox();

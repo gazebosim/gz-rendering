@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreInertiaVisual.hh>
+#include <ignition/rendering/config.hh>

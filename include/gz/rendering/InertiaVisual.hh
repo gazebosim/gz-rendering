@@ -23,16 +23,16 @@
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
     /// \class InertiaVisual InertiaVisual.hh
     /// gz/rendering/InertiaVisual.hh
     /// \brief Represents a inertia visual
-    class IGNITION_RENDERING_VISIBLE InertiaVisual :
+    class GZ_RENDERING_VISIBLE InertiaVisual :
       public virtual Visual
     {
       /// \brief Destructor
@@ -41,13 +41,13 @@ namespace ignition
       /// \brief Set the inertial component of the visual
       /// \param[in] _inertial Inertial component of the visual
       public: virtual void SetInertial(
-                  const ignition::math::Inertiald &_inertial) = 0;
+                  const gz::math::Inertiald &_inertial) = 0;
 
       /// \brief Load the Inertia visual from its pose and scale
       /// \param[in] _pose Pose of the Inertia visual
       /// \param[in] _scale Scale factor of the box visual
-      public: virtual void Load(const ignition::math::Pose3d &_pose,
-          const ignition::math::Vector3d &_scale) = 0;
+      public: virtual void Load(const gz::math::Pose3d &_pose,
+          const gz::math::Vector3d &_scale) = 0;
 
       /// \brief Get the box visual
       /// \return Pointer to the box visual

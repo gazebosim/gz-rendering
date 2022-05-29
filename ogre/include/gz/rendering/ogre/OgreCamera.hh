@@ -30,16 +30,16 @@ namespace Ogre
   class Camera;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
     class OgreSelectionBuffer;
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreCamera :
+    class GZ_RENDERING_OGRE_VISIBLE OgreCamera :
       public virtual BaseCamera<OgreSensor>,
       public virtual OgreObjectInterface
     {
@@ -103,7 +103,7 @@ namespace ignition
       public: double FarClip() const;
 
       // Documentation inherited
-      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+      public: virtual VisualPtr VisualAt(const gz::math::Vector2i
                   &_mousePos) override;
 
       // Documentation Inherited.

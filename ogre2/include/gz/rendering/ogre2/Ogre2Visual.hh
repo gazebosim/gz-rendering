@@ -24,17 +24,17 @@
 #include "gz/rendering/ogre2/Ogre2Node.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
     class Ogre2VisualPrivate;
 
     /// \brief Ogre2.x implementation of the visual class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Visual :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Visual :
       public BaseVisual<Ogre2Node>
     {
       /// \brief Constructor
@@ -56,11 +56,11 @@ namespace ignition
       public: virtual void SetVisibilityFlags(uint32_t _flags) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox BoundingBox()
+      public: virtual gz::math::AxisAlignedBox BoundingBox()
                   const override;
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
+      public: virtual gz::math::AxisAlignedBox LocalBoundingBox()
                   const override;
 
       /// \brief Recursively loop through this visual's children
@@ -70,8 +70,8 @@ namespace ignition
       /// be calculated.
       /// \param[in] _pose World pose of the visual
       private: virtual void BoundsHelper(
-                     ignition::math::AxisAlignedBox &_box, bool _local,
-                     const ignition::math::Pose3d &_pose) const;
+                     gz::math::AxisAlignedBox &_box, bool _local,
+                     const gz::math::Pose3d &_pose) const;
 
       /// \brief Wrapper function for BoundsHelper to reduce redundant
       /// world pose access
@@ -79,7 +79,7 @@ namespace ignition
       /// \param[in] _local A flag indicating if the local bounding box is to
       /// be calculated.
       private: virtual void BoundsHelper(
-                     ignition::math::AxisAlignedBox &_box, bool _local) const;
+                     gz::math::AxisAlignedBox &_box, bool _local) const;
 
       // Documentation inherited.
       protected: virtual GeometryStorePtr Geometries() const override;

@@ -27,11 +27,11 @@
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/ViewController.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declarations
     class OrbitViewControllerPrivate;
@@ -39,7 +39,7 @@ namespace ignition
     /// \class OrbitViewController OrbitViewController.hh
     /// gz/rendering/OrbitViewController.hh
     /// \brief A camera view controller
-    class IGNITION_RENDERING_VISIBLE OrbitViewController
+    class GZ_RENDERING_VISIBLE OrbitViewController
         : public virtual ViewController
     {
       /// \brief Destructor

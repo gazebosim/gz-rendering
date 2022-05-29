@@ -20,11 +20,11 @@
 #include <memory>
 #include "gz/rendering/base/BaseRenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     class OgreArrowVisual;
     class OgreAxisVisual;

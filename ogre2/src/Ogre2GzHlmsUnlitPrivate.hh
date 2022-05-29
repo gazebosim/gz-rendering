@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2GZHLMSUNLITPRIVATE_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2GZHLMSUNLITPRIVATE_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2GZHLMSUNLITPRIVATE_HH_
+#define GZ_RENDERING_OGRE2_OGRE2GZHLMSUNLITPRIVATE_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre2/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre2/Export.hh"
 
 #include "Ogre2GzHlmsSphericalClipMinDistance.hh"
 #include "Ogre2GzHlmsSharedPrivate.hh"
@@ -56,15 +56,15 @@ namespace Ogre
   /// \internal
   /// \remark Public variables take effect immediately (i.e. for the
   /// next render)
-  class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsUnlit final
+  class GZ_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsUnlit final
     : public HlmsUnlit,
       public HlmsListener,
-      public ignition::rendering::Ogre2GzHlmsShared
+      public gz::rendering::Ogre2GzHlmsShared
   {
     /// \brief Constructor. Asks for modular listeners so we can add
     /// them in the proper order
     public: Ogre2GzHlmsUnlit(Archive *dataFolder, ArchiveVec *libraryFolders,
-                              ignition::rendering::
+                              gz::rendering::
                               Ogre2GzHlmsSphericalClipMinDistance
                               *_sphericalClipMinDistance);
 

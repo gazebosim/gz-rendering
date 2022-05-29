@@ -24,11 +24,11 @@
 #include "gz/rendering/ogre2/Export.hh"
 #include "gz/rendering/ogre2/Ogre2Object.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
     class Ogre2RenderPassPrivate;
@@ -49,7 +49,7 @@ namespace ignition
     /// the next RenderPass. Note that the Ogre2RenderPass class provides the
     /// node definition only and the actual node creation work is done in the
     /// Ogre2RenderTarget class when the whole workspace is constructed.
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderPass :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2RenderPass :
       public BaseRenderPass<Ogre2Object>
     {
       /// \brief Constructor

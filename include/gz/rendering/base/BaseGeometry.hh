@@ -24,11 +24,11 @@
 #include "gz/rendering/Geometry.hh"
 #include "gz/rendering/Scene.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     template <class T>
     class BaseGeometry :
@@ -99,7 +99,7 @@ namespace ignition
     template <class T>
     GeometryPtr BaseGeometry<T>::Clone() const
     {
-      ignwarn << "Clone functionality for Geometry does not exist yet.\n";
+      gzwarn << "Clone functionality for Geometry does not exist yet.\n";
       return nullptr;
     }
 

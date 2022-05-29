@@ -36,17 +36,17 @@
 #undef DestroyAll
 #endif
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Map Storage.hh gz/rendering/Storage.hh
     /// \brief Storage map from std::string to template class T
     /// \tparam T The storage element type
     template <class T>
-    class IGNITION_RENDERING_VISIBLE Map
+    class GZ_RENDERING_VISIBLE Map
     {
       /// \typedef TPtr
       /// \brief Shared pointer to T
@@ -111,7 +111,7 @@ namespace ignition
     /// will ensure that each element's name and ID are unique.
     /// \tparam T The storage element type
     template <class T>
-    class IGNITION_RENDERING_VISIBLE Store
+    class GZ_RENDERING_VISIBLE Store
     {
       /// \typedef TPtr
       /// \brief Shared pointer to T
@@ -224,7 +224,7 @@ namespace ignition
     /// a single composite store.
     /// \tparam T The storage element type
     template <class T>
-    class IGNITION_RENDERING_VISIBLE CompositeStore :
+    class GZ_RENDERING_VISIBLE CompositeStore :
       public Store<T>
     {
       /// \typedef TPtr
@@ -288,7 +288,7 @@ namespace ignition
     /// \tparam T New storage type
     /// \tparam U Some derived class of T
     template <class T, class U>
-    class IGNITION_RENDERING_VISIBLE StoreWrapper :
+    class GZ_RENDERING_VISIBLE StoreWrapper :
       public Store<T>
     {
       public: virtual ~StoreWrapper() { }
@@ -296,7 +296,7 @@ namespace ignition
 
 // armhf failed to build with this code. It can not be removed for the rest
 // of arches to keep ABI but should be removed in major versions unreleased
-// see https://github.com/ignitionrobotics/ign-rendering/pull/457
+// see https://github.com/gazebosim/gz-rendering/pull/457
 #ifndef __ARM_PCS_VFP
     template class Store<Scene>;
     template class Store<Node>;

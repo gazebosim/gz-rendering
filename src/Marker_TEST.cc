@@ -16,15 +16,15 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Marker.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Marker.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 using namespace std::chrono_literals;
 
@@ -39,7 +39,7 @@ void MarkerTest::Marker(const std::string &_renderEngine)
 {
   if (_renderEngine == "optix")
   {
-    igndbg << "Marker not supported yet in rendering engine: "
+    gzdbg << "Marker not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -48,7 +48,7 @@ void MarkerTest::Marker(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
            << "' is not supported" << std::endl;
     return;
   }
@@ -126,7 +126,7 @@ TEST_P(MarkerTest, Marker)
 
 INSTANTIATE_TEST_CASE_P(Marker, MarkerTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

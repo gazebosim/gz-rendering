@@ -24,16 +24,16 @@
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
     /// \class COMVisual COMVisual.hh
     /// gz/rendering/COMVisual.hh
     /// \brief Represents a center of mass visual
-    class IGNITION_RENDERING_VISIBLE COMVisual :
+    class GZ_RENDERING_VISIBLE COMVisual :
       public virtual Visual
     {
       /// \brief Destructor
@@ -42,7 +42,7 @@ namespace ignition
       /// \brief Set the inertial component of the visual
       /// \param[in] _inertial Inertial component of the visual
       public: virtual void SetInertial(
-                  const ignition::math::Inertiald &_inertial) = 0;
+                  const gz::math::Inertiald &_inertial) = 0;
 
       /// \brief Set the mass of the parent
       /// \param[in] _mass Parent mass
@@ -54,7 +54,7 @@ namespace ignition
 
       /// \brief Get the inertia pose
       /// \return Inertia pose in parent frame.
-      public: virtual ignition::math::Pose3d InertiaPose() const = 0;
+      public: virtual gz::math::Pose3d InertiaPose() const = 0;
 
       /// \brief Get the sphere visual
       /// \return Pointer to the sphere visual

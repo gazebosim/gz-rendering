@@ -21,13 +21,13 @@
 #include <utility>
 #include <vector>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Heightmap.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Visual.hh"
+#include "gz/rendering/RenderTypes.hh"
 
 #include "Terra/Terra.h"
 
@@ -43,7 +43,7 @@
   #pragma warning(pop)
 #endif
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 /////////////////////////////////////////////////
@@ -286,7 +286,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
       }
       catch(Ogre::Exception &e)
       {
-        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+        gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
       }
 
       const Ogre::Vector4 customParameter =
@@ -306,7 +306,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
           // We need to keep the material's vertex shader
           // to keep vertex deformation consistent; so we use
           // a cloned material with a different pixel shader
-          // https://github.com/ignitionrobotics/ign-rendering/issues/544
+          // https://github.com/gazebosim/gz-rendering/issues/544
           //
           // material may be a nullptr if we called setMaterial directly
           // (i.e. it's not using Ogre2Material interface).

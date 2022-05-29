@@ -21,14 +21,14 @@
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
     /// \brief Mixin class to provide direct access to Ogre objects.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreObjectInterface
+    class GZ_RENDERING_OGRE_VISIBLE OgreObjectInterface
     {
       public: virtual ~OgreObjectInterface();
 

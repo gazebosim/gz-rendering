@@ -26,14 +26,14 @@
 #include "gz/rendering/ShaderType.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief An enum for the type of material
-    enum IGNITION_RENDERING_VISIBLE MaterialType
+    enum GZ_RENDERING_VISIBLE MaterialType
     {
       /// \brief Classic shading, i.e. variants of Phong
       MT_CLASSIC = 0,
@@ -44,7 +44,7 @@ namespace ignition
 
     /// \class Material Material.hh gz/rendering/Material.hh
     /// \brief Represents a surface material of a Geometry
-    class IGNITION_RENDERING_VISIBLE Material :
+    class GZ_RENDERING_VISIBLE Material :
       public virtual Object
     {
       /// \brief Destructor

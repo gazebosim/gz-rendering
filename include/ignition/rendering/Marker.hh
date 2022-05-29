@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/Marker.hh>
+#include <ignition/rendering/config.hh>

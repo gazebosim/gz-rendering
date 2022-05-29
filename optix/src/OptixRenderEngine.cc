@@ -17,15 +17,15 @@
 
 #include <vector>
 
-#include <ignition/plugin/Register.hh>
+#include <gz/plugin/Register.hh>
 
-#include "ignition/rendering/RenderEngineManager.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
-#include "ignition/rendering/optix/OptixScene.hh"
-#include "ignition/rendering/optix/OptixStorage.hh"
-#include "ignition/rendering/optix/OptixRenderEngine.hh"
+#include "gz/rendering/RenderEngineManager.hh"
+#include "gz/rendering/optix/OptixIncludes.hh"
+#include "gz/rendering/optix/OptixScene.hh"
+#include "gz/rendering/optix/OptixStorage.hh"
+#include "gz/rendering/optix/OptixRenderEngine.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -80,9 +80,10 @@ std::string OptixRenderEngine::PtxFile(const std::string& _fileBase) const
 
   std::vector<std::string> folders;
 
-  const char *env= std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  const char *env= std::getenv("GZ_RENDERING_RESOURCE_PATH");
+  env = (env) ? env : std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
-      IGN_RENDERING_RESOURCE_PATH;
+      GZ_RENDERING_RESOURCE_PATH;
   resourcePath = common::joinPaths(resourcePath, "optix");
   folders.push_back(resourcePath);
 
@@ -134,5 +135,5 @@ bool OptixRenderEngine::InitImpl()
 }
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(ignition::rendering::OptixRenderEnginePlugin,
-                    ignition::rendering::RenderEnginePlugin)
+IGNITION_ADD_PLUGIN(gz::rendering::OptixRenderEnginePlugin,
+                    gz::rendering::RenderEnginePlugin)

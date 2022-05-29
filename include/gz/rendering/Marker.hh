@@ -24,14 +24,14 @@
 #include "gz/rendering/Object.hh"
 #include "gz/rendering/RenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Enum for marker types
-    enum IGNITION_RENDERING_VISIBLE MarkerType
+    enum GZ_RENDERING_VISIBLE MarkerType
     {
       /// \brief No type
       MT_NONE           = 0,
@@ -73,7 +73,7 @@ namespace ignition
     /// \class Marker Marker.hh gz/rendering/Marker
     /// \brief A marker geometry class. The marker's visual appearance is based
     /// on the marker type specified.
-    class IGNITION_RENDERING_VISIBLE Marker :
+    class GZ_RENDERING_VISIBLE Marker :
       public virtual Geometry
     {
       protected: Marker();
@@ -101,11 +101,11 @@ namespace ignition
       /// \brief Set the render type of this Marker
       /// \param[in] _markerType The desired render type
       public: virtual void SetType(
-                  const ignition::rendering::MarkerType _markerType) = 0;
+                  const gz::rendering::MarkerType _markerType) = 0;
 
       /// \brief Get the render type of this Marker
       /// \return The render type of the marker
-      public: virtual ignition::rendering::MarkerType Type() const = 0;
+      public: virtual gz::rendering::MarkerType Type() const = 0;
 
       /// \brief Set size of the marker. Only affects MT_POINTS.
       /// e.g. size of rasterized points in pixels
@@ -127,19 +127,19 @@ namespace ignition
       /// \param[in] _color The color the point is set to
       public: virtual void AddPoint(double _x,
                   double _y, double _z,
-                  const ignition::math::Color &_color) = 0;
+                  const gz::math::Color &_color) = 0;
 
       /// \brief Add a point with its respective color to the marker
       /// \param[in] _pt A vector containing the position of the point
       /// \param[in] _color The color the point is set to
-      public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
-                  const ignition::math::Color &_color) = 0;
+      public: virtual void AddPoint(const gz::math::Vector3d &_pt,
+                  const gz::math::Color &_color) = 0;
 
       /// \brief Set an existing point's vector
       /// \param[in] _index The index of the point
       /// \param[in] _value The new positional vector of the point
       public: virtual void SetPoint(unsigned int _index,
-                  const ignition::math::Vector3d &_value) = 0;
+                  const gz::math::Vector3d &_value) = 0;
     };
     }
   }

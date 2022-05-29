@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/LightVisual.hh>
+#include <ignition/rendering/config.hh>

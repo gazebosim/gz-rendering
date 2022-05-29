@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixSensor.hh>
+#include <ignition/rendering/config.hh>

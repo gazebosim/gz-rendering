@@ -25,18 +25,18 @@
 #include "gz/rendering/ogre/OgreObject.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     // TODO(anyone): use a better way to find shader configurations
     const std::string depth_vertex_shader_file =
       "depth_vertex_shader.glsl";
     const std::string depth_fragment_shader_file =
       "depth_fragment_shader.glsl";
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreMaterial :
+    class GZ_RENDERING_OGRE_VISIBLE OgreMaterial :
       public BaseMaterial<OgreObject>
     {
       protected: OgreMaterial();

@@ -20,14 +20,14 @@
 #include "gz/rendering/base/BaseSensor.hh"
 #include "gz/rendering/ogre2/Ogre2Node.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Ogre2.x implementation of the sensor classs
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Sensor :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Sensor :
       public BaseSensor<Ogre2Node>
     {
       /// \brief Constructor

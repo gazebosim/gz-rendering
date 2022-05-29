@@ -42,17 +42,17 @@ namespace Ogre
   class Texture;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
     class Ogre2RenderTargetPrivate;
 
     /// \brief Ogre2.x implementation of the render target class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderTarget :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2RenderTarget :
       public virtual BaseRenderTarget<Ogre2Object>
     {
       /// \brief Constructor
@@ -235,7 +235,7 @@ namespace ignition
     };
 
     /// \brief Ogre2.x implementation of the render texture class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderTexture :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2RenderTexture :
       public virtual BaseRenderTexture<Ogre2RenderTarget>
     {
       /// \brief Constructor
@@ -278,7 +278,7 @@ namespace ignition
     };
 
     /// \brief Ogre2.x implementation of the render window class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderWindow :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2RenderWindow :
       public virtual BaseRenderWindow<Ogre2RenderTarget>
     {
       /// \brief Constructor

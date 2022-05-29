@@ -20,11 +20,11 @@
 #include <string>
 #include "gz/rendering/Camera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /* \class ThermalCamera ThermalCamera.hh \
       * gz/rendering/ThermalCamera.hh
      */
@@ -37,7 +37,7 @@ namespace ignition
     /// are modeled as a function of depth (which is not how a real thermal
     /// sensor works). Ideally we support heatmaps for visuals in order to
     /// produce more realistic temperature output.
-    class IGNITION_RENDERING_VISIBLE ThermalCamera :
+    class GZ_RENDERING_VISIBLE ThermalCamera :
       public virtual Camera
     {
       /// \brief Destructor
@@ -115,7 +115,7 @@ namespace ignition
       /// \param[in] _subscriber Subscriber callback function. The callback
       /// function arguments are: <thermal data, width, height, depth, format>
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr ConnectNewThermalFrame(
+      public: virtual gz::common::ConnectionPtr ConnectNewThermalFrame(
           std::function<void(const uint16_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) = 0;
     };

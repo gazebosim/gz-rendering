@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseDistortionPass.hh>
+#include <ignition/rendering/config.hh>

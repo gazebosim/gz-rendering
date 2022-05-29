@@ -15,18 +15,18 @@
  *
  */
 
-#include "ignition/common/Console.hh"
+#include "gz/common/Console.hh"
 
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/RenderEngineManager.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/RenderEngineManager.hh"
+#include "gz/rendering/Scene.hh"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 //
 /*//////////////////////////////////////////////////
 bool load()
@@ -129,50 +129,50 @@ void setPluginPaths(const std::list<std::string> &_paths)
 //////////////////////////////////////////////////
 ScenePtr sceneFromFirstRenderEngine()
 {
-  auto loadedEngNames = ignition::rendering::loadedEngines();
+  auto loadedEngNames = gz::rendering::loadedEngines();
   if (loadedEngNames.empty())
   {
-    igndbg << "No rendering engine is loaded yet" << std::endl;
+    gzdbg << "No rendering engine is loaded yet" << std::endl;
     return nullptr;
   }
 
   auto engineName = loadedEngNames[0];
   if (loadedEngNames.size() > 1)
   {
-    ignwarn << "More than one engine is available. "
+    gzwarn << "More than one engine is available. "
       << "Using engine [" << engineName << "]" << std::endl;
   }
 
-  auto engine = ignition::rendering::engine(engineName);
+  auto engine = gz::rendering::engine(engineName);
   if (!engine)
   {
-    ignerr << "Internal error: failed to load engine [" << engineName
+    gzerr << "Internal error: failed to load engine [" << engineName
       << "]." << std::endl;
     return nullptr;
   }
 
   if (engine->SceneCount() == 0)
   {
-    igndbg << "No scene has been created yet" << std::endl;
+    gzdbg << "No scene has been created yet" << std::endl;
     return nullptr;
   }
 
   auto scene = engine->SceneByIndex(0);
   if (nullptr == scene)
   {
-    ignerr << "Internal error: scene is null." << std::endl;
+    gzerr << "Internal error: scene is null." << std::endl;
     return nullptr;
   }
 
   if (engine->SceneCount() > 1)
   {
-    ignwarn << "More than one scene is available. "
+    gzwarn << "More than one scene is available. "
       << "Using scene [" << scene->Name() << "]" << std::endl;
   }
 
   if (!scene->IsInitialized() || nullptr == scene->RootVisual())
   {
-    igndbg << "Scene is not initialized yet" << std::endl;
+    gzdbg << "Scene is not initialized yet" << std::endl;
     return nullptr;
   }
 

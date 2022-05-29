@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
+#define GZ_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
 
 #include <random>
 #include <string>
@@ -25,19 +25,19 @@
 #include <utility>
 #include <vector>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2Camera.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/SegmentationCamera.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Ogre2Camera.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/SegmentationCamera.hh"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 /// \brief Helper class to assign unique colors to renderables
 /// Due to historic reasons it's called "MaterialSwitcher" although
@@ -45,7 +45,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 ///
 /// Hlms customizations take care of running custom code that outputs
 /// a flat colour
-class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
+class GZ_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
   public Ogre::Camera::Listener
 {
   /// \brief Constructor
@@ -142,6 +142,6 @@ class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationMaterialSwitcher :
 };
 }
 }  // namespace rendering
-}  // namespace ignition
+}  // namespace gz
 
-#endif  // IGNITION_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_
+#endif  // GZ_RENDERING_OGRE2_OGRE2SEGMENTATIONMATERIALSWITCHER_HH_

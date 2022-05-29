@@ -15,11 +15,11 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ShaderType.hh"
+#include "gz/rendering/ShaderType.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -44,7 +44,7 @@ ShaderType ShaderUtil::Sanitize(ShaderType _type)
   // check if value within enum bounds
   if (!ShaderUtil::IsValid(_type))
   {
-    ignerr << "Invalid ShaderType value: " << _type << std::endl;
+    gzerr << "Invalid ShaderType value: " << _type << std::endl;
     return ST_UNKNOWN;
   }
 

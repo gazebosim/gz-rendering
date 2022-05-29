@@ -20,11 +20,11 @@
 #include <string>
 #include "gz/rendering/RenderPass.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /* \class BaseRenderPass BaseRenderPass.hh \
      * gz/rendering/base/BaseRenderPass.hh

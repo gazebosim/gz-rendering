@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre2/Ogre2InertiaVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2Material.hh"
-#include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
+#include "gz/rendering/ogre2/Ogre2InertiaVisual.hh"
+#include "gz/rendering/ogre2/Ogre2Material.hh"
+#include "gz/rendering/ogre2/Ogre2DynamicRenderable.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -26,10 +26,10 @@
   #pragma warning(pop)
 #endif
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
-class ignition::rendering::Ogre2InertiaVisualPrivate
+class gz::rendering::Ogre2InertiaVisualPrivate
 {
   /// \brief inertia visual materal
   public: Ogre2MaterialPtr material = nullptr;
@@ -86,8 +86,8 @@ void Ogre2InertiaVisual::Destroy()
 }
 
 //////////////////////////////////////////////////
-void Ogre2InertiaVisual::Load(const ignition::math::Pose3d &_pose,
-                              const ignition::math::Vector3d &_scale)
+void Ogre2InertiaVisual::Load(const gz::math::Pose3d &_pose,
+                              const gz::math::Vector3d &_scale)
 {
   if (!this->dataPtr->crossLines)
   {
@@ -117,12 +117,12 @@ void Ogre2InertiaVisual::Load(const ignition::math::Pose3d &_pose,
   }
 
   // Inertia position indicator
-  ignition::math::Vector3d p1(0, 0, -2*_scale.Z());
-  ignition::math::Vector3d p2(0, 0, 2*_scale.Z());
-  ignition::math::Vector3d p3(0, -2*_scale.Y(), 0);
-  ignition::math::Vector3d p4(0, 2*_scale.Y(), 0);
-  ignition::math::Vector3d p5(-2*_scale.X(), 0, 0);
-  ignition::math::Vector3d p6(2*_scale.X(), 0, 0);
+  gz::math::Vector3d p1(0, 0, -2*_scale.Z());
+  gz::math::Vector3d p2(0, 0, 2*_scale.Z());
+  gz::math::Vector3d p3(0, -2*_scale.Y(), 0);
+  gz::math::Vector3d p4(0, 2*_scale.Y(), 0);
+  gz::math::Vector3d p5(-2*_scale.X(), 0, 0);
+  gz::math::Vector3d p6(2*_scale.X(), 0, 0);
   p1 = _pose.Rot().RotateVector(p1);
   p2 = _pose.Rot().RotateVector(p2);
   p3 = _pose.Rot().RotateVector(p3);
@@ -166,7 +166,7 @@ void Ogre2InertiaVisual::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

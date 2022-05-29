@@ -25,14 +25,14 @@
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief A class that stores ray query intersection results.
-    class IGNITION_RENDERING_VISIBLE RayQueryResult
+    class GZ_RENDERING_VISIBLE RayQueryResult
     {
       /// \brief Intersection distance
       public: double distance = -1;
@@ -60,7 +60,7 @@ namespace ignition
 
     /// \class RayQuery RayQuery.hh gz/rendering/RayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
-    class IGNITION_RENDERING_VISIBLE RayQuery
+    class GZ_RENDERING_VISIBLE RayQuery
         : public virtual Object
     {
       /// \brief Destructor

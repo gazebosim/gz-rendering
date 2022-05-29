@@ -58,7 +58,7 @@ unsigned int imgh = 0;
 
 ir::CameraPtr g_camera;
 ir::ImagePtr g_image;
-ignition::common::ConnectionPtr g_connection;
+gz::common::ConnectionPtr g_connection;
 
 bool g_initContext = false;
 
@@ -147,7 +147,7 @@ void handleMouse()
     g_rayQuery = rayCamera->Scene()->CreateRayQuery();
     if (!g_rayQuery)
     {
-      ignerr << "Failed to create Ray Query" << std::endl;
+      gzerr << "Failed to create Ray Query" << std::endl;
       return;
     }
   }
@@ -181,7 +181,7 @@ void handleMouse()
   if (g_mouse.motionDirty)
   {
     g_mouse.motionDirty = false;
-    auto drag = ignition::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
+    auto drag = gz::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
 
     // left mouse button pan
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
@@ -357,7 +357,7 @@ void run(ir::CameraPtr _camera)
 {
   if (!_camera)
   {
-    ignerr << "No camera found. Scene will not be rendered" << std::endl;
+    gzerr << "No camera found. Scene will not be rendered" << std::endl;
     return;
   }
 

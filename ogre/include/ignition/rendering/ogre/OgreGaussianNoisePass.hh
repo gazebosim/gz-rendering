@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreGaussianNoisePass.hh>
+#include <ignition/rendering/config.hh>

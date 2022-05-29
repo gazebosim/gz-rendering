@@ -24,15 +24,15 @@
 #include "gz/rendering/optix/OptixObject.hh"
 #include "gz/rendering/optix/OptixRenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// TODO Not implemented yet!
     /// \brief Optix implementation of a grid geometry
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixGrid
+    class GZ_RENDERING_OPTIX_VISIBLE OptixGrid
       : public BaseGrid<OptixPrimitive>
     {
       /// \brief Constructor

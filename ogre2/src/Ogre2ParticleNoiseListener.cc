@@ -17,17 +17,17 @@
 
 #include <string>
 
-#include <ignition/math/Rand.hh>
+#include <gz/math/Rand.hh>
 
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
-#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Visual.hh"
+#include "gz/rendering/ogre2/Ogre2ParticleEmitter.hh"
 
 #include "Ogre2ParticleNoiseListener.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -87,7 +87,7 @@ void Ogre2ParticleNoiseListener::cameraPreRenderScene(
       psParams->setNamedConstant("particleStddev",
           static_cast<float>(particleStddev));
       psParams->setNamedConstant("rnd",
-          static_cast<float>(ignition::math::Rand::DblUniform(0.0, 1.0)));
+          static_cast<float>(gz::math::Rand::DblUniform(0.0, 1.0)));
 
       // get particle scatter ratio value from particle emitter user data
       // and pass that to the shaders
@@ -103,7 +103,7 @@ void Ogre2ParticleNoiseListener::cameraPreRenderScene(
         }
         catch(Ogre::Exception &e)
         {
-          ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+          gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
         }
         Ogre2ParticleEmitterPtr emitterPtr =
           std::dynamic_pointer_cast<Ogre2ParticleEmitter>(result);

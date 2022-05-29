@@ -49,7 +49,7 @@ The cube map accepted by the ogre2 render engine needs to be in a specific
 format. You can use the `gimp-dds` plugin to create the texture.
 
 Let's take a look at the sky cube map in gimp. Open `gimp` and import the
-[sky_lowres.dds](https://github.com/ignitionrobotics/ign-rendering/blob/main/examples/ogre2_demo/media/skybox_lowres.dds?raw=true)
+[sky_lowres.dds](https://github.com/gazebosim/gz-rendering/blob/main/examples/ogre2_demo/media/skybox_lowres.dds?raw=true)
 file. Look at the `Layers` windows (`Windows` > `Dockable Dialogs` > `Layers`)
 to see that each face of the cube map is in its own individual layer.
 

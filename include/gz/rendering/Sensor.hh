@@ -20,16 +20,16 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Node.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Sensor Sensor.hh gz/rendering/Sensor.hh
     /// \brief Represents a scene sensor. The most obvious example is a camera,
     /// but it can be anything that generates output from the scene.
-    class IGNITION_RENDERING_VISIBLE Sensor :
+    class GZ_RENDERING_VISIBLE Sensor :
       public virtual Node
     {
       /// \brief Sensor

@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/optix/OptixNode.hh"
-#include "ignition/rendering/optix/OptixConversions.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
-#include "ignition/rendering/optix/OptixScene.hh"
-#include "ignition/rendering/optix/OptixStorage.hh"
+#include "gz/rendering/optix/OptixNode.hh"
+#include "gz/rendering/optix/OptixConversions.hh"
+#include "gz/rendering/optix/OptixIncludes.hh"
+#include "gz/rendering/optix/OptixScene.hh"
+#include "gz/rendering/optix/OptixStorage.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -151,7 +151,7 @@ bool OptixNode::AttachChild(NodePtr _child)
 
   if (!derived)
   {
-    ignerr << "Cannot attach node created by another render-engine"
+    gzerr << "Cannot attach node created by another render-engine"
         << std::endl;
     return false;
   }

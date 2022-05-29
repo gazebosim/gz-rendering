@@ -24,13 +24,13 @@
 #include "gz/rendering/optix/OptixObject.hh"
 #include "gz/rendering/optix/OptixRenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixMesh :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixMesh :
       public BaseMesh<OptixGeometry>
     {
       typedef std::vector<std::string> NameList;
@@ -56,7 +56,7 @@ namespace ignition
       private: friend class OptixMeshFactory;
     };
 
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixSubMesh :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixSubMesh :
       public BaseSubMesh<OptixObject>
     {
       protected: OptixSubMesh();

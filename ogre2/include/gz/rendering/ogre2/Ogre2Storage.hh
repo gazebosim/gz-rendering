@@ -29,15 +29,15 @@
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 // armhf failed to build with this code. It can not be removed for the rest
 // of arches to keep ABI but should be removed in major versions unreleased
-// see https://github.com/ignitionrobotics/ign-rendering/pull/457
+// see https://github.com/gazebosim/gz-rendering/pull/457
 #ifndef __ARM_PCS_VFP
     template class BaseGeometryStore<Ogre2Geometry>;
     template class BaseLightStore<Ogre2Light>;

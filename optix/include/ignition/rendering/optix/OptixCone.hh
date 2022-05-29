@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixCone.hh>
+#include <ignition/rendering/config.hh>

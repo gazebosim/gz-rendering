@@ -20,16 +20,16 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class CompositeVisual CompositeVisual.hh
     /// gz/rendering/CompositeVisual.hh
     /// \brief Represents a predefined collection of geometries and visuals
-    class IGNITION_RENDERING_VISIBLE CompositeVisual :
+    class GZ_RENDERING_VISIBLE CompositeVisual :
       public virtual Visual
     {
       /// \brief Destructor

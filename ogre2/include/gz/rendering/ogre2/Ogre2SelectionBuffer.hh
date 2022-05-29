@@ -30,11 +30,11 @@ namespace Ogre
   class SceneManager;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
     struct Ogre2SelectionBufferPrivate;
@@ -44,7 +44,7 @@ namespace ignition
     /// color is assigned to each entity. Whenever a selection request is made,
     /// the selection buffer camera renders to a 1x1 sized offscreen buffer.
     /// The color value of that pixel gives the identity of the entity.
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SelectionBuffer
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2SelectionBuffer
     {
       /// \brief Constructor
       /// \param[in] _cameraName Name of the camera to generate a selection

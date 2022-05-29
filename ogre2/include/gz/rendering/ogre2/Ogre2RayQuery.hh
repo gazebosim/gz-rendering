@@ -23,11 +23,11 @@
 #include "gz/rendering/ogre2/Ogre2Object.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
     class Ogre2RayQueryPrivate;
@@ -35,7 +35,7 @@ namespace ignition
     /// \class Ogre2RayQuery Ogre2RayQuery.hh
     /// gz/rendering/ogre2/Ogre2RayQuery.hh
     /// \brief A Ray Query class used for computing ray object intersections
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RayQuery :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2RayQuery :
         public BaseRayQuery<Ogre2Object>
     {
       /// \brief Constructor

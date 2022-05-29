@@ -24,17 +24,17 @@
 #include "gz/rendering/Export.hh"
 #include "gz/rendering/RenderPass.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /* \class DistortionPass DistortionPass.hh \
      * gz/rendering/DistortionPass.hh
      */
     /// \brief A render pass that applies distortion to the render target
-    class IGNITION_RENDERING_VISIBLE DistortionPass
+    class GZ_RENDERING_VISIBLE DistortionPass
       : public virtual RenderPass
     {
       /// \brief Constructor

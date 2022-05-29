@@ -22,15 +22,15 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Node.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /// \class Visual Visual.hh gz/rendering/Visual.hh
     /// \brief Represents a visual node in a scene graph. A Visual is the only
     /// node that can have Geometry and other Visual children.
-    class IGNITION_RENDERING_VISIBLE Visual :
+    class GZ_RENDERING_VISIBLE Visual :
       public virtual Node
     {
       /// \brief Destructor
@@ -136,11 +136,11 @@ namespace ignition
 
       /// \brief Get the bounding box in world frame coordinates.
       /// \return The axis aligned bounding box
-      public: virtual ignition::math::AxisAlignedBox BoundingBox() const = 0;
+      public: virtual gz::math::AxisAlignedBox BoundingBox() const = 0;
 
       /// \brief Get the local bounding box of the visual.
       /// \return The local bounding box
-      public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
+      public: virtual gz::math::AxisAlignedBox LocalBoundingBox()
               const = 0;
 
       /// \brief Clone the visual (and its children) with a new name.

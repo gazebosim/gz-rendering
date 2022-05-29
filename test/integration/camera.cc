@@ -17,21 +17,21 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/GpuRays.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/SegmentationCamera.hh"
-#include "ignition/rendering/ShaderParams.hh"
-#include "ignition/rendering/ThermalCamera.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/GpuRays.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/SegmentationCamera.hh"
+#include "gz/rendering/ShaderParams.hh"
+#include "gz/rendering/ThermalCamera.hh"
 
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class CameraTest: public testing::Test,
@@ -40,7 +40,7 @@ class CameraTest: public testing::Test,
   // Documentation inherited
   public: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    gz::common::Console::SetVerbosity(4);
   }
 
   // Test and verify camera tracking
@@ -60,7 +60,7 @@ class CameraTest: public testing::Test,
 
   // Path to test media directory
   public: const std::string TEST_MEDIA_PATH =
-          ignition::common::joinPaths(std::string(PROJECT_SOURCE_PATH),
+          gz::common::joinPaths(std::string(PROJECT_SOURCE_PATH),
                 "test", "media");
 };
 
@@ -71,7 +71,7 @@ void CameraTest::Track(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -201,7 +201,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
 {
   if (_renderEngine == "optix")
   {
-    igndbg << "VisualAt not supported yet in rendering engine: "
+    gzdbg << "VisualAt not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -210,7 +210,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -330,7 +330,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -452,7 +452,7 @@ void CameraTest::Visibility(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -582,7 +582,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
 {
   if (_renderEngine == "optix")
   {
-    igndbg << "Custom shaders are not supported yet in rendering engine: "
+    gzdbg << "Custom shaders are not supported yet in rendering engine: "
            << _renderEngine << std::endl;
     return;
   }
@@ -595,7 +595,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
            << "' is not supported" << std::endl;
     return;
   }
@@ -628,13 +628,13 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
 
   // create shader materials
   // path to look for vertex and fragment shader parameters
-  std::string vertexShaderPath = ignition::common::joinPaths(
+  std::string vertexShaderPath = gz::common::joinPaths(
       TEST_MEDIA_PATH, "materials", "programs", vertexShaderFile);
-  std::string fragmentShaderPath = ignition::common::joinPaths(
+  std::string fragmentShaderPath = gz::common::joinPaths(
       TEST_MEDIA_PATH, "materials", "programs", fragmentShaderFile);
 
   // create shader material
-  ignition::rendering::MaterialPtr shader = scene->CreateMaterial();
+  gz::rendering::MaterialPtr shader = scene->CreateMaterial();
   shader->SetVertexShader(vertexShaderPath);
   shader->SetFragmentShader(fragmentShaderPath);
 
@@ -811,7 +811,7 @@ TEST_P(CameraTest, ShaderSelection)
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

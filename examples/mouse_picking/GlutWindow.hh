@@ -20,7 +20,7 @@
 #include <vector>
 #include "gz/rendering/RenderTypes.hh"
 
-namespace ir = ignition::rendering;
+namespace ir = gz::rendering;
 
 void run(std::vector<ir::CameraPtr> _cameras);
 

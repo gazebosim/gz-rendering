@@ -15,14 +15,14 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/optix/OptixRenderTarget.hh"
+#include "gz/rendering/optix/OptixRenderTarget.hh"
 
-#include "ignition/rendering/optix/OptixConversions.hh"
-#include "ignition/rendering/optix/OptixScene.hh"
+#include "gz/rendering/optix/OptixConversions.hh"
+#include "gz/rendering/optix/OptixScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -46,7 +46,7 @@ void OptixRenderTarget::Copy(Image &_image) const
 
   if (_image.Width() != this->width || _image.Height() != this->height)
   {
-    ignerr << "Invalid image dimensions" << std::endl;
+    gzerr << "Invalid image dimensions" << std::endl;
     return;
   }
 

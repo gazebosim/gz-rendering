@@ -26,14 +26,14 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Enum for mapping function types
-    enum IGNITION_RENDERING_VISIBLE MappingFunctionType
+    enum GZ_RENDERING_VISIBLE MappingFunctionType
     {
       /// \brief Gnomonic
       MFT_GNOMONIC = 0,
@@ -55,7 +55,7 @@ namespace ignition
     };
 
     /// \brief Enum for angle function types
-    enum IGNITION_RENDERING_VISIBLE AngleFunctionType
+    enum GZ_RENDERING_VISIBLE AngleFunctionType
     {
       /// \brief identity
       AFT_IDENTITY = 0,
@@ -69,7 +69,7 @@ namespace ignition
 
     /// \brief Describes a lens of a camera
     ///   as amapping function of type r = c1*f*fun(theta/c2+c3)
-    class IGNITION_RENDERING_VISIBLE CameraLens
+    class GZ_RENDERING_VISIBLE CameraLens
     {
       /// \brief Constructor
       public: CameraLens();

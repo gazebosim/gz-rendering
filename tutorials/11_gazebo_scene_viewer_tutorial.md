@@ -1,13 +1,13 @@
 \page gazebo_scene_viewer Gazebo scene viewer
 
-The Gazebo scene viewer examples allow us to visualize Gazebo simulation using the Ignition Rendering library.
+The Gazebo scene viewer examples allow us to visualize Gazebo simulation using the Gazebo Rendering library.
 
 ## Compile and run the example
 
 Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
-git clone https://github.com/ignitionrobotics/ign-rendering
+git clone https://github.com/gazebosim/gz-rendering
 cd ign-rendering/examples/gazebo_scene_viewer
 mkdir build
 cd build

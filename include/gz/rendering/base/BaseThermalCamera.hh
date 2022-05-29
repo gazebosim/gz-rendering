@@ -22,11 +22,11 @@
 #include "gz/rendering/base/BaseCamera.hh"
 #include "gz/rendering/ThermalCamera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Base implementation of the ThermalCamera class
     template <class T>
@@ -78,7 +78,7 @@ namespace ignition
       public: virtual void SetHeatSourceTemperatureRange(float _range) override;
 
       // Documentation inherted.
-      public: virtual ignition::common::ConnectionPtr ConnectNewThermalFrame(
+      public: virtual gz::common::ConnectionPtr ConnectNewThermalFrame(
           std::function<void(const uint16_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
 
@@ -89,10 +89,10 @@ namespace ignition
       protected: float ambientRange = 0.0f;
 
       /// \brief Minimum temperature
-      protected: float minTemp = -ignition::math::INF_F;
+      protected: float minTemp = -gz::math::INF_F;
 
       /// \brief Maximum temperature
-      protected: float maxTemp = ignition::math::INF_F;
+      protected: float maxTemp = gz::math::INF_F;
 
       /// \brief Linear resolution. Defaults to 10mK.
       protected: float resolution = 0.01f;

@@ -27,18 +27,18 @@
 
 #include "gz/rendering/Camera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
     // Inline bracket to help doxygen filtering.
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
       // forward declaration
       class MoveToHelperPrivate;
 
       /// \brief Helper class for animating a user camera to move to a target
       /// entity
-      class IGNITION_RENDERING_VISIBLE MoveToHelper
+      class GZ_RENDERING_VISIBLE MoveToHelper
       {
         public: MoveToHelper();
 

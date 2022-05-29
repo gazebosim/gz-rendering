@@ -35,18 +35,18 @@
 #include "gz/rendering/ogre2/Ogre2ObjectInterface.hh"
 #include "gz/rendering/ogre2/Ogre2Sensor.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
     class Ogre2SegmentationCameraPrivate;
 
     /// \brief Segmentation camera used to label each pixel with a label id.
     /// Supports Semantic / Panoptic Segmentation
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SegmentationCamera :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2SegmentationCamera :
       public virtual BaseSegmentationCamera<Ogre2Sensor>,
       public virtual Ogre2ObjectInterface
     {
@@ -69,7 +69,7 @@ namespace ignition
       public: virtual void PostRender() override;
 
       // Documentation inherited
-      public: virtual ignition::common::ConnectionPtr
+      public: virtual gz::common::ConnectionPtr
         ConnectNewSegmentationFrame(
         std::function<void(const uint8_t *, unsigned int, unsigned int,
         unsigned int, const std::string &)>  _subscriber) override;

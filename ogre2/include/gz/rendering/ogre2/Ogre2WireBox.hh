@@ -27,17 +27,17 @@ namespace Ogre
   class MovableObject;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
     class Ogre2WireBoxPrivate;
 
     /// \brief Ogre2 implementation of a wire box geometry.
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2WireBox
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2WireBox
       : public BaseWireBox<Ogre2Geometry>
     {
       /// \brief Constructor

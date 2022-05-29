@@ -25,11 +25,11 @@
 #include "gz/rendering/ogre/OgreRenderTypes.hh"
 #include "gz/rendering/ogre/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
     class OgreRTShaderSystemPrivate;
@@ -42,7 +42,7 @@ namespace ignition
     ///
     /// This class allows Gazebo to generate per-pixel shaders for every
     /// material at run-time.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRTShaderSystem :
+    class GZ_RENDERING_OGRE_VISIBLE OgreRTShaderSystem :
       public common::SingletonT<OgreRTShaderSystem>
     {
       /// \enum LightingModel

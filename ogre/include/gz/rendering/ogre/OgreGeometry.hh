@@ -27,13 +27,13 @@ namespace Ogre
   class MovableObject;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreGeometry :
+    class GZ_RENDERING_OGRE_VISIBLE OgreGeometry :
       public BaseGeometry<OgreObject>
     {
       protected: OgreGeometry();

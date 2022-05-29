@@ -29,11 +29,11 @@
 #include "gz/rendering/base/BaseObject.hh"
 #include "gz/rendering/base/BaseRenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Base implementation of a joint visual
     template <class T>
@@ -57,28 +57,28 @@ namespace ignition
       protected: virtual void Destroy() override;
 
       // Documentation inherited.
-      public: virtual void SetAxis(const ignition::math::Vector3d &_axis,
+      public: virtual void SetAxis(const gz::math::Vector3d &_axis,
           bool _useParentFrame) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::Vector3d Axis() const override;
+      public: virtual gz::math::Vector3d Axis() const override;
 
       // Documentation inherited.
       public: virtual void SetParentAxis(
-          const ignition::math::Vector3d &_axis,
+          const gz::math::Vector3d &_axis,
           const std::string &_parentName,
           bool _useParentFrame) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::Vector3d ParentAxis() const override;
+      public: virtual gz::math::Vector3d ParentAxis() const override;
 
       // Documentation inherited.
-      public: virtual bool UpdateAxis(const ignition::math::Vector3d &_axis,
+      public: virtual bool UpdateAxis(const gz::math::Vector3d &_axis,
           bool _useParentFrame) override;
 
       // Documentation inherited.
       public: virtual bool UpdateParentAxis(
-          const ignition::math::Vector3d &_axis,
+          const gz::math::Vector3d &_axis,
           bool _useParentFrame) override;
 
       // Documentation inherited.
@@ -102,7 +102,7 @@ namespace ignition
       /// \param[in] _useParentFrame True if the axis vector is
       /// expressed in the joint parent frame.
       protected: void UpdateAxisImpl(ArrowVisualPtr _arrowVisual,
-          const ignition::math::Vector3d &_axis,
+          const gz::math::Vector3d &_axis,
           bool _useParentFrame);
 
       /// \brief Helper function to create axis visual.
@@ -131,8 +131,8 @@ namespace ignition
       protected: JointVisualPtr parentAxisVis = nullptr;
 
       /// \brief Scale based on the size of the joint's child.
-      protected: ignition::math::Vector3d scaleToChild =
-          ignition::math::Vector3d::One;
+      protected: gz::math::Vector3d scaleToChild =
+          gz::math::Vector3d::One;
 
       /// \brief Flag to indicate joint visual type has changed.
       protected: bool dirtyJointType = false;
@@ -144,8 +144,8 @@ namespace ignition
       protected: bool dirtyParentAxis = false;
 
       /// \brief Joint visual axis vector.
-      protected: ignition::math::Vector3d axis =
-          ignition::math::Vector3d::Zero;
+      protected: gz::math::Vector3d axis =
+          gz::math::Vector3d::Zero;
 
       /// \brief Flag to indicate whether axis vector is
       /// expressed in joint parent frame.
@@ -155,8 +155,8 @@ namespace ignition
       protected: bool updateAxis = false;
 
       /// \brief Parent axis vector.
-      protected: ignition::math::Vector3d parentAxis =
-          ignition::math::Vector3d::Zero;
+      protected: gz::math::Vector3d parentAxis =
+          gz::math::Vector3d::Zero;
 
       /// \brief Joint parent name.
       protected: std::string jointParentName = "";
@@ -268,7 +268,7 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseJointVisual<T>::SetAxis(
-          const ignition::math::Vector3d &_axis,
+          const gz::math::Vector3d &_axis,
           bool _useParentFrame)
     {
       this->axis = _axis;
@@ -299,14 +299,14 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseJointVisual<T>::SetParentAxis(
-          const ignition::math::Vector3d &_axis,
+          const gz::math::Vector3d &_axis,
           const std::string &_parentName,
           bool _useParentFrame)
     {
       if (this->Type() != JointVisualType::JVT_REVOLUTE2 &&
           this->Type() != JointVisualType::JVT_UNIVERSAL)
       {
-        ignlog << "Joint visual is not of type Revolute2 or "
+        gzlog << "Joint visual is not of type Revolute2 or "
                << " Universal "
                << " so the parent axis will not be shown\n";
         return;
@@ -325,7 +325,7 @@ namespace ignition
       auto jointParentVis = this->Scene()->NodeByName(this->jointParentName);
       if (jointParentVis == nullptr)
       {
-        ignlog << "Joint parent with name " << this->jointParentName
+        gzlog << "Joint parent with name " << this->jointParentName
                << " does not exist"
                << " so the parent axis will not be shown\n";
         return;
@@ -349,7 +349,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    bool BaseJointVisual<T>::UpdateAxis(const ignition::math::Vector3d &_axis,
+    bool BaseJointVisual<T>::UpdateAxis(const gz::math::Vector3d &_axis,
           bool _useParentFrame)
     {
       if (this->ArrowVisual() && this->HasParent())
@@ -364,7 +364,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     bool BaseJointVisual<T>::UpdateParentAxis(
-          const ignition::math::Vector3d &_axis,
+          const gz::math::Vector3d &_axis,
           bool _useParentFrame)
     {
       if (this->ParentAxisVisual() &&
@@ -382,18 +382,18 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     void BaseJointVisual<T>::UpdateAxisImpl(ArrowVisualPtr _arrowVisual,
-          const ignition::math::Vector3d &_axis,
+          const gz::math::Vector3d &_axis,
           bool _useParentFrame)
     {
       // Get rotation to axis vector
-      ignition::math::Vector3d axisDir = _axis;
-      ignition::math::Vector3d u = axisDir.Normalize();
-      ignition::math::Vector3d v = ignition::math::Vector3d::UnitZ;
+      gz::math::Vector3d axisDir = _axis;
+      gz::math::Vector3d u = axisDir.Normalize();
+      gz::math::Vector3d v = gz::math::Vector3d::UnitZ;
       double cosTheta = v.Dot(u);
       double angle = acos(cosTheta);
-      ignition::math::Quaterniond quat;
+      gz::math::Quaterniond quat;
       // check the parallel case
-      if (ignition::math::equal(angle, IGN_PI))
+      if (gz::math::equal(angle, IGN_PI))
         quat.SetFromAxisAngle(u.Perpendicular(), angle);
       else
         quat.SetFromAxisAngle((v.Cross(u)).Normalize(), angle);
@@ -401,11 +401,11 @@ namespace ignition
 
       if (_useParentFrame)
       {
-        ignition::math::Pose3d parentInitPose =
+        gz::math::Pose3d parentInitPose =
             this->Parent()->InitialLocalPose();
 
         // get rotation of joint visual in model frame
-        ignition::math::Quaterniond quatFromModel =
+        gz::math::Quaterniond quatFromModel =
             (parentInitPose * this->LocalPose()).Rot();
 
         // rotate arrow visual so that the axis vector applies to the model
@@ -436,20 +436,20 @@ namespace ignition
       this->axisVisual->ShowAxisHead(true);
       _arrowVisual->ShowArrowShaft(true);
 
-      auto axisWorld = axisWorldRotation * ignition::math::Vector3d::UnitZ;
-      if (axisWorld == jointWorldRotation * ignition::math::Vector3d::UnitX)
+      auto axisWorld = axisWorldRotation * gz::math::Vector3d::UnitZ;
+      if (axisWorld == jointWorldRotation * gz::math::Vector3d::UnitX)
       {
         this->axisVisual->ShowAxisHead(0, false);
         _arrowVisual->ShowArrowShaft(false);
       }
       else if (axisWorld ==
-          jointWorldRotation * ignition::math::Vector3d::UnitY)
+          jointWorldRotation * gz::math::Vector3d::UnitY)
       {
         this->axisVisual->ShowAxisHead(1, false);
         _arrowVisual->ShowArrowShaft(false);
       }
       else if (axisWorld ==
-          jointWorldRotation * ignition::math::Vector3d::UnitZ)
+          jointWorldRotation * gz::math::Vector3d::UnitZ)
       {
         this->axisVisual->ShowAxisHead(2, false);
         _arrowVisual->ShowArrowShaft(false);
@@ -471,7 +471,7 @@ namespace ignition
       {
         double childSize =
             std::max(0.1, parentVisual->BoundingBox().Size().Length());
-        this->scaleToChild = ignition::math::Vector3d(childSize * 0.2,
+        this->scaleToChild = gz::math::Vector3d(childSize * 0.2,
             childSize * 0.2, childSize * 0.2);
         this->SetLocalScale(this->scaleToChild);
         if (this->ParentAxisVisual())
@@ -489,14 +489,14 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::Vector3d BaseJointVisual<T>::Axis() const
+    gz::math::Vector3d BaseJointVisual<T>::Axis() const
     {
       return this->axis;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::Vector3d BaseJointVisual<T>::ParentAxis() const
+    gz::math::Vector3d BaseJointVisual<T>::ParentAxis() const
     {
       return this->parentAxis;
     }

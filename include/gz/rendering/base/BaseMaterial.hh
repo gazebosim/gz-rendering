@@ -25,11 +25,11 @@
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/ShaderType.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Default pbr material properties
     static const common::Pbr kDefaultPbr;

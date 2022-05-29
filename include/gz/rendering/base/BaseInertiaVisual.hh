@@ -24,11 +24,11 @@
 #include "gz/rendering/InertiaVisual.hh"
 #include "gz/rendering/Scene.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Base implementation of an inertia visual
     template <class T>
@@ -50,11 +50,11 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetInertial(
-                  const ignition::math::Inertiald &_inertial) override;
+                  const gz::math::Inertiald &_inertial) override;
 
       // Documentation inherited.
-      public: virtual void Load(const ignition::math::Pose3d &,
-          const ignition::math::Vector3d &) override;
+      public: virtual void Load(const gz::math::Pose3d &,
+          const gz::math::Vector3d &) override;
 
       // Documentation inherited
       public: virtual VisualPtr BoxVisual() const override;
@@ -89,33 +89,33 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     void BaseInertiaVisual<T>::SetInertial(
-          const ignition::math::Inertiald &_inertial)
+          const gz::math::Inertiald &_inertial)
     {
       auto xyz = _inertial.Pose().Pos();
       auto q = _inertial.Pose().Rot();
 
-      // Use ignition::math::MassMatrix3 to compute
+      // Use gz::math::MassMatrix3 to compute
       // equivalent box size and rotation
       auto m = _inertial.MassMatrix();
-      ignition::math::Vector3d boxScale;
-      ignition::math::Quaterniond boxRot;
+      gz::math::Vector3d boxScale;
+      gz::math::Quaterniond boxRot;
       if (!m.EquivalentBox(boxScale, boxRot))
       {
         // Invalid inertia, load with default scale
-        ignlog << "The link is static or has unrealistic "
+        gzlog << "The link is static or has unrealistic "
             << "inertia, so the equivalent inertia box will not be shown.\n";
       }
       else
       {
         // Apply additional rotation by boxRot
-        this->Load(ignition::math::Pose3d(xyz, q * boxRot), boxScale);
+        this->Load(gz::math::Pose3d(xyz, q * boxRot), boxScale);
       }
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseInertiaVisual<T>::Load(const ignition::math::Pose3d &,
-        const ignition::math::Vector3d &)
+    void BaseInertiaVisual<T>::Load(const gz::math::Pose3d &,
+        const gz::math::Vector3d &)
     {
       // no op
     }

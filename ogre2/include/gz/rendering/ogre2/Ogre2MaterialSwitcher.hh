@@ -38,17 +38,17 @@
   #pragma warning(pop)
 #endif
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declarations
     class Ogre2SelectionBuffer;
 
     /// \brief Helper class to assign unique colors to renderables
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2MaterialSwitcher :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2MaterialSwitcher :
       public Ogre::Camera::Listener
     {
       /// \brief Constructor
@@ -60,7 +60,7 @@ namespace ignition
       /// \brief Get the entity with a specific color
       /// \param[in] _color The entity's color.
       public: std::string EntityName(
-              const ignition::math::Color &_color) const;
+              const gz::math::Color &_color) const;
 
       /// \brief Reset the color value incrementor
       public: void Reset();
@@ -77,7 +77,7 @@ namespace ignition
       public: virtual void cameraPostRenderScene(Ogre::Camera *_cam) override;
 
       /// \brief Current unique color value
-      private: ignition::math::Color currentColor;
+      private: gz::math::Color currentColor;
 
       /// \brief Color dictionary that maps the unique color value to
       /// renderable name

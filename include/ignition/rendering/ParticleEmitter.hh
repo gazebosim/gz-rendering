@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ParticleEmitter.hh>
+#include <ignition/rendering/config.hh>

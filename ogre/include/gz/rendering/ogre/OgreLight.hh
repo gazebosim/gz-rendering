@@ -26,13 +26,13 @@ namespace Ogre
   class Light;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreLight :
+    class GZ_RENDERING_OGRE_VISIBLE OgreLight :
       public BaseLight<OgreNode>
     {
       protected: OgreLight();
@@ -97,7 +97,7 @@ namespace ignition
       protected: Ogre::Light::LightTypes ogreLightType;
     };
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreDirectionalLight :
+    class GZ_RENDERING_OGRE_VISIBLE OgreDirectionalLight :
       public BaseDirectionalLight<OgreLight>
     {
       protected: OgreDirectionalLight();
@@ -111,7 +111,7 @@ namespace ignition
       private: friend class OgreScene;
     };
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgrePointLight :
+    class GZ_RENDERING_OGRE_VISIBLE OgrePointLight :
       public BasePointLight<OgreLight>
     {
       protected: OgrePointLight();
@@ -121,7 +121,7 @@ namespace ignition
       private: friend class OgreScene;
     };
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreSpotLight :
+    class GZ_RENDERING_OGRE_VISIBLE OgreSpotLight :
       public BaseSpotLight<OgreLight>
     {
       protected: OgreSpotLight();

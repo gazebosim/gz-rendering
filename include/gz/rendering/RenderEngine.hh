@@ -24,17 +24,17 @@
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class RenderEngine RenderEngine.hh gz/rendering/RenderEngine.hh
     /// \brief An abstract interface to a concrete render-engine. A
     /// RenderEngine is responsible for initializing a render-engine as well as
     /// creating, storing, and destroying scenes.
-    class IGNITION_RENDERING_VISIBLE RenderEngine
+    class GZ_RENDERING_VISIBLE RenderEngine
     {
       /// \brief Destructor
       public: virtual ~RenderEngine() { }

@@ -24,15 +24,15 @@
 #include "gz/rendering/Object.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Geometry Geometry.hh gz/rendering/Geometry.hh
     /// \brief Represents a geometric shape to be rendered
-    class IGNITION_RENDERING_VISIBLE Geometry :
+    class GZ_RENDERING_VISIBLE Geometry :
       public virtual Object
     {
       /// \brief Destructor

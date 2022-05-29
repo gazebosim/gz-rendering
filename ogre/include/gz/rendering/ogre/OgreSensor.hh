@@ -20,13 +20,13 @@
 #include "gz/rendering/base/BaseSensor.hh"
 #include "gz/rendering/ogre/OgreNode.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreSensor :
+    class GZ_RENDERING_OGRE_VISIBLE OgreSensor :
       public BaseSensor<OgreNode>
     {
       protected: OgreSensor();

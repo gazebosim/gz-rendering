@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ViewController.hh>
+#include <ignition/rendering/config.hh>

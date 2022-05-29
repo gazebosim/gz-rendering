@@ -118,7 +118,7 @@ void handleMouse()
     {
       // Get visual using Selection Buffer from Camera
       ir::VisualPtr visual1;
-      ignition::math::Vector2i mousePosI(g_mouse.x, g_mouse.y);
+      gz::math::Vector2i mousePosI(g_mouse.x, g_mouse.y);
       visual1 = rayCamera->VisualAt(mousePosI);
       if (visual1)
       {
@@ -256,7 +256,7 @@ void run(std::vector<ir::CameraPtr> _cameras)
 {
   if (_cameras.empty())
   {
-    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    gzerr << "No cameras found. Scene will not be rendered" << std::endl;
     return;
   }
 

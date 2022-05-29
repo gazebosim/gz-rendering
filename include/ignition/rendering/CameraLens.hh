@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/CameraLens.hh>
+#include <ignition/rendering/config.hh>

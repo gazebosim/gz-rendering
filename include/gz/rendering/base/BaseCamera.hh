@@ -32,11 +32,11 @@
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/base/BaseRenderTarget.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     template <class T>
     class BaseDepthCamera;
 
@@ -105,7 +105,7 @@ namespace ignition
       public: virtual RenderWindowPtr CreateRenderWindow() override;
 
       // Documentation inherited.
-      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+      public: virtual VisualPtr VisualAt(const gz::math::Vector2i
                   &_mousePos) override;
 
       // Documentation inherited.
@@ -489,7 +489,7 @@ namespace ignition
     RenderWindowPtr BaseCamera<T>::CreateRenderWindow()
     {
       // Does nothing by default
-      ignerr << "Render window not supported for render engine: " <<
+      gzerr << "Render window not supported for render engine: " <<
           this->Scene()->Engine()->Name() << std::endl;
       return RenderWindowPtr();
     }
@@ -556,7 +556,7 @@ namespace ignition
       }
       else
       {
-        ignerr << "Unknown camera projection type: " << this->projectionType
+        gzerr << "Unknown camera projection type: " << this->projectionType
                << std::endl;
       }
 
@@ -631,10 +631,10 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    VisualPtr BaseCamera<T>::VisualAt(const ignition::math::Vector2i
+    VisualPtr BaseCamera<T>::VisualAt(const gz::math::Vector2i
         &/*_mousePos*/)
     {
-      ignerr << "VisualAt not implemented for the render engine" << std::endl;
+      gzerr << "VisualAt not implemented for the render engine" << std::endl;
       return VisualPtr();
     }
 
@@ -795,7 +795,7 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::SetMaterial(const MaterialPtr &/*_material*/)
     {
-      ignerr << "SetMaterial not implemented for current render"
+      gzerr << "SetMaterial not implemented for current render"
           << " engine" << std::endl;
     }
 
@@ -803,7 +803,7 @@ namespace ignition
     template <class T>
     unsigned int BaseCamera<T>::RenderTextureGLId() const
     {
-      ignerr << "RenderTextureGLId is not supported by current render"
+      gzerr << "RenderTextureGLId is not supported by current render"
           << " engine" << std::endl;
       return 0u;
     }
@@ -812,7 +812,7 @@ namespace ignition
     template <class T>
     void BaseCamera<T>::RenderTextureMetalId(void *) const
     {
-      ignerr << "RenderTextureMetalId is not supported by current render"
+      gzerr << "RenderTextureMetalId is not supported by current render"
           << " engine" << std::endl;
     }
 

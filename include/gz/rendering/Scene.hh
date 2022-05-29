@@ -33,11 +33,11 @@
 #include "gz/rendering/Storage.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     class RenderEngine;
 
@@ -45,7 +45,7 @@ namespace ignition
     /// \brief Manages a single scene-graph. This class updates scene-wide
     /// properties and holds the root scene node. A Scene also serves as a
     /// factory for all scene objects.
-    class IGNITION_RENDERING_VISIBLE Scene
+    class GZ_RENDERING_VISIBLE Scene
     {
       /// \brief Destructor
       public: virtual ~Scene() { }

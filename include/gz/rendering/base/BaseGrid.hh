@@ -21,11 +21,11 @@
 #include "gz/rendering/Grid.hh"
 #include "gz/rendering/base/BaseObject.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Base implementation of a grid geometry
     template <class T>

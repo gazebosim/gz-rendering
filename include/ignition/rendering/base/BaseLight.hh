@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseLight.hh>
+#include <ignition/rendering/config.hh>

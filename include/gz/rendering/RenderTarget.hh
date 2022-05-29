@@ -26,15 +26,15 @@
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/Object.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class RenderTarget RenderTarget.hh gz/rendering/RenderTarget.hh
     /// \brief Represents a render-target to which cameras can render images.
-    class IGNITION_RENDERING_VISIBLE RenderTarget :
+    class GZ_RENDERING_VISIBLE RenderTarget :
       public virtual Object
     {
       /// \brief Destructor
@@ -100,7 +100,7 @@ namespace ignition
      */
     /// \brief Represents a off-screen render-texture to which cameras can
     /// render images.
-    class IGNITION_RENDERING_VISIBLE RenderTexture :
+    class GZ_RENDERING_VISIBLE RenderTexture :
       public virtual RenderTarget
     {
       /// \brief Destructor
@@ -123,7 +123,7 @@ namespace ignition
      */
     /// \brief Represents a on-screen render-window to which cameras can
     /// render images.
-    class IGNITION_RENDERING_VISIBLE RenderWindow :
+    class GZ_RENDERING_VISIBLE RenderWindow :
       public virtual RenderTarget
     {
       /// \brief Destructor

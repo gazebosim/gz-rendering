@@ -15,10 +15,10 @@
  *
 */
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/ogre/OgreDynamicRenderable.hh"
+#include "gz/common/Console.hh"
+#include "gz/rendering/ogre/OgreDynamicRenderable.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -95,7 +95,7 @@ void OgreDynamicRenderable::SetOperationType(MarkerType _opType)
       break;
 
     default:
-      ignerr << "Unknown render operation type[" << _opType << "]\n";
+      gzerr << "Unknown render operation type[" << _opType << "]\n";
       break;
   }
 }

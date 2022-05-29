@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseGizmoVisual.hh>
+#include <ignition/rendering/config.hh>

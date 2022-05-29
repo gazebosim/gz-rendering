@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixVisual.hh>
+#include <ignition/rendering/config.hh>

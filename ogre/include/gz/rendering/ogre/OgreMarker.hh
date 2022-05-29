@@ -23,17 +23,17 @@
 #include "gz/rendering/ogre/OgreGeometry.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
     class OgreMarkerPrivate;
 
     /// \brief Ogre implementation of a marker geometry.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreMarker
+    class GZ_RENDERING_OGRE_VISIBLE OgreMarker
       : public BaseMarker<OgreGeometry>
     {
       /// \brief Constructor
@@ -63,11 +63,11 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void SetPoint(unsigned int _index,
-                           const ignition::math::Vector3d &_value) override;
+                           const gz::math::Vector3d &_value) override;
 
       // Documentation inherited
-      public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
-                           const ignition::math::Color &_color) override;
+      public: virtual void AddPoint(const gz::math::Vector3d &_pt,
+                           const gz::math::Color &_color) override;
 
       // Documentation inherited
       public: virtual void ClearPoints() override;

@@ -40,11 +40,11 @@ namespace Ogre
   class Viewport;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
     class Ogre2GpuRaysPrivate;
@@ -62,7 +62,7 @@ namespace ignition
     /// min/max angles and no. of samples. Each ray is a direction vector that
     /// is used to sample/lookup the range data stored in the faces of the
     /// cubemap.
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2GpuRays :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2GpuRays :
       public BaseGpuRays<Ogre2Sensor>
     {
       /// \brief Constructor

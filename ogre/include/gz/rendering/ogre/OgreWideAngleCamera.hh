@@ -36,14 +36,14 @@ namespace Ogre
   class Viewport;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Ogre implementation of WideAngleCamera
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreWideAngleCamera :
+    class GZ_RENDERING_OGRE_VISIBLE OgreWideAngleCamera :
         public BaseWideAngleCamera<OgreSensor>,
         protected Ogre::CompositorInstance::Listener
     {

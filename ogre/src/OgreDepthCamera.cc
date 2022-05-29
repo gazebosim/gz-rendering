@@ -22,13 +22,13 @@
   #endif
   #include <windows.h>
 #endif
-#include <ignition/math/Helpers.hh>
-#include "ignition/rendering/ogre/OgreDepthCamera.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
+#include <gz/math/Helpers.hh>
+#include "gz/rendering/ogre/OgreDepthCamera.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
 
 /// \internal
 /// \brief Private data for the OgreDepthCamera class
-class ignition::rendering::OgreDepthCameraPrivate
+class gz::rendering::OgreDepthCameraPrivate
 {
   /// \brief The depth buffer
   public: float *depthBuffer = nullptr;
@@ -58,23 +58,23 @@ class ignition::rendering::OgreDepthCameraPrivate
   public: bool outputPoints = false;
 
   /// \brief maximum value used for data outside sensor range
-  public: float dataMaxVal = ignition::math::INF_D;
+  public: float dataMaxVal = gz::math::INF_D;
 
   /// \brief minimum value used for data outside sensor range
-  public: float dataMinVal = -ignition::math::INF_D;
+  public: float dataMinVal = -gz::math::INF_D;
 
   /// \brief Event used to signal rgb point cloud data
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newRgbPointCloud;
 
   /// \brief Event used to signal depth data
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newDepthFrame;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -117,7 +117,7 @@ void OgreDepthCamera::Destroy()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
   }
   else
   {
@@ -146,7 +146,7 @@ void OgreDepthCamera::CreateCamera()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
@@ -154,7 +154,7 @@ void OgreDepthCamera::CreateCamera()
       this->name);
   if (this->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -205,9 +205,10 @@ void OgreDepthCamera::CreatePointCloudTexture()
 
   this->dataPtr->pcdMaterial = this->scene->CreateMaterial();
 
-  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
+  env = (env) ? env : std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
-      IGN_RENDERING_RESOURCE_PATH;
+      GZ_RENDERING_RESOURCE_PATH;
 
   // path to look for vertex and fragment shader parameters
   std::string pcdVSPath = common::joinPaths(
@@ -228,7 +229,7 @@ void OgreDepthCamera::CreateDepthTexture()
 {
   if (this->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
   }
 
   if (this->depthTexture == nullptr)
@@ -490,16 +491,16 @@ void OgreDepthCamera::PostRender()
         "PF_FLOAT32_RGBA");
 
     // Uncomment to debug xyz output
-    // igndbg << "wxh: " << width << " x " << height << std::endl;
+    // gzdbg << "wxh: " << width << " x " << height << std::endl;
     // for (unsigned int i = 0; i < height; ++i)
     // {
     //   for (unsigned int j = 0; j < width; ++j)
     //   {
-    //     igndbg << "[" << this->dataPtr->pcdBuffer[i*width*4+j*4] << "]"
+    //     gzdbg << "[" << this->dataPtr->pcdBuffer[i*width*4+j*4] << "]"
     //       << "[" << this->dataPtr->pcdBuffer[i*width*4+j*4+1] << "]"
     //       << "[" << this->dataPtr->pcdBuffer[i*width*4+j*4+2] << "],";
     //   }
-    //   igndbg << std::endl;
+    //   gzdbg << std::endl;
     // }
 
     // Uncommnet to debug color output
@@ -512,11 +513,11 @@ void OgreDepthCamera::PostRender()
     //     unsigned int r = *rgba >> 24 & 0xFF;
     //     unsigned int g = *rgba >> 16 & 0xFF;
     //     unsigned int b = *rgba >> 8 & 0xFF;
-    //     igndbg << "[" << r << "]"
+    //     gzdbg << "[" << r << "]"
     //            << "[" << g << "]"
     //            << "[" << b << "],";
     //   }
-    //   igndbg << std::endl;
+    //   gzdbg << std::endl;
     // }
   }
 }
@@ -528,7 +529,7 @@ const float *OgreDepthCamera::DepthData() const
 }
 
 //////////////////////////////////////////////////
-ignition::common::ConnectionPtr OgreDepthCamera::ConnectNewDepthFrame(
+gz::common::ConnectionPtr OgreDepthCamera::ConnectNewDepthFrame(
     std::function<void(const float *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {
@@ -536,7 +537,7 @@ ignition::common::ConnectionPtr OgreDepthCamera::ConnectNewDepthFrame(
 }
 
 //////////////////////////////////////////////////
-ignition::common::ConnectionPtr OgreDepthCamera::ConnectNewRgbPointCloud(
+gz::common::ConnectionPtr OgreDepthCamera::ConnectNewRgbPointCloud(
     std::function<void(const float *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {

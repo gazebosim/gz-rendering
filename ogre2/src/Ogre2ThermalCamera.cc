@@ -49,33 +49,33 @@
 #pragma warning(pop)
 #endif
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/math/Helpers.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/math/Helpers.hh>
 
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2Material.hh"
-#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Sensor.hh"
-#include "ignition/rendering/ogre2/Ogre2ThermalCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Heightmap.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2Material.hh"
+#include "gz/rendering/ogre2/Ogre2ParticleEmitter.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Sensor.hh"
+#include "gz/rendering/ogre2/Ogre2ThermalCamera.hh"
+#include "gz/rendering/ogre2/Ogre2Visual.hh"
 
-#include <ignition/common/Image.hh>
+#include <gz/common/Image.hh>
 
 #include "Terra/Terra.h"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 //
 /// \brief Helper class for switching the ogre item's material to heat source
 /// material when a thermal camera is being rendered.
@@ -158,7 +158,7 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::Camera::Listener
 
 /// \internal
 /// \brief Private data for the Ogre2ThermalCamera class
-class ignition::rendering::Ogre2ThermalCameraPrivate
+class gz::rendering::Ogre2ThermalCameraPrivate
 {
   /// \brief Outgoing thermal data, used by newThermalFrame event.
   public: uint16_t *thermalImage = nullptr;
@@ -188,7 +188,7 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
   public: Ogre::MaterialPtr thermalMaterial;
 
   /// \brief Event used to signal thermal image data
-  public: ignition::common::EventT<void(const uint16_t *,
+  public: gz::common::EventT<void(const uint16_t *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newThermalFrame;
 
@@ -205,7 +205,7 @@ class ignition::rendering::Ogre2ThermalCameraPrivate
   public: unsigned int bitDepth = 16u;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -278,7 +278,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
       }
       catch(Ogre::Exception &e)
       {
-        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+        gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
       }
       Ogre2VisualPtr ogreVisual =
           std::dynamic_pointer_cast<Ogre2Visual>(result);
@@ -307,7 +307,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
             }
             catch(std::bad_variant_access &e)
             {
-              ignerr << "Error casting user data: " << e.what() << "\n";
+              gzerr << "Error casting user data: " << e.what() << "\n";
               temp = -1.0;
               foundTemp = false;
             }
@@ -318,7 +318,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
         if (foundTemp && temp < 0.0)
         {
           temp = 0.0;
-          ignwarn << "Unable to set negatve temperature for: "
+          gzwarn << "Unable to set negatve temperature for: "
               << ogreVisual->Name() << ". Value cannot be lower than absolute "
               << "zero. Clamping temperature to 0 degrees Kelvin."
               << std::endl;
@@ -345,7 +345,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
             // We need to keep the material's vertex shader
             // to keep vertex deformation consistent; so we use
             // a cloned material with a different pixel shader
-            // https://github.com/ignitionrobotics/ign-rendering/issues/544
+            // https://github.com/gazebosim/gz-rendering/issues/544
             //
             // material may be a nullptr if we called setMaterial directly
             // (i.e. it's not using Ogre2Material interface).
@@ -462,7 +462,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           {
             // TODO(anyone): We need to keep the material's vertex shader
             // to keep vertex deformation consistent. See
-            // https://github.com/ignitionrobotics/ign-rendering/issues/544
+            // https://github.com/gazebosim/gz-rendering/issues/544
             this->materialMap.push_back({ subItem, subItem->getMaterial() });
           }
           else
@@ -508,7 +508,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
             // We need to keep the material's vertex shader
             // to keep vertex deformation consistent; so we use
             // a cloned material with a different pixel shader
-            // https://github.com/ignitionrobotics/ign-rendering/issues/544
+            // https://github.com/gazebosim/gz-rendering/issues/544
             //
             // material may be a nullptr if we called setMaterial directly
             // (i.e. it's not using Ogre2Material interface).
@@ -586,7 +586,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
             }
             catch (std::bad_variant_access &e)
             {
-              ignerr << "Error casting user data: " << e.what() << "\n";
+              gzerr << "Error casting user data: " << e.what() << "\n";
               temp = -1.0;
               foundTemp = false;
             }
@@ -597,7 +597,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
         if (foundTemp && temp < 0.0)
         {
           temp = 0.0;
-          ignwarn << "Unable to set negatve temperature for: " << visual->Name()
+          gzwarn << "Unable to set negatve temperature for: " << visual->Name()
                   << ". Value cannot be lower than absolute "
                   << "zero. Clamping temperature to 0 degrees Kelvin."
                   << std::endl;
@@ -614,7 +614,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
       // get heat signature and the corresponding min/max temperature values
       else if (std::get_if<std::string>(&tempAny))
       {
-        ignerr << "Heat Signature not yet supported by Heightmaps. Simulation "
+        gzerr << "Heat Signature not yet supported by Heightmaps. Simulation "
                   "may crash!\n";
       }
       else
@@ -776,7 +776,7 @@ void Ogre2ThermalCamera::Destroy()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
   }
   else
   {
@@ -796,14 +796,14 @@ void Ogre2ThermalCamera::CreateCamera()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
   this->ogreCamera = ogreSceneManager->createCamera(this->name);
   if (this->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -1046,7 +1046,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
 
   if (!wsDef)
   {
-    ignerr << "Unable to add workspace definition [" << wsDefName << "] "
+    gzerr << "Unable to add workspace definition [" << wsDefName << "] "
            << " for " << this->Name();
   }
 

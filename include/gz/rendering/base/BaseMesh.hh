@@ -25,11 +25,11 @@
 #include "gz/rendering/Storage.hh"
 #include "gz/rendering/base/BaseObject.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     //////////////////////////////////////////////////
     template <class T>
@@ -189,7 +189,7 @@ namespace ignition
     std::map<std::string, math::Matrix4d>
           BaseMesh<T>::SkeletonLocalTransforms() const
     {
-      std::map<std::string, ignition::math::Matrix4d> tmpMap;
+      std::map<std::string, gz::math::Matrix4d> tmpMap;
       return tmpMap;
     }
 
@@ -213,7 +213,7 @@ namespace ignition
     void BaseMesh<T>::SetSkeletonWeights(
           const std::unordered_map<std::string, float> &)
     {
-      ignerr << "SetSkeletonWeights not supported for render engine: "
+      gzerr << "SetSkeletonWeights not supported for render engine: "
              << this->Scene()->Engine()->Name() << std::endl;
     }
 
@@ -333,13 +333,13 @@ namespace ignition
     {
       if (!this->Scene())
       {
-        ignerr << "Cloning a mesh failed because the mesh to be "
+        gzerr << "Cloning a mesh failed because the mesh to be "
           << "cloned does not belong to a scene.\n";
         return nullptr;
       }
       else if (this->meshDescriptor.meshName.empty())
       {
-        ignerr << "Cloning a geometry failed because the name of the mesh is "
+        gzerr << "Cloning a geometry failed because the name of the mesh is "
           << "missing.\n";
         return nullptr;
       }

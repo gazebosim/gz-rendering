@@ -14,14 +14,14 @@
  * limitations under the License.
  *
 */
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre/OgreWireBox.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreDynamicLines.hh"
+#include "gz/rendering/ogre/OgreWireBox.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreDynamicLines.hh"
 
-class ignition::rendering::OgreWireBoxPrivate
+class gz::rendering::OgreWireBoxPrivate
 {
   /// \brief WireBox materal
   public: OgreMaterialPtr material;
@@ -30,7 +30,7 @@ class ignition::rendering::OgreWireBoxPrivate
   public: Ogre::ManualObject *manualObject = nullptr;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -93,8 +93,8 @@ void OgreWireBox::Create()
   this->dataPtr->manualObject->begin(materialName,
       Ogre::RenderOperation::OT_LINE_LIST);
 
-  ignition::math::Vector3d max = this->box.Max();
-  ignition::math::Vector3d min = this->box.Min();
+  gz::math::Vector3d max = this->box.Max();
+  gz::math::Vector3d min = this->box.Min();
 
   // line 0
   this->dataPtr->manualObject->position(min.X(), min.Y(), min.Z());
@@ -157,7 +157,7 @@ void OgreWireBox::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

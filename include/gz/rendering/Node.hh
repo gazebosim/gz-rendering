@@ -29,11 +29,11 @@
 #include "gz/rendering/Object.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Alias for a variant that can hold various types of data.
     /// The first type of the variant is std::monostate in order to prevent
@@ -48,7 +48,7 @@ namespace ignition
 
     /// \class Node Node.hh gz/rendering/Node.hh
     /// \brief Represents a single posable node in the scene graph
-    class IGNITION_RENDERING_VISIBLE Node :
+    class GZ_RENDERING_VISIBLE Node :
       public virtual Object
     {
       /// \brief Destructor

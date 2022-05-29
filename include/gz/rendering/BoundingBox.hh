@@ -24,16 +24,16 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
   class BoundingBoxPrivate;
 
   /// \brief 2D or 3D Bounding box. It stores the
   /// position / orientation / size info of the box and its label
-  class IGNITION_RENDERING_VISIBLE BoundingBox
+  class GZ_RENDERING_VISIBLE BoundingBox
   {
     /// \brief Constructor
     public: BoundingBox();

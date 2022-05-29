@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/BoundingBox.hh>
+#include <ignition/rendering/config.hh>

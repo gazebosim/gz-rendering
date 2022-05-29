@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/DistortionPass.hh>
+#include <ignition/rendering/config.hh>

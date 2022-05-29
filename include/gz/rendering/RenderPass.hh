@@ -21,17 +21,17 @@
 #include "gz/rendering/Object.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class RenderPass RenderPass.hh gz/rendering/RenderPass.hh
     /// \brief A render pass can be added to a camera to affect how the scene
     /// is rendered. It can be used to add post-processing effects. Multiple
     /// passes can be chained together.
-    class IGNITION_RENDERING_VISIBLE RenderPass
+    class GZ_RENDERING_VISIBLE RenderPass
       : public virtual Object
     {
       /// \brief Destructor

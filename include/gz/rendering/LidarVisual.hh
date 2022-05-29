@@ -26,14 +26,14 @@
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Marker.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Enum for LidarVisual types
-    enum IGNITION_RENDERING_VISIBLE LidarVisualType
+    enum GZ_RENDERING_VISIBLE LidarVisualType
     {
       /// \brief No type
       LVT_NONE           = 0,
@@ -51,7 +51,7 @@ namespace ignition
     /// \class LidarVisual LidarVisual.hh gz/rendering/LidarVisual
     /// \brief A LidarVisual geometry class. The visual appearance is based
     /// on the type specified.
-    class IGNITION_RENDERING_VISIBLE LidarVisual :
+    class GZ_RENDERING_VISIBLE LidarVisual :
       public virtual Visual
     {
       protected: LidarVisual();
@@ -73,7 +73,7 @@ namespace ignition
       /// \param[in] _points Vector of points representing distance of the ray
       /// \param[in] _colors Vector of colors for the rendered points
       public: virtual void SetPoints(const std::vector<double> &_points,
-                        const std::vector<ignition::math::Color> &_colors) = 0;
+                        const std::vector<gz::math::Color> &_colors) = 0;
 
       /// \brief Set minimum vertical angle
       /// \param[in] _minVerticalAngle Minimum vertical angle
@@ -148,11 +148,11 @@ namespace ignition
       /// \brief Set offset of visual
       /// \param[in] _offset The offset of the lidar rays from visual origin
       public: virtual void SetOffset(
-                  const ignition::math::Pose3d _offset) = 0;
+                  const gz::math::Pose3d _offset) = 0;
 
       /// \brief Get offset of visual
       /// \return The offset of the lidar rays from visual origin
-      public: virtual ignition::math::Pose3d  Offset() const = 0;
+      public: virtual gz::math::Pose3d  Offset() const = 0;
 
       /// \brief Get number of points in laser data
       /// \return The number of points in the laser data

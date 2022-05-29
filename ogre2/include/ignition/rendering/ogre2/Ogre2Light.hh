@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre2/Ogre2Light.hh>
+#include <ignition/rendering/config.hh>

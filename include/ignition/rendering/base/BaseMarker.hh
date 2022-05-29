@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseMarker.hh>
+#include <ignition/rendering/config.hh>

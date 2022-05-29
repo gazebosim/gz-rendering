@@ -25,11 +25,11 @@
 #include "gz/rendering/CameraLens.hh"
 #include "gz/rendering/WideAngleCamera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     template <class T>
     class BaseWideAngleCamera :
       public virtual WideAngleCamera,
@@ -101,7 +101,7 @@ namespace ignition
     math::Vector3d BaseWideAngleCamera<T>:: Project3d(const math::Vector3d &)
         const
     {
-      ignerr << "Project3d is not supported for "
+      gzerr << "Project3d is not supported for "
              << "render engine: " << this->Scene()->Engine()->Name()
              << std::endl;
       return math::Vector3d();

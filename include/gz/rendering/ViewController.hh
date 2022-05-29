@@ -23,16 +23,16 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Camera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class ViewController ViewController.hh
     ///   gz/rendering/ViewController.hh
     /// \brief A camera view controller
-    class IGNITION_RENDERING_VISIBLE ViewController
+    class GZ_RENDERING_VISIBLE ViewController
     {
       /// \brief Destructor
       public: virtual ~ViewController() { }

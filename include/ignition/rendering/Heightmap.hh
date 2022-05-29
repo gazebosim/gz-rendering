@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/Heightmap.hh>
+#include <ignition/rendering/config.hh>

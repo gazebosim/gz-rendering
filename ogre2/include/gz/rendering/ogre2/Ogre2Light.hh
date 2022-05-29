@@ -35,17 +35,17 @@ namespace Ogre
   class Light;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
     class Ogre2LightPrivate;
 
     /// \brief Ogre 2.x implementation of the light class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Light :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Light :
       public BaseLight<Ogre2Node>
     {
       /// \brief Constructor
@@ -140,7 +140,7 @@ namespace ignition
     };
 
     /// \brief Ogre 2.x implementation of the directional light class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2DirectionalLight :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2DirectionalLight :
       public BaseDirectionalLight<Ogre2Light>
     {
       /// \brief Constructor
@@ -160,7 +160,7 @@ namespace ignition
     };
 
     /// \brief Ogre 2.x implementation of the point light class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2PointLight :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2PointLight :
       public BasePointLight<Ogre2Light>
     {
       /// \brief Constructor
@@ -174,7 +174,7 @@ namespace ignition
     };
 
     /// \brief Ogre 2.x implementation of the spot light class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2SpotLight :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2SpotLight :
       public BaseSpotLight<Ogre2Light>
     {
       /// \brief Constructor

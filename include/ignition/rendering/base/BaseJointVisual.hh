@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseJointVisual.hh>
+#include <ignition/rendering/config.hh>

@@ -17,15 +17,15 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderTarget.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderTarget.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class SceneTest : public testing::Test,
@@ -34,7 +34,7 @@ class SceneTest : public testing::Test,
   // Documentation inherited
   public: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    gz::common::Console::SetVerbosity(4);
   }
 
   public: void Scene(const std::string &_renderEngine);
@@ -69,7 +69,7 @@ void SceneTest::Scene(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
            << "' is not supported" << std::endl;
     return;
   }
@@ -134,7 +134,7 @@ void SceneTest::Nodes(const std::string &_renderEngine)
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
     return;
   }
 
@@ -218,7 +218,7 @@ void SceneTest::RemoveNodes(const std::string &_renderEngine)
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
     return;
   }
 
@@ -320,7 +320,7 @@ void SceneTest::DestroyNodes(const std::string &_renderEngine)
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
     return;
   }
 
@@ -469,7 +469,7 @@ void SceneTest::NodeCycle(const std::string &_renderEngine)
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
     return;
   }
 
@@ -535,7 +535,7 @@ void SceneTest::Materials(const std::string &_renderEngine)
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
     return;
   }
 
@@ -665,7 +665,7 @@ void SceneTest::Time(const std::string &_renderEngine)
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
     return;
   }
 
@@ -703,7 +703,7 @@ void SceneTest::BackgroundMaterial(const std::string &_renderEngine)
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
     return;
   }
 
@@ -730,13 +730,13 @@ void SceneTest::Sky(const std::string &_renderEngine)
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
     return;
   }
 
   if (_renderEngine != "ogre2")
   {
-    igndbg << "Sky not supported yet in rendering engine: "
+    gzdbg << "Sky not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -828,7 +828,7 @@ TEST_P(SceneTest, Sky)
 
 INSTANTIATE_TEST_CASE_P(Scene, SceneTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

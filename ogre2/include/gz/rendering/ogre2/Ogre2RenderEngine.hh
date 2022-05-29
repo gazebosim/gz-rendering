@@ -46,18 +46,18 @@ namespace Ogre
   class CompositorWorkspaceListener;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
     class Ogre2RenderEnginePrivate;
     class Ogre2GzHlmsSphericalClipMinDistance;
 
     /// \brief Plugin for loading ogre render engine
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderEnginePlugin :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2RenderEnginePlugin :
       public RenderEnginePlugin
     {
       /// \brief Constructor
@@ -78,7 +78,7 @@ namespace ignition
     /// \brief Ogre2 render engine class. A singleton class that manages the
     /// underlying ogre2 render engine, loads its plugins, and creates
     /// resources needed for the engine to run
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderEngine :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2RenderEngine :
       public virtual BaseRenderEngine,
       public common::SingletonT<Ogre2RenderEngine>
     {
@@ -180,7 +180,7 @@ namespace ignition
       public: std::vector<unsigned int> FSAALevels() const;
 
       /// \brief Deprecated. Use SphericalClipMinDistance instead
-      public: Ogre2GzHlmsSphericalClipMinDistance IGN_DEPRECATED(7) &
+      public: Ogre2GzHlmsSphericalClipMinDistance GZ_DEPRECATED(7) &
           HlmsCustomizations();
 
       /// \brief Retrieves Hlms customizations for tweaking them

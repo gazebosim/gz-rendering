@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseGrid.hh>
+#include <ignition/rendering/config.hh>

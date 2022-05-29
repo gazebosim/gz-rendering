@@ -22,28 +22,28 @@
 #include "gz/rendering/optix/OptixIncludes.hh"
 #include "gz/rendering/optix/OptixLightTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixLight :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixLight :
       public BaseLight<OptixNode>
     {
       protected: OptixLight();
 
       public: virtual ~OptixLight();
 
-      public: virtual ignition::math::Color DiffuseColor() const;
+      public: virtual gz::math::Color DiffuseColor() const;
 
       public: virtual void SetDiffuseColor(
-          const ignition::math::Color &_color);
+          const gz::math::Color &_color);
 
-      public: virtual ignition::math::Color SpecularColor() const;
+      public: virtual gz::math::Color SpecularColor() const;
 
       public: virtual void SetSpecularColor(
-          const ignition::math::Color &_color);
+          const gz::math::Color &_color);
 
       public: virtual double AttenuationConstant() const;
 
@@ -74,16 +74,16 @@ namespace ignition
       protected: virtual void Init();
     };
 
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixDirectionalLight :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixDirectionalLight :
       public BaseDirectionalLight<OptixLight>
     {
       protected: OptixDirectionalLight();
 
       public: virtual ~OptixDirectionalLight();
 
-      public: virtual ignition::math::Vector3d Direction() const;
+      public: virtual gz::math::Vector3d Direction() const;
 
-      public: virtual void SetDirection(const ignition::math::Vector3d &_dir);
+      public: virtual void SetDirection(const gz::math::Vector3d &_dir);
 
       public: virtual OptixDirectionalLightData Data() const;
 
@@ -100,7 +100,7 @@ namespace ignition
       private: friend class OptixScene;
     };
 
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixPointLight :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixPointLight :
       public BasePointLight<OptixLight>
     {
       protected: OptixPointLight();
@@ -122,24 +122,24 @@ namespace ignition
       private: friend class OptixScene;
     };
 
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixSpotLight :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixSpotLight :
       public BaseSpotLight<OptixLight>
     {
       protected: OptixSpotLight();
 
       public: virtual ~OptixSpotLight();
 
-      public: virtual ignition::math::Vector3d Direction() const;
+      public: virtual gz::math::Vector3d Direction() const;
 
-      public: virtual void SetDirection(const ignition::math::Vector3d &_dir);
+      public: virtual void SetDirection(const gz::math::Vector3d &_dir);
 
-      public: virtual ignition::math::Angle InnerAngle() const;
+      public: virtual gz::math::Angle InnerAngle() const;
 
-      public: virtual void SetInnerAngle(const ignition::math::Angle &_angle);
+      public: virtual void SetInnerAngle(const gz::math::Angle &_angle);
 
-      public: virtual ignition::math::Angle OuterAngle() const;
+      public: virtual gz::math::Angle OuterAngle() const;
 
-      public: virtual void SetOuterAngle(const ignition::math::Angle &_angle);
+      public: virtual void SetOuterAngle(const gz::math::Angle &_angle);
 
       public: virtual double Falloff() const;
 

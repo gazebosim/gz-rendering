@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreHeightmap.hh>
+#include <ignition/rendering/config.hh>

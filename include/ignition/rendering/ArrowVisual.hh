@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ArrowVisual.hh>
+#include <ignition/rendering/config.hh>

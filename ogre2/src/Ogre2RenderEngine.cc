@@ -28,19 +28,19 @@
   // pulled in by anybody (e.g., Boost).
   #include <Winsock2.h>
 #endif
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
 
-#include <ignition/plugin/Register.hh>
+#include <gz/plugin/Register.hh>
 
-#include "ignition/rendering/GraphicsAPI.hh"
-#include "ignition/rendering/RenderEngineManager.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Storage.hh"
+#include "gz/rendering/GraphicsAPI.hh"
+#include "gz/rendering/RenderEngineManager.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Storage.hh"
 
 #include "Ogre2GzHlmsPbsPrivate.hh"
 #include "Ogre2GzHlmsTerraPrivate.hh"
@@ -51,21 +51,21 @@
 #include "Terra/TerraWorkspaceListener.h"
 #include "Ogre2GzHlmsSphericalClipMinDistance.hh"
 
-class IGNITION_RENDERING_OGRE2_HIDDEN
-    ignition::rendering::Ogre2RenderEnginePrivate
+class GZ_RENDERING_OGRE2_HIDDEN
+    gz::rendering::Ogre2RenderEnginePrivate
 {
 #if !defined(__APPLE__) && !defined(_WIN32)
   public: GLXFBConfig* dummyFBConfigs = nullptr;
 #endif
 
   /// \brief The graphics API to use
-  public: ignition::rendering::GraphicsAPI graphicsAPI{GraphicsAPI::OPENGL};
+  public: gz::rendering::GraphicsAPI graphicsAPI{GraphicsAPI::OPENGL};
 
   /// \brief A list of supported fsaa levels
   public: std::vector<unsigned int> fsaaLevels;
 
   /// \brief Controls Hlms customizations for both PBS and Unlit
-  public: ignition::rendering::Ogre2GzHlmsSphericalClipMinDistance
+  public: gz::rendering::Ogre2GzHlmsSphericalClipMinDistance
   sphericalClipMinDistance;
 
   /// \brief Pbs listener that adds terra shadows
@@ -85,7 +85,7 @@ class IGNITION_RENDERING_OGRE2_HIDDEN
   public: Ogre::Ogre2GzHlmsTerra *ignHlmsTerra{nullptr};
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -211,7 +211,7 @@ void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
 
   if (path.empty())
   {
-    ignerr << "URI doesn't exist[" << _uri << "]\n";
+    gzerr << "URI doesn't exist[" << _uri << "]\n";
     return;
   }
 
@@ -268,7 +268,7 @@ void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
             }
             catch(Ogre::Exception&)
             {
-              ignerr << "Unable to parse material file[" << fullPath << "]\n";
+              gzerr << "Unable to parse material file[" << fullPath << "]\n";
             }
             stream->close();
           }
@@ -278,7 +278,7 @@ void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
   }
   catch(Ogre::Exception &)
   {
-    ignerr << "Unable to load Ogre Resources.\nMake sure the"
+    gzerr << "Unable to load Ogre Resources.\nMake sure the"
         "resources path in the world file is set correctly." << std::endl;
   }
 }
@@ -338,12 +338,12 @@ bool Ogre2RenderEngine::LoadImpl(
   }
   catch (Ogre::Exception &ex)
   {
-    ignerr << ex.what() << std::endl;
+    gzerr << ex.what() << std::endl;
     return false;
   }
   catch (...)
   {
-    ignerr << "Failed to load render-engine" << std::endl;
+    gzerr << "Failed to load render-engine" << std::endl;
     return false;
   }
 }
@@ -358,7 +358,7 @@ bool Ogre2RenderEngine::InitImpl()
   }
   catch (...)
   {
-    ignerr << "Failed to initialize render-engine" << std::endl;
+    gzerr << "Failed to initialize render-engine" << std::endl;
     return false;
   }
 }
@@ -384,7 +384,7 @@ void Ogre2RenderEngine::CreateLogger()
 {
   // create log file path
   std::string logPath;
-  ignition::common::env(IGN_HOMEDIR, logPath);
+  gz::common::env(IGN_HOMEDIR, logPath);
   logPath = common::joinPaths(logPath, ".ignition", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre2.log");
@@ -411,7 +411,7 @@ void Ogre2RenderEngine::CreateContext()
   {
     // Not able to create a Xwindow, try to run in headless mode
     this->SetHeadless(true);
-    ignwarn << "Unable to open display: " << XDisplayName(0)
+    gzwarn << "Unable to open display: " << XDisplayName(0)
             << ". Trying to run in headless mode." << std::endl;
     return;
   }
@@ -434,7 +434,7 @@ void Ogre2RenderEngine::CreateContext()
 
   if (nelements <= 0)
   {
-    ignerr << "Unable to create glx fbconfig" << std::endl;
+    gzerr << "Unable to create glx fbconfig" << std::endl;
     return;
   }
 
@@ -461,7 +461,7 @@ void Ogre2RenderEngine::CreateContext()
   }
   else
   {
-    ignwarn << "glXCreateContextAttribsARB() not found" << std::endl;
+    gzwarn << "glXCreateContextAttribsARB() not found" << std::endl;
     this->dummyContext = glXCreateNewContext(x11Display,
                                              this->dataPtr->dummyFBConfigs[0],
                                              GLX_RGBA_TYPE, nullptr, 1);
@@ -471,7 +471,7 @@ void Ogre2RenderEngine::CreateContext()
 
   if (!this->dummyContext)
   {
-    ignerr << "Unable to create glx context" << std::endl;
+    gzerr << "Unable to create glx context" << std::endl;
     return;
   }
 
@@ -489,7 +489,7 @@ void Ogre2RenderEngine::CreateRoot()
   }
   catch (Ogre::Exception &)
   {
-    ignerr << "Unable to create Ogre root" << std::endl;
+    gzerr << "Unable to create Ogre root" << std::endl;
   }
 }
 
@@ -541,7 +541,7 @@ void Ogre2RenderEngine::LoadPlugins()
         {
           if ((*piter).find("RenderSystem") != std::string::npos)
           {
-            ignerr << "Unable to find Ogre Plugin[" << *piter
+            gzerr << "Unable to find Ogre Plugin[" << *piter
                    << "]. Rendering will not be possible."
                    << "Make sure you have installed OGRE properly.\n";
           }
@@ -559,7 +559,7 @@ void Ogre2RenderEngine::LoadPlugins()
       {
         if ((*piter).find("RenderSystem") != std::string::npos)
         {
-          ignerr << "Unable to load Ogre Plugin[" << *piter
+          gzerr << "Unable to load Ogre Plugin[" << *piter
                  << "]. Rendering will not be possible."
                  << "Make sure you have installed OGRE properly.\n";
         }
@@ -601,7 +601,7 @@ void Ogre2RenderEngine::CreateRenderSystem()
 
   if (renderSys == nullptr)
   {
-    ignerr << "unable to find " << targetRenderSysName << ". OGRE is probably "
+    gzerr << "unable to find " << targetRenderSysName << ". OGRE is probably "
             "installed incorrectly. Double check the OGRE cmake output, "
             "and make sure OpenGL is enabled." << std::endl;
   }
@@ -671,9 +671,10 @@ void Ogre2RenderEngine::CreateRenderSystem()
 
 void Ogre2RenderEngine::RegisterHlms()
 {
-  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
+  env = (env) ? env : std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
-      IGN_RENDERING_RESOURCE_PATH;
+      GZ_RENDERING_RESOURCE_PATH;
   // install path
   std::string mediaPath = common::joinPaths(resourcePath, "ogre2", "media");
   if (!common::exists(mediaPath))
@@ -864,9 +865,10 @@ void Ogre2RenderEngine::RegisterHlms()
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::CreateResources()
 {
-  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
+  env = (env) ? env : std::getenv("IGN_RENDERING_RESOURCE_PATH");
   std::string resourcePath = (env) ? std::string(env) :
-      IGN_RENDERING_RESOURCE_PATH;
+      GZ_RENDERING_RESOURCE_PATH;
   // install path
   std::string mediaPath = common::joinPaths(resourcePath, "ogre2", "media");
   if (!common::exists(mediaPath))
@@ -902,7 +904,7 @@ void Ogre2RenderEngine::CreateResources()
       }
       catch(Ogre::Exception &/*_e*/)
       {
-        ignerr << "Unable to load Ogre Resources. Make sure the resources "
+        gzerr << "Unable to load Ogre Resources. Make sure the resources "
             "path in the world file is set correctly." << std::endl;
       }
     }
@@ -917,7 +919,7 @@ void Ogre2RenderEngine::CreateRenderWindow()
       1, 1, 1, 0);
   if (res.empty())
   {
-    ignerr << "Failed to create dummy render window." << std::endl;
+    gzerr << "Failed to create dummy render window." << std::endl;
   }
 }
 
@@ -988,7 +990,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     }
     catch(const std::exception &_e)
     {
-      ignerr << " Unable to create the rendering window: " << _e.what()
+      gzerr << " Unable to create the rendering window: " << _e.what()
              << std::endl;
       window = nullptr;
     }
@@ -996,7 +998,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   if (attempts >= 10)
   {
-    ignerr << "Unable to create the rendering window after [" << attempts
+    gzerr << "Unable to create the rendering window after [" << attempts
            << "] attempts." << std::endl;
     return std::string();
   }
@@ -1076,5 +1078,5 @@ Ogre::CompositorWorkspaceListener *Ogre2RenderEngine::TerraWorkspaceListener()
 }
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(ignition::rendering::Ogre2RenderEnginePlugin,
-                    ignition::rendering::RenderEnginePlugin)
+IGNITION_ADD_PLUGIN(gz::rendering::Ogre2RenderEnginePlugin,
+                    gz::rendering::RenderEnginePlugin)

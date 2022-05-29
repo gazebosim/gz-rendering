@@ -20,13 +20,13 @@
 #include <string>
 #include "gz/rendering/optix/OptixGeometry.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixPrimitive :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixPrimitive :
       public OptixGeometry
     {
       protected: OptixPrimitive();

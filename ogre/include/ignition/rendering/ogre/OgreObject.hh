@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreObject.hh>
+#include <ignition/rendering/config.hh>

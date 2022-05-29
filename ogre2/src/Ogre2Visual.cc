@@ -15,15 +15,15 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Geometry.hh"
-#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Storage.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
-#include "ignition/rendering/Utils.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Geometry.hh"
+#include "gz/rendering/ogre2/Ogre2ParticleEmitter.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Storage.hh"
+#include "gz/rendering/ogre2/Ogre2Visual.hh"
+#include "gz/rendering/Utils.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -33,11 +33,11 @@
   #pragma warning(pop)
 #endif
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 /// \brief Private data for the Ogre2Visual class
-class ignition::rendering::Ogre2VisualPrivate
+class gz::rendering::Ogre2VisualPrivate
 {
   /// \brief True if wireframe mode is enabled
   public: bool wireframe;
@@ -131,14 +131,14 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
 {
   if (!_geometry)
   {
-    ignerr << "Cannot attach null geometry." << std::endl;
+    gzerr << "Cannot attach null geometry." << std::endl;
 
     return false;
   }
 
   if (!this->ogreNode)
   {
-    ignerr << "Cannot attach geometry, null Ogre node." << std::endl;
+    gzerr << "Cannot attach geometry, null Ogre node." << std::endl;
     return false;
   }
 
@@ -147,7 +147,7 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    ignerr << "Cannot attach geometry created by another render-engine"
+    gzerr << "Cannot attach geometry created by another render-engine"
           << std::endl;
 
     return false;
@@ -156,7 +156,7 @@ bool Ogre2Visual::AttachGeometry(GeometryPtr _geometry)
   Ogre::MovableObject *ogreObj = derived->OgreObject();
   if (!ogreObj)
   {
-    ignerr << "Cannot attach a null geometry object" << std::endl;
+    gzerr << "Cannot attach a null geometry object" << std::endl;
     return false;
   }
 
@@ -178,7 +178,7 @@ bool Ogre2Visual::DetachGeometry(GeometryPtr _geometry)
 {
   if (!this->ogreNode)
   {
-    ignerr << "Cannot detach geometry, null Ogre node." << std::endl;
+    gzerr << "Cannot detach geometry, null Ogre node." << std::endl;
     return false;
   }
 
@@ -187,7 +187,7 @@ bool Ogre2Visual::DetachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    ignerr << "Cannot detach geometry created by another render-engine"
+    gzerr << "Cannot detach geometry created by another render-engine"
           << std::endl;
 
     return false;
@@ -200,36 +200,36 @@ bool Ogre2Visual::DetachGeometry(GeometryPtr _geometry)
 }
 
 //////////////////////////////////////////////////
-ignition::math::AxisAlignedBox Ogre2Visual::LocalBoundingBox() const
+gz::math::AxisAlignedBox Ogre2Visual::LocalBoundingBox() const
 {
-  ignition::math::AxisAlignedBox box;
+  gz::math::AxisAlignedBox box;
   this->BoundsHelper(box, true /* local frame */);
   return box;
 }
 
 //////////////////////////////////////////////////
-ignition::math::AxisAlignedBox Ogre2Visual::BoundingBox() const
+gz::math::AxisAlignedBox Ogre2Visual::BoundingBox() const
 {
-  ignition::math::AxisAlignedBox box;
+  gz::math::AxisAlignedBox box;
   this->BoundsHelper(box, false /* world frame */);
   return box;
 }
 
 //////////////////////////////////////////////////
-void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
+void Ogre2Visual::BoundsHelper(gz::math::AxisAlignedBox &_box,
     bool _local) const
 {
   this->BoundsHelper(_box, _local, this->WorldPose());
 }
 
 //////////////////////////////////////////////////
-void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
-    bool _local, const ignition::math::Pose3d &_pose) const
+void Ogre2Visual::BoundsHelper(gz::math::AxisAlignedBox &_box,
+    bool _local, const gz::math::Pose3d &_pose) const
 {
   if (!this->ogreNode)
     return;
 
-  ignition::math::Vector3d scale = this->WorldScale();
+  gz::math::Vector3d scale = this->WorldScale();
 
   for (size_t i = 0; i < this->ogreNode->numAttachedObjects(); i++)
   {
@@ -239,15 +239,15 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
     {
       Ogre::Aabb bb = obj->getLocalAabb();
 
-      ignition::math::Vector3d min(0, 0, 0);
-      ignition::math::Vector3d max(0, 0, 0);
-      ignition::math::AxisAlignedBox box(min, max);
+      gz::math::Vector3d min(0, 0, 0);
+      gz::math::Vector3d max(0, 0, 0);
+      gz::math::AxisAlignedBox box(min, max);
 
       // Ogre does not return a valid bounding box for lights.
       if (obj->getMovableType() == Ogre::LightFactory::FACTORY_TYPE_NAME)
       {
-        box.Min() = ignition::math::Vector3d(-0.5, -0.5, -0.5);
-        box.Max()  = ignition::math::Vector3d(0.5, 0.5, 0.5);
+        box.Min() = gz::math::Vector3d(-0.5, -0.5, -0.5);
+        box.Max()  = gz::math::Vector3d(0.5, 0.5, 0.5);
       }
       else
       {
@@ -255,22 +255,22 @@ void Ogre2Visual::BoundsHelper(ignition::math::AxisAlignedBox &_box,
         Ogre::Vector3 ogreMax = bb.getMaximum();
 
         // Get ogre bounding boxes and size to object's scale
-        min = scale * ignition::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
-        max = scale * ignition::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
+        min = scale * gz::math::Vector3d(ogreMin.x, ogreMin.y, ogreMin.z);
+        max = scale * gz::math::Vector3d(ogreMax.x, ogreMax.y, ogreMax.z);
         box.Min() = min,
         box.Max() = max;
 
         // Assume world transform
-        ignition::math::Pose3d transform = _pose;
+        gz::math::Pose3d transform = _pose;
 
         // If local frame, calculate transform matrix and set
         if (_local)
         {
-          ignition::math::Pose3d worldPose = this->WorldPose();
-          ignition::math::Vector3d parentPos = _pose.Pos();
-          ignition::math::Quaternion parentRotInv = _pose.Rot().Inverse();
-          ignition::math::Pose3d localTransform =
-            ignition::math::Pose3d(
+          gz::math::Pose3d worldPose = this->WorldPose();
+          gz::math::Vector3d parentPos = _pose.Pos();
+          gz::math::Quaternion parentRotInv = _pose.Rot().Inverse();
+          gz::math::Pose3d localTransform =
+            gz::math::Pose3d(
                 (parentRotInv * (worldPose.Pos() - parentPos)),
                 (parentRotInv * worldPose.Rot()));
           transform = localTransform;

@@ -29,11 +29,11 @@
 #include "gz/rendering/RenderPass.hh"
 #include "gz/rendering/RenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
     class RenderPassSystemPrivate;
@@ -42,7 +42,7 @@ namespace ignition
      * gz/rendering/RenderPassSystem.hh
      */
     /// \brief A factory interface for creating render passes
-    class IGNITION_RENDERING_VISIBLE RenderPassFactory
+    class GZ_RENDERING_VISIBLE RenderPassFactory
     {
       /// \brief Instantiate new render pass
       /// \return New render pass
@@ -53,7 +53,7 @@ namespace ignition
      * gz/rendering/RenderPassSystem.hh
      */
     /// \brief A class for creating and managing render passes
-    class IGNITION_RENDERING_VISIBLE RenderPassSystem
+    class GZ_RENDERING_VISIBLE RenderPassSystem
     {
       /// \brief Constructor
       public: RenderPassSystem();
@@ -93,11 +93,11 @@ namespace ignition
     ///
     /// Use this macro to register render pass with the render pass factory.
     #define IGN_RENDERING_REGISTER_RENDER_PASS(classname, interface) \
-    class classname##Factory : public ignition::rendering::RenderPassFactory \
+    class classname##Factory : public gz::rendering::RenderPassFactory \
     { \
       public: classname##Factory() \
               { \
-                ignition::rendering::RenderPassSystem::Register( \
+                gz::rendering::RenderPassSystem::Register( \
                     typeid(interface).name(), this); \
               } \
       public: RenderPass *New() const override \

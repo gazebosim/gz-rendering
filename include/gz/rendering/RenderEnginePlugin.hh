@@ -26,18 +26,18 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declarations
     class RenderEngine;
     class RenderEnginePluginPrivate;
 
     /// \brief Base plugin class for render engines
-    class IGNITION_RENDERING_VISIBLE RenderEnginePlugin
+    class GZ_RENDERING_VISIBLE RenderEnginePlugin
     {
       /// \brief Constructor
       public: RenderEnginePlugin();

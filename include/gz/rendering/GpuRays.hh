@@ -26,15 +26,15 @@
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/Camera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class GpuRays GpuRays.hh gz/rendering/GpuRays.hh
     /// \brief Generate depth ray data.
-    class IGNITION_RENDERING_VISIBLE GpuRays :
+    class GZ_RENDERING_VISIBLE GpuRays :
       public virtual Camera
     {
       /// \brief Callback function for new frame render event listeners
@@ -106,14 +106,14 @@ namespace ignition
 
       /// \brief Get minimal horizontal angle value
       // \return minimal horizontal angle value
-      public: virtual ignition::math::Angle AngleMin() const = 0;
+      public: virtual gz::math::Angle AngleMin() const = 0;
 
       /// \brief Set minimal horizontal angle value
       public: virtual void SetAngleMin(double _angle) = 0;
 
       /// \brief Get maximal horizontal angle value
       // \return maximal horizontal angle value
-      public: virtual ignition::math::Angle AngleMax() const = 0;
+      public: virtual gz::math::Angle AngleMax() const = 0;
 
       /// \brief Set maximal horizontal angle value
       public: virtual void SetAngleMax(double _angle) = 0;
@@ -142,14 +142,14 @@ namespace ignition
 
       /// \brief Get minimal vertical angle value
       // \return minimal vertical angle value
-      public: virtual ignition::math::Angle VerticalAngleMin() const = 0;
+      public: virtual gz::math::Angle VerticalAngleMin() const = 0;
 
       /// \brief Set minimal vertical angle value
       public: virtual void SetVerticalAngleMin(const double _angle) = 0;
 
       /// \brief Get maximal vertical angle value
       // \return maximal vertical angle value
-      public: virtual ignition::math::Angle VerticalAngleMax() const = 0;
+      public: virtual gz::math::Angle VerticalAngleMax() const = 0;
 
       /// \brief Set maximal vertical angle value
       // \return minimal vertical angle value

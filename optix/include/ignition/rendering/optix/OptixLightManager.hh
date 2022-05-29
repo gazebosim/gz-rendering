@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixLightManager.hh>
+#include <ignition/rendering/config.hh>

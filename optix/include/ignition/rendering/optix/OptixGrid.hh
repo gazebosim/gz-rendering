@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixGrid.hh>
+#include <ignition/rendering/config.hh>

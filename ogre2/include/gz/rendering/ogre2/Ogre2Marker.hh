@@ -22,17 +22,17 @@
 #include "gz/rendering/base/BaseMarker.hh"
 #include "gz/rendering/ogre2/Ogre2Geometry.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
     class Ogre2MarkerPrivate;
 
     /// \brief Ogre 2.x implementation of a marker geometry.
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Marker
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Marker
       : public BaseMarker<Ogre2Geometry>
     {
       /// \brief Constructor
@@ -62,11 +62,11 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void SetPoint(unsigned int _index,
-                           const ignition::math::Vector3d &_value) override;
+                           const gz::math::Vector3d &_value) override;
 
       // Documentation inherited
-      public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
-                           const ignition::math::Color &_color) override;
+      public: virtual void AddPoint(const gz::math::Vector3d &_pt,
+                           const gz::math::Color &_color) override;
 
       // Documentation inherited
       public: virtual void ClearPoints() override;

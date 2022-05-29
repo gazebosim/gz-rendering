@@ -28,17 +28,17 @@
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/OgreRenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declarations
     class OgreSelectionBuffer;
 
     /// \brief Helper class to assign unique colors to renderables
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreMaterialSwitcher :
+    class GZ_RENDERING_OGRE_VISIBLE OgreMaterialSwitcher :
 // Ogre::MaterialManager::Listener isn't a dll-interface class, this may cause
 // issues
 #ifdef _MSC_VER
@@ -60,7 +60,7 @@ namespace ignition
       /// \brief Get the entity with a specific color
       /// \param[in] _color The entity's color.
       public: std::string EntityName(
-              const ignition::math::Color &_color) const;
+              const gz::math::Color &_color) const;
 
       /// \brief Reset the color value incrementor
       public: void Reset();
@@ -93,7 +93,7 @@ namespace ignition
                   const Ogre::RenderTargetEvent &_evt);
 
       /// \brief Current unique color value
-      private: ignition::math::Color currentColor;
+      private: gz::math::Color currentColor;
 
       /// \brief last entity assigned an unique color value
       private: std::string lastEntity;

@@ -33,7 +33,7 @@
 #include "example_config.hh"
 #include "GlutWindow.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 const std::string RESOURCE_PATH =
@@ -50,8 +50,8 @@ const int hRayCount = 640;
 const int vRayCount = 1;
 std::vector<double> pts;
 
-ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0.5),
-    ignition::math::Quaterniond::Identity);
+gz::math::Pose3d testPose(gz::math::Vector3d(0, 0, 0.5),
+    gz::math::Quaterniond::Identity);
 
 //////////////////////////////////////////////////
 void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
@@ -117,8 +117,8 @@ void buildScene(ScenePtr _scene)
     root->AddChild(grid);
   }
 
-  ignition::math::Pose3d box01Pose(ignition::math::Vector3d(6, 0, 0.5),
-                                   ignition::math::Quaterniond::Identity);
+  gz::math::Pose3d box01Pose(gz::math::Vector3d(6, 0, 0.5),
+                                   gz::math::Quaterniond::Identity);
   VisualPtr visualBox1 = _scene->CreateVisual("UnitBox1");
   visualBox1->AddGeometry(_scene->CreateBox());
   visualBox1->SetWorldPosition(box01Pose.Pos());
@@ -126,8 +126,8 @@ void buildScene(ScenePtr _scene)
   visualBox1->SetMaterial(red);
   root->AddChild(visualBox1);
 
-  ignition::math::Pose3d box02Pose(ignition::math::Vector3d(6, 6, 0.5),
-                                   ignition::math::Quaterniond::Identity);
+  gz::math::Pose3d box02Pose(gz::math::Vector3d(6, 6, 0.5),
+                                   gz::math::Quaterniond::Identity);
   VisualPtr visualBox2 = _scene->CreateVisual("UnitBox2");
   visualBox2->AddGeometry(_scene->CreateBox());
   visualBox2->SetWorldPosition(box02Pose.Pos());
@@ -135,8 +135,8 @@ void buildScene(ScenePtr _scene)
   visualBox2->SetMaterial(green);
   root->AddChild(visualBox2);
 
-  ignition::math::Pose3d sphere01Pose(ignition::math::Vector3d(1, -3, 0.5),
-                                   ignition::math::Quaterniond::Identity);
+  gz::math::Pose3d sphere01Pose(gz::math::Vector3d(1, -3, 0.5),
+                                   gz::math::Quaterniond::Identity);
   VisualPtr visualSphere1 = _scene->CreateVisual("UnitSphere1");
   visualSphere1->AddGeometry(_scene->CreateSphere());
   visualSphere1->SetWorldPosition(sphere01Pose.Pos());
@@ -247,7 +247,7 @@ CameraPtr createCamera(const std::string &_engineName,
   RenderEngine *engine = rendering::engine(_engineName, _params);
   if (!engine)
   {
-    ignwarn << "Engine '" << _engineName
+    gzwarn << "Engine '" << _engineName
               << "' is not supported" << std::endl;
     return CameraPtr();
   }

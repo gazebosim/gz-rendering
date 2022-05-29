@@ -18,15 +18,15 @@
 #include <map>
 #include <mutex>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/SystemPaths.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/SystemPaths.hh>
 
-#include <ignition/plugin/Loader.hh>
+#include <gz/plugin/Loader.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderEngineManager.hh"
-#include "ignition/rendering/RenderEnginePlugin.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderEngineManager.hh"
+#include "gz/rendering/RenderEnginePlugin.hh"
 
 /// \brief Holds information about an engine
 struct EngineInfo
@@ -36,11 +36,11 @@ struct EngineInfo
   std::string name;
 
   /// \brief The pointer to the render engine.
-  ignition::rendering::RenderEngine *engine;
+  gz::rendering::RenderEngine *engine;
 };
 
 /// \brief Private implementation of the RenderEngineManager class.
-class ignition::rendering::RenderEngineManagerPrivate
+class gz::rendering::RenderEngineManagerPrivate
 {
   /// \brief EngineMap that maps engine name to an engine pointer.
   typedef std::map<std::string, RenderEngine *> EngineMap;
@@ -93,10 +93,14 @@ class ignition::rendering::RenderEngineManagerPrivate
   public: std::map<std::string, std::string> enginePlugins;
 
   /// \brief Plugin loader for managing render engine plugin libraries.
-  public: ignition::plugin::Loader pluginLoader;
+  public: gz::plugin::Loader pluginLoader;
+
+  /// \brief Deprecated environment variable which holds paths to look for
+  /// plugins
+  public: std::string pluginPathEnvDeprecated = "IGN_RENDERING_PLUGIN_PATH";
 
   /// \brief Environment variable which holds paths to look for plugins
-  public: std::string pluginPathEnv = "IGN_RENDERING_PLUGIN_PATH";
+  public: std::string pluginPathEnv = "GZ_RENDERING_PLUGIN_PATH";
 
   /// \brief List which holds paths to look for engine plugins.
   public: std::list<std::string> pluginPaths;
@@ -105,7 +109,7 @@ class ignition::rendering::RenderEngineManagerPrivate
   public: std::recursive_mutex enginesMutex;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -224,7 +228,7 @@ RenderEngine *RenderEngineManager::EngineAt(unsigned int _index,
 {
   if (_index >= this->EngineCount())
   {
-    ignerr << "Invalid render-engine index: " << _index << std::endl;
+    gzerr << "Invalid render-engine index: " << _index << std::endl;
     return nullptr;
   }
 
@@ -251,7 +255,7 @@ bool RenderEngineManager::UnloadEngine(const std::string &_name)
 
     if (iter == this->dataPtr->engines.end())
     {
-      ignerr << "No render-engine registered with name: " << _name << std::endl;
+      gzerr << "No render-engine registered with name: " << _name << std::endl;
       return false;
     }
   }
@@ -264,7 +268,7 @@ bool RenderEngineManager::UnloadEngineAt(unsigned int _index)
 {
   if (_index >= this->EngineCount())
   {
-    ignerr << "Invalid render-engine index: " << _index << std::endl;
+    gzerr << "Invalid render-engine index: " << _index << std::endl;
     return false;
   }
 
@@ -280,13 +284,13 @@ void RenderEngineManager::RegisterEngine(const std::string &_name,
 {
   if (!_engine)
   {
-    ignerr << "Render-engine cannot be null" << std::endl;
+    gzerr << "Render-engine cannot be null" << std::endl;
     return;
   }
 
   if (this->HasEngine(_name))
   {
-    ignerr << "Render-engine already registered with name: "
+    gzerr << "Render-engine already registered with name: "
           << _name << std::endl;
 
     return;
@@ -333,7 +337,7 @@ void RenderEngineManager::UnregisterEngineAt(unsigned int _index)
 {
   if (_index >= this->EngineCount())
   {
-    ignerr << "Invalid render-engine index: " << _index << std::endl;
+    gzerr << "Invalid render-engine index: " << _index << std::endl;
     return;
   }
 
@@ -439,14 +443,14 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
 bool RenderEngineManagerPrivate::LoadEnginePlugin(
     const std::string &_filename, const std::string &_path)
 {
-  ignmsg << "Loading plugin [" << _filename << "]" << std::endl;
+  gzmsg << "Loading plugin [" << _filename << "]" << std::endl;
 
-  ignition::common::SystemPaths systemPaths;
+  gz::common::SystemPaths systemPaths;
   systemPaths.SetPluginPathEnv(this->pluginPathEnv);
 
   // Add default install folder.
-  systemPaths.AddPluginPaths(std::string(IGN_RENDERING_PLUGIN_PATH));
-  systemPaths.AddPluginPaths({IGNITION_RENDERING_ENGINE_INSTALL_DIR});
+  systemPaths.AddPluginPaths(std::string(GZ_RENDERING_PLUGIN_PATH));
+  systemPaths.AddPluginPaths({GZ_RENDERING_ENGINE_INSTALL_DIR});
 
   // Add any preset plugin paths.
   for (const auto &path : this->pluginPaths)
@@ -458,23 +462,37 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   auto pathToLib = systemPaths.FindSharedLibrary(_filename);
   if (pathToLib.empty())
   {
-    ignerr << "Failed to load plugin [" << _filename <<
-              "] : couldn't find shared library." << std::endl;
-    return false;
+    // Try deprecated environment variable
+    common::SystemPaths systemPathsDep;
+    systemPathsDep.SetPluginPathEnv(this->pluginPathEnvDeprecated);
+    pathToLib = systemPathsDep.FindSharedLibrary(_filename);
+    if (pathToLib.empty())
+    {
+      gzerr << "Failed to load plugin [" << _filename <<
+               "] : couldn't find shared library." << std::endl;
+      return false;
+    }
+    else
+    {
+      gzwarn << "Found plugin [" << _filename
+             << "] using deprecated environment variable ["
+             << this->pluginPathEnvDeprecated << "]. Please use ["
+             << this->pluginPathEnv << "] instead." << std::endl;
+    }
   }
 
   // Load plugin
   auto pluginNames = this->pluginLoader.LoadLib(pathToLib);
   if (pluginNames.empty())
   {
-    ignerr << "Failed to load plugin [" << _filename <<
+    gzerr << "Failed to load plugin [" << _filename <<
               "] : couldn't load library on path [" << pathToLib <<
               "]." << std::endl;
     return false;
   }
 
   auto engineNames = pluginLoader.PluginsImplementing<
-      ignition::rendering::RenderEnginePlugin>();
+      gz::rendering::RenderEnginePlugin>();
 
   if (engineNames.empty())
   {
@@ -486,7 +504,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
     {
       error << "- " << pluginName << std::endl;
     }
-    ignerr << error.str();
+    gzerr << error.str();
     return false;
   }
 
@@ -502,23 +520,23 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
       warn << "- " << pluginName << std::endl;
     }
     warn << "Loading [" << engineName << "]." << std::endl;
-    ignwarn << warn.str();
+    gzwarn << warn.str();
   }
 
   auto plugin = pluginLoader.Instantiate(engineName);
   if (!plugin)
   {
-    ignerr << "Failed to instantiate plugin [" << engineName << "]"
+    gzerr << "Failed to instantiate plugin [" << engineName << "]"
            << std::endl;
     return false;
   }
 
   auto renderPlugin =
-      plugin->QueryInterface<ignition::rendering::RenderEnginePlugin>();
+      plugin->QueryInterface<gz::rendering::RenderEnginePlugin>();
 
   if (!renderPlugin)
   {
-    ignerr << "Failed to query interface from [" << engineName << "]"
+    gzerr << "Failed to query interface from [" << engineName << "]"
            << std::endl;
     return false;
   }
@@ -542,7 +560,7 @@ bool RenderEngineManagerPrivate::UnloadEnginePlugin(
   auto it = this->enginePlugins.find(_engineName);
   if (it == this->enginePlugins.end())
   {
-    ignmsg << "Skip unloading engine plugin. [" << _engineName << "] "
+    gzmsg << "Skip unloading engine plugin. [" << _engineName << "] "
            << "not loaded from plugin." << std::endl;
     return false;
   }
@@ -555,7 +573,7 @@ bool RenderEngineManagerPrivate::UnloadEnginePlugin(
   // see issue #45
   if (!this->pluginLoader.ForgetLibraryOfPlugin(pluginName))
   {
-    ignerr << "Failed to unload plugin: " << pluginName << std::endl;
+    gzerr << "Failed to unload plugin: " << pluginName << std::endl;
   }
 #endif
 

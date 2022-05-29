@@ -21,17 +21,17 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \enum ShaderType ShaderType.hh gz/rendering/ShaderType.hh
     /// \brief Available types of shaders. Note that not all rendering-engines
     /// will be able to use each type. They will instead default to the closest
     /// alternative.
-    enum IGNITION_RENDERING_VISIBLE ShaderType
+    enum GZ_RENDERING_VISIBLE ShaderType
     {
       /// \brief Unknown or errant type
       ST_UNKNOWN  = 0,
@@ -54,7 +54,7 @@ namespace ignition
 
     /// \class ShaderUtil ShaderType.hh gz/rendering/ShaderType.hh
     /// \brief Provides supporting functions for ShaderType enum
-    class IGNITION_RENDERING_VISIBLE ShaderUtil
+    class GZ_RENDERING_VISIBLE ShaderUtil
     {
       /// \brief Determine if given type is valid ShaderType enum
       /// \param[in] _type Enum value to be evaluated

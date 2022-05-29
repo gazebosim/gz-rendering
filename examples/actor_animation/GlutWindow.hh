@@ -21,8 +21,8 @@
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/common/graphics/Types.hh"
 
-namespace ir = ignition::rendering;
-namespace ic = ignition::common;
+namespace ir = gz::rendering;
+namespace ic = gz::common;
 
 /// \brief Run the demo and render the scene from the cameras
 /// \param[in] _cameras Cameras in the scene

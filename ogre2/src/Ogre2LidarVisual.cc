@@ -25,15 +25,15 @@
 #endif
 #endif
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
-#include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Marker.hh"
-#include "ignition/rendering/ogre2/Ogre2Geometry.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2DynamicRenderable.hh"
+#include "gz/rendering/ogre2/Ogre2LidarVisual.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Marker.hh"
+#include "gz/rendering/ogre2/Ogre2Geometry.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -47,7 +47,7 @@
   #pragma warning(pop)
 #endif
 
-class ignition::rendering::Ogre2LidarVisualPrivate
+class gz::rendering::Ogre2LidarVisualPrivate
 {
   /// \brief Non Hitting DynamicLines Object to display
   public: std::vector<std::shared_ptr<Ogre2DynamicRenderable>> noHitRayStrips;
@@ -85,7 +85,7 @@ class ignition::rendering::Ogre2LidarVisualPrivate
   public: Ogre::MaterialPtr pointsMat;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -212,7 +212,7 @@ void Ogre2LidarVisual::Update()
 
   if (!this->dataPtr->receivedData || this->dataPtr->lidarPoints.size() == 0)
   {
-    ignwarn << "New lidar data not received. Exiting update function"
+    gzwarn << "New lidar data not received. Exiting update function"
             << std::endl;
     return;
   }
@@ -259,7 +259,7 @@ void Ogre2LidarVisual::Update()
   if (this->dataPtr->lidarPoints.size() !=
                   this->verticalCount * this->horizontalCount)
   {
-    ignwarn << "Size of lidar data inconsistent with rays."
+    gzwarn << "Size of lidar data inconsistent with rays."
             << " Exiting update function."
             << std::endl;
     return;
@@ -313,7 +313,7 @@ void Ogre2LidarVisual::Update()
           this->ogreNode->attachObject(renderable->OgreObject());
           this->dataPtr->deadZoneRayFans.push_back(renderable);
           this->dataPtr->deadZoneRayFans[j]->AddPoint(
-                      ignition::math::Vector3d::Zero);
+                      gz::math::Vector3d::Zero);
 
           renderable = std::shared_ptr<Ogre2DynamicRenderable>(
                                   new Ogre2DynamicRenderable(this->Scene()));
@@ -365,28 +365,28 @@ void Ogre2LidarVisual::Update()
       double r = this->dataPtr->lidarPoints[ j * this->horizontalCount + i];
 
       bool inf = (std::isinf(r) || r >= this->maxRange);
-      ignition::math::Quaterniond ray(
-        ignition::math::Vector3d(0.0, -verticalAngle, horizontalAngle));
+      gz::math::Quaterniond ray(
+        gz::math::Vector3d(0.0, -verticalAngle, horizontalAngle));
 
-      ignition::math::Vector3d axis = this->offset.Rot() * ray *
-        ignition::math::Vector3d(1.0, 0.0, 0.0);
+      gz::math::Vector3d axis = this->offset.Rot() * ray *
+        gz::math::Vector3d(1.0, 0.0, 0.0);
 
       // Check for infinite range, which indicates the ray did not
       // intersect an object.
       double hitRange = inf ? 0 : r;
 
       // Compute the start point of the ray
-      ignition::math::Vector3d startPt =
+      gz::math::Vector3d startPt =
                   (axis * this->minRange) + this->offset.Pos();
 
       // Compute the end point of the ray
-      ignition::math::Vector3d pt =
+      gz::math::Vector3d pt =
                   (axis * hitRange) + this->offset.Pos();
 
       double noHitRange = inf ? this->maxRange : hitRange;
 
       // Compute the end point of the no-hit ray
-      ignition::math::Vector3d noHitPt =
+      gz::math::Vector3d noHitPt =
                   (axis * noHitRange) + this->offset.Pos();
 
       // Update the lines and strips that represent each simulated ray.

@@ -25,16 +25,16 @@
 #include "gz/rendering/CameraLens.hh"
 #include "gz/rendering/Scene.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class WideAngleCamera WideAngleCamera.hh
     ///     gz/rendering/WideAngleCamera.hh
     /// \brief Wide angle camera class
-    class IGNITION_RENDERING_VISIBLE WideAngleCamera :
+    class GZ_RENDERING_VISIBLE WideAngleCamera :
       public virtual Camera
     {
       /// \brief Destructor

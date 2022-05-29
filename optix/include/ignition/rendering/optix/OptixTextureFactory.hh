@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixTextureFactory.hh>
+#include <ignition/rendering/config.hh>

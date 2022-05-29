@@ -37,11 +37,11 @@
   #pragma warning(disable:4275)
 #endif
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Causes all objects in a scene to be rendered with the same
     /// material when rendered by a given RenderTarget.
@@ -55,7 +55,7 @@ namespace ignition
     /// Every time ogre tries to get a technique for a material it will call
     /// handleSchemeNotFound which returns the first supported technique on the
     /// material provided to this class's constructor.
-    class IGNITION_RENDERING_OGRE2_VISIBLE  Ogre2RenderTargetMaterial :
+    class GZ_RENDERING_OGRE2_VISIBLE  Ogre2RenderTargetMaterial :
       public Ogre::Camera::Listener,
       public Ogre::MaterialManager::Listener
     {

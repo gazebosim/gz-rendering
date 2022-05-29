@@ -22,17 +22,17 @@
 #include "gz/rendering/base/BaseParticleEmitter.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
     class Ogre2ParticleEmitterPrivate;
 
     /// \brief Class to manage a particle emitter.
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2ParticleEmitter :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2ParticleEmitter :
       public BaseParticleEmitter<Ogre2Visual>
     {
       /// \brief Constructor
@@ -49,7 +49,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetEmitterSize(
-                  const ignition::math::Vector3d &_size) override;
+                  const gz::math::Vector3d &_size) override;
 
       // Documentation inherited.
       public: virtual void SetRate(double _rate) override;
@@ -62,7 +62,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetParticleSize(
-                  const ignition::math::Vector3d &_size) override;
+                  const gz::math::Vector3d &_size) override;
 
       // Documentation inherited.
       public: virtual void SetLifetime(double _lifetime) override;
@@ -76,8 +76,8 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetColorRange(
-                  const ignition::math::Color &_colorStart,
-                  const ignition::math::Color &_colorEnd) override;
+                  const gz::math::Color &_colorStart,
+                  const gz::math::Color &_colorEnd) override;
 
       // Documentation inherited.
       public: virtual void SetScaleRate(double _scaleRate) override;

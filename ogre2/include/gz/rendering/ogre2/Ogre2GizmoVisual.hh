@@ -20,13 +20,13 @@
 #include "gz/rendering/base/BaseGizmoVisual.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2GizmoVisual :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2GizmoVisual :
       public BaseGizmoVisual<Ogre2Visual>
     {
       /// \brief Constructor

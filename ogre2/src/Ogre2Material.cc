@@ -36,21 +36,21 @@
 #pragma warning(pop)
 #endif
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Image.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Image.hh>
 
-#include "ignition/rendering/GraphicsAPI.hh"
-#include "ignition/rendering/ShaderParams.hh"
-#include "ignition/rendering/ShaderType.hh"
-#include "ignition/rendering/ogre2/Ogre2Material.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/GraphicsAPI.hh"
+#include "gz/rendering/ShaderParams.hh"
+#include "gz/rendering/ShaderType.hh"
+#include "gz/rendering/ogre2/Ogre2Material.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
 
 
 /// \brief Private data for the Ogre2Material class
-class ignition::rendering::Ogre2MaterialPrivate
+class gz::rendering::Ogre2MaterialPrivate
 {
   /// \brief Ogre stores the name using hashes. This variable will
   /// store the material hash name
@@ -103,7 +103,7 @@ class ignition::rendering::Ogre2MaterialPrivate
   }
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -345,7 +345,7 @@ void Ogre2Material::SetRenderOrder(const float _renderOrder)
   if (renderSystem->isReverseDepth())
   {
     // Reverse depth needs 100x scale AND ends up being superior
-    // See https://github.com/ignitionrobotics/ign-rendering/
+    // See https://github.com/gazebosim/gz-rendering/
     // issues/427#issuecomment-991800352
     // and see https://www.youtube.com/watch?v=s2XdH3fYUac
     macroblock.mDepthBiasConstant = _renderOrder * 100.0f;
@@ -698,7 +698,7 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
             (ShaderParam::PARAM_TEXTURE == name_param.second.Type() ||
              ShaderParam::PARAM_TEXTURE_CUBE == name_param.second.Type())))
     {
-      ignwarn << "Unable to find GPU program parameter: "
+      gzwarn << "Unable to find GPU program parameter: "
               << name_param.first << std::endl;
       continue;
     }
@@ -766,7 +766,7 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       }
       else
       {
-        ignerr << "Shader param texture not found: " << value << std::endl;
+        gzerr << "Shader param texture not found: " << value << std::endl;
         continue;
       }
 
@@ -804,7 +804,7 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
         texUnit->setCubicTextureName(baseName, true);
         // must apply this check for Metal rendering to work
         // (i.e. not segfault). See the discussion in:
-        // https://github.com/ignitionrobotics/ign-rendering/pull/541
+        // https://github.com/gazebosim/gz-rendering/pull/541
         if (texUnit->isLoaded())
         {
           texUnit->_load();
@@ -812,7 +812,7 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       }
       else
       {
-        ignerr << "Unrecognized texture type set for shader param: "
+        gzerr << "Unrecognized texture type set for shader param: "
                << name_param.first << std::endl;
         continue;
       }
@@ -882,7 +882,7 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
   Ogre::PbsTextureTypes _type)
 {
   // FIXME(anyone) need to keep baseName = _texture for all meshes. Refer to
-  // https://github.com/ignitionrobotics/ign-rendering/issues/139
+  // https://github.com/gazebosim/gz-rendering/issues/139
   // for more details
   std::string baseName = _texture;
   if (common::isFile(_texture))
@@ -938,7 +938,7 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
       auto tex = textureMgr->findTextureNoThrow(rgbTexName);
       if (!tex)
       {
-        ignmsg << "Grayscale emissive texture detected. Converting to RGB: "
+        gzmsg << "Grayscale emissive texture detected. Converting to RGB: "
                << rgbTexName << std::endl;
         // need to be 4 channels for gpu texture
         unsigned int channels = 4u;
@@ -1056,7 +1056,7 @@ void Ogre2Material::Init()
 
   if (!this->ogreHlmsPbs)
   {
-    ignerr << "Ogre HLMS PBS not ready. Is Ogre2 Render Engine initiallized?"
+    gzerr << "Ogre HLMS PBS not ready. Is Ogre2 Render Engine initiallized?"
            << std::endl;
     return;
   }
@@ -1122,7 +1122,7 @@ Ogre::HlmsUnlitDatablock *Ogre2Material::UnlitDatablock()
         hlmsManager->getHlms(Ogre::HLMS_UNLIT));
     if (!ogreHlmsUnlit)
     {
-      ignerr << "Ogre HLMS UNLIT not ready. Is Ogre2 Render Engine "
+      gzerr << "Ogre HLMS UNLIT not ready. Is Ogre2 Render Engine "
              << "initiallized?" << std::endl;
       return nullptr;
     }
@@ -1177,7 +1177,7 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
 
   if (!common::exists(_path))
   {
-    ignerr << "Vertex shader path does not exist: " << _path << std::endl;
+    gzerr << "Vertex shader path does not exist: " << _path << std::endl;
     return;
   }
 
@@ -1231,14 +1231,14 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
 
   if(this->dataPtr->ogreSolidColorMat->getNumSupportedTechniques() == 0u)
   {
-    ignwarn
+    gzwarn
       << "Material '" << this->Name()
       << "' could not be paired with special pixel shader '"
       << this->dataPtr->ogreSolidColorShader->getSourceFile()
       << "' See Ogre.log for details. This shader is used for special "
          "rendering in sensors (e.g. Lidar, Thermal). Your vertex shader "
          "must have a compatible signature if you want it to work.\n"
-         "See https://github.com/ignitionrobotics/ign-rendering/issues/544\n"
+         "See https://github.com/gazebosim/gz-rendering/issues/544\n"
          "If this issue isn't fixed, sensor rendering MIGHT not be correct"
          "if your vertex shader performs custom geometry deformation";
   }
@@ -1267,7 +1267,7 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
 
   if (!common::exists(_path))
   {
-    ignerr << "Fragment shader path does not exist: " << _path << std::endl;
+    gzerr << "Fragment shader path does not exist: " << _path << std::endl;
     return;
   }
 

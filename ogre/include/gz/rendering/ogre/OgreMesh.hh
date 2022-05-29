@@ -33,16 +33,16 @@ namespace Ogre
   class SubEntity;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declarations
     class OgreMeshPrivate;
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreMesh :
+    class GZ_RENDERING_OGRE_VISIBLE OgreMesh :
       public BaseMesh<OgreGeometry>
     {
       typedef std::vector<std::string> NameList;
@@ -101,7 +101,7 @@ namespace ignition
       private: std::unique_ptr<OgreMeshPrivate> dataPtr;
     };
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreSubMesh :
+    class GZ_RENDERING_OGRE_VISIBLE OgreSubMesh :
       public BaseSubMesh<OgreObject>
     {
       protected: OgreSubMesh();

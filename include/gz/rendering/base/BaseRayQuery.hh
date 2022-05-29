@@ -23,11 +23,11 @@
 #include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/Scene.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class BaseRayQuery BaseRayQuery.hh
     /// gz/rendering/base/BaseRayQuery.hh
@@ -91,7 +91,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::Vector3d BaseRayQuery<T>::Origin() const
+    gz::math::Vector3d BaseRayQuery<T>::Origin() const
     {
       return this->origin;
     }
@@ -105,7 +105,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::Vector3d BaseRayQuery<T>::Direction() const
+    gz::math::Vector3d BaseRayQuery<T>::Direction() const
     {
       return this->direction;
     }
@@ -113,7 +113,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     void BaseRayQuery<T>::SetFromCamera(const CameraPtr &_camera,
-        const ignition::math::Vector2d &_coord)
+        const gz::math::Vector2d &_coord)
     {
       math::Matrix4d projectionMatrix = _camera->ProjectionMatrix();
       math::Matrix4d viewMatrix = _camera->ViewMatrix();

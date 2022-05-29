@@ -21,13 +21,13 @@
 #include "gz/rendering/optix/OptixIncludes.hh"
 #include "gz/rendering/optix/OptixObject.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixGeometry :
+    class GZ_RENDERING_OPTIX_VISIBLE OptixGeometry :
       public BaseGeometry<OptixObject>
     {
       protected: OptixGeometry();

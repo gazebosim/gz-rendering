@@ -73,7 +73,7 @@ class IgnitionRenderer
   private: double cameraOffset = 0.0;
 
   /// \brief The camera for the example scene
-  private: ignition::rendering::CameraPtr camera;
+  private: gz::rendering::CameraPtr camera;
 };
 
-#endif // GZ_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_GZ_RENDERER_HH_
+#endif  // GZ_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_GZ_RENDERER_HH_

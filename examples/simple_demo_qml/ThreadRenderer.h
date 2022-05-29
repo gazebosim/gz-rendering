@@ -170,4 +170,4 @@ private:
     RenderThread *renderThread = nullptr;
 };
 
-#endif // GZ_RENDERING_EXAMPLES_SIMPLE_DEMO_THREAD_RENDERER_HH_
+#endif  // GZ_RENDERING_EXAMPLES_SIMPLE_DEMO_THREAD_RENDERER_HH_

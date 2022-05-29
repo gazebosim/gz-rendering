@@ -26,11 +26,11 @@
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \addtogroup ign_rendering
     /// \{
@@ -38,7 +38,7 @@ namespace ignition
     /// \brief Conversions Conversions.hh rendering/Conversions.hh
     /// \brief A set of utility function to convert between Gazebo and Ogre
     /// data types
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreConversions
+    class GZ_RENDERING_OGRE_VISIBLE OgreConversions
     {
       /// \brief Return the equivalent ogre color
       /// \param[in] _color ign-math color to convert

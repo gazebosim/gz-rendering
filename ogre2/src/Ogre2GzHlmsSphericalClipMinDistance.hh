@@ -15,11 +15,11 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2GZHLMSCUSTOMIZATIONS_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2GZHLMSCUSTOMIZATIONS_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2GZHLMSCUSTOMIZATIONS_HH_
+#define GZ_RENDERING_OGRE2_OGRE2GZHLMSCUSTOMIZATIONS_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre2/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre2/Export.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -29,11 +29,11 @@
   #pragma warning(pop)
 #endif
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Controls custom shader snippets of Hlms (both Pbs and Unlit):
     ///
@@ -46,7 +46,7 @@ namespace ignition
     /// \internal
     /// \remark Public variables take effect immediately (i.e. for the
     /// next render)
-    class IGNITION_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsSphericalClipMinDistance
+    class GZ_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsSphericalClipMinDistance
       final : public Ogre::HlmsListener
     {
       public: virtual ~Ogre2GzHlmsSphericalClipMinDistance() = default;
@@ -104,7 +104,7 @@ namespace ignition
       ///
       /// Set to a negative value to disable (0 does NOT disable it!)
       ///
-      /// See https://github.com/ignitionrobotics/ign-rendering/pull/356
+      /// See https://github.com/gazebosim/gz-rendering/pull/356
       public: float minDistanceClip = -1.0f;
 
       /// \brief When true, we're currently dealing with HlmsUnlit

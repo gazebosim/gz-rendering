@@ -105,7 +105,7 @@ endif()
 #--------------------------------------
 # Find OGRE2: first try to find OGRE2 built with PlanarReflections support and
 # fallback to look for OGRE2 without it. Both seems to works for ign-rendering.
-# See https://github.com/ignitionrobotics/ign-rendering/issues/597
+# See https://github.com/gazebosim/gz-rendering/issues/597
 ign_find_package(IgnOGRE2 VERSION 2.2.0
     COMPONENTS HlmsPbs HlmsUnlit Overlay PlanarReflections
     PRIVATE_FOR ogre2
@@ -124,7 +124,7 @@ if (OGRE2_FOUND)
 endif()
 
 # Plugin install dirs
-set(IGNITION_RENDERING_ENGINE_INSTALL_DIR
+set(GZ_RENDERING_ENGINE_INSTALL_DIR
   ${CMAKE_INSTALL_PREFIX}/${IGN_LIB_INSTALL_DIR}/ign-${IGN_DESIGNATION}-${PROJECT_VERSION_MAJOR}/engine-plugins
 )
 
@@ -149,12 +149,12 @@ endif()
 #####################################
 # Define compile-time default variables
 if(MSVC)
-  set(IGN_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR})
+  set(GZ_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR})
 else()
-  set(IGN_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+  set(GZ_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 endif()
 
-set(IGN_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/${IGN_DATA_INSTALL_DIR})
+set(GZ_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/${IGN_DATA_INSTALL_DIR})
 
 #============================================================================
 # Configure the build

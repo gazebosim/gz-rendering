@@ -40,7 +40,7 @@
 
 #include "GlutWindow.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 const std::string vertexShaderGLSLFile = "vertex_shader.glsl";
@@ -55,7 +55,7 @@ const std::string fragmentShaderMetalFile = "fragment_shader.metal";
 //! [init shaders variables]
 
 const std::string RESOURCE_PATH =
-    ignition::common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
+    gz::common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene,
@@ -97,15 +97,15 @@ void buildScene(ScenePtr _scene,
 
   // create shader materials
   // path to look for vertex and fragment shader parameters
-  std::string vertexShaderPath = ignition::common::joinPaths(
+  std::string vertexShaderPath = gz::common::joinPaths(
       RESOURCE_PATH, vertexShaderFile);
 
-  std::string fragmentShaderPath = ignition::common::joinPaths(
+  std::string fragmentShaderPath = gz::common::joinPaths(
       RESOURCE_PATH, fragmentShaderFile);
 
   //! [add shader to visual]
   // create shader material
-  ignition::rendering::MaterialPtr shader = _scene->CreateMaterial();
+  gz::rendering::MaterialPtr shader = _scene->CreateMaterial();
   shader->SetVertexShader(vertexShaderPath);
   shader->SetFragmentShader(fragmentShaderPath);
 

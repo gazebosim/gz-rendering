@@ -23,18 +23,18 @@
 
 #include "gz/rendering/ViewController.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declare private data pointer.
     class OrthoViewControllerPrivate;
 
     /// \class OrthoViewController OrthoViewController.hh
     /// \brief Orthographic view controller
-    class IGNITION_RENDERING_VISIBLE OrthoViewController
+    class GZ_RENDERING_VISIBLE OrthoViewController
         : public virtual ViewController
     {
       /// \brief Constructor

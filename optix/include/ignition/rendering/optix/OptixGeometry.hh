@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixGeometry.hh>
+#include <ignition/rendering/config.hh>

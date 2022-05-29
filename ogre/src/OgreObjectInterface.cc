@@ -15,9 +15,9 @@
  *
  */
 
-#include "ignition/rendering/ogre/OgreObjectInterface.hh"
+#include "gz/rendering/ogre/OgreObjectInterface.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

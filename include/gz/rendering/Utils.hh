@@ -31,13 +31,13 @@
 #include "gz/rendering/RayQuery.hh"
 
 
-namespace ignition
+namespace gz
 {
   /// \brief Rendering classes and function useful in robot applications.
   namespace rendering
   {
     // Inline bracket to help doxygen filtering.
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Retrieve the first point on a surface in the 3D scene hit by a
     /// ray cast from the given 2D screen coordinates.
@@ -46,7 +46,7 @@ namespace ignition
     /// \param[in] _rayQuery Ray query for mouse clicks
     /// \param[in] _maxDistance maximum distance to check the collision
     /// \return 3D coordinates of a point in the 3D scene.
-    IGNITION_RENDERING_VISIBLE
+    GZ_RENDERING_VISIBLE
     math::Vector3d screenToScene(
         const math::Vector2i &_screenPos,
         const CameraPtr &_camera,
@@ -61,7 +61,7 @@ namespace ignition
     /// \param[inout] _rayResult Ray query result
     /// \param[in] _maxDistance maximum distance to check the collision
     /// \return 3D coordinates of a point in the 3D scene.
-    IGNITION_RENDERING_VISIBLE
+    GZ_RENDERING_VISIBLE
     math::Vector3d screenToScene(
         const math::Vector2i &_screenPos,
         const CameraPtr &_camera,
@@ -76,7 +76,7 @@ namespace ignition
     /// \param[in] _rayQuery Ray query for mouse clicks
     /// \param[in] _offset Offset along the plane normal
     /// \return 3D coordinates of a point in the 3D scene.
-    IGNITION_RENDERING_VISIBLE
+    GZ_RENDERING_VISIBLE
     math::Vector3d screenToPlane(
       const math::Vector2i &_screenPos,
       const CameraPtr &_camera,
@@ -85,7 +85,7 @@ namespace ignition
 
     /// \brief Get the screen scaling factor.
     /// \return The screen scaling factor.
-    IGNITION_RENDERING_VISIBLE
+    GZ_RENDERING_VISIBLE
     float screenScalingFactor();
 
     /// \brief Transform a bounding box.
@@ -93,10 +93,10 @@ namespace ignition
     /// \param[in] _pose Pose used to transform the bounding box.
     /// \return Vertices of the transformed bounding box in
     /// world coordinates.
-    IGNITION_RENDERING_VISIBLE
-    ignition::math::AxisAlignedBox transformAxisAlignedBox(
-        const ignition::math::AxisAlignedBox &_box,
-        const ignition::math::Pose3d &_pose);
+    GZ_RENDERING_VISIBLE
+    gz::math::AxisAlignedBox transformAxisAlignedBox(
+        const gz::math::AxisAlignedBox &_box,
+        const gz::math::Pose3d &_pose);
     }
   }
 }

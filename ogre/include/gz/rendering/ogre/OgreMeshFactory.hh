@@ -29,13 +29,13 @@ namespace Ogre
   class Entity;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreMeshFactory
+    class GZ_RENDERING_OGRE_VISIBLE OgreMeshFactory
     {
       public: explicit OgreMeshFactory(OgreScenePtr _scene);
 
@@ -67,7 +67,7 @@ namespace ignition
       protected: std::vector<MaterialPtr> materialCache;
     };
 
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreSubMeshStoreFactory
+    class GZ_RENDERING_OGRE_VISIBLE OgreSubMeshStoreFactory
     {
       typedef std::vector<std::string> NameList;
 

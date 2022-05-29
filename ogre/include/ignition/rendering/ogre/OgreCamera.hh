@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreCamera.hh>
+#include <ignition/rendering/config.hh>

@@ -15,13 +15,13 @@
  */
 
 #include <FreeImage.h>
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/optix/OptixTextureFactory.hh"
-#include "ignition/rendering/optix/OptixScene.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/optix/OptixTextureFactory.hh"
+#include "gz/rendering/optix/OptixScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 // TODO: clone texture sampler, reuse texture buffers
@@ -55,7 +55,7 @@ optix::Buffer OptixTextureFactory::CreateBuffer(const std::string &_filename)
 {
   if (_filename.empty())
   {
-    ignerr << "Cannot load texture from empty filename" << std::endl;
+    gzerr << "Cannot load texture from empty filename" << std::endl;
     return this->CreateBuffer();
   }
 
@@ -64,7 +64,7 @@ optix::Buffer OptixTextureFactory::CreateBuffer(const std::string &_filename)
 
   if (!image)
   {
-    ignerr << "Unable to load texture: " << _filename << std::endl;
+    gzerr << "Unable to load texture: " << _filename << std::endl;
     return this->CreateBuffer();
   }
 

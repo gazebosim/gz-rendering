@@ -28,17 +28,17 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief forward declaration
     class ShaderParamPrivate;
 
     /// \brief a variant type that holds params that can be passed to a shader
-    class IGNITION_RENDERING_VISIBLE ShaderParam
+    class GZ_RENDERING_VISIBLE ShaderParam
     {
       public: enum ParamType : uint16_t
       {

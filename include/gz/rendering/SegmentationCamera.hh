@@ -26,7 +26,7 @@
 #include "gz/rendering/Camera.hh"
 
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -42,13 +42,13 @@ namespace ignition
       ST_PANOPTIC = 1
     };
 
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /// \class SegmentationCamera SegmentationCamera.hh
     /// gz/rendering/SegmentationCamera.hh
     /// \brief Poseable Segmentation camera used for rendering the scene graph.
     /// This camera is designed to produce segmentation data, instead of a 2D
     /// image.
-    class IGNITION_RENDERING_VISIBLE SegmentationCamera :
+    class GZ_RENDERING_VISIBLE SegmentationCamera :
       public virtual Camera
     {
       /// \brief Destructor
@@ -68,7 +68,7 @@ namespace ignition
       /// The callback function arguments are:
       /// <segmentation data, width, height, channels, format>
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr
+      public: virtual gz::common::ConnectionPtr
         ConnectNewSegmentationFrame(
           std::function<void(const uint8_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) = 0;

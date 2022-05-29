@@ -20,11 +20,11 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/ogre2/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE
     {
       /// \brief Rendering modes so that GzHlms implementations
       /// follow alternate code paths or extra customizations
@@ -52,6 +52,6 @@ namespace ignition
       };
     }  // namespace IGNITION_RENDERING_VERSION_NAMESPACE
   }    // namespace rendering
-}  // namespace ignition
+}  // namespace gz
 
 #endif

@@ -24,11 +24,11 @@
 #include "gz/rendering/Storage.hh"
 #include "gz/rendering/base/BaseStorage.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     template <class T>
     class BaseNode :
@@ -207,8 +207,8 @@ namespace ignition
       protected: bool initialLocalPoseSet = false;
 
       /// \brief Initial local pose for this node.
-      protected: ignition::math::Pose3d initialLocalPose =
-          ignition::math::Pose3d::Zero;
+      protected: gz::math::Pose3d initialLocalPose =
+          gz::math::Pose3d::Zero;
 
       /// \brief A map of custom key value data
       protected: std::map<std::string, Variant> userData;
@@ -247,7 +247,7 @@ namespace ignition
     {
       if (_child->Id() == this->Id())
       {
-        ignerr << "Cannot add self as a child node" << std::endl;
+        gzerr << "Cannot add self as a child node" << std::endl;
         return;
       }
 
@@ -341,7 +341,7 @@ namespace ignition
 
       if (!pose.IsFinite())
       {
-        ignerr << "Unable to set pose of a node: "
+        gzerr << "Unable to set pose of a node: "
                << "non-finite (nan, inf) values detected." << std::endl;
         return;
       }

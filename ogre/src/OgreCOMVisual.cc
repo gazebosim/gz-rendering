@@ -15,12 +15,12 @@
  *
  */
 
-#include "ignition/rendering/ogre/OgreCOMVisual.hh"
-#include "ignition/rendering/ogre/OgreDynamicLines.hh"
+#include "gz/rendering/ogre/OgreCOMVisual.hh"
+#include "gz/rendering/ogre/OgreDynamicLines.hh"
 
-#include "ignition/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
 
-class ignition::rendering::OgreCOMVisualPrivate
+class gz::rendering::OgreCOMVisualPrivate
 {
   /// \brief Grid materal
   public: OgreMaterialPtr material = nullptr;
@@ -32,7 +32,7 @@ class ignition::rendering::OgreCOMVisualPrivate
   public: VisualPtr sphereVis = nullptr;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -98,14 +98,14 @@ void OgreCOMVisual::CreateVisual()
   }
 
   double sphereRadius = this->SphereRadius();
-  this->dataPtr->sphereVis->SetLocalScale(ignition::math::Vector3d(
+  this->dataPtr->sphereVis->SetLocalScale(gz::math::Vector3d(
       sphereRadius*2, sphereRadius*2, sphereRadius*2));
   this->dataPtr->sphereVis->SetLocalPosition(this->InertiaPose().Pos());
   this->dataPtr->sphereVis->SetLocalRotation(this->InertiaPose().Rot());
 
   // Get the bounding box of the parent visual
   VisualPtr vis = this->Scene()->VisualByName(this->parentName);
-  ignition::math::AxisAlignedBox box;
+  gz::math::AxisAlignedBox box;
   if (vis)
     box = vis->LocalBoundingBox();
 
@@ -114,19 +114,19 @@ void OgreCOMVisual::CreateVisual()
   this->dataPtr->crossLines->Update();
 
   // CoM position indicator
-  ignition::math::Vector3d p1(0, 0,
+  gz::math::Vector3d p1(0, 0,
       box.Min().Z() - this->InertiaPose().Pos().Z());
-  ignition::math::Vector3d p2(0, 0,
+  gz::math::Vector3d p2(0, 0,
       box.Max().Z() - this->InertiaPose().Pos().Z());
 
-  ignition::math::Vector3d p3(0,
+  gz::math::Vector3d p3(0,
       box.Min().Y() - this->InertiaPose().Pos().Y(), 0);
-  ignition::math::Vector3d p4(0,
+  gz::math::Vector3d p4(0,
       box.Max().Y() - this->InertiaPose().Pos().Y(), 0);
 
-  ignition::math::Vector3d p5(
+  gz::math::Vector3d p5(
       box.Min().X() - this->InertiaPose().Pos().X(), 0, 0);
-  ignition::math::Vector3d p6(
+  gz::math::Vector3d p6(
       box.Max().X() - this->InertiaPose().Pos().X(), 0, 0);
 
   p1 += this->InertiaPose().Pos();
@@ -157,7 +157,7 @@ void OgreCOMVisual::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

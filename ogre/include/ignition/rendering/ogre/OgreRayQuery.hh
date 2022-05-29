@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreRayQuery.hh>
+#include <ignition/rendering/config.hh>

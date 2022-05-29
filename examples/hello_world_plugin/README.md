@@ -1,7 +1,7 @@
 # Engine plugin
 
 This example shows how to create a plugin that integrates a rendering engine with
-Ignition Rendering and how to load it with Ignition Gazebo.
+Gazebo Rendering and how to load it with Gazebo.
 
 ## Build
 
@@ -39,5 +39,5 @@ or the file extension, i.e., libHelloWorldPlugin.so -> HelloWorldPlugin):
 ign gazebo --render-engine HelloWorldPlugin
 ~~~
 
-You should see a blank screen within the Ignition GUI, as this mocked plugin provides no implementation
+You should see a blank screen within the Gazebo GUI, as this mocked plugin provides no implementation
 for the scene.

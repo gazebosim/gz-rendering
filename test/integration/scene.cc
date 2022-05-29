@@ -17,16 +17,16 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class SceneTest: public testing::Test,
@@ -35,7 +35,7 @@ class SceneTest: public testing::Test,
   // Documentation inherited
   public: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    gz::common::Console::SetVerbosity(4);
   }
 
   // Test adding and removing visuals
@@ -54,7 +54,7 @@ void SceneTest::AddRemoveVisuals(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -150,7 +150,7 @@ void SceneTest::VisualAt(const std::string &_renderEngine)
 {
   if (_renderEngine == "optix")
   {
-    igndbg << "RayQuery not supported yet in rendering engine: "
+    gzdbg << "RayQuery not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -159,7 +159,7 @@ void SceneTest::VisualAt(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -205,19 +205,19 @@ void SceneTest::VisualAt(const std::string &_renderEngine)
   camera->Update();
 
   // test get sphere object
-  ignition::math::Vector2i spherePosition(220, 307);
+  gz::math::Vector2i spherePosition(220, 307);
   VisualPtr sphere_visual = scene->VisualAt(camera, spherePosition);
   ASSERT_TRUE(sphere_visual != nullptr);
   EXPECT_EQ("sphere", sphere_visual->Name());
 
   // test get box object
-  ignition::math::Vector2i boxPosition(452, 338);
+  gz::math::Vector2i boxPosition(452, 338);
   VisualPtr box_visual = scene->VisualAt(camera, boxPosition);
   ASSERT_TRUE(box_visual != nullptr);
   EXPECT_EQ("box", box_visual->Name());
 
   // test get no object
-  ignition::math::Vector2i emptyPosition(300, 150);
+  gz::math::Vector2i emptyPosition(300, 150);
   VisualPtr empty_visual = scene->VisualAt(camera, emptyPosition);
   ASSERT_TRUE(empty_visual == nullptr);
 
@@ -241,7 +241,7 @@ TEST_P(SceneTest, VisualAt)
 // It doesn't suppot optix just yet
 INSTANTIATE_TEST_CASE_P(Scene, SceneTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

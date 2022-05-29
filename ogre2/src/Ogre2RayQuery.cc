@@ -15,20 +15,20 @@
  *
  */
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/SubMesh.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/common/SubMesh.hh>
 
-#include "ignition/rendering/ogre2/Ogre2Camera.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2ObjectInterface.hh"
-#include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2SegmentationCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
-#include "ignition/rendering/ogre2/Ogre2ThermalCamera.hh"
+#include "gz/rendering/ogre2/Ogre2Camera.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2DepthCamera.hh"
+#include "gz/rendering/ogre2/Ogre2ObjectInterface.hh"
+#include "gz/rendering/ogre2/Ogre2RayQuery.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2SegmentationCamera.hh"
+#include "gz/rendering/ogre2/Ogre2SelectionBuffer.hh"
+#include "gz/rendering/ogre2/Ogre2ThermalCamera.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -43,7 +43,7 @@
 #endif
 
 /// \brief Private data class for Ogre2RayQuery
-class ignition::rendering::Ogre2RayQueryPrivate
+class gz::rendering::Ogre2RayQueryPrivate
 {
   /// \brief Ogre ray scene query object for computing intersection.
   public: Ogre::RaySceneQuery *rayQuery = nullptr;
@@ -58,7 +58,7 @@ class ignition::rendering::Ogre2RayQueryPrivate
   public: std::thread::id threadId;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -90,7 +90,7 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
       std::dynamic_pointer_cast<Ogre2ObjectInterface>(_camera);
   if (!ogre2ObjectInterface)
   {
-    ignwarn << "Camera does not support ray query\n";
+    gzwarn << "Camera does not support ray query\n";
     return;
   }
 
@@ -245,11 +245,11 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
           if (indexCount <= k+2)
             continue;
 
-          ignition::math::Vector3d vertexA =
+          gz::math::Vector3d vertexA =
             submesh->Vertex(submesh->Index(k));
-          ignition::math::Vector3d vertexB =
+          gz::math::Vector3d vertexB =
             submesh->Vertex(submesh->Index(k+1));
-          ignition::math::Vector3d vertexC =
+          gz::math::Vector3d vertexC =
             submesh->Vertex(submesh->Index(k+2));
 
           Ogre::Vector3 worldVertexA =

@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixRenderTarget.hh>
+#include <ignition/rendering/config.hh>

@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreSensor.hh>
+#include <ignition/rendering/config.hh>

@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseRenderPass.hh>
+#include <ignition/rendering/config.hh>

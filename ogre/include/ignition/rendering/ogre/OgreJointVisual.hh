@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreJointVisual.hh>
+#include <ignition/rendering/config.hh>

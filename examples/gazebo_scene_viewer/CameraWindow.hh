@@ -20,7 +20,7 @@
 #include <vector>
 #include "gz/rendering/RenderTypes.hh"
 
-namespace gz = ignition::rendering;
+namespace gz = gz::rendering;
 
 void GlutRun(std::vector<gz::CameraPtr> _cameras);
 

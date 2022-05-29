@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreMaterialSwitcher.hh>
+#include <ignition/rendering/config.hh>

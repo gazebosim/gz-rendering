@@ -15,15 +15,15 @@
  *
  */
 
-#include <ignition/common/Console.hh>
-#include "ignition/rendering/ogre/OgreDynamicLines.hh"
-#include "ignition/rendering/ogre/OgreLidarVisual.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreMarker.hh"
-#include "ignition/rendering/ogre/OgreGeometry.hh"
+#include <gz/common/Console.hh>
+#include "gz/rendering/ogre/OgreDynamicLines.hh"
+#include "gz/rendering/ogre/OgreLidarVisual.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreMarker.hh"
+#include "gz/rendering/ogre/OgreGeometry.hh"
 
 
-class ignition::rendering::OgreLidarVisualPrivate
+class gz::rendering::OgreLidarVisualPrivate
 {
   /// \brief Non Hitting DynamicLines Object to display
   public: std::vector<std::shared_ptr<OgreDynamicLines>> noHitRayStrips;
@@ -51,7 +51,7 @@ class ignition::rendering::OgreLidarVisualPrivate
   public: std::vector<double> lidarPoints;
 
   /// \brief The colour of rendered points
-  public: std::vector<ignition::math::Color> pointColors;
+  public: std::vector<gz::math::Color> pointColors;
 
   /// \brief True if new points data is received
   public: bool receivedData = false;
@@ -60,7 +60,7 @@ class ignition::rendering::OgreLidarVisualPrivate
   public: bool visible = true;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -158,18 +158,18 @@ void OgreLidarVisual::SetPoints(const std::vector<double> &_points)
   this->dataPtr->pointColors.clear();
   for (unsigned int i = 0u; i < this->dataPtr->lidarPoints.size(); ++i)
   {
-    this->dataPtr->pointColors.push_back(ignition::math::Color::Blue);
+    this->dataPtr->pointColors.push_back(gz::math::Color::Blue);
   }
   this->dataPtr->receivedData = true;
 }
 
 //////////////////////////////////////////////////
 void OgreLidarVisual::SetPoints(const std::vector<double> &_points,
-                        const std::vector<ignition::math::Color> &_colors)
+                        const std::vector<gz::math::Color> &_colors)
 {
   if (_points.size() != _colors.size())
   {
-    ignerr << "Unequal size of point and color vector."
+    gzerr << "Unequal size of point and color vector."
            << "Setting all point colors blue." << std::endl;
     this->SetPoints(_points);
   }
@@ -189,7 +189,7 @@ void OgreLidarVisual::Update()
 
   if (!this->dataPtr->receivedData || this->dataPtr->lidarPoints.size() == 0)
   {
-    ignwarn << "New lidar data not received. Exiting update function"
+    gzwarn << "New lidar data not received. Exiting update function"
             << std::endl;
     return;
   }
@@ -236,7 +236,7 @@ void OgreLidarVisual::Update()
   if (this->dataPtr->lidarPoints.size() !=
                   this->verticalCount * this->horizontalCount)
   {
-    ignwarn << "Size of lidar data inconsistent with rays."
+    gzwarn << "Size of lidar data inconsistent with rays."
             << " Exiting update function."
             << std::endl;
     return;
@@ -314,7 +314,7 @@ void OgreLidarVisual::Update()
           this->Node()->attachObject(mv.get());
           this->dataPtr->deadZoneRayFans.push_back(line);
           this->dataPtr->deadZoneRayFans[j]->AddPoint(
-                      ignition::math::Vector3d::Zero);
+                      gz::math::Vector3d::Zero);
 
           line = std::shared_ptr<OgreDynamicLines>(
                       new OgreDynamicLines(MT_TRIANGLE_STRIP));
@@ -365,28 +365,28 @@ void OgreLidarVisual::Update()
       double r = this->dataPtr->lidarPoints[ j * this->horizontalCount + i];
 
       bool inf = (std::isinf(r) || r >= this->maxRange);
-      ignition::math::Quaterniond ray(
-        ignition::math::Vector3d(0.0, -verticalAngle, horizontalAngle));
+      gz::math::Quaterniond ray(
+        gz::math::Vector3d(0.0, -verticalAngle, horizontalAngle));
 
-      ignition::math::Vector3d axis = this->offset.Rot() * ray *
-        ignition::math::Vector3d(1.0, 0.0, 0.0);
+      gz::math::Vector3d axis = this->offset.Rot() * ray *
+        gz::math::Vector3d(1.0, 0.0, 0.0);
 
       // Check for infinite range, which indicates the ray did not
       // intersect an object.
       double hitRange = inf ? 0 : r;
 
       // Compute the start point of the ray
-      ignition::math::Vector3d startPt =
+      gz::math::Vector3d startPt =
                   (axis * this->minRange) + this->offset.Pos();
 
       // Compute the end point of the ray
-      ignition::math::Vector3d pt =
+      gz::math::Vector3d pt =
                   (axis * hitRange) + this->offset.Pos();
 
       double noHitRange = inf ? this->maxRange : hitRange;
 
       // Compute the end point of the no-hit ray
-      ignition::math::Vector3d noHitPt =
+      gz::math::Vector3d noHitPt =
                   (axis * noHitRange) + this->offset.Pos();
 
       // Update the lines and strips that represent each simulated ray.

@@ -41,7 +41,7 @@ void main()
   // (even w/ point filtering) causes p.a to loss information (e.g.
   // values close to 0 get rounded to 0)
   //
-  // See https://github.com/ignitionrobotics/ign-rendering/issues/332
+  // See https://github.com/gazebosim/gz-rendering/issues/332
   vec4 p = texelFetch(inputTexture, ivec2(inPs.uv0 *texResolution.xy), 0);
 
   vec3 point = p.xyz;

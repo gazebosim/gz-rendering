@@ -20,13 +20,13 @@
 #include "gz/rendering/base/BaseParticleEmitter.hh"
 #include "gz/rendering/ogre/OgreVisual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /// \brief Class to manage a particle emitter.
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreParticleEmitter :
+    class GZ_RENDERING_OGRE_VISIBLE OgreParticleEmitter :
       public BaseParticleEmitter<OgreVisual>
     {
       /// \brief Constructor

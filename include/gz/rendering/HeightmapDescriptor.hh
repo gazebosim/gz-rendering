@@ -25,17 +25,17 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
   class HeightmapDescriptorPrivate;
   class HeightmapTexturePrivate;
   class HeightmapBlendPrivate;
 
   /// \brief Texture to be used on heightmaps.
-  class IGNITION_RENDERING_VISIBLE HeightmapTexture
+  class GZ_RENDERING_VISIBLE HeightmapTexture
   {
     /// \brief Constructor
     public: HeightmapTexture();
@@ -92,7 +92,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
   };
 
   /// \brief Blend information to be used between textures on heightmaps.
-  class IGNITION_RENDERING_VISIBLE HeightmapBlend
+  class GZ_RENDERING_VISIBLE HeightmapBlend
   {
     /// \brief Constructor
     public: HeightmapBlend();
@@ -143,7 +143,7 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
   /// \class HeightmapDescriptor HeightmapDescriptor.hh
   /// gz/rendering/HeightmapDescriptor.hh
   /// \brief Describes how a Heightmap should be loaded
-  class IGNITION_RENDERING_VISIBLE HeightmapDescriptor
+  class GZ_RENDERING_VISIBLE HeightmapDescriptor
   {
     /// \brief Constructor
     public: HeightmapDescriptor();
@@ -188,19 +188,19 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
     /// \brief Get the heightmap's final size in world units.
     /// \return The heightmap's size.
-    public: ignition::math::Vector3d Size() const;
+    public: gz::math::Vector3d Size() const;
 
     /// \brief Set the heightmap's final size in world units. Defaults to 1x1x1.
     /// \param[in] _size The heightmap's size factor.
-    public: void SetSize(const ignition::math::Vector3d &_size);
+    public: void SetSize(const gz::math::Vector3d &_size);
 
     /// \brief Get the heightmap's position offset.
     /// \return The heightmap's position offset.
-    public: ignition::math::Vector3d Position() const;
+    public: gz::math::Vector3d Position() const;
 
     /// \brief Set the heightmap's position offset.
     /// \param[in] _position The heightmap's position offset.
-    public: void SetPosition(const ignition::math::Vector3d &_position);
+    public: void SetPosition(const gz::math::Vector3d &_position);
 
     /// \brief Get whether the heightmap uses terrain paging.
     /// \return True if the heightmap uses terrain paging.

@@ -28,16 +28,16 @@ namespace Ogre
   class MovableObject;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
     // Forward declaration
     class Ogre2COMVisualPrivate;
 
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2COMVisual :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2COMVisual :
       public BaseCOMVisual<Ogre2Visual>
     {
       /// \brief Constructor

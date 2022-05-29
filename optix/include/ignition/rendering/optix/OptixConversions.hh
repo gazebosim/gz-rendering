@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/optix/OptixConversions.hh>
+#include <ignition/rendering/config.hh>

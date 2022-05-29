@@ -17,9 +17,9 @@
 
 #include "Ogre2GzHlmsUnlitPrivate.hh"
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -33,7 +33,7 @@
   #pragma warning(pop)
 #endif
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 namespace Ogre
@@ -166,9 +166,9 @@ namespace Ogre
         //  2. This object should not be rendered and we should've called
         //     movableObject->setVisible(false) or use RenderQueue IDs
         //     or visibility flags to prevent rendering it
-        ignerr << "A module is trying to render an object without "
+        gzerr << "A module is trying to render an object without "
                   "specifying a parameter. Please report this bug at "
-                  "https://github.com/ignitionrobotics/ign-rendering/issues\n";
+                  "https://github.com/gazebosim/gz-rendering/issues\n";
         throw;
       }
       float *dataPtr = this->MapObjectDataBufferFor(

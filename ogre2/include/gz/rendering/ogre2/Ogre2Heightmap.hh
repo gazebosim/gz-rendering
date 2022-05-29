@@ -24,7 +24,7 @@
 #include "gz/rendering/ogre2/Ogre2Geometry.hh"
 
 // Ignoring warning: "non dll-interface class
-// 'ignition::rendering::v5::Heightmap' used as base for dll-interface class"
+// 'gz::rendering::v5::Heightmap' used as base for dll-interface class"
 // because `Heightmap` and `BaseHeightmap` are header-only
 #ifdef _MSC_VER
  #pragma warning(push)
@@ -37,17 +37,17 @@ namespace Ogre
   class Terra;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
     class Ogre2HeightmapPrivate;
 
     /// \brief Ogre implementation of a heightmap geometry.
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Heightmap
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Heightmap
       : public BaseHeightmap<Ogre2Geometry>
     {
       /// \brief Constructor

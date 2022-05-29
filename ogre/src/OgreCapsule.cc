@@ -17,16 +17,16 @@
 
 #include <cmath>
 
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/MeshManager.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/MeshManager.hh>
 
-#include "ignition/rendering/ogre/OgreCapsule.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreMesh.hh"
-#include "ignition/rendering/ogre/OgreVisual.hh"
+#include "gz/rendering/ogre/OgreCapsule.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreMesh.hh"
+#include "gz/rendering/ogre/OgreVisual.hh"
 
-class ignition::rendering::OgreCapsulePrivate
+class gz::rendering::OgreCapsulePrivate
 {
   /// \brief Capsule materal
   public: OgreMaterialPtr material{nullptr};
@@ -35,7 +35,7 @@ class ignition::rendering::OgreCapsulePrivate
   public: OgreMeshPtr ogreMesh{nullptr};
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -106,7 +106,7 @@ void OgreCapsule::Update()
   meshDescriptor.mesh = meshMgr->MeshByName(capsuleMeshName);
   if (meshDescriptor.mesh == nullptr)
   {
-    ignerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;
+    gzerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;
     return;
   }
 
@@ -145,7 +145,7 @@ void OgreCapsule::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

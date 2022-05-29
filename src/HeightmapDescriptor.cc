@@ -16,13 +16,13 @@
  */
 
 
-#include "ignition/rendering/HeightmapDescriptor.hh"
+#include "gz/rendering/HeightmapDescriptor.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-class ignition::rendering::HeightmapTexturePrivate
+class gz::rendering::HeightmapTexturePrivate
 {
   /// \brief Texture size.
   public: double size{1.0};
@@ -35,7 +35,7 @@ class ignition::rendering::HeightmapTexturePrivate
 };
 
 //////////////////////////////////////////////////
-class ignition::rendering::HeightmapBlendPrivate
+class gz::rendering::HeightmapBlendPrivate
 {
   /// \brief Minimum height to blend from.
   public: double minHeight{0.0};
@@ -45,7 +45,7 @@ class ignition::rendering::HeightmapBlendPrivate
 };
 
 //////////////////////////////////////////////////
-class ignition::rendering::HeightmapDescriptorPrivate
+class gz::rendering::HeightmapDescriptorPrivate
 {
   /// \brief Name used for caching
   public: std::string name;

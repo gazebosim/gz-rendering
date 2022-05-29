@@ -27,11 +27,11 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declarations.
     class RenderEngine;
@@ -43,7 +43,7 @@ namespace ignition
     /// render-engines available at runtime. RenderEngine objects should not
     /// be access directly, but instead via the RenderEngineManager to maintain
     /// a flexible render-engine agnostic design.
-    class IGNITION_RENDERING_VISIBLE RenderEngineManager :
+    class GZ_RENDERING_VISIBLE RenderEngineManager :
       public virtual common::SingletonT<RenderEngineManager>
     {
       /// \brief Constructor
@@ -141,7 +141,7 @@ namespace ignition
       IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief required SingletonT friendship
-      private: friend class ignition::common::SingletonT<RenderEngineManager>;
+      private: friend class gz::common::SingletonT<RenderEngineManager>;
     };
     }
   }

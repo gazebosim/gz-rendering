@@ -15,47 +15,47 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre/OgreArrowVisual.hh"
-#include "ignition/rendering/ogre/OgreAxisVisual.hh"
-#include "ignition/rendering/ogre/OgreCamera.hh"
-#include "ignition/rendering/ogre/OgreCapsule.hh"
-#include "ignition/rendering/ogre/OgreCOMVisual.hh"
-#include "ignition/rendering/ogre/OgreConversions.hh"
-#include "ignition/rendering/ogre/OgreDepthCamera.hh"
-#include "ignition/rendering/ogre/OgreGeometry.hh"
-#include "ignition/rendering/ogre/OgreGizmoVisual.hh"
-#include "ignition/rendering/ogre/OgreGpuRays.hh"
-#include "ignition/rendering/ogre/OgreGrid.hh"
-#include "ignition/rendering/ogre/OgreHeightmap.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreInertiaVisual.hh"
-#include "ignition/rendering/ogre/OgreJointVisual.hh"
-#include "ignition/rendering/ogre/OgreLidarVisual.hh"
-#include "ignition/rendering/ogre/OgreLightVisual.hh"
-#include "ignition/rendering/ogre/OgreMarker.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreMeshFactory.hh"
-#include "ignition/rendering/ogre/OgreParticleEmitter.hh"
-#include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
-#include "ignition/rendering/ogre/OgreRayQuery.hh"
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#include "ignition/rendering/ogre/OgreRenderTarget.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreStorage.hh"
-#include "ignition/rendering/ogre/OgreText.hh"
-#include "ignition/rendering/ogre/OgreThermalCamera.hh"
-#include "ignition/rendering/ogre/OgreVisual.hh"
-#include "ignition/rendering/ogre/OgreWideAngleCamera.hh"
-#include "ignition/rendering/ogre/OgreWireBox.hh"
+#include "gz/rendering/ogre/OgreArrowVisual.hh"
+#include "gz/rendering/ogre/OgreAxisVisual.hh"
+#include "gz/rendering/ogre/OgreCamera.hh"
+#include "gz/rendering/ogre/OgreCapsule.hh"
+#include "gz/rendering/ogre/OgreCOMVisual.hh"
+#include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreDepthCamera.hh"
+#include "gz/rendering/ogre/OgreGeometry.hh"
+#include "gz/rendering/ogre/OgreGizmoVisual.hh"
+#include "gz/rendering/ogre/OgreGpuRays.hh"
+#include "gz/rendering/ogre/OgreGrid.hh"
+#include "gz/rendering/ogre/OgreHeightmap.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreInertiaVisual.hh"
+#include "gz/rendering/ogre/OgreJointVisual.hh"
+#include "gz/rendering/ogre/OgreLidarVisual.hh"
+#include "gz/rendering/ogre/OgreLightVisual.hh"
+#include "gz/rendering/ogre/OgreMarker.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreMeshFactory.hh"
+#include "gz/rendering/ogre/OgreParticleEmitter.hh"
+#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
+#include "gz/rendering/ogre/OgreRayQuery.hh"
+#include "gz/rendering/ogre/OgreRenderEngine.hh"
+#include "gz/rendering/ogre/OgreRenderTarget.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreStorage.hh"
+#include "gz/rendering/ogre/OgreText.hh"
+#include "gz/rendering/ogre/OgreThermalCamera.hh"
+#include "gz/rendering/ogre/OgreVisual.hh"
+#include "gz/rendering/ogre/OgreWideAngleCamera.hh"
+#include "gz/rendering/ogre/OgreWireBox.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
 
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class Subclassing the Ogre Rectangle2D class to create a gradient
     /// colored rectangle. The class is setting colors at the four vertices
@@ -129,7 +129,7 @@ namespace ignition
   }
 }
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -241,19 +241,19 @@ void OgreScene::SetGradientBackgroundColor(
   auto coloredRectangle2D = backgroundNodePtr->getAttachedObject(0);
   if (!coloredRectangle2D)
   {
-    ignerr << "Unable to find the background attached object" << std::endl;
+    gzerr << "Unable to find the background attached object" << std::endl;
     return;
   }
 
   rect = dynamic_cast<ColoredRectangle2D *>(coloredRectangle2D);
   if (!rect)
   {
-    ignerr << "Unable to cast from Ogre::MovableObject to ColouredRectangle2D"
+    gzerr << "Unable to cast from Ogre::MovableObject to ColouredRectangle2D"
            << std::endl;
     return;
   }
 
-  // Convert the ignition::math::Color to Ogre::ColourValue.
+  // Convert the gz::math::Color to Ogre::ColourValue.
   std::array<Ogre::ColourValue, 4> ogreColors;
   for (auto i = 0u; i < 4; ++i)
     ogreColors[i].setAsRGBA(_colors[i].AsRGBA());
@@ -707,7 +707,7 @@ void OgreScene::CreateRootVisual()
   // check if root visual created successfully
   if (!this->InitObject(this->rootVisual, rootId, rootName))
   {
-    ignerr << "Unable to create root visual" << std::endl;
+    gzerr << "Unable to create root visual" << std::endl;
     this->rootVisual = nullptr;
   }
 

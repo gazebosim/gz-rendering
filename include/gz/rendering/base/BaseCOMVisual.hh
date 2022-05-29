@@ -26,11 +26,11 @@
 #include "gz/rendering/COMVisual.hh"
 #include "gz/rendering/Scene.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Base implementation of an center of mass visual
     template <class T>
@@ -52,7 +52,7 @@ namespace ignition
 
       // Documentation inherited.
       public: virtual void SetInertial(
-                  const ignition::math::Inertiald &_inertial) override;
+                  const gz::math::Inertiald &_inertial) override;
 
       // Documentation inherited.
       public: virtual void SetMass(double _mass) override;
@@ -61,7 +61,7 @@ namespace ignition
       public: virtual double Mass() const override;
 
       // Documentation inherited
-      public: virtual ignition::math::Pose3d InertiaPose() const override;
+      public: virtual gz::math::Pose3d InertiaPose() const override;
 
       // Documentation inherited
       public: virtual VisualPtr SphereVisual() const override;
@@ -77,8 +77,8 @@ namespace ignition
       protected: double mass = 1.0;
 
       /// \brief Inertia pose in parent frame.
-      protected: ignition::math::Pose3d inertiaPose =
-          ignition::math::Pose3d::Zero;
+      protected: gz::math::Pose3d inertiaPose =
+          gz::math::Pose3d::Zero;
 
       /// \brief Flag to indicate parent properties have changed.
       protected: bool dirtyCOMVisual = false;
@@ -113,7 +113,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     void BaseCOMVisual<T>::SetInertial(
-          const ignition::math::Inertiald &_inertial)
+          const gz::math::Inertiald &_inertial)
     {
       this->inertiaPose = _inertial.Pose();
 
@@ -128,13 +128,13 @@ namespace ignition
         // Unrealistic mass, load with default mass
         if (_mass < 0)
         {
-          ignlog << "The parent " << this->parentName
+          gzlog << "The parent " << this->parentName
               << " has unrealistic mass, "
               << "unable to visualize sphere of equivalent mass.\n";
         }
         else
         {
-          ignlog << "The parent " << this->parentName
+          gzlog << "The parent " << this->parentName
               << " is static or has mass of 0, "
               << "so a sphere of equivalent mass will not be shown.\n";
         }
@@ -154,7 +154,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::Pose3d BaseCOMVisual<T>::InertiaPose() const
+    gz::math::Pose3d BaseCOMVisual<T>::InertiaPose() const
     {
       return this->inertiaPose;
     }

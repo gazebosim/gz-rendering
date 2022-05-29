@@ -24,7 +24,7 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace common
   {
@@ -32,16 +32,16 @@ namespace ignition
   }
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \struct MeshDescriptor MeshDescriptor.hh
     /// gz/rendering/MeshDescriptor.hh
     /// \brief Describes how a Mesh should be loaded
-    struct IGNITION_RENDERING_VISIBLE MeshDescriptor
+    struct GZ_RENDERING_VISIBLE MeshDescriptor
     {
       /// \brief Constructor
       public: MeshDescriptor();

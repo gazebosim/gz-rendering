@@ -22,14 +22,14 @@
 #include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "gz/rendering/ogre2/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Ogre2.x implementation of the Object class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Object :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Object :
       public BaseObject
     {
       /// \brief Constructor

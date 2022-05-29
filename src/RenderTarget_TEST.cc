@@ -17,19 +17,19 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/GaussianNoisePass.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/RenderPassSystem.hh"
-#include "ignition/rendering/RenderTarget.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/GaussianNoisePass.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/RenderPassSystem.hh"
+#include "gz/rendering/RenderTarget.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class RenderTargetTest : public testing::Test,
@@ -52,7 +52,7 @@ void RenderTargetTest::RenderTexture(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -83,7 +83,7 @@ void RenderTargetTest::RenderWindow(const std::string &_renderEngine)
 {
   if (_renderEngine != "ogre")
   {
-    igndbg << "RenderWindow not supported yet in rendering engine: "
+    gzdbg << "RenderWindow not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -92,7 +92,7 @@ void RenderTargetTest::RenderWindow(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -132,7 +132,7 @@ void RenderTargetTest::AddRemoveRenderPass(const std::string &_renderEngine)
 {
   if (_renderEngine != "ogre")
   {
-    igndbg << "RenderWindow not supported yet in rendering engine: "
+    gzdbg << "RenderWindow not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -141,7 +141,7 @@ void RenderTargetTest::AddRemoveRenderPass(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -155,7 +155,7 @@ void RenderTargetTest::AddRemoveRenderPass(const std::string &_renderEngine)
   RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
   if (!rpSystem)
   {
-    ignwarn << "Render engin '" << _renderEngine << "' does not support "
+    gzwarn << "Render engin '" << _renderEngine << "' does not support "
             << "render pass system" << std::endl;
     return;
   }
@@ -205,7 +205,7 @@ TEST_P(RenderTargetTest, AddRemoveRenderPass)
 
 INSTANTIATE_TEST_CASE_P(RenderTarget, RenderTargetTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

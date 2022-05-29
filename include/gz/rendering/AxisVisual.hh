@@ -20,15 +20,15 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/CompositeVisual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \class AxisVisual AxisVisual.hh gz/rendering/AxisVisual.hh
     /// \brief Represents a axis composite visual
-    class IGNITION_RENDERING_VISIBLE AxisVisual :
+    class GZ_RENDERING_VISIBLE AxisVisual :
       public virtual CompositeVisual
     {
       /// \brief Destructor

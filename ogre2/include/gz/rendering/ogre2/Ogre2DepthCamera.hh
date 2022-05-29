@@ -42,17 +42,17 @@ namespace Ogre
   class Viewport;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // Forward declaration
     class Ogre2DepthCameraPrivate;
 
     /// \brief Depth camera used to render depth data into an image buffer
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2DepthCamera :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2DepthCamera :
       public virtual BaseDepthCamera<Ogre2Sensor>,
       public virtual Ogre2ObjectInterface
     {
@@ -92,14 +92,14 @@ namespace ignition
       /// \brief Connect a to the new depth image signal
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr ConnectNewDepthFrame(
+      public: virtual gz::common::ConnectionPtr ConnectNewDepthFrame(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
 
       /// \brief Connect a to the new rgb point cloud signal
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr ConnectNewRgbPointCloud(
+      public: virtual gz::common::ConnectionPtr ConnectNewRgbPointCloud(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
 

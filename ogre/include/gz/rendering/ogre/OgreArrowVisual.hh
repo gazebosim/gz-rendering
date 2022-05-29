@@ -20,13 +20,13 @@
 #include "gz/rendering/base/BaseArrowVisual.hh"
 #include "gz/rendering/ogre/OgreVisual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreArrowVisual :
+    class GZ_RENDERING_OGRE_VISIBLE OgreArrowVisual :
       public BaseArrowVisual<OgreVisual>
     {
       protected: OgreArrowVisual();

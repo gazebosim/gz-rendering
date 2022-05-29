@@ -39,17 +39,17 @@ namespace Ogre
   class HlmsUnlitDatablock;
 }  // namespace Ogre
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     // forward declaration
     class Ogre2MaterialPrivate;
 
     /// \brief Ogre 2.x implementation of the material class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Material :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Material :
       public BaseMaterial<Ogre2Object>
     {
       /// \brief Constructor

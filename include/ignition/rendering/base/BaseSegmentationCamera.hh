@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/base/BaseSegmentationCamera.hh>
+#include <ignition/rendering/config.hh>

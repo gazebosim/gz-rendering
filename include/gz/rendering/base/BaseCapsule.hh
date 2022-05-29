@@ -24,11 +24,11 @@
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/base/BaseObject.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /// \brief Base implementation of a Capsule Geometry
     template <class T>
     class BaseCapsule :
@@ -116,7 +116,7 @@ namespace ignition
     {
       if (!this->Scene())
       {
-        ignerr << "Cloning a Capsule failed because the capsule to be "
+        gzerr << "Cloning a Capsule failed because the capsule to be "
           << "cloned does not belong to a scene.\n";
         return nullptr;
       }

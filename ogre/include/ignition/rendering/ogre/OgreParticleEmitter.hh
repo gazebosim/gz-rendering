@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreParticleEmitter.hh>
+#include <ignition/rendering/config.hh>

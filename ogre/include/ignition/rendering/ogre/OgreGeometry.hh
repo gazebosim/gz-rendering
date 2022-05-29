@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreGeometry.hh>
+#include <ignition/rendering/config.hh>

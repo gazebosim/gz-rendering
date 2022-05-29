@@ -22,15 +22,15 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 
@@ -73,13 +73,13 @@ void getMemInfo(double &_resident, double &_share)
                                 (task_info_t)&t_info,
                                 &t_info_count))
   {
-    ignerr << "failure calling task_info\n";
+    gzerr << "failure calling task_info\n";
     return;
   }
   _resident = static_cast<double>(t_info.resident_size/1024);
   _share = static_cast<double>(t_info.virtual_size/1024);
 #else
-  ignerr << "Unsupported architecture\n";
+  gzerr << "Unsupported architecture\n";
   return;
 #endif
 }
@@ -91,7 +91,7 @@ void checkMemLeak(const std::string &_renderEngine,
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
     return;
   }
 
@@ -119,9 +119,9 @@ void checkMemLeak(const std::string &_renderEngine,
   double resPercentChange = (residentEnd - residentStart) / residentStart;
   double sharePercentChange = (shareEnd - shareStart) / shareStart;
 
-  igndbg << "ResPercentChange[" << resPercentChange << "] "
+  gzdbg << "ResPercentChange[" << resPercentChange << "] "
     << "ResMaxPercentChange[" << resMaxPercentChange << "]" << std::endl;
-  igndbg << "SharePercentChange[" << sharePercentChange << "] "
+  gzdbg << "SharePercentChange[" << sharePercentChange << "] "
     << "ShareMaxPercentChange[" << shareMaxPercentChange << "]" << std::endl;
 
   EXPECT_LT(resPercentChange, resMaxPercentChange);
@@ -192,7 +192,7 @@ TEST_P(SceneFactoryTest, VisualMemoryLeak)
 
 INSTANTIATE_TEST_CASE_P(SceneFactory, SceneFactoryTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

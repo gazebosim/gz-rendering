@@ -30,13 +30,13 @@ namespace Ogre
   class SceneManager;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreScene :
+    class GZ_RENDERING_OGRE_VISIBLE OgreScene :
       public BaseScene
     {
       protected: OgreScene(unsigned int _id, const std::string &_name);

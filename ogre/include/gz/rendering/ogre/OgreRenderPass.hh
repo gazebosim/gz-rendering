@@ -22,17 +22,17 @@
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/OgreObject.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /* \class OgreRenderPass OgreRenderPass.hh \
      * gz/rendering/ogre/OgreRenderPass.hh
      */
     /// \brief Ogre implementation of the RenderPass class
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreRenderPass :
+    class GZ_RENDERING_OGRE_VISIBLE OgreRenderPass :
       public BaseRenderPass<OgreObject>
     {
       /// \brief Constructor

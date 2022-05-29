@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ShaderParam.hh>
+#include <ignition/rendering/config.hh>

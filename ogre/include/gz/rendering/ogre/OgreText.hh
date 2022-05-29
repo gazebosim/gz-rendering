@@ -29,17 +29,17 @@
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     class OgreMovableText;
     class OgreTextPrivate;
 
     /// \brief Ogre implementation of text geometry
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreText
+    class GZ_RENDERING_OGRE_VISIBLE OgreText
         : public BaseText<OgreGeometry>
     {
       /// \brief Constructor
@@ -71,7 +71,7 @@ namespace ignition
       public: virtual void SetTextString(const std::string &_text) override;
 
       // Documentation inherited.
-      public: virtual void SetColor(const ignition::math::Color &_color)
+      public: virtual void SetColor(const gz::math::Color &_color)
           override;
 
       // Documentation inherited.
@@ -91,7 +91,7 @@ namespace ignition
       public: virtual void SetShowOnTop(const bool _onTop) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox AABB() const override;
+      public: virtual gz::math::AxisAlignedBox AABB() const override;
 
       /// \brief Set material to text geometry.
       /// \param[in] _material Ogre material.

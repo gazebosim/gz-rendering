@@ -15,12 +15,12 @@
  *
 */
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreMaterialSwitcher.hh"
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/common/Console.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreMaterialSwitcher.hh"
+#include "gz/rendering/RenderTypes.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 
@@ -28,7 +28,7 @@ using namespace rendering;
 OgreMaterialSwitcher::OgreMaterialSwitcher()
   : lastTechnique(nullptr)
 {
-  this->currentColor = ignition::math::Color(0.0f, 0.0f, 0.1f);
+  this->currentColor = gz::math::Color(0.0f, 0.0f, 0.1f);
 }
 
 /////////////////////////////////////////////////
@@ -98,7 +98,7 @@ Ogre::Technique *OgreMaterialSwitcher::handleSchemeNotFound(
           overlayMaterial->getTechnique(0);
       if (!this->overlayTechnique || !this->overlayTechnique->getPass(0))
       {
-        ignerr << "Problem creating the selection buffer overlay material"
+        gzerr << "Problem creating the selection buffer overlay material"
             << std::endl;
         return nullptr;
       }
@@ -157,7 +157,7 @@ void OgreMaterialSwitcher::postRenderTargetUpdate(
 
 /////////////////////////////////////////////////
 std::string OgreMaterialSwitcher::EntityName(
-    const ignition::math::Color &_color) const
+    const gz::math::Color &_color) const
 {
   auto iter = this->colorDict.find(_color.AsRGBA());
 
@@ -178,7 +178,7 @@ void OgreMaterialSwitcher::NextColor()
 /////////////////////////////////////////////////
 void OgreMaterialSwitcher::Reset()
 {
-  this->currentColor = ignition::math::Color(0.0, 0.0, 0.0);
+  this->currentColor = gz::math::Color(0.0, 0.0, 0.0);
   this->lastTechnique = nullptr;
   this->lastEntity.clear();
   this->colorDict.clear();

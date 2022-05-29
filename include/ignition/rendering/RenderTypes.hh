@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/RenderTypes.hh>
+#include <ignition/rendering/config.hh>

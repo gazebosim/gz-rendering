@@ -20,13 +20,13 @@
 #include "gz/rendering/base/BaseJointVisual.hh"
 #include "gz/rendering/ogre/OgreVisual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+    inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreJointVisual :
+    class GZ_RENDERING_OGRE_VISIBLE OgreJointVisual :
       public BaseJointVisual<OgreVisual>
     {
       /// \brief Constructor

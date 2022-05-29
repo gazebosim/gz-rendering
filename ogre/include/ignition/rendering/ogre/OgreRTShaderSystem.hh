@@ -16,3 +16,4 @@
  */
 
 #include <gz/rendering/ogre/OgreRTShaderSystem.hh>
+#include <ignition/rendering/config.hh>

@@ -7,7 +7,7 @@ When the application starts you will see a blank window.
 When you click the `+` or `-` keys you can change the scene.
 By pressing the `Tab` button you will advance to the next render engine.
 
-You may see the render engine title in the window change to Optix if you have compiled your Ignition Rendering library with OptiX (otherwise you can only use Ogre).
+You may see the render engine title in the window change to Optix if you have compiled your Gazebo Rendering library with OptiX (otherwise you can only use Ogre).
 The frame rate may also change based on your computer's capabilities.
 
 The following scenes have more primitive objects such as cones or cilinders. Again, you can see the scene with different render engines pressing `Tab`.
@@ -26,7 +26,7 @@ There are some scenes demonstrating reflective materials and mutiple point light
 Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
-git clone https://github.com/ignitionrobotics/ign-rendering
+git clone https://github.com/gazebosim/gz-rendering
 cd ign-rendering/examples/custom_scene_viewer
 mkdir build
 cd build

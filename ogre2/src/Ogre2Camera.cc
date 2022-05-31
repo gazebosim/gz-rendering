@@ -75,8 +75,7 @@ void Ogre2Camera::Destroy()
 math::Angle Ogre2Camera::HFOV() const
 {
   double vfov = this->ogreCamera->getFOVy().valueRadians();
-  double hFOV;
-  hFOV = 2.0 * atan(tan(vfov / 2.0) * this->ImageWidth() / this->ImageHeight());
+  double hFOV = 2.0 * atan(tan(vfov / 2.0) * this->AspectRatio());
   return math::Angle(hFOV);
 }
 

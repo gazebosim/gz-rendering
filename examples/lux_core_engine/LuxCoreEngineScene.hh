@@ -141,6 +141,18 @@ protected:
                                          const std::string &_name);
 
 protected:
+  virtual COMVisualPtr CreateCOMVisualImpl(unsigned int _id,
+                                           const std::string &_name);
+
+protected:
+  virtual InertiaVisualPtr CreateInertiaVisualImpl(unsigned int _id,
+                                                   const std::string &_name);
+
+protected:
+  virtual JointVisualPtr CreateJointVisualImpl(unsigned int _id,
+                                               const std::string &_name);
+
+protected:
   virtual LightStorePtr Lights() const;
 
 protected:

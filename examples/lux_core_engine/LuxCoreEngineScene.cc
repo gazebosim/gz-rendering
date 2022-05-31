@@ -217,6 +217,21 @@ RayQueryPtr LuxCoreEngineScene::CreateRayQueryImpl(unsigned int _id,
   return nullptr;
 }
 
+COMVisualPtr LuxCoreEngineScene::CreateCOMVisualImpl(unsigned int _id,
+                                           const std::string &_name) {
+  return nullptr;
+}
+
+InertiaVisualPtr LuxCoreEngineScene::CreateInertiaVisualImpl(unsigned int _id,
+                                                   const std::string &_name) {
+  return nullptr;
+}
+
+JointVisualPtr LuxCoreEngineScene::CreateJointVisualImpl(unsigned int _id,
+                                               const std::string &_name) {
+  return nullptr;
+}
+
 LightStorePtr LuxCoreEngineScene::Lights() const { return this->lights; }
 
 SensorStorePtr LuxCoreEngineScene::Sensors() const { return this->sensors; }

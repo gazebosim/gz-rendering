@@ -73,8 +73,6 @@ void OgreCamera::SetHFOV(const math::Angle &_angle)
   double angle = _angle.Radian();
   double vfov = 2.0 * atan(tan(angle / 2.0) / this->AspectRatio());
   this->ogreCamera->setFOVy(Ogre::Radian(vfov));
-  // keep aspect in BaseCamera the same as aspect in Ogre lib
-  this->aspect = this->AspectRatio();
 }
 
 //////////////////////////////////////////////////

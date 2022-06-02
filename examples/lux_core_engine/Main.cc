@@ -37,14 +37,6 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene) {
-  DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
-  light0->SetDirection(-0.5, 0.5, -1);
-  light0->SetDiffuseColor(0.00001, 0.00001, 0.00001);
-
-  PointLightPtr light2 = _scene->CreatePointLight();
-  light2->SetDiffuseColor(0.5, 0.5, 0.5);
-  light2->SetLocalPosition(3, 5, 5);
-
   MaterialPtr red = _scene->CreateMaterial();
   red->SetDiffuse(1.0, 0.0, 0.0);
 

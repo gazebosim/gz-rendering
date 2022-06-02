@@ -46,6 +46,12 @@ namespace ignition
       public: unsigned int objectId = 0;
 
       /// \brief Returns false if result is not valid
+      public: operator bool() const
+              {
+                return distance > 0;
+              }
+
+      /// \brief Returns false if result is not valid
       public: operator bool()
               {
                 return distance > 0;
@@ -69,7 +75,7 @@ namespace ignition
       public: virtual math::Vector3d Origin() const = 0;
 
       /// \brief Set ray direction
-      /// \param[in] _origin Ray origin
+      /// \param[in] _dir Ray origin
       public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
 
       /// \brief Get ray direction
@@ -83,8 +89,7 @@ namespace ignition
                 const math::Vector2d &_coord) = 0;
 
       /// \brief Compute intersections
-      /// \param[out] A vector of intersection results
-      /// \return True if results are not empty
+      /// \return A vector of intersection results
       public: virtual RayQueryResult ClosestPoint() = 0;
     };
     }

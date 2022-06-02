@@ -124,6 +124,9 @@ class ignition::rendering::OgreGpuRaysPrivate
 
   /// \brief Number of cameras needed to generate the rays.
   public: unsigned int cameraCount = 1;
+
+  /// \brief Min allowed angle in radians;
+  public: const math::Angle kMinAllowedAngle = 1e-4;
 };
 
 using namespace ignition;
@@ -245,7 +248,9 @@ void OgreGpuRays::CreateCamera()
 void OgreGpuRays::ConfigureCameras()
 {
   // horizontal gpu rays setup
-  this->SetHFOV(this->AngleMax() - this->AngleMin());
+  auto hfovAngle = this->AngleMax() - this->AngleMin();
+  hfovAngle = std::max(this->dataPtr->kMinAllowedAngle, hfovAngle);
+  this->SetHFOV(hfovAngle);
 
   if (this->HFOV().Radian() > 2.0 * IGN_PI)
   {
@@ -288,7 +293,8 @@ void OgreGpuRays::ConfigureCameras()
 
   if (this->VerticalRangeCount() > 1)
   {
-    vfovAngle = (this->VerticalAngleMax() - this->VerticalAngleMin()).Radian();
+    vfovAngle = std::max(this->dataPtr->kMinAllowedAngle.Radian(),
+        (this->VerticalAngleMax() - this->VerticalAngleMin()).Radian());
   }
   else
   {
@@ -409,7 +415,7 @@ void OgreGpuRays::CreateGpuRaysTextures()
       Ogre::TextureManager::getSingleton().createManual(
       texName.str(), "General", Ogre::TEX_TYPE_2D,
       this->dataPtr->w1st, this->dataPtr->h1st, 0,
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
       Ogre::PF_FLOAT32_RGB, Ogre::TU_RENDERTARGET).getPointer();
 #else
       Ogre::PF_FLOAT32_RGB, Ogre::TU_RENDERTARGET).get();
@@ -428,7 +434,7 @@ void OgreGpuRays::CreateGpuRaysTextures()
     vp->setSkiesEnabled(false);
     vp->setBackgroundColour(
         Ogre::ColourValue(this->dataMaxVal, 0.0, 1.0));
-    vp->setVisibilityMask(IGN_VISIBILITY_ALL &
+    vp->setVisibilityMask(this->VisibilityMask() &
         ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
   }
 
@@ -445,7 +451,7 @@ void OgreGpuRays::CreateGpuRaysTextures()
       Ogre::TEX_TYPE_2D,
       this->dataPtr->w2nd, this->dataPtr->h2nd, 0,
       Ogre::PF_FLOAT32_RGB,
-#if OGRE_VERSION_LT_1_10_1
+#if OGRE_VERSION_LT_1_11_0
       Ogre::TU_RENDERTARGET).getPointer();
 #else
       Ogre::TU_RENDERTARGET).get();

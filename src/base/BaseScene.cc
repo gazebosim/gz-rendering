@@ -27,6 +27,10 @@
 
 #include "ignition/rendering/ArrowVisual.hh"
 #include "ignition/rendering/AxisVisual.hh"
+#include "ignition/rendering/BoundingBoxCamera.hh"
+#include "ignition/rendering/COMVisual.hh"
+#include "ignition/rendering/InertiaVisual.hh"
+#include "ignition/rendering/JointVisual.hh"
 #include "ignition/rendering/LidarVisual.hh"
 #include "ignition/rendering/LightVisual.hh"
 #include "ignition/rendering/Camera.hh"
@@ -40,6 +44,7 @@
 #include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/Text.hh"
 #include "ignition/rendering/ThermalCamera.hh"
+#include "ignition/rendering/SegmentationCamera.hh"
 #include "ignition/rendering/Visual.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
 #include "ignition/rendering/base/BaseScene.hh"
@@ -136,7 +141,13 @@ std::chrono::steady_clock::duration BaseScene::Time() const
 //////////////////////////////////////////////////
 void BaseScene::SetTime(const std::chrono::steady_clock::duration &_time)
 {
-  this->time = _time;
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+  // TODO(anyone): Remove me in ign-rendering7
+  if (std::chrono::duration_cast<std::chrono::nanoseconds>(_time).count() != -1)
+#endif
+  {
+    this->time = _time;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -812,6 +823,66 @@ ThermalCameraPtr BaseScene::CreateThermalCamera(const unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+BoundingBoxCameraPtr BaseScene::CreateBoundingBoxCamera()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateBoundingBoxCamera(objId);
+}
+//////////////////////////////////////////////////
+BoundingBoxCameraPtr BaseScene::CreateBoundingBoxCamera(
+  const unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "BoundingBoxCamera");
+  return this->CreateBoundingBoxCamera(_id, objName);
+}
+//////////////////////////////////////////////////
+BoundingBoxCameraPtr BaseScene::CreateBoundingBoxCamera(
+  const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateBoundingBoxCamera(objId, _name);
+}
+//////////////////////////////////////////////////
+BoundingBoxCameraPtr BaseScene::CreateBoundingBoxCamera(
+  const unsigned int _id,
+    const std::string &_name)
+{
+  BoundingBoxCameraPtr camera = this->CreateBoundingBoxCameraImpl(_id, _name);
+  bool result = this->RegisterSensor(camera);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+SegmentationCameraPtr BaseScene::CreateSegmentationCamera()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateSegmentationCamera(objId);
+}
+//////////////////////////////////////////////////
+SegmentationCameraPtr BaseScene::CreateSegmentationCamera(
+  const unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "SegmentationCamera");
+  return this->CreateSegmentationCamera(_id, objName);
+}
+//////////////////////////////////////////////////
+SegmentationCameraPtr BaseScene::CreateSegmentationCamera(
+  const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateSegmentationCamera(objId, _name);
+}
+//////////////////////////////////////////////////
+SegmentationCameraPtr BaseScene::CreateSegmentationCamera(
+  const unsigned int _id,
+    const std::string &_name)
+{
+  SegmentationCameraPtr camera = this->CreateSegmentationCameraImpl(_id, _name);
+  bool result = this->RegisterSensor(camera);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
 GpuRaysPtr BaseScene::CreateGpuRays()
 {
   unsigned int objId = this->CreateObjectId();
@@ -914,6 +985,95 @@ AxisVisualPtr BaseScene::CreateAxisVisual(unsigned int _id,
     const std::string &_name)
 {
   AxisVisualPtr visual = this->CreateAxisVisualImpl(_id, _name);
+  bool result = this->RegisterVisual(visual);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+COMVisualPtr BaseScene::CreateCOMVisual()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateCOMVisual(objId);
+}
+
+//////////////////////////////////////////////////
+COMVisualPtr BaseScene::CreateCOMVisual(unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "COMVisual");
+  return this->CreateCOMVisual(_id, objName);
+}
+
+//////////////////////////////////////////////////
+COMVisualPtr BaseScene::CreateCOMVisual(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateCOMVisual(objId, _name);
+}
+
+//////////////////////////////////////////////////
+COMVisualPtr BaseScene::CreateCOMVisual(unsigned int _id,
+    const std::string &_name)
+{
+  COMVisualPtr visual = this->CreateCOMVisualImpl(_id, _name);
+  bool result = this->RegisterVisual(visual);
+  return (result) ? visual : nullptr;
+}
+
+InertiaVisualPtr BaseScene::CreateInertiaVisual()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateInertiaVisual(objId);
+}
+
+//////////////////////////////////////////////////
+InertiaVisualPtr BaseScene::CreateInertiaVisual(unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "InertiaVisual");
+  return this->CreateInertiaVisual(_id, objName);
+}
+
+//////////////////////////////////////////////////
+InertiaVisualPtr BaseScene::CreateInertiaVisual(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateInertiaVisual(objId, _name);
+}
+
+//////////////////////////////////////////////////
+InertiaVisualPtr BaseScene::CreateInertiaVisual(unsigned int _id,
+    const std::string &_name)
+{
+  InertiaVisualPtr visual = this->CreateInertiaVisualImpl(_id, _name);
+  bool result = this->RegisterVisual(visual);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+JointVisualPtr BaseScene::CreateJointVisual()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateJointVisual(objId);
+}
+
+//////////////////////////////////////////////////
+JointVisualPtr BaseScene::CreateJointVisual(unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "JointVisual");
+  return this->CreateJointVisual(_id, objName);
+}
+
+//////////////////////////////////////////////////
+JointVisualPtr BaseScene::CreateJointVisual(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateJointVisual(objId, _name);
+}
+
+//////////////////////////////////////////////////
+JointVisualPtr BaseScene::CreateJointVisual(unsigned int _id,
+    const std::string &_name)
+{
+  JointVisualPtr visual = this->CreateJointVisualImpl(_id, _name);
   bool result = this->RegisterVisual(visual);
   return (result) ? visual : nullptr;
 }
@@ -1236,9 +1396,37 @@ void BaseScene::PreRender()
 }
 
 //////////////////////////////////////////////////
+void BaseScene::PostRender()
+{
+}
+
+//////////////////////////////////////////////////
+void BaseScene::SetCameraPassCountPerGpuFlush(uint8_t /*_numPass*/)
+{
+}
+
+//////////////////////////////////////////////////
+uint8_t BaseScene::CameraPassCountPerGpuFlush() const
+{
+  return 0u;
+}
+
+//////////////////////////////////////////////////
+bool BaseScene::LegacyAutoGpuFlush() const
+{
+  return true;
+}
+
+//////////////////////////////////////////////////
 void BaseScene::Clear()
 {
-  this->nodes->DestroyAll();
+  this->DestroyNodes();
+  auto root = this->RootVisual();
+  if (root)
+  {
+    root->RemoveChildren();
+    this->DestroyNode(root);
+  }
   this->DestroyMaterials();
   this->nextObjectId = ignition::math::MAX_UI16;
 }
@@ -1350,12 +1538,36 @@ void BaseScene::CreateMaterials()
   material->SetReceiveShadows(false);
   material->SetLightingEnabled(false);
 
+  material = this->CreateMaterial("Default/TransPurple");
+  material->SetAmbient(1.0, 0.0, 1.0);
+  material->SetDiffuse(1.0, 0.0, 1.0);
+  material->SetEmissive(1.0, 0.0, 1.0);
+  material->SetTransparency(0.5);
+  material->SetCastShadows(false);
+  material->SetReceiveShadows(false);
+  material->SetLightingEnabled(false);
+  material->SetDepthWriteEnabled(false);
+
   material = this->CreateMaterial("Default/White");
   material->SetAmbient(1.0, 1.0, 1.0);
   material->SetDiffuse(1.0, 1.0, 1.0);
   material->SetEmissive(1.0, 1.0, 1.0);
   material->SetTransparency(0);
   material->SetCastShadows(true);
+  material->SetReceiveShadows(true);
+  material->SetLightingEnabled(true);
+
+  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  std::string resourcePath = (env) ? std::string(env) :
+      IGN_RENDERING_RESOURCE_PATH;
+
+  // path to look for CoM material texture
+  std::string com_material_texture_path = common::joinPaths(
+      resourcePath, "media", "materials", "textures", "com.png");
+  material = this->CreateMaterial("Default/CoM");
+  material->SetTexture(com_material_texture_path);
+  material->SetTransparency(0);
+  material->SetCastShadows(false);
   material->SetReceiveShadows(true);
   material->SetLightingEnabled(true);
 }

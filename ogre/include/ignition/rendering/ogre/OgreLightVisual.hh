@@ -61,7 +61,7 @@ namespace ignition
       public: void CreateVisual();
 
       // Documentation inherited.
-      public: virtual MaterialPtr Material() const;
+      public: virtual MaterialPtr Material() const override;
 
       // Documentation inherited.
       public: virtual void SetMaterial(

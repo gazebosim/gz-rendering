@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_OGRE_OGREVISUAL_HH_
 #define IGNITION_RENDERING_OGRE_OGREVISUAL_HH_
 
+#include <memory>
 #include <vector>
 
 #include "ignition/rendering/base/BaseVisual.hh"
@@ -29,12 +30,21 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    // forward declaration
+    class OgreVisualPrivate;
+
     class IGNITION_RENDERING_OGRE_VISIBLE OgreVisual :
       public BaseVisual<OgreNode>
     {
       protected: OgreVisual();
 
       public: virtual ~OgreVisual();
+
+      // Documentation inherited.
+      public: virtual void SetWireframe(bool _show) override;
+
+      // Documentation inherited.
+      public: virtual bool Wireframe() const override;
 
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
@@ -82,6 +92,9 @@ namespace ignition
       protected: OgreGeometryStorePtr geometries;
 
       private: OgreVisualPtr SharedThis();
+
+      /// \brief Pointer to private data class
+      private: std::unique_ptr<OgreVisualPrivate> dataPtr;
 
       private: friend class OgreScene;
     };

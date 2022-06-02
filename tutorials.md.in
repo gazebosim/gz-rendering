@@ -26,6 +26,8 @@ Ignition @IGN_DESIGNATION_CAP@ library and how to use the library effectively.
 10. \subpage particles  "Particles"
 11. \subpage render_order  "Render Order"
 12. \subpage heightmap  "Heightmap"
+13. \subpage envmap "Environment map"
+14. \subpage depth_camera "Depth camera"
 
 ## License
 

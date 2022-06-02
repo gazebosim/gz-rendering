@@ -67,6 +67,14 @@ void OgreCamera::Destroy()
 }
 
 //////////////////////////////////////////////////
+math::Angle OgreCamera::HFOV() const
+{
+  double vfov = this->ogreCamera->getFOVy().valueRadians();
+  double hFOV = 2.0 * atan(tan(vfov / 2.0) * this->AspectRatio());
+  return math::Angle(hFOV);
+}
+
+//////////////////////////////////////////////////
 void OgreCamera::SetHFOV(const math::Angle &_angle)
 {
   BaseCamera::SetHFOV(_angle);
@@ -277,6 +285,32 @@ math::Matrix4d OgreCamera::ProjectionMatrix() const
 math::Matrix4d OgreCamera::ViewMatrix() const
 {
   return OgreConversions::Convert(this->ogreCamera->getViewMatrix(true));
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
+{
+  BaseCamera::SetProjectionMatrix(_matrix);
+  this->ogreCamera->setCustomProjectionMatrix(true,
+      OgreConversions::Convert(this->projectionMatrix));
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::SetProjectionType(CameraProjectionType _type)
+{
+  BaseCamera::SetProjectionType(_type);
+  switch (this->projectionType)
+  {
+    default:
+    case CPT_PERSPECTIVE:
+      this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
+      break;
+    case CPT_ORTHOGRAPHIC:
+      this->ogreCamera->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
+      break;
+  }
+  // reset projection matrix when projection type changes
+  this->ogreCamera->setCustomProjectionMatrix(false);
 }
 
 //////////////////////////////////////////////////

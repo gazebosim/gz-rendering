@@ -22,11 +22,15 @@
 #include "ignition/rendering/ogre2/Ogre2AxisVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Capsule.hh"
+#include "ignition/rendering/ogre2/Ogre2COMVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2GizmoVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
 #include "ignition/rendering/ogre2/Ogre2Grid.hh"
+#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
+#include "ignition/rendering/ogre2/Ogre2InertiaVisual.hh"
+#include "ignition/rendering/ogre2/Ogre2JointVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Light.hh"
 #include "ignition/rendering/ogre2/Ogre2LightVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
@@ -41,6 +45,7 @@
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2ThermalCamera.hh"
+#include "ignition/rendering/ogre2/Ogre2SegmentationCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 #include "ignition/rendering/ogre2/Ogre2WireBox.hh"
 
@@ -57,6 +62,13 @@
 #include <OgreSceneManager.h>
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
+#if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 1
+#include <OgreHlms.h>
+#include <OgreHlmsManager.h>
+#endif
+
+#include "Terra/Terra.h"
+#include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif
@@ -69,6 +81,40 @@ class ignition::rendering::Ogre2ScenePrivate
 
   /// \brief Flag to indicate if sky is enabled or not
   public: bool skyEnabled = false;
+
+  /// \brief Flag to alert the user its usage of PreRender/PostRender
+  /// is incorrect
+  public: bool frameUpdateStarted = false;
+
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+  /// \brief HACK: SetTime was not doing anything; but it is needed for
+  /// particle FXs to simulate forward.
+  ///
+  /// To avoid breaking apps that were already calling SetTime() or
+  /// were never calling it, apps that call SetTime( -1 ) will tell
+  /// ign-rendering6 to start honouring simulation time.
+  ///
+  /// Otherwise the old behavior is used; which uses real time for particle
+  /// FXs instead of simulation time.
+  ///
+  /// See https://github.com/ignitionrobotics/ign-rendering/issues/556
+  /// See https://github.com/ignitionrobotics/ign-rendering/pull/584
+  ///
+  /// TODO(anyone): Remove any code using hackIgnoringSimTime for
+  /// ign-rendering7 as we can safely default to simulation time
+  /// without worrying about breaking existing apps.
+  public: bool hackIgnoringSimTime = true;
+#endif
+
+  /// \brief Total time elapsed in simulation since last rendering frame
+  public: std::chrono::steady_clock::duration lastRenderSimTime{0};
+
+  /// \brief Keeps track how many passes we've done so far and
+  /// compares it to cameraPassCountPerGpuFlush
+  public: uint32_t currNumCameraPasses = 0u;
+
+  /// \brief Flag to indicate if we should flush GPU very often (per camera)
+  public: uint8_t cameraPassCountPerGpuFlush = 0u;
 
   /// \brief Name of shadow compositor node
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
@@ -106,6 +152,23 @@ VisualPtr Ogre2Scene::RootVisual() const
 }
 
 //////////////////////////////////////////////////
+void Ogre2Scene::SetTime(const std::chrono::steady_clock::duration &_time)
+{
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+  if (std::chrono::duration_cast<std::chrono::nanoseconds>(_time).count() == -1)
+  {
+    this->dataPtr->hackIgnoringSimTime = false;
+  }
+  else  // NOLINT
+#endif
+  {
+    this->time = _time;
+    if (_time < this->dataPtr->lastRenderSimTime)
+      this->dataPtr->lastRenderSimTime = _time;
+  }
+}
+
+//////////////////////////////////////////////////
 math::Color Ogre2Scene::AmbientLight() const
 {
   // This method considers that the ambient upper hemisphere and
@@ -114,6 +177,12 @@ math::Color Ogre2Scene::AmbientLight() const
   Ogre::ColourValue ogreColor =
     this->ogreSceneManager->getAmbientLightUpperHemisphere();
   return Ogre2Conversions::Convert(ogreColor);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::ClearMaterialsCache(const std::string &_name)
+{
+  this->meshFactory->ClearMaterialsCache(_name);
 }
 
 //////////////////////////////////////////////////
@@ -134,6 +203,12 @@ void Ogre2Scene::SetAmbientLight(const math::Color &_color)
 //////////////////////////////////////////////////
 void Ogre2Scene::PreRender()
 {
+  IGN_ASSERT((this->LegacyAutoGpuFlush() ||
+              this->dataPtr->frameUpdateStarted == false),
+             "Scene::PreRender called again before calling Scene::PostRender. "
+             "See Scene::SetCameraPassCountPerGpuFlush for details");
+  this->dataPtr->frameUpdateStarted = true;
+
   if (this->ShadowsDirty())
   {
     // notify all render targets
@@ -143,29 +218,247 @@ void Ogre2Scene::PreRender()
           this->SensorByIndex(i));
       if (camera)
       {
-        // TODO(anyone): this function should rely on virtual functions instead
-        // of dynamic casts
-        // Looks in commit history for '#SetShadowsNodeDefDirtyABI' to
-        // see changes made and revert
-        {
-          auto cameraDerived = std::dynamic_pointer_cast<Ogre2DepthCamera>(
-                                 this->SensorByIndex(i));
-          if (cameraDerived)
-            cameraDerived->SetShadowsNodeDefDirty();
-        }
-        {
-          auto cameraDerived = std::dynamic_pointer_cast<Ogre2Camera>(
-                                 this->SensorByIndex(i));
-          if (cameraDerived)
-            cameraDerived->SetShadowsNodeDefDirty();
-        }
+         camera->SetShadowsDirty();
       }
     }
 
-    UpdateShadowNode();
+    this->UpdateShadowNode();
   }
 
   BaseScene::PreRender();
+
+  if (!this->LegacyAutoGpuFlush())
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    const auto currTime = this->Time();
+    Ogre::FrameEvent evt;
+    evt.timeSinceLastEvent = 0;  // Not used by Ogre so we don't care
+    evt.timeSinceLastFrame = static_cast<Ogre::Real>(
+      static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(
+                            currTime - this->dataPtr->lastRenderSimTime)
+                            .count()) /
+      1000000000.0);
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+    if (!this->dataPtr->hackIgnoringSimTime)
+    {
+      engine->OgreRoot()->_fireFrameStarted(evt);
+    }
+    else
+    {
+      engine->OgreRoot()->_fireFrameStarted();
+    }
+#else
+    engine->OgreRoot()->_fireFrameStarted(evt);
+#endif
+
+    this->ogreSceneManager->updateSceneGraph();
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::PostRender()
+{
+  IGN_ASSERT((this->LegacyAutoGpuFlush() ||
+              this->dataPtr->frameUpdateStarted == true),
+             "Scene::PostRender called again before calling Scene::PreRender. "
+             "See Scene::SetCameraPassCountPerGpuFlush for details");
+  this->dataPtr->frameUpdateStarted = false;
+
+  if (dataPtr->cameraPassCountPerGpuFlush == 0u)
+  {
+    ignwarn << "Calling Scene::PostRender but "
+               "SetCameraPassCountPerGpuFlush is 0 (legacy mode for clients"
+               " not calling PostRender)."
+               "Read the documentation on SetCameraPassCountPerGpuFlush, "
+               "you very likely want to increase this number" << std::endl;
+  }
+  else
+  {
+    if (this->dataPtr->currNumCameraPasses > 0u)
+    {
+      this->FlushGpuCommandsAndStartNewFrame(0u, true);
+    }
+    else
+    {
+      // Every camera already calls FlushGpuCommandsAndStartNewFrame(false)
+      // right after rendering. So likely commands are already flushed.
+      //
+      // If we're here then we are only missing to perform the last step of
+      // FlushGpuCommandsAndStartNewFrame in order to start a new frame
+      this->EndFrame();
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::StartForcedRender()
+{
+  if (this->LegacyAutoGpuFlush() || !this->dataPtr->frameUpdateStarted)
+  {
+    this->ogreSceneManager->updateSceneGraph();
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::EndForcedRender()
+{
+  this->dataPtr->currNumCameraPasses = 0u;
+  this->FlushGpuCommandsOnly();
+
+  if (this->LegacyAutoGpuFlush() || !this->dataPtr->frameUpdateStarted)
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    auto ogreRoot = engine->OgreRoot();
+
+    auto itor = ogreRoot->getSceneManagerIterator();
+    while (itor.hasMoreElements())
+    {
+      Ogre::SceneManager *sceneManager = itor.getNext();
+      sceneManager->clearFrameData();
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::StartRendering(Ogre::Camera *_camera)
+{
+  if (_camera)
+    this->UpdateAllHeightmaps(_camera);
+
+  if (this->LegacyAutoGpuFlush())
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+
+    const auto currTime = this->Time();
+    Ogre::FrameEvent evt;
+    evt.timeSinceLastEvent = 0;  // Not used by Ogre so we don't care
+    evt.timeSinceLastFrame = static_cast<Ogre::Real>(
+      static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(
+                            currTime - this->dataPtr->lastRenderSimTime)
+                            .count()) /
+      1000000000.0);
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+    if (!this->dataPtr->hackIgnoringSimTime)
+    {
+      engine->OgreRoot()->_fireFrameStarted(evt);
+    }
+    else
+    {
+      engine->OgreRoot()->_fireFrameStarted();
+    }
+#else
+    engine->OgreRoot()->_fireFrameStarted(evt);
+#endif
+
+    this->ogreSceneManager->updateSceneGraph();
+  }
+  else
+  {
+    IGN_ASSERT(this->dataPtr->frameUpdateStarted == true,
+               "Started rendering without first calling Scene::PreRender. "
+               "See Scene::SetCameraPassCountPerGpuFlush for details");
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::FlushGpuCommandsAndStartNewFrame(uint8_t _numPasses,
+                                                  bool _startNewFrame)
+{
+  this->dataPtr->currNumCameraPasses += _numPasses;
+
+  if (this->dataPtr->currNumCameraPasses >= dataPtr->cameraPassCountPerGpuFlush
+      || _startNewFrame)
+  {
+    this->dataPtr->currNumCameraPasses = 0u;
+    this->FlushGpuCommandsOnly();
+
+    // Legacy mode requires to do EndFrame here every time
+    if (dataPtr->cameraPassCountPerGpuFlush == 0u || _startNewFrame)
+      this->EndFrame();
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::FlushGpuCommandsOnly()
+{
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  // The following code is equivalent to calling:
+  //  engine->OgreRoot()->renderOneFrame();
+  //
+  // however without updating SceneManager::updateSceneGraph
+  // because that has already been done; and most (all?) workspaces
+  // are updated manually (since they're created as disabled)
+
+#if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 1
+  auto hlmsManager = ogreRoot->getHlmsManager();
+  // Updating the compositor with all workspaces disabled achieves our goal
+  ogreCompMgr->_update(Ogre::SceneManagerEnumerator::getSingleton(),
+                       hlmsManager);
+#else
+  // Updating the compositor with all workspaces disabled achieves our goal
+  ogreCompMgr->_update();
+#endif
+
+  ogreCompMgr->_swapAllFinalTargets();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::EndFrame()
+{
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+
+  const auto currTime = this->Time();
+  Ogre::FrameEvent evt;
+  evt.timeSinceLastEvent = 0;  // Not used by Ogre so we don't care
+  evt.timeSinceLastFrame = static_cast<Ogre::Real>(
+    static_cast<double>(std::chrono::duration_cast<std::chrono::nanoseconds>(
+                          currTime - this->dataPtr->lastRenderSimTime)
+                          .count()) /
+    1000000000.0);
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+  if (!this->dataPtr->hackIgnoringSimTime)
+  {
+    ogreRoot->_fireFrameRenderingQueued(evt);
+  }
+  else
+  {
+    ogreRoot->_fireFrameRenderingQueued();
+  }
+#else
+  ogreRoot->_fireFrameRenderingQueued(evt);
+#endif
+  this->dataPtr->lastRenderSimTime = currTime;
+
+  auto itor = ogreRoot->getSceneManagerIterator();
+  while (itor.hasMoreElements())
+  {
+    Ogre::SceneManager *sceneManager = itor.getNext();
+    sceneManager->clearFrameData();
+  }
+
+  ogreRoot->_fireFrameEnded(evt);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::SetCameraPassCountPerGpuFlush(uint8_t _numPass)
+{
+  this->dataPtr->cameraPassCountPerGpuFlush = _numPass;
+}
+
+//////////////////////////////////////////////////
+uint8_t Ogre2Scene::CameraPassCountPerGpuFlush() const
+{
+  return this->dataPtr->cameraPassCountPerGpuFlush;
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Scene::LegacyAutoGpuFlush() const
+{
+  return this->dataPtr->cameraPassCountPerGpuFlush == 0u;
 }
 
 //////////////////////////////////////////////////
@@ -215,8 +508,98 @@ bool Ogre2Scene::InitImpl()
   this->CreateRootVisual();
   this->CreateStores();
   this->CreateMeshFactory();
-
+  UpdateShadowNode();
   return true;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Scene::UpdateAllHeightmaps(Ogre::Camera *_camera)
+{
+  auto engine = Ogre2RenderEngine::Instance();
+  Ogre::HlmsPbsTerraShadows *pbsTerraShadows = engine->HlmsPbsTerraShadows();
+
+  Ogre::Real closestTerraSqDist = std::numeric_limits<Ogre::Real>::max();
+  Ogre::Terra *closestTerra = 0;
+  Ogre::Terra *insideTerra = 0;
+
+  const Ogre::Vector2 cameraPos2d(_camera->getDerivedPosition().xy());
+
+  auto itor = this->heightmaps.begin();
+  auto endt = this->heightmaps.end();
+
+  while (itor != endt)
+  {
+    Ogre2HeightmapPtr heightmap = itor->lock();
+    if (!heightmap)
+    {
+      // Heightmap has been destroyed. Remove it from our list.
+      // Swap and pop trick
+      itor = Ogre::efficientVectorRemove(this->heightmaps, itor);
+      endt = this->heightmaps.end();
+    }
+    else
+    {
+      heightmap->UpdateForRender(_camera);
+      Ogre::Terra *terra = heightmap->Terra();
+
+      const Ogre::Vector2 origin2d = terra->getTerrainOrigin().xy() +
+                                     terra->getXZDimensions() * 0.5f;
+      const Ogre::Vector2 end2d = origin2d + terra->getXZDimensions();
+
+      if (!(cameraPos2d.x < origin2d.x || cameraPos2d.x > end2d.x ||
+            cameraPos2d.y < origin2d.y || cameraPos2d.x > end2d.y) )
+      {
+        // Give preference to the Terra we're currently inside of
+        insideTerra = terra;
+      }
+      else
+      {
+        auto sqDist = cameraPos2d.squaredDistance((origin2d + end2d) * 0.5f);
+        if( sqDist < closestTerraSqDist )
+        {
+          closestTerraSqDist = sqDist;
+          closestTerra = terra;
+        }
+      }
+
+      ++itor;
+    }
+  }
+
+  // If we're not inside any Terra, then prefer the one that is
+  // "closest" to camera. Both may be nullptrs though.
+  if (insideTerra)
+  {
+    pbsTerraShadows->setTerra(insideTerra);
+  }
+  else
+  {
+    pbsTerraShadows->setTerra(closestTerra);
+  }
+
+#if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 2
+  if (!this->heightmaps.empty())
+  {
+      // Ogre 2.2 expects ign to provide Terra's shadow texture
+      // to each compositor that may use it to properly set barriers
+      // (otherwise GPU may start rendering before the Compute Shader
+      // is done ray marching terrain shadows)
+      //
+      // This is insane with so many possible compositors ign has,
+      // so we do a brute-force approach here (not that expensive actually)
+      //
+      // Ogre 2.3 got rid of this requirement due to being very user-hostile
+      Ogre::RenderSystem *renderSys =
+              this->ogreSceneManager->getDestinationRenderSystem();
+
+      Ogre::ResourceTransition resourceTransition;
+      resourceTransition.readBarrierBits = Ogre::ReadBarrier::Uav;
+      resourceTransition.writeBarrierBits = Ogre::WriteBarrier::Uav;
+      renderSys->_resourceTransitionCreated(&resourceTransition);
+      renderSys->_executeResourceTransition(&resourceTransition);
+      renderSys->_resourceTransitionDestroyed(&resourceTransition);
+  }
+#endif
 }
 
 //////////////////////////////////////////////////
@@ -268,7 +651,7 @@ void Ogre2Scene::UpdateShadowNode()
   // directional lights
   unsigned int atlasId = 0u;
   unsigned int texSize = 2048u;
-  unsigned int halfTexSize = texSize * 0.5;
+  unsigned int halfTexSize = static_cast<unsigned int>(texSize * 0.5);
   for (unsigned int i = 0; i < dirLightCount; ++i)
   {
     shadowParam.technique = Ogre::SHADOWMAP_PSSM;
@@ -424,17 +807,20 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
     for (size_t i = 0; i < numTextures; ++i)
     {
       const Ogre::ShadowNodeHelper::Resolution &atlasRes = atlasResolutions[i];
+      Ogre::String texName = "atlas" + Ogre::StringConverter::toString(i);
       Ogre::TextureDefinitionBase::TextureDefinition *texDef =
-          shadowNodeDef->addTextureDefinition(
-          "atlas" + Ogre::StringConverter::toString(i));
+          shadowNodeDef->addTextureDefinition(texName);
 
       texDef->width = std::max(atlasRes.x, 1u);
       texDef->height = std::max(atlasRes.y, 1u);
-      texDef->formatList.push_back(Ogre::PF_D32_FLOAT);
+      texDef->format = Ogre::PFG_D32_FLOAT;
       texDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
-      texDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
+      texDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
       texDef->preferDepthTexture = false;
-      texDef->fsaa = false;
+      texDef->fsaa = "0";
+      Ogre::RenderTargetViewDef *rtv =
+        shadowNodeDef->addRenderTextureView(texName);
+      rtv->setForTextureDefinition(texName, texDef);
     }
 
     // Define the cubemap needed by point lights
@@ -443,15 +829,18 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
       Ogre::TextureDefinitionBase::TextureDefinition *texDef =
           shadowNodeDef->addTextureDefinition("tmpCubemap");
 
-      texDef->width   = pointLightCubemapResolution;
-      texDef->height  = pointLightCubemapResolution;
-      texDef->depth   = 6u;
-      texDef->textureType = Ogre::TEX_TYPE_CUBE_MAP;
-      texDef->formatList.push_back(Ogre::PF_FLOAT32_R);
+      texDef->width = pointLightCubemapResolution;
+      texDef->height = pointLightCubemapResolution;
+      texDef->depthOrSlices = 6u;
+      texDef->textureType = Ogre::TextureTypes::TypeCube;
+      texDef->format = Ogre::PFG_R16_UNORM;
       texDef->depthBufferId = 1u;
-      texDef->depthBufferFormat = Ogre::PF_D32_FLOAT;
+      texDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
       texDef->preferDepthTexture = false;
-      texDef->fsaa = false;
+      texDef->fsaa = "0";
+      Ogre::RenderTargetViewDef *rtv =
+        shadowNodeDef->addRenderTextureView( "tmpCubemap" );
+      rtv->setForTextureDefinition( "tmpCubemap", texDef );
     }
   }
 
@@ -477,19 +866,23 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
     for (size_t j = 0; j < numSplits; ++j)
     {
       Ogre::Vector2 uvOffset(
-          shadowParam.atlasStart[j].x, shadowParam.atlasStart[j].y);
+          static_cast<Ogre::Real>(shadowParam.atlasStart[j].x),
+          static_cast<Ogre::Real>(shadowParam.atlasStart[j].y));
       Ogre::Vector2 uvLength(
-          shadowParam.resolution[j].x, shadowParam.resolution[j].y);
+          static_cast<Ogre::Real>(shadowParam.resolution[j].x),
+          static_cast<Ogre::Real>(shadowParam.resolution[j].y));
 
-      uvOffset /= Ogre::Vector2(texResolution.x, texResolution.y);
-      uvLength /= Ogre::Vector2(texResolution.x, texResolution.y);
+      uvOffset /= Ogre::Vector2(static_cast<Ogre::Real>(texResolution.x),
+          static_cast<Ogre::Real>(texResolution.y));
+      uvLength /= Ogre::Vector2(static_cast<Ogre::Real>(texResolution.x),
+          static_cast<Ogre::Real>(texResolution.y));
 
       const Ogre::String texName =
           "atlas" + Ogre::StringConverter::toString(shadowParam.atlasId);
 
       Ogre::ShadowTextureDefinition *shadowTexDef =
           shadowNodeDef->addShadowTextureDefinition(lightIdx, j, texName,
-          0, uvOffset, uvLength, 0);
+          uvOffset, uvLength, 0);
       shadowTexDef->shadowMapTechnique = shadowParam.technique;
       shadowTexDef->pssmLambda = pssmLambda;
       shadowTexDef->splitPadding = splitPadding;
@@ -516,8 +909,8 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
       Ogre::CompositorPassDef *passDef = targetDef->addPass(Ogre::PASS_CLEAR);
       Ogre::CompositorPassClearDef *passClear =
           static_cast<Ogre::CompositorPassClearDef *>(passDef);
-      passClear->mColourValue = Ogre::ColourValue::White;
-      passClear->mDepthValue = 1.0f;
+      passClear->setAllClearColours(Ogre::ColourValue::White);
+      passClear->mClearDepth = 1.0f;
     }
 
     // Pass scene for directional and spot lights first
@@ -571,25 +964,18 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
           targetDef->setShadowMapSupportedLightTypes(
               shadowParam.supportedLightTypes & pointMask);
           {
-            // Clear pass
-            Ogre::CompositorPassDef *passDef =
-                targetDef->addPass(Ogre::PASS_CLEAR);
-            Ogre::CompositorPassClearDef *passClear =
-                static_cast<Ogre::CompositorPassClearDef *>(passDef);
-            passClear->mColourValue = Ogre::ColourValue::White;
-            passClear->mDepthValue = 1.0f;
-            passClear->mShadowMapIdx = shadowMapIdx;
-          }
-
-          {
-            // Scene pass
-            Ogre::CompositorPassDef *passDef =
+              // Scene pass
+              Ogre::CompositorPassDef *passDef =
                 targetDef->addPass(Ogre::PASS_SCENE);
-            Ogre::CompositorPassSceneDef *passScene =
-                static_cast<Ogre::CompositorPassSceneDef *>(passDef);
-            passScene->mCameraCubemapReorient = true;
-            passScene->mShadowMapIdx = shadowMapIdx;
-            passScene->mIncludeOverlays = false;
+              Ogre::CompositorPassSceneDef *passScene =
+                      static_cast<Ogre::CompositorPassSceneDef*>(passDef);
+              passScene->setAllLoadActions(Ogre::LoadAction::Clear);
+              passScene->setAllClearColours(
+                  Ogre::ColourValue(0.0f, 0.0f, 0.0f, 0.0f));
+              passScene->mClearDepth = 1.0f;
+              passScene->mCameraCubemapReorient = true;
+              passScene->mShadowMapIdx = shadowMapIdx;
+              passScene->mIncludeOverlays = false;
           }
         }
 
@@ -605,7 +991,7 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
             static_cast<Ogre::CompositorPassQuadDef *>(passDef);
         passQuad->mMaterialIsHlms = false;
         passQuad->mMaterialName = "Ogre/DPSM/CubeToDpsm";
-        passQuad->addQuadTextureSource(0, "tmpCubemap", 0);
+        passQuad->addQuadTextureSource(0, "tmpCubemap");
         passQuad->mShadowMapIdx = shadowMapIdx;
       }
       const size_t numSplits = shadowParam.technique ==
@@ -638,6 +1024,12 @@ VisualStorePtr Ogre2Scene::Visuals() const
 MaterialMapPtr Ogre2Scene::Materials() const
 {
   return this->materials;
+}
+
+//////////////////////////////////////////////////
+const std::vector<std::weak_ptr<Ogre2Heightmap>> &Ogre2Scene::Heightmaps() const
+{
+  return this->heightmaps;
 }
 
 //////////////////////////////////////////////////
@@ -698,6 +1090,15 @@ ThermalCameraPtr Ogre2Scene::CreateThermalCameraImpl(const unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+SegmentationCameraPtr Ogre2Scene::CreateSegmentationCameraImpl(
+  const unsigned int _id, const std::string &_name)
+{
+  Ogre2SegmentationCameraPtr camera(new Ogre2SegmentationCamera);
+  bool result = this->InitObject(camera, _id, _name);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
 GpuRaysPtr Ogre2Scene::CreateGpuRaysImpl(unsigned int _id,
     const std::string &_name)
 {
@@ -729,6 +1130,32 @@ AxisVisualPtr Ogre2Scene::CreateAxisVisualImpl(unsigned int _id,
     const std::string &_name)
 {
   Ogre2AxisVisualPtr visual(new Ogre2AxisVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+COMVisualPtr Ogre2Scene::CreateCOMVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2COMVisualPtr visual(new Ogre2COMVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+InertiaVisualPtr Ogre2Scene::CreateInertiaVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2InertiaVisualPtr visual(new Ogre2InertiaVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+JointVisualPtr Ogre2Scene::CreateJointVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2JointVisualPtr visual(new Ogre2JointVisual);
   bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : nullptr;
 }
@@ -801,6 +1228,7 @@ MeshPtr Ogre2Scene::CreateMeshImpl(unsigned int _id,
   Ogre2MeshPtr mesh = this->meshFactory->Create(_desc);
   if (nullptr == mesh)
     return nullptr;
+  mesh->SetDescriptor(_desc);
 
   bool result = this->InitObject(mesh, _id, _name);
   return (result) ? mesh : nullptr;
@@ -816,13 +1244,13 @@ CapsulePtr Ogre2Scene::CreateCapsuleImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-HeightmapPtr Ogre2Scene::CreateHeightmapImpl(unsigned int,
-    const std::string &, const HeightmapDescriptor &)
+HeightmapPtr Ogre2Scene::CreateHeightmapImpl(unsigned int _id,
+  const std::string &_name, const HeightmapDescriptor &_desc)
 {
-  ignerr << "Ogre 2 doesn't support heightmaps yet, see " <<
-      "https://github.com/ignitionrobotics/ign-rendering/issues/187"
-      << std::endl;
-  return nullptr;
+  Ogre2HeightmapPtr heightmap(new Ogre2Heightmap(_desc));
+  heightmaps.push_back(heightmap);
+  bool result = this->InitObject(heightmap, _id, _name);
+  return (result) ? heightmap : nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -935,20 +1363,17 @@ void Ogre2Scene::CreateContext()
 {
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
 
-  Ogre::InstancingThreadedCullingMethod threadedCullingMethod =
-      Ogre::INSTANCING_CULLING_SINGLETHREAD;
   // getNumLogicalCores() may return 0 if couldn't detect
   const size_t numThreads = std::max<size_t>(
       1, Ogre::PlatformInformation::getNumLogicalCores());
 
   // See ogre doxygen documentation regarding culling methods.
   // In some cases you may still want to use single thread.
-  // if( numThreads > 1 )
+  // if (numThreads > 1)
   //   threadedCullingMethod = Ogre::INSTANCING_CULLING_THREADED;
   // Create the SceneManager, in this case a generic one
   this->ogreSceneManager = root->createSceneManager(Ogre::ST_GENERIC,
-                                                    numThreads,
-                                                    threadedCullingMethod);
+                                                    numThreads);
 
   this->ogreSceneManager->addRenderQueueListener(
       Ogre2RenderEngine::Instance()->OverlaySystem());
@@ -964,7 +1389,8 @@ void Ogre2Scene::CreateContext()
   // enable forward plus to support multiple lights
   // this is required for non-shadow-casting point lights and
   // spot lights to work
-  this->ogreSceneManager->setForwardClustered(true, 16, 8, 24, 96, 1, 500);
+  this->ogreSceneManager->setForwardClustered(
+    true, 16, 8, 24, 96, 0, 0, 1, 500);
 }
 
 //////////////////////////////////////////////////

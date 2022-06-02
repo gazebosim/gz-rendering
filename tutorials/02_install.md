@@ -86,9 +86,9 @@ wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 sudo apt update
 ```
 
-Install OGRE 2.1 debs
+Install OGRE 2.2 debs
 ```
-sudo apt install libogre-2.1-dev
+sudo apt install libogre-2.2-dev
 ```
 
 **OptiX (experimental)**
@@ -196,6 +196,54 @@ This assumes you have created and activated a Conda environment while installing
   cmake --install . --config Release
   ```
 
+# macOS
+
+## Binary Installation
+
+On macOS, add OSRF packages:
+  ```
+  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  brew tap osrf/simulation
+  ```
+
+Install Ignition Rendering:
+  ```
+  brew install ignition-rendering<#>
+  ```
+
+Be sure to replace `<#>` with a number value, such as 5 or 6, depending on
+which version you need.
+
+## Source Installation
+
+1. Clone the repository
+  ```
+  git clone https://github.com/ignitionrobotics/ign-rendering -b ign-rendering<#>
+  ```
+  Be sure to replace `<#>` with a number value, such as 5 or 6, depending on
+  which version you need.
+
+2. Install dependencies
+  ```
+  brew install --only-dependencies ignition-rendering<#>
+  ```
+  Be sure to replace `<#>` with a number value, such as 5 or 6, depending on
+  which version you need.
+
+3. Configure and build
+  ```
+  cd ign-rendering
+  mkdir build
+  cd build
+  cmake ..
+  make
+  ```
+
+4. Optionally, install
+  ```
+  sudo make install
+  ```
+
 # Documentation
 
 API documentation can be generated using Doxygen
@@ -226,4 +274,3 @@ To run tests specific to a render engine, set the `RENDER_ENGINE_VALUES` environ
   ```
   RENDER_ENGINE_VALUES=ogre2 make test
   ```
-

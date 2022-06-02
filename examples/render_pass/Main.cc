@@ -137,10 +137,11 @@ void buildScene(ScenePtr _scene)
 }
 
 //////////////////////////////////////////////////
-CameraPtr createCamera(const std::string &_engineName)
+CameraPtr createCamera(const std::string &_engineName,
+    const std::map<std::string, std::string>& _params)
 {
   // create and populate scene
-  RenderEngine *engine = rendering::engine(_engineName);
+  RenderEngine *engine = rendering::engine(_engineName, _params);
   if (!engine)
   {
     std::cout << "Engine '" << _engineName
@@ -159,11 +160,24 @@ CameraPtr createCamera(const std::string &_engineName)
   {
     // add gaussian noise pass
     RenderPassPtr pass = rpSystem->Create<GaussianNoisePass>();
-    GaussianNoisePassPtr noisePass =
-        std::dynamic_pointer_cast<GaussianNoisePass>(pass);
-    noisePass->SetMean(0.1);
-    noisePass->SetStdDev(0.08);
-    camera->AddRenderPass(noisePass);
+    if (pass)
+    {
+      GaussianNoisePassPtr noisePass =
+          std::dynamic_pointer_cast<GaussianNoisePass>(pass);
+      noisePass->SetMean(0.1);
+      noisePass->SetStdDev(0.08);
+      camera->AddRenderPass(noisePass);
+    }
+
+    // add distortion pass
+    pass = rpSystem->Create<DistortionPass>();
+    if (pass)
+    {
+      DistortionPassPtr distortionPass =
+          std::dynamic_pointer_cast<DistortionPass>(pass);
+      distortionPass->SetK1(0.5);
+      camera->AddRenderPass(distortionPass);
+    }
   }
   //! [get render pass system]
 
@@ -184,6 +198,12 @@ int main(int _argc, char** _argv)
     ogreEngineName = _argv[1];
   }
 
+  GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
+  if (_argc > 2)
+  {
+    graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));
+  }
+
   common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
@@ -194,7 +214,14 @@ int main(int _argc, char** _argv)
   {
     try
     {
-      CameraPtr camera = createCamera(engineName);
+      std::map<std::string, std::string> params;
+      if (engineName.compare("ogre2") == 0
+          && graphicsApi == GraphicsAPI::METAL)
+      {
+        params["metal"] = "1";
+      }
+
+      CameraPtr camera = createCamera(engineName, params);
       if (camera)
       {
         cameras.push_back(camera);

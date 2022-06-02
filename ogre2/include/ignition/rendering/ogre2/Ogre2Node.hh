@@ -98,7 +98,7 @@ namespace ignition
       protected: virtual math::Quaterniond RawLocalRotation() const;
 
       /// \brief Set the raw local rotation of the node
-      /// \param[in] _position Local rotation to set the node to
+      /// \param[in] _rotation Local rotation to set the node to
       protected: virtual void SetRawLocalRotation(
                      const math::Quaterniond &_rotation);
 

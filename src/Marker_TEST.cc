@@ -109,6 +109,10 @@ void MarkerTest::Marker(const std::string &_renderEngine)
   EXPECT_NO_THROW(marker->SetPoint(0, math::Vector3d(3, 1, 2)));
   EXPECT_NO_THROW(marker->ClearPoints());
 
+  EXPECT_DOUBLE_EQ(1.0, marker->Size());
+  marker->SetSize(3.0);
+  EXPECT_DOUBLE_EQ(3.0, marker->Size());
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

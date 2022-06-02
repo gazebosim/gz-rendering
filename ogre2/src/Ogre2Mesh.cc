@@ -24,6 +24,9 @@
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
 #include <OgreItem.h>
 #include <OgreSceneManager.h>
+#include <OgreMeshManager.h>
+#include <OgreMeshManager2.h>
+#include <OgreMaterialManager.h>
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -38,6 +41,14 @@
 /// brief Private implementation of the Ogre2Mesh class
 class ignition::rendering::Ogre2MeshPrivate
 {
+};
+
+/// brief Private implementation of the Ogre2SubMesh class
+class ignition::rendering::Ogre2SubMeshPrivate
+{
+  /// \brief name of the mesh inside the mesh manager to be able to
+  /// remove it
+  public: std::string subMeshName;
 };
 
 using namespace ignition;
@@ -271,6 +282,7 @@ SubMeshStorePtr Ogre2Mesh::SubMeshes() const
 
 //////////////////////////////////////////////////
 Ogre2SubMesh::Ogre2SubMesh()
+  : dataPtr(new Ogre2SubMeshPrivate)
 {
 }
 
@@ -278,6 +290,40 @@ Ogre2SubMesh::Ogre2SubMesh()
 Ogre2SubMesh::~Ogre2SubMesh()
 {
   this->Destroy();
+}
+
+//////////////////////////////////////////////////
+void Ogre2SubMesh::SetMeshName(const std::string &_name)
+{
+  this->dataPtr->subMeshName = _name;
+}
+
+//////////////////////////////////////////////////
+void Ogre2SubMesh::Destroy()
+{
+  auto meshManager = Ogre::MeshManager::getSingletonPtr();
+  if (meshManager)
+  {
+    auto iend = meshManager->getResourceIterator().end();
+    for (auto i = meshManager->getResourceIterator().begin(); i != iend;)
+    {
+      // A use count of 3 means that only RGM and RM have
+      // references RGM has one (this one) and RM has 2 (by name and by handle)
+      Ogre::Resource* res = i->second.get();
+      if (i->second.useCount() == 3)
+      {
+        if (res->getName() == this->dataPtr->subMeshName)
+        {
+          Ogre::v1::MeshManager::getSingleton().remove(
+            this->dataPtr->subMeshName);
+          Ogre::MeshManager::getSingleton().remove(this->dataPtr->subMeshName);
+          break;
+        }
+      }
+      ++i;
+    }
+  }
+  BaseSubMesh::Destroy();
 }
 
 //////////////////////////////////////////////////
@@ -300,8 +346,17 @@ void Ogre2SubMesh::SetMaterialImpl(MaterialPtr _material)
     return;
   }
 
-  this->ogreSubItem->setDatablock(
-      static_cast<Ogre::HlmsPbsDatablock *>(derived->Datablock()));
+  // low level material with custom shaders
+  if (!derived->FragmentShader().empty() && !derived->VertexShader().empty())
+  {
+    this->ogreSubItem->setMaterial(derived->Material());
+  }
+  // Pbs Hlms material
+  else
+  {
+    this->ogreSubItem->setDatablock(
+        static_cast<Ogre::HlmsPbsDatablock *>(derived->Datablock()));
+  }
 
   // set cast shadows
   this->ogreSubItem->getParent()->setCastShadows(_material->CastShadows());

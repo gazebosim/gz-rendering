@@ -675,6 +675,15 @@ void SceneTest::Time(const std::string &_renderEngine)
   std::chrono::steady_clock::duration duration =
     std::chrono::steady_clock::duration::zero();
 
+#if IGNITION_RENDERING_MAJOR_VERSION <= 6
+  // -1 is a hack and is the only value supposed to
+  // be ignored by ign-rendering6.
+  //
+  // We must call it and EXPECT_EQ(duration, scene->Time());
+  // should still be pass in ign-rendering6.
+  scene->SetTime(std::chrono::nanoseconds(-1));
+#endif
+
   EXPECT_EQ(duration, scene->Time());
 
   duration = std::chrono::seconds(23);

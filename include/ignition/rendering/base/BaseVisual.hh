@@ -77,7 +77,13 @@ namespace ignition
                   bool _unique = true) override;
 
       // Documentation inherited.
-      public: virtual MaterialPtr Material() override;
+      public: virtual MaterialPtr Material() const override;
+
+      // Documentation inherited.
+      public: virtual void SetWireframe(bool _show) override;
+
+      // Documentation inherited.
+      public: virtual bool Wireframe() const override;
 
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
@@ -101,19 +107,16 @@ namespace ignition
       public: virtual void Destroy() override;
 
       // Documentation inherited.
-      public: virtual void SetUserData(const std::string &_key,
-          Variant _value) override;
-
-      // Documentation inherited.
-      public: virtual Variant UserData(const std::string &_key) const override;
-
-      // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox BoundingBox()
               const override;
 
       // Documentation inherited.
       public: virtual ignition::math::AxisAlignedBox LocalBoundingBox()
               const override;
+
+      // Documentation inherited.
+      public: virtual VisualPtr Clone(const std::string &_name,
+                  NodePtr _newParent) const override;
 
       protected: virtual void PreRenderChildren() override;
 
@@ -128,14 +131,14 @@ namespace ignition
       /// \brief Pointer to material assigned to this visual
       protected: MaterialPtr material;
 
-      /// \brief A map of custom key value data
-      protected: std::map<std::string, Variant> userData;
-
       /// \brief Visual's visibility flags
       protected: uint32_t visibilityFlags = IGN_VISIBILITY_ALL;
 
       /// \brief The bounding box of the visual
       protected: ignition::math::AxisAlignedBox boundingBox;
+
+      /// \brief True if wireframe mode is enabled else false
+      protected: bool wireframe = false;
     };
 
     //////////////////////////////////////////////////
@@ -294,7 +297,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    MaterialPtr BaseVisual<T>::Material()
+    MaterialPtr BaseVisual<T>::Material() const
     {
       return this->material;
     }
@@ -347,6 +350,22 @@ namespace ignition
         GeometryPtr geometry = this->GeometryByIndex(i);
         geometry->PreRender();
       }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseVisual<T>::Wireframe() const
+    {
+      return this->wireframe;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetWireframe(bool _show)
+    {
+      ignerr << "SetWireframe(" << _show << ") not supported for "
+             << "render engine: " << this->Scene()->Engine()->Name()
+             << std::endl;
     }
 
     //////////////////////////////////////////////////
@@ -459,20 +478,76 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetUserData(const std::string &_key, Variant _value)
+    VisualPtr BaseVisual<T>::Clone(const std::string &_name,
+        NodePtr _newParent) const
     {
-      this->userData[_key] = _value;
-    }
+      ScenePtr scene_ = this->Scene();
+      if (nullptr == scene_)
+      {
+        ignerr << "Cloning a visual failed because the visual to be cloned is "
+          << "not attached to a scene.\n";
+        return nullptr;
+      }
+      VisualPtr result;
+      if (_name.empty())
+        result = scene_->CreateVisual();
+      else
+        result = scene_->CreateVisual(_name);
 
-    //////////////////////////////////////////////////
-    template <class T>
-    Variant BaseVisual<T>::UserData(const std::string &_key) const
-    {
-      Variant value;
-      auto it = this->userData.find(_key);
-      if (it != this->userData.end())
-        value = it->second;
-      return value;
+      if (nullptr != _newParent)
+      {
+        auto parentScene = _newParent->Scene();
+        if (nullptr != parentScene && parentScene->Id() != scene_->Id())
+        {
+          ignerr << "Cloning a visual failed because the desired parent of the "
+            << "cloned visual belongs to a different scene.\n";
+          scene_->DestroyVisual(result);
+          return nullptr;
+        }
+        _newParent->AddChild(result);
+      }
+
+      result->SetOrigin(this->Origin());
+      result->SetInheritScale(this->InheritScale());
+      result->SetLocalScale(this->LocalScale());
+      result->SetLocalPose(this->LocalPose());
+      result->SetVisibilityFlags(this->VisibilityFlags());
+      result->SetWireframe(this->Wireframe());
+
+      // if the visual that was cloned has child visuals, clone those as well
+      auto children_ =
+          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          this->Children());
+      if (!children_)
+      {
+        ignerr << "Cast failed in BaseVisual::Clone\n";
+        scene_->DestroyVisual(result);
+        return nullptr;
+      }
+      for (auto it = children_->Begin(); it != children_->End(); ++it)
+      {
+        NodePtr child = it->second;
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        // recursively delete all cloned visuals if the child cannot be
+        // retrieved, or if cloning the child visual failed
+        if (!visual || !visual->Clone("", result))
+        {
+          ignerr << "Cloning a child visual failed.\n";
+          scene_->DestroyVisual(result, true);
+          return nullptr;
+        }
+      }
+
+      for (unsigned int i = 0; i < this->GeometryCount(); ++i)
+        result->AddGeometry(this->GeometryByIndex(i)->Clone());
+
+      if (this->Material())
+        result->SetMaterial(this->Material());
+
+      for (const auto &[key, val] : this->userData)
+        result->SetUserData(key, val);
+
+      return result;
     }
     }
   }

@@ -24,6 +24,7 @@
 
 #include <ignition/common/SingletonT.hh>
 
+#include "ignition/rendering/GraphicsAPI.hh"
 #include "ignition/rendering/RenderEnginePlugin.hh"
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
@@ -34,10 +35,14 @@ namespace Ogre
 {
   class LogManager;
   class Root;
+  class Window;
   namespace v1
   {
     class OverlaySystem;
   }
+
+  class HlmsPbsTerraShadows;
+  class CompositorWorkspaceListener;
 }
 
 namespace ignition
@@ -48,6 +53,7 @@ namespace ignition
     //
     // forward declaration
     class Ogre2RenderEnginePrivate;
+    class Ogre2IgnHlmsCustomizations;
 
     /// \brief Plugin for loading ogre render engine
     class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2RenderEnginePlugin :
@@ -94,6 +100,9 @@ namespace ignition
       /// \param[in] _uri Resource path in the form of an uri
       public: void AddResourcePath(const std::string &_uri) override;
 
+      /// \brief return the ogre window
+      public: Ogre::Window * OgreWindow() const;
+
       /// \brief Get the ogre2 root object
       /// \return ogre2 root object
       public: virtual Ogre::Root *OgreRoot() const;
@@ -110,9 +119,15 @@ namespace ignition
                   const unsigned int _width, const unsigned int _height,
                   const double _ratio, const unsigned int _antiAliasing);
 
+      /// \brief Get the render engine's graphics API
+      /// Note: Do not merge this forward. This has been changed to
+      /// virtual function in ign-rendering7
+      /// \return The graphics API enum class
+      public: rendering::GraphicsAPI GraphicsAPI() const;
+
       /// \brief Create a scene
       /// \param[in] _id Unique scene Id
-      /// \parampin] _name Name of scene
+      /// \param[in] _name Name of scene
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name) override;
 
@@ -137,6 +152,9 @@ namespace ignition
 
       /// \brief Create GL context
       private: void CreateContext();
+
+      /// \brief Register Hlms
+      private: void RegisterHlms();
 
       /// \brief Create ogre root
       private: void CreateRoot();
@@ -163,10 +181,33 @@ namespace ignition
       /// \return a list of FSAA levels
       public: std::vector<unsigned int> FSAALevels() const;
 
+      /// \brief Retrieves Hlms customizations for tweaking them
+      /// \return Ogre HLMS customizations
+      public: Ogre2IgnHlmsCustomizations &HlmsCustomizations();
+
       /// \internal
       /// \brief Get a pointer to the Ogre overlay system.
       /// \return Pointer to the ogre overlay system.
       public: Ogre::v1::OverlaySystem *OverlaySystem() const;
+
+      /// \internal
+      /// \brief Get a pointer to the Pbs listener that adds terra shadows.
+      /// Do NOT assume HlmsPbs::getListener() == HlmsPbsTerraShadows()
+      /// as there may be more than one listener in the future with
+      /// a master listener coordinating them
+      /// \return Pointer to the Pbs listener that adds terra shadows.
+      public: Ogre::HlmsPbsTerraShadows *HlmsPbsTerraShadows() const;
+
+      /// \internal
+      /// \brief Get a pointer to the workspace listener that adds terra
+      /// casting shadows from spot and point lights.
+      ///
+      /// This listener needs to be added to each workspace that wants
+      /// terrain shadows from spot/point lights. If no terrains are in scene
+      /// then the workspace's overhead is negligible / almost 0.
+      /// \return Pointer to the CompositorWorkspaceListener
+      public: Ogre::CompositorWorkspaceListener
+          *TerraWorkspaceListener() const;
 
       /// \brief Pointer to the ogre's overlay system
       private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;
@@ -192,6 +233,9 @@ namespace ignition
       /// \brief Dummy window Id needed for linux platform
       private: uint64_t dummyWindowId = 0u;
 
+      /// \brief Ogre Window
+      private: Ogre::Window *window = nullptr;
+
       /// \brief True to use the current opengl context
       private: bool useCurrentGLContext = false;
 
@@ -205,4 +249,3 @@ namespace ignition
   }
 }
 #endif
-

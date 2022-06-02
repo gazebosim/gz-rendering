@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_GEOMETRY_HH_
 
 #include <string>
+
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/Object.hh"
@@ -55,17 +56,21 @@ namespace ignition
       /// \param[in] _name Name of registered Material
       /// \param[in] _unique True if the specified material should be cloned
       public: virtual void SetMaterial(const std::string &_name,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
 
       /// \brief Set the materials of this Geometry
       /// \param[in] _material New Material to be assigned
       /// \param[in] _unique True if the given material should be cloned
       public: virtual void SetMaterial(MaterialPtr _material,
-                  bool unique = true) = 0;
+                  bool _unique = true) = 0;
 
       /// \brief Get the material of this geometry
       /// \return Material used by this geometry
       public: virtual MaterialPtr Material() const = 0;
+
+      /// \brief Clone the geometry.
+      /// \return The cloned geometry.
+      public: virtual GeometryPtr Clone() const = 0;
     };
     }
   }

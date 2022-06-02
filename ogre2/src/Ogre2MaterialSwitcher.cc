@@ -36,6 +36,12 @@ using namespace ignition;
 using namespace rendering;
 
 
+/// \brief A map of ogre sub item pointer to their original low level material
+/// \todo(anyone) Added here for ABI compatibity. Move to private class
+/// in ign-rendering7
+std::map<Ogre2MaterialSwitcher *,
+         std::map<Ogre::SubItem *, Ogre::MaterialPtr>> materialMap;
+
 /////////////////////////////////////////////////
 Ogre2MaterialSwitcher::Ogre2MaterialSwitcher(Ogre2ScenePtr _scene)
 {
@@ -74,13 +80,12 @@ Ogre2MaterialSwitcher::~Ogre2MaterialSwitcher()
 }
 
 ////////////////////////////////////////////////
-void Ogre2MaterialSwitcher::preRenderTargetUpdate(
-    const Ogre::RenderTargetEvent &/*_evt*/)
+void Ogre2MaterialSwitcher::cameraPreRenderScene(
+    Ogre::Camera * /*_evt*/)
 {
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials
   // on the fly. We are not doing this often so should be ok.
-  this->datablockMap.clear();
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
   while (itor.hasMoreElements())
@@ -95,28 +100,48 @@ void Ogre2MaterialSwitcher::preRenderTargetUpdate(
     for (unsigned int i = 0; i < item->getNumSubItems(); ++i)
     {
       Ogre::SubItem *subItem = item->getSubItem(i);
-      Ogre::HlmsDatablock *datablock = subItem->getDatablock();
-      this->datablockMap[subItem] = datablock;
-
       subItem->setCustomParameter(1,
           Ogre::Vector4(this->currentColor.R(), this->currentColor.G(),
                         this->currentColor.B(), 1.0));
 
-      // check if it's an overlay material by assuming the
-      // depth check and depth write properties are off.
-      if (!datablock->getMacroblock()->mDepthWrite &&
-          !datablock->getMacroblock()->mDepthCheck)
-        subItem->setMaterial(this->plainOverlayMaterial);
+      // case when item is using low level materials
+      // e.g. shaders
+      if (!subItem->getMaterial().isNull())
+      {
+        materialMap[this][subItem] = subItem->getMaterial();
+        auto technique = subItem->getMaterial()->getTechnique(0);
+
+        if (technique && !technique->isDepthWriteEnabled() &&
+            !technique->isDepthCheckEnabled())
+        {
+          subItem->setMaterial(this->plainOverlayMaterial);
+        }
+        else
+        {
+          subItem->setMaterial(this->plainMaterial);
+        }
+      }
+      // regular Pbs Hlms datablock
       else
-        subItem->setMaterial(this->plainMaterial);
+      {
+        Ogre::HlmsDatablock *datablock = subItem->getDatablock();
+        this->datablockMap[subItem] = datablock;
+        // check if it's an overlay material by assuming the
+        // depth check and depth write properties are off.
+        if (!datablock->getMacroblock()->mDepthWrite &&
+            !datablock->getMacroblock()->mDepthCheck)
+          subItem->setMaterial(this->plainOverlayMaterial);
+        else
+          subItem->setMaterial(this->plainMaterial);
+      }
     }
     itor.moveNext();
   }
 }
 
 /////////////////////////////////////////////////
-void Ogre2MaterialSwitcher::postRenderTargetUpdate(
-    const Ogre::RenderTargetEvent &/*_evt*/)
+void Ogre2MaterialSwitcher::cameraPostRenderScene(
+    Ogre::Camera * /*_evt*/)
 {
   // restore item to use hlms material
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
@@ -131,9 +156,17 @@ void Ogre2MaterialSwitcher::postRenderTargetUpdate(
       auto it = this->datablockMap.find(subItem);
       if (it != this->datablockMap.end())
         subItem->setDatablock(it->second);
+      else
+      {
+        auto mIt = materialMap[this].find(subItem);
+        if (mIt != materialMap[this].end())
+          subItem->setMaterial(mIt->second);
+      }
     }
     itor.moveNext();
   }
+  this->datablockMap.clear();
+  materialMap[this].clear();
 }
 
 /////////////////////////////////////////////////

@@ -40,6 +40,7 @@
 #include <OgreMeshManager2.h>
 #include <OgreSceneManager.h>
 #include <OgreSubMesh2.h>
+#include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif
@@ -130,6 +131,16 @@ void Ogre2DynamicRenderable::Destroy()
   this->dataPtr->sceneManager->destroyItem(this->dataPtr->ogreItem);
   this->dataPtr->ogreItem = nullptr;
 
+  // remove mesh from mesh manager
+  if (this->dataPtr->subMesh &&
+      Ogre::MeshManager::getSingleton().resourceExists(
+      this->dataPtr->subMesh->mParent->getName()))
+  {
+    Ogre::MeshManager::getSingleton().remove(
+        this->dataPtr->subMesh->mParent->getName());
+    this->dataPtr->subMesh = nullptr;
+  }
+
   if (this->dataPtr->material && this->dataPtr->ownsMaterial)
   {
     this->dataPtr->scene->DestroyMaterial(this->dataPtr->material);
@@ -150,11 +161,16 @@ void Ogre2DynamicRenderable::DestroyBuffer()
   if (!vaoManager)
     return;
 
-  if (this->dataPtr->vertexBuffer)
-    vaoManager->destroyVertexBuffer(this->dataPtr->vertexBuffer);
-
-  if (this->dataPtr->vao)
-    vaoManager->destroyVertexArrayObject(this->dataPtr->vao);
+  if (this->dataPtr->subMesh)
+  {
+    if (!this->dataPtr->subMesh->mVao[Ogre::VpNormal].empty())
+    {
+      this->dataPtr->subMesh->destroyVaos(
+          this->dataPtr->subMesh->mVao[Ogre::VpNormal], vaoManager);
+    }
+    if (!this->dataPtr->subMesh->mVao[Ogre::VpShadow].empty())
+      this->dataPtr->subMesh->mVao[Ogre::VpShadow].clear();
+  }
 
   this->dataPtr->vertexBuffer = nullptr;
   this->dataPtr->vao = nullptr;
@@ -326,6 +342,9 @@ void Ogre2DynamicRenderable::UpdateBuffer()
   // update item aabb
   if (this->dataPtr->ogreItem)
   {
+    bool castShadows = this->dataPtr->ogreItem->getCastShadows();
+    auto lowLevelMat = this->dataPtr->ogreItem->getSubItem(0)->getMaterial();
+
     // need to rebuild ogre [sub]item because the vao was destroyed
     // this updates the item's bounding box and fixes occasional crashes
     // from invalid access to old vao
@@ -339,6 +358,13 @@ void Ogre2DynamicRenderable::UpdateBuffer()
           this->dataPtr->material->Datablock()));
       this->dataPtr->ogreItem->setCastShadows(
           this->dataPtr->material->CastShadows());
+    }
+    else if (lowLevelMat)
+    {
+      // the _initialise call above resets the ogre item properties so set
+      // them again
+      this->dataPtr->ogreItem->getSubItem(0)->setMaterial(lowLevelMat);
+      this->dataPtr->ogreItem->setCastShadows(castShadows);
     }
   }
 

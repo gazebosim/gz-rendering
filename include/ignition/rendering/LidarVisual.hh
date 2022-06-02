@@ -171,6 +171,16 @@ namespace ignition
       /// \return The type for lidar visual
       public: virtual LidarVisualType Type() const = 0;
 
+      /// \brief Set size of the lidar visualization,
+      /// e.g. size of rasterized lidar points in pixels
+      /// \param[in] _size Size of the lidar visualization.
+      public: virtual void SetSize(double _size) = 0;
+
+      /// \brief Get size of the lidar visualization
+      /// \return Size of the lidar visualization.
+      /// \sa SetSize
+      public: virtual double Size() const = 0;
+
       /// \brief Set if non-hitting rays will be displayed
       /// (this does not work for TRIANGLE_STRIPS visual)
       /// \param[in] _display Boolean value to display non hitting visuals

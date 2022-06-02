@@ -43,6 +43,12 @@ namespace ignition
       /// \brief Destructor
       public: virtual ~Ogre2Visual();
 
+      // Documentation inherited
+      public: virtual void SetWireframe(bool _show) override;
+
+      // Documentation inherited
+      public: virtual bool Wireframe() const override;
+
       // Documentation inherited.
       public: virtual void SetVisible(bool _visible) override;
 

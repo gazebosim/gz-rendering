@@ -6,8 +6,12 @@ set(IGN_COMMON_VER 4)
 find_package(ignition-rendering6 REQUIRED)
 find_package(ignition-plugin1 REQUIRED COMPONENTS all)
 
-include_directories(/ignition-ws/shared/LuxCore-sdk/include)
-find_library(LUXCORE_LIBRARY luxcore HINTS /ignition-ws/shared/LuxCore-sdk/lib/)
+if (NOT DEFINED ENV{LUXCORE_SDK_PATH})
+  message(FATAL_ERROR "Must define LUXCORE_SDK_PATH")
+endif ()
+
+include_directories($ENV{LUXCORE_SDK_PATH}/include)
+find_library(LUXCORE_LIBRARY luxcore HINTS $ENV{LUXCORE_SDK_PATH}/lib/)
 
 add_library(LuxCoreEngine SHARED 
   LuxCoreEngineObject.cc 

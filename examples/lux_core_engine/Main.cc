@@ -161,18 +161,15 @@ CameraPtr createCamera(const std::string &_engineName) {
 int main(int _argc, char **_argv) {
   glutInit(&_argc, _argv);
 
-  // Expose engine name to command line because we can't instantiate both
-  // ogre and ogre2 at the same time
-  std::string ogreEngineName("ogre");
-  if (_argc > 1) {
-    ogreEngineName = _argv[1];
-  }
-
   common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  // engineNames.push_back(ogreEngineName);
+  std::cout << "Hint: Make sure to set IGN_RENDERING_PLUGIN_PATH to the " <<
+               "directory containing \'libLuxCoreEngine.so\'" << std::endl;
+
+  std::cout << "It may take a while to initialize LuxCore" << std::endl;
+
   engineNames.push_back("LuxCoreEngine");
 
   for (auto engineName : engineNames) {

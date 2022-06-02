@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef ignition_rendering_luxcoreengine_luxcoreenginerendertypes_hh_
-#define ignition_rendering_luxcoreengine_luxcoreenginerendertypes_hh_
+#ifndef IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINERENDERTYPES_HH_
+#define IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINERENDERTYPES_HH_
 
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
 namespace ignition {
 namespace rendering {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+
 class LuxCoreEngineCamera;
 class LuxCoreEngineScene;
 class LuxCoreEngineSensor;
@@ -72,6 +73,7 @@ typedef BaseVisualStore<LuxCoreEngineVisual> LuxCoreEngineVisualStore;
 typedef shared_ptr<LuxCoreEngineVisualStore> LuxCoreEngineVisualStorePtr;
 typedef BaseGeometryStore<LuxCoreEngineGeometry> LuxCoreEngineGeometryStore;
 typedef shared_ptr<LuxCoreEngineGeometryStore> LuxCoreEngineGeometryStorePtr;
+
 } // namespace IGNITION_RENDERING_VERSION_NAMESPACE
 } // namespace rendering
 } // namespace ignition

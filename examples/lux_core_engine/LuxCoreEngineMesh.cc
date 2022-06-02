@@ -1,11 +1,28 @@
+/*
+ * Copyright (C) 2022 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 #include "LuxCoreEngineMesh.hh"
-
 #include "LuxCoreEngineScene.hh"
 
 using namespace ignition;
 using namespace rendering;
 
-std::vector<float> multiplyMatrix(float *a, float *b) {
+//////////////////////////////////////////////////
+std::vector<float> multiplyMatrix(float *a, float *b)
+{
   std::vector<float> result(16);
   for (uint32_t x = 0; x < 4; x++) {
     for (uint32_t y = 0; y < 4; y++) {
@@ -20,7 +37,9 @@ std::vector<float> multiplyMatrix(float *a, float *b) {
   return result;
 }
 
-std::vector<float> inverseMatrix(float *m) {
+//////////////////////////////////////////////////
+std::vector<float> inverseMatrix(float *m)
+{
   float result[16];
   std::vector<float> resultOut(16);
 
@@ -90,7 +109,9 @@ std::vector<float> inverseMatrix(float *m) {
   return resultOut;
 }
 
-LuxCoreEngineMesh::LuxCoreEngineMesh() {
+//////////////////////////////////////////////////
+LuxCoreEngineMesh::LuxCoreEngineMesh()
+{
   this->subMeshes = LuxCoreEngineSubMeshStorePtr(new LuxCoreEngineSubMeshStore);
 
   memset(this->scaleMatrix, 0, 16 * sizeof(float));
@@ -119,20 +140,32 @@ LuxCoreEngineMesh::LuxCoreEngineMesh() {
   this->previousMatrix[15] = 1.0f;
 }
 
-bool LuxCoreEngineMesh::HasParent() const {}
+//////////////////////////////////////////////////
+bool LuxCoreEngineMesh::HasParent() const
+{
+}
 
-VisualPtr LuxCoreEngineMesh::Parent() const {}
+//////////////////////////////////////////////////
+VisualPtr LuxCoreEngineMesh::Parent() const
+{
+}
 
-void LuxCoreEngineMesh::SetMaterial(MaterialPtr _material, bool _unique) {
+//////////////////////////////////////////////////
+void LuxCoreEngineMesh::SetMaterial(MaterialPtr _material, bool _unique)
+{
   scene->SceneLux()->Parse(
       luxrays::Property("scene.objects." + Name() + ".shape")(Name() + "-mesh")
       << luxrays::Property("scene.objects." + Name() +
                            ".material")(_material->Name()));
 }
 
-void LuxCoreEngineMesh::UpdateTransformation() {
-  if (SubMeshes()->Size() > 0) {
-    for (unsigned int i = 0; i < SubMeshes()->Size(); i++) {
+//////////////////////////////////////////////////
+void LuxCoreEngineMesh::UpdateTransformation()
+{
+  if (SubMeshes()->Size() > 0)
+  {
+    for (unsigned int i = 0; i < SubMeshes()->Size(); i++)
+    {
       std::vector<float> result =
           multiplyMatrix(this->rotationMatrix, this->scaleMatrix);
       result = multiplyMatrix(this->translationMatrix, result.data());
@@ -143,7 +176,9 @@ void LuxCoreEngineMesh::UpdateTransformation() {
           SubMeshes()->GetByIndex(i)->Name(), offsetMatrix.data());
       memcpy(this->previousMatrix, result.data(), sizeof(float) * 16);
     }
-  } else {
+  } 
+  else
+  {
     std::vector<float> result =
         multiplyMatrix(this->rotationMatrix, this->scaleMatrix);
     result = multiplyMatrix(this->translationMatrix, result.data());
@@ -155,7 +190,9 @@ void LuxCoreEngineMesh::UpdateTransformation() {
   }
 }
 
-void LuxCoreEngineMesh::SetLocalPosition(double _x, double _y, double _z) {
+//////////////////////////////////////////////////
+void LuxCoreEngineMesh::SetLocalPosition(double _x, double _y, double _z)
+{
   this->translationMatrix[12] = _x;
   this->translationMatrix[13] = _y;
   this->translationMatrix[14] = _z;
@@ -163,7 +200,9 @@ void LuxCoreEngineMesh::SetLocalPosition(double _x, double _y, double _z) {
   this->UpdateTransformation();
 }
 
-void LuxCoreEngineMesh::SetLocalScale(double _x, double _y, double _z) {
+//////////////////////////////////////////////////
+void LuxCoreEngineMesh::SetLocalScale(double _x, double _y, double _z)
+{
   this->scaleMatrix[0] = _x;
   this->scaleMatrix[5] = _y;
   this->scaleMatrix[10] = _z;
@@ -171,7 +210,9 @@ void LuxCoreEngineMesh::SetLocalScale(double _x, double _y, double _z) {
   this->UpdateTransformation();
 }
 
-void LuxCoreEngineMesh::SetLocalRotation(double _r, double _p, double _y) {
+//////////////////////////////////////////////////
+void LuxCoreEngineMesh::SetLocalRotation(double _r, double _p, double _y)
+{
   this->rotationMatrix[0] = cos(_y) * cos(_p);
   this->rotationMatrix[1] = sin(_y) * cos(_p);
   this->rotationMatrix[2] = -sin(_p);
@@ -185,14 +226,31 @@ void LuxCoreEngineMesh::SetLocalRotation(double _r, double _p, double _y) {
   this->UpdateTransformation();
 }
 
-void LuxCoreEngineMesh::SetName(std::string name) { this->name = name; }
+//////////////////////////////////////////////////
+void LuxCoreEngineMesh::SetName(std::string name)
+{
+  this->name = name;
+}
 
-void LuxCoreEngineMesh::AddSubMesh(const LuxCoreEngineSubMeshPtr _child) {
+//////////////////////////////////////////////////
+void LuxCoreEngineMesh::AddSubMesh(const LuxCoreEngineSubMeshPtr _child)
+{
   this->subMeshes->Add(_child);
 }
 
-SubMeshStorePtr LuxCoreEngineMesh::SubMeshes() const { return this->subMeshes; }
+//////////////////////////////////////////////////
+SubMeshStorePtr LuxCoreEngineMesh::SubMeshes() const
+{
+  return this->subMeshes;
+}
 
-void LuxCoreEngineSubMesh::SetMaterialImpl(MaterialPtr _material) {}
+//////////////////////////////////////////////////
+void LuxCoreEngineSubMesh::SetMaterialImpl(MaterialPtr _material)
+{
+}
 
-void LuxCoreEngineSubMesh::SetName(std::string name) { this->name = name; }
+//////////////////////////////////////////////////
+void LuxCoreEngineSubMesh::SetName(std::string name)
+{
+  this->name = name;
+}

@@ -656,7 +656,6 @@ namespace ignition
                    // The following two lines will avoid doxygen warnings
                    (void)_id;
                    (void)_name;
-
                    ignerr << "Segmentation camera not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return SegmentationCameraPtr();

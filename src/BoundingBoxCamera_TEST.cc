@@ -62,8 +62,8 @@ void BoundingBoxCameraTest::BoundingBoxCamera(const std::string &_renderEngine)
   unsigned char *data = new unsigned char[width * height * channels];
 
   BoundingBox box;
-  box.Center({125, 125, 0});
-  box.Size({50, 50, 0});
+  box.SetCenter({125, 125, 0});
+  box.SetSize({50, 50, 0});
 
   camera->SetImageWidth(width);
   camera->SetImageHeight(height);

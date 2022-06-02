@@ -25,19 +25,19 @@ using namespace rendering;
 class ignition::rendering::BoundingBoxPrivate
 {
   /// \brief Center of the bounding box
-  public: ignition::math::Vector3d center;
+  public: math::Vector3d center;
 
   /// \brief Size of the bounding box
-  public: ignition::math::Vector3d size;
+  public: math::Vector3d size;
 
   /// \brief Orientation of the bounding box
-  public: ignition::math::Quaterniond orientation;
+  public: math::Quaterniond orientation;
 
   /// \brief Label of the bounding box
   public: uint32_t label;
 
   /// \brief 3D vertices of the bounding box
-  public: std::vector<ignition::math::Vector3d> vertices3d;
+  public: std::vector<math::Vector3d> vertices3d;
 
   /// \brief Helper method for computing the bounding box's 3D vertices.
   /// This should be called whenever the box's center, size, or orientation
@@ -122,46 +122,46 @@ BoundingBox &BoundingBox::operator=(BoundingBox &&_box)
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Vector3d &BoundingBox::Center() const
+const math::Vector3d &BoundingBox::Center() const
 {
   return this->dataPtr->center;
 }
 
 /////////////////////////////////////////////////
-void BoundingBox::Center(const ignition::math::Vector3d &_center)
+void BoundingBox::SetCenter(const math::Vector3d &_center)
 {
   this->dataPtr->center = _center;
   this->dataPtr->ComputeVertices();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Vector3d &BoundingBox::Size() const
+const math::Vector3d &BoundingBox::Size() const
 {
   return this->dataPtr->size;
 }
 
 /////////////////////////////////////////////////
-void BoundingBox::Size(const ignition::math::Vector3d &_size)
+void BoundingBox::SetSize(const math::Vector3d &_size)
 {
   this->dataPtr->size = _size;
   this->dataPtr->ComputeVertices();
 }
 
 /////////////////////////////////////////////////
-const ignition::math::Quaterniond &BoundingBox::Orientation() const
+const math::Quaterniond &BoundingBox::Orientation() const
 {
   return this->dataPtr->orientation;
 }
 
 /////////////////////////////////////////////////
-void BoundingBox::Orientation(const ignition::math::Quaterniond &_orientation)
+void BoundingBox::SetOrientation(const math::Quaterniond &_orientation)
 {
   this->dataPtr->orientation = _orientation;
   this->dataPtr->ComputeVertices();
 }
 
 /////////////////////////////////////////////////
-const std::vector<ignition::math::Vector3d> &BoundingBox::Vertices3D() const
+const std::vector<math::Vector3d> &BoundingBox::Vertices3D() const
 {
   return this->dataPtr->vertices3d;
 }
@@ -173,7 +173,7 @@ uint32_t BoundingBox::Label() const
 }
 
 /////////////////////////////////////////////////
-void BoundingBox::Label(uint32_t _label)
+void BoundingBox::SetLabel(uint32_t _label)
 {
   this->dataPtr->label = _label;
 }

@@ -738,10 +738,10 @@ void Ogre2BoundingBoxCamera::MergeMultiLinksModels3D()
       // convert to rendering::BoundingBox format
       BoundingBox box;
       auto pose = mergedBox.Pose();
-      box.Center(pose.Pos());
-      box.Orientation(pose.Rot());
-      box.Size(mergedBox.Size());
-      box.Label(this->dataPtr->visibleBoxesLabel[ogreIds[0]]);
+      box.SetCenter(pose.Pos());
+      box.SetOrientation(pose.Rot());
+      box.SetSize(mergedBox.Size());
+      box.SetLabel(this->dataPtr->visibleBoxesLabel[ogreIds[0]]);
 
       this->dataPtr->outputBoxes.push_back(box);
     }
@@ -803,11 +803,11 @@ BoundingBox Ogre2BoundingBoxCamera::MergeBoxes2D(
     maxY = std::max<uint32_t>(maxY, boxMaxY);
   }
 
-  uint32_t width = maxX - minX;
-  uint32_t height = maxY - minY;
-  mergedBox.Size({width, height, 0});
-  mergedBox.Center({minX + width / 2, minY + height / 2, 0});
-  mergedBox.Label(_boxes[0]->Label());
+  auto width = static_cast<double>(maxX - minX);
+  auto height = static_cast<double>(maxY - minY);
+  mergedBox.SetSize({width, height, 0});
+  mergedBox.SetCenter({minX + width * 0.5, minY + height * 0.5, 0});
+  mergedBox.SetLabel(_boxes[0]->Label());
 
   return mergedBox;
 }
@@ -868,8 +868,8 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
     Ogre::Vector3 viewPosition = viewMatrix * position;
 
     // Convert to ignition::math
-    box->Center(Ogre2Conversions::Convert(viewPosition));
-    box->Size(Ogre2Conversions::Convert(size));
+    box->SetCenter(Ogre2Conversions::Convert(viewPosition));
+    box->SetSize(Ogre2Conversions::Convert(size));
 
     // Compute the rotation of the box from its world rotation & view matrix
     auto worldCameraRotation = Ogre2Conversions::Convert(
@@ -878,7 +878,7 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
 
     // Body to camera rotation = body_world * world_camera
     auto bodyCameraRotation = worldCameraRotation * bodyWorldRotation;
-    box->Orientation(bodyCameraRotation);
+    box->SetOrientation(bodyCameraRotation);
 
     this->dataPtr->boundingboxes[ogreId] = box;
     itor.moveNext();
@@ -890,7 +890,7 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
     uint32_t ogreId = box.first;
     uint32_t label = this->dataPtr->visibleBoxesLabel[ogreId];
 
-    box.second->Label(label);
+    box.second->SetLabel(label);
   }
 
   // Combine boxes of multi-links model if exists
@@ -937,7 +937,7 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
         if (!this->dataPtr->boundingboxes.count(ogreId))
         {
           box = new BoundingBox();
-          box->Label(label);
+          box->SetLabel(label);
 
           boundary = new BoxBoundary();
           boundary->minX = width;
@@ -969,9 +969,10 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
     auto boxWidth = boundary->maxX - boundary->minX;
     auto boxHeight = boundary->maxY - boundary->minY;
 
-    box.second->Center({boundary->minX + boxWidth / 2,
-        boundary->minY + boxHeight / 2, 0});
-    box.second->Size({boxWidth, boxHeight, 0});
+    box.second->SetCenter({boundary->minX + boxWidth * 0.5,
+        boundary->minY + boxHeight * 0.5, 0});
+    box.second->SetSize(
+        {static_cast<double>(boxWidth), static_cast<double>(boxHeight), 0});
   }
 
   for (auto bb : boxesBoundary)
@@ -1052,8 +1053,8 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
     BoundingBox *box = new BoundingBox();
     auto boxWidth = maxVertex.x - minVertex.x;
     auto boxHeight = minVertex.y - maxVertex.y;
-    box->Center({minVertex.x + boxWidth / 2, maxVertex.y + boxHeight / 2, 0});
-    box->Size({boxWidth, boxHeight, 0});
+    box->SetCenter({minVertex.x + boxWidth / 2, maxVertex.y + boxHeight / 2, 0});
+    box->SetSize({boxWidth, boxHeight, 0});
 
     this->dataPtr->boundingboxes[ogreId] = box;
 
@@ -1066,7 +1067,7 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
     uint32_t ogreId = box.first;
     uint32_t label = this->dataPtr->visibleBoxesLabel[ogreId];
 
-    box.second->Label(label);
+    box.second->SetLabel(label);
   }
 
   // Combine boxes of multi-links model if exists

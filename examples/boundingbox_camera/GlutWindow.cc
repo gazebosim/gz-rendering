@@ -386,7 +386,7 @@ void initContext()
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);
-  glutCreateWindow("Bounding Camera");
+  glutCreateWindow("Bounding Box Camera");
   glutDisplayFunc(displayCB);
   glutIdleFunc(idleCB);
   glutKeyboardFunc(keyboardCB);

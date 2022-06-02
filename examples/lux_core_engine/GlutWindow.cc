@@ -157,7 +157,7 @@ void initContext() {
 //////////////////////////////////////////////////
 void printUsage() {
   std::cout << "===============================" << std::endl;
-  std::cout << "  TAB - Switch render engines  " << std::endl;
+  std::cout << "  TAB - Pause and bake scene   " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
   std::cout << "===============================" << std::endl;
 }

@@ -17,6 +17,14 @@
 
 #include <limits>
 
+#ifdef _MSC_VER
+#pragma warning(push, 0)
+#endif
+#include <OgreBitwise.h>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
 #include <ignition/common/Console.hh>
 
 #include <ignition/math/Color.hh>
@@ -35,8 +43,6 @@
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
-
-#include <OgreBitwise.h>
 
 #include "Ogre2BoundingBoxMaterialSwitcher.hh"
 
@@ -510,7 +516,8 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
   this->dataPtr->workspaceDefinition = "BoundingBoxCameraWorkspace_" +
     this->Name();
 
-  uint32_t background = this->dataPtr->materialSwitcher->backgroundLabel;
+  float background = static_cast<float>(
+      this->dataPtr->materialSwitcher->backgroundLabel);
   auto backgroundColor = Ogre::ColourValue(background, background, background);
 
   // basic workspace consist of clear pass with the givin color &
@@ -666,7 +673,8 @@ void Ogre2BoundingBoxCamera::MarkVisibleBoxes()
 }
 
 /////////////////////////////////////////////////
-void Ogre2BoundingBoxCameraPrivate::MeshVertices(const std::vector<uint32_t> &_ogreIds,
+void Ogre2BoundingBoxCameraPrivate::MeshVertices(
+    const std::vector<uint32_t> &_ogreIds,
     std::vector<math::Vector3d> &_vertices)
 {
   auto viewMatrix = this->ogreCamera->getViewMatrix();
@@ -830,9 +838,9 @@ BoundingBox Ogre2BoundingBoxCameraPrivate::MergeBoxes2D(
     return *_boxes[0];
 
   BoundingBox mergedBox;
-  uint32_t minX = UINT32_MAX;
+  uint32_t minX = std::numeric_limits<uint32_t>::max();
   uint32_t maxX = 0;
-  uint32_t minY = UINT32_MAX;
+  uint32_t minY = std::numeric_limits<uint32_t>::max();
   uint32_t maxY = 0;
 
   for (const auto &box : _boxes)
@@ -1101,7 +1109,8 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
     auto box = std::make_shared<BoundingBox>();
     auto boxWidth = maxVertex.x - minVertex.x;
     auto boxHeight = minVertex.y - maxVertex.y;
-    box->SetCenter({minVertex.x + boxWidth / 2, maxVertex.y + boxHeight / 2, 0});
+    box->SetCenter(
+        {minVertex.x + boxWidth / 2, maxVertex.y + boxHeight / 2, 0});
     box->SetSize({boxWidth, boxHeight, 0});
 
     this->dataPtr->boundingboxes[ogreId] = box;

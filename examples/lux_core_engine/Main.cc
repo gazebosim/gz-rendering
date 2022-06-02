@@ -37,74 +37,74 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene) {
-  // DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
-  // light0->SetDirection(-0.5, 0.5, -1);
-  // light0->SetDiffuseColor(0.00001, 0.00001, 0.00001);
+  DirectionalLightPtr light0 = _scene->CreateDirectionalLight();
+  light0->SetDirection(-0.5, 0.5, -1);
+  light0->SetDiffuseColor(0.00001, 0.00001, 0.00001);
 
-  // PointLightPtr light2 = _scene->CreatePointLight();
-  // light2->SetDiffuseColor(0.5, 0.5, 0.5);
-  // light2->SetLocalPosition(3, 5, 5);
+  PointLightPtr light2 = _scene->CreatePointLight();
+  light2->SetDiffuseColor(0.5, 0.5, 0.5);
+  light2->SetLocalPosition(3, 5, 5);
 
-  // MaterialPtr red = _scene->CreateMaterial();
-  // red->SetDiffuse(1.0, 0.0, 0.0);
+  MaterialPtr red = _scene->CreateMaterial();
+  red->SetDiffuse(1.0, 0.0, 0.0);
 
-  // VisualPtr leftWall = _scene->CreateVisual();
-  // leftWall->AddGeometry(_scene->CreatePlane());
-  // leftWall->SetLocalScale(1, 5, 5);
-  // leftWall->SetLocalRotation(0, IGN_PI / 2, 0);
-  // leftWall->SetLocalPosition(0, 0, 2.5);
-  // leftWall->SetMaterial(red);
-  //
-  // MaterialPtr green = _scene->CreateMaterial();
-  // green->SetDiffuse(0.0, 1.0, 0.0);
-  //
-  // VisualPtr rightWall = _scene->CreateVisual();
-  // rightWall->AddGeometry(_scene->CreatePlane());
-  // rightWall->SetLocalScale(1, 5, 5);
-  // rightWall->SetLocalRotation(0, IGN_PI / 2, 0);
-  // rightWall->SetLocalPosition(0, 0, -2.5);
-  // rightWall->SetMaterial(green);
+  VisualPtr leftWall = _scene->CreateVisual();
+  leftWall->AddGeometry(_scene->CreatePlane());
+  leftWall->SetLocalScale(1, 5, 5);
+  leftWall->SetLocalRotation(0, IGN_PI / 2, 0);
+  leftWall->SetLocalPosition(0, 0, 2.5);
+  leftWall->SetMaterial(red);
+  
+  MaterialPtr green = _scene->CreateMaterial();
+  green->SetDiffuse(0.0, 1.0, 0.0);
+  
+  VisualPtr rightWall = _scene->CreateVisual();
+  rightWall->AddGeometry(_scene->CreatePlane());
+  rightWall->SetLocalScale(1, 5, 5);
+  rightWall->SetLocalRotation(0, IGN_PI / 2, 0);
+  rightWall->SetLocalPosition(0, 0, -2.5);
+  rightWall->SetMaterial(green);
 
-  // MaterialPtr white = _scene->CreateMaterial();
-  // white->SetDiffuse(1.0, 1.0, 1.0);
-  //
-  // VisualPtr backWall = _scene->CreateVisual();
-  // backWall->AddGeometry(_scene->CreatePlane());
-  // backWall->SetLocalScale(5, 1, 5);
-  // backWall->SetLocalRotation(IGN_PI / 2, 0, 0);
-  // backWall->SetLocalPosition(0, 0, -2.5);
-  // backWall->SetMaterial(white);
+  MaterialPtr white = _scene->CreateMaterial();
+  white->SetDiffuse(1.0, 1.0, 1.0);
+  
+  VisualPtr backWall = _scene->CreateVisual();
+  backWall->AddGeometry(_scene->CreatePlane());
+  backWall->SetLocalScale(5, 1, 5);
+  backWall->SetLocalRotation(IGN_PI / 2, 0, 0);
+  backWall->SetLocalPosition(0, 0, -2.5);
+  backWall->SetMaterial(white);
 
-  // VisualPtr floor = _scene->CreateVisual();
-  // floor->AddGeometry(_scene->CreatePlane());
-  // floor->SetLocalScale(5, 5, 1);
-  // floor->SetLocalRotation(0, 0, 0);
-  // floor->SetLocalPosition(0, 0, -2.5);
-  // floor->SetMaterial(white);
+  VisualPtr floor = _scene->CreateVisual();
+  floor->AddGeometry(_scene->CreatePlane());
+  floor->SetLocalScale(5, 5, 1);
+  floor->SetLocalRotation(0, 0, 0);
+  floor->SetLocalPosition(0, 0, -2.5);
+  floor->SetMaterial(white);
 
-  // VisualPtr ceiling = _scene->CreateVisual();
-  // ceiling->AddGeometry(_scene->CreatePlane());
-  // ceiling->SetLocalScale(5, 5, 1);
-  // ceiling->SetLocalRotation(0, 0, 0);
-  // ceiling->SetLocalPosition(0, 0, 2.5);
-  // ceiling->SetMaterial(white);
+  VisualPtr ceiling = _scene->CreateVisual();
+  ceiling->AddGeometry(_scene->CreatePlane());
+  ceiling->SetLocalScale(5, 5, 1);
+  ceiling->SetLocalRotation(0, 0, 0);
+  ceiling->SetLocalPosition(0, 0, 2.5);
+  ceiling->SetMaterial(white);
 
-  // MaterialPtr lightMaterial = _scene->CreateMaterial();
-  // lightMaterial->SetEmissive(1.0, 1.0, 1.0);
-  // lightMaterial->SetDiffuse(1.0, 1.0, 1.0);
+  MaterialPtr lightMaterial = _scene->CreateMaterial();
+  lightMaterial->SetEmissive(1.0, 1.0, 1.0);
+  lightMaterial->SetDiffuse(1.0, 1.0, 1.0);
 
-  // VisualPtr ceilingLight = _scene->CreateVisual();
-  // ceiling->AddGeometry(_scene->CreatePlane());
-  // ceiling->SetLocalScale(2.5, 2.5, 1);
-  // ceiling->SetLocalRotation(0, 0, 0);
-  // ceiling->SetLocalPosition(0, 0, 2.5);
-  // ceiling->SetMaterial(lightMaterial);
+  VisualPtr ceilingLight = _scene->CreateVisual();
+  ceiling->AddGeometry(_scene->CreatePlane());
+  ceiling->SetLocalScale(2.5, 2.5, 1);
+  ceiling->SetLocalRotation(0, 0, 0);
+  ceiling->SetLocalPosition(0, 0, 2.5);
+  ceiling->SetMaterial(lightMaterial);
 
   MaterialPtr boxMaterial1 = _scene->CreateMaterial();
   boxMaterial1->SetDiffuse(1.0, 1.0, 1.0);
 
-  // MaterialPtr boxMaterial2 = _scene->CreateMaterial();
-  // boxMaterial2->SetDiffuse(1.0, 1.0, 1.0);
+  MaterialPtr boxMaterial2 = _scene->CreateMaterial();
+  boxMaterial2->SetDiffuse(1.0, 1.0, 1.0);
 
   VisualPtr box1 = _scene->CreateVisual();
   box1->AddGeometry(_scene->CreateBox());
@@ -113,22 +113,22 @@ void buildScene(ScenePtr _scene) {
   box1->SetLocalScale(1.5, 1.5, 1.5);
   box1->SetMaterial(boxMaterial1);
 
-  // VisualPtr box2 = _scene->CreateVisual();
-  // box2->AddGeometry(_scene->CreateBox());
-  // box2->SetLocalPosition(0.5, 0.5, -0.5);
-  // box2->SetLocalRotation(0, 0, -IGN_PI / 10);
-  // box2->SetLocalScale(1.5, 1.5, 3.0);
-  // box2->SetMaterial(boxMaterial2);
+  VisualPtr box2 = _scene->CreateVisual();
+  box2->AddGeometry(_scene->CreateBox());
+  box2->SetLocalPosition(0.5, 0.5, -0.5);
+  box2->SetLocalRotation(0, 0, -IGN_PI / 10);
+  box2->SetLocalScale(1.5, 1.5, 3.0);
+  box2->SetMaterial(boxMaterial2);
 
-  VisualPtr mesh = _scene->CreateVisual();
-  MeshDescriptor descriptor;
-  descriptor.meshName = "media/duck.dae";
-  common::MeshManager *meshManager = common::MeshManager::Instance();
-  descriptor.mesh = meshManager->Load(descriptor.meshName);
-  MeshPtr meshGeom = _scene->CreateMesh(descriptor);
-  mesh->AddGeometry(meshGeom);
-  mesh->SetLocalPosition(3, 0, 0);
-  mesh->SetLocalRotation(1.5708, 0, 2.0);
+  // VisualPtr mesh = _scene->CreateVisual();
+  // MeshDescriptor descriptor;
+  // descriptor.meshName = "media/duck.dae";
+  // common::MeshManager *meshManager = common::MeshManager::Instance();
+  // descriptor.mesh = meshManager->Load(descriptor.meshName);
+  // MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+  // mesh->AddGeometry(meshGeom);
+  // mesh->SetLocalPosition(3, 0, 0);
+  // mesh->SetLocalRotation(1.5708, 0, 2.0);
 
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.0);
@@ -138,7 +138,7 @@ void buildScene(ScenePtr _scene) {
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(IGN_PI / 2);
 
-  camera->SetTrackTarget(mesh);
+  // camera->SetTrackTarget(mesh);
 }
 
 //////////////////////////////////////////////////

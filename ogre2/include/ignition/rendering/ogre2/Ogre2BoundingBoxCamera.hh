@@ -26,11 +26,7 @@
 #endif
 
 #include <memory>
-#include <string>
 #include <vector>
-
-#include <ignition/common/Event.hh>
-#include <ignition/common/Console.hh>
 
 #include "ignition/rendering/base/BaseBoundingBoxCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
@@ -61,9 +57,6 @@ namespace ignition
 
       /// \brief Destroy the camera
       public: virtual void Destroy() override;
-
-      /// \brief Create the camera.
-      protected: void CreateCamera();
 
       // Documentation inherited
       public: virtual void PreRender() override;
@@ -96,10 +89,6 @@ namespace ignition
       /// \brief Create dummy render texture. Needed to satisfy inheritance
       /// and to set image's dims
       public: void CreateRenderTexture();
-
-      /// \brief Get a pointer to the render target.
-      /// \return Pointer to the render target
-      protected: virtual RenderTargetPtr RenderTarget() const override;
 
       /// \brief Compute the full bounding boxes by projecting all mesh vertices
       /// of each object, then get the min & max of x & y to get the full bbox.
@@ -158,27 +147,18 @@ namespace ignition
       /// the ogre id which appears in the map.
       public: void MarkVisibleBoxes();
 
-      /// \brief Merge a vector of 2D boxes. Used in multi-links model.
-      /// \param[in] _boxes Vector of 2D boxes
-      /// \return Merged bounding box
-      public: BoundingBox MergeBoxes2D(
-        const std::vector<BoundingBox *> &_boxes);
+      /// \brief Get a pointer to the render target.
+      /// \return Pointer to the render target
+      protected: virtual RenderTargetPtr RenderTarget() const override;
 
-      /// \brief Get the 3d vertices (in world coord.) of the item's that
-      /// belongs to the same parent (only used in multi-links models)
-      /// \param[in] _ogreIds vector of ogre ids that belongs to the same model
-      /// \param[out] _vertices vector of 3d vertices of the item
-      public: void MeshVertices(const std::vector<uint32_t> &_ogreIds,
-                  std::vector<math::Vector3d> &_vertices) const;
+      /// \brief Create the camera.
+      private: void CreateCamera();
 
       /// \brief Merge a links's 2d boxes of multi links models
       private: void MergeMultiLinksModels2D();
 
       /// \brief Merge a links's 3d boxes of multi links models
       private: void MergeMultiLinksModels3D();
-
-      /// \brief Pointer to the ogre camera
-      protected: Ogre::Camera *ogreCamera{nullptr};
 
       /// \internal
       /// \brief Pointer to private data.

@@ -1,6 +1,6 @@
 \page boundingbox_camera Bounding Box camera
 
-This example shows how to use the depth camera.
+This example shows how to use the bounding box camera.
 
 ## Compile and run the example
 

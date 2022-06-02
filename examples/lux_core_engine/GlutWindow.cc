@@ -16,13 +16,13 @@
  */
 
 #if __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/OpenGL.h>
 #include <GLUT/glut.h>
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/gl.h>
 #else
 #include <GL/glew.h>
-#include <GL/gl.h>
 #include <GL/glut.h>
+#include <GL/gl.h>
 #endif
 
 #if !defined(__APPLE__) && !defined(_WIN32)

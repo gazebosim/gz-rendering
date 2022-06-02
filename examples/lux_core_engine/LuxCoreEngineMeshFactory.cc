@@ -1,19 +1,39 @@
-#include "LuxCoreEngineMeshFactory.hh"
-
-#include "LuxCoreEngineScene.hh"
-
+/*
+ * Copyright (C) 2022 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/SubMesh.hh>
+
+#include "LuxCoreEngineMeshFactory.hh"
+#include "LuxCoreEngineScene.hh"
 
 using namespace ignition;
 using namespace rendering;
 
+//////////////////////////////////////////////////
 LuxCoreEngineMeshFactory::LuxCoreEngineMeshFactory(LuxCoreEngineScenePtr _scene)
-    : scene(_scene) {}
+    : scene(_scene)
+{
+}
 
+//////////////////////////////////////////////////
 LuxCoreEngineMeshPtr
 LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
-                                 const std::string &_name) {
+                                 const std::string &_name)
+{
   LuxCoreEngineMeshPtr mesh(new LuxCoreEngineMesh);
 
   std::string meshName = _name;
@@ -21,21 +41,24 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
                  meshName.end());
   mesh->SetName(meshName);
 
-  struct Coordinate {
+  struct Coordinate
+  {
     float x, y;
 
     Coordinate(float x, float y) : x(x), y(y) {}
     Coordinate() {}
   };
 
-  struct Vertex {
+  struct Vertex
+  {
     float x, y, z;
 
     Vertex(float x, float y, float z) : x(x), y(y), z(z) {}
     Vertex() {}
   };
 
-  struct VertexTriangle {
+  struct VertexTriangle
+  {
     unsigned int v1, v2, v3;
 
     VertexTriangle(unsigned int v1, unsigned int v2, unsigned int v3)
@@ -43,7 +66,8 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
     VertexTriangle() {}
   };
 
-  if (_desc.meshName == "unit_box") {
+  if (_desc.meshName == "unit_box")
+  {
     Vertex *p = (Vertex *)luxcore::Scene::AllocVerticesBuffer(24);
 
     float minX = -0.5f, minY = -0.5f, minZ = -0.5f;
@@ -103,7 +127,9 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
 
     scene->SceneLux()->DefineMesh(meshName + "-mesh", 24, 12, (float *)p,
                                   (unsigned int *)vi, NULL, NULL, NULL, NULL);
-  } else if (_desc.meshName == "unit_plane") {
+  }
+  else if (_desc.meshName == "unit_plane")
+  {
     Vertex *p = (Vertex *)luxcore::Scene::AllocVerticesBuffer(4);
 
     float minX = -0.5f, minY = -0.5f, z = 0.0f;
@@ -122,8 +148,11 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
 
     scene->SceneLux()->DefineMesh(meshName + "-mesh", 4, 2, (float *)p,
                                   (unsigned int *)vi, NULL, NULL, NULL, NULL);
-  } else {
-    for (unsigned int i = 0; i < _desc.mesh->SubMeshCount(); i++) {
+  }
+  else
+  {
+    for (unsigned int i = 0; i < _desc.mesh->SubMeshCount(); i++)
+    {
       LuxCoreEngineSubMeshPtr submesh(new LuxCoreEngineSubMesh);
 
       auto submeshCommon = _desc.mesh->SubMeshByIndex(i).lock();
@@ -138,7 +167,8 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
       Vertex *p = (Vertex *)luxcore::Scene::AllocVerticesBuffer(
           submeshCommon->VertexCount());
 
-      for (unsigned int x = 0; x < submeshCommon->VertexCount(); x++) {
+      for (unsigned int x = 0; x < submeshCommon->VertexCount(); x++)
+      {
         p[x] = Vertex(submeshCommon->Vertex(x)[0], submeshCommon->Vertex(x)[1],
                       submeshCommon->Vertex(x)[2]);
       }
@@ -147,7 +177,8 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
       unsigned int *vi = (unsigned int *)luxcore::Scene::AllocTrianglesBuffer(
           submeshCommon->IndexCount() / 3);
 
-      for (unsigned int x = 0; x < submeshCommon->IndexCount(); x++) {
+      for (unsigned int x = 0; x < submeshCommon->IndexCount(); x++)
+      {
         vi[x] = submeshCommon->Index(x);
       }
 
@@ -155,7 +186,8 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
       Vertex *n = (Vertex *)luxcore::Scene::AllocVerticesBuffer(
           submeshCommon->NormalCount());
 
-      for (unsigned int x = 0; x < submeshCommon->NormalCount(); x++) {
+      for (unsigned int x = 0; x < submeshCommon->NormalCount(); x++)
+      {
         n[x] = Vertex(submeshCommon->Normal(x)[0], submeshCommon->Normal(x)[1],
                       submeshCommon->Normal(x)[2]);
       }
@@ -163,7 +195,8 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
       // UV Coordinates
       Coordinate *uv = new Coordinate[submeshCommon->TexCoordCount()];
 
-      for (unsigned int x = 0; x < submeshCommon->TexCoordCount(); x++) {
+      for (unsigned int x = 0; x < submeshCommon->TexCoordCount(); x++)
+      {
         uv[x] = Coordinate(submeshCommon->TexCoord(x)[0],
                            submeshCommon->TexCoord(x)[1]);
       }

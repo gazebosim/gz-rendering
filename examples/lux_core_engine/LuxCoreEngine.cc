@@ -14,10 +14,10 @@
  * limitations under the License.
  *
  */
-
 #include <ignition/common/SingletonT.hh>
-
 #include <ignition/plugin/Register.hh>
+
+#include <luxcore/luxcore.h>
 
 #include "ignition/rendering/RenderEnginePlugin.hh"
 #include "ignition/rendering/base/BaseRenderEngine.hh"
@@ -36,8 +36,6 @@
 #include "LuxCoreEngineSensor.hh"
 #include "LuxCoreEngineVisual.hh"
 
-#include "luxcore/luxcore.h"
-
 using namespace ignition;
 using namespace rendering;
 
@@ -46,31 +44,35 @@ namespace ignition {
 namespace rendering {
 
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+
 /// \brief The render engine class which implements a render engine.
 class LuxCoreEngineRenderEngine
     : public virtual BaseRenderEngine,
       public common::SingletonT<LuxCoreEngineRenderEngine> {
-  // Documentation Inherited.
-public:
-  virtual bool IsEnabled() const override { return true; }
 
   // Documentation Inherited.
-public:
-  virtual std::string Name() const override {
+  public: virtual bool IsEnabled() const override
+  {
+    return true;
+  }
+
+  // Documentation Inherited.
+  public: virtual std::string Name() const override
+  {
     return "LuxCoreEngineRenderEngine";
   }
 
   // Documentation Inherited.
-protected:
-  virtual bool
-  LoadImpl(const std::map<std::string, std::string> & /*_params*/) override {
+  protected: virtual bool LoadImpl(
+      const std::map<std::string, std::string> &/*_params*/) override
+  {
     return true;
   }
 
   /// \brief Initialize the render engine.
   /// \return True if the operation is successful
-protected:
-  virtual bool InitImpl() override {
+  protected: virtual bool InitImpl() override
+  {
     this->scenes = LuxCoreEngineSceneStorePtr(new LuxCoreEngineSceneStore);
     return true;
   }
@@ -78,41 +80,42 @@ protected:
   /// \brief Get a pointer to the list of scenes managed by the render
   /// engine.
   /// \return list of scenes
-protected:
-  virtual SceneStorePtr Scenes() const override { return this->scenes; }
+  protected: virtual SceneStorePtr Scenes() const override
+  {
+    return this->scenes;
+  }
 
   /// \brief Create a scene.
   /// \param[in] _id Unique scene Id
   /// \parampin] _name Name of scene
-protected:
-  virtual ScenePtr CreateSceneImpl(unsigned int _id,
-                                   const std::string &_name) override {
+  protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
+                                              const std::string &_name) override
+  {
     auto scene = LuxCoreEngineScenePtr(new LuxCoreEngineScene(_id, _name));
     this->scenes->Add(scene);
     return scene;
   }
 
   /// \brief Singelton setup.
-private:
-  friend class common::SingletonT<LuxCoreEngineRenderEngine>;
+  private: friend class common::SingletonT<LuxCoreEngineRenderEngine>;
 
-private:
-  LuxCoreEngineSceneStorePtr scenes;
+  private: LuxCoreEngineSceneStorePtr scenes;
 };
 
 /// \brief Plugin for loading the HelloWorld render engine.
 class LuxCoreEnginePlugin : public RenderEnginePlugin {
+
   /// \brief Get the name of the render engine loaded by this plugin.
   /// \return Name of render engine
-public:
-  std::string Name() const override {
+  public: std::string Name() const override
+  {
     return LuxCoreEngineRenderEngine::Instance()->Name();
   }
 
   /// \brief Get a pointer to the render engine loaded by this plugin.
   /// \return Render engine instance
-public:
-  RenderEngine *Engine() const override {
+  public: RenderEngine *Engine() const override
+  {
     return LuxCoreEngineRenderEngine::Instance();
   }
 };

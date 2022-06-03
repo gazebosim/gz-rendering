@@ -225,6 +225,14 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
         scene->SceneLux()->DefineImageMap<unsigned char>(
             submeshName + "-texmap", imageData, 1.f, 3, image.Width(),
             image.Height());
+
+        // scene->SceneLux()->Parse(
+        //     luxrays::Property("scene.textures." + submeshName + "-texmap" +
+        //                 ".type")("imagemap")
+        //  << luxrays::Property("scene.textures." + submeshName + "-texmap" +
+        //                 ".file")(submeshName + "-texmap")
+        //  << luxrays::Property("scene.textures." + submeshName + "-texmap" +
+        //                 ".gamma")(1.f));
       }
     }
   }

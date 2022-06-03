@@ -72,7 +72,7 @@ void CameraTest::ViewProjectionMatrix(const std::string &_renderEngine)
   EXPECT_GT(camera->HFOV(), 0);
   math::Angle hfov(1.57);
   camera->SetHFOV(hfov);
-  EXPECT_DOUBLE_EQ(hfov.Radian(), camera->HFOV().Radian());
+  EXPECT_NEAR(hfov.Radian(), camera->HFOV().Radian(), 1e-6);
 
   EXPECT_GT(camera->AspectRatio(), 0);
   camera->SetAspectRatio(1.7777);

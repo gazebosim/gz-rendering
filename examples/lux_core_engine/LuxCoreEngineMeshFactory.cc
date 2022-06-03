@@ -218,21 +218,21 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
 
       if (image.Valid())
       {
-        unsigned char* imageData;
-        unsigned int imageDataSize;
+        unsigned char* imageData = NULL;
+        unsigned int imageDataSize = 0;
         image.Data(&imageData, imageDataSize);
- 
+
         scene->SceneLux()->DefineImageMap<unsigned char>(
             submeshName + "-texmap", imageData, 1.f, 3, image.Width(),
             image.Height());
 
-        // scene->SceneLux()->Parse(
-        //     luxrays::Property("scene.textures." + submeshName + "-texmap" +
-        //                 ".type")("imagemap")
-        //  << luxrays::Property("scene.textures." + submeshName + "-texmap" +
-        //                 ".file")(submeshName + "-texmap")
-        //  << luxrays::Property("scene.textures." + submeshName + "-texmap" +
-        //                 ".gamma")(1.f));
+        scene->SceneLux()->Parse(
+            luxrays::Property("scene.textures." + submeshName + "-texmap" +
+                        ".type")("imagemap")
+         << luxrays::Property("scene.textures." + submeshName + "-texmap" +
+                        ".file")(submeshName + "-texmap")
+         << luxrays::Property("scene.textures." + submeshName + "-texmap" +
+                        ".gamma")(1.f));
       }
     }
   }

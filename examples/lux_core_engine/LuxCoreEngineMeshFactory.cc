@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+#include <ignition/common/Image.hh>
 #include <ignition/common/Mesh.hh>
 #include <ignition/common/SubMesh.hh>
 
@@ -201,12 +202,30 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
                            submeshCommon->TexCoord(x)[1]);
       }
 
-      scene->SceneLux()->DefineMesh(
-          submeshName + "-submesh", submeshCommon->VertexCount(),
-          submeshCommon->IndexCount() / 3, (float *)p, (unsigned int *)vi,
-          (float *)n, (float *)uv, NULL, NULL);
+      if (!scene->SceneLux()->IsMeshDefined(submeshName + "-submesh"))
+      {
+        scene->SceneLux()->DefineMesh(
+            submeshName + "-submesh", submeshCommon->VertexCount(),
+            submeshCommon->IndexCount() / 3, (float *)p, (unsigned int *)vi,
+            (float *)n, (float *)uv, NULL, NULL);
+      }
 
       mesh->AddSubMesh(submesh);
+
+      ignition::common::Image image(
+          _desc.mesh->MaterialByIndex(submeshCommon->MaterialIndex())->
+              TextureImage());
+
+      if (image.Valid())
+      {
+        unsigned char* imageData;
+        unsigned int imageDataSize;
+        image.Data(&imageData, imageDataSize);
+ 
+        scene->SceneLux()->DefineImageMap<unsigned char>(
+            submeshName + "-texmap", imageData, 1.f, 3, image.Width(),
+            image.Height());
+      }
     }
   }
 

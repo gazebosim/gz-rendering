@@ -37,6 +37,15 @@ using namespace rendering;
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene) {
+  CameraPtr camera = _scene->CreateCamera("camera");
+  camera->SetLocalPosition(0.0, 0.0, 0.0);
+  camera->SetLocalRotation(0.0, 0.0, 0.0);
+  camera->SetImageWidth(400);
+  camera->SetImageHeight(300);
+  camera->SetAspectRatio(1.333);
+  camera->SetHFOV(IGN_PI / 2);
+
+  // Cornell Box Scene
   MaterialPtr red = _scene->CreateMaterial();
   red->SetDiffuse(1.0, 0.0, 0.0);
 
@@ -112,6 +121,7 @@ void buildScene(ScenePtr _scene) {
   box2->SetLocalScale(1.5, 1.5, 3.0);
   box2->SetMaterial(boxMaterial2);
 
+  // // Duck Scene
   // VisualPtr mesh = _scene->CreateVisual();
   // MeshDescriptor descriptor;
   // descriptor.meshName = "media/duck.dae";
@@ -121,14 +131,6 @@ void buildScene(ScenePtr _scene) {
   // mesh->AddGeometry(meshGeom);
   // mesh->SetLocalPosition(3, 0, 0);
   // mesh->SetLocalRotation(1.5708, 0, 2.0);
-
-  CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 0.0);
-  camera->SetLocalRotation(0.0, 0.0, 0.0);
-  camera->SetImageWidth(400);
-  camera->SetImageHeight(300);
-  camera->SetAspectRatio(1.333);
-  camera->SetHFOV(IGN_PI / 2);
 
   // camera->SetTrackTarget(mesh);
 }

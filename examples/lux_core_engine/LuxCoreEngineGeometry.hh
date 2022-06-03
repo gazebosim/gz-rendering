@@ -30,10 +30,13 @@ class LuxCoreEngineGeometry : public BaseGeometry<LuxCoreEngineObject> {
 
   public: LuxCoreEngineGeometry();
 
+  // Documentation inherited.
   public: virtual void SetLocalPosition(double _x, double _y, double _z) = 0;
 
+  // Documentation inherited.
   public: virtual void SetLocalScale(double _x, double _y, double _z) = 0;
 
+  // Documentation inherited.
   public: virtual void SetLocalRotation(double _r, double _p, double _y) = 0;
 };
 

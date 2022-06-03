@@ -38,18 +38,33 @@ void LuxCoreEngineCamera::Render()
 {
   if (!this->renderSessionLux) {
     luxrays::Properties props;
+
     props.Set(luxrays::Property("renderengine.type")("RTPATHOCL"));
     props.Set(luxrays::Property("rtpath.resolutionreduction.preview")("4"));
     props.Set(
         luxrays::Property("rtpath.resolutionreduction.preview.step")("8"));
     props.Set(luxrays::Property("rtpath.resolutionreduction")("4"));
+
     props.Set(luxrays::Property("sampler.type")("TILEPATHSAMPLER"));
+    props.Set(luxrays::Property("accelerator.type")("BVH"));
+    props.Set(luxrays::Property("accelerator.instances.enable")("0"));
+
     props.Set(luxrays::Property("film.width")(this->ImageWidth()));
     props.Set(luxrays::Property("film.height")(this->ImageHeight()));
+
     props.Set(luxrays::Property("film.imagepipeline.0.type")("TONEMAP_LINEAR"));
+    props.Set(luxrays::Property("film.imagepipeline.0.scale")("1.0"));
+
     props.Set(
         luxrays::Property("film.imagepipeline.1.type")("GAMMA_CORRECTION"));
     props.Set(luxrays::Property("film.imagepipeline.1.value")("2.2"));
+    props.Set(luxrays::Property("film.imagepipeline.1.table.size")("4096"));
+
+    // props.Set(
+    //     luxrays::Property("film.imagepipeline.2.type")
+    //         ("GAUSSIANFILTER_3x3"));
+    // props.Set(luxrays::Property("film.imagepipeline.2.weight")("0.15"));
+
     luxcore::RenderConfig *config =
         luxcore::RenderConfig::Create(props, scene->SceneLux());
     this->renderSessionLux = luxcore::RenderSession::Create(config);

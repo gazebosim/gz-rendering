@@ -233,6 +233,12 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
                         ".file")(submeshName + "-texmap")
          << luxrays::Property("scene.textures." + submeshName + "-texmap" +
                         ".gamma")(1.f));
+
+        scene->SceneLux()->Parse(
+            luxrays::Property("scene.materials." + submeshName + "-texmap" +
+                        ".type")("matte")
+         << luxrays::Property("scene.materials." + submeshName + "-texmap" +
+                        ".kd")(submeshName + "-texmap"));
       }
     }
   }

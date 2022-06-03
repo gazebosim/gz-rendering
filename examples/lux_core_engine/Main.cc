@@ -121,18 +121,20 @@ void buildScene(ScenePtr _scene) {
   box2->SetLocalScale(1.5, 1.5, 3.0);
   box2->SetMaterial(boxMaterial2);
 
-  // // Duck Scene
-  // VisualPtr mesh = _scene->CreateVisual();
-  // MeshDescriptor descriptor;
-  // descriptor.meshName = "media/duck.dae";
-  // common::MeshManager *meshManager = common::MeshManager::Instance();
-  // descriptor.mesh = meshManager->Load(descriptor.meshName);
-  // MeshPtr meshGeom = _scene->CreateMesh(descriptor);
-  // mesh->AddGeometry(meshGeom);
-  // mesh->SetLocalPosition(3, 0, 0);
-  // mesh->SetLocalRotation(1.5708, 0, 2.0);
+  // Duck Scene
+  MaterialPtr matte = _scene->CreateMaterial();
+  matte->SetDiffuse(1.0, 0.0, 0.0);
 
-  // camera->SetTrackTarget(mesh);
+  VisualPtr mesh = _scene->CreateVisual();
+  MeshDescriptor descriptor;
+  descriptor.meshName = "media/duck.dae";
+  common::MeshManager *meshManager = common::MeshManager::Instance();
+  descriptor.mesh = meshManager->Load(descriptor.meshName);
+  MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+  mesh->AddGeometry(meshGeom);
+  mesh->SetLocalRotation(IGN_PI / 2, 0, -IGN_PI / 4);
+  mesh->SetLocalPosition(-0.25, -1.25, 1.25);
+  mesh->SetMaterial(matte);
 }
 
 //////////////////////////////////////////////////

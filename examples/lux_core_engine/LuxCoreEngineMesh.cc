@@ -153,10 +153,27 @@ VisualPtr LuxCoreEngineMesh::Parent() const
 //////////////////////////////////////////////////
 void LuxCoreEngineMesh::SetMaterial(MaterialPtr _material, bool _unique)
 {
-  scene->SceneLux()->Parse(
-      luxrays::Property("scene.objects." + Name() + ".shape")(Name() + "-mesh")
-      << luxrays::Property("scene.objects." + Name() +
-                           ".material")(_material->Name()));
+  if (SubMeshes()->Size() > 0)
+  {
+    for (unsigned int i = 0; i < SubMeshes()->Size(); i++)
+    {
+       scene->SceneLux()->Parse(
+           luxrays::Property("scene.objects." +
+               SubMeshes()->GetByIndex(i)->Name() + ".shape")
+               (SubMeshes()->GetByIndex(i)->Name() + "-submesh")
+        << luxrays::Property("scene.objects." +
+               SubMeshes()->GetByIndex(i)->Name() + ".material")
+               (SubMeshes()->GetByIndex(i)->Name() + "-texmap"));
+    }
+  }
+  else
+  {
+    scene->SceneLux()->Parse(
+        luxrays::Property("scene.objects." + Name() + ".shape")
+            (Name() + "-mesh")
+     << luxrays::Property("scene.objects." + Name() + ".material")
+            (_material->Name()));
+  }
 }
 
 //////////////////////////////////////////////////

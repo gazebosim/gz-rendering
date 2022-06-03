@@ -178,6 +178,11 @@ void CameraTest::RenderTexture(const std::string &_renderEngine)
   camera->SetImageHeight(80u);
   EXPECT_EQ(80u, camera->ImageHeight());
 
+  double width = 100
+  camera.SetImageWidth(width)
+  double aspectRatio = width / camera.ImageHeight()
+  EXPECT_NEAR(aspectRatio, camera.AspectRatio(), 1e-6)
+
   EXPECT_NE(PixelFormat::PF_UNKNOWN, camera->ImageFormat());
   camera->SetImageFormat(PixelFormat::PF_B8G8R8);
   EXPECT_EQ(PixelFormat::PF_B8G8R8, camera->ImageFormat());

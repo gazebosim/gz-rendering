@@ -67,10 +67,12 @@ void LuxCoreEngineCamera::Render()
 
     luxcore::RenderConfig *config =
         luxcore::RenderConfig::Create(props, scene->SceneLux());
+
     this->renderSessionLux = luxcore::RenderSession::Create(config);
     this->renderSessionLux->Start();
 
     std::cout << scene->SceneLux()->ToProperties() << std::endl;
+    std::cout << props << std::endl;
   }
 
   this->renderSessionLux->WaitNewFrame();
@@ -79,6 +81,7 @@ void LuxCoreEngineCamera::Render()
 
   float *luxcoreBuffer =
       (float *)malloc(film.GetWidth() * film.GetHeight() * 3 * sizeof(float));
+
   film.GetOutput(luxcore::Film::OUTPUT_RGB_IMAGEPIPELINE, luxcoreBuffer);
 
   if (this->renderTarget->HostDataBuffer() == NULL) {

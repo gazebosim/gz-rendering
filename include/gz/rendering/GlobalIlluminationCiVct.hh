@@ -31,6 +31,9 @@ namespace gz
 
   class GZ_RENDERING_VISIBLE CiVctCascade
   {
+    /// \brief Destructor
+    public: virtual ~CiVctCascade() {}
+
     /// \brief Sets whether to correctly calculate GI occlusion caused
     /// by occluders against area lights. Consumes more VRAM.
     /// This option is not needed if you're not using area lights
@@ -154,13 +157,21 @@ namespace gz
     /// You can call it fewer times (i.e. some kb of RAM will be wasted)
     /// but not more.
     /// \remarks You can't call this function after adding cascades
+    /// The semantics are similar to std::vector::reserve
     /// \param[in] _maxCascades Number of times AddCascade will be called
     public: virtual void SetMaxCascades(const uint32_t _maxCascades) = 0;
 
     /// \brief Adds a new cascade
+    /// \remark Cannot be called anymore after Start() has been called
     /// \param[in] _ref Can be nullptr. If you already have a cascade,
     /// we will clone its settings.
-    public: virtual CiVctCascadePtr AddCascade(CiVctCascade*_ref) = 0;
+    public: virtual CiVctCascadePtr AddCascade(const CiVctCascade *_ref) = 0;
+
+    /// \brief Removes the last added cascade.
+    /// \remark Do NOT try to call any of the functions of the CiVctCascadePtr
+    /// returned by AddCascade after this call.
+    /// \remark Cannot be called anymore after Start() has been called
+    public: virtual void PopCascade() = 0;
 
     /// \brief Alters each cascade's step size.
     /// The last cascade is set to stepSize.

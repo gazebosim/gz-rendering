@@ -230,7 +230,8 @@ void Ogre2GlobalIlluminationCiVct::SetMaxCascades(const uint32_t _maxCascades)
 }
 
 //////////////////////////////////////////////////
-CiVctCascadePtr Ogre2GlobalIlluminationCiVct::AddCascade(CiVctCascade *_ref)
+CiVctCascadePtr Ogre2GlobalIlluminationCiVct::AddCascade(
+  const CiVctCascade *_ref)
 {
   const size_t cascadeIdx = this->dataPtr->cascades.size();
 
@@ -244,6 +245,16 @@ CiVctCascadePtr Ogre2GlobalIlluminationCiVct::AddCascade(CiVctCascade *_ref)
   newCascade->Init(&this->dataPtr->cascadedVoxelizer->getCascade(cascadeIdx),
                    _ref);
   return this->dataPtr->cascades.back();
+}
+
+//////////////////////////////////////////////////
+void Ogre2GlobalIlluminationCiVct::PopCascade()
+{
+  if( !this->dataPtr->cascades.empty())
+  {
+    this->dataPtr->cascadedVoxelizer->popCascade();
+    this->dataPtr->cascades.pop_back();
+  }
 }
 
 //////////////////////////////////////////////////

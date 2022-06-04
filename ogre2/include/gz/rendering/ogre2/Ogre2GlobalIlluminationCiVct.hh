@@ -131,7 +131,11 @@ namespace gz
       public: virtual void SetMaxCascades(const uint32_t _maxCascades) override;
 
       // Documentation inherited
-      public: virtual CiVctCascadePtr AddCascade(CiVctCascade* _ref) override;
+      public: virtual CiVctCascadePtr AddCascade(
+            const CiVctCascade* _ref) override;
+
+      // Documentation inherited
+      public: virtual void PopCascade() override;
 
       // Documentation inherited
       public: virtual void AutoCalculateStepSizes(

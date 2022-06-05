@@ -353,6 +353,8 @@ void Ogre2GlobalIlluminationCiVct::Build()
     cascadedVoxelizer->addAllItems(sceneManager, 0xffffffff, false);
 
   sceneManager->updateSceneGraph();
+  cascadedVoxelizer->setCameraPosition(
+    Ogre2Conversions::Convert(this->dataPtr->bindCamera->WorldPosition()));
   cascadedVoxelizer->update(sceneManager);
 
   this->LightingChanged();

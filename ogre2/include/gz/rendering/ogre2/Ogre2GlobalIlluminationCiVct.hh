@@ -148,6 +148,9 @@ namespace gz
       // Documentation inherited.
       public: virtual bool ConsistentCascadeSteps() const override;
 
+      // Documentation inherited.
+      public: virtual bool Started() const override;
+
       // Documentation inherited
       public: virtual void Start(
             uint32_t _bounceCount, bool _anisotropic) override;

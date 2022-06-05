@@ -75,6 +75,9 @@ class DETAIL_GZ_RENDERING_OGRE2_HIDDEN
   /// \brief See GlobalIlluminationCiVct::SetHighQuality
   /// This value is cached because it globally affects HlmsPbs
   public: bool highQuality = false;
+
+  /// \brief Tracks if GlobalIlluminationCiVct::Start has been called
+  public: bool started = false;
   // clang-format on
 };
 
@@ -280,10 +283,17 @@ bool Ogre2GlobalIlluminationCiVct::ConsistentCascadeSteps() const
 }
 
 //////////////////////////////////////////////////
+bool Ogre2GlobalIlluminationCiVct::Started() const
+{
+  return this->dataPtr->started;
+}
+
+//////////////////////////////////////////////////
 void Ogre2GlobalIlluminationCiVct::Start(uint32_t _bounceCount,
                                          bool _anisotropic)
 {
   Ogre::Root *ogreRoot = Ogre2RenderEngine::Instance()->OgreRoot();
+  this->dataPtr->started = true;
   this->dataPtr->cascadedVoxelizer->init(ogreRoot->getRenderSystem(),
                                          ogreRoot->getHlmsManager(),
                                          _bounceCount, _anisotropic);

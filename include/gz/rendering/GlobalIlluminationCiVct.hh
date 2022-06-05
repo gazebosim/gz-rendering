@@ -226,6 +226,10 @@ namespace gz
     /// \return True if the feature is enabled
     public: virtual bool ConsistentCascadeSteps() const = 0;
 
+    /// \brief Returns true if Start() has already been called
+    /// \return true if Start() has already been called
+    public: virtual bool Started() const = 0;
+
     /// \brief Call this function after adding all cascades.
     /// You can no longer add cascades after this
     /// \param[in] _bounceCount Number of bounces for cascade 0.

@@ -512,15 +512,15 @@ math::Vector3d OgreWideAngleCamera::Project3d(
       // face of the cube. Note: operate in clip space so
       // left handed coordinate system rotation
       if (i == 0)
-        rot = gz::math::Quaterniond(0.0, IGN_PI * 0.5, 0.0);
+        rot = gz::math::Quaterniond(0.0, GZ_PI * 0.5, 0.0);
       else if (i == 1)
-        rot = gz::math::Quaterniond(0.0, -IGN_PI * 0.5, 0.0);
+        rot = gz::math::Quaterniond(0.0, -GZ_PI * 0.5, 0.0);
       else if (i == 2)
-        rot = gz::math::Quaterniond(-IGN_PI * 0.5, 0.0, 0.0);
+        rot = gz::math::Quaterniond(-GZ_PI * 0.5, 0.0, 0.0);
       else if (i == 3)
-        rot = gz::math::Quaterniond(IGN_PI * 0.5, 0.0, 0.0);
+        rot = gz::math::Quaterniond(GZ_PI * 0.5, 0.0, 0.0);
       else if (i == 5)
-        rot = gz::math::Quaterniond(0.0, IGN_PI, 0.0);
+        rot = gz::math::Quaterniond(0.0, GZ_PI, 0.0);
       dir = rot * dir;
       dir.Normalize();
 

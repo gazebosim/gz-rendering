@@ -26,7 +26,7 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-IGN_ENUM(graphicsAPIIface, GraphicsAPI,
+GZ_ENUM(graphicsAPIIface, GraphicsAPI,
     GraphicsAPI::GRAPHICS_API_BEGIN,
     GraphicsAPI::GRAPHICS_API_END,
     "UNKNOWN", "OPENGL", "DIRECT3D11", "VULKAN", "METAL")

@@ -208,7 +208,7 @@ namespace gz
 
       protected: virtual RenderTargetPtr RenderTarget() const = 0;
 
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: common::EventT<void(const void *, unsigned int, unsigned int,
                      unsigned int, const std::string &)> newFrameEvent;
 
@@ -245,7 +245,7 @@ namespace gz
 
       /// \brief Target node to follow
       protected: NodePtr followNode;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Follow target in world frame.
       protected: bool followWorldFrame = false;

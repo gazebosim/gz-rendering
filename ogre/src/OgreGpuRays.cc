@@ -252,9 +252,9 @@ void OgreGpuRays::ConfigureCameras()
   hfovAngle = std::max(this->dataPtr->kMinAllowedAngle, hfovAngle);
   this->SetHFOV(hfovAngle);
 
-  if (this->HFOV().Radian() > 2.0 * IGN_PI)
+  if (this->HFOV().Radian() > 2.0 * GZ_PI)
   {
-    this->SetHFOV(2.0 * IGN_PI);
+    this->SetHFOV(2.0 * GZ_PI);
     gzwarn << "Horizontal FOV for GPU rays is capped at 180 degrees.\n";
   }
 
@@ -308,9 +308,9 @@ void OgreGpuRays::ConfigureCameras()
     }
   }
 
-  if (vfovAngle > IGN_PI / 2.0)
+  if (vfovAngle > GZ_PI / 2.0)
   {
-    vfovAngle = IGN_PI / 2.0;
+    vfovAngle = GZ_PI / 2.0;
     gzwarn << "Vertical FOV for GPU laser is capped at 90 degrees.\n";
   }
 
@@ -434,8 +434,8 @@ void OgreGpuRays::CreateGpuRaysTextures()
     vp->setSkiesEnabled(false);
     vp->setBackgroundColour(
         Ogre::ColourValue(this->dataMaxVal, 0.0, 1.0));
-    vp->setVisibilityMask(IGN_VISIBILITY_ALL &
-        ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
+    vp->setVisibilityMask(GZ_VISIBILITY_ALL &
+        ~(GZ_VISIBILITY_GUI | GZ_VISIBILITY_SELECTABLE));
   }
 
   this->dataPtr->matFirstPass = dynamic_cast<Ogre::Material *>(
@@ -469,7 +469,7 @@ void OgreGpuRays::CreateGpuRaysTextures()
   vp->setSkiesEnabled(false);
   vp->setBackgroundColour(Ogre::ColourValue(0.0, 1.0, 0.0));
   vp->setVisibilityMask(
-      IGN_VISIBILITY_ALL & ~(IGN_VISIBILITY_GUI | IGN_VISIBILITY_SELECTABLE));
+      GZ_VISIBILITY_ALL & ~(GZ_VISIBILITY_GUI | GZ_VISIBILITY_SELECTABLE));
 
   Ogre::Matrix4 p = this->BuildScaledOrthoMatrix(
       0, static_cast<float>(this->dataPtr->w2nd / 10.0),

@@ -205,7 +205,7 @@ namespace gz
 
       protected: virtual void Init() override;
 
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: Ogre::MaterialPtr ogreMaterial;
 
       protected: Ogre::Technique *ogreTechnique = nullptr;
@@ -236,7 +236,7 @@ namespace gz
 
       /// \brief Parameters to be bound to the fragment shader
       protected: ShaderParamsPtr fragmentShaderParams;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       private: friend class OgreScene;
     };

@@ -54,9 +54,9 @@ namespace gz
       public: virtual RenderEngine *Engine() const = 0;
 
       /// \brief Pointer to private data class
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: std::unique_ptr<RenderEnginePluginPrivate> dataPtr;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

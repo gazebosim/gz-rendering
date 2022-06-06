@@ -1014,7 +1014,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue(0, 0, 0));
       // thermal camera should not see particles
-      passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
+      passScene->mVisibilityMask = GZ_VISIBILITY_ALL &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
 

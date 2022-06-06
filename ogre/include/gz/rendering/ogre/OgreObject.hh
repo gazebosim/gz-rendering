@@ -38,9 +38,9 @@ namespace gz
 
       public: virtual ScenePtr Scene() const;
 
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: OgreScenePtr scene;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       private: friend class OgreScene;
     };

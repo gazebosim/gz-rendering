@@ -419,7 +419,7 @@ OgreHeightmap::OgreHeightmap(const HeightmapDescriptor &_desc)
     : BaseHeightmap(_desc), dataPtr(std::make_unique<OgreHeightmapPrivate>())
 {
   std::string home;
-  gz::common::env(IGN_HOMEDIR, home);
+  gz::common::env(GZ_HOMEDIR, home);
 
   this->dataPtr->pagingDir =
       common::joinPaths(home, ".ignition", "rendering",

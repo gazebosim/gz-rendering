@@ -130,14 +130,14 @@ namespace gz
 
       protected: unsigned int nextSceneId;
 
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief a list of paths that render engines use to locate their
       /// resources
       protected: std::vector<std::string> resourcePaths;
 
       /// \brief Render pass system for this render engine.
       protected: RenderPassSystemPtr renderPassSystem;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

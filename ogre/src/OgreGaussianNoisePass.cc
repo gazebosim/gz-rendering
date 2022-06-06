@@ -158,4 +158,4 @@ void OgreGaussianNoisePass::Destroy()
   }
 }
 
-IGN_RENDERING_REGISTER_RENDER_PASS(OgreGaussianNoisePass, GaussianNoisePass)
+GZ_RENDERING_REGISTER_RENDER_PASS(OgreGaussianNoisePass, GaussianNoisePass)

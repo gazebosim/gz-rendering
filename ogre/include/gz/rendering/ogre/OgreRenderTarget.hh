@@ -125,7 +125,7 @@ namespace gz
       protected: unsigned int antiAliasing = 4;
 
       /// \brief visibility mask associated with this render target
-      protected: uint32_t visibilityMask = IGN_VISIBILITY_ALL;
+      protected: uint32_t visibilityMask = GZ_VISIBILITY_ALL;
     };
 
     class GZ_RENDERING_OGRE_VISIBLE OgreRenderTexture :

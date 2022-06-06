@@ -17,3 +17,6 @@
 
 #include <gz/rendering/RenderPassSystem.hh>
 #include <ignition/rendering/config.hh>
+
+#define IGN_RENDERING_REGISTER_RENDER_PASS(classname, interface) \
+  GZ_RENDERING_REGISTER_RENDER_PASS(classname, interface)

@@ -61,10 +61,10 @@ namespace gz
       public: Ogre::CompositorInstance *gaussianNoiseInstance = nullptr;
 
       /// \brief Gaussian noise compositor listener
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: std::shared_ptr<GaussianNoiseCompositorListener>
           gaussianNoiseCompositorListener;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

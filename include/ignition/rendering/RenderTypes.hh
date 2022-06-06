@@ -17,3 +17,8 @@
 
 #include <gz/rendering/RenderTypes.hh>
 #include <ignition/rendering/config.hh>
+
+#define IGN_VISIBILITY_ALL             GZ_VISIBILITY_ALL
+#define IGN_VISIBILITY_SELECTION       GZ_VISIBILITY_SELECTION
+#define IGN_VISIBILITY_GUI             GZ_VISIBILITY_GUI
+#define IGN_VISIBILITY_SELECTABLE      GZ_VISIBILITY_SELECTABLE

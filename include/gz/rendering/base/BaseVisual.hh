@@ -132,7 +132,7 @@ namespace gz
       protected: MaterialPtr material;
 
       /// \brief Visual's visibility flags
-      protected: uint32_t visibilityFlags = IGN_VISIBILITY_ALL;
+      protected: uint32_t visibilityFlags = GZ_VISIBILITY_ALL;
 
       /// \brief The bounding box of the visual
       protected: gz::math::AxisAlignedBox boundingBox;

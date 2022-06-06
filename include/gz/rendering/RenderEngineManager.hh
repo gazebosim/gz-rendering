@@ -135,10 +135,10 @@ namespace gz
       /// \param[in] _paths The list of the plugin paths
       public: void SetPluginPaths(const std::list<std::string> &_paths);
 
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief private implementation details
       private: std::unique_ptr<RenderEngineManagerPrivate> dataPtr;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief required SingletonT friendship
       private: friend class gz::common::SingletonT<RenderEngineManager>;

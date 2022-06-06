@@ -177,9 +177,9 @@ void TransformControllerTest::WorldSpace(const std::string &_renderEngine)
   transformControl.SetTransformMode(TransformMode::TM_ROTATION);
   transformControl.SetTransformSpace(TransformSpace::TS_WORLD);
   transformControl.SetActiveAxis(math::Vector3d::UnitX);
-  transformControl.Rotate(math::Quaterniond(IGN_PI, 0, 0));
+  transformControl.Rotate(math::Quaterniond(GZ_PI, 0, 0));
   EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, 0, 2));
-  EXPECT_EQ(visual->WorldRotation(), math::Quaterniond(IGN_PI, 0, 0));
+  EXPECT_EQ(visual->WorldRotation(), math::Quaterniond(GZ_PI, 0, 0));
   EXPECT_EQ(visual->WorldScale(), math::Vector3d::One);
 
   // test scaling in world space
@@ -188,7 +188,7 @@ void TransformControllerTest::WorldSpace(const std::string &_renderEngine)
   transformControl.SetActiveAxis(math::Vector3d::UnitY);
   transformControl.Scale(math::Vector3d(1.0, 0.3, 1.0));
   EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, 0, 2));
-  EXPECT_EQ(visual->WorldRotation(), math::Quaterniond(IGN_PI, 0, 0));
+  EXPECT_EQ(visual->WorldRotation(), math::Quaterniond(GZ_PI, 0, 0));
   EXPECT_EQ(visual->WorldScale(), math::Vector3d(1.0, 0.3, 1.0));
 
   // Clean up
@@ -225,7 +225,7 @@ void TransformControllerTest::LocalSpace(const std::string &_renderEngine)
   // for testing transfoms in local space
   VisualPtr visual = scene->CreateVisual();
   ASSERT_NE(nullptr, visual);
-  math::Quaterniond initialRot(IGN_PI * 0.5, 0, 0);
+  math::Quaterniond initialRot(GZ_PI * 0.5, 0, 0);
   visual->SetLocalRotation(initialRot);
   EXPECT_EQ(initialRot, visual->WorldRotation());
   transformControl.Attach(visual);
@@ -244,10 +244,10 @@ void TransformControllerTest::LocalSpace(const std::string &_renderEngine)
   transformControl.SetTransformMode(TransformMode::TM_ROTATION);
   transformControl.SetTransformSpace(TransformSpace::TS_LOCAL);
   transformControl.SetActiveAxis(math::Vector3d::UnitX);
-  transformControl.Rotate(math::Quaterniond(IGN_PI, 0, 0));
+  transformControl.Rotate(math::Quaterniond(GZ_PI, 0, 0));
   EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, -2, 0));
   EXPECT_EQ(visual->WorldRotation(),
-      math::Quaterniond(IGN_PI, 0, 0) * initialRot);
+      math::Quaterniond(GZ_PI, 0, 0) * initialRot);
   EXPECT_EQ(visual->WorldScale(), math::Vector3d::One);
 
   // test scaling in local space
@@ -257,7 +257,7 @@ void TransformControllerTest::LocalSpace(const std::string &_renderEngine)
   transformControl.Scale(math::Vector3d(1.0, 0.3, 1.0));
   EXPECT_EQ(visual->WorldPosition(), math::Vector3d(0, -2, 0));
   EXPECT_EQ(visual->WorldRotation(),
-      math::Quaterniond(IGN_PI, 0, 0) * initialRot);
+      math::Quaterniond(GZ_PI, 0, 0) * initialRot);
   EXPECT_EQ(visual->WorldScale(), math::Vector3d(1.0, 0.3, 1.0));
 
   // Clean up

@@ -41,8 +41,8 @@ class gz::rendering::OrbitViewControllerPrivate
 using namespace gz;
 using namespace rendering;
 
-static const float PITCH_LIMIT_LOW = -static_cast<float>(IGN_PI)*0.5f + 0.001f;
-static const float PITCH_LIMIT_HIGH = static_cast<float>(IGN_PI)*0.5f - 0.001f;
+static const float PITCH_LIMIT_LOW = -static_cast<float>(GZ_PI)*0.5f + 0.001f;
+static const float PITCH_LIMIT_HIGH = static_cast<float>(GZ_PI)*0.5f - 0.001f;
 
 //////////////////////////////////////////////////
 OrbitViewController::OrbitViewController()
@@ -154,8 +154,8 @@ void OrbitViewController::Orbit(const math::Vector2d &_value)
     return;
   }
 
-  double dy = 2 * IGN_PI * _value.X() / this->dataPtr->camera->ImageWidth();
-  double dp = 2 * IGN_PI * _value.Y() / this->dataPtr->camera->ImageHeight();
+  double dy = 2 * GZ_PI * _value.X() / this->dataPtr->camera->ImageWidth();
+  double dp = 2 * GZ_PI * _value.Y() / this->dataPtr->camera->ImageHeight();
 
   // translate to make target the origin for rotation
   this->dataPtr->camera->SetWorldPosition(
@@ -185,10 +185,10 @@ void OrbitViewController::Orbit(const math::Vector2d &_value)
 //////////////////////////////////////////////////
 double OrbitViewControllerPrivate::NormalizeYaw(double _yaw)
 {
-  _yaw = fmod(_yaw, IGN_PI*2);
+  _yaw = fmod(_yaw, GZ_PI*2);
   if (_yaw < 0.0f)
   {
-    _yaw = IGN_PI * 2 + _yaw;
+    _yaw = GZ_PI * 2 + _yaw;
   }
 
   return _yaw;

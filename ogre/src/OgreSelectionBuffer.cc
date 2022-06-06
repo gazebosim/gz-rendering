@@ -162,7 +162,7 @@ void OgreSelectionBuffer::CreateRTTBuffer()
       this->dataPtr->materialSwitcher.get());
   vp->setMaterialScheme("selection");
   vp->setVisibilityMask(
-      IGN_VISIBILITY_SELECTABLE);
+      GZ_VISIBILITY_SELECTABLE);
   Ogre::HardwarePixelBufferSharedPtr pixelBuffer =
     this->dataPtr->texture->getBuffer();
   size_t bufferSize = pixelBuffer->getSizeInBytes();

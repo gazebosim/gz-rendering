@@ -111,7 +111,7 @@ void buildScene(ScenePtr _scene)
   camera->SetImageHeight(600);
   camera->SetImageFormat(PixelFormat::PF_R8G8B8);
   camera->SetAspectRatio(1.333);
-  camera->SetHFOV(IGN_PI / 2);
+  camera->SetHFOV(GZ_PI / 2);
   camera->EnableColoredMap(true);
   camera->SetSegmentationType(SegmentationType::ST_SEMANTIC);
   root->AddChild(camera);

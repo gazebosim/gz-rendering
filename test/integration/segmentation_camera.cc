@@ -162,7 +162,7 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
   camera->SetAspectRatio(aspectRatio);
   camera->SetImageWidth(width);
   camera->SetImageHeight(height);
-  camera->SetHFOV(IGN_PI / 2);
+  camera->SetHFOV(GZ_PI / 2);
 
   // add camera to the scene
   scene->RootVisual()->AddChild(camera);

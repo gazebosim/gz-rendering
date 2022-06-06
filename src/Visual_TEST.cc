@@ -518,7 +518,7 @@ void VisualTest::VisibilityFlags(const std::string &_renderEngine)
   ASSERT_NE(nullptr, visual);
 
   // check initial value
-  EXPECT_EQ(static_cast<uint32_t>(IGN_VISIBILITY_ALL),
+  EXPECT_EQ(static_cast<uint32_t>(GZ_VISIBILITY_ALL),
       visual->VisibilityFlags());
 
   // check setting new values
@@ -533,7 +533,7 @@ void VisualTest::VisibilityFlags(const std::string &_renderEngine)
 
   VisualPtr visual2 = scene->CreateVisual();
   ASSERT_NE(nullptr, visual2);
-  EXPECT_EQ(static_cast<uint32_t>(IGN_VISIBILITY_ALL),
+  EXPECT_EQ(static_cast<uint32_t>(GZ_VISIBILITY_ALL),
       visual2->VisibilityFlags());
 
   // check setting visibility flags to visual with child nodes

@@ -55,7 +55,7 @@ Ogre::Technique *OgreMaterialSwitcher::handleSchemeNotFound(
     static_cast<const Ogre::SubEntity *>(_rend);
 
   if (!(subEntity->getParent()->getVisibilityFlags() &
-      IGN_VISIBILITY_SELECTABLE))
+      GZ_VISIBILITY_SELECTABLE))
   {
     const_cast<Ogre::SubEntity *>(subEntity)->setCustomParameter(1,
         Ogre::Vector4(0, 0, 0, 0));

@@ -79,10 +79,10 @@ namespace gz
       /// \param[in] _value robit amount in image plane, e.g. mouse drag delta
       public: virtual void Orbit(const math::Vector2d &_value);
 
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief Private data pointer
       public: std::unique_ptr<OrbitViewControllerPrivate> dataPtr;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

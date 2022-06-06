@@ -213,9 +213,9 @@ namespace gz
           const math::Planed &_plane, math::Vector3d &_result);
 
       /// \brief Private data pointer
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: std::unique_ptr<TransformControllerPrivate> dataPtr;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

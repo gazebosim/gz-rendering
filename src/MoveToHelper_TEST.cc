@@ -104,7 +104,7 @@ void MoveToHelperTest::MoveTo(const std::string &_renderEngine)
   camera->SetImageHeight(600);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
-  camera->SetHFOV(IGN_PI / 2);
+  camera->SetHFOV(GZ_PI / 2);
   root->AddChild(camera);
 
   ASSERT_NE(nullptr, camera);

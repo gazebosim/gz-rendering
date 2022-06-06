@@ -100,5 +100,5 @@ namespace mock
 }
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(mock::HelloWorldPlugin,
+GZ_ADD_PLUGIN(mock::HelloWorldPlugin,
                     gz::rendering::RenderEnginePlugin)

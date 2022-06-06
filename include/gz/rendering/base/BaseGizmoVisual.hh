@@ -92,7 +92,7 @@ namespace gz
       /// \brief Current gizmo mode
       protected: TransformMode mode = TransformMode::TM_NONE;
 
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief A map of gizmo axis and their visuals
       protected: std::map<unsigned int, VisualPtr> visuals;
 
@@ -110,7 +110,7 @@ namespace gz
 
       /// \brief A map of axis enums to materials
       protected: std::map<unsigned int, MaterialPtr> materials;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Material used by axes
       protected: enum AxisMaterial
@@ -443,7 +443,7 @@ namespace gz
       transXVis->AddChild(transHeadXVis);
 
       transXVis->SetMaterial(this->materials[AM_X], false);
-      transXVis->SetLocalRotation(0, IGN_PI * 0.5, 0);
+      transXVis->SetLocalRotation(0, GZ_PI * 0.5, 0);
       transVis->AddChild(transXVis);
 
       // trans y
@@ -463,7 +463,7 @@ namespace gz
       transYVis->AddChild(transHeadYVis);
 
       transYVis->SetMaterial(this->materials[AM_Y], false);
-      transYVis->SetLocalRotation(-IGN_PI * 0.5, 0, 0);
+      transYVis->SetLocalRotation(-GZ_PI * 0.5, 0, 0);
       transVis->AddChild(transYVis);
 
       // trans z
@@ -533,20 +533,20 @@ namespace gz
       common::MeshManager *meshMgr = common::MeshManager::Instance();
       std::string rotMeshName = "gizmo_rotate";
       if (!meshMgr->HasMesh(rotMeshName))
-        meshMgr->CreateTube(rotMeshName, 1.0f, 1.02f, 0.02f, 1, 64, IGN_PI);
+        meshMgr->CreateTube(rotMeshName, 1.0f, 1.02f, 0.02f, 1, 64, GZ_PI);
 
       std::string rotFullMeshName = "gizmo_rotate_full";
       if (!meshMgr->HasMesh(rotFullMeshName))
       {
         meshMgr->CreateTube(rotFullMeshName, 1.0f, 1.02f, 0.02f, 1, 64,
-            2 * IGN_PI);
+            2 * GZ_PI);
       }
 
       std::string rotHandleMeshName = "gizmo_rotate_handle";
       if (!meshMgr->HasMesh(rotHandleMeshName))
       {
         meshMgr->CreateTube(rotHandleMeshName, 0.95f, 1.07f, 0.1f, 1, 64,
-            IGN_PI);
+            GZ_PI);
       }
 
       VisualPtr rotVis = this->Scene()->CreateVisual();
@@ -554,7 +554,7 @@ namespace gz
       // rotation x
       VisualPtr rotXVis = this->Scene()->CreateVisual();
       rotXVis->AddGeometry(this->Scene()->CreateMesh(rotMeshName));
-      rotXVis->SetLocalRotation(0, IGN_PI * 0.5, 0);
+      rotXVis->SetLocalRotation(0, GZ_PI * 0.5, 0);
       rotXVis->SetLocalScale(0.5, 0.5, 0.5);
       rotXVis->SetMaterial(this->materials[AM_X], false);
       rotVis->AddChild(rotXVis);
@@ -562,7 +562,7 @@ namespace gz
       // rotation y
       VisualPtr rotYVis = this->Scene()->CreateVisual();
       rotYVis->AddGeometry(this->Scene()->CreateMesh(rotMeshName));
-      rotYVis->SetLocalRotation(IGN_PI * 0.5, 0, 0);
+      rotYVis->SetLocalRotation(GZ_PI * 0.5, 0, 0);
       rotYVis->SetLocalScale(0.5, 0.5, 0.5);
       rotYVis->SetMaterial(this->materials[AM_Y], false);
       rotVis->AddChild(rotYVis);
@@ -632,7 +632,7 @@ namespace gz
       scaleXVis->AddChild(scaleHeadXVis);
 
       scaleXVis->SetMaterial(this->materials[AM_X], false);
-      scaleXVis->SetLocalRotation(0, IGN_PI * 0.5, 0);
+      scaleXVis->SetLocalRotation(0, GZ_PI * 0.5, 0);
       scaleVis->AddChild(scaleXVis);
 
       // scale y
@@ -652,7 +652,7 @@ namespace gz
       scaleYVis->AddChild(scaleHeadYVis);
 
       scaleYVis->SetMaterial(this->materials[AM_Y], false);
-      scaleYVis->SetLocalRotation(-IGN_PI * 0.5, 0, 0);
+      scaleYVis->SetLocalRotation(-GZ_PI * 0.5, 0, 0);
       scaleVis->AddChild(scaleYVis);
 
       // scale z

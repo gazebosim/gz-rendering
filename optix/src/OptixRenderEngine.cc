@@ -148,5 +148,5 @@ bool OptixRenderEngine::InitImpl()
 }
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(gz::rendering::OptixRenderEnginePlugin,
+GZ_ADD_PLUGIN(gz::rendering::OptixRenderEnginePlugin,
                     gz::rendering::RenderEnginePlugin)

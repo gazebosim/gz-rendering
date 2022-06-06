@@ -566,7 +566,7 @@ RenderTargetPtr OgreDepthCamera::RenderTarget() const
 //////////////////////////////////////////////////
 double OgreDepthCamera::LimitFOV(const double _fov)
 {
-  return std::min(std::max(0.001, _fov), IGN_PI * 0.999);
+  return std::min(std::max(0.001, _fov), GZ_PI * 0.999);
 }
 
 //////////////////////////////////////////////////

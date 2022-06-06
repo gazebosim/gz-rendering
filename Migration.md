@@ -18,7 +18,8 @@ release will remove the deprecated code.
 4. The environment variable `IGN_RENDERING_PLUGIN_PATH` is deprecated. Use `GZ_RENDERING_PLUGIN_PATH` instead.
 5. The environment variable `IGN_RENDERING_RESOURCE_PATH` is deprecated. Use `GZ_RENDERING_RESOURCE_PATH` instead.
 6. The following `IGN_` prefixed macros are deprecated and will be removed in future versions.
-    Use the `GZ_` prefix instead.
+   Additionally, they will only be available when including the corresponding `ignition/...` header.
+   Use the `GZ_` prefix instead.
     1. `IGN_RENDERING_REGISTER_RENDER_PASS`
     2. `IGN_VISIBILITY_ALL`
     3. `IGN_VISIBILITY_SELECTION`

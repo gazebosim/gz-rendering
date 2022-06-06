@@ -56,6 +56,12 @@ class gz::rendering::Ogre2MaterialPrivate
   /// store the material hash name
   public: std::string hashName;
 
+  /// TODO document
+  public: std::vector<unsigned char> textureData;
+
+  /// TMP remove TODO
+  public: std::string textureName;
+
   /// \brief Path to vertex shader program.
   public: std::string vertexShaderPath;
 
@@ -384,27 +390,28 @@ std::string Ogre2Material::Texture() const
 //////////////////////////////////////////////////
 void Ogre2Material::SetTexture(const std::string &_name)
 {
+  gzwarn << "Setting normal texture with name " << _name << std::endl;
   if (_name.empty())
   {
     this->ClearTexture();
     return;
   }
-
   this->textureName = _name;
   this->SetTextureMapImpl(this->textureName, Ogre::PBSM_DIFFUSE);
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetTexture(const std::vector<unsigned char> &_buf, const std::string& _format)
+void Ogre2Material::SetTexture(const std::vector<unsigned char> &_buf, const std::string& _name)
 {
-  gzwarn << "Setting texture raw buffer! size is " << _buf.size() << " format is " << _format << std::endl;
+  gzwarn << "Setting material " << this->Name() << " texture raw buffer! size is " << _buf.size() << " name is " << _name << std::endl;
+  this->dataPtr->textureData = _buf;
+  this->dataPtr->textureName = _name;
   if (_buf.size() == 0)
   {
     // Clear texture
     return;
   }
-
-  this->SetTextureMapDataImpl(_buf, _format, Ogre::PBSM_DIFFUSE);
+  this->SetTextureMapDataImpl(_buf, _name, Ogre::PBSM_DIFFUSE);
   /*
   if (_name.empty())
   {
@@ -415,6 +422,12 @@ void Ogre2Material::SetTexture(const std::vector<unsigned char> &_buf, const std
   this->textureName = _name;
   this->SetTextureMapImpl(this->textureName, Ogre::PBSM_DIFFUSE);
   */
+}
+
+//////////////////////////////////////////////////
+std::pair<std::vector<unsigned char>, std::string> Ogre2Material::TextureData() const
+{
+  return {this->dataPtr->textureData, this->dataPtr->textureName};
 }
 
 //////////////////////////////////////////////////
@@ -1058,11 +1071,11 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
 
 //////////////////////////////////////////////////
 void Ogre2Material::SetTextureMapDataImpl(const std::vector<unsigned char> &_buf,
-  const std::string& _format,
+  const std::string& _name,
   Ogre::PbsTextureTypes _type)
 {
   // TODO duplicated textures, avoid reloading
-  std::string texName = "dummy_name";
+  std::string texName = _name;
 
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
   Ogre::TextureGpuManager *textureMgr =
@@ -1080,6 +1093,7 @@ void Ogre2Material::SetTextureMapDataImpl(const std::vector<unsigned char> &_buf
 
   // create the gpu texture
   Ogre::uint32 textureFlags = 0;
+  textureFlags |= Ogre::TextureFlags::AutomaticBatching;
   Ogre::TextureGpu *texture = textureMgr->createOrRetrieveTexture(
       texName, // TODO name
       Ogre::GpuPageOutStrategy::Discard,
@@ -1088,15 +1102,20 @@ void Ogre2Material::SetTextureMapDataImpl(const std::vector<unsigned char> &_buf
       Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
       0u);
 
-  texture->setPixelFormat(img.getPixelFormat());
-  texture->setTextureType(img.getTextureType());
-  texture->setNumMipmaps(img.getNumMipmaps());
-  texture->setResolution(img.getWidth(), img.getHeight());
-  texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
-  texture->waitForData();
+  // Has to be loaded
+  if (texture->getResidencyStatus() == Ogre::GpuResidency::OnStorage)
+  {
+    gzmsg << "Loading texture into gpu" << std::endl;
+    texture->setPixelFormat(img.getPixelFormat());
+    texture->setTextureType(img.getTextureType());
+    texture->setNumMipmaps(img.getNumMipmaps());
+    texture->setResolution(img.getWidth(), img.getHeight());
+    texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+    texture->waitForData();
 
-  // upload raw color image data to gpu texture
-  img.uploadTo(texture, 0, 0);
+    // upload raw color image data to gpu texture
+    img.uploadTo(texture, 0, 0);
+  }
 
   // Now assign it to the material
   Ogre::HlmsSamplerblock samplerBlockRef;

@@ -165,7 +165,9 @@ namespace gz
       public: virtual void SetTexture(const std::string &_texture) override;
 
       // Documentation inherited
-      public: virtual void SetTexture(const std::vector<unsigned char> &_buf, const std::string& _format) override;
+      public: virtual void SetTexture(const std::vector<unsigned char> &_buf, const std::string& _name) override;
+
+      public: virtual std::pair<std::vector<unsigned char>, std::string> TextureData() const override;
 
       // Documentation inherited
       public: virtual void ClearTexture() override;
@@ -719,9 +721,16 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetTexture(const std::vector<unsigned char> &_buf, const std::string& _format)
+    void BaseMaterial<T>::SetTexture(const std::vector<unsigned char> &/*_buf*/, const std::string& /*_name*/)
     {
       // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::pair<std::vector<unsigned char>, std::string> BaseMaterial<T>::TextureData() const
+    {
+      return {};
     }
 
     //////////////////////////////////////////////////
@@ -971,6 +980,8 @@ namespace gz
       this->SetReceiveShadows(_material->ReceiveShadows());
       this->SetReflectionEnabled(_material->ReflectionEnabled());
       this->SetTexture(_material->Texture());
+      // TODO change API?
+      this->SetTexture(_material->TextureData().first, _material->TextureData().second);
       this->SetNormalMap(_material->NormalMap());
       this->SetRoughnessMap(_material->RoughnessMap());
       this->SetMetalnessMap(_material->MetalnessMap());

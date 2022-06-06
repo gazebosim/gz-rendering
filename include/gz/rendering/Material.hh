@@ -226,7 +226,11 @@ namespace gz
       /// \brief Set the material texture from a raw buffer
       /// \param[in] _buf raw data buffer containing texture data
       /// \param[in] _buf data format
-      public: virtual void SetTexture(const std::vector<unsigned char> &_buf, const std::string& _format) = 0;
+      public: virtual void SetTexture(const std::vector<unsigned char> &_buf, const std::string& _name) = 0;
+
+      /// \brief Get the URI of the texture file
+      /// \return URI of the texture file
+      public: virtual std::pair<std::vector<unsigned char>, std::string> TextureData() const = 0;
 
       /// \brief Removes any texture mapped to this material
       public: virtual void ClearTexture() = 0;

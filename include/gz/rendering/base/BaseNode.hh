@@ -504,7 +504,7 @@ namespace gz
         return _pose;
       }
 
-      return _pose - parent->WorldPose();
+      return parent->WorldPose().Inverse() * _pose;
     }
 
     //////////////////////////////////////////////////

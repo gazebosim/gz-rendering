@@ -165,6 +165,9 @@ namespace gz
       public: virtual void SetTexture(const std::string &_texture) override;
 
       // Documentation inherited
+      public: virtual void SetTexture(const std::vector<unsigned char> &_buf, const std::string& _format) override;
+
+      // Documentation inherited
       public: virtual void ClearTexture() override;
 
       // Documentation inherited
@@ -716,6 +719,13 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseMaterial<T>::SetTexture(const std::vector<unsigned char> &_buf, const std::string& _format)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseMaterial<T>::ClearTexture()
     {
       // no op
@@ -992,6 +1002,8 @@ namespace gz
       // TODO(anyone): update common::Material
       this->SetReflectivity(0);
       this->SetTexture(_material.TextureImage());
+      // TODO change API?
+      this->SetTexture(_material.TextureData().first, _material.TextureData().second);
       // TODO(anyone): update common::Material
       this->SetCastShadows(true);
       // TODO(anyone): update common::Material

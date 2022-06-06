@@ -111,6 +111,9 @@ namespace gz
       public: virtual void SetTexture(const std::string &_texture) override;
 
       // Documentation inherited
+      public: virtual void SetTexture(const std::vector<unsigned char> &_buf, const std::string& _format) override;
+
+      // Documentation inherited
       public: virtual void ClearTexture() override;
 
       // Documentation inherited
@@ -273,6 +276,11 @@ namespace gz
       /// metalness
       protected: virtual void SetTextureMapImpl(const std::string &_texture,
           Ogre::PbsTextureTypes _type);
+
+      /// TODO docs
+      protected: void SetTextureMapDataImpl(const std::vector<unsigned char> &_buf,
+        const std::string& _format,
+        Ogre::PbsTextureTypes _type);
 
       /// \brief Get a pointer to the ogre texture by name
       /// \return Ogre texture

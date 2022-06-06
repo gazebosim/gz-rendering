@@ -18,7 +18,8 @@
 #include <limits>
 
 #ifdef _MSC_VER
-#pragma warning(push, 0)
+#pragma warning(push)
+#pragma warning(disable:5033)
 #endif
 #include <OgreBitwise.h>
 #ifdef _MSC_VER
@@ -838,26 +839,26 @@ BoundingBox Ogre2BoundingBoxCameraPrivate::MergeBoxes2D(
     return *_boxes[0];
 
   BoundingBox mergedBox;
-  uint32_t minX = std::numeric_limits<uint32_t>::max();
-  uint32_t maxX = 0;
-  uint32_t minY = std::numeric_limits<uint32_t>::max();
-  uint32_t maxY = 0;
+  double minX = std::numeric_limits<double>::max();
+  double maxX = 0.0;
+  double minY = std::numeric_limits<double>::max();
+  double maxY = 0.0;
 
   for (const auto &box : _boxes)
   {
-    uint32_t boxMinX = box->Center().X() - box->Size().X() / 2;
-    uint32_t boxMaxX = box->Center().X() + box->Size().X() / 2;
-    uint32_t boxMinY = box->Center().Y() - box->Size().Y() / 2;
-    uint32_t boxMaxY = box->Center().Y() + box->Size().Y() / 2;
+    double boxMinX = box->Center().X() - box->Size().X() * 0.5;
+    double boxMaxX = box->Center().X() + box->Size().X() * 0.5;
+    double boxMinY = box->Center().Y() - box->Size().Y() * 0.5;
+    double boxMaxY = box->Center().Y() + box->Size().Y() * 0.5;
 
-    minX = std::min<uint32_t>(minX, boxMinX);
-    maxX = std::max<uint32_t>(maxX, boxMaxX);
-    minY = std::min<uint32_t>(minY, boxMinY);
-    maxY = std::max<uint32_t>(maxY, boxMaxY);
+    minX = std::min(minX, boxMinX);
+    maxX = std::max(maxX, boxMaxX);
+    minY = std::min(minY, boxMinY);
+    maxY = std::max(maxY, boxMaxY);
   }
 
-  auto width = static_cast<double>(maxX - minX);
-  auto height = static_cast<double>(maxY - minY);
+  auto width = maxX - minX;
+  auto height = maxY - minY;
   mergedBox.SetSize({width, height, 0});
   mergedBox.SetCenter({minX + width * 0.5, minY + height * 0.5, 0});
   mergedBox.SetLabel(_boxes[0]->Label());

@@ -488,11 +488,11 @@ void OgreGpuRays::CreateGpuRaysTextures()
 
   Ogre::Technique *technique =
     this->dataPtr->matSecondPass->getTechnique(0);
-  IGN_ASSERT(technique,
+  GZ_ASSERT(technique,
       "OgreGpuRays material script error: technique not found");
 
   Ogre::Pass *pass = technique->getPass(0);
-  IGN_ASSERT(pass,
+  GZ_ASSERT(pass,
       "OgreGpuRays material script error: pass not found");
   pass->removeAllTextureUnitStates();
   Ogre::TextureUnitState *texUnit = nullptr;

@@ -45,9 +45,9 @@ namespace gz
                                                 Ogre::MaterialPtr &_mat)
       {
 #if OGRE_VERSION_LT_1_11_0
-        IGN_ASSERT(!_mat.isNull(), "Null OGRE material");
+        GZ_ASSERT(!_mat.isNull(), "Null OGRE material");
 #else
-        IGN_ASSERT(_mat, "Null OGRE material");
+        GZ_ASSERT(_mat, "Null OGRE material");
 #endif
         // modify material here (wont alter the base material!), called for
         // every drawn geometry instance (i.e. compositor render_quad)
@@ -63,15 +63,15 @@ namespace gz
         //    fragment_program GaussianNoiseFS
         // 2. media/materials/scripts/gaussian_noise_fs.glsl
         Ogre::Technique *technique = _mat->getTechnique(0);
-        IGN_ASSERT(technique, "Null OGRE material technique");
+        GZ_ASSERT(technique, "Null OGRE material technique");
         Ogre::Pass *pass = technique->getPass(_passId);
-        IGN_ASSERT(pass, "Null OGRE material pass");
+        GZ_ASSERT(pass, "Null OGRE material pass");
         Ogre::GpuProgramParametersSharedPtr params =
             pass->getFragmentProgramParameters();
 #if OGRE_VERSION_LT_1_11_0
-        IGN_ASSERT(!params.isNull(), "Null OGRE material GPU parameters");
+        GZ_ASSERT(!params.isNull(), "Null OGRE material GPU parameters");
 #else
-        IGN_ASSERT(params, "Null OGRE material GPU parameters");
+        GZ_ASSERT(params, "Null OGRE material GPU parameters");
 #endif
         params->setNamedConstant("offsets", offsets);
         params->setNamedConstant("mean", static_cast<Ogre::Real>(this->mean));

@@ -1432,9 +1432,11 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(unsigned char *_data,
   uint32_t width = this->ImageWidth();
 
   std::vector<uint32_t> x_values =
-    {uint32_t(minVertex.X()), uint32_t(maxVertex.X())};
+    {uint32_t(minVertex.X()),
+        std::min(this->ImageWidth() - 1, uint32_t(maxVertex.X()))};
   std::vector<uint32_t> y_values =
-    {uint32_t(minVertex.Y()), uint32_t(maxVertex.Y())};
+    {uint32_t(minVertex.Y()),
+        std::min(this->ImageHeight() - 1, uint32_t(maxVertex.Y()))};
 
   for (uint32_t i = minVertex.Y(); i < maxVertex.Y(); i++)
   {

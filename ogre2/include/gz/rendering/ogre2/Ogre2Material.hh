@@ -289,7 +289,7 @@ namespace gz
       protected: void UpdateShaderParams();
 
       /// \brief Transfer params from ign-rendering type to ogre type
-      /// \param[in] _params ignition rendering params
+      /// \param[in] _params Gazebo Rendering params
       /// \param[out] _ogreParams ogre type for holding params
       protected: void UpdateShaderParams(ConstShaderParamsPtr _params,
           Ogre::GpuProgramParametersSharedPtr _ogreParams);

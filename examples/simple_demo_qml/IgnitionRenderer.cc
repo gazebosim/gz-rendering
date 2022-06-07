@@ -175,7 +175,7 @@ gz::rendering::CameraPtr CreateCamera(const std::string &_engineName)
   // create and populate scene
   std::map<std::string, std::string> params;
 
-  // ensure that the QML application and Ignition / Ogre2 share an OpenGL
+  // ensure that the QML application and Gazebo / Ogre2 share an OpenGL
   // context
   params["useCurrentGLContext"] = "1";
   RenderEngine *engine = rendering::engine(_engineName, params);

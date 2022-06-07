@@ -286,7 +286,7 @@ namespace ignition
     void BaseCamera<T>::SetImageWidth(const unsigned int _width)
     {
       this->RenderTarget()->SetWidth(_width);
-      this->aspect = this->AspectRatio();
+      this->SetAspectRatio(1.0 * _width / this->ImageHeight());
     }
 
     //////////////////////////////////////////////////
@@ -301,7 +301,7 @@ namespace ignition
     void BaseCamera<T>::SetImageHeight(const unsigned int _height)
     {
       this->RenderTarget()->SetHeight(_height);
-      this->aspect = this->AspectRatio();
+      this->SetAspectRatio(1.0 * this->ImageWidth() / _height);
     }
 
     //////////////////////////////////////////////////

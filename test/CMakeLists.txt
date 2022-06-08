@@ -12,7 +12,7 @@ add_library(gtest_main STATIC gtest/src/gtest_main.cc)
 target_link_libraries(
   gtest_main
   gtest
-  ignition-cmake${IGN_CMAKE_VER}::utilities
+  gz-cmake${GZ_CMAKE_VER}::utilities
 )
 set(GTEST_LIBRARY "${PROJECT_BINARY_DIR}/test/libgtest.a")
 set(GTEST_MAIN_LIBRARY "${PROJECT_BINARY_DIR}/test/libgtest_main.a")

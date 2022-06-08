@@ -3,14 +3,14 @@ cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 #============================================================================
 # Initialize the project
 #============================================================================
-project(ignition-rendering7 VERSION 7.0.0)
+project(gz-rendering7 VERSION 7.0.0)
 
 #============================================================================
-# Find ignition-cmake
+# Find gz-cmake
 #============================================================================
-# If you get an error at this line, you need to install ignition-cmake
-find_package(ignition-cmake3 REQUIRED)
-set(IGN_CMAKE_VER ${ignition-cmake3_VERSION_MAJOR})
+# If you get an error at this line, you need to install gz-cmake
+find_package(gz-cmake3 REQUIRED)
+set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
 
 #============================================================================
 # Set up the project
@@ -31,25 +31,25 @@ option(USE_UNOFFICIAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the bui
 #============================================================================
 
 #--------------------------------------
-# Find ignition-math
-gz_find_package(ignition-math7 REQUIRED COMPONENTS eigen3)
-set(IGN_MATH_VER ${ignition-math7_VERSION_MAJOR})
+# Find gz-math
+gz_find_package(gz-math7 REQUIRED COMPONENTS eigen3)
+set(GZ_MATH_VER ${gz-math7_VERSION_MAJOR})
 
 #--------------------------------------
-# Find ignition-common
-gz_find_package(ignition-common5 REQUIRED
+# Find gz-common
+gz_find_package(gz-common5 REQUIRED
   COMPONENTS graphics events geospatial)
-set(IGN_COMMON_VER ${ignition-common5_VERSION_MAJOR})
+set(GZ_COMMON_VER ${gz-common5_VERSION_MAJOR})
 
 #--------------------------------------
-# Find ignition-plugin
-gz_find_package(ignition-plugin2 REQUIRED COMPONENTS all)
-set(IGN_PLUGIN_VER ${ignition-plugin2_VERSION_MAJOR})
+# Find gz-plugin
+gz_find_package(gz-plugin2 REQUIRED COMPONENTS all)
+set(GZ_PLUGIN_VER ${gz-plugin2_VERSION_MAJOR})
 
 #--------------------------------------
-# Find ignition-utils
-gz_find_package(ignition-utils2 REQUIRED)
-set(IGN_UTILS_VER ${ignition-utils2_VERSION_MAJOR})
+# Find gz-utils
+gz_find_package(gz-utils2 REQUIRED)
+set(GZ_UTILS_VER ${gz-utils2_VERSION_MAJOR})
 
 #--------------------------------------
 # Find FreeImage

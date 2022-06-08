@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-custom-shaders)
+project(gz-rendering-custom-shaders)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
 )
 
-find_package(ignition-rendering7 REQUIRED)
+find_package(gz-rendering7 REQUIRED)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})

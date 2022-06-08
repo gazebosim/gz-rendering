@@ -17,6 +17,7 @@
 
 #include <map>
 #include <mutex>
+#include <regex>
 
 #include <gz/common/Console.hh>
 #include <gz/common/SystemPaths.hh>
@@ -136,14 +137,17 @@ unsigned int RenderEngineManager::EngineCount() const
 //////////////////////////////////////////////////
 bool RenderEngineManager::HasEngine(const std::string &_name) const
 {
+  // Deprecated: accept ignition-prefixed engines
+  auto name = std::regex_replace(_name, std::regex("ignition"), "gz");
+
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
-  auto iter = this->dataPtr->engines.find(_name);
+  auto iter = this->dataPtr->engines.find(name);
 
   if (iter == this->dataPtr->engines.end())
   {
     // Check if the provided name is a name of a default engine, if so,
     // translate the name to the shared library name
-    auto defaultIt = this->dataPtr->defaultEngines.find(_name);
+    auto defaultIt = this->dataPtr->defaultEngines.find(name);
     if (defaultIt != this->dataPtr->defaultEngines.end())
       iter = this->dataPtr->engines.find(defaultIt->second);
   }
@@ -154,14 +158,17 @@ bool RenderEngineManager::HasEngine(const std::string &_name) const
 //////////////////////////////////////////////////
 bool RenderEngineManager::IsEngineLoaded(const std::string &_name) const
 {
+  // Deprecated: accept ignition-prefixed engines
+  auto name = std::regex_replace(_name, std::regex("ignition"), "gz");
+
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
-  auto iter = this->dataPtr->engines.find(_name);
+  auto iter = this->dataPtr->engines.find(name);
 
   if (iter == this->dataPtr->engines.end())
   {
     // Check if the provided name is a name of a default engine, if so,
     // translate the name to the shared library name
-    auto defaultIt = this->dataPtr->defaultEngines.find(_name);
+    auto defaultIt = this->dataPtr->defaultEngines.find(name);
     if (defaultIt != this->dataPtr->defaultEngines.end())
     {
       iter = this->dataPtr->engines.find(defaultIt->second);
@@ -241,21 +248,24 @@ RenderEngine *RenderEngineManager::EngineAt(unsigned int _index,
 //////////////////////////////////////////////////
 bool RenderEngineManager::UnloadEngine(const std::string &_name)
 {
+  // Deprecated: accept ignition-prefixed engines
+  auto name = std::regex_replace(_name, std::regex("ignition"), "gz");
+
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   // check in the list of available engines
-  auto iter = this->dataPtr->engines.find(_name);
+  auto iter = this->dataPtr->engines.find(name);
 
   if (iter == this->dataPtr->engines.end())
   {
     // Check if the provided name is a name of a default engine, if so,
     // translate the name to the shared library name
-    auto defaultIt = this->dataPtr->defaultEngines.find(_name);
+    auto defaultIt = this->dataPtr->defaultEngines.find(name);
     if (defaultIt != this->dataPtr->defaultEngines.end())
       iter = this->dataPtr->engines.find(defaultIt->second);
 
     if (iter == this->dataPtr->engines.end())
     {
-      gzerr << "No render-engine registered with name: " << _name << std::endl;
+      gzerr << "No render-engine registered with name: " << name << std::endl;
       return false;
     }
   }
@@ -413,7 +423,7 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
   // TODO(anyone): Find a cleaner way to get the default engine library name
 
   // cppcheck-suppress unreadVariable
-  std::string libName = "ignition-rendering-";
+  std::string libName = "gz-rendering-";
 
   // cppcheck-suppress unusedVariable
   std::string engineName;

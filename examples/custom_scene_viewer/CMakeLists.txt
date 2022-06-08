@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-custom-scene-viewer)
-find_package(ignition-rendering7 REQUIRED)
+project(gz-rendering-custom-scene-viewer)
+find_package(gz-rendering7 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}

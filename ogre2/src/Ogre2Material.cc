@@ -1052,19 +1052,15 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
   const std::shared_ptr<common::Image> &_img,
   Ogre::PbsTextureTypes _type)
 {
-  // TODO duplicated textures, avoid reloading
-  std::string texName = _name;
-
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
   Ogre::TextureGpuManager *textureMgr =
       root->getRenderSystem()->getTextureGpuManager();
-
 
   // create the gpu texture
   Ogre::uint32 textureFlags = 0;
   textureFlags |= Ogre::TextureFlags::AutomaticBatching;
   Ogre::TextureGpu *texture = textureMgr->createOrRetrieveTexture(
-      texName, // TODO name
+      _name,
       Ogre::GpuPageOutStrategy::Discard,
       textureFlags | Ogre::TextureFlags::ManualTexture,
       Ogre::TextureTypes::Type2D,
@@ -1076,8 +1072,6 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
   {
     gzmsg << "Loading texture into gpu" << std::endl;
 
-    // Load image using Ogre::Image
-    // TODO _buf size check
     unsigned char* data = nullptr;
     unsigned int length;
     _img->RGBAData(&data, length);
@@ -1106,7 +1100,7 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
     gzmsg << "total size in bytes is " << img.getSizeBytes() << std::endl;
     img.uploadTo(texture, 0, 0);
 
-    // img->Data() allocates memory, free it
+    // img->RGBAData() allocates memory, free it
     delete data;
   }
 
@@ -1116,15 +1110,14 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
   samplerBlockRef.mV = Ogre::TAM_WRAP;
   samplerBlockRef.mW = Ogre::TAM_WRAP;
 
-  this->ogreDatablock->setTexture(_type, texName, &samplerBlockRef);
+  this->ogreDatablock->setTexture(_type, _name, &samplerBlockRef);
 
-  auto tex = textureMgr->findTextureNoThrow(texName);
+  auto tex = textureMgr->findTextureNoThrow(_name);
 
   if (tex)
   {
     tex->waitForMetadata();
     this->dataPtr->hashName = tex->getName().getFriendlyText();
-    gzmsg << "Texture hash name is " << this->dataPtr->hashName << std::endl;
   }
 }
 

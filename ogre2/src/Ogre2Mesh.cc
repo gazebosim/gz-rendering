@@ -335,8 +335,6 @@ Ogre::SubItem *Ogre2SubMesh::Ogre2SubItem() const
 //////////////////////////////////////////////////
 void Ogre2SubMesh::SetMaterialImpl(MaterialPtr _material)
 {
-  gzwarn << "Setting material with name " << _material->Name() << " for mesh " << this->dataPtr->subMeshName << " Texture name is " << _material->Texture() << std::endl;
-  //gzwarn << "Mesh has format " << _material->Pbr()->AlbedoMapFormat() << std::endl;
   Ogre2MaterialPtr derived =
       std::dynamic_pointer_cast<Ogre2Material>(_material);
 

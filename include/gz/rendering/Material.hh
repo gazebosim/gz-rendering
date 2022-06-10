@@ -220,17 +220,16 @@ namespace gz
       public: virtual std::string Texture() const = 0;
 
       /// \brief Set the material texture
-      /// \param[in] _texture URI of the new texture file
-      public: virtual void SetTexture(const std::string &_texture) = 0;
+      /// \param[in] _texture URI of the new texture file or identifying name
+      /// if _img is set
+      /// \param[in] _img Image data
+      public: virtual void SetTexture(const std::string &_texture,
+                                      const std::shared_ptr<common::Image> &_img = nullptr) = 0;
 
-      /// \brief Set the material texture from a raw buffer
-      /// \param[in] _buf raw data buffer containing texture data
-      /// \param[in] _buf data format
-      public: virtual void SetTexture(const std::vector<unsigned char> &_buf, const std::string& _name) = 0;
-
-      /// \brief Get the URI of the texture file
-      /// \return URI of the texture file
-      public: virtual std::pair<std::vector<unsigned char>, std::string> TextureData() const = 0;
+      /// \brief Get the texture data
+      /// \return Pointer the common::Image with the data if the texture was loaded
+      /// from memory
+      public: virtual std::shared_ptr<common::Image> TextureData() const = 0;
 
       /// \brief Removes any texture mapped to this material
       public: virtual void ClearTexture() = 0;

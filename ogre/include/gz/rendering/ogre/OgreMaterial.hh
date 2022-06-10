@@ -124,7 +124,8 @@ namespace gz
       public: virtual std::string Texture() const override;
 
       // Documentation inherited.
-      public: virtual void SetTexture(const std::string &_texture) override;
+      public: virtual void SetTexture(const std::string &_texture,
+                                      const std::shared_ptr<common::Image> &_img = nullptr) override;
 
       public: virtual void ClearTexture() override;
 

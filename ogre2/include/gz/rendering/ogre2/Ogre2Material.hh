@@ -108,13 +108,11 @@ namespace gz
       public: virtual std::string Texture() const override;
 
       // Documentation inherited
-      public: virtual void SetTexture(const std::string &_texture) override;
+      public: virtual void SetTexture(const std::string &_texture,
+                                      const std::shared_ptr<common::Image> &_img = nullptr) override;
 
       // Documentation inherited
-      public: virtual void SetTexture(const std::vector<unsigned char> &_buf, const std::string& _name) override;
-
-      // Documentation inherited
-      public: virtual std::pair<std::vector<unsigned char>, std::string> TextureData() const override;
+      public: virtual std::shared_ptr<common::Image> TextureData() const override;
 
       // Documentation inherited
       public: virtual void ClearTexture() override;
@@ -281,9 +279,9 @@ namespace gz
           Ogre::PbsTextureTypes _type);
 
       /// TODO docs
-      protected: void SetTextureMapDataImpl(const std::vector<unsigned char> &_buf,
-        const std::string& _name,
-        Ogre::PbsTextureTypes _type);
+      protected: void SetTextureMapDataImpl(const std::string& _name,
+          const std::shared_ptr<common::Image> &_img,
+          Ogre::PbsTextureTypes _type);
 
       /// \brief Get a pointer to the ogre texture by name
       /// \return Ogre texture

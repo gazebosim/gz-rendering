@@ -162,12 +162,11 @@ namespace gz
       public: virtual std::string Texture() const override;
 
       // Documentation inherited
-      public: virtual void SetTexture(const std::string &_texture) override;
+      public: virtual void SetTexture(const std::string &_texture,
+                                      const std::shared_ptr<common::Image> &_img = nullptr) override;
 
       // Documentation inherited
-      public: virtual void SetTexture(const std::vector<unsigned char> &_buf, const std::string& _name) override;
-
-      public: virtual std::pair<std::vector<unsigned char>, std::string> TextureData() const override;
+      public: virtual std::shared_ptr<common::Image> TextureData() const override;
 
       // Documentation inherited
       public: virtual void ClearTexture() override;
@@ -714,21 +713,14 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetTexture(const std::string &)
+    void BaseMaterial<T>::SetTexture(const std::string &, const std::shared_ptr<common::Image> &)
     {
       // no op
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetTexture(const std::vector<unsigned char> &/*_buf*/, const std::string& /*_name*/)
-    {
-      // no op
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    std::pair<std::vector<unsigned char>, std::string> BaseMaterial<T>::TextureData() const
+    std::shared_ptr<common::Image> BaseMaterial<T>::TextureData() const
     {
       return {};
     }
@@ -979,9 +971,7 @@ namespace gz
       this->SetCastShadows(_material->CastShadows());
       this->SetReceiveShadows(_material->ReceiveShadows());
       this->SetReflectionEnabled(_material->ReflectionEnabled());
-      this->SetTexture(_material->Texture());
-      // TODO change API?
-      this->SetTexture(_material->TextureData().first, _material->TextureData().second);
+      this->SetTexture(_material->Texture(), _material->TextureData());
       this->SetNormalMap(_material->NormalMap());
       this->SetRoughnessMap(_material->RoughnessMap());
       this->SetMetalnessMap(_material->MetalnessMap());
@@ -1012,9 +1002,7 @@ namespace gz
       this->SetRenderOrder(_material.RenderOrder());
       // TODO(anyone): update common::Material
       this->SetReflectivity(0);
-      this->SetTexture(_material.TextureImage());
-      // TODO change API?
-      this->SetTexture(_material.TextureData().first, _material.TextureData().second);
+      this->SetTexture(_material.TextureImage(), _material.TextureData());
       // TODO(anyone): update common::Material
       this->SetCastShadows(true);
       // TODO(anyone): update common::Material

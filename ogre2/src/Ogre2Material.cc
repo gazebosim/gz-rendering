@@ -57,10 +57,7 @@ class gz::rendering::Ogre2MaterialPrivate
   public: std::string hashName;
 
   /// TODO document
-  public: std::vector<unsigned char> textureData;
-
-  /// TMP remove TODO
-  public: std::string textureName;
+  public: std::shared_ptr<common::Image> textureData;
 
   /// \brief Path to vertex shader program.
   public: std::string vertexShaderPath;
@@ -388,52 +385,33 @@ std::string Ogre2Material::Texture() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetTexture(const std::string &_name)
+void Ogre2Material::SetTexture(const std::string &_name,
+                               const std::shared_ptr<common::Image> &_img)
 {
-  gzwarn << "Setting normal texture with name " << _name << std::endl;
   if (_name.empty())
   {
     this->ClearTexture();
     return;
   }
   this->textureName = _name;
-  this->SetTextureMapImpl(this->textureName, Ogre::PBSM_DIFFUSE);
+  this->dataPtr->textureData = _img;
+  if (_img == nullptr)
+    this->SetTextureMapImpl(this->textureName, Ogre::PBSM_DIFFUSE);
+  else
+    this->SetTextureMapDataImpl(this->textureName, _img, Ogre::PBSM_DIFFUSE);
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetTexture(const std::vector<unsigned char> &_buf, const std::string& _name)
+std::shared_ptr<common::Image> Ogre2Material::TextureData() const
 {
-  gzwarn << "Setting material " << this->Name() << " texture raw buffer! size is " << _buf.size() << " name is " << _name << std::endl;
-  this->dataPtr->textureData = _buf;
-  this->dataPtr->textureName = _name;
-  if (_buf.size() == 0)
-  {
-    // Clear texture
-    return;
-  }
-  this->SetTextureMapDataImpl(_buf, _name, Ogre::PBSM_DIFFUSE);
-  /*
-  if (_name.empty())
-  {
-    this->ClearTexture();
-    return;
-  }
-
-  this->textureName = _name;
-  this->SetTextureMapImpl(this->textureName, Ogre::PBSM_DIFFUSE);
-  */
-}
-
-//////////////////////////////////////////////////
-std::pair<std::vector<unsigned char>, std::string> Ogre2Material::TextureData() const
-{
-  return {this->dataPtr->textureData, this->dataPtr->textureName};
+  return this->dataPtr->textureData;
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearTexture()
 {
   this->textureName = "";
+  this->dataPtr->textureData = nullptr;
   this->ogreDatablock->setTexture(Ogre::PBSM_DIFFUSE, this->textureName);
 }
 
@@ -1070,8 +1048,8 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetTextureMapDataImpl(const std::vector<unsigned char> &_buf,
-  const std::string& _name,
+void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
+  const std::shared_ptr<common::Image> &_img,
   Ogre::PbsTextureTypes _type)
 {
   // TODO duplicated textures, avoid reloading
@@ -1081,15 +1059,6 @@ void Ogre2Material::SetTextureMapDataImpl(const std::vector<unsigned char> &_buf
   Ogre::TextureGpuManager *textureMgr =
       root->getRenderSystem()->getTextureGpuManager();
 
-  // Load image using Ogre::Image
-  // TODO _buf size check
-  Ogre::DataStreamPtr stream(new Ogre::MemoryDataStream(const_cast<unsigned char *>(&_buf.front()), _buf.size()));
-  Ogre::Image2 img;
-  img.load(stream);
-
-  gzmsg << "Image size is " << img.getWidth() << "," << img.getHeight() << std::endl;
-  gzmsg << "Image format is " << img.getPixelFormat() << ", type is " << img.getTextureType() << " num mipmaps is " << (int)img.getNumMipmaps() << " num slices is " << img.getNumSlices() << " depth is " << img.getDepth() << std::endl;
-  gzmsg << "total size in bytes is " << img.getSizeBytes() << std::endl;
 
   // create the gpu texture
   Ogre::uint32 textureFlags = 0;
@@ -1098,7 +1067,7 @@ void Ogre2Material::SetTextureMapDataImpl(const std::vector<unsigned char> &_buf
       texName, // TODO name
       Ogre::GpuPageOutStrategy::Discard,
       textureFlags | Ogre::TextureFlags::ManualTexture,
-      img.getTextureType(),
+      Ogre::TextureTypes::Type2D,
       Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
       0u);
 
@@ -1106,15 +1075,39 @@ void Ogre2Material::SetTextureMapDataImpl(const std::vector<unsigned char> &_buf
   if (texture->getResidencyStatus() == Ogre::GpuResidency::OnStorage)
   {
     gzmsg << "Loading texture into gpu" << std::endl;
-    texture->setPixelFormat(img.getPixelFormat());
-    texture->setTextureType(img.getTextureType());
-    texture->setNumMipmaps(img.getNumMipmaps());
-    texture->setResolution(img.getWidth(), img.getHeight());
+
+    // Load image using Ogre::Image
+    // TODO _buf size check
+    unsigned char* data = nullptr;
+    unsigned int length;
+    _img->RGBAData(&data, length);
+
+    if (_img->PixelFormat() == common::Image::PixelFormatType::RGBA_INT8)
+    {
+      // Image has alpha channel
+      texture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+    }
+    else
+    {
+      // Unsupported!
+      return;
+    }
+    texture->setTextureType(Ogre::TextureTypes::Type2D);
+    texture->setNumMipmaps(1u);
+    texture->setResolution(_img->Width(), _img->Height());
     texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
     texture->waitForData();
 
     // upload raw color image data to gpu texture
+    Ogre::Image2 img;
+    img.loadDynamicImage(data, false, texture);
+    gzmsg << "Image size is " << img.getWidth() << "," << img.getHeight() << std::endl;
+    gzmsg << "Image format is " << img.getPixelFormat() << ", type is " << img.getTextureType() << " num mipmaps is " << (int)img.getNumMipmaps() << " num slices is " << img.getNumSlices() << " depth is " << img.getDepth() << std::endl;
+    gzmsg << "total size in bytes is " << img.getSizeBytes() << std::endl;
     img.uploadTo(texture, 0, 0);
+
+    // img->Data() allocates memory, free it
+    delete data;
   }
 
   // Now assign it to the material
@@ -1133,87 +1126,6 @@ void Ogre2Material::SetTextureMapDataImpl(const std::vector<unsigned char> &_buf
     this->dataPtr->hashName = tex->getName().getFriendlyText();
     gzmsg << "Texture hash name is " << this->dataPtr->hashName << std::endl;
   }
-
-  // disable alpha from texture if texture does not have an alpha channel
-  // otherwise this becomes a transparent material
-  /*
-  if (_type == Ogre::PBSM_DIFFUSE)
-  {
-    bool isGrayscale = (Ogre::PixelFormatGpuUtils::getNumberOfComponents(
-            tex->getPixelFormat()) == 1u);
-
-    if (this->TextureAlphaEnabled() || isGrayscale)
-    {
-      if (tex)
-      {
-        tex->scheduleTransitionTo(Ogre::GpuResidency::Resident);
-        tex->waitForData();
-
-        // only enable alpha from texture if texture has alpha component
-        if (this->TextureAlphaEnabled() &&
-            !Ogre::PixelFormatGpuUtils::hasAlpha(tex->getPixelFormat()))
-        {
-          this->SetAlphaFromTexture(false, this->AlphaThreshold(),
-              this->TwoSidedEnabled());
-        }
-
-        // treat grayscale texture as RGB
-        if (isGrayscale)
-        {
-          this->ogreDatablock->setUseDiffuseMapAsGrayscale(true);
-        }
-      }
-    }
-  }
-  */
-
-  /*
-
-  Ogre::HlmsSamplerblock samplerBlockRef;
-  samplerBlockRef.mU = Ogre::TAM_WRAP;
-  samplerBlockRef.mV = Ogre::TAM_WRAP;
-  samplerBlockRef.mW = Ogre::TAM_WRAP;
-
-  this->ogreDatablock->setTexture(_type, baseName, &samplerBlockRef);
-  auto tex = textureMgr->findTextureNoThrow(baseName);
-
-  if (tex)
-  {
-    tex->waitForMetadata();
-    this->dataPtr->hashName = tex->getName().getFriendlyText();
-  }
-
-  // disable alpha from texture if texture does not have an alpha channel
-  // otherwise this becomes a transparent material
-  if (_type == Ogre::PBSM_DIFFUSE)
-  {
-    bool isGrayscale = (Ogre::PixelFormatGpuUtils::getNumberOfComponents(
-            tex->getPixelFormat()) == 1u);
-
-    if (this->TextureAlphaEnabled() || isGrayscale)
-    {
-      if (tex)
-      {
-        tex->scheduleTransitionTo(Ogre::GpuResidency::Resident);
-        tex->waitForData();
-
-        // only enable alpha from texture if texture has alpha component
-        if (this->TextureAlphaEnabled() &&
-            !Ogre::PixelFormatGpuUtils::hasAlpha(tex->getPixelFormat()))
-        {
-          this->SetAlphaFromTexture(false, this->AlphaThreshold(),
-              this->TwoSidedEnabled());
-        }
-
-        // treat grayscale texture as RGB
-        if (isGrayscale)
-        {
-          this->ogreDatablock->setUseDiffuseMapAsGrayscale(true);
-        }
-      }
-    }
-  }
-  */
 }
 
 //////////////////////////////////////////////////////

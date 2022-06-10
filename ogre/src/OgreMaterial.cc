@@ -290,7 +290,8 @@ std::string OgreMaterial::Texture() const
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetTexture(const std::string &_name)
+void OgreMaterial::SetTexture(const std::string &_name,
+                               const std::shared_ptr<common::Image> &_img)
 {
   if (_name.empty())
   {

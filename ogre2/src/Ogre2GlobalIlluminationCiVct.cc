@@ -333,8 +333,13 @@ void Ogre2GlobalIlluminationCiVct::Reset()
 
   for (size_t cascadeIdx = 0u; cascadeIdx < numCascades; ++cascadeIdx)
   {
-    newCascadedVoxelizer->addCascade(
-      oldCascadedVoxelizer->getCascade(cascadeIdx));
+    // Copy all settings from old reference. We set ref.voxelizer to nullptr
+    // to avoid Ogre asserting on us (that assert is meant to warn against
+    // calling addCascade on an already-started system. Here's it's ok because
+    // we are copying from a started system to an unstarted one)
+    Ogre::VctCascadeSetting ref = oldCascadedVoxelizer->getCascade(cascadeIdx);
+    ref.voxelizer = nullptr;
+    newCascadedVoxelizer->addCascade(ref);
     Ogre2CiVctCascade *cascade = dynamic_cast<Ogre2CiVctCascade *>(
       this->dataPtr->cascades[cascadeIdx].get());
     cascade->ReInit(&newCascadedVoxelizer->getCascade(cascadeIdx));

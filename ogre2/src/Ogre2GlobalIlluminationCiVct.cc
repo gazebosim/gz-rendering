@@ -105,6 +105,15 @@ void Ogre2CiVctCascade::Init(Ogre::VctCascadeSetting *_cascade,
 }
 
 //////////////////////////////////////////////////
+
+void Ogre2CiVctCascade::ReInit(Ogre::VctCascadeSetting *_cascade)
+{
+  IGN_ASSERT(this->dataPtr->cascade != nullptr,
+             "Calling Ogre2CiVctCascade::ReInit without Init!");
+  this->dataPtr->cascade = _cascade;
+}
+
+//////////////////////////////////////////////////
 void Ogre2CiVctCascade::SetCorrectAreaLightShadows(
   bool _correctAreaLightShadows)
 {
@@ -253,7 +262,7 @@ CiVctCascadePtr Ogre2GlobalIlluminationCiVct::AddCascade(
 //////////////////////////////////////////////////
 void Ogre2GlobalIlluminationCiVct::PopCascade()
 {
-  if( !this->dataPtr->cascades.empty())
+  if (!this->dataPtr->cascades.empty())
   {
     this->dataPtr->cascadedVoxelizer->popCascade();
     this->dataPtr->cascades.pop_back();
@@ -304,6 +313,34 @@ void Ogre2GlobalIlluminationCiVct::NewSettings(uint32_t _bounceCount,
                                                bool _anisotropic)
 {
   this->dataPtr->cascadedVoxelizer->setNewSettings(_bounceCount, _anisotropic);
+}
+
+//////////////////////////////////////////////////
+void Ogre2GlobalIlluminationCiVct::Reset()
+{
+  if (this->Enabled())
+  {
+    this->scene->SetActiveGlobalIllumination(nullptr);
+  }
+
+  Ogre::VctCascadedVoxelizer *oldCascadedVoxelizer =
+    this->dataPtr->cascadedVoxelizer;
+  Ogre::VctCascadedVoxelizer *newCascadedVoxelizer =
+    new Ogre::VctCascadedVoxelizer();
+  this->dataPtr->cascadedVoxelizer = newCascadedVoxelizer;
+
+  const size_t numCascades = this->dataPtr->cascades.size();
+
+  for (size_t cascadeIdx = 0u; cascadeIdx < numCascades; ++cascadeIdx)
+  {
+    newCascadedVoxelizer->addCascade(
+      oldCascadedVoxelizer->getCascade(cascadeIdx));
+    Ogre2CiVctCascade *cascade = dynamic_cast<Ogre2CiVctCascade *>(
+      this->dataPtr->cascades[cascadeIdx].get());
+    cascade->ReInit(&newCascadedVoxelizer->getCascade(cascadeIdx));
+  }
+
+  delete oldCascadedVoxelizer;
 }
 
 //////////////////////////////////////////////////

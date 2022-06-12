@@ -53,6 +53,11 @@ namespace gz
       public: void Init(Ogre::VctCascadeSetting *_cascade,
                         const CiVctCascade *_ref);
 
+      /// \brief Re-initializes the cascade.
+      /// See Ogre2GlobalIlluminationCiVct::Reset
+      /// \param[in] _cascade Cascade we control. All data already filled.
+      public: void ReInit(Ogre::VctCascadeSetting *_cascade);
+
       // Documentation inherited.
       public: virtual void SetCorrectAreaLightShadows(
             bool _correctAreaLightShadows) override;
@@ -155,9 +160,13 @@ namespace gz
       public: virtual void Start(
             uint32_t _bounceCount, bool _anisotropic) override;
 
+
       // Documentation inherited
       public: virtual void NewSettings(
             uint32_t _bounceCount, bool _anisotropic) override;
+
+      // Documentation inherited
+      public: virtual void Reset() override;
 
       // Documentation inherited
       public: virtual void Bind(const CameraPtr &_camera) override;

@@ -251,6 +251,10 @@ namespace gz
     public: virtual void NewSettings(
         uint32_t _bounceCount, bool _anisotropic) = 0;
 
+    /// \brief Disables this GI and undoes the internal work performed by
+    /// Start(). This makes it possible to edit cascades again.
+    public: virtual void Reset() = 0;
+
     /// \brief CIVCT relies on having multiple cascades around a central
     /// position, typically a camera. This function binds a camera for us
     /// to monitor and will act as the center of those cascades

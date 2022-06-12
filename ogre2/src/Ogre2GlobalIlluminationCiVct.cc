@@ -346,6 +346,7 @@ void Ogre2GlobalIlluminationCiVct::Reset()
   }
 
   delete oldCascadedVoxelizer;
+  this->dataPtr->started = false;
 }
 
 //////////////////////////////////////////////////

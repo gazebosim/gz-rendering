@@ -160,7 +160,6 @@ namespace gz
       public: virtual void Start(
             uint32_t _bounceCount, bool _anisotropic) override;
 
-
       // Documentation inherited
       public: virtual void NewSettings(
             uint32_t _bounceCount, bool _anisotropic) override;

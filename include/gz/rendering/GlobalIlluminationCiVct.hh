@@ -226,7 +226,8 @@ namespace gz
     /// \return True if the feature is enabled
     public: virtual bool ConsistentCascadeSteps() const = 0;
 
-    /// \brief Returns true if Start() has already been called
+    /// \brief Returns true if Start() has already been called.
+    /// Will return false again if Reset() is called.
     /// \return true if Start() has already been called
     public: virtual bool Started() const = 0;
 

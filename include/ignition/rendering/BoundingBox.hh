@@ -18,6 +18,7 @@
 #define IGNITION_RENDERING_BOUNDINGBOX_HH_
 
 #include <memory>
+#include <utility>
 
 #include <ignition/common/SuppressWarning.hh>
 

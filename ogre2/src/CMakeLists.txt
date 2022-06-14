@@ -58,6 +58,15 @@ else()
   INSTALL(FILES ${PROJECT_BINARY_DIR}/${unversioned} DESTINATION ${IGNITION_RENDERING_ENGINE_INSTALL_DIR})
 endif()
 
+if (NOT (APPLE OR WIN32))
+  option(USE_GLX "Use GLX to create OpenGL contexts." ON)
+else()
+  option(USE_GLX "Use GLX to create OpenGL contexts." OFF)
+endif()
+if (USE_GLX)
+  add_definitions(-DHAVE_GLX=1)
+endif()
+
 # Build the unit tests
 ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre2_target})
 

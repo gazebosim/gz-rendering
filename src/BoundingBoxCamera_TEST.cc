@@ -38,6 +38,15 @@ class BoundingBoxCameraTest : public testing::Test,
 /////////////////////////////////////////////////
 void BoundingBoxCameraTest::BoundingBoxCamera(const std::string &_renderEngine)
 {
+  // Not all engines are supported
+  if (_renderEngine.compare("optix") == 0 ||
+      _renderEngine.compare("ogre") == 0)
+  {
+    igndbg << "Engine '" << _renderEngine
+           << "' doesn't support bounding box cameras" << std::endl;
+    return;
+  }
+
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)

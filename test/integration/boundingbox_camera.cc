@@ -158,7 +158,7 @@ void Build3dBoxScene(rendering::ScenePtr scene)
 void BoundingBoxCameraTest::SimpleBoxes(
   const std::string &_renderEngine)
 {
-  // Optix is not supported
+  // Not all engines are supported
   if (_renderEngine.compare("optix") == 0 ||
       _renderEngine.compare("ogre") == 0)
   {
@@ -177,6 +177,7 @@ void BoundingBoxCameraTest::SimpleBoxes(
   }
 
   ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
   BuildSimpleScene(scene);
 
   // Create BoundingBox camera
@@ -244,11 +245,12 @@ void BoundingBoxCameraTest::OccludedBoxes(
   // accepted error with +/- in pixels in comparing the box coordinates
   int margin_error = 1;
 
-  // Optix is not supported
-  if (_renderEngine.compare("optix") == 0)
+  // Not all engines are supported
+  if (_renderEngine.compare("optix") == 0 ||
+      _renderEngine.compare("ogre") == 0)
   {
     igndbg << "Engine '" << _renderEngine
-              << "' doesn't support depth cameras" << std::endl;
+           << "' doesn't support bounding box cameras" << std::endl;
     return;
   }
 
@@ -262,6 +264,7 @@ void BoundingBoxCameraTest::OccludedBoxes(
   }
 
   ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
   BuildScene(scene);
 
   // Create BoundingBox camera
@@ -363,11 +366,12 @@ void BoundingBoxCameraTest::OccludedBoxes(
 void BoundingBoxCameraTest::Oriented3dBoxes(
   const std::string &_renderEngine)
 {
-  // Optix is not supported
-  if (_renderEngine.compare("optix") == 0)
+  // Not all engines are supported
+  if (_renderEngine.compare("optix") == 0 ||
+      _renderEngine.compare("ogre") == 0)
   {
     igndbg << "Engine '" << _renderEngine
-              << "' doesn't support depth cameras" << std::endl;
+           << "' doesn't support bounding box cameras" << std::endl;
     return;
   }
 
@@ -381,6 +385,7 @@ void BoundingBoxCameraTest::Oriented3dBoxes(
   }
 
   ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
   Build3dBoxScene(scene);
 
   // Create BoundingBox camera

@@ -215,7 +215,7 @@ void BoundingBoxCameraTest::SimpleBoxes(
   BoundingBox leftBox = g_boxes[0];
   BoundingBox rightBox = g_boxes[1];
 
-  uint32_t middleScreen = 0.5 * width;
+  double middleScreen = 0.5 * width;
   unsigned int leftLabel = 1;
   unsigned int rightLabel = 2;
 

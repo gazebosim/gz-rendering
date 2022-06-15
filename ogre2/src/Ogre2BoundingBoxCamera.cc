@@ -1144,12 +1144,12 @@ void Ogre2BoundingBoxCamera::MeshMinimalBox(
   const Ogre::Vector3 &_scale
   )
 {
-  _minVertex.x = INT32_MAX;
-  _minVertex.y = INT32_MAX;
-  _minVertex.z = INT32_MAX;
-  _maxVertex.x = INT32_MIN;
-  _maxVertex.y = INT32_MIN;
-  _maxVertex.z = INT32_MIN;
+  _minVertex.x = std::numeric_limits<float>::max();
+  _minVertex.y = std::numeric_limits<float>::max();
+  _minVertex.z = std::numeric_limits<float>::max();
+  _maxVertex.x = -std::numeric_limits<float>::max();
+  _maxVertex.y = -std::numeric_limits<float>::max();
+  _maxVertex.z = -std::numeric_limits<float>::max();
 
   auto subMeshes = _mesh->getSubMeshes();
 
@@ -1259,9 +1259,9 @@ void Ogre2BoundingBoxCamera::DrawLine(unsigned char *_data,
     {
       // Plot the point
       auto index = (y * this->ImageWidth() + x) * 3;
-      _data[index] = 255 * _color.R();
-      _data[index + 1] = 255 * _color.G();
-      _data[index + 2] = 255 * _color.B();
+      _data[index] = static_cast<unsigned char>(255 * _color.R());
+      _data[index + 1] = static_cast<unsigned char>(255 * _color.G());
+      _data[index + 2] = static_cast<unsigned char>(255 * _color.B());
 
       if (D > 0)
       {
@@ -1305,9 +1305,9 @@ void Ogre2BoundingBoxCamera::DrawLine(unsigned char *_data,
     {
       // Plot the point
       auto index = (y * this->ImageWidth() + x) * 3;
-      _data[index] = 255 * _color.R();
-      _data[index + 1] = 255 * _color.G();
-      _data[index + 2] = 255 * _color.B();
+      _data[index] = static_cast<unsigned char>(255 * _color.R());
+      _data[index + 1] = static_cast<unsigned char>(255 * _color.G());
+      _data[index + 2] = static_cast<unsigned char>(255 * _color.B());
 
       if (D > 0)
       {
@@ -1406,10 +1406,10 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(unsigned char *_data,
       vertex.X() = uint32_t((vertex.X() + 1.0) / 2 * width );
       vertex.Y() = uint32_t((1.0 - vertex.Y()) / 2 * height);
 
-      vertex.X() = std::max<uint32_t>(0, vertex.X());
-      vertex.Y() = std::max<uint32_t>(0, vertex.Y());
-      vertex.X() = std::min<uint32_t>(vertex.X(), width - 1);
-      vertex.Y() = std::min<uint32_t>(vertex.Y(), height - 1);
+      vertex.X() = std::max<double>(0.0, vertex.X());
+      vertex.Y() = std::max<double>(0.0, vertex.Y());
+      vertex.X() = std::min<double>(vertex.X(), width - 1.0);
+      vertex.Y() = std::min<double>(vertex.Y(), height - 1.0);
 
       projVertices.push_back(math::Vector2i(vertex.X(), vertex.Y()));
     }
@@ -1424,67 +1424,67 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(unsigned char *_data,
   }
 
   // 2D box
-  math::Vector2 minVertex(_box.Center().X() - _box.Size().X() / 2,
+  math::Vector2i minVertex(_box.Center().X() - _box.Size().X() / 2,
     _box.Center().Y() - _box.Size().Y() / 2);
 
-  math::Vector2 maxVertex(_box.Center().X() + _box.Size().X() / 2,
+  math::Vector2i maxVertex(_box.Center().X() + _box.Size().X() / 2,
     _box.Center().Y() + _box.Size().Y() / 2);
 
   uint32_t width = this->ImageWidth();
 
-  std::vector<uint32_t> x_values =
+  std::vector<uint32_t> xValues =
     {uint32_t(minVertex.X()),
         std::min(this->ImageWidth() - 1, uint32_t(maxVertex.X()))};
-  std::vector<uint32_t> y_values =
+  std::vector<uint32_t> yValues =
     {uint32_t(minVertex.Y()),
         std::min(this->ImageHeight() - 1, uint32_t(maxVertex.Y()))};
 
-  for (uint32_t i = minVertex.Y(); i < maxVertex.Y(); i++)
+  for (auto i = minVertex.Y(); i < maxVertex.Y(); i++)
   {
-    for (auto j : x_values)
+    for (auto j : xValues)
     {
       auto index = (i * width + j) * 3;
-      _data[index] = 255 * _color.R();
-      _data[index + 1] = 255 * _color.G();
-      _data[index + 2] = 255 * _color.B();
+      _data[index] = static_cast<unsigned char>(255 * _color.R());
+      _data[index + 1] = static_cast<unsigned char>(255 * _color.G());
+      _data[index + 2] = static_cast<unsigned char>(255 * _color.B());
     }
   }
-  for (auto i : y_values)
+  for (auto i : yValues)
   {
-    for (uint32_t j = minVertex.X(); j < maxVertex.X(); j++)
+    for (auto j = minVertex.X(); j < maxVertex.X(); j++)
     {
       auto index = (i * width + j) * 3;
-      _data[index] = 255 * _color.R();
-      _data[index + 1] = 255 * _color.G();
-      _data[index + 2] = 255 * _color.B();
+      _data[index] = static_cast<unsigned char>(255 * _color.R());
+      _data[index + 1] = static_cast<unsigned char>(255 * _color.G());
+      _data[index + 2] = static_cast<unsigned char>(255 * _color.B());
     }
   }
 }
 
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::ConvertToScreenCoord(
-  Ogre::Vector3 &minVertex, Ogre::Vector3 &maxVertex) const
+  Ogre::Vector3 &_minVertex, Ogre::Vector3 &_maxVertex) const
 {
   uint32_t width = this->ImageWidth();
   uint32_t height = this->ImageHeight();
 
   // clip the values outside the frustum range
-  minVertex.x = std::clamp<double>(minVertex.x, -1.0, 1.0);
-  minVertex.y = std::clamp<double>(minVertex.y, -1.0, 1.0);
-  maxVertex.x = std::clamp<double>(maxVertex.x, -1.0, 1.0);
-  maxVertex.y = std::clamp<double>(maxVertex.y, -1.0, 1.0);
+  _minVertex.x = std::clamp<float>(_minVertex.x, -1.0, 1.0);
+  _minVertex.y = std::clamp<float>(_minVertex.y, -1.0, 1.0);
+  _maxVertex.x = std::clamp<float>(_maxVertex.x, -1.0, 1.0);
+  _maxVertex.y = std::clamp<float>(_maxVertex.y, -1.0, 1.0);
 
   // convert from [-1, 1] range to [0, 1] range & multiply by screen dims
-  minVertex.x = uint32_t((minVertex.x + 1.0) / 2 * width );
-  minVertex.y = uint32_t((1.0 - minVertex.y) / 2 * height);
-  maxVertex.x = uint32_t((maxVertex.x + 1.0) / 2 * width );
-  maxVertex.y = uint32_t((1.0 - maxVertex.y) / 2 * height);
+  _minVertex.x = uint32_t((_minVertex.x + 1.0) / 2 * width );
+  _minVertex.y = uint32_t((1.0 - _minVertex.y) / 2 * height);
+  _maxVertex.x = uint32_t((_maxVertex.x + 1.0) / 2 * width );
+  _maxVertex.y = uint32_t((1.0 - _maxVertex.y) / 2 * height);
 
   // clip outside screen boundries
-  minVertex.x = std::max<uint32_t>(0, minVertex.x);
-  minVertex.y = std::max<uint32_t>(0, minVertex.y);
-  maxVertex.x = std::min<uint32_t>(maxVertex.x, width - 1);
-  maxVertex.y = std::min<uint32_t>(maxVertex.y, height - 1);
+  _minVertex.x = std::max<float>(0.0, _minVertex.x);
+  _minVertex.y = std::max<float>(0.0, _minVertex.y);
+  _maxVertex.x = std::min<float>(_maxVertex.x, width - 1.0);
+  _maxVertex.y = std::min<float>(_maxVertex.y, height - 1.0);
 }
 
 /////////////////////////////////////////////////

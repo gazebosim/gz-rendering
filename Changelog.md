@@ -1,6 +1,21 @@
 ## Ignition Rendering
 
-### Ignition Rendering 6.X
+### Ignition Rendering 6.5.0 (2022-06-15)
+
+1. Bounding Box Camera
+    * [Pull request #334](https://github.com/gazebosim/gz-rendering/pull/334)
+
+1. Make GLX dependencies optional for Ogre2.
+    * [Pull request #646](https://github.com/gazebosim/gz-rendering/pull/646)
+
+1. Add missing utility include for `std::exchange`
+    * [Pull request #650](https://github.com/gazebosim/gz-rendering/pull/650)
+
+1. Change `aspect` to `AspectRatio()`
+    * [Pull request #635](https://github.com/gazebosim/gz-rendering/pull/635)
+
+1. `Camera::HFOV` override for Ogre and Ogre2
+    * [Pull request #636](https://github.com/gazebosim/gz-rendering/pull/636)
 
 ### Ignition Rendering 6.4.0 (2022-05-12)
 

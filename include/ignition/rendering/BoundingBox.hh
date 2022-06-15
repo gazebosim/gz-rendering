@@ -17,10 +17,14 @@
 #ifndef IGNITION_RENDERING_BOUNDINGBOX_HH_
 #define IGNITION_RENDERING_BOUNDINGBOX_HH_
 
+#include <cstdint>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include <ignition/common/SuppressWarning.hh>
+#include <ignition/math/Vector3.hh>
+#include <ignition/math/Quaternion.hh>
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
@@ -59,6 +63,56 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     /// \param[in] _box The heightmap box to set values from.
     /// \return *this
     public: BoundingBox &operator=(const BoundingBox &_box);
+
+    /// \brief Get the center of the bounding box.
+    /// \return The center of the bounding box, in (x,y,z) representation.
+    /// If this is a 2D bounding box, the z component should be ignored.
+    public: const math::Vector3d &Center() const;
+
+    /// \brief Set the center of the bounding box.
+    /// \param[in] _center The center of the bounding box, in (x,y,z)
+    /// representation. If this is a 2D bounding box, the z component should be
+    /// ignored.
+    public: void SetCenter(const math::Vector3d &_center);
+
+    /// \brief Get the size of the bounding box.
+    /// \return The size of the box (width, height, depth). If this is a 2D
+    /// bounding box, the depth should be ignored.
+    public: const math::Vector3d &Size() const;
+
+    /// \brief Set the size of the bounding box.
+    /// \param[in] _size The size of the box (width, height, depth). If this is
+    /// a 2D bounding box, the depth should be ignored.
+    public: void SetSize(const math::Vector3d &_size);
+
+    /// \brief Get the orientation of the bounding box.
+    /// \return The orientation of the bounding box, in camera coordinates.
+    public: const math::Quaterniond &Orientation() const;
+
+    /// \brief Set the orientation of the bounding box.
+    /// \param[in] _orientation The orientation of the bounding box, in camera
+    /// coordinates.
+    public: void SetOrientation(const math::Quaterniond &_orientation);
+
+    /// \brief Get the vertices of the 3D bounding box representation.
+    /// \return The vertices, in the following order:
+    ///
+    ///    1 -------- 0
+    ///   /|         /|
+    ///  2 -------- 3 .
+    ///  | |        | |
+    ///  . 5 -------- 4
+    ///  |/         |/
+    ///  6 -------- 7
+    public: const std::vector<math::Vector3d> &Vertices3D() const;
+
+    /// \brief Get the label of the bounding box.
+    /// \return The label of the bounding box.
+    public: uint32_t Label() const;
+
+    /// \brief Set the label of the bounding box.
+    /// \param[in] _label The label of the bounding box.
+    public: void SetLabel(uint32_t _label);
 
     /// \internal
     /// \brief Private data

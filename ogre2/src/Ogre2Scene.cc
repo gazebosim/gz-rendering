@@ -20,6 +20,7 @@
 #include "ignition/rendering/RenderTypes.hh"
 #include "ignition/rendering/ogre2/Ogre2ArrowVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2AxisVisual.hh"
+#include "ignition/rendering/ogre2/Ogre2BoundingBoxCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Capsule.hh"
 #include "ignition/rendering/ogre2/Ogre2COMVisual.hh"
@@ -1085,6 +1086,15 @@ ThermalCameraPtr Ogre2Scene::CreateThermalCameraImpl(const unsigned int _id,
     const std::string &_name)
 {
   Ogre2ThermalCameraPtr camera(new Ogre2ThermalCamera);
+  bool result = this->InitObject(camera, _id, _name);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+BoundingBoxCameraPtr Ogre2Scene::CreateBoundingBoxCameraImpl(
+  const unsigned int _id, const std::string &_name)
+{
+  Ogre2BoundingBoxCameraPtr camera(new Ogre2BoundingBoxCamera);
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : nullptr;
 }

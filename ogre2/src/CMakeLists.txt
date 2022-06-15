@@ -35,6 +35,7 @@ target_include_directories(${ogre2_target}
 target_link_libraries(${ogre2_target}
   PUBLIC
     ${ignition-common${IGN_COMMON_VER}_LIBRARIES}
+    ignition-math${IGN_MATH_VER}::eigen3
   PRIVATE
     ignition-plugin${IGN_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}

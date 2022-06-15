@@ -1411,7 +1411,8 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(unsigned char *_data,
       vertex.X() = std::min<double>(vertex.X(), width - 1.0);
       vertex.Y() = std::min<double>(vertex.Y(), height - 1.0);
 
-      projVertices.push_back(math::Vector2i(vertex.X(), vertex.Y()));
+      projVertices.push_back(math::Vector2i(static_cast<int>(vertex.X()),
+          static_cast<int>(vertex.Y())));
     }
 
     for (unsigned int endPt = 0; endPt < projVertices.size(); endPt += 2)
@@ -1424,11 +1425,13 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(unsigned char *_data,
   }
 
   // 2D box
-  math::Vector2i minVertex(_box.Center().X() - _box.Size().X() / 2,
-    _box.Center().Y() - _box.Size().Y() / 2);
+  math::Vector2i minVertex(
+    static_cast<int>(_box.Center().X() - _box.Size().X() / 2),
+    static_cast<int>(_box.Center().Y() - _box.Size().Y() / 2));
 
-  math::Vector2i maxVertex(_box.Center().X() + _box.Size().X() / 2,
-    _box.Center().Y() + _box.Size().Y() / 2);
+  math::Vector2i maxVertex(
+    static_cast<int>(_box.Center().X() + _box.Size().X() / 2),
+    static_cast<int>(_box.Center().Y() + _box.Size().Y() / 2));
 
   uint32_t width = this->ImageWidth();
 
@@ -1475,10 +1478,10 @@ void Ogre2BoundingBoxCamera::ConvertToScreenCoord(
   _maxVertex.y = std::clamp<float>(_maxVertex.y, -1.0, 1.0);
 
   // convert from [-1, 1] range to [0, 1] range & multiply by screen dims
-  _minVertex.x = uint32_t((_minVertex.x + 1.0) / 2 * width );
-  _minVertex.y = uint32_t((1.0 - _minVertex.y) / 2 * height);
-  _maxVertex.x = uint32_t((_maxVertex.x + 1.0) / 2 * width );
-  _maxVertex.y = uint32_t((1.0 - _maxVertex.y) / 2 * height);
+  _minVertex.x = (_minVertex.x + 1.0) / 2 * width ;
+  _minVertex.y = (1.0 - _minVertex.y) / 2 * height;
+  _maxVertex.x = (_maxVertex.x + 1.0) / 2 * width ;
+  _maxVertex.y = (1.0 - _maxVertex.y) / 2 * height;
 
   // clip outside screen boundries
   _minVertex.x = std::max<float>(0.0, _minVertex.x);

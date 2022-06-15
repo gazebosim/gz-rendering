@@ -159,10 +159,11 @@ void BoundingBoxCameraTest::SimpleBoxes(
   const std::string &_renderEngine)
 {
   // Optix is not supported
-  if (_renderEngine.compare("optix") == 0)
+  if (_renderEngine.compare("optix") == 0 ||
+      _renderEngine.compare("ogre") == 0)
   {
     igndbg << "Engine '" << _renderEngine
-              << "' doesn't support depth cameras" << std::endl;
+           << "' doesn't support bounding box cameras" << std::endl;
     return;
   }
 

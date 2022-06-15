@@ -1478,9 +1478,9 @@ void Ogre2BoundingBoxCamera::ConvertToScreenCoord(
   _maxVertex.y = std::clamp<float>(_maxVertex.y, -1.0, 1.0);
 
   // convert from [-1, 1] range to [0, 1] range & multiply by screen dims
-  _minVertex.x = (_minVertex.x + 1.0) / 2 * width ;
+  _minVertex.x = (_minVertex.x + 1.0) / 2 * width;
   _minVertex.y = (1.0 - _minVertex.y) / 2 * height;
-  _maxVertex.x = (_maxVertex.x + 1.0) / 2 * width ;
+  _maxVertex.x = (_maxVertex.x + 1.0) / 2 * width;
   _maxVertex.y = (1.0 - _maxVertex.y) / 2 * height;
 
   // clip outside screen boundries

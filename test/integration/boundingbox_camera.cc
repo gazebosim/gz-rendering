@@ -243,7 +243,7 @@ void BoundingBoxCameraTest::OccludedBoxes(
   const std::string &_renderEngine)
 {
   // accepted error with +/- in pixels in comparing the box coordinates
-  int margin_error = 1;
+  int marginError = 2;
 
   // Not all engines are supported
   if (_renderEngine.compare("optix") == 0 ||
@@ -313,16 +313,16 @@ void BoundingBoxCameraTest::OccludedBoxes(
   unsigned int frontLabel = 2;
 
   // hard-coded comparasion with acceptable error
-  EXPECT_NEAR(occludedBox.Center().X(), 98, margin_error);
-  EXPECT_NEAR(occludedBox.Center().Y(), 119, margin_error);
-  EXPECT_NEAR(occludedBox.Size().X(), 15, margin_error);
-  EXPECT_NEAR(occludedBox.Size().Y(), 45, margin_error);
+  EXPECT_NEAR(occludedBox.Center().X(), 98, marginError);
+  EXPECT_NEAR(occludedBox.Center().Y(), 119, marginError);
+  EXPECT_NEAR(occludedBox.Size().X(), 15, marginError);
+  EXPECT_NEAR(occludedBox.Size().Y(), 45, marginError);
   EXPECT_EQ(occludedBox.Label(), occludedLabel);
 
-  EXPECT_NEAR(frontBox.Center().X(), 159, margin_error);
-  EXPECT_NEAR(frontBox.Center().Y(), 119, margin_error);
-  EXPECT_NEAR(frontBox.Size().X(), 105, margin_error);
-  EXPECT_NEAR(frontBox.Size().Y(), 105, margin_error);
+  EXPECT_NEAR(frontBox.Center().X(), 159, marginError);
+  EXPECT_NEAR(frontBox.Center().Y(), 119, marginError);
+  EXPECT_NEAR(frontBox.Size().X(), 105, marginError);
+  EXPECT_NEAR(frontBox.Size().Y(), 105, marginError);
   EXPECT_EQ(frontBox.Label(), frontLabel);
 
   g_mutex.unlock();
@@ -342,16 +342,16 @@ void BoundingBoxCameraTest::OccludedBoxes(
   BoundingBox frontFullBox = g_boxes[1];
 
   // coordinates of partially occluded object is bigger
-  EXPECT_NEAR(occludedFullBox.Center().X(), 116, margin_error);
-  EXPECT_NEAR(occludedFullBox.Center().Y(), 119, margin_error);
-  EXPECT_NEAR(occludedFullBox.Size().X(), 51, margin_error);
-  EXPECT_NEAR(occludedFullBox.Size().Y(), 45, margin_error);
+  EXPECT_NEAR(occludedFullBox.Center().X(), 116, marginError);
+  EXPECT_NEAR(occludedFullBox.Center().Y(), 119, marginError);
+  EXPECT_NEAR(occludedFullBox.Size().X(), 51, marginError);
+  EXPECT_NEAR(occludedFullBox.Size().Y(), 45, marginError);
   EXPECT_EQ(occludedFullBox.Label(), occludedLabel);
 
-  EXPECT_NEAR(frontFullBox.Center().X(), 159, margin_error);
-  EXPECT_NEAR(frontFullBox.Center().Y(), 119, margin_error);
-  EXPECT_NEAR(frontFullBox.Size().X(), 108, margin_error);
-  EXPECT_NEAR(frontFullBox.Size().Y(), 108, margin_error);
+  EXPECT_NEAR(frontFullBox.Center().X(), 159, marginError);
+  EXPECT_NEAR(frontFullBox.Center().Y(), 119, marginError);
+  EXPECT_NEAR(frontFullBox.Size().X(), 108, marginError);
+  EXPECT_NEAR(frontFullBox.Size().Y(), 108, marginError);
 
   EXPECT_EQ(frontFullBox.Label(), frontLabel);
 
@@ -425,15 +425,15 @@ void BoundingBoxCameraTest::Oriented3dBoxes(
   BoundingBox box = g_boxes[0];
 
   // accepted error with +/- in pixels in comparing the box coordinates
-  double margin_error = 0.1;
+  double marginError = 0.1;
 
-  EXPECT_NEAR(box.Center().X(), 0, margin_error);
-  EXPECT_NEAR(box.Center().Y(), 0, margin_error);
-  EXPECT_NEAR(box.Center().Z(), -3, margin_error);
+  EXPECT_NEAR(box.Center().X(), 0, marginError);
+  EXPECT_NEAR(box.Center().Y(), 0, marginError);
+  EXPECT_NEAR(box.Center().Z(), -3, marginError);
 
-  EXPECT_NEAR(box.Orientation().Roll(), 1.6708, margin_error);
-  EXPECT_NEAR(box.Orientation().Pitch(), 0.870796, margin_error);
-  EXPECT_NEAR(box.Orientation().Yaw(), -3.14159, margin_error);
+  EXPECT_NEAR(box.Orientation().Roll(), 1.6708, marginError);
+  EXPECT_NEAR(box.Orientation().Pitch(), 0.870796, marginError);
+  EXPECT_NEAR(box.Orientation().Yaw(), -3.14159, marginError);
 
   EXPECT_EQ(box.Label(), 1u);
   g_mutex.unlock();

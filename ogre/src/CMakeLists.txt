@@ -1,6 +1,6 @@
 # Collect source files into the "sources" variable and unit test files into the
 # "gtest_sources" variable.
-ign_get_libsources_and_unittests(sources gtest_sources)
+gz_get_libsources_and_unittests(sources gtest_sources)
 
 if (MSVC)
   # Warning #4251 is the "dll-interface" warning that tells you when types used
@@ -13,7 +13,7 @@ endif()
 
 set(engine_name "ogre")
 
-ign_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre_target)
+gz_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre_target)
 
 if(OGRE_VERSION VERSION_LESS 1.11.0)
   add_definitions(-DOGRE_VERSION_LT_1_11_0)
@@ -41,7 +41,7 @@ target_link_libraries(${ogre_target}
     )
 
 # Build the unit tests
-ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre_target})
+gz_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre_target})
 
 # Note that plugins are currently being installed in 2 places: /lib and the engine-plugins dir
 install(TARGETS ${ogre_target} DESTINATION ${GZ_RENDERING_ENGINE_INSTALL_DIR})

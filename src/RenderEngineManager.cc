@@ -138,7 +138,13 @@ unsigned int RenderEngineManager::EngineCount() const
 bool RenderEngineManager::HasEngine(const std::string &_name) const
 {
   // Deprecated: accept ignition-prefixed engines
-  auto name = std::regex_replace(_name, std::regex("ignition"), "gz");
+  auto name = _name;
+  if (name.find("ignition") != std::string::npos)
+  {
+    name = std::regex_replace(name, std::regex("ignition"), "gz");
+    gzwarn << "Trying to load deprecated plugin [" << _name << "]. Use ["
+           << name << "] instead." << std::endl;
+  }
 
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   auto iter = this->dataPtr->engines.find(name);
@@ -159,7 +165,13 @@ bool RenderEngineManager::HasEngine(const std::string &_name) const
 bool RenderEngineManager::IsEngineLoaded(const std::string &_name) const
 {
   // Deprecated: accept ignition-prefixed engines
-  auto name = std::regex_replace(_name, std::regex("ignition"), "gz");
+  auto name = _name;
+  if (name.find("ignition") != std::string::npos)
+  {
+    name = std::regex_replace(name, std::regex("ignition"), "gz");
+    gzwarn << "Trying to load deprecated plugin [" << _name << "]. Use ["
+           << name << "] instead." << std::endl;
+  }
 
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   auto iter = this->dataPtr->engines.find(name);
@@ -249,7 +261,13 @@ RenderEngine *RenderEngineManager::EngineAt(unsigned int _index,
 bool RenderEngineManager::UnloadEngine(const std::string &_name)
 {
   // Deprecated: accept ignition-prefixed engines
-  auto name = std::regex_replace(_name, std::regex("ignition"), "gz");
+  auto name = _name;
+  if (name.find("ignition") != std::string::npos)
+  {
+    name = std::regex_replace(name, std::regex("ignition"), "gz");
+    gzwarn << "Trying to load deprecated plugin [" << _name << "]. Use ["
+           << name << "] instead." << std::endl;
+  }
 
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   // check in the list of available engines

@@ -15,12 +15,12 @@
  *
  */
 
-#include "ignition/rendering/ogre/OgreLightVisual.hh"
-#include "ignition/rendering/ogre/OgreDynamicLines.hh"
+#include "gz/rendering/ogre/OgreLightVisual.hh"
+#include "gz/rendering/ogre/OgreDynamicLines.hh"
 
-#include "ignition/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
 
-class ignition::rendering::OgreLightVisualPrivate
+class gz::rendering::OgreLightVisualPrivate
 {
   /// \brief Grid materal
   public: OgreMaterialPtr material = nullptr;
@@ -28,7 +28,7 @@ class ignition::rendering::OgreLightVisualPrivate
   std::shared_ptr<OgreDynamicLines> line = nullptr;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -79,7 +79,7 @@ void OgreLightVisual::CreateVisual()
       this->Scene()->Material("Default/TransGreen");
     this->SetMaterial(lightVisualMaterial, false);
   }
-  std::vector<ignition::math::Vector3d> positions = this->CreateVisualLines();
+  std::vector<gz::math::Vector3d> positions = this->CreateVisualLines();
 
   for (const auto &p : positions)
   {
@@ -99,7 +99,7 @@ void OgreLightVisual::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

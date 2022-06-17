@@ -24,18 +24,18 @@
 #include <set>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreMesh.hh"
-#include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre/OgreRenderEngine.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreMesh.hh"
+#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
 
-class ignition::rendering::OgreRTShaderSystemPrivate
+class gz::rendering::OgreRTShaderSystemPrivate
 {
   /// \brief The shader generator.
   public: Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
@@ -75,7 +75,7 @@ class ignition::rendering::OgreRTShaderSystemPrivate
   public: std::thread::id threadId;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -117,7 +117,7 @@ bool OgreRTShaderSystem::Init()
     std::string coreLibsPath, cachePath;
     if (!this->Paths(coreLibsPath, cachePath))
     {
-      ignerr << "Cannot find OGRE rtshaderlib. "
+      gzerr << "Cannot find OGRE rtshaderlib. "
              << "Shadows will be disabled." << std::endl;
       return false;
     }
@@ -138,7 +138,7 @@ bool OgreRTShaderSystem::Init()
   }
   else
   {
-    ignerr << "RT Shader system failed to initialize" << std::endl;
+    gzerr << "RT Shader system failed to initialize" << std::endl;
     return false;
   }
   return false;
@@ -353,7 +353,7 @@ void OgreRTShaderSystem::RemoveShaders(OgreSubMesh *_subMesh)
     }
     catch(Ogre::Exception &e)
     {
-      ignerr << "Unable to remove shader technique for material["
+      gzerr << "Unable to remove shader technique for material["
         << curMaterialName << "]\n";
     }
   }
@@ -399,7 +399,7 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
     }
     catch(Ogre::Exception &e)
     {
-      ignerr << "Unable to create shader technique for material["
+      gzerr << "Unable to create shader technique for material["
         << curMaterialName << "]\n";
       success = false;
     }
@@ -485,9 +485,23 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
 bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
     std::string &cachePath)
 {
-  const char *env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+  const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
+
+  // TODO(CH3): Deprecated. Remove on tock.
+  if (!env)
+  {
+    env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+
+    if (env)
+    {
+      gzwarn << "Using deprecated environment variable "
+             << "[IGN_RENDERING_RESOURCE_PATH]. Please use "
+             << "[GZ_RENDERING_RESOURCE_PATH] instead." << std::endl;
+    }
+  }
+
   std::string resourcePath = (env) ? std::string(env) :
-      IGN_RENDERING_RESOURCE_PATH;
+      GZ_RENDERING_RESOURCE_PATH;
 
   // path to look for ogre media files
   std::vector<std::string> paths;
@@ -522,7 +536,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
       // Create the directory
       if (!common::createDirectories(cachePath))
       {
-        ignerr << "Unable to create ogre RTShader cache directories: "
+        gzerr << "Unable to create ogre RTShader cache directories: "
             << cachePath << std::endl;
       }
       break;
@@ -532,7 +546,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
   // Core shader lib not found -> shader generating will fail.
   if (coreLibsPath.empty())
   {
-    ignerr << "Unable to find shader lib. Shader generating will fail."
+    gzerr << "Unable to find shader lib. Shader generating will fail."
       << std::endl;
     return false;
   }
@@ -716,9 +730,9 @@ void OgreRTShaderSystem::Update()
 bool OgreRTShaderSystem::SetShadowTextureSize(const unsigned int _size)
 {
   // check if texture size is a power of 2
-  if (!ignition::math::isPowerOfTwo(_size))
+  if (!gz::math::isPowerOfTwo(_size))
   {
-    ignerr << "Shadow texture size must be a power of 2" << std::endl;
+    gzerr << "Shadow texture size must be a power of 2" << std::endl;
     return false;
   }
 

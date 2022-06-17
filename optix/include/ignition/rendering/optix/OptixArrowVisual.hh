@@ -14,28 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXARROWVISUAL_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXARROWVISUAL_HH_
 
-#include "ignition/rendering/base/BaseArrowVisual.hh"
-#include "ignition/rendering/optix/OptixVisual.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixArrowVisual :
-      public BaseArrowVisual<OptixVisual>
-    {
-      protected: OptixArrowVisual();
-
-      public: virtual ~OptixArrowVisual();
-
-      private: friend class OptixScene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixArrowVisual.hh>
+#include <ignition/rendering/config.hh>

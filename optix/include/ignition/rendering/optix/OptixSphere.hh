@@ -14,29 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXSPHERE_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXSPHERE_HH_
 
-#include "ignition/rendering/optix/OptixPrimitive.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixSphere :
-      public OptixPrimitive
-    {
-      protected: OptixSphere();
-
-      public: virtual ~OptixSphere();
-
-      public: static optix::Geometry CreateOptixGeometry(OptixScenePtr _scene);
-
-      private: friend class OptixScene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixSphere.hh>
+#include <ignition/rendering/config.hh>

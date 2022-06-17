@@ -15,15 +15,15 @@
  *
 */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/OrthoViewController.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/Visual.hh"
+#include "gz/rendering/OrthoViewController.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/Visual.hh"
 
 /// \internal
 /// \brief OrthoViewController private data.
-class ignition::rendering::OrthoViewControllerPrivate
+class gz::rendering::OrthoViewControllerPrivate
 {
   /// \brief Build a custom scaled orthographic projection matrix.
   /// \param[in] _left Left position
@@ -48,7 +48,7 @@ class ignition::rendering::OrthoViewControllerPrivate
   public: math::Vector3d target;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -116,7 +116,7 @@ void OrthoViewController::Zoom(double _value)
   // Zoom by changing the orthographic window size
   // Translate back to mouse cursor position
 
-  ignition::math::Vector3d translation;
+  gz::math::Vector3d translation;
   int width = this->dataPtr->camera->ImageWidth();
   int height = this->dataPtr->camera->ImageHeight();
 
@@ -192,14 +192,14 @@ void OrthoViewController::Pan(const math::Vector2d &_value)
 {
   if (!this->dataPtr->camera)
   {
-    ignerr << "Camera is NULL" << std::endl;
+    gzerr << "Camera is NULL" << std::endl;
     return;
   }
 
   double viewportWidth = this->dataPtr->camera->ImageWidth();
   double viewportHeight = this->dataPtr->camera->ImageHeight();
 
-  ignition::math::Vector3d translation;
+  gz::math::Vector3d translation;
 
   double factor = 1.0;
 
@@ -224,7 +224,7 @@ void OrthoViewController::Orbit(const math::Vector2d &_value)
 {
   if (!this->dataPtr->camera)
   {
-    ignerr << "Camera is NULL" << std::endl;
+    gzerr << "Camera is NULL" << std::endl;
     return;
   }
 

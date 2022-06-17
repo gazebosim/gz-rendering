@@ -27,17 +27,17 @@
 #include <iostream>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Skeleton.hh>
-#include <ignition/common/SkeletonAnimation.hh>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/Mesh.hh>
-#include <ignition/rendering.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Skeleton.hh>
+#include <gz/common/SkeletonAnimation.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/rendering.hh>
 
 #include "example_config.hh"
 #include "GlutWindow.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 const std::string RESOURCE_PATH =
@@ -63,7 +63,7 @@ void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
   // Skeleton will be animated by GlutWindow
 
   //! [load mesh]
-  ignmsg << "Creating mesh with animations..." << std::endl;
+  gzmsg << "Creating mesh with animations..." << std::endl;
   MeshDescriptor descriptor;
   descriptor.meshName = common::joinPaths(RESOURCE_PATH, "walk.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
@@ -78,18 +78,18 @@ void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
   _skel->AddBvhAnimation(bvhFile, scale);
   if (_skel->AnimationCount() == 0)
   {
-    ignerr << "Failed to load animation." << std::endl;
+    gzerr << "Failed to load animation." << std::endl;
     return;
   }
-  ignmsg << "Loaded animations: " << std::endl;
+  gzmsg << "Loaded animations: " << std::endl;
   for (unsigned int i = 0; i < _skel->AnimationCount(); ++i)
-    ignmsg << "  * " << _skel->Animation(i)->Name() << std::endl;
+    gzmsg << "  * " << _skel->Animation(i)->Name() << std::endl;
   //! [add animation]
 
   unsigned int size = 25;
   double halfSize = size * 0.5;
   unsigned int count = 0;
-  ignmsg << "Creating " << size*size << " meshes with skeleton animation"
+  gzmsg << "Creating " << size*size << " meshes with skeleton animation"
          << std::endl;
   for (unsigned int i = 0; i < size; ++i)
   {
@@ -163,7 +163,7 @@ CameraPtr createCamera(const std::string &_engineName,
   RenderEngine *engine = rendering::engine(_engineName, _params);
   if (!engine)
   {
-    ignwarn << "Engine '" << _engineName
+    gzwarn << "Engine '" << _engineName
               << "' is not supported" << std::endl;
     return CameraPtr();
   }

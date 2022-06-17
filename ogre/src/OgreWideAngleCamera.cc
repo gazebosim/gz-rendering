@@ -32,15 +32,15 @@
 #endif
 #endif
 
-#include "ignition/rendering/CameraLens.hh"
+#include "gz/rendering/CameraLens.hh"
 
-#include "ignition/rendering/ogre/OgreConversions.hh"
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
-#include "ignition/rendering/ogre/OgreWideAngleCamera.hh"
+#include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreRenderEngine.hh"
+#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
+#include "gz/rendering/ogre/OgreWideAngleCamera.hh"
 
 /// \brief Private data for the WideAngleCamera class
-class ignition::rendering::OgreWideAngleCamera::Implementation
+class gz::rendering::OgreWideAngleCamera::Implementation
 {
   /// \brief Environment texture size
   public: int envTextureSize = 512u;
@@ -89,12 +89,12 @@ class ignition::rendering::OgreWideAngleCamera::Implementation
   public: unsigned char *wideAngleImage = nullptr;
 
   /// \brief Event used to signal camera data
-  public: ignition::common::EventT<void(const unsigned char *,
+  public: gz::common::EventT<void(const unsigned char *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newImageFrame;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -203,7 +203,7 @@ void OgreWideAngleCamera::CreateCamera()
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
@@ -211,7 +211,7 @@ void OgreWideAngleCamera::CreateCamera()
       this->Name() + "_Camera");
   if (this->dataPtr->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -293,7 +293,7 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
 {
   if (this->dataPtr->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -338,7 +338,7 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
     static bool ogreFSAAWarn = false;
     if (ogreFSAAWarn)
     {
-      ignwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
+      gzwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
               << "is not supported. Setting to 0" << std::endl;
       ogreFSAAWarn = true;
     }
@@ -490,7 +490,7 @@ math::Vector3d OgreWideAngleCamera::Project3d(
     const math::Vector3d &_pt) const
 {
   // project onto cubemap face then onto
-  ignition::math::Vector3d screenPos;
+  gz::math::Vector3d screenPos;
   // loop through all env cameras can find the one that sees the 3d world point
   for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
   {
@@ -505,22 +505,22 @@ math::Vector3d OgreWideAngleCamera::Project3d(
     {
       // determine dir vector to projected point from env camera
       // work in y up, z forward, x right clip space
-      ignition::math::Vector3d dir(pos.x, pos.y, 1);
-      ignition::math::Quaterniond rot = ignition::math::Quaterniond::Identity;
+      gz::math::Vector3d dir(pos.x, pos.y, 1);
+      gz::math::Quaterniond rot = gz::math::Quaterniond::Identity;
 
       // rotate dir vector into wide angle camera frame based on the
       // face of the cube. Note: operate in clip space so
       // left handed coordinate system rotation
       if (i == 0)
-        rot = ignition::math::Quaterniond(0.0, IGN_PI * 0.5, 0.0);
+        rot = gz::math::Quaterniond(0.0, IGN_PI * 0.5, 0.0);
       else if (i == 1)
-        rot = ignition::math::Quaterniond(0.0, -IGN_PI * 0.5, 0.0);
+        rot = gz::math::Quaterniond(0.0, -IGN_PI * 0.5, 0.0);
       else if (i == 2)
-        rot = ignition::math::Quaterniond(-IGN_PI * 0.5, 0.0, 0.0);
+        rot = gz::math::Quaterniond(-IGN_PI * 0.5, 0.0, 0.0);
       else if (i == 3)
-        rot = ignition::math::Quaterniond(IGN_PI * 0.5, 0.0, 0.0);
+        rot = gz::math::Quaterniond(IGN_PI * 0.5, 0.0, 0.0);
       else if (i == 5)
-        rot = ignition::math::Quaterniond(0.0, IGN_PI, 0.0);
+        rot = gz::math::Quaterniond(0.0, IGN_PI, 0.0);
       dir = rot * dir;
       dir.Normalize();
 
@@ -623,7 +623,7 @@ void OgreWideAngleCamera::PostRender()
       this->dataPtr->wideAngleImage, width, height, channelCount, "PF_R8G8B8");
 
   // Uncomment to debug wide angle cameraoutput
-  // igndbg << "wxh: " << width << " x " << height << std::endl;
+  // gzdbg << "wxh: " << width << " x " << height << std::endl;
   // for (unsigned int i = 0; i < height; ++i)
   // {
   //   for (unsigned int j = 0; j < width * channelCount; j += channelCount)

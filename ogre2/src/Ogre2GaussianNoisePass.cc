@@ -16,11 +16,11 @@
  */
 
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/RenderPassSystem.hh"
-#include "ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/RenderPassSystem.hh"
+#include "gz/rendering/ogre2/Ogre2GaussianNoisePass.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -39,13 +39,13 @@
 #endif
 
 /// \brief Private data for the Ogre2GaussianNoisePass class
-class ignition::rendering::Ogre2GaussianNoisePassPrivate
+class gz::rendering::Ogre2GaussianNoisePassPrivate
 {
   /// brief Pointer to the Gaussian noise ogre material
   public: Ogre::Material *gaussianNoiseMat = nullptr;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -74,9 +74,9 @@ void Ogre2GaussianNoisePass::PreRender()
   // Sample three values within the range [0,1.0] and set them for use in
   // the fragment shader, which will interpret them as offsets from (0,0)
   // to use when computing pseudo-random values.
-  Ogre::Vector3 offsets(ignition::math::Rand::DblUniform(0.0, 1.0),
-                        ignition::math::Rand::DblUniform(0.0, 1.0),
-                        ignition::math::Rand::DblUniform(0.0, 1.0));
+  Ogre::Vector3 offsets(gz::math::Rand::DblUniform(0.0, 1.0),
+                        gz::math::Rand::DblUniform(0.0, 1.0),
+                        gz::math::Rand::DblUniform(0.0, 1.0));
   // These calls are setting parameters that are declared in two places:
   // 1. media/materials/scripts/gaussian_noise.material, in
   //    fragment_program GaussianNoiseFS
@@ -113,7 +113,7 @@ void Ogre2GaussianNoisePass::CreateRenderPass()
       Ogre::MaterialManager::getSingleton().getByName(matName);
   if (!ogreMat)
   {
-    ignerr << "Gaussian noise material not found: '" << matName << "'"
+    gzerr << "Gaussian noise material not found: '" << matName << "'"
            << std::endl;
     return;
   }

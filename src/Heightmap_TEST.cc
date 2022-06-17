@@ -17,17 +17,17 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/geospatial/ImageHeightmap.hh>
-#include <ignition/utilities/ExtraTestMacros.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/geospatial/ImageHeightmap.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Heightmap.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Heightmap.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class HeightmapTest : public testing::Test,
@@ -52,7 +52,7 @@ TEST_P(HeightmapTest, IGN_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   std::string renderEngine{this->GetParam()};
   if (renderEngine != "ogre")
   {
-    igndbg << "Heightmap not supported yet in rendering engine: "
+    gzdbg << "Heightmap not supported yet in rendering engine: "
             << renderEngine << std::endl;
     return;
   }
@@ -60,7 +60,7 @@ TEST_P(HeightmapTest, IGN_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   auto engine = rendering::engine(renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << renderEngine
+    gzdbg << "Engine '" << renderEngine
            << "' is not supported" << std::endl;
     return;
   }
@@ -174,8 +174,8 @@ TEST_P(HeightmapTest, MoveConstructor)
   descriptor.SetSampling(123u);
 
   HeightmapDescriptor descriptor2(std::move(descriptor));
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
   EXPECT_TRUE(descriptor2.UseTerrainPaging());
   EXPECT_EQ(123u, descriptor2.Sampling());
 
@@ -208,8 +208,8 @@ TEST_P(HeightmapTest, CopyConstructor)
   descriptor.SetSampling(123u);
 
   HeightmapDescriptor descriptor2(descriptor);
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
   EXPECT_TRUE(descriptor2.UseTerrainPaging());
   EXPECT_EQ(123u, descriptor2.Sampling());
 
@@ -243,8 +243,8 @@ TEST_P(HeightmapTest, CopyAssignmentOperator)
 
   HeightmapDescriptor descriptor2;
   descriptor2 = descriptor;
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
   EXPECT_TRUE(descriptor2.UseTerrainPaging());
   EXPECT_EQ(123u, descriptor2.Sampling());
 
@@ -280,8 +280,8 @@ TEST_P(HeightmapTest, MoveAssignmentOperator)
 
   HeightmapDescriptor descriptor2;
   descriptor2 = std::move(descriptor);
-  EXPECT_EQ(ignition::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
+  EXPECT_EQ(gz::math::Vector3d(0.1, 0.2, 0.3), descriptor2.Size());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), descriptor2.Position());
   EXPECT_TRUE(descriptor2.UseTerrainPaging());
   EXPECT_EQ(123u, descriptor2.Sampling());
 
@@ -352,10 +352,10 @@ TEST_P(HeightmapTest, CopyAssignmentAfterMove)
 }
 
 // TODO(anyone) Running test with Ogre1. Update once Ogre2 is supported.
-// https://github.com/ignitionrobotics/ign-rendering/issues/187
+// https://github.com/gazebosim/gz-rendering/issues/187
 INSTANTIATE_TEST_CASE_P(Heightmap, HeightmapTest,
     ::testing::ValuesIn({"ogre"}),
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 /////////////////////////////////////////////////
 int main(int argc, char **argv)

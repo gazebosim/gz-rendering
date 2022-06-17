@@ -25,17 +25,17 @@
 
 #include <limits>
 
-#include <ignition/math/Helpers.hh>
-#include "ignition/rendering/ShaderParams.hh"
-#include "ignition/rendering/ogre/OgreThermalCamera.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreVisual.hh"
+#include <gz/math/Helpers.hh>
+#include "gz/rendering/ShaderParams.hh"
+#include "gz/rendering/ogre/OgreThermalCamera.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreVisual.hh"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 //
 /// \brief Helper class for switching the ogre item's material to heat source
 /// material when a thermal camera is being rendered.
@@ -90,7 +90,7 @@ class OgreThermalCameraMaterialSwitcher : public Ogre::RenderTargetListener,
 
 /// \internal
 /// \brief Private data for the OgreThermalCamera class
-class ignition::rendering::OgreThermalCameraPrivate
+class gz::rendering::OgreThermalCameraPrivate
 {
   /// \brief The thermal material
   public: Ogre::MaterialPtr thermalMaterial;
@@ -123,7 +123,7 @@ class ignition::rendering::OgreThermalCameraPrivate
   public: uint16_t dataMinVal = 0u;
 
   /// \brief Event used to signal thermal image data
-  public: ignition::common::EventT<void(const uint16_t *,
+  public: gz::common::EventT<void(const uint16_t *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newThermalFrame;
 
@@ -132,7 +132,7 @@ class ignition::rendering::OgreThermalCameraPrivate
       thermalMaterialSwitcher;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 
@@ -208,7 +208,7 @@ Ogre::Technique *OgreThermalCameraMaterialSwitcher::handleSchemeNotFound(
     }
     catch(Ogre::Exception &e)
     {
-      ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+      gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
     }
     ogreVisual = std::dynamic_pointer_cast<OgreVisual>(result);
   }
@@ -240,7 +240,7 @@ Ogre::Technique *OgreThermalCameraMaterialSwitcher::handleSchemeNotFound(
         }
         catch(std::bad_variant_access &e)
         {
-          ignerr << "Error casting user data: " << e.what() << "\n";
+          gzerr << "Error casting user data: " << e.what() << "\n";
           temp = -1.0;
         }
       }
@@ -316,7 +316,7 @@ void OgreThermalCamera::Destroy()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
   }
   else
   {
@@ -345,7 +345,7 @@ void OgreThermalCamera::CreateCamera()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
@@ -353,7 +353,7 @@ void OgreThermalCamera::CreateCamera()
       this->name);
   if (this->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -377,7 +377,7 @@ void OgreThermalCamera::CreateThermalTexture()
 {
   if (this->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -545,14 +545,14 @@ void OgreThermalCamera::PostRender()
       this->dataPtr->thermalBuffer, width, height, 1, "L16");
 
   // Uncomment to debug thermal output
-  // igndbg << "wxh: " << width << " x " << height << std::endl;
+  // gzdbg << "wxh: " << width << " x " << height << std::endl;
   // for (unsigned int i = 0; i < height; ++i)
   // {
   //   for (unsigned int j = 0; j < width; ++j)
   //   {
-  //     igndbg << "[" << this->dataPtr->thermalImage[i*width + j] << "]";
+  //     gzdbg << "[" << this->dataPtr->thermalImage[i*width + j] << "]";
   //   }
-  //   igndbg << std::endl;
+  //   gzdbg << std::endl;
   // }
 }
 

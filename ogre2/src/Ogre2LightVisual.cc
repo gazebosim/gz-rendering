@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre2/Ogre2LightVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2Material.hh"
-#include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
+#include "gz/rendering/ogre2/Ogre2LightVisual.hh"
+#include "gz/rendering/ogre2/Ogre2Material.hh"
+#include "gz/rendering/ogre2/Ogre2DynamicRenderable.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -26,10 +26,10 @@
   #pragma warning(pop)
 #endif
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
-class ignition::rendering::Ogre2LightVisualPrivate
+class gz::rendering::Ogre2LightVisualPrivate
 {
   /// \brief light visual materal
   public: Ogre2MaterialPtr material = nullptr;
@@ -93,7 +93,7 @@ void Ogre2LightVisual::CreateVisual()
     this->SetMaterial(defaultMat, false);
   }
 
-  std::vector<ignition::math::Vector3d> positions = this->CreateVisualLines();
+  std::vector<gz::math::Vector3d> positions = this->CreateVisualLines();
 
   for (const auto &p : positions)
   {
@@ -113,7 +113,7 @@ void Ogre2LightVisual::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

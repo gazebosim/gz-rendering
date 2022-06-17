@@ -15,13 +15,13 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/optix/OptixPrimitive.hh"
-#include "ignition/rendering/optix/OptixMaterial.hh"
-#include "ignition/rendering/optix/OptixScene.hh"
+#include "gz/rendering/optix/OptixPrimitive.hh"
+#include "gz/rendering/optix/OptixMaterial.hh"
+#include "gz/rendering/optix/OptixScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -53,7 +53,7 @@ void OptixPrimitive::SetMaterial(MaterialPtr _material, bool unique)
 
   if (!_material)
   {
-    ignerr << "Cannot assign null material" << std::endl;
+    gzerr << "Cannot assign null material" << std::endl;
     return;
   }
 
@@ -64,7 +64,7 @@ void OptixPrimitive::SetMaterial(MaterialPtr _material, bool unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
            << std::endl;
 
     return;

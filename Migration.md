@@ -5,27 +5,31 @@ Deprecated code produces compile-time warnings. These warning serve as
 notification to users that their code should be upgraded. The next major
 release will remove the deprecated code.
 
-## Ignition Rendering 6.x to 7.x
+## Gazebo Rendering 6.x to 7.x
 
 ### Deprecations
 
 1. **ogre2/include/ignition/rendering/ogre2/Ogre2RenderEngine.hh**
     + Deprecated: `Ogre2IgnHlmsSphericalClipMinDistance &HlmsCustomizations()`
-    + Replacement: `Ogre2IgnHlmsSphericalClipMinDistance &SphericalClipMinDistance()`
-
-## Ignition Rendering 6.2.1 to 6.X
+    + Replacement: `Ogre2GzHlmsSphericalClipMinDistance &SphericalClipMinDistance()`
+2. The `ignition` namespace is deprecated and will be removed in future versions.  Use `gz` instead.
+3. Header files under `ignition/...` are deprecated and will be removed in future versions.
+   Use `gz/...` instead.
+4. The environment variable `IGN_RENDERING_PLUGIN_PATH` is deprecated. Use `GZ_RENDERING_PLUGIN_PATH` instead.
+5. The environment variable `IGN_RENDERING_RESOURCE_PATH` is deprecated. Use `GZ_RENDERING_RESOURCE_PATH` instead.
+## Gazebo Rendering 6.2.1 to 6.X
 
 ### Modifications
 
 1. Ogre 2 heightmaps: the Y position sign was flipped
 
-1. `Scene::SetTime` is often unset. Ignition's `Ogre2` now defaults to 60hz otherwise rendering won't advance forward.
+1. `Scene::SetTime` is often unset. Gazebo's `Ogre2` now defaults to 60hz otherwise rendering won't advance forward.
 	+ Mostly affects Particles.
 	+ Also may affect gaussian postprocessing and other filters dependant on time.
 	+ Previous behavior was using real time instead of simulation time, which is wrong.
-	+ See https://github.com/ignitionrobotics/ign-rendering/issues/556 for details.
+	+ See https://github.com/gazebosim/gz-rendering/issues/556 for details.
 
-## Ignition Rendering 5.x to 6.x
+## Gazebo Rendering 5.x to 6.x
 
 ### Modifications
 
@@ -60,18 +64,18 @@ release will remove the deprecated code.
 1. **depth_camera_fs.glsl** and **depth_camera_final_fs.glsl**
     + Far clipping changed from clipping by depth to clipping by range, i.e. distance to point, so that the data generated will never exceed the specified max range of the camera.
 
-## Ignition Rendering 4.0 to 4.1
+## Gazebo Rendering 4.0 to 4.1
 
 ## ABI break
 
 1. **ogre2/include/ignition/rendering/ogre2/Ogre2DepthCamera.hh**
     + Medium severity ABI break with the addition of the `AddRenderPass` override.
 
-## Ignition Rendering 3.X to 4.X
+## Gazebo Rendering 3.X to 4.X
 
 ### Deprecations
 
-1. **ignition::common::Time** deprecated in favor of **std::chrono::steady_clock::duration**
+1. **gz::common::Time** deprecated in favor of **std::chrono::steady_clock::duration**
     + Deprecated: `void BaseScene::SetSimTime(const common::Time &_time)`
     + Replacement: `void BaseScene::SetTime(const std::chrono::steady_clock::duration &_time)`
     + Deprecated: `common::Time SimTime() const`
@@ -79,14 +83,14 @@ release will remove the deprecated code.
     + Deprecated: `common::Time simTime`
     + Replacement: `std::chrono::steady_clock::duration time`
 
-## Ignition Rendering 2.X to 3.X
+## Gazebo Rendering 2.X to 3.X
 
 ### Deletions
 
 1. **Ogre2DepthCamera.hh**
     + Removed unused member variables `captureData` and `newData`
 
-## Ignition Rendering 1.X to 2.X
+## Gazebo Rendering 1.X to 2.X
 
 ### Modifications
 

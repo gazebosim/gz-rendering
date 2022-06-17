@@ -17,17 +17,17 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/GaussianNoisePass.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/RenderPassSystem.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/GaussianNoisePass.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/RenderPassSystem.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class CameraTest : public testing::Test,
@@ -56,7 +56,7 @@ void CameraTest::ViewProjectionMatrix(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -159,7 +159,7 @@ void CameraTest::RenderTexture(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -204,7 +204,7 @@ void CameraTest::TrackFollow(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -276,7 +276,7 @@ void CameraTest::AddRemoveRenderPass(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -293,7 +293,7 @@ void CameraTest::AddRemoveRenderPass(const std::string &_renderEngine)
   RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
   if (!rpSystem)
   {
-    ignwarn << "Render engin '" << _renderEngine << "' does not support "
+    gzwarn << "Render engin '" << _renderEngine << "' does not support "
             << "render pass system" << std::endl;
     return;
   }
@@ -330,7 +330,7 @@ void CameraTest::VisibilityMask(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -388,7 +388,7 @@ TEST_P(CameraTest, VisibilityMask)
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

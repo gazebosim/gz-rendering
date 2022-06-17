@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_ACTOR_ANIMATION_GLUTWINDOW_HH_
-#define IGNITION_RENDERING_EXAMPLES_ACTOR_ANIMATION_GLUTWINDOW_HH_
+#ifndef GZ_RENDERING_EXAMPLES_ACTOR_ANIMATION_GLUTWINDOW_HH_
+#define GZ_RENDERING_EXAMPLES_ACTOR_ANIMATION_GLUTWINDOW_HH_
 
 #include <vector>
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/common/graphics/Types.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/common/graphics/Types.hh"
 
-namespace ir = ignition::rendering;
-namespace ic = ignition::common;
+namespace ir = gz::rendering;
+namespace ic = gz::common;
 
 /// \brief Run the demo and render the scene from the cameras
 /// \param[in] _cameras Cameras in the scene

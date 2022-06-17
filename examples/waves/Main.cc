@@ -33,14 +33,14 @@
 #include <iostream>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/rendering.hh>
+#include <gz/common/Console.hh>
+#include <gz/rendering.hh>
 
 #include "example_config.hh"
 
 #include "GlutWindow.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 const std::string vertexShaderGLSL330File = "GerstnerWaves_vs_330.glsl";
@@ -50,7 +50,7 @@ const std::string vertexShaderMetalFile = "GerstnerWaves_vs.metal";
 const std::string fragmentShaderMetalFile = "GerstnerWaves_fs.metal";
 
 const std::string RESOURCE_PATH =
-    ignition::common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
+    gz::common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene,
@@ -87,14 +87,14 @@ void buildScene(ScenePtr _scene,
 
   // create shader materials
   // path to look for vertex and fragment shader parameters
-  std::string vertexShaderPath = ignition::common::joinPaths(
+  std::string vertexShaderPath = gz::common::joinPaths(
       RESOURCE_PATH, vertexShaderFile);
 
-  std::string fragmentShaderPath = ignition::common::joinPaths(
+  std::string fragmentShaderPath = gz::common::joinPaths(
       RESOURCE_PATH, fragmentShaderFile);
 
   // create shader material
-  ignition::rendering::MaterialPtr shader = _scene->CreateMaterial();
+  gz::rendering::MaterialPtr shader = _scene->CreateMaterial();
   shader->SetVertexShader(vertexShaderPath);
   shader->SetFragmentShader(fragmentShaderPath);
 
@@ -185,7 +185,7 @@ int main(int _argc, char** _argv)
         // todo(anyone) Passing textures to custom shaders is currently
         // only available in ogre2
         engineName = "ogre2";
-        ignerr << "Only ogre2 engine is supported. Switching to use ogre2."
+        gzerr << "Only ogre2 engine is supported. Switching to use ogre2."
                << std::endl;
       }
 

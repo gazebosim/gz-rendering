@@ -17,19 +17,19 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Image.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Image.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/PixelFormat.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/Image.hh"
+#include "gz/rendering/PixelFormat.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class SkyTest: public testing::Test,
@@ -38,7 +38,7 @@ class SkyTest: public testing::Test,
   // Documentation inherited
   public: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    gz::common::Console::SetVerbosity(4);
   }
 
   // Test and verify sky is created
@@ -52,14 +52,14 @@ void SkyTest::Sky(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
 
   if (_renderEngine != "ogre2")
   {
-    igndbg << "Sky not supported yet in rendering engine: "
+    gzdbg << "Sky not supported yet in rendering engine: "
             << _renderEngine << std::endl;
     return;
   }
@@ -152,7 +152,7 @@ TEST_P(SkyTest, Sky)
 
 INSTANTIATE_TEST_CASE_P(Sky, SkyTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

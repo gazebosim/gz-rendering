@@ -19,19 +19,19 @@
 #include <memory>
 #include <string>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/Skeleton.hh>
-#include <ignition/common/SkeletonAnimation.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/common/Skeleton.hh>
+#include <gz/common/SkeletonAnimation.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/Mesh.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/Mesh.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class MeshTest : public testing::Test,
@@ -57,7 +57,7 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -116,7 +116,7 @@ void MeshTest::MeshSkeletonAnimation(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -212,7 +212,7 @@ void MeshTest::MeshClone(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
            << "' is not supported" << std::endl;
     return;
   }
@@ -273,7 +273,7 @@ void MeshTest::MeshClone(const std::string &_renderEngine)
   {
     // since the "top level mesh" has a material, the submesh materials are not
     // unique copies:
-    // https://github.com/ignitionrobotics/ign-rendering/blob/8f961d0c4cc755b6a2ca217d5a73de268ef95514/include/ignition/rendering/base/BaseMesh.hh#L293
+    // https://github.com/gazebosim/gz-rendering/blob/8f961d0c4cc755b6a2ca217d5a73de268ef95514/include/ignition/rendering/base/BaseMesh.hh#L293
     auto clonedSubMesh = clonedMesh->SubMeshByIndex(i);
     auto originalSubMesh = clonedMesh->SubMeshByIndex(i);
     compareMaterials(clonedSubMesh->Material(), originalSubMesh->Material(),
@@ -293,7 +293,7 @@ TEST_P(MeshTest, MeshClone)
 
 INSTANTIATE_TEST_CASE_P(Mesh, MeshTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

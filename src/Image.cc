@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/Image.hh"
+#include "gz/rendering/Image.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

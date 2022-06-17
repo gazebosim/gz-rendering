@@ -18,16 +18,16 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/InertiaVisual.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/InertiaVisual.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class InertiaVisualTest : public testing::Test,
@@ -43,7 +43,7 @@ void InertiaVisualTest::InertiaVisual(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -57,10 +57,10 @@ void InertiaVisualTest::InertiaVisual(const std::string &_renderEngine)
   // check initial values
   EXPECT_EQ(nullptr, inertiaVisual->BoxVisual());
 
-  ignition::math::MassMatrix3d massMatrix(
+  gz::math::MassMatrix3d massMatrix(
       2.0, {2.0, 1.5, 1.0}, {0.0, 0.0, 0.0});
-  ignition::math::Pose3d p(0.0, 1.0, 2.5, 1.0, 0.4, 0.4);
-  ignition::math::Inertiald inertial;
+  gz::math::Pose3d p(0.0, 1.0, 2.5, 1.0, 0.4, 0.4);
+  gz::math::Inertiald inertial;
 
   inertiaVisual->SetInertial(inertial);
   EXPECT_EQ(nullptr, inertiaVisual->BoxVisual());
@@ -83,7 +83,7 @@ TEST_P(InertiaVisualTest, InertiaVisual)
 
 INSTANTIATE_TEST_CASE_P(Visual, InertiaVisualTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

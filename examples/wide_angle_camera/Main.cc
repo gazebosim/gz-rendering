@@ -33,12 +33,12 @@
 #include <iostream>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/rendering.hh>
+#include <gz/common/Console.hh>
+#include <gz/rendering.hh>
 
 #include "GlutWindow.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -143,7 +143,7 @@ CameraPtr createCamera(const std::string &_engineName)
   RenderEngine *engine = rendering::engine(_engineName);
   if (!engine)
   {
-    ignwarn << "Engine '" << _engineName
+    gzwarn << "Engine '" << _engineName
               << "' is not supported" << std::endl;
     return CameraPtr();
   }

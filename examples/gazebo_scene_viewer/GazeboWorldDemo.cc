@@ -25,24 +25,24 @@
 #endif
 
 #include <iostream>
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 #include <gazebo/transport/TransportIface.hh>
 
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/RenderingIface.hh>
-#include <ignition/rendering/RenderEngine.hh>
-#include <ignition/rendering/Scene.hh>
-#include <ignition/rendering/Visual.hh>
+#include <gz/rendering/Camera.hh>
+#include <gz/rendering/RenderingIface.hh>
+#include <gz/rendering/RenderEngine.hh>
+#include <gz/rendering/Scene.hh>
+#include <gz/rendering/Visual.hh>
 
 #include "CameraWindow.hh"
 #include "SceneManager.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 void Connect()
 {
-  ignition::common::Console::SetVerbosity(4);
+  gz::common::Console::SetVerbosity(4);
   gazebo::transport::init();
   gazebo::transport::run();
 

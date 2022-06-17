@@ -18,17 +18,17 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include <ignition/common/Console.hh>
-#include <ignition/math/Color.hh>
+#include <gz/common/Console.hh>
+#include <gz/math/Color.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/ParticleEmitter.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/ParticleEmitter.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 /// \brief The test fixture.
@@ -62,7 +62,7 @@ bool ParticleEmitterTest::SetUp(const std::string &_renderEngine)
   this->engine = rendering::engine(_renderEngine);
   if (!this->engine)
   {
-    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
     return false;
   }
 
@@ -78,7 +78,7 @@ void ParticleEmitterTest::CheckBasicAPI()
 
   // Default values.
   EmitterType    expectedEmitterType     = EmitterType::EM_POINT;
-  math::Vector3d expectedEmitterSize     = ignition::math::Vector3d::One;
+  math::Vector3d expectedEmitterSize     = gz::math::Vector3d::One;
   double         expectedRate            = 10.0;
   double         expectedDuration        = 0;
   bool           expectedEmitting        = false;
@@ -87,8 +87,8 @@ void ParticleEmitterTest::CheckBasicAPI()
   MaterialPtr    expectedMaterial        = nullptr;
   double         expectedMinVel          = 1;
   double         expectedMaxVel          = 1;
-  math::Color    expectedColorStart      = ignition::math::Color::White;
-  math::Color    expectedColorEnd        = ignition::math::Color::White;
+  math::Color    expectedColorStart      = gz::math::Color::White;
+  math::Color    expectedColorEnd        = gz::math::Color::White;
   double         expectedScaleRate       = 1;
   std::string    expectedColorRangeImage = "";
   float          particleScatterRatio    = 0.65f;
@@ -122,8 +122,8 @@ void ParticleEmitterTest::CheckBasicAPI()
   expectedMaterial        = nullptr;
   expectedMinVel          = 2;
   expectedMaxVel          = 3;
-  expectedColorStart      = ignition::math::Color::Red;
-  expectedColorEnd        = ignition::math::Color::Blue;
+  expectedColorStart      = gz::math::Color::Red;
+  expectedColorEnd        = gz::math::Color::Blue;
   expectedScaleRate       = 10;
   expectedColorRangeImage = common::joinPaths(TEST_MEDIA_PATH, "texture.png");
   float expectedScatterRatio  = 0.24f;
@@ -185,7 +185,7 @@ TEST_P(ParticleEmitterTest, ParticleEmitter)
 
 INSTANTIATE_TEST_CASE_P(ParticleEmitter, ParticleEmitterTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

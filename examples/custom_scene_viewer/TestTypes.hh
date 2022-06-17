@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_TESTYPES_HH_
-#define IGNITION_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_TESTYPES_HH_
+#ifndef GZ_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_TESTYPES_HH_
+#define GZ_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_TESTYPES_HH_
 
 #include <vector>
-#include <ignition/rendering.hh>
+#include <gz/rendering.hh>
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

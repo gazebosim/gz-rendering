@@ -7,7 +7,7 @@ This example demonstrates the use of the render pass system for adding Gaussian 
 Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
-git clone https://github.com/ignitionrobotics/ign-rendering
+git clone https://github.com/gazebosim/gz-rendering
 cd ign-rendering/examples/render_pass
 mkdir build
 cd build

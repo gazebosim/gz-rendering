@@ -38,10 +38,10 @@
 
 #include <mutex>
 
-#include <ignition/common/Console.hh>
-#include <ignition/rendering/Image.hh>
-#include <ignition/rendering/Scene.hh>
-#include <ignition/rendering/WideAngleCamera.hh>
+#include <gz/common/Console.hh>
+#include <gz/rendering/Image.hh>
+#include <gz/rendering/Scene.hh>
+#include <gz/rendering/WideAngleCamera.hh>
 
 #include "GlutWindow.hh"
 
@@ -57,7 +57,7 @@ ir::CameraPtr g_camera;
 ir::CameraPtr g_currCamera;
 unsigned int g_cameraIndex = 0;
 ir::ImagePtr g_image;
-ignition::common::ConnectionPtr g_connection;
+gz::common::ConnectionPtr g_connection;
 
 bool g_initContext = false;
 
@@ -197,7 +197,7 @@ void run(std::vector<ir::CameraPtr> _cameras)
 {
   if (_cameras.empty())
   {
-    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    gzerr << "No cameras found. Scene will not be rendered" << std::endl;
     return;
   }
 

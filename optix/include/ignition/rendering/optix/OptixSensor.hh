@@ -14,26 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXSENSOR_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXSENSOR_HH_
 
-#include "ignition/rendering/base/BaseSensor.hh"
-#include "ignition/rendering/optix/OptixNode.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixSensor :
-      public BaseSensor<OptixNode>
-    {
-      protected: OptixSensor();
-
-      public: virtual ~OptixSensor();
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixSensor.hh>
+#include <ignition/rendering/config.hh>

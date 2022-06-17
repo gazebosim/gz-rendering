@@ -15,21 +15,21 @@
  *
 */
 
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/SubMesh.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/common/SubMesh.hh>
 
-#include <ignition/math/Color.hh>
-#include <ignition/math/Helpers.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Helpers.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/ogre/OgreCamera.hh"
-#include "ignition/rendering/ogre/OgreGpuRays.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/ogre/OgreCamera.hh"
+#include "gz/rendering/ogre/OgreGpuRays.hh"
 
 /// \internal
 /// \brief Private data for the OgreGpuRays class
-class ignition::rendering::OgreGpuRaysPrivate
+class gz::rendering::OgreGpuRaysPrivate
 {
   /// \brief Event triggered when new gpu rays range data are available.
   /// \param[in] _frame New frame containing raw gpu rays data.
@@ -37,7 +37,7 @@ class ignition::rendering::OgreGpuRaysPrivate
   /// \param[in] _height Height of frame.
   /// \param[in] _channels Number of channels
   /// \param[in] _format Format of frame.
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
                unsigned int, unsigned int, unsigned int,
                const std::string &)> newGpuRaysFrame;
 
@@ -129,7 +129,7 @@ class ignition::rendering::OgreGpuRaysPrivate
   public: const math::Angle kMinAllowedAngle = 1e-4;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -225,7 +225,7 @@ void OgreGpuRays::CreateCamera()
   Ogre::SceneManager *ogreSceneManager  = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
@@ -233,7 +233,7 @@ void OgreGpuRays::CreateCamera()
       this->Name() + "_Camera");
   if (this->dataPtr->ogreCamera == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
@@ -255,7 +255,7 @@ void OgreGpuRays::ConfigureCameras()
   if (this->HFOV().Radian() > 2.0 * IGN_PI)
   {
     this->SetHFOV(2.0 * IGN_PI);
-    ignwarn << "Horizontal FOV for GPU rays is capped at 180 degrees.\n";
+    gzwarn << "Horizontal FOV for GPU rays is capped at 180 degrees.\n";
   }
 
   this->SetHorzHalfAngle((this->AngleMax() + this->AngleMin()).Radian() / 2.0);
@@ -302,7 +302,7 @@ void OgreGpuRays::ConfigureCameras()
 
     if (this->VerticalAngleMax() != this->VerticalAngleMin())
     {
-      ignwarn << "Only one vertical ray but vertical min. and max. angle "
+      gzwarn << "Only one vertical ray but vertical min. and max. angle "
           "are not equal. Min. angle is used.\n";
       this->SetVerticalAngleMax(this->VerticalAngleMin().Radian());
     }
@@ -311,7 +311,7 @@ void OgreGpuRays::ConfigureCameras()
   if (vfovAngle > IGN_PI / 2.0)
   {
     vfovAngle = IGN_PI / 2.0;
-    ignwarn << "Vertical FOV for GPU laser is capped at 90 degrees.\n";
+    gzwarn << "Vertical FOV for GPU laser is capped at 90 degrees.\n";
   }
 
   this->SetVFOV(vfovAngle);
@@ -332,7 +332,7 @@ void OgreGpuRays::ConfigureCameras()
 
   if (vfovCamera > 2.8)
   {
-    ignerr << "Vertical FOV of internal camera exceeds 2.8 radians.\n";
+    gzerr << "Vertical FOV of internal camera exceeds 2.8 radians.\n";
   }
 
   this->SetCosVertFOV(vfovCamera);
@@ -703,7 +703,7 @@ void OgreGpuRays::CreateOrthoCam()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
     return;
   }
 
@@ -711,12 +711,12 @@ void OgreGpuRays::CreateOrthoCam()
       this->Name() + "_Ortho_Camera");
   if (this->dataPtr->orthoCam == nullptr)
   {
-    ignerr << "Ogre camera cannot be created" << std::endl;
+    gzerr << "Ogre camera cannot be created" << std::endl;
     return;
   }
 
   Ogre::SceneNode *rootSceneNode = std::dynamic_pointer_cast<
-      ignition::rendering::OgreNode>(this->scene->RootVisual())->Node();
+      gz::rendering::OgreNode>(this->scene->RootVisual())->Node();
   this->dataPtr->pitchNodeOrtho = rootSceneNode->createChildSceneNode();
   this->dataPtr->pitchNodeOrtho->attachObject(this->dataPtr->orthoCam);
 
@@ -899,7 +899,7 @@ void OgreGpuRays::CreateCanvas()
       this->Name() + "second_pass_canvas");
 
   Ogre::SceneNode *visualSceneNode =  std::dynamic_pointer_cast<
-    ignition::rendering::OgreNode>(this->dataPtr->visual)->Node();
+    gz::rendering::OgreNode>(this->dataPtr->visual)->Node();
 
   Ogre::Node *visualParent = visualSceneNode->getParent();
   if (visualParent != nullptr)
@@ -919,7 +919,7 @@ void OgreGpuRays::CreateCanvas()
 
   MaterialPtr canvasMaterial =
     this->scene->CreateMaterial(this->Name() + "_green");
-  canvasMaterial->SetAmbient(ignition::math::Color(0, 1, 0, 1));
+  canvasMaterial->SetAmbient(gz::math::Color(0, 1, 0, 1));
   this->dataPtr->visual->SetMaterial(canvasMaterial);
 
   this->dataPtr->visual->SetVisible(true);
@@ -981,7 +981,7 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
 }
 
 //////////////////////////////////////////////////
-ignition::common::ConnectionPtr OgreGpuRays::ConnectNewGpuRaysFrame(
+gz::common::ConnectionPtr OgreGpuRays::ConnectNewGpuRaysFrame(
     std::function<void(const float *_frame, unsigned int _width,
     unsigned int _height, unsigned int _channels,
     const std::string &/*_format*/)> _subscriber)

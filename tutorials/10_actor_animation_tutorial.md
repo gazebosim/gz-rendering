@@ -1,13 +1,13 @@
 \page actor_animation Actor animation tutorial
 
-This tutorial will show you how to use the Ignition Rendering library to create an actor animation.
+This tutorial will show you how to use the Gazebo Rendering library to create an actor animation.
 
 ## Compile and run the example
 
 Clone the source code, Create a build directory and use `cmake` and `make` to compile the code:
 
 ```{.sh}
-git clone https://github.com/ignitionrobotics/ign-rendering
+git clone https://github.com/gazebosim/gz-rendering
 cd ign-rendering/examples/actor_animation
 mkdir build
 cd build

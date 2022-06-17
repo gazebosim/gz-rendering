@@ -15,12 +15,12 @@
  *
  */
 
-#include "ignition/rendering/ogre2/Ogre2Camera.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
-#include "ignition/rendering/Utils.hh"
+#include "gz/rendering/ogre2/Ogre2Camera.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2SelectionBuffer.hh"
+#include "gz/rendering/Utils.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -33,11 +33,11 @@
 #endif
 
 /// \brief Private data for the Ogre2Camera class
-class ignition::rendering::Ogre2CameraPrivate
+class gz::rendering::Ogre2CameraPrivate
 {
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -62,7 +62,7 @@ void Ogre2Camera::Destroy()
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
-    ignerr << "Scene manager cannot be obtained" << std::endl;
+    gzerr << "Scene manager cannot be obtained" << std::endl;
   }
   if (ogreSceneManager->findCameraNoThrow(this->name) != nullptr)
   {
@@ -255,7 +255,7 @@ Ogre2SelectionBuffer *Ogre2Camera::SelectionBuffer() const
 }
 
 //////////////////////////////////////////////////
-VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
+VisualPtr Ogre2Camera::VisualAt(const gz::math::Vector2i &_mousePos)
 {
   VisualPtr result;
 
@@ -275,7 +275,7 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
   }
 
   float ratio = screenScalingFactor();
-  ignition::math::Vector2i mousePos(
+  gz::math::Vector2i mousePos(
       static_cast<int>(std::rint(ratio * _mousePos.X())),
       static_cast<int>(std::rint(ratio * _mousePos.Y())));
   Ogre::Item *ogreItem = this->selectionBuffer->OnSelectionClick(
@@ -294,7 +294,7 @@ VisualPtr Ogre2Camera::VisualAt(const ignition::math::Vector2i &_mousePos)
       }
       catch(Ogre::Exception &e)
       {
-        ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+        gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
       }
     }
   }

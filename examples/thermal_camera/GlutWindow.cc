@@ -31,13 +31,13 @@
 
 #include <mutex>
 
-#include <ignition/common/Console.hh>
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/Image.hh>
-#include <ignition/rendering/RayQuery.hh>
-#include <ignition/rendering/Scene.hh>
-#include <ignition/rendering/ThermalCamera.hh>
-#include <ignition/rendering/OrbitViewController.hh>
+#include <gz/common/Console.hh>
+#include <gz/rendering/Camera.hh>
+#include <gz/rendering/Image.hh>
+#include <gz/rendering/RayQuery.hh>
+#include <gz/rendering/Scene.hh>
+#include <gz/rendering/ThermalCamera.hh>
+#include <gz/rendering/OrbitViewController.hh>
 
 #include "GlutWindow.hh"
 
@@ -52,7 +52,7 @@ std::vector<ir::CameraPtr> g_cameras;
 ir::CameraPtr g_camera;
 unsigned int g_cameraIndex = 0;
 ir::ImagePtr g_image;
-ignition::common::ConnectionPtr g_connection;
+gz::common::ConnectionPtr g_connection;
 
 
 bool g_initContext = false;
@@ -142,7 +142,7 @@ void handleMouse()
     g_rayQuery = rayCamera->Scene()->CreateRayQuery();
     if (!g_rayQuery)
     {
-      ignerr << "Failed to create Ray Query" << std::endl;
+      gzerr << "Failed to create Ray Query" << std::endl;
       return;
     }
   }
@@ -157,7 +157,7 @@ void handleMouse()
     {
       // Get visual using Selection Buffer from Camera
       ir::VisualPtr visual;
-      ignition::math::Vector2i mousePos(g_mouse.x, g_mouse.y);
+      gz::math::Vector2i mousePos(g_mouse.x, g_mouse.y);
       visual = rayCamera->VisualAt(mousePos);
       if (visual)
       {
@@ -178,7 +178,7 @@ void handleMouse()
         2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
     double ny = 1.0 -
         2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
-    g_rayQuery->SetFromCamera(rayCamera, ignition::math::Vector2d(nx, ny));
+    g_rayQuery->SetFromCamera(rayCamera, gz::math::Vector2d(nx, ny));
     g_target  = g_rayQuery->ClosestPoint();
     if (!g_target)
     {
@@ -208,7 +208,7 @@ void handleMouse()
   if (g_mouse.motionDirty)
   {
     g_mouse.motionDirty = false;
-    auto drag = ignition::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
+    auto drag = gz::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
 
     // left mouse button pan
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
@@ -270,7 +270,7 @@ void OnNewThermalFrame(const uint16_t *_scan,
 
   // convert temperature to grayscale image
   double range = static_cast<double>(max - min);
-  if (ignition::math::equal(range, 0.0))
+  if (gz::math::equal(range, 0.0))
     range = 1.0;
   unsigned char *data = g_image->Data<unsigned char>();
   for (unsigned int i = 0; i < _height; ++i)
@@ -394,7 +394,7 @@ void run(std::vector<ir::CameraPtr> _cameras)
 {
   if (_cameras.empty())
   {
-    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    gzerr << "No cameras found. Scene will not be rendered" << std::endl;
     return;
   }
 

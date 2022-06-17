@@ -38,11 +38,11 @@
 
 #include <mutex>
 
-#include <ignition/common/Console.hh>
-#include <ignition/rendering.hh>
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/Image.hh>
-#include <ignition/rendering/Scene.hh>
+#include <gz/common/Console.hh>
+#include <gz/rendering.hh>
+#include <gz/rendering/Camera.hh>
+#include <gz/rendering/Image.hh>
+#include <gz/rendering/Scene.hh>
 
 #include "example_config.hh"
 
@@ -52,7 +52,7 @@
 #define KEY_TAB  9
 
 const std::string RESOURCE_PATH =
-    ignition::common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
+    gz::common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
 unsigned int imgw = 0;
@@ -159,7 +159,7 @@ void handleMouse()
     g_rayQuery = rayCamera->Scene()->CreateRayQuery();
     if (!g_rayQuery)
     {
-      ignerr << "Failed to create Ray Query" << std::endl;
+      gzerr << "Failed to create Ray Query" << std::endl;
       return;
     }
   }
@@ -170,7 +170,7 @@ void handleMouse()
         2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
     double ny = 1.0 -
         2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
-    g_rayQuery->SetFromCamera(rayCamera, ignition::math::Vector2d(nx, ny));
+    g_rayQuery->SetFromCamera(rayCamera, gz::math::Vector2d(nx, ny));
     g_target  = g_rayQuery->ClosestPoint();
     if (!g_target)
     {
@@ -200,7 +200,7 @@ void handleMouse()
   if (g_mouse.motionDirty)
   {
     g_mouse.motionDirty = false;
-    auto drag = ignition::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
+    auto drag = gz::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
 
     // left mouse button pan
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
@@ -417,11 +417,11 @@ void initUniforms()
   (*g_fsParams)["deepColor"].InitializeBuffer(4);
   (*g_fsParams)["deepColor"].UpdateBuffer(deepColor);
 
-  std::string bumpMapPath = ignition::common::joinPaths(RESOURCE_PATH,
+  std::string bumpMapPath = gz::common::joinPaths(RESOURCE_PATH,
       "wave_normals.dds");
   (*g_fsParams)["bumpMap"].SetTexture(bumpMapPath);
 
-  std::string cubeMapPath = ignition::common::joinPaths(RESOURCE_PATH,
+  std::string cubeMapPath = gz::common::joinPaths(RESOURCE_PATH,
       "skybox_lowres.dds");
 
   (*g_fsParams)["cubeMap"].SetTexture(cubeMapPath,
@@ -456,7 +456,7 @@ void run(std::vector<ir::CameraPtr> _cameras)
 {
   if (_cameras.empty())
   {
-    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    gzerr << "No cameras found. Scene will not be rendered" << std::endl;
     return;
   }
 

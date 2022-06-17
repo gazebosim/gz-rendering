@@ -17,19 +17,19 @@
 
 #include <gazebo/common/Events.hh>
 
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/Console.hh>
-#include <ignition/math/Helpers.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/common/Console.hh>
+#include <gz/math/Helpers.hh>
 
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/Capsule.hh>
-#include <ignition/rendering/Scene.hh>
-#include <ignition/rendering/Visual.hh>
+#include <gz/rendering/Camera.hh>
+#include <gz/rendering/Capsule.hh>
+#include <gz/rendering/Scene.hh>
+#include <gz/rendering/Visual.hh>
 
 #include "SceneManager.hh"
 #include "SceneManagerPrivate.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -706,7 +706,7 @@ ScenePtr SubSceneManager::SceneAt(unsigned int _index) const
 
   if (_index >= this->SceneCount())
   {
-    ignerr << "Invalid scene index: " << _index << std::endl;
+    gzerr << "Invalid scene index: " << _index << std::endl;
     return nullptr;
   }
 
@@ -722,13 +722,13 @@ void SubSceneManager::AddScene(ScenePtr _scene)
 
   if (!_scene)
   {
-    ignerr << "Cannot add null scene pointer" << std::endl;
+    gzerr << "Cannot add null scene pointer" << std::endl;
     return;
   }
 
   if (this->HasScene(_scene))
   {
-    ignerr << "Scene has already been added" << std::endl;
+    gzerr << "Scene has already been added" << std::endl;
     return;
   }
 
@@ -790,7 +790,7 @@ ScenePtr SubSceneManager::RemoveSceneAt(unsigned int _index)
 
   if (_index >= this->SceneCount())
   {
-    ignerr << "Invalid scene index: " << _index << std::endl;
+    gzerr << "Invalid scene index: " << _index << std::endl;
     return nullptr;
   }
 
@@ -951,7 +951,7 @@ void SubSceneManager::ProcessLight(const gazebo::msgs::Light &_lightMsg,
         return;
 
       default:
-        ignerr << "Invalid light type: " << type << std::endl;
+        gzerr << "Invalid light type: " << type << std::endl;
         return;
     }
   }
@@ -1473,8 +1473,8 @@ void SubSceneManager::ProcessGeometry(
   // check if invalid type
   if (!geomFunc)
   {
-    ignerr << "Unsupported geometry type: " << geomType << std::endl;
-    ignwarn << "Using empty geometry instead" << std::endl;
+    gzerr << "Unsupported geometry type: " << geomType << std::endl;
+    gzwarn << "Using empty geometry instead" << std::endl;
     geomFunc = this->geomFunctions[gazebo::msgs::Geometry::EMPTY];
   }
 
@@ -1743,8 +1743,8 @@ VisualPtr SubSceneManager::Parent(const std::string &_name)
     {
       if (_name != "default")
       {
-        ignerr  << "invalid parent name: " << _name << std::endl;
-        ignwarn << "using scene root node" << std::endl;
+        gzerr  << "invalid parent name: " << _name << std::endl;
+        gzwarn << "using scene root node" << std::endl;
       }
 
       parent = this->activeScene->RootVisual();

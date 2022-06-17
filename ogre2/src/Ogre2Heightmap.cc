@@ -17,14 +17,14 @@
 
 #include <chrono>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Util.hh>
 
-#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Light.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Heightmap.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Light.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
 
 #include "Terra/Terra.h"
 
@@ -44,7 +44,7 @@
 #endif
 
 //////////////////////////////////////////////////
-class ignition::rendering::Ogre2HeightmapPrivate
+class gz::rendering::Ogre2HeightmapPrivate
 {
   /// \brief Skirt min height. Leave it at -1 for automatic.
   /// Leave it at 0 for maximum skirt size (high performance hit)
@@ -64,7 +64,7 @@ class ignition::rendering::Ogre2HeightmapPrivate
   public: std::unique_ptr<Ogre::Terra> terra{nullptr};
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -85,7 +85,7 @@ void Ogre2Heightmap::Init()
 
   if (this->descriptor.Data() == nullptr)
   {
-    ignerr << "Failed to initialize: null heightmap data." << std::endl;
+    gzerr << "Failed to initialize: null heightmap data." << std::endl;
     return;
   }
 
@@ -115,7 +115,7 @@ void Ogre2Heightmap::Init()
 
   if (needsOgre1Compat)
   {
-    ignwarn << "Heightmap final sampling should be 2^n"
+    gzwarn << "Heightmap final sampling should be 2^n"
            << std::endl << " which differs from ogre1's 2^n+1"
            << std::endl << "The last row and column will be cropped"
            << std::endl << "size = (width * sampling) - sampling + 1"
@@ -127,7 +127,7 @@ void Ogre2Heightmap::Init()
   }
   else if (!math::isPowerOfTwo(srcWidth))
   {
-    ignerr << "Heightmap final sampling must satisfy 2^n."
+    gzerr << "Heightmap final sampling must satisfy 2^n."
            << std::endl << "size = width * sampling"
            << std::endl << "[" << srcWidth << "] = ["
            << this->descriptor.Data()->Width() << "] * ["
@@ -175,7 +175,7 @@ void Ogre2Heightmap::Init()
 
       if (heightVal < minElevation || heightVal > maxElevation)
       {
-        ignerr << "Internal error: height [" << heightVal
+        gzerr << "Internal error: height [" << heightVal
                << "] is out of bounds [" << minElevation << " / "
                << maxElevation << "]" << std::endl;
       }
@@ -197,7 +197,7 @@ void Ogre2Heightmap::Init()
 
   if (this->dataPtr->heights.empty())
   {
-    ignerr << "Failed to load terrain. Heightmap data is empty" << std::endl;
+    gzerr << "Failed to load terrain. Heightmap data is empty" << std::endl;
     return;
   }
 
@@ -292,7 +292,7 @@ void Ogre2Heightmap::Init()
     if ((numTextures > 4u && !bCanUseFirstAsBase) ||
         (numTextures > 5u && bCanUseFirstAsBase))
     {
-      ignwarn << "Ogre2Heightmap currently supports up to 4 textures, "
+      gzwarn << "Ogre2Heightmap currently supports up to 4 textures, "
                  "5 textures if the first one is diffuse-only & "
                  "texture size = terrain size. "
                  "The rest are ignored. Supplied: "
@@ -351,7 +351,7 @@ void Ogre2Heightmap::Init()
     if ((numBlends > 3u && !bCanUseFirstAsBase) ||
         (numBlends > 4u && bCanUseFirstAsBase))
     {
-      ignwarn << "Ogre2Heightmap currently supports up to 3 blends, "
+      gzwarn << "Ogre2Heightmap currently supports up to 3 blends, "
                  "4 blends if the first one is diffuse-only & "
                  "texture size = terrain size. "
                  "The rest are ignored. Supplied: "
@@ -376,10 +376,10 @@ void Ogre2Heightmap::Init()
 
   this->dataPtr->terra->setDatablock(datablock);
 
-  ignmsg << "Loading heightmap: " << this->descriptor.Name() << std::endl;
+  gzmsg << "Loading heightmap: " << this->descriptor.Name() << std::endl;
   auto time = std::chrono::steady_clock::now();
 
-  ignmsg << "Heightmap loaded. Process took "
+  gzmsg << "Heightmap loaded. Process took "
         <<  std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::steady_clock::now() - time).count()
         << " ms." << std::endl;

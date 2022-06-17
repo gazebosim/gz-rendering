@@ -15,7 +15,7 @@
  *
  */
 
-#include "ignition/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -26,7 +26,7 @@
   #pragma warning(pop)
 #endif
 
-using namespace ignition::rendering;
+using namespace gz::rendering;
 
 
 //////////////////////////////////////////////////

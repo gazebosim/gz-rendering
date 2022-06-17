@@ -19,13 +19,13 @@
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 /////////////////////////////////////////////////
@@ -66,7 +66,7 @@ TEST(RenderingIfaceTest, GetEngine)
   for (unsigned int i = 0; i < count; ++i)
   {
     RenderEngine *eng = engine(i, std::map<std::string, std::string>(),
-        IGN_RENDERING_TEST_PLUGIN_PATH);
+        GZ_RENDERING_TEST_PLUGIN_PATH);
     ASSERT_NE(nullptr, eng);
     EXPECT_TRUE(isEngineLoaded(eng->Name()));
     EXPECT_TRUE(hasEngine(eng->Name()));

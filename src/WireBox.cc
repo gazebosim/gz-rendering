@@ -16,9 +16,9 @@
  */
 
 
-#include "ignition/rendering/WireBox.hh"
+#include "gz/rendering/WireBox.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

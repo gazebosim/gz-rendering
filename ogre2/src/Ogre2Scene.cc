@@ -15,39 +15,39 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2ArrowVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2AxisVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2Camera.hh"
-#include "ignition/rendering/ogre2/Ogre2Capsule.hh"
-#include "ignition/rendering/ogre2/Ogre2COMVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2GizmoVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2GpuRays.hh"
-#include "ignition/rendering/ogre2/Ogre2Grid.hh"
-#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
-#include "ignition/rendering/ogre2/Ogre2InertiaVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2JointVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2Light.hh"
-#include "ignition/rendering/ogre2/Ogre2LightVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2LidarVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2Marker.hh"
-#include "ignition/rendering/ogre2/Ogre2Material.hh"
-#include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
-#include "ignition/rendering/ogre2/Ogre2Node.hh"
-#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
-#include "ignition/rendering/ogre2/Ogre2RayQuery.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2ThermalCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2SegmentationCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
-#include "ignition/rendering/ogre2/Ogre2WireBox.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2ArrowVisual.hh"
+#include "gz/rendering/ogre2/Ogre2AxisVisual.hh"
+#include "gz/rendering/ogre2/Ogre2Camera.hh"
+#include "gz/rendering/ogre2/Ogre2Capsule.hh"
+#include "gz/rendering/ogre2/Ogre2COMVisual.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2DepthCamera.hh"
+#include "gz/rendering/ogre2/Ogre2GizmoVisual.hh"
+#include "gz/rendering/ogre2/Ogre2GpuRays.hh"
+#include "gz/rendering/ogre2/Ogre2Grid.hh"
+#include "gz/rendering/ogre2/Ogre2Heightmap.hh"
+#include "gz/rendering/ogre2/Ogre2InertiaVisual.hh"
+#include "gz/rendering/ogre2/Ogre2JointVisual.hh"
+#include "gz/rendering/ogre2/Ogre2Light.hh"
+#include "gz/rendering/ogre2/Ogre2LightVisual.hh"
+#include "gz/rendering/ogre2/Ogre2LidarVisual.hh"
+#include "gz/rendering/ogre2/Ogre2Marker.hh"
+#include "gz/rendering/ogre2/Ogre2Material.hh"
+#include "gz/rendering/ogre2/Ogre2MeshFactory.hh"
+#include "gz/rendering/ogre2/Ogre2Node.hh"
+#include "gz/rendering/ogre2/Ogre2ParticleEmitter.hh"
+#include "gz/rendering/ogre2/Ogre2RayQuery.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2ThermalCamera.hh"
+#include "gz/rendering/ogre2/Ogre2SegmentationCamera.hh"
+#include "gz/rendering/ogre2/Ogre2Visual.hh"
+#include "gz/rendering/ogre2/Ogre2WireBox.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -75,7 +75,7 @@
 #endif
 
 /// \brief Private data for the Ogre2Scene class
-class ignition::rendering::Ogre2ScenePrivate
+class gz::rendering::Ogre2ScenePrivate
 {
   /// \brief Flag to indicate if shadows need to be updated
   public: bool shadowsDirty = true;
@@ -101,7 +101,7 @@ class ignition::rendering::Ogre2ScenePrivate
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -227,7 +227,7 @@ void Ogre2Scene::PostRender()
 
   if (dataPtr->cameraPassCountPerGpuFlush == 0u)
   {
-    ignwarn << "Calling Scene::PostRender but "
+    gzwarn << "Calling Scene::PostRender but "
                "SetCameraPassCountPerGpuFlush is 0 (legacy mode for clients"
                " not calling PostRender)."
                "Read the documentation on SetCameraPassCountPerGpuFlush, "
@@ -574,7 +574,7 @@ void Ogre2Scene::UpdateShadowNode()
         dirLightCount);
     spotPointLightCount = std::min(
         std::max(maxShadowMaps - dirLightCount * 3, 0u), spotPointLightCount);
-    ignwarn << "Number of shadow-casting lights exceeds the limit supported by "
+    gzwarn << "Number of shadow-casting lights exceeds the limit supported by "
             << "the underlying rendering engine ogre2. Limiting to "
             << dirLightCount << " directional lights and "
             << spotPointLightCount << " point / spot lights" << std::endl;
@@ -1342,7 +1342,7 @@ void Ogre2Scene::CreateRootVisual()
   // check if root visual created successfully
   if (!this->InitObject(this->rootVisual, rootId, rootName))
   {
-    ignerr << "Unable to create root visual" << std::endl;
+    gzerr << "Unable to create root visual" << std::endl;
     this->rootVisual = nullptr;
     return;
   }

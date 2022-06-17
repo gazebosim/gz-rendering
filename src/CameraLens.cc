@@ -21,13 +21,13 @@
 #include <utility>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/common/Console.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/CameraLens.hh"
+#include "gz/rendering/CameraLens.hh"
 
 /// \brief Private fields of camera lens
-class ignition::rendering::CameraLens::Implementation
+class gz::rendering::CameraLens::Implementation
 {
   /// \brief Linear scale factor
   public: double c1 = 1.0;
@@ -89,7 +89,7 @@ class ignition::rendering::CameraLens::Implementation
               throw std::invalid_argument("Unknown angle function");
             }
 
-            /// \brief Cast to ignition::math::Vector3d,
+            /// \brief Cast to gz::math::Vector3d,
             ///   this vector is passed to shader to avoid branching
             /// \return Vector3 Vector whose one component is 1
             ///   and the rest are nulls
@@ -137,7 +137,7 @@ class ignition::rendering::CameraLens::Implementation
   public: MapFunctionEnum fun = MapFunctionEnum(AFT_IDENTITY);
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -182,7 +182,7 @@ void CameraLens::SetCustomMappingFunction(double _c1, double _c2,
   }
   catch(const std::exception &ex)
   {
-    ignerr << "Angle functionis not known, "
+    gzerr << "Angle functionis not known, "
            << "[tan] will be used instead" << std::endl;
 
     this->dataPtr->fun = CameraLens::Implementation::MapFunctionEnum(AFT_TAN);
@@ -269,7 +269,7 @@ void CameraLens::SetType(MappingFunctionType _type)
   }
   catch(...)
   {
-    ignerr << "Unknown lens type." << std::endl;
+    gzerr << "Unknown lens type." << std::endl;
     return;
   }
 
@@ -297,7 +297,7 @@ void CameraLens::SetType(MappingFunctionType _type)
     }
     catch(const std::exception &ex)
     {
-      ignerr << "`fun` value [" << std::get<4>(params)
+      gzerr << "`fun` value [" << std::get<4>(params)
              << "] is not known, keeping the old one" << std::endl;
     }
   }
@@ -351,7 +351,7 @@ void CameraLens::SetAngleFunction(AngleFunctionType _fun)
   }
   catch(const std::exception &ex)
   {
-    ignerr << "`Fun` value [" << _fun << "] is not known, "
+    gzerr << "`Fun` value [" << _fun << "] is not known, "
            << "keeping the old one" << std::endl;
     return;
   }

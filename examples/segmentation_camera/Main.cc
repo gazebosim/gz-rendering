@@ -28,14 +28,14 @@
 #include <string>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/rendering.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/rendering.hh>
 
 #include "example_config.hh"
 #include "GlutWindow.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 const std::string RESOURCE_PATH =
@@ -125,7 +125,7 @@ CameraPtr createCamera(const std::string &_engineName,
   RenderEngine *engine = rendering::engine(_engineName, _params);
   if (!engine)
   {
-    ignwarn << "Engine '" << _engineName
+    gzwarn << "Engine '" << _engineName
               << "' is not supported" << std::endl;
     return CameraPtr();
   }

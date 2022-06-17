@@ -15,14 +15,14 @@
  *
  */
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/GraphicsAPI.hh"
-#include <ignition/common/EnumIface.hh>
+#include "gz/rendering/config.hh"
+#include "gz/rendering/GraphicsAPI.hh"
+#include <gz/common/EnumIface.hh>
 
 #include <algorithm>
 #include <string>
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

@@ -17,20 +17,20 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Event.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Event.hh>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/WideAngleCamera.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/WideAngleCamera.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -46,7 +46,7 @@ class WideAngleCameraTest: public testing::Test,
   // Documentation inherited
   protected: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    gz::common::Console::SetVerbosity(4);
   }
 };
 
@@ -85,19 +85,19 @@ void WideAngleCameraTest::WideAngleCamera(
   // Currently, only ogre supports wide angle cameras
   if (_renderEngine.compare("ogre") != 0)
   {
-    ignerr << "Engine '" << _renderEngine
+    gzerr << "Engine '" << _renderEngine
            << "' doesn't support wide angle cameras" << std::endl;
     return;
   }
 
-  auto *engine = ignition::rendering::engine(_renderEngine);
+  auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
-    ignerr << "Engine '" << _renderEngine
+    gzerr << "Engine '" << _renderEngine
            << "' was unable to be retrieved" << std::endl;
     return;
   }
-  ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(1.0, 1.0, 1.0);
   scene->SetBackgroundColor(0.2, 0.2, 0.2);
@@ -157,7 +157,7 @@ void WideAngleCameraTest::WideAngleCamera(
   unsigned char *dataRegular = imageRegular.Data<unsigned char>();
 
   // Set a callback on the  camera sensor to get a wide angle camera frame
-  ignition::common::ConnectionPtr connection =
+  gz::common::ConnectionPtr connection =
       camera->ConnectNewWideAngleFrame(
           std::bind(OnNewWideAngleFrame,
           std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
@@ -227,7 +227,7 @@ void WideAngleCameraTest::WideAngleCamera(
 
   // Clean up
   engine->DestroyScene(scene);
-  ignition::rendering::unloadEngine(engine->Name());
+  gz::rendering::unloadEngine(engine->Name());
 }
 
 //////////////////////////////////////////////////
@@ -236,20 +236,20 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
   // Currently, only ogre supports wideAngle cameras
   if (_renderEngine.compare("ogre") != 0)
   {
-    ignerr << "Engine '" << _renderEngine
+    gzerr << "Engine '" << _renderEngine
            << "' doesn't support wide angle cameras" << std::endl;
     return;
   }
 
   // Setup ign-rendering with an empty scene
-  auto *engine = ignition::rendering::engine(_renderEngine);
+  auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
-    ignerr << "Engine '" << _renderEngine
+    gzerr << "Engine '" << _renderEngine
               << "' was unable to be retrieved" << std::endl;
     return;
   }
-  ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(1.0, 1.0, 1.0);
   scene->SetBackgroundColor(0.2, 0.2, 0.2);
@@ -279,7 +279,7 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
   camera->Update();
 
   // point directly in front of camera
-  auto worldPoint = ignition::math::Vector3d::UnitX;
+  auto worldPoint = gz::math::Vector3d::UnitX;
   auto screenPt = camera->Project3d(worldPoint);
   EXPECT_FLOAT_EQ(camera->ImageWidth() * 0.5, screenPt.X());
   EXPECT_FLOAT_EQ(camera->ImageHeight() * 0.5, screenPt.Y());
@@ -287,14 +287,14 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
   EXPECT_LT(screenPt.Z(), 1.0);
 
   // point behind camera
-  worldPoint = -ignition::math::Vector3d::UnitX;
+  worldPoint = -gz::math::Vector3d::UnitX;
   screenPt = camera->Project3d(worldPoint);
   // z is distance of point from image center
   // in this case it'll be outside of image so greater than 1.0
   EXPECT_GT(screenPt.Z(), 1.0);
 
   // point at right side of camera image
-  worldPoint = ignition::math::Vector3d(1, -0.5, 0.0);
+  worldPoint = gz::math::Vector3d(1, -0.5, 0.0);
   screenPt = camera->Project3d(worldPoint);
   EXPECT_GT(screenPt.X(), camera->ImageWidth() * 0.5);
   EXPECT_FLOAT_EQ(camera->ImageHeight() * 0.5, screenPt.Y());
@@ -302,7 +302,7 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
   EXPECT_LT(screenPt.Z(), 1.0);
 
   // point at left side of camera image
-  worldPoint = ignition::math::Vector3d(1, 0.5, 0.0);
+  worldPoint = gz::math::Vector3d(1, 0.5, 0.0);
   screenPt = camera->Project3d(worldPoint);
   EXPECT_LT(screenPt.X(), camera->ImageWidth() * 0.5);
   EXPECT_FLOAT_EQ(camera->ImageHeight() * 0.5, screenPt.Y());
@@ -310,7 +310,7 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
   EXPECT_LT(screenPt.Z(), 1.0);
 
   // point at top half of camera image
-  worldPoint = ignition::math::Vector3d(1, 0.0, 0.5);
+  worldPoint = gz::math::Vector3d(1, 0.0, 0.5);
   screenPt = camera->Project3d(worldPoint);
   EXPECT_FLOAT_EQ(camera->ImageWidth() * 0.5, screenPt.X());
   EXPECT_LT(screenPt.Y(), camera->ImageHeight() * 0.5);
@@ -318,7 +318,7 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
   EXPECT_LT(screenPt.Z(), 1.0);
 
   // point at bottom half of camera image
-  worldPoint = ignition::math::Vector3d(1, 0.0, -0.5);
+  worldPoint = gz::math::Vector3d(1, 0.0, -0.5);
   screenPt = camera->Project3d(worldPoint);
   EXPECT_FLOAT_EQ(camera->ImageWidth() * 0.5, screenPt.X());
   EXPECT_GT(screenPt.Y(), camera->ImageHeight() * 0.5);
@@ -326,7 +326,7 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
   EXPECT_LT(screenPt.Z(), 1.0);
 
   // point at top left quadrant of camera image
-  worldPoint = ignition::math::Vector3d(1, 0.5, 0.5);
+  worldPoint = gz::math::Vector3d(1, 0.5, 0.5);
   screenPt = camera->Project3d(worldPoint);
   EXPECT_LT(screenPt.X(), camera->ImageWidth() * 0.5);
   EXPECT_LT(screenPt.Y(), camera->ImageHeight() * 0.5);
@@ -334,7 +334,7 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
   EXPECT_LT(screenPt.Z(), 1.0);
 
   // point at top right quadrant of camera image
-  worldPoint = ignition::math::Vector3d(1, -0.5, 0.5);
+  worldPoint = gz::math::Vector3d(1, -0.5, 0.5);
   screenPt = camera->Project3d(worldPoint);
   EXPECT_GT(screenPt.X(), camera->ImageWidth() * 0.5);
   EXPECT_LT(screenPt.Y(), camera->ImageHeight() * 0.5);
@@ -342,7 +342,7 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
   EXPECT_LT(screenPt.Z(), 1.0);
 
   // point at bottom left quadrant of camera image
-  worldPoint = ignition::math::Vector3d(1, 0.5, -0.5);
+  worldPoint = gz::math::Vector3d(1, 0.5, -0.5);
   screenPt = camera->Project3d(worldPoint);
   EXPECT_LT(screenPt.X(), camera->ImageWidth() * 0.5);
   EXPECT_GT(screenPt.Y(), camera->ImageHeight() * 0.5);
@@ -350,7 +350,7 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
   EXPECT_LT(screenPt.Z(), 1.0);
 
   // point at bottom right quadrant of camera image
-  worldPoint = ignition::math::Vector3d(1, -0.5, -0.5);
+  worldPoint = gz::math::Vector3d(1, -0.5, -0.5);
   screenPt = camera->Project3d(worldPoint);
   EXPECT_GT(screenPt.X(), camera->ImageWidth() * 0.5);
   EXPECT_GT(screenPt.Y(), camera->ImageHeight() * 0.5);
@@ -359,7 +359,7 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  ignition::rendering::unloadEngine(engine->Name());
+  gz::rendering::unloadEngine(engine->Name());
 }
 
 TEST_P(WideAngleCameraTest, WideAngleCamera)
@@ -373,7 +373,7 @@ TEST_P(WideAngleCameraTest, Projection)
 }
 
 INSTANTIATE_TEST_CASE_P(WideAngleCamera, WideAngleCameraTest,
-    RENDER_ENGINE_VALUES, ignition::rendering::PrintToStringParam());
+    RENDER_ENGINE_VALUES, gz::rendering::PrintToStringParam());
 
 //////////////////////////////////////////////////
 int main(int argc, char **argv)

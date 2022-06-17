@@ -18,7 +18,7 @@
 #include "example_config.hh"
 #include "SceneBuilder.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 const std::string RESOURCE_PATH = std::string(PROJECT_BINARY_PATH) + "/media";

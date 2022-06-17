@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
-#define IGNITION_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
+#ifndef GZ_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
+#define GZ_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
 
 #include <vector>
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/rendering/RenderTypes.hh"
 
-namespace gz = ignition::rendering;
+namespace gz = gz::rendering;
 
 void GlutRun(std::vector<gz::CameraPtr> _cameras);
 

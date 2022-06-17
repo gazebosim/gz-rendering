@@ -18,25 +18,25 @@
 
 #include <cmath>
 #include <sstream>
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/ogre/OgreDynamicLines.hh"
+#include "gz/common/Console.hh"
+#include "gz/rendering/ogre/OgreDynamicLines.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 enum {POSITION_BINDING, TEXCOORD_BINDING};
 
 
 /// \brief Private implementation
-class ignition::rendering::OgreDynamicLinesPrivate
+class gz::rendering::OgreDynamicLinesPrivate
 {
   /// \brief list of colors at each point
-  public: std::vector<ignition::math::Color> colors;
+  public: std::vector<gz::math::Color> colors;
 
   /// \brief List of points for the line
-  public: std::vector<ignition::math::Vector3d> points;
+  public: std::vector<gz::math::Vector3d> points;
 
   /// \brief Used to indicate if the lines require an update
   public: bool dirty = false;
@@ -57,8 +57,8 @@ OgreDynamicLines::~OgreDynamicLines()
 }
 
 /////////////////////////////////////////////////
-void OgreDynamicLines::AddPoint(const ignition::math::Vector3d &_pt,
-                            const ignition::math::Color &_color)
+void OgreDynamicLines::AddPoint(const gz::math::Vector3d &_pt,
+                            const gz::math::Color &_color)
 {
   this->dataPtr->points.push_back(_pt);
   this->dataPtr->colors.push_back(_color);
@@ -67,18 +67,18 @@ void OgreDynamicLines::AddPoint(const ignition::math::Vector3d &_pt,
 
 /////////////////////////////////////////////////
 void OgreDynamicLines::AddPoint(double _x, double _y,
-                double _z, const ignition::math::Color &_color)
+                double _z, const gz::math::Color &_color)
 {
-  this->AddPoint(ignition::math::Vector3d(_x, _y, _z), _color);
+  this->AddPoint(gz::math::Vector3d(_x, _y, _z), _color);
 }
 
 /////////////////////////////////////////////////
 void OgreDynamicLines::SetPoint(unsigned int _index,
-                            const ignition::math::Vector3d &_value)
+                            const gz::math::Vector3d &_value)
 {
   if (_index >= this->dataPtr->points.size())
   {
-    ignerr << "Point index[" << _index << "] is out of bounds[0-"
+    gzerr << "Point index[" << _index << "] is out of bounds[0-"
            << this->dataPtr->points.size()-1 << "]\n";
     return;
   }
@@ -90,24 +90,24 @@ void OgreDynamicLines::SetPoint(unsigned int _index,
 
 /////////////////////////////////////////////////
 void OgreDynamicLines::SetColor(unsigned int _index,
-                            const ignition::math::Color &_color)
+                            const gz::math::Color &_color)
 {
   this->dataPtr->colors[_index] = _color;
   this->dataPtr->dirty = true;
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector3d OgreDynamicLines::Point(
+gz::math::Vector3d OgreDynamicLines::Point(
     const unsigned int _index) const
 {
   if (_index >= this->dataPtr->points.size())
   {
-    ignerr << "Point index[" << _index << "] is out of bounds[0-"
+    gzerr << "Point index[" << _index << "] is out of bounds[0-"
            << this->dataPtr->points.size()-1 << "]\n";
 
-    return ignition::math::Vector3d(ignition::math::INF_D,
-                                    ignition::math::INF_D,
-                                    ignition::math::INF_D);
+    return gz::math::Vector3d(gz::math::INF_D,
+                                    gz::math::INF_D,
+                                    gz::math::INF_D);
   }
 
   return this->dataPtr->points[_index];

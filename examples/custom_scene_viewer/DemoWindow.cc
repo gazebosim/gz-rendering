@@ -33,7 +33,7 @@
 #include <string>
 #include <vector>
 
-#include <ignition/rendering.hh>
+#include <gz/rendering.hh>
 
 #include "ManualSceneDemo.hh"
 #include "DemoWindow.hh"
@@ -41,7 +41,7 @@
 #define KEY_ESC 27
 #define KEY_TAB  9
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

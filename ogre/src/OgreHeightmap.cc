@@ -17,17 +17,17 @@
 
 #include <chrono>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Util.hh>
 
-#include "ignition/rendering/ogre/OgreCamera.hh"
-#include "ignition/rendering/ogre/OgreConversions.hh"
-#include "ignition/rendering/ogre/OgreHeightmap.hh"
-#include "ignition/rendering/ogre/OgreLight.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreCamera.hh"
+#include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreHeightmap.hh"
+#include "gz/rendering/ogre/OgreLight.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreRenderEngine.hh"
+#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
 
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR >= 11
 // Since OGRE 1.11, the once public
@@ -310,7 +310,7 @@ class DummyPageProvider : public Ogre::PageProvider
 };
 
 //////////////////////////////////////////////////
-class ignition::rendering::OgreHeightmapPrivate
+class gz::rendering::OgreHeightmapPrivate
 {
   /// \brief Global options - in some Ogre versions, this is enforced as a
   /// singleton.
@@ -409,9 +409,9 @@ class ignition::rendering::OgreHeightmapPrivate
 };
 
 Ogre::TerrainGlobalOptions
-    *ignition::rendering::OgreHeightmapPrivate::terrainGlobals = nullptr;
+    *gz::rendering::OgreHeightmapPrivate::terrainGlobals = nullptr;
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -419,7 +419,7 @@ OgreHeightmap::OgreHeightmap(const HeightmapDescriptor &_desc)
     : BaseHeightmap(_desc), dataPtr(std::make_unique<OgreHeightmapPrivate>())
 {
   std::string home;
-  ignition::common::env(IGN_HOMEDIR, home);
+  gz::common::env(IGN_HOMEDIR, home);
 
   this->dataPtr->pagingDir =
       common::joinPaths(home, ".ignition", "rendering",
@@ -438,7 +438,7 @@ void OgreHeightmap::Init()
 
   if (this->descriptor.Data() == nullptr)
   {
-    ignerr << "Failed to initialize: null heightmap data." << std::endl;
+    gzerr << "Failed to initialize: null heightmap data." << std::endl;
     return;
   }
 
@@ -504,13 +504,13 @@ void OgreHeightmap::Init()
 
   if (this->dataPtr->heights.empty())
   {
-    ignerr << "Failed to load terrain. Heightmap data is empty" << std::endl;
+    gzerr << "Failed to load terrain. Heightmap data is empty" << std::endl;
     return;
   }
 
   if (!math::isPowerOfTwo(this->dataPtr->dataSize - 1))
   {
-    ignerr << "Heightmap final sampling must satisfy 2^n+1."
+    gzerr << "Heightmap final sampling must satisfy 2^n+1."
            << std::endl << "size = (width * sampling) = sampling + 1"
            << std::endl << "[" << this->dataPtr->dataSize << "] = (["
            << this->descriptor.Data()->Width() << "] * ["
@@ -567,7 +567,7 @@ void OgreHeightmap::Init()
         this->dataPtr->numTerrainSubdivisions = 16u;
       nTerrains = this->dataPtr->numTerrainSubdivisions;
 
-      ignmsg << "Large heightmap used with LOD. It will be subdivided into " <<
+      gzmsg << "Large heightmap used with LOD. It will be subdivided into " <<
           this->dataPtr->numTerrainSubdivisions << " terrains." << std::endl;
     }
     std::string terrainName = "gazebo_terrain" + terrainNameSuffix;
@@ -672,7 +672,7 @@ void OgreHeightmap::Init()
         static_cast<unsigned int>(sqrtN) - 1);
   }
 
-  ignmsg << "Loading heightmap: " << this->descriptor.Name() << std::endl;
+  gzmsg << "Loading heightmap: " << this->descriptor.Name() << std::endl;
   auto time = std::chrono::steady_clock::now();
 
   for (int y = 0; y <= sqrtN - 1; ++y)
@@ -685,7 +685,7 @@ void OgreHeightmap::Init()
   // Sync load since we want everything in place when we start
   this->dataPtr->terrainGroup->loadAllTerrains(true);
 
-  ignmsg << "Heightmap loaded. Process took "
+  gzmsg << "Heightmap loaded. Process took "
         <<  std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::steady_clock::now() - time).count()
         << " ms." << std::endl;
@@ -738,7 +738,7 @@ void OgreHeightmap::PreRender()
 
   // saving an ogre terrain data file can take quite some time for large
   // terrains.
-  ignmsg << "Saving heightmap cache data to "
+  gzmsg << "Saving heightmap cache data to "
          << common::joinPaths(this->dataPtr->pagingDir, this->descriptor.Name())
          << std::endl;
   auto time = std::chrono::steady_clock::now();
@@ -751,12 +751,12 @@ void OgreHeightmap::PreRender()
   }
   catch(Ogre::Exception &_e)
   {
-    ignerr << "Failed to save heightmap: " << _e.what() << std::endl;
+    gzerr << "Failed to save heightmap: " << _e.what() << std::endl;
   }
 
   if (saved)
   {
-    ignmsg << "Heightmap cache data saved. Process took "
+    gzmsg << "Heightmap cache data saved. Process took "
           <<  std::chrono::duration_cast<std::chrono::milliseconds>(
               std::chrono::steady_clock::now() - time).count()
           << " ms." << std::endl;
@@ -858,7 +858,7 @@ bool OgreHeightmap::PrepareTerrain(
     }
     catch(std::ifstream::failure &_e)
     {
-      ignerr << "Terrain paging error: Unable to read terrain hash ["
+      gzerr << "Terrain paging error: Unable to read terrain hash ["
              << _e.what() << "]" << std::endl;
     }
   }
@@ -894,7 +894,7 @@ void OgreHeightmap::UpdateTerrainHash(const std::string &_hash,
   }
   else
   {
-    ignerr << "Unable to open file for creating a terrain hash: [" +
+    gzerr << "Unable to open file for creating a terrain hash: [" +
         terrainHashFullPath + "]" << std::endl;
   }
 }
@@ -906,7 +906,7 @@ void OgreHeightmap::SplitHeights(const std::vector<float> &_heightmap,
   // We support splitting the terrain in 4 or 16 pieces
   if (_n != 4 && _n != 16)
   {
-    ignerr << "Invalid number of terrain divisions [" << _n
+    gzerr << "Invalid number of terrain divisions [" << _n
            << "]. It should be 4 or 16." << std::endl;
     return;
   }
@@ -961,7 +961,7 @@ void OgreHeightmap::DefineTerrain(int _x, int _y)
 
   if (resourceExists && !this->dataPtr->terrainHashChanged)
   {
-    ignmsg << "Loading heightmap cache data: " << filename << std::endl;
+    gzmsg << "Loading heightmap cache data: " << filename << std::endl;
 
     this->dataPtr->terrainGroup->defineTerrain(_x, _y);
     this->dataPtr->loadedFromCache = true;
@@ -1075,7 +1075,7 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
 {
   if (nullptr == _terrain)
   {
-    ignerr << "Invalid terrain\n";
+    gzerr << "Invalid terrain\n";
     return false;
   }
 
@@ -1087,7 +1087,7 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
   // Bounds check for following loop
   if (_terrain->getLayerCount() < this->descriptor.BlendCount() + 1)
   {
-    ignerr << "Invalid terrain, too few layers ["
+    gzerr << "Invalid terrain, too few layers ["
            << unsigned(_terrain->getLayerCount())
            << "] for the number of blends ["
            << this->descriptor.BlendCount() << "] to initialize blend map"
@@ -1225,7 +1225,7 @@ void IgnTerrainMatGen::SM2Profile::addTechnique(
     }
     else
     {
-      ignerr << "No supported shader languages" << std::endl;
+      gzerr << "No supported shader languages" << std::endl;
       return;
     }
 
@@ -1791,7 +1791,7 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateVpHeader(
         _outStream << "  worldPos.x += uv1.x * toMorph * lodMorph.x;\n";
         break;
       default:
-        ignerr << "Invalid alignment\n";
+        gzerr << "Invalid alignment\n";
     };
   }
 
@@ -2154,7 +2154,7 @@ void IgnTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFpHeader(
           _outStream << "  vec3 tangent = vec3(0.0, 0.0, -1.0);\n";
           break;
         default:
-          ignerr << "Invalid terrain alignment\n";
+          gzerr << "Invalid terrain alignment\n";
           break;
       };
 
@@ -2694,7 +2694,7 @@ void TerrainMaterial::setGridSize(const unsigned int _size)
 {
   if (_size == 0)
   {
-    ignerr << "Unable to set a grid size of zero" << std::endl;
+    gzerr << "Unable to set a grid size of zero" << std::endl;
     return;
   }
 

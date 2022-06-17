@@ -48,7 +48,7 @@ fragment float4 main_metal
   // (even w/ point filtering) causes p.a to loss information (e.g.
   // values close to 0 get rounded to 0)
   //
-  // See https://github.com/ignitionrobotics/ign-rendering/issues/332
+  // See https://github.com/gazebosim/gz-rendering/issues/332
   // Either: Metal equivalent of texelFetch
   float4 p = inputTexture.read(uint2(inPs.uv0 * params.texResolution.xy), 0);
   // Or: Use standard sampler

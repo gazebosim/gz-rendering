@@ -15,13 +15,13 @@
  *
 */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre/OgreGrid.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreGrid.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
 
-class ignition::rendering::OgreGridPrivate
+class gz::rendering::OgreGridPrivate
 {
   /// \brief Grid materal
   public: OgreMaterialPtr material;
@@ -30,7 +30,7 @@ class ignition::rendering::OgreGridPrivate
   public: Ogre::ManualObject *manualObject = nullptr;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -168,7 +168,7 @@ void OgreGrid::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

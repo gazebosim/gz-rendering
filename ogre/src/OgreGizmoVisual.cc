@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre/OgreGizmoVisual.hh"
+#include "gz/rendering/ogre/OgreGizmoVisual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

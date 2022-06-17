@@ -1,7 +1,7 @@
 \page installation Installation
 
-These instructions are for installing only Ignition Rendering.
-If you're interested in using all the Ignition libraries, check out this [Ignition installation](https://ignitionrobotics.org/docs/latest/install).
+These instructions are for installing only Gazebo Rendering.
+If you're interested in using all the Ignition libraries, check out this [Ignition installation](https://gazebosim.org/docs/latest/install).
 
 We recommend following the Binary Install instructions to get up and running as quickly and painlessly as possible.
 
@@ -65,7 +65,7 @@ sudo apt install -y \
 
 ### Supported Rendering Engines
 
-Ignition Rendering will look for rendering libraries installed in the system and
+Gazebo Rendering will look for rendering libraries installed in the system and
 build the relevant plugins if dependencies are found.
 
 **OGRE 1.x**
@@ -115,7 +115,7 @@ sdk 4.0.2, comment out lines 167-206).
 1. Clone the repository
   ```
   # Optionally, append `-b ign-rendering#` (replace # with a number) to check out a specific version
-  git clone http://github.com/ignitionrobotics/ign-rendering
+  git clone http://github.com/gazebosim/gz-rendering
   ```
 
 2. Configure and build
@@ -139,7 +139,7 @@ On Windows, only OGRE 1 is currently supported.
 
 ## Prerequisites
 
-First, follow the [ign-cmake](https://github.com/ignitionrobotics/ign-cmake) tutorial for installing Conda, Visual Studio, CMake, and other prerequisites, and also for creating a Conda environment.
+First, follow the [ign-cmake](https://github.com/gazebosim/gz-cmake) tutorial for installing Conda, Visual Studio, CMake, and other prerequisites, and also for creating a Conda environment.
 
 Navigate to ``condabin`` if necessary to use the ``conda`` command (i.e., if Conda is not in your `PATH` environment variable. You can find the location of ``condabin`` in Anaconda Prompt, ``where conda``).
 
@@ -177,7 +177,7 @@ This assumes you have created and activated a Conda environment while installing
 3. Navigate to where you would like to build the library, and clone the repository.
   ```
   # Optionally, append `-b ign-rendering#` (replace # with a number) to check out a specific version
-  git clone https://github.com/ignitionrobotics/ign-rendering.git
+  git clone https://github.com/gazebosim/gz-rendering.git
   ```
 
 4. Configure and build
@@ -204,7 +204,7 @@ On macOS, add OSRF packages:
   brew tap osrf/simulation
   ```
 
-Install Ignition Rendering:
+Install Gazebo Rendering:
   ```
   brew install ignition-rendering<#>
   ```
@@ -216,7 +216,7 @@ which version you need.
 
 1. Clone the repository
   ```
-  git clone https://github.com/ignitionrobotics/ign-rendering -b ign-rendering<#>
+  git clone https://github.com/gazebosim/gz-rendering -b ign-rendering<#>
   ```
   Be sure to replace `<#>` with a number value, such as 5 or 6, depending on
   which version you need.

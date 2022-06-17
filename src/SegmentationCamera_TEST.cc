@@ -17,15 +17,15 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
-#include "ignition/rendering/SegmentationCamera.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/SegmentationCamera.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class SegmentationCameraTest : public testing::Test,
@@ -42,7 +42,7 @@ void SegmentationCameraTest::SegmentationCamera(
   // Currently, only ogre2 supports segmentation cameras
   if (_renderEngine.compare("ogre2") != 0)
   {
-    ignerr << "Engine '" << _renderEngine
+    gzerr << "Engine '" << _renderEngine
               << "' doesn't support segmentation cameras" << std::endl;
     return;
   }
@@ -51,7 +51,7 @@ void SegmentationCameraTest::SegmentationCamera(
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    ignerr << "Engine '" << _renderEngine
+    gzerr << "Engine '" << _renderEngine
               << "' was unable to be retrieved" << std::endl;
     return;
   }
@@ -88,7 +88,7 @@ TEST_P(SegmentationCameraTest, SegmentationCamera)
 
 INSTANTIATE_TEST_CASE_P(SegmentationCamera, SegmentationCameraTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

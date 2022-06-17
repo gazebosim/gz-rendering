@@ -15,11 +15,11 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/PixelFormat.hh"
+#include "gz/rendering/PixelFormat.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -114,7 +114,7 @@ PixelFormat PixelUtil::Sanitize(PixelFormat _format)
   // check if value within enum bounds
   if (!PixelUtil::IsValid(_format))
   {
-    ignerr << "Invalid PixelFormat value: " << _format << std::endl;
+    gzerr << "Invalid PixelFormat value: " << _format << std::endl;
     return PF_UNKNOWN;
   }
 

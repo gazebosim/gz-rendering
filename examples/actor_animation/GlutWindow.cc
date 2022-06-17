@@ -34,16 +34,16 @@
 #include <map>
 #include <string>
 
-#include <ignition/math/Matrix4.hh>
-#include <ignition/common/Console.hh>
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/Skeleton.hh>
-#include <ignition/common/SkeletonAnimation.hh>
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/Image.hh>
-#include <ignition/rendering/OrbitViewController.hh>
-#include <ignition/rendering/RayQuery.hh>
-#include <ignition/rendering/Scene.hh>
+#include <gz/math/Matrix4.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/Skeleton.hh>
+#include <gz/common/SkeletonAnimation.hh>
+#include <gz/rendering/Camera.hh>
+#include <gz/rendering/Image.hh>
+#include <gz/rendering/OrbitViewController.hh>
+#include <gz/rendering/RayQuery.hh>
+#include <gz/rendering/Scene.hh>
 
 #include "GlutWindow.hh"
 #include "example_config.hh"
@@ -160,7 +160,7 @@ void handleMouse()
     g_rayQuery = rayCamera->Scene()->CreateRayQuery();
     if (!g_rayQuery)
     {
-      ignerr << "Failed to create Ray Query" << std::endl;
+      gzerr << "Failed to create Ray Query" << std::endl;
       return;
     }
   }
@@ -171,7 +171,7 @@ void handleMouse()
         2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
     double ny = 1.0 -
         2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
-    g_rayQuery->SetFromCamera(rayCamera, ignition::math::Vector2d(nx, ny));
+    g_rayQuery->SetFromCamera(rayCamera, gz::math::Vector2d(nx, ny));
     g_target  = g_rayQuery->ClosestPoint();
     if (!g_target)
     {
@@ -201,7 +201,7 @@ void handleMouse()
   if (g_mouse.motionDirty)
   {
     g_mouse.motionDirty = false;
-    auto drag = ignition::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
+    auto drag = gz::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
 
     // left mouse button pan
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
@@ -250,9 +250,9 @@ void updatePose(double _time)
   for (auto &v : g_visuals)
   {
   //! [update pose]
-    std::map<std::string, ignition::math::Matrix4d> animFrames;
+    std::map<std::string, gz::math::Matrix4d> animFrames;
     animFrames = g_skelAnim->PoseAt(_time, true);
-    std::map<std::string, ignition::math::Matrix4d> skinFrames;
+    std::map<std::string, gz::math::Matrix4d> skinFrames;
     for (auto pair : animFrames)
     {
       std::string animNodeName = pair.first;
@@ -260,7 +260,7 @@ void updatePose(double _time)
 
       std::string skinName =
           g_skel->NodeNameAnimToSkin(g_animIdx, animNodeName);
-      ignition::math::Matrix4d skinTf =
+      gz::math::Matrix4d skinTf =
               g_skel->AlignTranslation(g_animIdx, animNodeName)
               * animTf * g_skel->AlignRotation(g_animIdx, animNodeName);
 
@@ -542,7 +542,7 @@ void run(std::vector<ir::CameraPtr> _cameras,
 {
   if (_cameras.empty())
   {
-    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    gzerr << "No cameras found. Scene will not be rendered" << std::endl;
     return;
   }
 

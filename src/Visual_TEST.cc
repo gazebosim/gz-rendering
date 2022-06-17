@@ -18,18 +18,18 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include <ignition/common/Console.hh>
-#include <ignition/math/AxisAlignedBox.hh>
+#include <gz/common/Console.hh>
+#include <gz/math/AxisAlignedBox.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/Visual.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/Visual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class VisualTest : public testing::Test,
@@ -69,7 +69,7 @@ void VisualTest::Material(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -154,7 +154,7 @@ void VisualTest::Children(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -223,7 +223,7 @@ void VisualTest::Scale(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -314,7 +314,7 @@ void VisualTest::UserData(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -411,7 +411,7 @@ void VisualTest::UserData(const std::string &_renderEngine)
   EXPECT_THROW(
   {
     auto res = std::get<int>(value);
-    igndbg << res << std::endl;
+    gzdbg << res << std::endl;
   }, std::bad_variant_access);
 
   // Clean up
@@ -431,7 +431,7 @@ void VisualTest::Geometry(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -506,7 +506,7 @@ void VisualTest::VisibilityFlags(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -573,7 +573,7 @@ void VisualTest::BoundingBox(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -589,13 +589,13 @@ void VisualTest::BoundingBox(const std::string &_renderEngine)
   visual->AddGeometry(box);
   visual->SetWorldPosition(1.0, 2.0, 3.0);
 
-  ignition::math::AxisAlignedBox localBoundingBox = visual->LocalBoundingBox();
-  ignition::math::AxisAlignedBox boundingBox = visual->BoundingBox();
+  gz::math::AxisAlignedBox localBoundingBox = visual->LocalBoundingBox();
+  gz::math::AxisAlignedBox boundingBox = visual->BoundingBox();
 
-  EXPECT_EQ(ignition::math::Vector3d(-0.5, -0.5, -0.5), localBoundingBox.Min());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 0.5, 0.5), localBoundingBox.Max());
-  EXPECT_EQ(ignition::math::Vector3d(0.5, 1.5, 2.5), boundingBox.Min());
-  EXPECT_EQ(ignition::math::Vector3d(1.5, 2.5, 3.5), boundingBox.Max());
+  EXPECT_EQ(gz::math::Vector3d(-0.5, -0.5, -0.5), localBoundingBox.Min());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 0.5, 0.5), localBoundingBox.Max());
+  EXPECT_EQ(gz::math::Vector3d(0.5, 1.5, 2.5), boundingBox.Min());
+  EXPECT_EQ(gz::math::Vector3d(1.5, 2.5, 3.5), boundingBox.Max());
 
   // Clean up
   engine->DestroyScene(scene);
@@ -614,7 +614,7 @@ void VisualTest::Wireframe(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported\n";
     return;
   }
@@ -643,7 +643,7 @@ void VisualTest::Clone(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    gzdbg << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -784,7 +784,7 @@ TEST_P(VisualTest, Clone)
 
 INSTANTIATE_TEST_CASE_P(Visual, VisualTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    gz::rendering::PrintToStringParam());
 
 int main(int argc, char **argv)
 {

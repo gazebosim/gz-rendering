@@ -15,12 +15,12 @@
  *
  */
 
-#include "ignition/rendering/ogre/OgreInertiaVisual.hh"
-#include "ignition/rendering/ogre/OgreDynamicLines.hh"
+#include "gz/rendering/ogre/OgreInertiaVisual.hh"
+#include "gz/rendering/ogre/OgreDynamicLines.hh"
 
-#include "ignition/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
 
-class ignition::rendering::OgreInertiaVisualPrivate
+class gz::rendering::OgreInertiaVisualPrivate
 {
   /// \brief Grid materal
   public: OgreMaterialPtr material = nullptr;
@@ -32,7 +32,7 @@ class ignition::rendering::OgreInertiaVisualPrivate
   public: VisualPtr boxVis = nullptr;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -66,8 +66,8 @@ Ogre::MovableObject *OgreInertiaVisual::OgreObject() const
 }
 
 //////////////////////////////////////////////////
-void OgreInertiaVisual::Load(const ignition::math::Pose3d &_pose,
-                             const ignition::math::Vector3d &_scale)
+void OgreInertiaVisual::Load(const gz::math::Pose3d &_pose,
+                             const gz::math::Vector3d &_scale)
 {
   if (!this->dataPtr->crossLines)
   {
@@ -88,12 +88,12 @@ void OgreInertiaVisual::Load(const ignition::math::Pose3d &_pose,
   }
 
   // Inertia position indicator
-  ignition::math::Vector3d p1(0, 0, -2*_scale.Z());
-  ignition::math::Vector3d p2(0, 0, 2*_scale.Z());
-  ignition::math::Vector3d p3(0, -2*_scale.Y(), 0);
-  ignition::math::Vector3d p4(0, 2*_scale.Y(), 0);
-  ignition::math::Vector3d p5(-2*_scale.X(), 0, 0);
-  ignition::math::Vector3d p6(2*_scale.X(), 0, 0);
+  gz::math::Vector3d p1(0, 0, -2*_scale.Z());
+  gz::math::Vector3d p2(0, 0, 2*_scale.Z());
+  gz::math::Vector3d p3(0, -2*_scale.Y(), 0);
+  gz::math::Vector3d p4(0, 2*_scale.Y(), 0);
+  gz::math::Vector3d p5(-2*_scale.X(), 0, 0);
+  gz::math::Vector3d p6(2*_scale.X(), 0, 0);
   p1 = _pose.Rot().RotateVector(p1);
   p2 = _pose.Rot().RotateVector(p2);
   p3 = _pose.Rot().RotateVector(p3);
@@ -138,7 +138,7 @@ void OgreInertiaVisual::SetMaterial(MaterialPtr _material, bool _unique)
 
   if (!derived)
   {
-    ignerr << "Cannot assign material created by another render-engine"
+    gzerr << "Cannot assign material created by another render-engine"
         << std::endl;
 
     return;

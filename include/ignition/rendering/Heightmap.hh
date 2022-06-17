@@ -14,29 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_HEIGHTMAP_HH_
-#define IGNITION_RENDERING_HEIGHTMAP_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/HeightmapDescriptor.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    /// \class Heightmap Heightmap.hh ignition/rendering/Heightmap
-    /// \brief A terrain defined by a heightfield.
-    class Heightmap :
-      public virtual Geometry
-    {
-      /// \brief Get the immutable heightmap descriptor.
-      /// \return Descriptor with heightmap information.
-      public: virtual const HeightmapDescriptor &Descriptor() = 0;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/Heightmap.hh>
+#include <ignition/rendering/config.hh>

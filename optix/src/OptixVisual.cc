@@ -15,13 +15,13 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/optix/OptixVisual.hh"
-#include "ignition/rendering/optix/OptixConversions.hh"
-#include "ignition/rendering/optix/OptixStorage.hh"
+#include "gz/rendering/optix/OptixVisual.hh"
+#include "gz/rendering/optix/OptixConversions.hh"
+#include "gz/rendering/optix/OptixStorage.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -76,7 +76,7 @@ bool OptixVisual::AttachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    ignerr << "Cannot attach geometry created by another render-engine"
+    gzerr << "Cannot attach geometry created by another render-engine"
           << std::endl;
 
     return false;
@@ -97,7 +97,7 @@ bool OptixVisual::DetachGeometry(GeometryPtr _geometry)
 
   if (!derived)
   {
-    ignerr << "Cannot detach geometry created by another render-engine"
+    gzerr << "Cannot detach geometry created by another render-engine"
           << std::endl;
 
     return false;

@@ -1,6 +1,6 @@
 # Collect source files into the "sources" variable and unit test files into the
 # "gtest_sources" variable.
-ign_get_libsources_and_unittests(sources gtest_sources)
+gz_get_libsources_and_unittests(sources gtest_sources)
 
 if (MSVC)
   # Warning #4251 is the "dll-interface" warning that tells you when types used
@@ -13,7 +13,7 @@ endif()
 
 set(engine_name "ogre2")
 
-ign_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre2_target)
+gz_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre2_target)
 
 find_package(OpenGL)
 
@@ -59,6 +59,6 @@ else()
 endif()
 
 # Build the unit tests
-ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre2_target})
+gz_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre2_target})
 
 install(DIRECTORY "media"  DESTINATION ${GZ_RENDERING_RESOURCE_PATH}/ogre2)

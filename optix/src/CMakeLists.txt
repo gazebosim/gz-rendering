@@ -1,6 +1,6 @@
 # Collect source files into the "sources" variable and unit test files into the
 # "gtest_sources" variable.
-ign_get_libsources_and_unittests(sources gtest_sources)
+gz_get_libsources_and_unittests(sources gtest_sources)
 
 include_directories(${CUDA_INCLUDE_DIRS})
 link_directories(${CUDA_LIBRARY_DIRS})
@@ -11,7 +11,7 @@ include_directories(SYSTEM ${OptiX_INCLUDE_DIRS})
 
 set(engine_name optix)
 
-ign_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME optix_target)
+gz_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME optix_target)
 
 set(cuda_sources
   OptixBox.cu
@@ -43,7 +43,7 @@ target_link_libraries(${optix_target}
     optix::optix_prime)
 
 # Build the unit tests
-ign_build_tests(TYPE UNIT SOURCES ${gtest_sources})
+gz_build_tests(TYPE UNIT SOURCES ${gtest_sources})
 
 # Note that plugins are currently being installed in 2 places: /lib and the engine-plugins dir
 install(TARGETS ${optix_target} DESTINATION ${GZ_RENDERING_ENGINE_INSTALL_DIR})
@@ -55,7 +55,7 @@ if (WIN32)
   # disable MSVC inherit via dominance warning
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4250")
   INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy
-  ${GZ_RENDERING_ENGINE_INSTALL_DIR}\/${versioned} 
+  ${GZ_RENDERING_ENGINE_INSTALL_DIR}\/${versioned}
   ${GZ_RENDERING_ENGINE_INSTALL_DIR}\/${unversioned})")
 else()
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink ${versioned} ${unversioned})

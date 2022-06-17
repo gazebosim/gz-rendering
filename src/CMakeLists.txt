@@ -7,7 +7,7 @@ set_property(
 
 # Collect source files into the "sources" variable and unit test files into the
 # "gtest_sources" variable.
-ign_get_libsources_and_unittests(sources gtest_sources)
+gz_get_libsources_and_unittests(sources gtest_sources)
 
 add_subdirectory(base)
 
@@ -21,10 +21,10 @@ if (MSVC)
 endif()
 
 # Create the library target.
-ign_create_core_library(SOURCES ${sources} CXX_STANDARD 17)
+gz_create_core_library(SOURCES ${sources} CXX_STANDARD 17)
 
 # Include the interface directories that we always need.
-#ign_target_interface_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
+#gz_target_interface_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
 #  ignition-math${IGN_MATH_VER})
 
 set_property(
@@ -45,5 +45,5 @@ if (UNIX AND NOT APPLE)
 endif()
 
 # Build the unit tests.
-ign_build_tests(TYPE UNIT SOURCES ${gtest_sources})
+gz_build_tests(TYPE UNIT SOURCES ${gtest_sources})
 

@@ -29,4 +29,4 @@ if (UNIX AND NOT APPLE)
   endforeach()
 endif()
 
-ign_build_tests(TYPE INTEGRATION SOURCES ${tests})
+gz_build_tests(TYPE INTEGRATION SOURCES ${tests})

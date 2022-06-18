@@ -118,6 +118,28 @@ namespace gz
       /// \param[in] _visible True if this visual should be made visible
       public: virtual void SetVisible(bool _visible) = 0;
 
+      /// \brief Tells Render Engine this Visual will be static (i.e.
+      /// won't move, rotate or scale)
+      /// \remark Performance impact of switching staticness depends on
+      ///   on engine. In it isn't expensive but it isn't
+      ///   free either. Try to minimize transitions.
+      ///   Raytracing engines may rely on this information for their
+      ///   BVH structures
+      ///   TODO(anyone): Staticness should be ideally be supplied
+      ///   during construction for maximum performance
+      /// \remark If a single Static object is changed, all static objects
+      ///   will be updated. Thus if a single static object is constantly
+      ///   changing, it will affect everything and the performance
+      ///   profile will be as if all objects were dynamic.
+      /// \remark (INTERNAL) For implementations:
+      ///   Dynamic Scene Node + Dynamic MovableObject = Valid
+      ///   Static Scene Node  + Static MovableObject  = Valid
+      ///   Static Scene Node  + Dynamic MovableObject = Valid, but
+      ///     rarely makes sense
+      ///   Dynamic Scene Node + Static MovableObject  = Invalid
+      /// \param[in] _static True if this visual should be made static
+      public: virtual void SetVisualStatic(bool _static) = 0;
+
       /// \brief Set visibility flags
       /// \param[in] _flags Visibility flags
       public: virtual void SetVisibilityFlags(uint32_t _flags) = 0;

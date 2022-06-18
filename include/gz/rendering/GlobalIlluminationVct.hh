@@ -31,6 +31,23 @@ namespace gz
     class GZ_RENDERING_VISIBLE GlobalIlluminationVct :
         public GlobalIlluminationBase
     {
+      /// \enum DebugVisualizationMode
+      /// \brief Debug visualization modes for
+      /// GlobalIlluminationVct::SetDebugVisualization
+      public: enum DebugVisualizationMode
+              {
+                /// \brief Debug voxelized Albedo
+                DVM_Albedo,
+                /// \brief Debug voxelized Normals
+                DVM_Normal,
+                /// \brief Debug voxelized Emissive materials
+                DVM_Emissive,
+                /// \brief Debug VCT result (i.e. what's used by GI)
+                DVM_Lighting,
+                /// \brief Disable debugging
+                DVM_None
+              };
+
       /// \brief Destructor
       public: virtual ~GlobalIlluminationVct() { }
 
@@ -117,6 +134,16 @@ namespace gz
       /// \brief Returns number of octant subdivisions per axis
       /// \return Octant subdivisions. Length of array is 3
       public: virtual const uint32_t* OctantCount() const = 0;
+
+      /// \brief Draws the voxels on screen for inspection and understand what
+      /// is going on with GI. You should be looking at a minecraft-like world
+      /// \param[in] _dvm What component to visualize
+      public: virtual void SetDebugVisualization(
+            DebugVisualizationMode _dvm) = 0;
+
+      /// \brief Returns current visualization mode
+      /// \return Visualization mode
+      public: virtual DebugVisualizationMode DebugVisualization() const = 0;
 
       /// \brief Called by Scene when lighting changes so that
       /// GI can be updated

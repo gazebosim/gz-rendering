@@ -107,11 +107,23 @@ namespace gz
       public: virtual bool Enabled() const override;
 
       // Documentation inherited.
+      public: virtual void SetDebugVisualization(
+            DebugVisualizationMode _dvm) override;
+
+      // Documentation inherited.
+      public: virtual DebugVisualizationMode DebugVisualization() const
+          override;
+
+      // Documentation inherited.
       public: virtual void LightingChanged() override;
 
       /// \internal
       /// \brief Retrieves HlmsPbs
       private: Ogre::HlmsPbs* HlmsPbs() const;
+
+      /// \internal
+      /// \brief Syncs the current value of DebugVisualization with Ogre
+      private: void SyncModeVisualizationMode();
 
       /// \brief Pointer to private data class
       private: std::unique_ptr<Ogre2GlobalIlluminationVctPrivate> dataPtr;

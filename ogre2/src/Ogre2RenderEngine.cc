@@ -1081,6 +1081,12 @@ void Ogre2RenderEngine::CreateResources()
         std::make_pair(p + "/VCT", "General"));
     archNames.push_back(
         std::make_pair(p + "/VCT/Visualizer", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/Hlms/Common/Any", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/Hlms/Common/GLSL", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/Hlms/Pbs/Any", "General"));
 
     for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
     {

@@ -60,6 +60,10 @@ class gz::rendering::Ogre2GlobalIlluminationVctPrivate
   /// \brief See GlobalIlluminationVct::SetThinWallCounter
   public: float thinWallCounter = 1.0f;
 
+  /// \brief See GlobalIlluminationVct::DebugVisualizationMode
+  public: GlobalIlluminationVct::DebugVisualizationMode debugVisualizationMode =
+      GlobalIlluminationVct::DVM_None;
+
   /// \brief See GlobalIlluminationVct::SetHighQuality
   /// This value is cached because it globally affects HlmsPbs
   public: bool highQuality = false;
@@ -239,13 +243,16 @@ void Ogre2GlobalIlluminationVct::Build()
 
     for (size_t j = 0; j < totalObjs; j += ARRAY_PACKED_REALS)
     {
-      // objData.mOwner is guaranteed by Ogre to not be a nullptr
-      if (objData.mOwner[j]->getVisible())
+      for (size_t k = 0; k < ARRAY_PACKED_REALS; ++k)
       {
-        auto item = dynamic_cast<Ogre::Item *>(objData.mOwner[j]);
-        if (item)
+        // objData.mOwner is guaranteed by Ogre to not be a nullptr
+        if (objData.mOwner[k]->getVisible())
         {
-          voxelizer->addItem(item, false);
+          auto item = dynamic_cast<Ogre::Item *>(objData.mOwner[k]);
+          if (item)
+          {
+            voxelizer->addItem(item, false);
+          }
         }
       }
 
@@ -268,9 +275,11 @@ void Ogre2GlobalIlluminationVct::Build()
                             this->dataPtr->voxelizer, true);
 
     this->dataPtr->vctLighting->setAnisotropic(this->dataPtr->anisotropic);
+    this->dataPtr->vctLighting->mSpecularSdfQuality = 10.0f;
   }
 
   this->LightingChanged();
+  this->SyncModeVisualizationMode();
 }
 
 //////////////////////////////////////////////////
@@ -309,6 +318,21 @@ bool Ogre2GlobalIlluminationVct::Enabled() const
 }
 
 //////////////////////////////////////////////////
+void Ogre2GlobalIlluminationVct::SetDebugVisualization(
+  DebugVisualizationMode _dvm)
+{
+  this->dataPtr->debugVisualizationMode = _dvm;
+  this->SyncModeVisualizationMode();
+}
+
+//////////////////////////////////////////////////
+GlobalIlluminationVct::DebugVisualizationMode
+Ogre2GlobalIlluminationVct::DebugVisualization() const
+{
+  return this->dataPtr->debugVisualizationMode;
+}
+
+//////////////////////////////////////////////////
 void Ogre2GlobalIlluminationVct::LightingChanged()
 {
   GZ_ASSERT(this->dataPtr->vctLighting != nullptr,
@@ -336,4 +360,31 @@ Ogre::HlmsPbs *Ogre2GlobalIlluminationVct::HlmsPbs() const
   GZ_ASSERT(dynamic_cast<Ogre::HlmsPbs *>(hlms),
             "Corruption or incorrect setup detected");
   return static_cast<Ogre::HlmsPbs *>(hlms);
+}
+
+//////////////////////////////////////////////////
+void Ogre2GlobalIlluminationVct::SyncModeVisualizationMode()
+{
+  if (this->dataPtr->vctLighting)
+  {
+    this->dataPtr->vctLighting->setDebugVisualization(
+      this->dataPtr->debugVisualizationMode == DVM_Lighting,
+      this->scene->OgreSceneManager());
+  }
+  if (this->dataPtr->voxelizer)
+  {
+    if (this->dataPtr->debugVisualizationMode <= DVM_Emissive)
+    {
+      this->dataPtr->voxelizer->setDebugVisualization(
+        static_cast<Ogre::VctVoxelizer::DebugVisualizationMode>(
+          this->dataPtr->debugVisualizationMode),
+        this->scene->OgreSceneManager());
+    }
+    else
+    {
+      this->dataPtr->voxelizer->setDebugVisualization(
+        Ogre::VctVoxelizer::DebugVisualizationNone,
+        this->scene->OgreSceneManager());
+    }
+  }
 }

@@ -53,6 +53,9 @@ namespace gz
       public: virtual void SetVisible(bool _visible) override;
 
       // Documentation inherited.
+      public: virtual void SetVisualStatic(bool _static) override;
+
+      // Documentation inherited.
       public: virtual void SetVisibilityFlags(uint32_t _flags) override;
 
       // Documentation inherited.

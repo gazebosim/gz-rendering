@@ -71,6 +71,34 @@ namespace Ogre
     /// \brief Destructor. Virtual to silence warnings
     public: virtual ~Ogre2GzHlmsUnlit() override = default;
 
+    /// \brief Override so listeners can inform Hlms the number of
+    /// extra textures they need to make room for.
+    ///
+    /// \remarks We cannot read 'this' state. All state data
+    /// must come from _properties. Otherwise we can't use
+    /// HlmsDiskCache
+    ///
+    /// \param[in] _properties Properties to read state from
+    /// \param[in] _casterPass Whether this is a caster pass
+    public: virtual uint16 getNumExtraPassTextures(
+        const HlmsPropertyVec &_properties, bool _casterPass) const override;
+
+    /// \brief Override so listeners can set extra properties after
+    /// a renderable is assigned an HlmsDatablock
+    ///
+    /// \param[in, out] _hlms Hlms to modify
+    /// \param[in] _passCache Current properties at pass level
+    /// \param[in] _renderableCacheProperties properties at renderable level
+    /// \param[in] _renderableCachePieces Custom pieces for this renderable
+    /// \param[in] _properties Properties defined so far (amalgamated)
+    /// \param[in] _queuedRenderable Renderable being affected
+    public: virtual void propertiesMergedPreGenerationStep(
+        Hlms *_hlms, const HlmsCache &_passCache,
+        const HlmsPropertyVec &_renderableCacheProperties,
+        const PiecesMap _renderableCachePieces[NumShaderTypes],
+        const HlmsPropertyVec &_properties,
+        const QueuedRenderable &_queuedRenderable);
+
     // Documentation inherited
     public: using HlmsUnlit::preparePassHash;
 

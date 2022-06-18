@@ -915,7 +915,6 @@ void Ogre2RenderEngine::RegisterHlms()
     hlmsTerra->setDebugOutputPath(false, false);
     hlmsTerra->setListener(hlmsTerra);
 
-
     this->dataPtr->terraWorkspaceListener.reset(
       new Ogre::TerraWorkspaceListener(hlmsTerra));
 
@@ -989,7 +988,6 @@ void Ogre2RenderEngine::CreateResources()
 void Ogre2RenderEngine::CreateRenderWindow()
 {
   // create dummy window
-
   std::string handle;
 
   struct SDLx11

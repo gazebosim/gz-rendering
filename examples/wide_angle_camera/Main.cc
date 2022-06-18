@@ -121,7 +121,7 @@ void buildScene(ScenePtr _scene)
   CameraLens lens;
   lens.SetCustomMappingFunction(1.05, 4.0, AFT_TAN, 1.0, 0.0);
   lens.SetType(MFT_CUSTOM);
-  lens.SetCutOffAngle(IGN_PI);
+  lens.SetCutOffAngle(GZ_PI);
 
   WideAngleCameraPtr camera = _scene->CreateWideAngleCamera("camera");
   camera->SetLens(lens);

@@ -55,7 +55,7 @@ class Ogre2RenderTargetCompositorListener :
     {
       Ogre::CompositorPassScene *scenePass =
           static_cast<Ogre::CompositorPassScene *>(_pass);
-      IGN_ASSERT(scenePass != nullptr, "Unable to get scene pass");
+      GZ_ASSERT(scenePass != nullptr, "Unable to get scene pass");
       Ogre::Viewport *vp = scenePass->getCamera()->getLastViewport();
       if (vp == nullptr) return;
       // make sure we do not alter the reserved visibility flags

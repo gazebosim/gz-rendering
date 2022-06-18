@@ -48,9 +48,9 @@ namespace gz
 
       protected: virtual void SetParent(OgreVisualPtr _parent);
 
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: OgreVisualPtr parent;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       private: friend class OgreVisual;
     };

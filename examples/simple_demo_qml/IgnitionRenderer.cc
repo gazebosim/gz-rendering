@@ -99,7 +99,7 @@ void BuildScene(gz::rendering::ScenePtr _scene)
   box->AddGeometry(_scene->CreateBox());
   box->SetOrigin(0.0, 0.5, 0.0);
   box->SetLocalPosition(3, 0, 0);
-  box->SetLocalRotation(IGN_PI / 4, 0, IGN_PI / 3);
+  box->SetLocalRotation(GZ_PI / 4, 0, GZ_PI / 3);
   box->SetLocalScale(1, 2.5, 1);
   box->SetMaterial(blue);
   root->AddChild(box);
@@ -162,7 +162,7 @@ void BuildScene(gz::rendering::ScenePtr _scene)
   camera->SetImageHeight(600);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(800.0/600.0);
-  camera->SetHFOV(IGN_PI / 2);
+  camera->SetHFOV(GZ_PI / 2);
   root->AddChild(camera);
 
   // track target
@@ -175,7 +175,7 @@ gz::rendering::CameraPtr CreateCamera(const std::string &_engineName)
   // create and populate scene
   std::map<std::string, std::string> params;
 
-  // ensure that the QML application and Ignition / Ogre2 share an OpenGL
+  // ensure that the QML application and Gazebo / Ogre2 share an OpenGL
   // context
   params["useCurrentGLContext"] = "1";
   RenderEngine *engine = rendering::engine(_engineName, params);

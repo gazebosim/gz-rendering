@@ -61,9 +61,9 @@ inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
     /// \internal
     /// \brief Private data
-    IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+    GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
     private: std::unique_ptr<BoundingBoxPrivate> dataPtr;
-    IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+    GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
   };
 }
 }

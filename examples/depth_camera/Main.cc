@@ -111,7 +111,7 @@ void buildScene(ScenePtr _scene)
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
   camera->SetAspectRatio(1.333);
-  camera->SetHFOV(IGN_PI / 2);
+  camera->SetHFOV(GZ_PI / 2);
   camera->SetImageFormat(PixelFormat::PF_FLOAT32_RGBA);
   camera->SetNearClipPlane(0.15);
   camera->SetFarClipPlane(10.0);

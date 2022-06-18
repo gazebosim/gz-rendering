@@ -137,9 +137,9 @@ namespace gz
       public: bool Buffer(std::shared_ptr<void> &_buffer) const;
 
       /// \brief private implementation
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       private: std::unique_ptr<ShaderParamPrivate> dataPtr;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

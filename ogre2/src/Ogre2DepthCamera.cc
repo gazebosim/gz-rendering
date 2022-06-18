@@ -704,7 +704,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
             static_cast<Ogre::CompositorPassSceneDef *>(
             colorTargetDef->addPass(Ogre::PASS_SCENE));
         passScene->mShadowNode = this->dataPtr->kShadowNodeName;
-        passScene->mVisibilityMask = IGN_VISIBILITY_ALL;
+        passScene->mVisibilityMask = GZ_VISIBILITY_ALL;
         passScene->mIncludeOverlays = false;
         passScene->mFirstRQ = 0u;
         passScene->mLastRQ = 2u;
@@ -741,7 +741,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
         Ogre::CompositorPassSceneDef *passScene =
             static_cast<Ogre::CompositorPassSceneDef *>(
             colorTargetDef->addPass(Ogre::PASS_SCENE));
-        passScene->mVisibilityMask = IGN_VISIBILITY_ALL;
+        passScene->mVisibilityMask = GZ_VISIBILITY_ALL;
         // todo(anyone) PbsMaterialsShadowNode is hardcoded.
         // Although this may be just fine
         passScene->mShadowNode = this->dataPtr->kShadowNodeName;
@@ -763,7 +763,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
         this->FarClipPlane(),
         this->FarClipPlane()));
       // depth texute does not contain particles
-      passScene->mVisibilityMask = IGN_VISIBILITY_ALL
+      passScene->mVisibilityMask = GZ_VISIBILITY_ALL
           & ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
 
@@ -1178,7 +1178,7 @@ RenderTargetPtr Ogre2DepthCamera::RenderTarget() const
 //////////////////////////////////////////////////
 double Ogre2DepthCamera::LimitFOV(const double _fov)
 {
-  return std::min(std::max(0.001, _fov), IGN_PI * 0.999);
+  return std::min(std::max(0.001, _fov), GZ_PI * 0.999);
 }
 
 //////////////////////////////////////////////////

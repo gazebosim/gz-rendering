@@ -47,7 +47,7 @@ class HeightmapTest : public testing::Test,
 
 /////////////////////////////////////////////////
 // ogre1 not supported on Windows
-TEST_P(HeightmapTest, IGN_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
+TEST_P(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 {
   std::string renderEngine{this->GetParam()};
   if (renderEngine != "ogre")

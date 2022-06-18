@@ -228,7 +228,7 @@ namespace gz
       protected: unsigned int antiAliasing = 4;
 
       /// \brief visibility mask associated with this render target
-      protected: uint32_t visibilityMask = IGN_VISIBILITY_ALL;
+      protected: uint32_t visibilityMask = GZ_VISIBILITY_ALL;
 
       /// \brief Pointer to private data
       private: std::unique_ptr<Ogre2RenderTargetPrivate> dataPtr;

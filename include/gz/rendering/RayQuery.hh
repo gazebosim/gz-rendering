@@ -38,9 +38,9 @@ namespace gz
       public: double distance = -1;
 
       /// \brief Intersection point in 3d space
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: math::Vector3d point;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Intersected object id
       public: unsigned int objectId = 0;

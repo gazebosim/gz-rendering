@@ -384,7 +384,7 @@ void Ogre2RenderEngine::CreateLogger()
 {
   // create log file path
   std::string logPath;
-  gz::common::env(IGN_HOMEDIR, logPath);
+  gz::common::env(GZ_HOMEDIR, logPath);
   logPath = common::joinPaths(logPath, ".ignition", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre2.log");
@@ -1104,5 +1104,5 @@ Ogre::CompositorWorkspaceListener *Ogre2RenderEngine::TerraWorkspaceListener()
 }
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(gz::rendering::Ogre2RenderEnginePlugin,
+GZ_ADD_PLUGIN(gz::rendering::Ogre2RenderEnginePlugin,
                     gz::rendering::RenderEnginePlugin)

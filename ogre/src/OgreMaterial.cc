@@ -439,7 +439,7 @@ void OgreMaterial::SetVertexShader(const std::string &_path)
 
   Ogre::HighLevelGpuProgramPtr vertexShader =
     Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
-        "__ignition_rendering_vertex__" + _path,
+        "__gz_rendering_vertex__" + _path,
         this->ogreGroup,
         "glsl", Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
 
@@ -488,7 +488,7 @@ void OgreMaterial::SetFragmentShader(const std::string &_path)
 
   Ogre::HighLevelGpuProgramPtr fragmentShader =
     Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
-        "__ignition_rendering_fragment__" + _path,
+        "__gz_rendering_fragment__" + _path,
         this->ogreGroup,
         "glsl", Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
 

@@ -522,7 +522,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
     {
       coreLibsPath = p;
       // setup patch name for rt shader cache in tmp
-      const char *homeEnv = std::getenv(IGN_HOMEDIR);
+      const char *homeEnv = std::getenv(GZ_HOMEDIR);
       std::string tmpDir = (homeEnv) ? std::string(homeEnv) : std::string(".");
 
       tmpDir = common::joinPaths(tmpDir, ".ignition", "rendering",

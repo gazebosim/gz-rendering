@@ -28,7 +28,7 @@ OgreRenderTargetMaterial::OgreRenderTargetMaterial(
   scene(_scene), renderTarget(_renderTarget), material(_material)
 {
   // Pick a name that's unlikely to collide with a real material scheme
-  this->schemeName = "__ignition__rendering__OgreRenderTargetMaterial";
+  this->schemeName = "__gz__rendering__OgreRenderTargetMaterial";
   this->renderTarget->getViewport(0)->setMaterialScheme(this->schemeName);
   this->renderTarget->addListener(this);
 }

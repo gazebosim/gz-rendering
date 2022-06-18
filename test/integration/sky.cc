@@ -82,7 +82,7 @@ void SkyTest::Sky(const std::string &_renderEngine)
   camera->SetImageWidth(100);
   camera->SetImageHeight(100);
   // look up into the sky
-  camera->SetLocalRotation(math::Quaterniond(0, -IGN_PI/2.0, 0));
+  camera->SetLocalRotation(math::Quaterniond(0, -GZ_PI/2.0, 0));
   root->AddChild(camera);
 
   // capture original image with red background

@@ -140,13 +140,13 @@ namespace gz
 
       ArrowVisualPtr xArrow = this->Scene()->CreateArrowVisual();
       xArrow->SetLocalPosition(0, 0, 0);
-      xArrow->SetLocalRotation(0, IGN_PI / 2, 0);
+      xArrow->SetLocalRotation(0, GZ_PI / 2, 0);
       xArrow->SetMaterial("Default/TransRed");
       this->AddChild(xArrow);
 
       ArrowVisualPtr yArrow = this->Scene()->CreateArrowVisual();
       yArrow->SetLocalPosition(0, 0, 0);
-      yArrow->SetLocalRotation(-IGN_PI / 2, 0, 0);
+      yArrow->SetLocalRotation(-GZ_PI / 2, 0, 0);
       yArrow->SetMaterial("Default/TransGreen");
       this->AddChild(yArrow);
 

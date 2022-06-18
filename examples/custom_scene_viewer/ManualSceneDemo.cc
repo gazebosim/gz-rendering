@@ -110,7 +110,7 @@ void ManualSceneDemo::AddCamera(const std::string &_engineName,
   camera->SetImageHeight(480);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
-  camera->SetHFOV(IGN_PI / 2);
+  camera->SetHFOV(GZ_PI / 2);
   root->AddChild(camera);
 
   this->scenes.push_back(scene);

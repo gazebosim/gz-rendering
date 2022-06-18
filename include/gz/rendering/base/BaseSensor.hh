@@ -41,7 +41,7 @@ namespace gz
       public: virtual uint32_t VisibilityMask() const override;
 
       /// \brief Camera's visibility mask
-      protected: uint32_t visibilityMask = IGN_VISIBILITY_ALL;
+      protected: uint32_t visibilityMask = GZ_VISIBILITY_ALL;
     };
 
     //////////////////////////////////////////////////

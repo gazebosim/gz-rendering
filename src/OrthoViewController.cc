@@ -228,8 +228,8 @@ void OrthoViewController::Orbit(const math::Vector2d &_value)
     return;
   }
 
-  double dy = 2 * IGN_PI * _value.X() / this->dataPtr->camera->ImageWidth();
-  double dp = 2 * IGN_PI * _value.Y() / this->dataPtr->camera->ImageHeight();
+  double dy = 2 * GZ_PI * _value.X() / this->dataPtr->camera->ImageWidth();
+  double dp = 2 * GZ_PI * _value.Y() / this->dataPtr->camera->ImageHeight();
 
   // translate to make target the origin for rotation
   this->dataPtr->camera->SetWorldPosition(

@@ -234,7 +234,7 @@ void OgreVisual::BoundsHelper(gz::math::AxisAlignedBox &_box,
   {
     Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
 
-    if (obj->isVisible() && obj->getVisibilityFlags() != IGN_VISIBILITY_GUI)
+    if (obj->isVisible() && obj->getVisibilityFlags() != GZ_VISIBILITY_GUI)
     {
       Ogre::AxisAlignedBox bb = obj->getBoundingBox();
 

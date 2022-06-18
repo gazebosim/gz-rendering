@@ -245,7 +245,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
   camera->SetImageHeight(600);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
-  camera->SetHFOV(IGN_PI / 2);
+  camera->SetHFOV(GZ_PI / 2);
   root->AddChild(camera);
 
   // render a few frames
@@ -663,13 +663,13 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   camera->SetImageHeight(600);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
-  camera->SetHFOV(IGN_PI / 2);
+  camera->SetHFOV(GZ_PI / 2);
   root->AddChild(camera);
 
   // Create a gpu ray
   // laser retro material switching may also affect shader materials
-  const double hMinAngle = -IGN_PI/2.0;
-  const double hMaxAngle = IGN_PI/2.0;
+  const double hMinAngle = -GZ_PI/2.0;
+  const double hMaxAngle = GZ_PI/2.0;
   const double minRange = 0.1;
   const double maxRange = 10.0;
   const int hRayCount = 320;
@@ -692,7 +692,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
   thermalCamera->SetAspectRatio(1.333);
   thermalCamera->SetImageWidth(320);
   thermalCamera->SetImageHeight(240);
-  thermalCamera->SetHFOV(IGN_PI_2);
+  thermalCamera->SetHFOV(GZ_PI_2);
   root->AddChild(thermalCamera);
 
   // Currently, only ogre2 supports segmentation cameras
@@ -712,7 +712,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
     segmentationCamera->SetAspectRatio(1.333);
     segmentationCamera->SetImageWidth(320);
     segmentationCamera->SetImageHeight(240);
-    segmentationCamera->SetHFOV(IGN_PI_2);
+    segmentationCamera->SetHFOV(GZ_PI_2);
     root->AddChild(segmentationCamera);
 
     // worldviewproj_matrix is a constant defined by ogre.

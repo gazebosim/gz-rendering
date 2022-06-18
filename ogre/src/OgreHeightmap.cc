@@ -45,7 +45,7 @@ using Ogre::TechniqueType;
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 11
 /// \internal
 /// \brief Custom terrain material generator for GLSL terrains.
-/// A custom material generator that lets Ignition use GLSL shaders
+/// A custom material generator that lets Gazebo use GLSL shaders
 /// (as opposed to the default Cg shaders provided by Ogre) for rendering
 /// terrain.
 class IgnTerrainMatGen : public Ogre::TerrainMaterialGeneratorA
@@ -419,7 +419,7 @@ OgreHeightmap::OgreHeightmap(const HeightmapDescriptor &_desc)
     : BaseHeightmap(_desc), dataPtr(std::make_unique<OgreHeightmapPrivate>())
 {
   std::string home;
-  gz::common::env(IGN_HOMEDIR, home);
+  gz::common::env(GZ_HOMEDIR, home);
 
   this->dataPtr->pagingDir =
       common::joinPaths(home, ".ignition", "rendering",
@@ -679,7 +679,7 @@ void OgreHeightmap::Init()
     for (int x = 0; x <= sqrtN - 1; ++x)
       this->DefineTerrain(x, y);
 
-  // use ignition shaders
+  // use Gazebo shaders
   this->CreateMaterial();
 
   // Sync load since we want everything in place when we start

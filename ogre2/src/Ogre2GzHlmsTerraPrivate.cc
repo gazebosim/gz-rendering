@@ -196,7 +196,7 @@ namespace Ogre
       if (this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED &&
           terra->HasSolidColor(2u))
       {
-        IGN_ASSERT(customParam.w >= 0.0f,
+        GZ_ASSERT(customParam.w >= 0.0f,
                    "customParam.w can't be negative for "
                    "IORM_SOLID_THERMAL_COLOR_TEXTURED");
 
@@ -258,7 +258,7 @@ namespace Ogre
       if (this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED &&
           terra->HasSolidColor(2u))
       {
-        IGN_ASSERT(customParam.w >= 0.0f,
+        GZ_ASSERT(customParam.w >= 0.0f,
                    "customParam.w can't be negative for "
                    "IORM_SOLID_THERMAL_COLOR_TEXTURED");
 

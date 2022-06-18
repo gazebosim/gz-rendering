@@ -83,6 +83,21 @@ namespace gz
     /// \return Octant subdivisions. Length of array is 3
     public: virtual const uint32_t* OctantCount() const = 0;
 
+    /// \brief The area in units around the camera to voxelize
+    /// Each cascade area size must be >= than the previous one
+    /// i.e.
+    ///   assert( cascade[i]->AreaHalfSize >= cascade[i-1]->AreaHalfSize );
+    ///
+    /// For best results, area half sizes from each cascade should be multiples
+    /// of each other
+    /// \param[in] _areaHalfSize
+    public: virtual void SetAreaHalfSize(
+          const gz::math::Vector3d &_areaHalfSize) = 0;
+
+    /// \brief Returns area in units around the camera to voxelize
+    /// \return area in units around the camera to voxelize
+    public: virtual gz::math::Vector3d AreaHalfSize() const = 0;
+
     /// \brief How much we let the camera move before updating the cascade
     /// Value is in range [1; inf)
     ///

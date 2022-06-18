@@ -271,7 +271,9 @@ void buildScene(ScenePtr _scene)
   camera->SetHFOV(IGN_PI / 2);
   root->AddChild(camera);
 
-#if 1
+#define GI_METHOD 2
+
+#if GI_METHOD == 1
   auto gi = _scene->CreateGlobalIlluminationVct();
   const uint32_t resolution[3]{ 128u, 128u, 32u };
   const uint32_t octantCount[3]{ 4, 4, 2 };
@@ -281,6 +283,34 @@ void buildScene(ScenePtr _scene)
   gi->SetThinWallCounter(1.0f);
   gi->SetOctantCount(octantCount);
   gi->SetAnisotropic(false);
+  gi->Build();
+  _scene->SetActiveGlobalIllumination(gi);
+  // gi->SetDebugVisualization(GlobalIlluminationVct::DVM_Lighting);
+#elif GI_METHOD == 2
+  auto gi = _scene->CreateGlobalIlluminationCiVct();
+
+  gi->SetMaxCascades(3u);
+
+  CiVctCascadePtr cascade = gi->AddCascade(nullptr);
+  const uint32_t resolution[3]{ 128u, 128u, 32u };
+  const uint32_t octantCount[3]{ 4, 4, 2 };
+  cascade->SetAreaHalfSize(ignition::math::Vector3d(5.0, 5.0, 5.0));
+  cascade->SetResolution(resolution);
+  cascade->SetCameraStepSize(ignition::math::Vector3d(
+    1.0, 1.0, 1.0));  // Will be overriden by autoCalculateStepSizes
+  cascade->SetThinWallCounter(1.0f);
+  cascade->SetOctantCount(octantCount);
+
+  cascade = gi->AddCascade(cascade.get());
+  cascade->SetAreaHalfSize(ignition::math::Vector3d(10.0, 10.0, 10.0));
+
+  cascade = gi->AddCascade(cascade.get());
+  cascade->SetAreaHalfSize(ignition::math::Vector3d(20.0, 20.0, 20.0));
+
+  gi->AutoCalculateStepSizes(ignition::math::Vector3d(3.0, 3.0, 3.0));
+
+  gi->SetHighQuality(false);
+  gi->Start(2u, true);
   gi->Build();
   _scene->SetActiveGlobalIllumination(gi);
   // gi->SetDebugVisualization(GlobalIlluminationVct::DVM_Lighting);

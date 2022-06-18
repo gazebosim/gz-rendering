@@ -85,6 +85,13 @@ namespace gz
       public: virtual const uint32_t* OctantCount() const override;
 
       // Documentation inherited.
+      public: virtual void SetAreaHalfSize(
+            const gz::math::Vector3d &_areaHalfSize) override;
+
+      // Documentation inherited.
+      public: virtual gz::math::Vector3d AreaHalfSize() const override;
+
+      // Documentation inherited.
       public: virtual void SetCameraStepSize(
             const gz::math::Vector3d &_stepSize) override;
 

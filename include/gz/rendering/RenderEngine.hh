@@ -184,6 +184,10 @@ namespace gz
           const std::string &_winHandle, const uint32_t _width,
           const uint32_t _height, const double _ratio) = 0;
 
+      /// \brief Returns the GraphicsAPI currently in use
+      /// \return GraphicsAPI currently in use
+      public: virtual GraphicsAPI CurrentGraphicsAPI() const = 0;
+
       /// \brief Set headless mode
       /// Only available in OGRE 2.2, which makes use of EGL
       /// \param[in] _headless Set to true to enable headless mode.

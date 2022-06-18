@@ -103,6 +103,12 @@ namespace gz
       }
 
       // Documentation Inherited
+      public: virtual GraphicsAPI CurrentGraphicsAPI() const override
+      {
+        return GraphicsAPI::UNKNOWN;
+      }
+
+      // Documentation Inherited
       public: virtual void SetHeadless(bool _headless) override;
 
       // Documentation Inherited

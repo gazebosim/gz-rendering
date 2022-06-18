@@ -381,8 +381,15 @@ void run(std::vector<ir::CameraPtr> _cameras)
     break;
 #else
   case SDL_SYSWM_X11:
-    winHandle = std::to_string((uintptr_t)wmInfo.info.x11.window);
-    // winHandle = std::to_string((uintptr_t)&wmInfo.info.x11);
+    if (renderEngine->CurrentGraphicsAPI() !=
+        ignition::rendering::GraphicsAPI::VULKAN)
+    {
+      winHandle = std::to_string((uintptr_t)wmInfo.info.x11.window);
+    }
+    else
+    {
+      winHandle = std::to_string((uintptr_t)&wmInfo.info.x11);
+    }
     break;
 #endif
   default:

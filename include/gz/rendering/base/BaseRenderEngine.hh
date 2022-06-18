@@ -95,6 +95,14 @@ namespace gz
       }
 
       // Documentation Inherited
+      public: virtual NativeWindowPtr CreateNativeWindow(
+          const std::string & /*_winHandle*/, uint32_t /*_width*/,
+          uint32_t /*_height*/, const double /*_ratio*/) override
+      {
+        return nullptr;
+      }
+
+      // Documentation Inherited
       public: virtual void SetHeadless(bool _headless) override;
 
       // Documentation Inherited

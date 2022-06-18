@@ -29,6 +29,7 @@
 #include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/RenderEngineManager.hh"
 #include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2NativeWindow.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
@@ -1146,7 +1147,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 {
   Ogre::StringVector paramsVector;
   Ogre::NameValuePairList params;
-  window = nullptr;
+  this->window = nullptr;
 
   if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
   {
@@ -1217,11 +1218,11 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 #endif
 
   int attempts = 0;
-  while (window == nullptr && (attempts++) < 10)
+  while (this->window == nullptr && (attempts++) < 10)
   {
     try
     {
-      window = Ogre::Root::getSingleton().createRenderWindow(
+      this->window = Ogre::Root::getSingleton().createRenderWindow(
           stream.str(), _width, _height, false, &params);
       this->RegisterHlms();
     }
@@ -1229,7 +1230,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     {
       gzerr << " Unable to create the rendering window: " << _e.what()
              << std::endl;
-      window = nullptr;
+      this->window = nullptr;
     }
   }
 
@@ -1240,12 +1241,12 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     return std::string();
   }
 
-  if (window)
+  if (this->window)
   {
-    window->_setVisible(true);
+    this->window->_setVisible(true);
 
     // Windows needs to reposition the render window to 0,0.
-    window->reposition(0, 0);
+    this->window->reposition(0, 0);
   }
   return stream.str();
 }
@@ -1254,6 +1255,91 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 GraphicsAPI Ogre2RenderEngine::GraphicsAPI() const
 {
   return this->dataPtr->graphicsAPI;
+}
+
+//////////////////////////////////////////////////
+NativeWindowPtr Ogre2RenderEngine::CreateNativeWindow(
+  const std::string &_winHandle, const uint32_t _width, const uint32_t _height,
+  const double _ratio)
+{
+  Ogre::StringVector paramsVector;
+  Ogre::NameValuePairList params;
+  Ogre::Window *ogreWindow = nullptr;
+
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
+  {
+    if (!_winHandle.empty())
+    {
+      params["SDL2x11"] = _winHandle;
+    }
+  }
+  else
+  {
+    if (!_winHandle.empty())
+    {
+      // Mac and Windows *must* use externalWindow handle.
+#if defined(__APPLE__) || defined(_MSC_VER)
+      params["externalWindowHandle"] = _winHandle;
+#else
+      params["parentWindowHandle"] = _winHandle;
+#endif
+    }
+  }
+
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
+  {
+#ifdef _WIN32
+    params["externalGLContext"] =
+      std::to_string((size_t)wglGetCurrentContext());
+#  elidef __APPLE__
+    params["externalGLContext"] =
+      std::to_string((size_t)CGLGetCurrentContext());
+#else
+    params["currentGLContext"] = "true";
+#endif
+
+    // All GL windows must match the same params (i.e. FSAA and pixel format)
+    this->window->getSampleDescription().getFsaaDesc(params["FSAA"]);
+  }
+
+  std::ostringstream stream;
+  stream << "OgreNativeWindow(0)" << "_" << _winHandle;
+
+  // Needed for retina displays
+  params["contentScalingFactor"] = std::to_string(_ratio);
+
+  // Ogre 2 PBS expects gamma correction
+  params["gamma"] = "Yes";
+
+  int attempts = 0;
+  while (ogreWindow == nullptr && (attempts++) < 10)
+  {
+    try
+    {
+      ogreWindow = Ogre::Root::getSingleton().createRenderWindow(
+          stream.str(), _width, _height, false, &params);
+    }
+    catch(const std::exception &_e)
+    {
+      ignerr << " Unable to create the rendering window: " << _e.what()
+             << std::endl;
+      ogreWindow = nullptr;
+    }
+  }
+
+  if (attempts >= 10)
+  {
+    ignerr << "Unable to create the rendering window after [" << attempts
+           << "] attempts." << std::endl;
+    return NativeWindowPtr(nullptr);
+  }
+
+  if (ogreWindow)
+  {
+    // Windows needs to reposition the render window to 0,0.
+    ogreWindow->reposition(0, 0);
+  }
+  return NativeWindowPtr(new Ogre2NativeWindow(ogreWindow));
 }
 
 //////////////////////////////////////////////////

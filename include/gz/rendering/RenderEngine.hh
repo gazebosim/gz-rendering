@@ -168,6 +168,22 @@ namespace gz
       /// \return GraphicsAPI currently in use
       public: virtual rendering::GraphicsAPI GraphicsAPI() const = 0;
 
+      /// \brief Creates a basic native window.
+      /// Note: This is useful when you need a basic single window with both
+      /// great performance and compatibility. But e.g. creating
+      /// more than one window may have additional complexities
+      /// depending on OS and RenderSystem
+      /// \param[in] _winHandle See samples on what to fill in here
+      /// \param[in] _width Starting width
+      /// \param[in] _height Starting height
+      /// \param[in] _ratio Device pixel ratio (typically needed for retina
+      /// displays)
+      /// \return NativeWindow. It may be nullptr if the underlying
+      /// engine hasn't implemented one
+      public: virtual NativeWindowPtr CreateNativeWindow(
+          const std::string &_winHandle, const uint32_t _width,
+          const uint32_t _height, const double _ratio) = 0;
+
       /// \brief Set headless mode
       /// Only available in OGRE 2.2, which makes use of EGL
       /// \param[in] _headless Set to true to enable headless mode.

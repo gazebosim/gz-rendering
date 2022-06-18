@@ -15,15 +15,6 @@
  *
  */
 
-#if defined(__APPLE__)
-  #include <OpenGL/gl.h>
-  #include <GLUT/glut.h>
-#elif not defined(_WIN32)
-  #include <GL/glew.h>
-  #include <GL/gl.h>
-  #include <GL/glut.h>
-#endif
-
 #include <iostream>
 #include <vector>
 
@@ -31,16 +22,16 @@
 #include <ignition/common/MeshManager.hh>
 #include <ignition/rendering.hh>
 
-#include "example_config.hh"
 #include "GlutWindow.hh"
+#include "example_config.hh"
+
+#include <SDL.h>
 
 using namespace ignition;
 using namespace rendering;
 
-
 const std::string RESOURCE_PATH =
-    common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
-
+  common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene)
@@ -58,11 +49,11 @@ void buildScene(ScenePtr _scene)
   std::string textureMap = common::joinPaths(RESOURCE_PATH, "pump_albedo.png");
   std::string normalMap = common::joinPaths(RESOURCE_PATH, "pump_normal.png");
   std::string roughnessMap =
-      common::joinPaths(RESOURCE_PATH, "pump_roughness.png");
+    common::joinPaths(RESOURCE_PATH, "pump_roughness.png");
   std::string metalnessMap =
-      common::joinPaths(RESOURCE_PATH, "pump_metallic.png");
+    common::joinPaths(RESOURCE_PATH, "pump_metallic.png");
   std::string environmentMap =
-      common::joinPaths(RESOURCE_PATH, "fort_point.dds");
+    common::joinPaths(RESOURCE_PATH, "fort_point.dds");
   matPBR->SetTexture(textureMap);
   matPBR->SetNormalMap(normalMap);
   matPBR->SetRoughnessMap(roughnessMap);
@@ -116,7 +107,7 @@ void buildScene(ScenePtr _scene)
   descriptor.mesh = meshManager->Load(descriptor.meshName);
   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
   meshGeom->SetMaterial(duckMat);
-  mesh->AddGeometry(meshGeom);  
+  mesh->AddGeometry(meshGeom);
   mesh->SetVisualStatic(true);
   root->AddChild(mesh);
 
@@ -144,7 +135,7 @@ void buildScene(ScenePtr _scene)
   mirrorMat->SetRoughness(0.1);
   mirrorMat->SetMetalness(0.9);
   std::string skyEnvironmentMap =
-      common::joinPaths(RESOURCE_PATH, "skybox_lowres.dds");
+    common::joinPaths(RESOURCE_PATH, "skybox_lowres.dds");
   mirrorMat->SetEnvironmentMap(skyEnvironmentMap);
   //! [create envmap]
 
@@ -249,23 +240,23 @@ void buildScene(ScenePtr _scene)
       name << "spotlight_test_" << i << j;
       VisualPtr boxVis = _scene->CreateVisual(name.str());
       boxVis->AddGeometry(_scene->CreateBox());
-	  boxVis->SetVisualStatic(true);
-      double x = -n + i*n -5;
-      double y = -n + j*n;
+      boxVis->SetVisualStatic(true);
+      double x = -n + i * n - 5;
+      double y = -n + j * n;
       boxVis->SetLocalPosition(x, y, 0.0);
       boxVis->SetLocalRotation(0, 0, 0);
       boxVis->SetLocalScale(0.5, 0.5, 0.5);
       boxVis->SetMaterial(green);
       root->AddChild(boxVis);
 
-	  name << "_light";
+      name << "_light";
       SpotLightPtr spotLight = _scene->CreateSpotLight(name.str());
       spotLight->SetDiffuseColor(1.0, 1.0, 1.0);
       spotLight->SetSpecularColor(0.2, 0.2, 0.2);
       spotLight->SetLocalPosition(x, y, 2.0);
       spotLight->SetDirection(0, 0, -1);
       spotLight->SetCastShadows(true);
-	  root->AddChild(spotLight);
+      root->AddChild(spotLight);
     }
   }
 
@@ -292,7 +283,7 @@ void buildScene(ScenePtr _scene)
   gi->SetAnisotropic(false);
   gi->Build();
   _scene->SetActiveGlobalIllumination(gi);
-  //gi->SetDebugVisualization(GlobalIlluminationVct::DVM_Lighting);
+  // gi->SetDebugVisualization(GlobalIlluminationVct::DVM_Lighting);
 #endif
 }
 
@@ -303,8 +294,7 @@ CameraPtr createCamera(const std::string &_engineName)
   RenderEngine *engine = rendering::engine(_engineName);
   if (!engine)
   {
-    std::cout << "Engine '" << _engineName
-              << "' is not supported" << std::endl;
+    std::cout << "Engine '" << _engineName << "' is not supported" << std::endl;
     return CameraPtr();
   }
   ScenePtr scene = engine->CreateScene("scene");
@@ -320,7 +310,7 @@ CameraPtr createCamera(const std::string &_engineName)
     // add gaussian noise pass
     RenderPassPtr pass = rpSystem->Create<GaussianNoisePass>();
     GaussianNoisePassPtr noisePass =
-        std::dynamic_pointer_cast<GaussianNoisePass>(pass);
+      std::dynamic_pointer_cast<GaussianNoisePass>(pass);
     noisePass->SetMean(0.1);
     noisePass->SetStdDev(0.08);
     noisePass->SetEnabled(false);
@@ -330,15 +320,14 @@ CameraPtr createCamera(const std::string &_engineName)
   return camera;
 }
 
-extern bool g_forRenderDoc;
-
 //////////////////////////////////////////////////
-int main(int _argc, char** _argv)
+int main(int _argc, char **_argv)
 {
-  glutInit(&_argc, _argv);
-
-  if (_argc > 1)
-	g_forRenderDoc = true;
+  if (SDL_Init(SDL_INIT_VIDEO) < 0)
+  {
+    printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    return -1;
+  }
 
   common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
@@ -362,5 +351,7 @@ int main(int _argc, char** _argv)
     }
   }
   run(cameras);
+
+  SDL_Quit();
   return 0;
 }

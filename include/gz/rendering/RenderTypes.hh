@@ -74,6 +74,7 @@ namespace gz
     class Marker;
     class Material;
     class Mesh;
+    class NativeWindow;
     class Node;
     class Object;
     class ObjectFactory;
@@ -209,6 +210,10 @@ namespace gz
     /// \typedef MeshPtr
     /// \brief Shared pointer to Mesh
     typedef shared_ptr<Mesh> MeshPtr;
+
+    /// \typedef NativeWindowPtr
+    /// \brief Shared pointer to NativeWindow
+    typedef shared_ptr<NativeWindow> NativeWindowPtr;
 
     /// \typedef NodePtr
     /// \brief Shared pointer to Node

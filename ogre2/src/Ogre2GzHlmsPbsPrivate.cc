@@ -57,6 +57,39 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
+  uint16 Ogre2GzHlmsPbs::getNumExtraPassTextures(
+          const HlmsPropertyVec &_properties, bool _casterPass) const
+  {
+    uint16 numExtraTextures = 0u;
+
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      numExtraTextures +=
+        listener->getNumExtraPassTextures(_properties, _casterPass);
+    }
+
+    return numExtraTextures;
+  }
+
+  /////////////////////////////////////////////////
+  void Ogre2GzHlmsPbs::propertiesMergedPreGenerationStep(
+    Hlms *_hlms, const HlmsCache &_passCache,
+    const HlmsPropertyVec &_renderableCacheProperties,
+    const PiecesMap _renderableCachePieces[NumShaderTypes],
+    const HlmsPropertyVec &_properties,
+    const QueuedRenderable &_queuedRenderable)
+  {
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      listener->propertiesMergedPreGenerationStep(
+        _hlms, _passCache, _renderableCacheProperties, _renderableCachePieces,
+        _properties, _queuedRenderable);
+    }
+  }
+
+  /////////////////////////////////////////////////
   void Ogre2GzHlmsPbs::preparePassHash(const CompositorShadowNode *_shadowNode,
                                         bool _casterPass, bool _dualParaboloid,
                                         SceneManager *_sceneManager,

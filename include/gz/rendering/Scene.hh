@@ -1202,6 +1202,37 @@ namespace gz
       public: virtual GlobalIlluminationVctPtr CreateGlobalIlluminationVct(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new GI CIVCT solution with the given name. A unique ID
+      /// and name will automatically be assigned to the GI.
+      /// \return The created GI CIVCT
+      public: virtual GlobalIlluminationCiVctPtr
+                  CreateGlobalIlluminationCiVct() = 0;
+
+      /// \brief Create new GI CIVCT solution with the given name. A unique name
+      /// will automatically be assigned to the GI. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new particle emitter
+      /// \param[in] _name Name of the new GI CIVCT solution
+      /// \return The created GI CIVCT
+      public: virtual GlobalIlluminationCiVctPtr CreateGlobalIlluminationCiVct(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new GI CIVCT solution with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new GI CIVCT solution
+      /// \return The created GI CIVCT
+      public: virtual GlobalIlluminationCiVctPtr CreateGlobalIlluminationCiVct(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new GI CIVCT solution with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new particle emitter
+      /// \param[in] _name Name of the new GI CIVCT solution
+      /// \return The created GI CIVCT
+      public: virtual GlobalIlluminationCiVctPtr CreateGlobalIlluminationCiVct(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Enable sky in the scene.
       /// \param[in] _enabled True to enable sky
       public: virtual void SetSkyEnabled(bool _enabled) = 0;

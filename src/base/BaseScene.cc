@@ -1398,6 +1398,36 @@ GlobalIlluminationVctPtr BaseScene::CreateGlobalIlluminationVct(
 }
 
 //////////////////////////////////////////////////
+GlobalIlluminationCiVctPtr BaseScene::CreateGlobalIlluminationCiVct()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateGlobalIlluminationCiVct(objId);
+}
+
+//////////////////////////////////////////////////
+GlobalIlluminationCiVctPtr BaseScene::CreateGlobalIlluminationCiVct(
+  unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "GI_CiVct");
+  return this->CreateGlobalIlluminationCiVct(_id, objName);
+}
+
+//////////////////////////////////////////////////
+GlobalIlluminationCiVctPtr BaseScene::CreateGlobalIlluminationCiVct(
+  const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateGlobalIlluminationCiVct(objId, _name);
+}
+
+//////////////////////////////////////////////////
+GlobalIlluminationCiVctPtr BaseScene::CreateGlobalIlluminationCiVct(
+  unsigned int _id, const std::string &_name)
+{
+  return this->CreateGlobalIlluminationCiVctImpl(_id, _name);
+}
+
+//////////////////////////////////////////////////
 void BaseScene::SetSkyEnabled(bool _enabled)  // NOLINT(readability/casting)
 {
   // no op, let derived class implement this.

@@ -70,7 +70,7 @@ namespace gz
       /// VCT is updated too often.
       ///
       /// When false, those resources will stay loaded at all times
-      /// \param[in] conserveMemory True to release memory as fast as possible
+      /// \param[in] _conserveMemory True to release memory as fast as possible
       public: virtual void SetConserveMemory(bool _conserveMemory) = 0;
 
       /// \brief Whether we're releasing memory as fast as possible

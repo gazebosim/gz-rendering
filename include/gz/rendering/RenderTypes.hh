@@ -51,6 +51,7 @@ namespace gz
     class BoundingBoxCamera;
     class Camera;
     class Capsule;
+    class CiVctCascade;
     class COMVisual;
     class DepthCamera;
     class DirectionalLight;
@@ -59,6 +60,7 @@ namespace gz
     class Geometry;
     class GizmoVisual;
     class GlobalIlluminationBase;
+    class GlobalIlluminationCiVct;
     class GlobalIlluminationVct;
     class GpuRays;
     class Grid;
@@ -110,6 +112,10 @@ namespace gz
     /// \typedef CameraPtr
     /// \brief Shared pointer to Camera
     typedef shared_ptr<Camera> CameraPtr;
+
+    /// \typedef CiVctCascadePtr
+    /// \brief Shared pointer to CiVctCascade
+    typedef std::shared_ptr<CiVctCascade> CiVctCascadePtr;
 
     /// \typedef DepthCameraPtr
     /// \brief Shared pointer to DepthCamera
@@ -234,6 +240,10 @@ namespace gz
     /// \typedef GlobalIlluminationBasePtr
     /// \brief Shared pointer to GlobalIlluminationBase
     typedef shared_ptr<GlobalIlluminationBase> GlobalIlluminationBasePtr;
+
+    /// \typedef GlobalIlluminationCiVctPtr
+    /// \brief Shared pointer to GlobalIlluminationCiVct
+    typedef shared_ptr<GlobalIlluminationCiVct> GlobalIlluminationCiVctPtr;
 
     /// \typedef GlobalIlluminationVctPtr
     /// \brief Shared pointer to GlobalIlluminationVct

@@ -592,6 +592,22 @@ namespace gz
                   unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited.
+      public: virtual GlobalIlluminationCiVctPtr
+                  CreateGlobalIlluminationCiVct() override;
+
+      // Documentation inherited.
+      public: virtual GlobalIlluminationCiVctPtr CreateGlobalIlluminationCiVct(
+                  unsigned int _id) override;
+
+      // Documentation inherited.
+      public: virtual GlobalIlluminationCiVctPtr CreateGlobalIlluminationCiVct(
+                  const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual GlobalIlluminationCiVctPtr CreateGlobalIlluminationCiVct(
+                  unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual void SetSkyEnabled(bool _enabled) override;
 
       // Documentation inherited.
@@ -856,6 +872,21 @@ namespace gz
                   gzerr << "GlobalIlluminationVct not supported by: "
                         << this->Engine()->Name() << std::endl;
                   return GlobalIlluminationVctPtr();
+                }
+
+      /// \brief Implementation for creating a GlobalIlluminationCiVct.
+      /// \param[in] _id Unique id.
+      /// \param[in] _name Name of GlobalIlluminationCiVct.
+      /// \return Pointer to the created Global Illumination CIVCT solution.
+      protected: virtual GlobalIlluminationCiVctPtr
+        CreateGlobalIlluminationCiVctImpl(
+                    unsigned int _id, const std::string &_name)
+                {
+                  (void)_id;
+                  (void)_name;
+                  ignerr << "GlobalIlluminationCiVct not supported by: "
+                         << this->Engine()->Name() << std::endl;
+                  return GlobalIlluminationCiVctPtr();
                 }
 
       protected: virtual LightStorePtr Lights() const = 0;

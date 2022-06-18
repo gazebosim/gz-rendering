@@ -1368,6 +1368,36 @@ ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+GlobalIlluminationVctPtr BaseScene::CreateGlobalIlluminationVct()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateGlobalIlluminationVct(objId);
+}
+
+//////////////////////////////////////////////////
+GlobalIlluminationVctPtr BaseScene::CreateGlobalIlluminationVct(
+  unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "GI_VCT");
+  return this->CreateGlobalIlluminationVct(_id, objName);
+}
+
+//////////////////////////////////////////////////
+GlobalIlluminationVctPtr BaseScene::CreateGlobalIlluminationVct(
+  const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateGlobalIlluminationVct(objId, _name);
+}
+
+//////////////////////////////////////////////////
+GlobalIlluminationVctPtr BaseScene::CreateGlobalIlluminationVct(
+  unsigned int _id, const std::string &_name)
+{
+  return this->CreateGlobalIlluminationVctImpl(_id, _name);
+}
+
+//////////////////////////////////////////////////
 void BaseScene::SetSkyEnabled(bool _enabled)  // NOLINT(readability/casting)
 {
   // no op, let derived class implement this.
@@ -1384,6 +1414,16 @@ bool BaseScene::SkyEnabled() const
   return false;
 }
 
+//////////////////////////////////////////////////
+void BaseScene::SetActiveGlobalIllumination(GlobalIlluminationBasePtr _gi)
+{
+  // no op, let derived class implement this.
+  if (_gi)
+  {
+    gzerr << "GI not supported by: "
+          << this->Engine()->Name() << std::endl;
+  }
+}
 
 //////////////////////////////////////////////////
 void BaseScene::PreRender()

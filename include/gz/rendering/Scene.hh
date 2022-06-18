@@ -1171,6 +1171,37 @@ namespace gz
       public: virtual ParticleEmitterPtr CreateParticleEmitter(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \brief Create new GI VCT solution with the given name. A unique ID
+      /// and name will automatically be assigned to the GI.
+      /// \return The created GI VCT
+      public: virtual GlobalIlluminationVctPtr
+                  CreateGlobalIlluminationVct() = 0;
+
+      /// \brief Create new GI VCT solution with the given name. A unique name
+      /// will automatically be assigned to the GI. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new particle emitter
+      /// \param[in] _name Name of the new GI VCT solution
+      /// \return The created GI VCT
+      public: virtual GlobalIlluminationVctPtr CreateGlobalIlluminationVct(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new GI VCT solution with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new GI VCT solution
+      /// \return The created GI VCT
+      public: virtual GlobalIlluminationVctPtr CreateGlobalIlluminationVct(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new GI VCT solution with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new particle emitter
+      /// \param[in] _name Name of the new GI VCT solution
+      /// \return The created GI VCT
+      public: virtual GlobalIlluminationVctPtr CreateGlobalIlluminationVct(
+                  unsigned int _id, const std::string &_name) = 0;
+
       /// \brief Enable sky in the scene.
       /// \param[in] _enabled True to enable sky
       public: virtual void SetSkyEnabled(bool _enabled) = 0;
@@ -1178,6 +1209,11 @@ namespace gz
       /// \brief Get whether the sky is enabled in the scene.
       /// \return true to sky is enabled, false otherwise
       public: virtual bool SkyEnabled() const = 0;
+
+      /// \brief Sets the given GI as the current new active GI solution
+      /// \param[in] _gi GI solution that should be active. Nullptr to disable
+      public: virtual void SetActiveGlobalIllumination(
+                GlobalIlluminationBasePtr _gi) = 0;
 
       /// \brief Prepare scene for rendering. The scene will flushing any scene
       /// changes by traversing scene-graph, calling PreRender on all objects

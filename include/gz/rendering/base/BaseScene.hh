@@ -576,10 +576,30 @@ namespace gz
                   unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited.
+      public: virtual GlobalIlluminationVctPtr
+                  CreateGlobalIlluminationVct() override;
+
+      // Documentation inherited.
+      public: virtual GlobalIlluminationVctPtr CreateGlobalIlluminationVct(
+                  unsigned int _id) override;
+
+      // Documentation inherited.
+      public: virtual GlobalIlluminationVctPtr CreateGlobalIlluminationVct(
+                  const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual GlobalIlluminationVctPtr CreateGlobalIlluminationVct(
+                  unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual void SetSkyEnabled(bool _enabled) override;
 
       // Documentation inherited.
       public: virtual bool SkyEnabled() const override;
+
+      // Documentation inherited.
+      public: virtual void SetActiveGlobalIllumination(
+            GlobalIlluminationBasePtr _gi) override;
 
       public: virtual void PreRender() override;
 
@@ -822,6 +842,21 @@ namespace gz
                           << this->Engine()->Name() << std::endl;
                    return ParticleEmitterPtr();
                  }
+
+      /// \brief Implementation for creating a GlobalIlluminationVct.
+      /// \param[in] _id Unique id.
+      /// \param[in] _name Name of GlobalIlluminationVct.
+      /// \return Pointer to the created Global Illumination VCT solution.
+      protected: virtual GlobalIlluminationVctPtr
+        CreateGlobalIlluminationVctImpl(
+                    unsigned int _id, const std::string &_name)
+                {
+                  (void)_id;
+                  (void)_name;
+                  gzerr << "GlobalIlluminationVct not supported by: "
+                        << this->Engine()->Name() << std::endl;
+                  return GlobalIlluminationVctPtr();
+                }
 
       protected: virtual LightStorePtr Lights() const = 0;
 

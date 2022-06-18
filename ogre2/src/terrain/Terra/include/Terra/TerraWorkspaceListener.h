@@ -25,6 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
+
 #ifndef _OgreTerraWorkspaceListener_H_
 #define _OgreTerraWorkspaceListener_H_
 

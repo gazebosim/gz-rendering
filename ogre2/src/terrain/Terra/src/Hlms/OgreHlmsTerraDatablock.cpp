@@ -71,7 +71,7 @@ namespace Ogre
         // IGN CUSTOMIZE END
         mBrdf( TerraBrdf::Default )
     {
-        mShadowConstantBiasGpu = mShadowConstantBias = 0.0f;
+        mShadowConstantBiasGpu = mShadowConstantBias = 0.01f;
 
         mRoughness[0] = mRoughness[1] = 1.0f;
         mRoughness[2] = mRoughness[3] = 1.0f;
@@ -89,16 +89,6 @@ namespace Ogre
     {
         if( mAssignedPool )
             static_cast<HlmsTerra*>(mCreator)->releaseSlot( this );
-
-        HlmsManager *hlmsManager = mCreator->getHlmsManager();
-        if( hlmsManager )
-        {
-            for( size_t i=0; i<NUM_TERRA_TEXTURE_TYPES; ++i )
-            {
-                if( mSamplerblocks[i] )
-                    hlmsManager->destroySamplerblock( mSamplerblocks[i] );
-            }
-        }
     }
     //-----------------------------------------------------------------------------------
     void HlmsTerraDatablock::calculateHash()

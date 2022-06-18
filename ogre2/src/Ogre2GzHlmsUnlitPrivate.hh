@@ -80,6 +80,7 @@ namespace Ogre
     ///
     /// \param[in] _properties Properties to read state from
     /// \param[in] _casterPass Whether this is a caster pass
+    /// \return Extra number of per-pass textures Hlms needs to account for
     public: virtual uint16 getNumExtraPassTextures(
         const HlmsPropertyVec &_properties, bool _casterPass) const override;
 
@@ -93,7 +94,8 @@ namespace Ogre
     /// \param[in] _properties Properties defined so far (amalgamated)
     /// \param[in] _queuedRenderable Renderable being affected
     public: virtual void propertiesMergedPreGenerationStep(
-        Hlms *_hlms, const HlmsCache &_passCache,
+        Hlms *_hlms,
+        const HlmsCache &_passCache,
         const HlmsPropertyVec &_renderableCacheProperties,
         const PiecesMap _renderableCachePieces[NumShaderTypes],
         const HlmsPropertyVec &_properties,

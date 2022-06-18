@@ -46,7 +46,7 @@ void Ogre2ParticleNoiseListener::cameraPreRenderScene(
   // returned by sensor in areas where particles are. It does so by adding
   // noise with high std dev values.
   // 1. Find first particle in the view of the sensor
-  // 2. set the sensor noise for the particles to half the size of the
+  // 2. Set the sensor noise for the particles to half the size of the
   // bounding box
   // \todo(anyone) noise std dev is set based on the first particle emitter the
   // sensor sees. Make this scale to multiple particle emitters!
@@ -73,7 +73,6 @@ void Ogre2ParticleNoiseListener::cameraPreRenderScene(
 
     Ogre::AxisAlignedBox box = Ogre::AxisAlignedBox(aabb.getMinimum(),
         aabb.getMaximum());
-
 
     if (_cam->isVisible(box))
     {
@@ -127,7 +126,7 @@ void Ogre2ParticleNoiseListener::SetupMaterial(Ogre::Pass *_pass,
   // returned by sensor in areas where particles are. It does so by adding
   // noise with high std dev values.
   // 1. Find first particle in the view of the sensor
-  // 2. set the sensor noise for the particles to half the size of the
+  // 2. Set the sensor noise for the particles to half the size of the
   // bounding box
   // \todo(anyone) noise std dev is set based on the first particle emitter the
   // sensor sees. Make this scale to multiple particle emitters!
@@ -155,7 +154,6 @@ void Ogre2ParticleNoiseListener::SetupMaterial(Ogre::Pass *_pass,
     Ogre::AxisAlignedBox box = Ogre::AxisAlignedBox(aabb.getMinimum(),
         aabb.getMaximum());
 
-
     if (_cam->isVisible(box))
     {
       // set stddev to half of size of particle emitter aabb
@@ -182,7 +180,7 @@ void Ogre2ParticleNoiseListener::SetupMaterial(Ogre::Pass *_pass,
         }
         catch(Ogre::Exception &e)
         {
-          ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+          gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
         }
         Ogre2ParticleEmitterPtr emitterPtr =
           std::dynamic_pointer_cast<Ogre2ParticleEmitter>(result);

@@ -70,6 +70,8 @@ class GZ_RENDERING_OGRE2_HIDDEN
 {
   /// \brief constructor
   /// \param[in] _scene the scene manager responsible for rendering
+  /// \param[in] _gpuRays owner of this class
+  /// \param[in] _ogreCamera camera to obtain projection settings from
   public: explicit Ogre2LaserRetroMaterialSwitcher(Ogre2ScenePtr _scene,
                                                    Ogre2GpuRays *_gpuRays,
                                                    Ogre::Camera *_ogreCamera);
@@ -232,20 +234,23 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
     Ogre::GpuProgramParametersSharedPtr psParams =
       pass->getFragmentProgramParameters();
 
+    const double nearPlane = this->gpuRays->NearClipPlane();
+    const double farPlane = this->gpuRays->FarClipPlane();
+
     // Set the uniform variables (see gpu_rays_1st_pass_fs.glsl).
     // The projectParams is used to linearize depth buffer data
     // The other params are used to clamp the range output
     Ogre::Vector2 projectionAB = this->ogreCamera->getProjectionParamsAB();
     double projectionA = projectionAB.x;
     double projectionB = projectionAB.y;
-    projectionB /= this->gpuRays->FarClipPlane();
+    projectionB /= farPlane;
     psParams->setNamedConstant("projectionParams",
                                Ogre::Vector2(static_cast<float>(projectionA),
                                              static_cast<float>(projectionB)));
-    psParams->setNamedConstant(
-      "near", static_cast<float>(this->gpuRays->NearClipPlane()));
-    psParams->setNamedConstant(
-      "far", static_cast<float>(this->gpuRays->FarClipPlane()));
+    psParams->setNamedConstant("near",
+                               static_cast<float>(nearPlane));
+    psParams->setNamedConstant("far",
+                               static_cast<float>(farPlane));
     psParams->setNamedConstant("max",
                                static_cast<float>(this->gpuRays->dataMaxVal));
     psParams->setNamedConstant("min",

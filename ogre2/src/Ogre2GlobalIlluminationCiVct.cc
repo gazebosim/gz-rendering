@@ -17,6 +17,7 @@
 
 #include "gz/rendering/ogre2/Ogre2GlobalIlluminationCiVct.hh"
 
+#include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
@@ -333,6 +334,15 @@ void Ogre2GlobalIlluminationCiVct::Build()
 void Ogre2GlobalIlluminationCiVct::UpdateLighting()
 {
   this->LightingChanged();
+}
+
+//////////////////////////////////////////////////
+void Ogre2GlobalIlluminationCiVct::UpdateCamera()
+{
+  Ogre::SceneManager *sceneManager = this->scene->OgreSceneManager();
+  this->dataPtr->cascadedVoxelizer->setCameraPosition(
+    Ogre2Conversions::Convert(this->dataPtr->bindCamera->WorldPosition()));
+  this->dataPtr->cascadedVoxelizer->update(sceneManager);
 }
 
 //////////////////////////////////////////////////

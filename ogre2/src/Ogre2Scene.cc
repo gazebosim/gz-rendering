@@ -246,6 +246,9 @@ void Ogre2Scene::PreRender()
     this->dataPtr->activeGi->UpdateLighting();
     this->dataPtr->lightsGiDirty = false;
   }
+
+  if (this->dataPtr->currNumCameraPasses == 0u)
+    this->dataPtr->activeGi->UpdateCamera();
 }
 
 //////////////////////////////////////////////////

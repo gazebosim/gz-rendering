@@ -289,6 +289,11 @@ void Ogre2GlobalIlluminationVct::UpdateLighting()
 }
 
 //////////////////////////////////////////////////
+void Ogre2GlobalIlluminationVct::UpdateCamera()
+{
+}
+
+//////////////////////////////////////////////////
 void Ogre2GlobalIlluminationVct::SetEnabled(bool _enabled)
 {
   Ogre::HlmsPbs *hlmsPbs = this->HlmsPbs();

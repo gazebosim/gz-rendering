@@ -65,6 +65,11 @@ namespace gz
       /// lighting changes. This implies Build has been called already
       public: virtual void UpdateLighting() = 0;
 
+      /// \brief Called by Scene on an active GlobalIlluminationBase whenever
+      /// first rendering happens for a new frame.
+      /// This implies Build has been called already
+      public: virtual void UpdateCamera() = 0;
+
       /// \brief Set the number of GI bounces. Very high number can
       /// cause a large performance impact
       /// \param[in] _bounceCount Value in range [0; inf)

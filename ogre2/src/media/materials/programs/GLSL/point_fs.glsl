@@ -15,10 +15,11 @@
  *
  */
 
-#version 330
+#version ogre_glsl_ver_330
 
 in vec3 ptColor;
 
+vulkan_layout( location = 0 )
 out vec4 fragColor;
 
 void main()

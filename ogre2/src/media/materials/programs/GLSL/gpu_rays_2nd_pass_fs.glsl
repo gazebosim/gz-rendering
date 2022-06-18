@@ -15,15 +15,16 @@
  *
  */
 
-#version 330
+#version ogre_glsl_ver_330
 
+vulkan_layout( location = 0 )
 in block
 {
   vec2 uv0;
 } inPs;
 
 // cubeUVTex packs information needed to sample from tex0-5
-uniform sampler2D cubeUVTex;
+vulkan_layout( ogre_t0 ) uniform texture2D cubeUVTex;
 
 // cubemap is constructed using z-up, x-forward, y-left
 // index: face   axis
@@ -35,35 +36,38 @@ uniform sampler2D cubeUVTex;
 //     5: back   -x
 
 // cube face 0 -y
-uniform sampler2D tex0;
+vulkan_layout( ogre_t1 ) uniform texture2D tex0;
 
 // cube face 1 +y
-uniform sampler2D tex1;
+vulkan_layout( ogre_t2 ) uniform texture2D tex1;
 
 // cube face 2 +z
-uniform sampler2D tex2;
+vulkan_layout( ogre_t3 ) uniform texture2D tex2;
 
 // cube face 3 -z
-uniform sampler2D tex3;
+vulkan_layout( ogre_t4 ) uniform texture2D tex3;
 
 // cube face 4 +x
-uniform sampler2D tex4;
+vulkan_layout( ogre_t5 ) uniform texture2D tex4;
 
 // cube face 5 -x
-uniform sampler2D tex5;
+vulkan_layout( ogre_t6 ) uniform texture2D tex5;
 
+vulkan( layout( ogre_s0 ) uniform sampler texSampler );
+
+vulkan_layout( location = 0 )
 out vec4 fragColor;
 
 vec2 getRange(vec2 uv, sampler2D tex)
 {
-  vec2 range = texture(tex, uv).xy;
+  vec2 range = texture(vkSampler2D(tex,texSampler), uv).xy;
   return range;
 }
 
 void main()
 {
   // get face index and uv coorodate data
-  vec3 data = texture(cubeUVTex, inPs.uv0).xyz;
+  vec3 data = texture(vkSampler2D(cubeUVTex,texSampler), inPs.uv0).xyz;
 
   // which face to sample range data from
   float faceIdx = data.z;

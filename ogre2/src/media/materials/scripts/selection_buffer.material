@@ -20,10 +20,6 @@ vertex_program selection_buffer_vs_GLSL glsl
 {
   // reuse depth camera vertex shader
   source depth_camera_vs.glsl
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program selection_buffer_fs_GLSL glsl
@@ -33,8 +29,23 @@ fragment_program selection_buffer_fs_GLSL glsl
   {
     param_named colorTexture int 0
     param_named depthTexture int 1
+  }
+}
 
-    param_named_auto colorTexResolution texture_size 0
+// Vulkan shaders
+vertex_program selection_buffer_vs_VK glslvk
+{
+  // reuse depth camera vertex shader
+  source depth_camera_vs.glsl
+}
+
+fragment_program selection_buffer_fs_VK glslvk
+{
+  source selection_buffer_fs.glsl
+  default_params
+  {
+    param_named colorTexture int 0
+    param_named depthTexture int 1
   }
 }
 
@@ -43,23 +54,12 @@ vertex_program selection_buffer_vs_Metal metal
 {
   // reuse depth camera vertex shader
   source depth_camera_vs.metal
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program selection_buffer_fs_Metal metal
 {
   source selection_buffer_fs.metal
   shader_reflection_pair_hint selection_buffer_vs_Metal
-  default_params
-  {
-    param_named colorTexture int 0
-    param_named depthTexture int 1
-
-    param_named_auto colorTexResolution texture_size 0
-  }
 }
 
 // Unified shaders
@@ -67,12 +67,24 @@ vertex_program selection_buffer_vs unified
 {
   delegate selection_buffer_vs_GLSL
   delegate selection_buffer_vs_Metal
+  delegate selection_buffer_vs_VK
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
 }
 
 fragment_program selection_buffer_fs unified
 {
   delegate selection_buffer_fs_GLSL
   delegate selection_buffer_fs_Metal
+  delegate selection_buffer_fs_VK
+
+  default_params
+  {
+    param_named_auto colorTexResolution texture_size 0
+  }
 }
 
 material SelectionBuffer

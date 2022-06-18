@@ -15,23 +15,28 @@
  *
  */
 
-#version 330
+#version ogre_glsl_ver_330
 
+vulkan_layout( location = 0 )
 in block
 {
   vec2 uv0;
 } inPs;
 
-uniform sampler2D inputTexture;
+vulkan_layout( ogre_t0 ) uniform texture2D inputTexture;
+vulkan( layout( ogre_s0 ) uniform sampler texSampler );
 
+vulkan_layout( location = 0 )
 out vec4 fragColor;
 
-uniform float near;
-uniform float far;
-uniform float min;
-uniform float max;
+vulkan( layout( ogre_P0 ) uniform Params { )
+	uniform float near;
+	uniform float far;
+	uniform float min;
+	uniform float max;
 
-uniform vec4 texResolution;
+	uniform vec4 texResolution;
+vulkan( }; )
 
 void main()
 {
@@ -42,7 +47,7 @@ void main()
   // values close to 0 get rounded to 0)
   //
   // See https://github.com/gazebosim/gz-rendering/issues/332
-  vec4 p = texelFetch(inputTexture, ivec2(inPs.uv0 *texResolution.xy), 0);
+  vec4 p = texelFetch(vkSampler2D(inputTexture,texSampler), ivec2(inPs.uv0 *texResolution.xy), 0);
 
   vec3 point = p.xyz;
 

@@ -19,10 +19,6 @@
 vertex_program GpuRaysScan1stVS_GLSL glsl
 {
   source gpu_rays_1st_pass_vs.glsl
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program GpuRaysScan1stFS_GLSL glsl
@@ -38,14 +34,21 @@ fragment_program GpuRaysScan1stFS_GLSL glsl
   }
 }
 
+// Vulkan shaders
+vertex_program GpuRaysScan1stVS_VK glslvk
+{
+  source gpu_rays_1st_pass_vs.glsl
+}
+
+fragment_program GpuRaysScan1stFS_VK glslvk
+{
+  source gpu_rays_1st_pass_fs.glsl
+}
+
 // Metal shaders
 vertex_program GpuRaysScan1stVS_Metal metal
 {
   source gpu_rays_1st_pass_vs.metal
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program GpuRaysScan1stFS_Metal metal
@@ -59,12 +62,19 @@ vertex_program GpuRaysScan1stVS unified
 {
   delegate GpuRaysScan1stVS_GLSL
   delegate GpuRaysScan1stVS_Metal
+  delegate GpuRaysScan1stVS_VK
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+  }
 }
 
 fragment_program GpuRaysScan1stFS unified
 {
   delegate GpuRaysScan1stFS_GLSL
   delegate GpuRaysScan1stFS_Metal
+  delegate GpuRaysScan1stFS_VK
 }
 
 material GpuRaysScan1st
@@ -116,6 +126,12 @@ fragment_program GpuRaysScan2ndFS_GLSL glsl
   }
 }
 
+// Vulkan shaders
+fragment_program GpuRaysScan2ndFS_VK glslvk
+{
+  source gpu_rays_2nd_pass_fs.glsl
+}
+
 // Metal shaders
 fragment_program GpuRaysScan2ndFS_Metal metal
 {
@@ -128,6 +144,7 @@ fragment_program GpuRaysScan2ndFS unified
 {
   delegate GpuRaysScan2ndFS_GLSL
   delegate GpuRaysScan2ndFS_Metal
+  delegate GpuRaysScan2ndFS_VK
 }
 
 material GpuRaysScan2nd
@@ -175,13 +192,6 @@ vertex_program laser_retro_vs_GLSL glsl
 {
   source plain_color_vs.glsl
   num_clip_distances 1
-
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-    param_named_auto worldView worldview_matrix
-    param_named ignMinClipDistance float 0.0
-  }
 }
 
 fragment_program laser_retro_fs_GLSL glsl
@@ -194,18 +204,23 @@ fragment_program laser_retro_fs_GLSL glsl
   }
 }
 
+// Vulkan shaders
+vertex_program laser_retro_vs_VK glslvk
+{
+  source plain_color_vs.glsl
+  num_clip_distances 1
+}
+
+fragment_program laser_retro_fs_VK glslvk
+{
+  source plain_color_fs.glsl
+}
+
 // Metal shaders
 vertex_program laser_retro_vs_Metal metal
 {
   source plain_color_vs.metal
   num_clip_distances 1
-
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-    param_named_auto worldView worldview_matrix
-    param_named ignMinClipDistance float 0.0
-  }
 }
 
 fragment_program laser_retro_fs_Metal metal
@@ -219,12 +234,21 @@ vertex_program laser_retro_vs unified
 {
   delegate laser_retro_vs_GLSL
   delegate laser_retro_vs_Metal
+  delegate laser_retro_vs_VK
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+    param_named_auto worldView worldview_matrix
+    param_named ignMinClipDistance float 0.0
+  }
 }
 
 fragment_program laser_retro_fs unified
 {
   delegate laser_retro_fs_GLSL
   delegate laser_retro_fs_Metal
+  delegate laser_retro_fs_VK
 }
 
 material LaserRetroSource

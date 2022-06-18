@@ -117,3 +117,82 @@ void Ogre2ParticleNoiseListener::cameraPreRenderScene(
     itor.moveNext();
   }
 }
+
+//////////////////////////////////////////////////
+void Ogre2ParticleNoiseListener::SetupMaterial(Ogre::Pass *_pass,
+                                               Ogre2ScenePtr _scene,
+                                               Ogre::Camera *_cam)
+{
+  // the code here is responsible for setting the depth variation of readings
+  // returned by sensor in areas where particles are. It does so by adding
+  // noise with high std dev values.
+  // 1. Find first particle in the view of the sensor
+  // 2. set the sensor noise for the particles to half the size of the
+  // bounding box
+  // \todo(anyone) noise std dev is set based on the first particle emitter the
+  // sensor sees. Make this scale to multiple particle emitters!
+  auto itor = _scene->OgreSceneManager()->getMovableObjectIterator(
+    Ogre::ParticleSystemFactory::FACTORY_TYPE_NAME);
+  while (itor.hasMoreElements())
+  {
+    Ogre::MovableObject *object = itor.peekNext();
+    Ogre::ParticleSystem *ps = dynamic_cast<Ogre::ParticleSystem *>(object);
+
+    if (!ps)
+    {
+      itor.moveNext();
+      continue;
+    }
+
+    Ogre::Aabb aabb = ps->getWorldAabbUpdated();
+    if (std::isinf(aabb.getMinimum().length()) ||
+        std::isinf(aabb.getMaximum().length()))
+    {
+      itor.moveNext();
+      continue;
+    }
+
+    Ogre::AxisAlignedBox box = Ogre::AxisAlignedBox(aabb.getMinimum(),
+        aabb.getMaximum());
+
+
+    if (_cam->isVisible(box))
+    {
+      // set stddev to half of size of particle emitter aabb
+      auto hs = box.getHalfSize() * 0.5;
+      double particleStddev = hs.x;
+
+      Ogre::GpuProgramParametersSharedPtr psParams =
+          _pass->getFragmentProgramParameters();
+      psParams->setNamedConstant("particleStddev",
+          static_cast<float>(particleStddev));
+      psParams->setNamedConstant("rnd",
+          static_cast<float>(gz::math::Rand::DblUniform(0.0, 1.0)));
+
+      // get particle scatter ratio value from particle emitter user data
+      // and pass that to the shaders
+      float scatterRatio = 0.65f;
+      Ogre::Any userAny = ps->getUserObjectBindings().getUserAny();
+      if (!userAny.isEmpty() && userAny.getType() == typeid(unsigned int))
+      {
+        VisualPtr result;
+        try
+        {
+          result = _scene->VisualById(Ogre::any_cast<unsigned int>(userAny));
+        }
+        catch(Ogre::Exception &e)
+        {
+          ignerr << "Ogre Error:" << e.getFullDescription() << "\n";
+        }
+        Ogre2ParticleEmitterPtr emitterPtr =
+          std::dynamic_pointer_cast<Ogre2ParticleEmitter>(result);
+        if (emitterPtr)
+          scatterRatio = emitterPtr->ParticleScatterRatio();
+      }
+      psParams->setNamedConstant("particleScatterRatio", scatterRatio);
+
+      return;
+    }
+    itor.moveNext();
+  }
+}

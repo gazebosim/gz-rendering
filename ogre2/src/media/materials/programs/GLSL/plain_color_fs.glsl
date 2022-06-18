@@ -18,7 +18,9 @@
 
 #version ogre_glsl_ver_330
 
-uniform vec4 inColor;
+vulkan( layout( ogre_P0 ) uniform Params { )
+  uniform vec4 inColor;
+vulkan( }; )
 
 vulkan_layout( location = 0 )
 out vec4 fragColor;

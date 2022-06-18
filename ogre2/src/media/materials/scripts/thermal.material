@@ -240,6 +240,12 @@ fragment_program HeatSignatureFS unified
   delegate HeatSignatureFS_GLSL
   delegate HeatSignatureFS_Metal
   delegate HeatSignatureFS_VK
+
+  default_params
+  {
+    param_named minTemp float 0
+    param_named maxTemp float 100
+  }
 }
 
 material ThermalHeatSignature

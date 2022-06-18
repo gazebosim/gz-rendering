@@ -42,11 +42,6 @@ vertex_program selection_buffer_vs_VK glslvk
 fragment_program selection_buffer_fs_VK glslvk
 {
   source selection_buffer_fs.glsl
-  default_params
-  {
-    param_named colorTexture int 0
-    param_named depthTexture int 1
-  }
 }
 
 // Metal shaders

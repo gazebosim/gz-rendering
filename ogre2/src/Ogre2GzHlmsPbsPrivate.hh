@@ -122,6 +122,23 @@ namespace Ogre
           Ogre::SceneManager *_sceneManager,
           float *_passBufferPtr) override;
 
+    /// \brief Fix warning about setupRootLayout overload hiding each other
+    protected: using HlmsPbs::setupRootLayout;
+
+    /// \brief Override so listeners can alter the root layout
+    /// if they need to add buffers to shaders. Applies to
+    /// a few APIs like Vulkan
+    ///
+    /// \remarks We cannot read 'this' state. All state data
+    /// must come from _properties. Otherwise we can't use
+    /// HlmsDiskCache
+    ///
+    /// \param[in,out] _rootLayout Root Layout to modify
+    /// \param[in] _properties Properties the PSO is being compiled with
+    public: virtual void setupRootLayout(
+        RootLayout &_rootLayout,
+        const HlmsPropertyVec &_properties) const override;
+
     /// \brief See HlmsListener::shaderCacheEntryCreated
     public: virtual void shaderCacheEntryCreated(
         const String &_shaderProfile, const HlmsCache *_hlmsCacheEntry,

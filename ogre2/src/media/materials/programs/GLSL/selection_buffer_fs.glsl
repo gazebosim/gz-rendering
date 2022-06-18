@@ -29,12 +29,12 @@ vulkan_layout( ogre_t1 ) uniform texture2D depthTexture;
 
 vulkan( layout( ogre_s0 ) uniform sampler texSampler );
 
-uniform vec4 colorTexResolution;
-
 vulkan_layout( location = 0 )
 out vec4 fragColor;
 
 vulkan( layout( ogre_P0 ) uniform Params { )
+  uniform vec4 colorTexResolution;
+
 	uniform vec2 projectionParams;
 	uniform float far;
 	uniform float inf;

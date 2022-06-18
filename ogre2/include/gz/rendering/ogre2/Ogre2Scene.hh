@@ -106,6 +106,11 @@ namespace gz
       public: virtual void SetActiveGlobalIllumination(
             GlobalIlluminationBasePtr _gi) override;
 
+      /// \internal
+      /// \brief Informs light data has changed which means
+      /// GI solution may want to update before rendering
+      public: void SetLightsGiDirty();
+
       // Documentation inherited.
       public: virtual void SetCameraPassCountPerGpuFlush(
             uint8_t _numPass) override;

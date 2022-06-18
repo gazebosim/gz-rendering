@@ -53,6 +53,13 @@ Ogre2Light::~Ogre2Light()
 }
 
 //////////////////////////////////////////////////
+void Ogre2Light::SetLocalPosition(const math::Vector3d &_position)
+{
+  Ogre2Node::SetLocalPosition(_position);
+  this->scene->SetLightsGiDirty();
+}
+
+//////////////////////////////////////////////////
 math::Color Ogre2Light::DiffuseColor() const
 {
   Ogre::ColourValue color = this->ogreLight->getDiffuseColour();
@@ -63,6 +70,7 @@ math::Color Ogre2Light::DiffuseColor() const
 void Ogre2Light::SetDiffuseColor(const math::Color &_color)
 {
   this->ogreLight->setDiffuseColour(_color.R(), _color.G(), _color.B());
+  this->scene->SetLightsGiDirty();
 }
 
 //////////////////////////////////////////////////
@@ -140,6 +148,7 @@ double Ogre2Light::Intensity() const
 void Ogre2Light::SetIntensity(double _intensity)
 {
   this->ogreLight->setPowerScale(_intensity * GZ_PI);
+  this->scene->SetLightsGiDirty();
 }
 
 //////////////////////////////////////////////////
@@ -168,6 +177,7 @@ void Ogre2Light::Destroy()
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   ogreSceneManager->destroySceneNode(this->ogreLight->getParentSceneNode());
   ogreSceneManager->destroyLight(this->ogreLight);
+  this->scene->SetLightsGiDirty();
 }
 
 //////////////////////////////////////////////////
@@ -198,6 +208,7 @@ void Ogre2Light::UpdateAttenuation()
 {
   this->ogreLight->setAttenuation(this->attenRange, this->attenConstant,
       this->attenLinear, this->attenQuadratic);
+  this->scene->SetLightsGiDirty();
 }
 
 //////////////////////////////////////////////////
@@ -223,6 +234,7 @@ math::Vector3d Ogre2DirectionalLight::Direction() const
 void Ogre2DirectionalLight::SetDirection(const math::Vector3d &_dir)
 {
   this->ogreLight->setDirection(Ogre2Conversions::Convert(_dir));
+  this->scene->SetLightsGiDirty();
 }
 
 //////////////////////////////////////////////////
@@ -261,6 +273,7 @@ math::Vector3d Ogre2SpotLight::Direction() const
 void Ogre2SpotLight::SetDirection(const math::Vector3d &_dir)
 {
   this->ogreLight->setDirection(Ogre2Conversions::Convert(_dir));
+  this->scene->SetLightsGiDirty();
 }
 
 //////////////////////////////////////////////////
@@ -273,6 +286,7 @@ math::Angle Ogre2SpotLight::InnerAngle() const
 void Ogre2SpotLight::SetInnerAngle(const math::Angle &_angle)
 {
   this->ogreLight->setSpotlightInnerAngle(Ogre2Conversions::Convert(_angle));
+  this->scene->SetLightsGiDirty();
 }
 
 //////////////////////////////////////////////////
@@ -285,6 +299,7 @@ math::Angle Ogre2SpotLight::OuterAngle() const
 void Ogre2SpotLight::SetOuterAngle(const math::Angle &_angle)
 {
   this->ogreLight->setSpotlightOuterAngle(Ogre2Conversions::Convert(_angle));
+  this->scene->SetLightsGiDirty();
 }
 
 //////////////////////////////////////////////////
@@ -297,6 +312,7 @@ double Ogre2SpotLight::Falloff() const
 void Ogre2SpotLight::SetFalloff(double _falloff)
 {
   this->ogreLight->setSpotlightFalloff(_falloff);
+  this->scene->SetLightsGiDirty();
 }
 
 //////////////////////////////////////////////////

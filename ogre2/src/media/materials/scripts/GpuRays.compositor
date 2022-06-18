@@ -1,26 +1,25 @@
 compositor_node GpuRays1stPass
 {
-  in 0 colorTexture
-  in 1 depthTexture
-  in 2 particleTexture
-  in 3 particleDepthTexture
-  in 4 rt_input
+  in 0 rt_input
 
-  // Create RTVs which explicitly use the depth buffers we want
-  // (and thus we can sample from it later). We can't
-  // override auto-created RTV from input channels (only local textures).
-  rtv particleTextureRtv
+  // TODO: These textures should be input so they can be shared
+  texture colorTexture target_width target_height PFG_R16_UNORM
+  texture depthTexture target_width target_height PFG_D32_FLOAT
+  texture particleTexture       target_width_scaled 0.5 target_height_scaled 0.5 PFG_RGBA8_UNORM
+  texture particleDepthTexture  target_width_scaled 0.5 target_height_scaled 0.5 PFG_D32_FLOAT
+
+  // Manually override the depth buffer from the auto-created RTV so
+  // it uses the one we want (and thus we can sample from it later)
+  rtv particleTexture
   {
-    colour	particleTexture
-    depth   particleDepthTexture
+    depth	particleDepthTexture
   }
-  rtv colorTextureRtv
+  rtv colorTexture
   {
-    colour	colorTexture
-    depth   depthTexture
+    depth	depthTexture
   }
 
-  target colorTextureRtv
+  target colorTexture
   {
     pass render_scene
     {
@@ -40,7 +39,7 @@ compositor_node GpuRays1stPass
     }
   }
 
-  target particleTextureRtv
+  target particleTexture
   {
     pass render_scene
     {
@@ -125,10 +124,6 @@ compositor_node GpuRays2ndPass
 workspace GpuRays1stPassWorkspace
 {
   connect_external 0 GpuRays1stPass 0
-  connect_external 1 GpuRays1stPass 1
-  connect_external 2 GpuRays1stPass 2
-  connect_external 3 GpuRays1stPass 3
-  connect_external 4 GpuRays1stPass 4
 }
 
 workspace GpuRays2ndPassWorkspace

@@ -922,10 +922,11 @@ void Ogre2GpuRays::Setup1stPass()
   Ogre::TextureGpuManager *textureMgr =
     ogreRoot->getRenderSystem()->getTextureGpuManager();
 
-  IGN_ASSERT(!this->dataPtr->colorTexture && !this->dataPtr->depthTexture &&
-               !this->dataPtr->particleTexture &&
-               !this->dataPtr->particleDepthTexture,
-             "Textures not destroyed!");
+  GZ_ASSERT(!this->dataPtr->colorTexture &&       //
+              !this->dataPtr->depthTexture &&     //
+              !this->dataPtr->particleTexture &&  //
+              !this->dataPtr->particleDepthTexture,
+            "Textures not destroyed!");
 
   Ogre::CompositorChannelVec compoChannels;
   compoChannels.reserve(5u);

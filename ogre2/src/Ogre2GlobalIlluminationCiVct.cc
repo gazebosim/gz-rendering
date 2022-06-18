@@ -108,8 +108,8 @@ void Ogre2CiVctCascade::Init(Ogre::VctCascadeSetting *_cascade,
 
 void Ogre2CiVctCascade::ReInit(Ogre::VctCascadeSetting *_cascade)
 {
-  IGN_ASSERT(this->dataPtr->cascade != nullptr,
-             "Calling Ogre2CiVctCascade::ReInit without Init!");
+  GZ_ASSERT(this->dataPtr->cascade != nullptr,
+            "Calling Ogre2CiVctCascade::ReInit without Init!");
   this->dataPtr->cascade = _cascade;
 }
 

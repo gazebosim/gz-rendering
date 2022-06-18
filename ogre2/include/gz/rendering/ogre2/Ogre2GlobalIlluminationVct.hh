@@ -99,13 +99,6 @@ namespace gz
       public: virtual bool ConserveMemory() const override;
 
       /// \internal
-      /// \brief Creates VctLighting ptr. This is delayed as much as
-      /// possible because it will allocate memory based on
-      /// GlobalIlluminationVct::SetResolution. Since that function may be
-      /// called too late, causing us to trash VRAM.
-      protected: void CreateVctLighting();
-
-      /// \internal
       /// \brief Sets this GI solution as enabled
       /// \param _enabled[in] True to enable, false otherwise
       protected: virtual void SetEnabled(bool _enabled) override;

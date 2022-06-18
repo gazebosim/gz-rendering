@@ -1050,6 +1050,7 @@ void Ogre2RenderEngine::CreateResources()
   }
 
   // register low level materials (ogre v1 materials)
+  // and compute shader stuff too
   std::vector< std::pair<std::string, std::string> > archNames;
   std::string p = mediaPath;
   if (common::isDirectory(p))
@@ -1066,6 +1067,20 @@ void Ogre2RenderEngine::CreateResources()
         std::make_pair(p + "/materials/scripts", "General"));
     archNames.push_back(
         std::make_pair(p + "/materials/textures", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/Compute/Tools", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/Compute/Tools/Any", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/Compute/Tools/GLSL", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/Compute/Tools/HLSL", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/Compute/Tools/Metal", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/VCT", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/VCT/Visualizer", "General"));
 
     for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
     {

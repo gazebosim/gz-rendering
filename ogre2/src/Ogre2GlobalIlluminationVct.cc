@@ -66,6 +66,9 @@ class gz::rendering::Ogre2GlobalIlluminationVctPrivate
 
   /// \brief See GlobalIlluminationVct::SetConserveMemory
   public: bool conserveMemory = false;
+
+  /// \brief See GlobalIlluminationVct::SetAnisotropic
+  public: bool anisotropic = true;
   // clang-format on
 };
 
@@ -174,16 +177,15 @@ bool Ogre2GlobalIlluminationVct::HighQuality() const
 //////////////////////////////////////////////////
 void Ogre2GlobalIlluminationVct::SetAnisotropic(bool _anisotropic)
 {
-  this->CreateVctLighting();
-  this->dataPtr->vctLighting->setAnisotropic(_anisotropic);
+  this->dataPtr->anisotropic = _anisotropic;
+  if (this->dataPtr->vctLighting)
+    this->dataPtr->vctLighting->setAnisotropic(_anisotropic);
 }
 
 //////////////////////////////////////////////////
 bool Ogre2GlobalIlluminationVct::Anisotropic() const
 {
-  if (!this->dataPtr->vctLighting)
-    return true;  // Same default as set in CreateVctLighting
-  return this->dataPtr->vctLighting->isAnisotropic();
+  return this->dataPtr->anisotropic;
 }
 
 //////////////////////////////////////////////////
@@ -256,20 +258,15 @@ void Ogre2GlobalIlluminationVct::Build()
 
   voxelizer->build(sceneManager);
 
-  this->CreateVctLighting();
-  this->LightingChanged();
-}
-
-//////////////////////////////////////////////////
-void Ogre2GlobalIlluminationVct::CreateVctLighting()
-{
-  if (this->dataPtr->vctLighting)
+  if (this->dataPtr->vctLighting == nullptr)
   {
     // Create Ogre::VctLighting
     this->dataPtr->vctLighting =
       new Ogre::VctLighting(Ogre::Id::generateNewId<Ogre::VctLighting>(),
                             this->dataPtr->voxelizer, true);
   }
+
+  this->LightingChanged();
 }
 
 //////////////////////////////////////////////////
@@ -278,10 +275,13 @@ void Ogre2GlobalIlluminationVct::SetEnabled(bool _enabled)
   Ogre::HlmsPbs *hlmsPbs = this->HlmsPbs();
   if (_enabled)
   {
-    CreateVctLighting();
     GZ_ASSERT(hlmsPbs->getVctLighting() == nullptr ||
-                hlmsPbs->getVctLighting() == this->dataPtr->vctLighting,
-              "There's already an active GI solution!");
+                 hlmsPbs->getVctLighting() == this->dataPtr->vctLighting,
+               "There's already an active GI solution!");
+    if (!this->dataPtr->vctLighting)
+    {
+      Build();
+    }
     hlmsPbs->setVctLighting(this->dataPtr->vctLighting);
     hlmsPbs->setVctFullConeCount(this->dataPtr->highQuality);
   }

@@ -402,11 +402,11 @@ void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
 //////////////////////////////////////////////////
 void OgreMovableText::SetupGeometry()
 {
-  IGN_ASSERT(this->font, "font class member is null");
+  GZ_ASSERT(this->font, "font class member is null");
 #if OGRE_VERSION_LT_1_11_0
-  IGN_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
+  GZ_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
 #else
-  IGN_ASSERT(this->ogreMaterial, "ogreMaterial class member is null");
+  GZ_ASSERT(this->ogreMaterial, "ogreMaterial class member is null");
 #endif
 
   Ogre::VertexDeclaration *decl = nullptr;
@@ -739,11 +739,11 @@ void OgreMovableText::UpdateColors()
   Ogre::RGBA *pDest{nullptr};
   unsigned int i;
 
-  IGN_ASSERT(this->font, "font class member is null");
+  GZ_ASSERT(this->font, "font class member is null");
 #if OGRE_VERSION_LT_1_11_0
-  IGN_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
+  GZ_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
 #else
-  IGN_ASSERT(this->ogreMaterial, "ogreMaterial class member is null");
+  GZ_ASSERT(this->ogreMaterial, "ogreMaterial class member is null");
 #endif
 
   // Convert to system-specific
@@ -860,9 +860,9 @@ void OgreMovableText::getRenderOperation(Ogre::RenderOperation &_op)
 const Ogre::MaterialPtr &OgreMovableText::getMaterial(void) const
 {
 #if OGRE_VERSION_LT_1_11_0
-  IGN_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
+  GZ_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
 #else
-  IGN_ASSERT(this->ogreMaterial, "ogreMaterial class member is null");
+  GZ_ASSERT(this->ogreMaterial, "ogreMaterial class member is null");
 #endif
   return this->ogreMaterial;
 }

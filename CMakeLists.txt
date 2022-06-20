@@ -15,7 +15,7 @@ set(IGN_CMAKE_VER ${ignition-cmake3_VERSION_MAJOR})
 #============================================================================
 # Set up the project
 #============================================================================
-ign_configure_project(
+gz_configure_project(
   REPLACE_IGNITION_INCLUDE_PATH gz/rendering
   VERSION_SUFFIX pre1)
 
@@ -32,28 +32,28 @@ option(USE_UNOFFICIAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the bui
 
 #--------------------------------------
 # Find ignition-math
-ign_find_package(ignition-math7 REQUIRED COMPONENTS eigen3)
+gz_find_package(ignition-math7 REQUIRED COMPONENTS eigen3)
 set(IGN_MATH_VER ${ignition-math7_VERSION_MAJOR})
 
 #--------------------------------------
 # Find ignition-common
-ign_find_package(ignition-common5 REQUIRED
+gz_find_package(ignition-common5 REQUIRED
   COMPONENTS graphics events geospatial)
 set(IGN_COMMON_VER ${ignition-common5_VERSION_MAJOR})
 
 #--------------------------------------
 # Find ignition-plugin
-ign_find_package(ignition-plugin2 REQUIRED COMPONENTS all)
+gz_find_package(ignition-plugin2 REQUIRED COMPONENTS all)
 set(IGN_PLUGIN_VER ${ignition-plugin2_VERSION_MAJOR})
 
 #--------------------------------------
 # Find ignition-utils
-ign_find_package(ignition-utils2 REQUIRED)
+gz_find_package(ignition-utils2 REQUIRED)
 set(IGN_UTILS_VER ${ignition-utils2_VERSION_MAJOR})
 
 #--------------------------------------
 # Find FreeImage
-ign_find_package(FreeImage VERSION 3.9
+gz_find_package(FreeImage VERSION 3.9
   REQUIRED_BY optix
   PRIVATE_FOR optix)
 
@@ -64,7 +64,7 @@ if ((NOT ${CMAKE_VERSION} VERSION_LESS 3.11) AND (NOT OpenGL_GL_PREFERENCE))
   set(OpenGL_GL_PREFERENCE "GLVND")
 endif()
 
-ign_find_package(OpenGL
+gz_find_package(OpenGL
   REQUIRED_BY ogre ogre2
   PKGCONFIG gl)
 
@@ -74,10 +74,10 @@ endif()
 
 #--------------------------------------
 # Find OGRE
-list(APPEND ign_ogre_components "RTShaderSystem" "Terrain" "Overlay" "Paging")
+list(APPEND gz_ogre_components "RTShaderSystem" "Terrain" "Overlay" "Paging")
 
-ign_find_package(IgnOGRE VERSION 1.9.0
-  COMPONENTS ${ign_ogre_components}
+gz_find_package(IgnOGRE VERSION 1.9.0
+  COMPONENTS ${gz_ogre_components}
   REQUIRED_BY ogre
   PRIVATE_FOR ogre)
 
@@ -106,14 +106,14 @@ endif()
 # Find OGRE2: first try to find OGRE2 built with PlanarReflections support and
 # fallback to look for OGRE2 without it. Both seems to works for ign-rendering.
 # See https://github.com/gazebosim/gz-rendering/issues/597
-ign_find_package(IgnOGRE2 VERSION 2.2.0
+gz_find_package(IgnOGRE2 VERSION 2.2.0
     COMPONENTS HlmsPbs HlmsUnlit Overlay PlanarReflections
     PRIVATE_FOR ogre2
     QUIET)
 
 if ("${OGRE2-PlanarReflections}" STREQUAL "OGRE2-PlanarReflections-NOTFOUND")
   message(STATUS "PlanarReflections component was not found. Try looking without it:")
-  ign_find_package(IgnOGRE2 VERSION 2.2.0
+  gz_find_package(IgnOGRE2 VERSION 2.2.0
     COMPONENTS HlmsPbs HlmsUnlit Overlay
     REQUIRED_BY ogre2
     PRIVATE_FOR ogre2)
@@ -137,7 +137,7 @@ if(NOT MSVC)
 
   #--------------------------------------
   # Find OptiX
-  ign_find_package(OptiX VERSION 3.8.0
+  gz_find_package(OptiX VERSION 3.8.0
       REQUIRED_BY optix
       PRIVATE_FOR optix)
 
@@ -174,11 +174,11 @@ endif()
 configure_file("${PROJECT_SOURCE_DIR}/cppcheck.suppress.in"
                ${PROJECT_BINARY_DIR}/cppcheck.suppress)
 
-ign_configure_build(QUIT_IF_BUILD_ERRORS
+gz_configure_build(QUIT_IF_BUILD_ERRORS
     COMPONENTS ${RENDERING_COMPONENTS})
 
 if (HAVE_OGRE2)
-  # Must be done after ign_configure_build or else Terra
+  # Must be done after gz_configure_build or else Terra
   # won't see IGN_ADD_fPIC_TO_LIBRARIES
   add_subdirectory(ogre2/src/terrain/Terra)
 endif()
@@ -186,7 +186,7 @@ endif()
 #============================================================================
 # Create package information
 #============================================================================
-ign_create_packages()
+gz_create_packages()
 
 #============================================================================
 # Configure documentation
@@ -194,7 +194,7 @@ ign_create_packages()
 configure_file(${CMAKE_SOURCE_DIR}/api.md.in ${CMAKE_BINARY_DIR}/api.md)
 configure_file(${CMAKE_SOURCE_DIR}/tutorials.md.in ${CMAKE_BINARY_DIR}/tutorials.md)
 
-ign_create_docs(
+gz_create_docs(
   API_MAINPAGE_MD "${CMAKE_BINARY_DIR}/api.md"
   TUTORIALS_MAINPAGE_MD "${CMAKE_BINARY_DIR}/tutorials.md"
   IMAGE_PATH_DIRS "${CMAKE_SOURCE_DIR}/tutorials/img"

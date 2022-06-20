@@ -133,13 +133,13 @@ void Ogre2Light::SetAttenuationRange(double _range)
 //////////////////////////////////////////////////
 double Ogre2Light::Intensity() const
 {
-  return this->ogreLight->getPowerScale() / IGN_PI;
+  return this->ogreLight->getPowerScale() / GZ_PI;
 }
 
 //////////////////////////////////////////////////
 void Ogre2Light::SetIntensity(double _intensity)
 {
-  this->ogreLight->setPowerScale(_intensity * IGN_PI);
+  this->ogreLight->setPowerScale(_intensity * GZ_PI);
 }
 
 //////////////////////////////////////////////////

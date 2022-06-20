@@ -384,7 +384,7 @@ void Ogre2RenderEngine::CreateLogger()
 {
   // create log file path
   std::string logPath;
-  gz::common::env(IGN_HOMEDIR, logPath);
+  gz::common::env(GZ_HOMEDIR, logPath);
   logPath = common::joinPaths(logPath, ".ignition", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre2.log");
@@ -672,7 +672,20 @@ void Ogre2RenderEngine::CreateRenderSystem()
 void Ogre2RenderEngine::RegisterHlms()
 {
   const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
-  env = (env) ? env : std::getenv("IGN_RENDERING_RESOURCE_PATH");
+
+  // TODO(CH3): Deprecated. Remove on tock.
+  if (!env)
+  {
+    env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+
+    if (env)
+    {
+      gzwarn << "Using deprecated environment variable "
+             << "[IGN_RENDERING_RESOURCE_PATH]. Please use "
+             << "[GZ_RENDERING_RESOURCE_PATH] instead." << std::endl;
+    }
+  }
+
   std::string resourcePath = (env) ? std::string(env) :
       GZ_RENDERING_RESOURCE_PATH;
   // install path
@@ -866,7 +879,20 @@ void Ogre2RenderEngine::RegisterHlms()
 void Ogre2RenderEngine::CreateResources()
 {
   const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
-  env = (env) ? env : std::getenv("IGN_RENDERING_RESOURCE_PATH");
+
+  // TODO(CH3): Deprecated. Remove on tock.
+  if (!env)
+  {
+    env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+
+    if (env)
+    {
+      gzwarn << "Using deprecated environment variable "
+             << "[IGN_RENDERING_RESOURCE_PATH]. Please use "
+             << "[GZ_RENDERING_RESOURCE_PATH] instead." << std::endl;
+    }
+  }
+
   std::string resourcePath = (env) ? std::string(env) :
       GZ_RENDERING_RESOURCE_PATH;
   // install path
@@ -1078,5 +1104,5 @@ Ogre::CompositorWorkspaceListener *Ogre2RenderEngine::TerraWorkspaceListener()
 }
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(gz::rendering::Ogre2RenderEnginePlugin,
+GZ_ADD_PLUGIN(gz::rendering::Ogre2RenderEnginePlugin,
                     gz::rendering::RenderEnginePlugin)

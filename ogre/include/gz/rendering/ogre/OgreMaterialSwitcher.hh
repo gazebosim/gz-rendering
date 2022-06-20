@@ -103,9 +103,9 @@ namespace gz
 
       /// \brief Color dictionary that maps the unique color value to
       /// renderable name
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       private: std::map<unsigned int, std::string> colorDict;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Increment unique color value that will be assigned to the
       /// next renderable

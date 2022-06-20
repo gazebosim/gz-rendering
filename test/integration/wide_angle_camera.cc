@@ -114,7 +114,7 @@ void WideAngleCameraTest::WideAngleCamera(
   CameraLens lens;
   lens.SetCustomMappingFunction(1.05, 4.0, AFT_TAN, 1.0, 0.0);
   lens.SetType(MFT_CUSTOM);
-  lens.SetCutOffAngle(IGN_PI);
+  lens.SetCutOffAngle(GZ_PI);
 
   camera->SetLens(lens);
   camera->SetHFOV(2.6);
@@ -265,7 +265,7 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
   CameraLens lens;
   lens.SetCustomMappingFunction(1.05, 4.0, AFT_TAN, 1.0, 0.0);
   lens.SetType(MFT_CUSTOM);
-  lens.SetCutOffAngle(IGN_PI);
+  lens.SetCutOffAngle(GZ_PI);
 
   camera->SetLens(lens);
   camera->SetHFOV(2.6);

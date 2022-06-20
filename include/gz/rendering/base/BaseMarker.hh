@@ -89,10 +89,10 @@ namespace gz
                   const gz::math::Vector3d &_value) override;
 
       /// \brief Life time of a marker
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: std::chrono::steady_clock::duration lifetime =
           std::chrono::steady_clock::duration::zero();
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief Layer at which the marker will reside
       protected: int32_t layer = 0;

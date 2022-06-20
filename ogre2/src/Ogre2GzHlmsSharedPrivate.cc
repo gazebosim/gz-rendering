@@ -79,7 +79,7 @@ namespace gz
         this->currPerObjectDataPtr = reinterpret_cast<float *>(
           constBuffer->map(0u, constBuffer->getNumElements()));
 
-        IGN_ASSERT(
+        GZ_ASSERT(
           _currConstBufferIdx <= _constBuffers.size() &&
             _startMappedConstBuffer != nullptr,
           "This should not happen. Base class must've bound something");
@@ -97,7 +97,7 @@ namespace gz
       //    (use a TexBufferPacked if we're past limits)
       //  - There is a bug and currPerObjectDataBuffer got out of sync
       //    with mCurrentConstBuffer
-      IGN_ASSERT((offset + numFloatsPerObject) * sizeof(float) <=
+      GZ_ASSERT((offset + numFloatsPerObject) * sizeof(float) <=
                    this->currPerObjectDataBuffer->getTotalSizeBytes(),
                  "Out of bounds!");
 

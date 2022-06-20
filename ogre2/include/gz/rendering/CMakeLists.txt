@@ -1,1 +1,1 @@
-ign_install_all_headers(COMPONENT ogre2)
+gz_install_all_headers(COMPONENT ogre2)

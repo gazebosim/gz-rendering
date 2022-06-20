@@ -681,9 +681,9 @@ void Ogre2GpuRays::ConfigureCamera()
   // Each cubemap texture covers 90 deg FOV so determine number of samples
   // within the view for both horizontal and vertical FOV
   unsigned int hs = static_cast<unsigned int>(
-      IGN_PI * 0.5 / hfovAngle.Radian() * this->RangeCount());
+      GZ_PI * 0.5 / hfovAngle.Radian() * this->RangeCount());
   unsigned int vs = static_cast<unsigned int>(
-      IGN_PI * 0.5 / vfovAngle * this->VerticalRangeCount());
+      GZ_PI * 0.5 / vfovAngle * this->VerticalRangeCount());
 
   // get the max number from the two
   unsigned int v = std::max(hs, vs);
@@ -1072,7 +1072,7 @@ void Ogre2GpuRays::Setup1stPass()
       // Id so we can run custom code in our CompositorWorkspaceListener
       passScene->mIdentifier = kLaserRetroMainDepthPassId;
       // set camera custom visibility mask when rendering laser retro
-      passScene->mVisibilityMask = IGN_VISIBILITY_ALL &
+      passScene->mVisibilityMask = GZ_VISIBILITY_ALL &
           ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
     }
 

@@ -927,7 +927,7 @@ Ogre::MaterialPtr Ogre2Material::Material()
         "plain_color_fs.metal");
       break;
     default:
-      IGN_ASSERT(false, "Impossible path!");
+      GZ_ASSERT(false, "Impossible path!");
     }
 
   }

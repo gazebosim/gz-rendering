@@ -60,11 +60,11 @@ namespace gz
 
       public: virtual bool ContainsValue(ConstTPtr _value) const;
 
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: virtual TPtr Get(const std::string &_key) const;
 
       public: virtual TPtr GetByIndex(unsigned int _index) const;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       public: virtual bool Put(const std::string &_key, TPtr _value);
 
@@ -267,9 +267,9 @@ namespace gz
 
       public: virtual TStorePtr RemoveStoreImpl(TStoreIter _iter);
 
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: TStoreList stores;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
 
     //////////////////////////////////////////////////

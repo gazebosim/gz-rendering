@@ -174,7 +174,7 @@ void Ogre2Scene::SetAmbientLight(const math::Color &_color)
 //////////////////////////////////////////////////
 void Ogre2Scene::PreRender()
 {
-  IGN_ASSERT((this->LegacyAutoGpuFlush() ||
+  GZ_ASSERT((this->LegacyAutoGpuFlush() ||
               this->dataPtr->frameUpdateStarted == false),
              "Scene::PreRender called again before calling Scene::PostRender. "
              "See Scene::SetCameraPassCountPerGpuFlush for details");
@@ -218,7 +218,7 @@ void Ogre2Scene::PreRender()
 //////////////////////////////////////////////////
 void Ogre2Scene::PostRender()
 {
-  IGN_ASSERT((this->LegacyAutoGpuFlush() ||
+  GZ_ASSERT((this->LegacyAutoGpuFlush() ||
               this->dataPtr->frameUpdateStarted == true),
              "Scene::PostRender called again before calling Scene::PreRender. "
              "See Scene::SetCameraPassCountPerGpuFlush for details");
@@ -303,7 +303,7 @@ void Ogre2Scene::StartRendering(Ogre::Camera *_camera)
   }
   else
   {
-    IGN_ASSERT(this->dataPtr->frameUpdateStarted == true,
+    GZ_ASSERT(this->dataPtr->frameUpdateStarted == true,
                "Started rendering without first calling Scene::PreRender. "
                "See Scene::SetCameraPassCountPerGpuFlush for details");
   }

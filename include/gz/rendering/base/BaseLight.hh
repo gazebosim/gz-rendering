@@ -239,8 +239,8 @@ namespace gz
     {
       T::Reset();
       this->SetDirection(0, 0, -1);
-      this->SetInnerAngle(IGN_PI / 4.5);
-      this->SetOuterAngle(IGN_PI / 4.0);
+      this->SetInnerAngle(GZ_PI / 4.5);
+      this->SetOuterAngle(GZ_PI / 4.0);
       this->SetFalloff(1.0);
     }
     }

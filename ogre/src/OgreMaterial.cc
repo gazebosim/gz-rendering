@@ -324,7 +324,8 @@ std::string OgreMaterial::NormalMap() const
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetNormalMap(const std::string &_name)
+void OgreMaterial::SetNormalMap(const std::string &_name,
+  const std::shared_ptr<common::Image> &_img)
 {
   if (_name.empty())
   {

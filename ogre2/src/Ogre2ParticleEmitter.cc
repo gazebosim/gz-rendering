@@ -488,7 +488,7 @@ void Ogre2ParticleEmitter::CreateParticleSystem()
 
   this->dataPtr->ps->setVisibilityFlags(kParticleVisibilityFlags);
 
-  IGN_ASSERT(kOgreEmitterTypes.size() == EmitterType::EM_NUM_EMITTERS,
+  GZ_ASSERT(kOgreEmitterTypes.size() == EmitterType::EM_NUM_EMITTERS,
              "The nummer of supported emitters does not match the number of "
              "Ogre emitter types.");
 

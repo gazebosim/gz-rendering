@@ -50,7 +50,7 @@ namespace gz
         /// \brief Total number of rendering modes
         IORM_COUNT,
       };
-    }  // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+    }  // namespace GZ_RENDERING_VERSION_NAMESPACE
   }    // namespace rendering
 }  // namespace gz
 

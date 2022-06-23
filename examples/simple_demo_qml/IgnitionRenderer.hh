@@ -22,8 +22,8 @@
 
 #include <gz/rendering.hh>
 
-/// \brief Ignition renderer class. This manages  the initialisation
-/// and update of an Ignition rendering engine instance and makes the
+/// \brief Gazebo renderer class. This manages the initialisation
+/// and update of a Gazebo rendering engine instance and makes the
 /// rendered texture available in a shared context for an application
 /// to apply to a render surface.
 class IgnitionRenderer

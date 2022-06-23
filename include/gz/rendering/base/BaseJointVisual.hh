@@ -393,7 +393,7 @@ namespace gz
       double angle = acos(cosTheta);
       gz::math::Quaterniond quat;
       // check the parallel case
-      if (gz::math::equal(angle, IGN_PI))
+      if (gz::math::equal(angle, GZ_PI))
         quat.SetFromAxisAngle(u.Perpendicular(), angle);
       else
         quat.SetFromAxisAngle((v.Cross(u)).Normalize(), angle);

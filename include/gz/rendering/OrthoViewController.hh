@@ -81,10 +81,10 @@ namespace gz
       private: virtual void Resize(const unsigned int _width,
                                   const unsigned int _height);
 
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief Private data pointer
       public: std::unique_ptr<OrthoViewControllerPrivate> dataPtr;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

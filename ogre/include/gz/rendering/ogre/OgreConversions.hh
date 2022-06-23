@@ -82,13 +82,13 @@ namespace gz
       /// return Ign-math angle
       public: static math::Angle Convert(const Ogre::Radian &_angle);
 
-      /// \brief Ogre Matrix4 to ignition math Matrix4d
+      /// \brief Ogre Matrix4 to Gazebo Math Matrix4d
       /// \param[in] _m Ogre Matrix4
-      /// \return ignition math Matrix4d
+      /// \return Gazebo Math Matrix4d
       public: static math::Matrix4d Convert(const Ogre::Matrix4 &_m);
 
-      /// \brief Ignition math Matrix4d to Ogre Matrix4
-      /// \param[in] _m ignition math Matrix4d
+      /// \brief Gazebo Math Matrix4d to Ogre Matrix4
+      /// \param[in] _m Gazebo Math Matrix4d
       /// \return Ogre Matrix4
       public: static Ogre::Matrix4 Convert(const math::Matrix4d &_m);
 

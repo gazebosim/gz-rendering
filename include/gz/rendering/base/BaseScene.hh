@@ -35,9 +35,9 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     class GZ_RENDERING_VISIBLE BaseScene :
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public std::enable_shared_from_this<BaseScene>,
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
       public virtual Scene
     {
       protected: BaseScene(unsigned int _id, const std::string &_name);
@@ -849,9 +849,9 @@ namespace gz
 
       protected: unsigned int id;
 
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: std::string name;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
 
       protected: std::chrono::steady_clock::duration time =
         std::chrono::steady_clock::duration::zero();
@@ -880,9 +880,9 @@ namespace gz
 
       private: unsigned int nextObjectId;
 
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       private: NodeStorePtr nodes;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
     }
   }

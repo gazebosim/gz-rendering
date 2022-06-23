@@ -173,7 +173,7 @@ namespace gz
       // Compute radius of sphere with density of lead and equivalent mass.
       double sphereRadius;
       double densityLead = 11340;
-      sphereRadius = cbrt((0.75 * this->Mass()) / (IGN_PI * densityLead));
+      sphereRadius = cbrt((0.75 * this->Mass()) / (GZ_PI * densityLead));
 
       return sphereRadius;
     }

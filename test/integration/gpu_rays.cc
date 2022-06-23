@@ -182,8 +182,8 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   // First place 2 of 3 boxes within range and verify range values.
   // then move all 3 boxes out of range and verify range values
 
-  const double hMinAngle = -IGN_PI/2.0;
-  const double hMaxAngle = IGN_PI/2.0;
+  const double hMinAngle = -GZ_PI/2.0;
+  const double hMaxAngle = GZ_PI/2.0;
   const double minRange = 0.1;
   const double maxRange = 10.0;
   const int hRayCount = 320;
@@ -221,7 +221,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   // Create a second ray caster rotated
   gz::math::Pose3d testPose2(gz::math::Vector3d(0, 0, 0.1),
-      gz::math::Quaterniond(IGN_PI/2.0, 0, 0));
+      gz::math::Quaterniond(GZ_PI/2.0, 0, 0));
 
   GpuRaysPtr gpuRays2 = scene->CreateGpuRays("gpu_rays_2");
   gpuRays2->SetWorldPosition(testPose2.Pos());
@@ -372,10 +372,10 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   // Place a box within range and verify range values,
   // then move the box out of range and verify range values
 
-  double hMinAngle = -IGN_PI/2.0;
-  double hMaxAngle = IGN_PI/2.0;
-  double vMinAngle = -IGN_PI/4.0;
-  double vMaxAngle = IGN_PI/4.0;
+  double hMinAngle = -GZ_PI/2.0;
+  double hMaxAngle = GZ_PI/2.0;
+  double vMinAngle = -GZ_PI/4.0;
+  double vMaxAngle = GZ_PI/4.0;
   double minRange = 0.1;
   double maxRange = 5.0;
   unsigned int hRayCount = 640;
@@ -513,8 +513,8 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
   // Test GPU ray with 3 boxes in the world.
   // Add noise in btewen GPU ray and box in the center
 
-  const double hMinAngle = -IGN_PI / 2.0;
-  const double hMaxAngle = IGN_PI / 2.0;
+  const double hMinAngle = -GZ_PI / 2.0;
+  const double hMaxAngle = GZ_PI / 2.0;
   const double minRange = 0.12;
   const double maxRange = 10.0;
   const int hRayCount = 320;
@@ -754,7 +754,7 @@ void GpuRaysTest::SingleRay(const std::string &_renderEngine)
 
   // Create first ray caster
   gz::math::Pose3d testPose(gz::math::Vector3d(0, 0, 7),
-      gz::math::Quaterniond(0, IGN_PI/2.0, 0));
+      gz::math::Quaterniond(0, GZ_PI/2.0, 0));
 
   GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays");
   gpuRays->SetWorldPosition(testPose.Pos());

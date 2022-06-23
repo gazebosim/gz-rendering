@@ -57,7 +57,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   EXPECT_TRUE(camera != nullptr);
 
   camera->SetLocalPosition(0.0, 0.0, 15);
-  camera->SetLocalRotation(0.0, IGN_PI / 2, 0.0);
+  camera->SetLocalRotation(0.0, GZ_PI / 2, 0.0);
 
   unsigned int width = 640u;
   unsigned int height = 480u;
@@ -154,7 +154,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
 
   // Move camera closer to box
   camera->SetLocalPosition(0.0, 0.0, 7.0);
-  camera->SetLocalRotation(0.0, IGN_PI / 2, 0.0);
+  camera->SetLocalRotation(0.0, GZ_PI / 2, 0.0);
 
   result = screenToScene(centerClick, camera, rayQuery, rayResult);
 

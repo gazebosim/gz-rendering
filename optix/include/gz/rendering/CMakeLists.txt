@@ -1,1 +1,1 @@
-ign_install_all_headers(COMPONENT optix)
+gz_install_all_headers(COMPONENT optix)

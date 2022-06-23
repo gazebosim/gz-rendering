@@ -251,7 +251,7 @@ void Ogre2Heightmap::Init()
   Ogre::Hlms *hlmsTerra =
           ogreRoot->getHlmsManager()->getHlms(Ogre::HLMS_USER3);
 
-  IGN_ASSERT(dynamic_cast<Ogre::HlmsTerra*>(hlmsTerra),
+  GZ_ASSERT(dynamic_cast<Ogre::HlmsTerra*>(hlmsTerra),
              "HlmsTerra incorrectly setup, memory corrupted, or "
              "HlmsTerra::getType changed while this code is out of sync");
 
@@ -261,7 +261,7 @@ void Ogre2Heightmap::Init()
               datablockName, datablockName, Ogre::HlmsMacroblock(),
               Ogre::HlmsBlendblock(), Ogre::HlmsParamVec(), false);
 
-  IGN_ASSERT(dynamic_cast<Ogre::HlmsTerraDatablock *>(datablockBase) != nullptr,
+  GZ_ASSERT(dynamic_cast<Ogre::HlmsTerraDatablock *>(datablockBase) != nullptr,
              "Corruption detected. This is impossible.");
 
   Ogre::HlmsTerraDatablock *datablock =

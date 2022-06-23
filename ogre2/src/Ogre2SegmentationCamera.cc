@@ -182,7 +182,7 @@ void Ogre2SegmentationCamera::CreateCamera()
   this->ogreCamera->detachFromParent();
   this->ogreNode->attachObject(this->ogreCamera);
 
-  // rotate to ignition gazebo coord.
+  // rotate to Gazebo Sim coord.
   this->ogreCamera->yaw(Ogre::Degree(-90));
   this->ogreCamera->roll(Ogre::Degree(-90));
   this->ogreCamera->setFixedYawAxis(false);

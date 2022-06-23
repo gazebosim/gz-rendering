@@ -97,7 +97,7 @@ void buildScene(ScenePtr _scene)
   camera->SetFarClipPlane(6);
   camera->SetNearClipPlane(1.0);
   camera->SetAspectRatio(1.333);
-  camera->SetHFOV(IGN_PI / 2);
+  camera->SetHFOV(GZ_PI / 2);
   camera->SetAmbientTemperature(293.0);
   camera->SetAmbientTemperatureRange(5.0);
   camera->SetLinearResolution(0.01);

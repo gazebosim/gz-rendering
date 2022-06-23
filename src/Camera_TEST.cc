@@ -341,7 +341,7 @@ void CameraTest::VisibilityMask(const std::string &_renderEngine)
   EXPECT_TRUE(camera != nullptr);
 
   // chek initial value
-  EXPECT_EQ(static_cast<uint32_t>(IGN_VISIBILITY_ALL),
+  EXPECT_EQ(static_cast<uint32_t>(GZ_VISIBILITY_ALL),
       camera->VisibilityMask());
 
   // check setting new values

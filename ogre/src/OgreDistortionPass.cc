@@ -56,10 +56,10 @@ namespace gz
 
       /// \brief Distortion compositor listener
       /// uses <gz/utils/ImplPtr.hh> from ign-rendering7
-      IGN_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: std::shared_ptr<DistortionCompositorListener>
           distortionCompositorListener;
-      IGN_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
 
     class DistortionCompositorListener
@@ -546,4 +546,4 @@ void OgreDistortionPass::CalculateAndApplyDistortionScale()
     this->dataPtr->distortionScale = gz::math::Vector2d(1, 1);
 }
 
-IGN_RENDERING_REGISTER_RENDER_PASS(OgreDistortionPass, DistortionPass)
+GZ_RENDERING_REGISTER_RENDER_PASS(OgreDistortionPass, DistortionPass)

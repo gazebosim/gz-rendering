@@ -352,7 +352,7 @@ void AllShapesSceneBuilder::BuildScene(ScenePtr _scene)
   VisualPtr box = _scene->CreateVisual(BOX);
   box->AddGeometry(_scene->CreateBox());
   box->SetLocalPosition(2.2, -0.8, 0.2);
-  box->SetLocalRotation(IGN_PI / 4, 0.0, IGN_PI / 4);
+  box->SetLocalRotation(GZ_PI / 4, 0.0, GZ_PI / 4);
   box->SetLocalScale(0.5, 0.5, 0.5);
   box->SetMaterial("Yellow");
   root->AddChild(box);
@@ -523,7 +523,7 @@ void TransparencySceneBuilder::BuildScene(ScenePtr _scene)
   VisualPtr background = _scene->CreateVisual();
   background->AddGeometry(_scene->CreatePlane());
   background->SetLocalPosition(4, 0, 4);
-  background->SetLocalRotation(0, -IGN_PI / 2, 0);
+  background->SetLocalRotation(0, -GZ_PI / 2, 0);
   background->SetLocalScale(10, 10, 1);
   background->SetMaterial("TextureWhite");
   root->AddChild(background);
@@ -631,7 +631,7 @@ void BoxSceneBuilder::BuildScene(ScenePtr _scene)
   VisualPtr box = _scene->CreateVisual(BOX);
   box->AddGeometry(_scene->CreateBox());
   box->SetLocalPosition(3.0, 0.0, 0.5);
-  box->SetLocalRotation(0.0, 0.0, IGN_PI / 4);
+  box->SetLocalRotation(0.0, 0.0, GZ_PI / 4);
   box->SetMaterial("Red");
   root->AddChild(box);
 }

@@ -15,8 +15,16 @@ release will remove the deprecated code.
 2. The `ignition` namespace is deprecated and will be removed in future versions.  Use `gz` instead.
 3. Header files under `ignition/...` are deprecated and will be removed in future versions.
    Use `gz/...` instead.
-* The environment variable `IGN_RENDERING_PLUGIN_PATH` is deprecated. Use `GZ_RENDERING_PLUGIN_PATH` instead.
-
+4. The environment variable `IGN_RENDERING_PLUGIN_PATH` is deprecated. Use `GZ_RENDERING_PLUGIN_PATH` instead.
+5. The environment variable `IGN_RENDERING_RESOURCE_PATH` is deprecated. Use `GZ_RENDERING_RESOURCE_PATH` instead.
+6. The following `IGN_` prefixed macros are deprecated and will be removed in future versions.
+   Additionally, they will only be available when including the corresponding `ignition/...` header.
+   Use the `GZ_` prefix instead.
+    1. `IGN_RENDERING_REGISTER_RENDER_PASS`
+    2. `IGN_VISIBILITY_ALL`
+    3. `IGN_VISIBILITY_SELECTION`
+    4. `IGN_VISIBILITY_GUI`
+    5. `IGN_VISIBILITY_SELECTABLE`
 ## Gazebo Rendering 6.2.1 to 6.X
 
 ### Modifications

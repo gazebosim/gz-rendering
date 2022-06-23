@@ -334,7 +334,7 @@ void OgreRenderEngine::CreateLogger()
 {
   // create log file path
   std::string logPath;
-  gz::common::env(IGN_HOMEDIR, logPath);
+  gz::common::env(GZ_HOMEDIR, logPath);
   logPath = common::joinPaths(logPath, ".ignition", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre.log");
@@ -567,7 +567,20 @@ void OgreRenderEngine::CreateResources()
   // TODO(anyone) support loading resources from user specified paths
   std::list<std::string> paths;
   const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
-  env = (env) ? env : std::getenv("IGN_RENDERING_RESOURCE_PATH");
+
+  // TODO(CH3): Deprecated. Remove on tock.
+  if (!env)
+  {
+    env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
+
+    if (env)
+    {
+      gzwarn << "Using deprecated environment variable "
+             << "[IGN_RENDERING_RESOURCE_PATH]. Please use "
+             << "[GZ_RENDERING_RESOURCE_PATH] instead." << std::endl;
+    }
+  }
+
   std::string resourcePath = (env) ? std::string(env) :
       GZ_RENDERING_RESOURCE_PATH;
   // install path
@@ -823,5 +836,5 @@ Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
 #endif
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(gz::rendering::OgreRenderEnginePlugin,
+GZ_ADD_PLUGIN(gz::rendering::OgreRenderEnginePlugin,
                     gz::rendering::RenderEnginePlugin)

@@ -224,7 +224,7 @@ namespace gz
       /// if _img is set
       /// \param[in] _img Image data
       public: virtual void SetTexture(const std::string &_texture,
-                                      const std::shared_ptr<common::Image> &_img = nullptr) = 0;
+        const std::shared_ptr<common::Image> &_img = nullptr) = 0;
 
       /// \brief Get the texture data
       /// \return Pointer the common::Image with the data if the texture was loaded
@@ -242,9 +242,17 @@ namespace gz
       /// \return URI of the normal map file
       public: virtual std::string NormalMap() const = 0;
 
+      /// \brief Get the normal map data
+      /// \return Pointer the common::Image with the data if the texture was loaded
+      /// from memory
+      public: virtual std::shared_ptr<common::Image> NormalMapData() const = 0;
+
       /// \brief Set the material normal map
-      /// \param[in] _normalMap URI of the new normal map file
-      public: virtual void SetNormalMap(const std::string &_normalMap) = 0;
+      /// \param[in] _normalMap URI of the new normal map file,
+      /// or identifying name if map was set from raw data
+      /// \param[in] _img Image data
+      public: virtual void SetNormalMap(const std::string &_normalMap,
+        const std::shared_ptr<common::Image> &_img = nullptr) = 0;
 
       /// \brief Removes any normal map mapped to this material
       public: virtual void ClearNormalMap() = 0;
@@ -257,10 +265,18 @@ namespace gz
       /// \return URI of the roughness map file
       public: virtual std::string RoughnessMap() const = 0;
 
+      /// \brief Get the roughness map data
+      /// \return Pointer the common::Image with the data if the texture was loaded
+      /// from memory
+      public: virtual std::shared_ptr<common::Image> RoughnessMapData() const = 0;
+
       /// \brief Set the material roughness map
-      /// \param[in] _roughnessMap URI of the new roughness map file
+      /// \param[in] _roughnessMap URI of the new roughness map file,
+      /// or identifying name if map was set from raw data
+      /// \param[in] _img Image data
       public: virtual void SetRoughnessMap(
-        const std::string &_roughnessMap) = 0;
+        const std::string &_roughnessMap,
+        const std::shared_ptr<common::Image> &_img = nullptr) = 0;
 
       /// \brief Removes any roughness map mapped to this material
       public: virtual void ClearRoughnessMap() = 0;
@@ -273,10 +289,18 @@ namespace gz
       /// \return URI of the metalness map file
       public: virtual std::string MetalnessMap() const = 0;
 
+      /// \brief Get the metalness map data
+      /// \return Pointer the common::Image with the data if the texture was loaded
+      /// from memory
+      public: virtual std::shared_ptr<common::Image> MetalnessMapData() const = 0;
+
       /// \brief Set the material metalness map
-      /// \param[in] _metalnessMap URI of the new metalness map file
+      /// \param[in] _metalnessMap URI of the new metalness map file,
+      /// or identifying name if map was set from raw data
+      /// \param[in] _img Image data
       public: virtual void SetMetalnessMap(
-        const std::string &_metalnessMap) = 0;
+        const std::string &_metalnessMap,
+        const std::shared_ptr<common::Image> &_img = nullptr) = 0;
 
       /// \brief Removes any metalness map mapped to this material
       public: virtual void ClearMetalnessMap() = 0;

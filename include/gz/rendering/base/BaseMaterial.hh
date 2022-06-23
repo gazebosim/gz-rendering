@@ -163,7 +163,7 @@ namespace gz
 
       // Documentation inherited
       public: virtual void SetTexture(const std::string &_texture,
-                                      const std::shared_ptr<common::Image> &_img = nullptr) override;
+        const std::shared_ptr<common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual std::shared_ptr<common::Image> TextureData() const override;
@@ -178,8 +178,11 @@ namespace gz
       public: virtual std::string NormalMap() const override;
 
       // Documentation inherited
-      public: virtual void SetNormalMap(const std::string &_normalMap)
-          override;
+      public: virtual std::shared_ptr<common::Image> NormalMapData() const override;
+
+      // Documentation inherited
+      public: virtual void SetNormalMap(const std::string &_normalMap,
+        const std::shared_ptr<common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual void ClearNormalMap() override;
@@ -191,8 +194,11 @@ namespace gz
       public: virtual std::string RoughnessMap() const override;
 
       // Documentation inherited
-      public: virtual void SetRoughnessMap(const std::string &_roughnessMap)
-          override;
+      public: virtual std::shared_ptr<common::Image> RoughnessMapData() const override;
+
+      // Documentation inherited
+      public: virtual void SetRoughnessMap(const std::string &_roughnessMap,
+        const std::shared_ptr<common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual void ClearRoughnessMap() override;
@@ -204,8 +210,11 @@ namespace gz
       public: virtual std::string MetalnessMap() const override;
 
       // Documentation inherited
-      public: virtual void SetMetalnessMap(const std::string &_metalnessMap)
-          override;
+      public: virtual std::shared_ptr<common::Image> MetalnessMapData() const override;
+
+      // Documentation inherited
+      public: virtual void SetMetalnessMap(const std::string &_metalnessMap,
+        const std::shared_ptr<common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual void ClearMetalnessMap() override;
@@ -713,7 +722,8 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetTexture(const std::string &, const std::shared_ptr<common::Image> &)
+    void BaseMaterial<T>::SetTexture(const std::string &,
+        const std::shared_ptr<common::Image> &)
     {
       // no op
     }
@@ -748,7 +758,15 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetNormalMap(const std::string &)
+    std::shared_ptr<common::Image> BaseMaterial<T>::NormalMapData() const
+    {
+      return {};
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetNormalMap(const std::string &,
+        const std::shared_ptr<common::Image> &)
     {
       // no op
     }
@@ -776,7 +794,15 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetRoughnessMap(const std::string &)
+    std::shared_ptr<common::Image> BaseMaterial<T>::RoughnessMapData() const
+    {
+      return {};
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetRoughnessMap(const std::string &,
+        const std::shared_ptr<common::Image> &)
     {
       // no op
     }
@@ -804,7 +830,15 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetMetalnessMap(const std::string &)
+    std::shared_ptr<common::Image> BaseMaterial<T>::MetalnessMapData() const
+    {
+      return {};
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetMetalnessMap(const std::string &,
+        const std::shared_ptr<common::Image> &)
     {
       // no op
     }
@@ -972,9 +1006,9 @@ namespace gz
       this->SetReceiveShadows(_material->ReceiveShadows());
       this->SetReflectionEnabled(_material->ReflectionEnabled());
       this->SetTexture(_material->Texture(), _material->TextureData());
-      this->SetNormalMap(_material->NormalMap());
-      this->SetRoughnessMap(_material->RoughnessMap());
-      this->SetMetalnessMap(_material->MetalnessMap());
+      this->SetNormalMap(_material->NormalMap(), _material->NormalMapData());
+      this->SetRoughnessMap(_material->RoughnessMap(), _material->RoughnessMapData());
+      this->SetMetalnessMap(_material->MetalnessMap(), _material->MetalnessMapData());
       this->SetRoughness(_material->Roughness());
       this->SetMetalness(_material->Metalness());
       this->SetEnvironmentMap(_material->EnvironmentMap());
@@ -1017,9 +1051,9 @@ namespace gz
       const common::Pbr *pbrMat = _material.PbrMaterial();
       if (!pbrMat)
         pbrMat = &kDefaultPbr;
-      this->SetNormalMap(pbrMat->NormalMap());
-      this->SetRoughnessMap(pbrMat->RoughnessMap());
-      this->SetMetalnessMap(pbrMat->MetalnessMap());
+      this->SetNormalMap(pbrMat->NormalMap(), pbrMat->NormalMapData());
+      this->SetRoughnessMap(pbrMat->RoughnessMap(), pbrMat->RoughnessMapData());
+      this->SetMetalnessMap(pbrMat->MetalnessMap(), pbrMat->MetalnessMapData());
       this->SetRoughness(pbrMat->Roughness());
       this->SetMetalness(pbrMat->Metalness());
       this->SetEnvironmentMap(pbrMat->EnvironmentMap());

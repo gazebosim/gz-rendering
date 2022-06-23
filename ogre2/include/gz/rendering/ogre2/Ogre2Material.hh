@@ -109,7 +109,7 @@ namespace gz
 
       // Documentation inherited
       public: virtual void SetTexture(const std::string &_texture,
-                                      const std::shared_ptr<common::Image> &_img = nullptr) override;
+        const std::shared_ptr<common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual std::shared_ptr<common::Image> TextureData() const override;
@@ -124,7 +124,11 @@ namespace gz
       public: virtual std::string NormalMap() const override;
 
       // Documentation inherited
-      public: virtual void SetNormalMap(const std::string &_normalMap) override;
+      public: virtual std::shared_ptr<common::Image> NormalMapData() const override;
+
+      // Documentation inherited
+      public: virtual void SetNormalMap(const std::string &_normalMap,
+        const std::shared_ptr<common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual void ClearNormalMap() override;
@@ -136,8 +140,12 @@ namespace gz
       public: virtual std::string RoughnessMap() const override;
 
       // Documentation inherited
+      public: virtual std::shared_ptr<common::Image> RoughnessMapData() const override;
+
+      // Documentation inherited
       public: virtual void SetRoughnessMap(
-        const std::string &_roughnessMap) override;
+        const std::string &_roughnessMap,
+        const std::shared_ptr<common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual void ClearRoughnessMap() override;
@@ -149,8 +157,12 @@ namespace gz
       public: virtual std::string MetalnessMap() const override;
 
       // Documentation inherited
+      public: virtual std::shared_ptr<common::Image> MetalnessMapData() const override;
+
+      // Documentation inherited
       public: virtual void SetMetalnessMap(
-        const std::string &_metalnessMap) override;
+        const std::string &_metalnessMap,
+        const std::shared_ptr<common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual void ClearMetalnessMap() override;

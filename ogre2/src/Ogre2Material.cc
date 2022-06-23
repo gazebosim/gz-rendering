@@ -56,8 +56,21 @@ class gz::rendering::Ogre2MaterialPrivate
   /// store the material hash name
   public: std::string hashName;
 
-  /// TODO document
+  /// \brief Pointer to image containing the texture data if it was
+  /// loaded from memory
   public: std::shared_ptr<common::Image> textureData;
+
+  /// \brief Pointer to image containing the normal map data if it was
+  /// loaded from memory
+  public: std::shared_ptr<common::Image> normalMapData;
+
+  /// \brief Pointer to image containing the roughness map data if it was
+  /// loaded from memory
+  public: std::shared_ptr<common::Image> roughnessMapData;
+
+  /// \brief Pointer to image containing the metalness map data if it was
+  /// loaded from memory
+  public: std::shared_ptr<common::Image> metalnessMapData;
 
   /// \brief Path to vertex shader program.
   public: std::string vertexShaderPath;
@@ -428,7 +441,14 @@ std::string Ogre2Material::NormalMap() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetNormalMap(const std::string &_name)
+std::shared_ptr<common::Image> Ogre2Material::NormalMapData() const
+{
+  return this->dataPtr->normalMapData;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetNormalMap(const std::string &_name,
+  const std::shared_ptr<common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -437,13 +457,18 @@ void Ogre2Material::SetNormalMap(const std::string &_name)
   }
 
   this->normalMapName = _name;
-  this->SetTextureMapImpl(this->normalMapName, Ogre::PBSM_NORMAL);
+  this->dataPtr->normalMapData = _img;
+  if (_img == nullptr)
+    this->SetTextureMapImpl(this->normalMapName, Ogre::PBSM_NORMAL);
+  else
+    this->SetTextureMapDataImpl(this->normalMapName, _img, Ogre::PBSM_NORMAL);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearNormalMap()
 {
   this->normalMapName = "";
+  this->dataPtr->normalMapData = nullptr;
   this->ogreDatablock->setTexture(Ogre::PBSM_NORMAL, this->normalMapName);
 }
 
@@ -460,7 +485,14 @@ std::string Ogre2Material::RoughnessMap() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetRoughnessMap(const std::string &_name)
+std::shared_ptr<common::Image> Ogre2Material::RoughnessMapData() const
+{
+  return this->dataPtr->roughnessMapData;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetRoughnessMap(const std::string &_name,
+  const std::shared_ptr<common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -469,13 +501,18 @@ void Ogre2Material::SetRoughnessMap(const std::string &_name)
   }
 
   this->roughnessMapName = _name;
-  this->SetTextureMapImpl(this->roughnessMapName, Ogre::PBSM_ROUGHNESS);
+  this->dataPtr->roughnessMapData = _img;
+  if (_img == nullptr)
+    this->SetTextureMapImpl(this->roughnessMapName, Ogre::PBSM_ROUGHNESS);
+  else
+    this->SetTextureMapDataImpl(this->roughnessMapName, _img, Ogre::PBSM_ROUGHNESS);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearRoughnessMap()
 {
   this->roughnessMapName = "";
+  this->dataPtr->roughnessMapData = nullptr;
   this->ogreDatablock->setTexture(Ogre::PBSM_ROUGHNESS, this->roughnessMapName);
 }
 
@@ -492,7 +529,15 @@ std::string Ogre2Material::MetalnessMap() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetMetalnessMap(const std::string &_name)
+std::shared_ptr<common::Image> Ogre2Material::MetalnessMapData() const
+{
+  return this->dataPtr->metalnessMapData;
+}
+
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetMetalnessMap(const std::string &_name,
+  const std::shared_ptr<common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -501,13 +546,18 @@ void Ogre2Material::SetMetalnessMap(const std::string &_name)
   }
 
   this->metalnessMapName = _name;
-  this->SetTextureMapImpl(this->metalnessMapName, Ogre::PBSM_METALLIC);
+  this->dataPtr->metalnessMapData = _img;
+  if (_img == nullptr)
+    this->SetTextureMapImpl(this->metalnessMapName, Ogre::PBSM_METALLIC);
+  else
+    this->SetTextureMapDataImpl(this->metalnessMapName, _img, Ogre::PBSM_METALLIC);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearMetalnessMap()
 {
   this->metalnessMapName = "";
+  this->dataPtr->metalnessMapData = nullptr;
   this->ogreDatablock->setTexture(Ogre::PBSM_METALLIC, this->metalnessMapName);
 }
 
@@ -1068,24 +1118,15 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
       0u);
 
   // Has to be loaded
-  if (texture->getResidencyStatus() == Ogre::GpuResidency::OnStorage)
+  if (texture->getWidth() == 0)
   {
-    gzmsg << "Loading texture into gpu" << std::endl;
+    gzmsg << "Loading texture " << _name << " into gpu" << std::endl;
 
     unsigned char* data = nullptr;
     unsigned int length;
     _img->RGBAData(&data, length);
 
-    if (_img->PixelFormat() == common::Image::PixelFormatType::RGBA_INT8)
-    {
-      // Image has alpha channel
-      texture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
-    }
-    else
-    {
-      // Unsupported!
-      return;
-    }
+    texture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
     texture->setTextureType(Ogre::TextureTypes::Type2D);
     texture->setNumMipmaps(1u);
     texture->setResolution(_img->Width(), _img->Height());

@@ -21,6 +21,8 @@
 
 #include <gz/utils/SuppressWarning.hh>
 
+#include <gz/common/Image.hh>
+
 #include "gz/rendering/base/BaseMaterial.hh"
 #include "gz/rendering/ogre/OgreObject.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"
@@ -225,6 +227,9 @@ namespace gz
       protected: math::Color emissiveColor;
 #endif
       protected: std::string textureName;
+
+      /// \brief Diffuse texture image if it was passed as binary data
+      protected: std::shared_ptr<common::Image> textureData;
 
       protected: std::string normalMapName;
 

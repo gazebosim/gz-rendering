@@ -300,7 +300,11 @@ void OgreMaterial::SetTexture(const std::string &_name,
   }
 
   this->textureName = _name;
-  this->SetTextureImpl(this->textureName);
+  this->textureData = _img;
+  if (_img == nullptr)
+    this->SetTextureImpl(this->textureName);
+  else
+    this->SetTextureDataImpl(this->textureName, _img);
 }
 
 //////////////////////////////////////////////////
@@ -325,7 +329,7 @@ std::string OgreMaterial::NormalMap() const
 
 //////////////////////////////////////////////////
 void OgreMaterial::SetNormalMap(const std::string &_name,
-  const std::shared_ptr<common::Image> &_img)
+  const std::shared_ptr<common::Image>& /*_img*/)
 {
   if (_name.empty())
   {
@@ -567,6 +571,45 @@ void OgreMaterial::SetTextureImpl(const std::string &_texture)
   {
     Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
         _texture, "FileSystem", this->ogreGroup);
+  }
+
+  this->ogreTexState->setTextureName(_texture);
+  this->UpdateColorOperation();
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::SetTextureDataImpl(const std::string &_texture,
+                                      const std::shared_ptr<common::Image> &_img)
+{
+  // Create the texture only if it was not created already
+  if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(
+      this->ogreGroup, _texture))
+  {
+    gzmsg << "Creating texture " << _texture << " with width " << _img->Width() << " and height " << _img->Height() << std::endl;
+    auto ogreTexture =
+    Ogre::TextureManager::getSingleton().createManual(
+        _texture,
+        "General",
+        Ogre::TEX_TYPE_2D,
+        _img->Width(),
+        _img->Height(),
+        0,
+        Ogre::PF_B8G8R8A8);
+    Ogre::HardwarePixelBufferSharedPtr pixelBuffer = ogreTexture->getBuffer();
+    gzmsg << "Buffer height is " << pixelBuffer->getHeight() << " width " << pixelBuffer->getWidth() << std::endl;
+    pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
+    const Ogre::PixelBox &pixelBox = pixelBuffer->getCurrentLock();
+
+    unsigned char *data = nullptr;
+    unsigned int count;
+    _img->RGBAData(&data, count);
+
+    memcpy(pixelBox.data, data, count);
+    pixelBuffer->unlock();
+    gzmsg << "Ogre size is " << pixelBox.rowPitch * pixelBox.getHeight() << " common size is " << count << std::endl;
+    gzmsg << "Pitch is " << pixelBox.rowPitch << " width is " << pixelBox.getWidth() << " height is " << pixelBox.getHeight() << std::endl;
+
+    delete[] data;
   }
 
   this->ogreTexState->setTextureName(_texture);

@@ -594,7 +594,7 @@ void OgreMaterial::SetTextureDataImpl(const std::string &_texture,
         _img->Width(),
         _img->Height(),
         0,
-        Ogre::PF_B8G8R8A8);
+        Ogre::PF_R8G8B8A8);
     Ogre::HardwarePixelBufferSharedPtr pixelBuffer = ogreTexture->getBuffer();
     gzmsg << "Buffer height is " << pixelBuffer->getHeight() << " width " << pixelBuffer->getWidth() << std::endl;
     pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
@@ -603,6 +603,15 @@ void OgreMaterial::SetTextureDataImpl(const std::string &_texture,
     unsigned char *data = nullptr;
     unsigned int count;
     _img->RGBAData(&data, count);
+    // TODO It seems we need to switch red and blue once again for OGRE1?
+    for (int r = 0; r < _img->Height(); ++r)
+    {
+      for (int c = 0; c < _img->Width(); ++c)
+      {
+        int pixIdx = (r * _img->Width() + c) * 4;
+        std::swap(data[pixIdx], data[pixIdx + 2]);
+      }
+    }
 
     memcpy(pixelBox.data, data, count);
     pixelBuffer->unlock();

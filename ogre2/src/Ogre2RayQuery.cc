@@ -79,8 +79,27 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
   Ogre::Ray ray =
       camera->ogreCamera->getCameraToViewportRay(screenPos.X(), screenPos.Y());
 
-  this->origin = Ogre2Conversions::Convert(ray.getOrigin());
-  this->direction = Ogre2Conversions::Convert(ray.getDirection());
+  auto originMath = Ogre2Conversions::Convert(ray.getOrigin());
+  if (originMath.IsFinite())
+  {
+    this->origin = originMath;
+  }
+  else
+  {
+    ignwarn << "Attempted to set non-finite origin from camera ["
+            << camera->Name() << "]" << std::endl;
+  }
+
+  auto directionMath = Ogre2Conversions::Convert(ray.getDirection());
+  if (directionMath.IsFinite())
+  {
+    this->direction = directionMath;
+  }
+  else
+  {
+    ignwarn << "Attempted to set non-finite direction from camera ["
+            << camera->Name() << "]" << std::endl;
+  }
 
   this->dataPtr->camera = camera;
 

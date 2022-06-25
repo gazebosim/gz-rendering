@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-camera-tracking)
-find_package(ignition-rendering7 REQUIRED)
+project(gz-rendering-camera-tracking)
+find_package(gz-rendering7 REQUIRED)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})

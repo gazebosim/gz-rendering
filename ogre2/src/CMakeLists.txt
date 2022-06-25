@@ -34,9 +34,9 @@ target_include_directories(${ogre2_target}
 
 target_link_libraries(${ogre2_target}
   PUBLIC
-    ${ignition-common${IGN_COMMON_VER}_LIBRARIES}
+    ${gz-common${GZ_COMMON_VER}_LIBRARIES}
   PRIVATE
-    ignition-plugin${IGN_PLUGIN_VER}::register
+    gz-plugin${GZ_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}
     terra
     IgnOGRE2::IgnOGRE2)

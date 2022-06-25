@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-waves)
+project(gz-rendering-waves)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
 )
 
-find_package(ignition-rendering7)
+find_package(gz-rendering7)
 
 set(TARGET_THIRD_PARTY_DEPENDS "")
 

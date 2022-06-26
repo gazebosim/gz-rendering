@@ -50,7 +50,7 @@ endif()
 add_executable(custom_shaders_uniforms Main.cc GlutWindow.cc)
 
 target_link_libraries(custom_shaders_uniforms
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
   ${TARGET_THIRD_PARTY_DEPENDS}
 )
 

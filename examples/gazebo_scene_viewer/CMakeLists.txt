@@ -33,7 +33,7 @@ target_link_libraries(gazebo_scene_viewer
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${GAZEBO_LIBRARIES}
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
   ${STD_CXX_FS_LIBRARIES}
 )
 
@@ -48,6 +48,6 @@ target_link_libraries(gazebo_scene_viewer2_demo
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${GAZEBO_LIBRARIES}
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
   ${STD_CXX_FS_LIBRARIES}
 )

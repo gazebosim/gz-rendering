@@ -50,7 +50,7 @@ endif()
 add_executable(waves Main.cc GlutWindow.cc)
 
 target_link_libraries(waves
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
   ${TARGET_THIRD_PARTY_DEPENDS}
 )
 

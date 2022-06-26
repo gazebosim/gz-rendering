@@ -30,7 +30,7 @@ target_link_libraries(particles_demo
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
 )
 
 add_custom_command(TARGET particles_demo POST_BUILD

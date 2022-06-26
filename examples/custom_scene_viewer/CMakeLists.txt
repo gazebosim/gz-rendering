@@ -38,7 +38,7 @@ target_link_libraries(custom_scene_viewer
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
 )
 
 add_custom_command(TARGET custom_scene_viewer POST_BUILD

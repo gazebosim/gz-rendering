@@ -34,7 +34,7 @@ target_link_libraries(custom_shaders
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
 )
 
 add_custom_command(TARGET custom_shaders POST_BUILD

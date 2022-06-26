@@ -30,7 +30,7 @@ target_link_libraries(mesh_viewer
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
 )
 
 add_custom_command(TARGET mesh_viewer POST_BUILD

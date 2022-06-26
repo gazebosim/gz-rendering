@@ -43,6 +43,6 @@ endif()
 add_executable(visualization_demo Main.cc GlutWindow.cc)
 
 target_link_libraries(visualization_demo
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
   ${TARGET_THIRD_PARTY_DEPENDS}
 )

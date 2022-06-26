@@ -382,6 +382,15 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseVisual<T>::SetVisualStatic(bool _static)
+    {
+      gzerr << "SetVisualStatic(" << _static << ") not supported for "
+            << "render engine: " << this->Scene()->Engine()->Name()
+            << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     gz::math::AxisAlignedBox BaseVisual<T>::LocalBoundingBox() const
     {
       gz::math::AxisAlignedBox box;

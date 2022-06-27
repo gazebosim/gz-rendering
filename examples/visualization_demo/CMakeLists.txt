@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-visualization-demo)
+project(gz-rendering-visualization-demo)
 
-find_package(ignition-rendering7)
+find_package(gz-rendering7)
 
 if (APPLE OR UNIX)
   find_package(GLUT REQUIRED)
@@ -43,6 +43,6 @@ endif()
 add_executable(visualization_demo Main.cc GlutWindow.cc)
 
 target_link_libraries(visualization_demo
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
   ${TARGET_THIRD_PARTY_DEPENDS}
 )

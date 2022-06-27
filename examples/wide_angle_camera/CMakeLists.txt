@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-wide-angle-camera)
-find_package(ignition-rendering7 REQUIRED)
+project(gz-rendering-wide-angle-camera)
+find_package(gz-rendering7 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
@@ -42,7 +42,7 @@ endif()
 add_executable(wide_angle_camera Main.cc GlutWindow.cc)
 
 target_link_libraries(wide_angle_camera
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
   ${TARGET_THIRD_PARTY_DEPENDS}
 )
 

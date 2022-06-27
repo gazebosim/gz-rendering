@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
-project(ignition-rendering-ogre2-demo)
+project(gz-rendering-ogre2-demo)
 
-find_package(ignition-rendering7)
+find_package(gz-rendering7)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
@@ -36,7 +36,7 @@ target_link_libraries(ogre2_demo
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
   )
 
 add_custom_command(TARGET ogre2_demo POST_BUILD

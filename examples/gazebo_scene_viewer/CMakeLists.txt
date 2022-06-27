@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-gazebo-scene-viewer)
-find_package(ignition-rendering7 REQUIRED)
+project(gz-rendering-gazebo-scene-viewer)
+find_package(gz-rendering7 REQUIRED)
 find_package(gazebo REQUIRED)
 
 include_directories(SYSTEM ${GAZEBO_INCLUDE_DIRS})
@@ -33,7 +33,7 @@ target_link_libraries(gazebo_scene_viewer
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${GAZEBO_LIBRARIES}
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
   ${STD_CXX_FS_LIBRARIES}
 )
 
@@ -48,6 +48,6 @@ target_link_libraries(gazebo_scene_viewer2_demo
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${GAZEBO_LIBRARIES}
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
   ${STD_CXX_FS_LIBRARIES}
 )

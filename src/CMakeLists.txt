@@ -25,7 +25,7 @@ gz_create_core_library(SOURCES ${sources} CXX_STANDARD 17)
 
 # Include the interface directories that we always need.
 #gz_target_interface_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
-#  ignition-math${IGN_MATH_VER})
+#  gz-math${GZ_MATH_VER})
 
 set_property(
   SOURCE RenderEngineManager.cc
@@ -35,10 +35,10 @@ set_property(
 
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
-  ignition-common${IGN_COMMON_VER}::requested
-  ignition-utils${IGN_UTILS_VER}::ignition-utils${IGN_UTILS_VER}
+  gz-common${GZ_COMMON_VER}::requested
+  gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
   PRIVATE
-  ignition-plugin${IGN_PLUGIN_VER}::loader
+  gz-plugin${GZ_PLUGIN_VER}::loader
 )
 if (UNIX AND NOT APPLE)
   target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE X11)

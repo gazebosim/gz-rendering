@@ -9,11 +9,13 @@ release will remove the deprecated code.
 
 ### Deprecations
 
+1. The CMake project is called `gz-renderingN` instead of `ignition-renderingN`.
+1. The shared libraries have `gz` where there used to be `ignition`, i.e. `libgz-rendering-ogre.so`
 1. **ogre2/include/ignition/rendering/ogre2/Ogre2RenderEngine.hh**
     + Deprecated: `Ogre2IgnHlmsSphericalClipMinDistance &HlmsCustomizations()`
     + Replacement: `Ogre2GzHlmsSphericalClipMinDistance &SphericalClipMinDistance()`
-2. The `ignition` namespace is deprecated and will be removed in future versions.  Use `gz` instead.
-3. Header files under `ignition/...` are deprecated and will be removed in future versions.
+1. The `ignition` namespace is deprecated and will be removed in future versions.  Use `gz` instead.
+1. Header files under `ignition/...` are deprecated and will be removed in future versions.
    Use `gz/...` instead.
 4. The environment variable `IGN_RENDERING_PLUGIN_PATH` is deprecated. Use `GZ_RENDERING_PLUGIN_PATH` instead.
 5. The environment variable `IGN_RENDERING_RESOURCE_PATH` is deprecated. Use `GZ_RENDERING_RESOURCE_PATH` instead.

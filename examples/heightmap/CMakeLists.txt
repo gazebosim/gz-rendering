@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-heightmap)
-find_package(ignition-rendering7 REQUIRED)
+project(gz-rendering-heightmap)
+find_package(gz-rendering7 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
@@ -30,7 +30,7 @@ target_link_libraries(heightmap
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
 )
 
 add_custom_command(TARGET heightmap POST_BUILD

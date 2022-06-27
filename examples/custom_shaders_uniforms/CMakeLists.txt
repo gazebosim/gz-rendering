@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
-project(ignition-rendering-custom_shaders_uniforms)
+project(gz-rendering-custom_shaders_uniforms)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
 )
 
-find_package(ignition-rendering7)
+find_package(gz-rendering7)
 
 set(TARGET_THIRD_PARTY_DEPENDS "")
 
@@ -50,7 +50,7 @@ endif()
 add_executable(custom_shaders_uniforms Main.cc GlutWindow.cc)
 
 target_link_libraries(custom_shaders_uniforms
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
   ${TARGET_THIRD_PARTY_DEPENDS}
 )
 

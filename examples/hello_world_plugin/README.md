@@ -5,7 +5,7 @@ Gazebo Rendering and how to load it with Gazebo.
 
 ## Build
 
-From the root of the `ign-rendering` repository, do the following to build the example:
+From the root of the `gz-rendering` repository, do the following to build the example:
 
 ~~~
 cd examples/hello_world_plugin

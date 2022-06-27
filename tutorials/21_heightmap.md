@@ -10,7 +10,7 @@ Clone the source code, create a build directory and use `cmake` and `make` to co
 
 ```{.sh}
 git clone https://github.com/gazebosim/gz-rendering
-cd ign-rendering/examples/heightmap
+cd gz-rendering/examples/heightmap
 mkdir build
 cd build
 cmake ..

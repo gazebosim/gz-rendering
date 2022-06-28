@@ -21,7 +21,7 @@
 #include <gz/rendering/MoveToHelper.hh>
 #include <gz/common/Console.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/RenderingIface.hh"
@@ -146,7 +146,7 @@ TEST_P(MoveToHelperTest, MoveToHelper)
   MoveTo(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(MoveToHelper, MoveToHelperTest,
+INSTANTIATE_TEST_SUITE_P(MoveToHelper, MoveToHelperTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
 

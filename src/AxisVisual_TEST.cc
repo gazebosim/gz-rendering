@@ -20,7 +20,7 @@
 
 #include <gz/common/Console.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/ArrowVisual.hh"
 #include "gz/rendering/AxisVisual.hh"
@@ -98,7 +98,7 @@ TEST_P(AxisVisualTest, AxisVisual)
   AxisVisual(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(AxisVisual, AxisVisualTest,
+INSTANTIATE_TEST_SUITE_P(AxisVisual, AxisVisualTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
 

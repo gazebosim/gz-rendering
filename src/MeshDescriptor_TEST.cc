@@ -21,7 +21,7 @@
 #include <gz/common/Console.hh>
 #include <gz/common/MeshManager.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/MeshDescriptor.hh"
@@ -93,7 +93,7 @@ TEST_P(MeshDescriptorTest, Descriptor)
   Descriptor(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(MeshDescriptor, MeshDescriptorTest,
+INSTANTIATE_TEST_SUITE_P(MeshDescriptor, MeshDescriptorTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
 

@@ -25,7 +25,7 @@
 #include "gz/rendering/Utils.hh"
 #include "gz/rendering/Visual.hh"
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 using namespace gz;
 using namespace rendering;
@@ -172,7 +172,7 @@ TEST_P(UtilTest, ClickToScene)
   ClickToScene(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(ClickToScene, UtilTest,
+INSTANTIATE_TEST_SUITE_P(ClickToScene, UtilTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
 

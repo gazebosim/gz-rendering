@@ -19,7 +19,7 @@
 
 #include <gz/common/Console.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/OrbitViewController.hh"
 #include "gz/rendering/RenderEngine.hh"
@@ -235,7 +235,7 @@ TEST_P(OrbitViewControllerTest, Control)
   Control(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(OrbitViewController, OrbitViewControllerTest,
+INSTANTIATE_TEST_SUITE_P(OrbitViewController, OrbitViewControllerTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
 

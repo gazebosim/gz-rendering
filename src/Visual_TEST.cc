@@ -21,7 +21,7 @@
 #include <gz/common/Console.hh>
 #include <gz/math/AxisAlignedBox.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/Geometry.hh"
 #include "gz/rendering/RenderEngine.hh"
@@ -782,7 +782,7 @@ TEST_P(VisualTest, Clone)
 }
 
 
-INSTANTIATE_TEST_CASE_P(Visual, VisualTest,
+INSTANTIATE_TEST_SUITE_P(Visual, VisualTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
 

@@ -21,7 +21,7 @@
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Event.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/DepthCamera.hh"
 #include "gz/rendering/ParticleEmitter.hh"
@@ -785,7 +785,7 @@ TEST_P(DepthCameraTest, DepthCameraParticles)
   DepthCameraParticles(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(DepthCamera, DepthCameraTest,
+INSTANTIATE_TEST_SUITE_P(DepthCamera, DepthCameraTest,
     RENDER_ENGINE_VALUES, gz::rendering::PrintToStringParam());
 
 //////////////////////////////////////////////////

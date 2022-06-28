@@ -19,7 +19,7 @@
 
 #include <gz/common/Console.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/GaussianNoisePass.hh"
@@ -203,7 +203,7 @@ TEST_P(RenderTargetTest, AddRemoveRenderPass)
   AddRemoveRenderPass(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(RenderTarget, RenderTargetTest,
+INSTANTIATE_TEST_SUITE_P(RenderTarget, RenderTargetTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
 

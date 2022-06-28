@@ -20,7 +20,7 @@
 
 #include <gz/common/Console.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/Node.hh"
 #include "gz/rendering/RenderEngine.hh"
@@ -130,7 +130,7 @@ TEST_P(NodeTest, Pose)
   Pose(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(Node, NodeTest,
+INSTANTIATE_TEST_SUITE_P(Node, NodeTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
 

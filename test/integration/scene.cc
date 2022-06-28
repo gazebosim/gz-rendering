@@ -19,7 +19,7 @@
 
 #include <gz/common/Console.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/RenderEngine.hh"
@@ -239,7 +239,7 @@ TEST_P(SceneTest, VisualAt)
 }
 
 // It doesn't suppot optix just yet
-INSTANTIATE_TEST_CASE_P(Scene, SceneTest,
+INSTANTIATE_TEST_SUITE_P(Scene, SceneTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
 

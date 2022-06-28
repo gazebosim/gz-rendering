@@ -19,7 +19,7 @@
 
 #include <gz/common/Console.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Grid.hh"
@@ -94,7 +94,7 @@ TEST_P(GridTest, Grid)
   Grid(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(Grid, GridTest,
+INSTANTIATE_TEST_SUITE_P(Grid, GridTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
 

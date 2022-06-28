@@ -19,7 +19,7 @@
 
 #include <gz/common/Console.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/RenderTarget.hh"
 #include "gz/rendering/RenderingIface.hh"
@@ -826,7 +826,7 @@ TEST_P(SceneTest, Sky)
   Sky(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(Scene, SceneTest,
+INSTANTIATE_TEST_SUITE_P(Scene, SceneTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
 

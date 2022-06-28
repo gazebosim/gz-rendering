@@ -20,7 +20,7 @@
 
 #include <gz/common/Console.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/COMVisual.hh"
 #include "gz/rendering/RenderEngine.hh"
@@ -102,7 +102,7 @@ TEST_P(COMVisualTest, COMVisual)
   COMVisual(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(Visual, COMVisualTest,
+INSTANTIATE_TEST_SUITE_P(Visual, COMVisualTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
 

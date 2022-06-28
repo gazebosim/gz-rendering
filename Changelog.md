@@ -194,7 +194,7 @@
 1. Fix particle effect randomness
     * [Pull request #388](https://github.com/gazebosim/gz-rendering/pull/388)
 
-1. Update test config to run ogre 1.x tests in ign-rendering6 on macOS
+1. Update test config to run ogre 1.x tests in gz-rendering6 on macOS
     * [Pull request #407](https://github.com/gazebosim/gz-rendering/pull/407)
     * [Pull request #409](https://github.com/gazebosim/gz-rendering/pull/409)
     * [Pull request #409](https://github.com/gazebosim/gz-rendering/pull/409)
@@ -334,7 +334,7 @@
     * [Pull request #398](https://github.com/gazebosim/gz-rendering/pull/398)
     * [Pull request #389](https://github.com/gazebosim/gz-rendering/pull/389)
 
-1. Set OGRE minimal version to 1.8. Warn on versions not supported (ign-rendering3)
+1. Set OGRE minimal version to 1.8. Warn on versions not supported (gz-rendering3)
     * [Pull request #376](https://github.com/gazebosim/gz-rendering/pull/376)
 
 1. 👩‍🌾 Remove bitbucket-pipelines.yml
@@ -455,7 +455,7 @@
 1. ogre2: explicitly request OpenGL 3.3 core profile context.
     * [Pull request #244](https://github.com/gazebosim/gz-rendering/pull/244)
 
-1. Bump in edifice: ign-common4
+1. Bump in edifice: gz-common4
     * [Pull request #209](https://github.com/gazebosim/gz-rendering/pull/209)
 
 1. Support setting horizontal and vertical resolution for GpuRays
@@ -496,7 +496,7 @@
     * [Pull request #378](https://github.com/gazebosim/gz-rendering/pull/378)
     * [Pull request #383](https://github.com/gazebosim/gz-rendering/pull/383)
 
-1. All changes merged forward from ign-rendering3
+1. All changes merged forward from gz-rendering3
     * [Pull request #382](https://github.com/gazebosim/gz-rendering/pull/382)
     * [Pull request #398](https://github.com/gazebosim/gz-rendering/pull/398)
 

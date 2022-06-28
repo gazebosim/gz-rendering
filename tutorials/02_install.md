@@ -74,7 +74,7 @@ build the relevant plugins if dependencies are found.
 sudo apt-get install libogre-1.9-dev
 ```
 
-**OGRE 2.x (supported in Versions >= ign-rendering1)**
+**OGRE 2.x (supported in Versions >= gz-rendering1)**
 
 Add OSRF packages if you have not done so already:
 ```

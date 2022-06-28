@@ -135,7 +135,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   result = screenToScene(centerClick, camera, rayQuery, rayResult);
 
   // high tol is used for z due to depth buffer precision.
-  // Do not merge the tol changes forward to ign-rendering6.
+  // Do not merge the tol changes forward to gz-rendering6.
   EXPECT_NEAR(0.5, result.Z(), 1e-3);
   EXPECT_NEAR(0.0, result.X(), 2e-6);
   EXPECT_NEAR(0.0, result.Y(), 2e-6);

@@ -74,7 +74,7 @@ Rendering engine plugin implementation code is stored in their own folders
 
 * `ogre` : OGRE 1.x rendering engine plugin
 
-* `ogre2` : OGRE 2.x rendering engine plugin (available in versions >= ign-rendering1)
+* `ogre2` : OGRE 2.x rendering engine plugin (available in versions >= gz-rendering1)
 
 * `optix` : OptiX rendering engine plugin
 

@@ -4,7 +4,7 @@ Next Tutorial: \ref installation
 
 ## What is Gazebo Rendering?
 
-Ignition Rendering is an open source library that provides an abstraction layer
+Gazebo Rendering is an open source library that provides an abstraction layer
 to multiple rendering engines. The goal is to provide a set of unified C++
 rendering APIs that are rendering-engine-agnostic. For instance, a scene created
 through the Gazebo Rendering API could be rendered using an OpenGL based

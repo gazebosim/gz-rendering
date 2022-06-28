@@ -55,7 +55,7 @@ namespace gz
       public: unsigned int distortionTexHeight = 0u;
 
       /// \brief Distortion compositor listener
-      /// uses <gz/utils/ImplPtr.hh> from ign-rendering7
+      /// uses <gz/utils/ImplPtr.hh> from gz-rendering7
       GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       public: std::shared_ptr<DistortionCompositorListener>
           distortionCompositorListener;

@@ -31,5 +31,5 @@ From here, you should be able to reference your rendering plugin within Gazebo b
 \note You can use the `--render-engine`, `--render-engine-server`, and `--render-engine-gui` flags to specify any supported or custom rendering engine at runtime, this flag will override any other pre-existing rendering engine specifications (such as in an `.sdf` file).  The command line call would look something like:
 
 ~~~
-ign gazebo --render-engine HelloWorldPlugin shapes.sdf
+gz sim --render-engine HelloWorldPlugin shapes.sdf
 ~~~

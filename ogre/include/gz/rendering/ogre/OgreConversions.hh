@@ -62,7 +62,7 @@ namespace gz
       /// \return ign-math vector
       public: static math::Vector3d Convert(const Ogre::Vector3 &_vector);
 
-      /// \brief Ign-math quaternion to Ogre quaternion
+      /// \brief gz-math quaternion to Ogre quaternion
       /// \param[in] _quat ign-math quaternion
       /// \return Ogre quaternion
       public: static Ogre::Quaternion Convert(const math::Quaterniond &_quat);
@@ -72,7 +72,7 @@ namespace gz
       /// return ign-math quaternion
       public: static math::Quaterniond Convert(const Ogre::Quaternion &_quat);
 
-      /// \brief Ign-math angle to Ogre angle
+      /// \brief gz-math angle to Ogre angle
       /// \param[in] _angle ign-math angle
       /// \return Ogre angle
       public: static Ogre::Radian Convert(const math::Angle &_angle);
@@ -92,7 +92,7 @@ namespace gz
       /// \return Ogre Matrix4
       public: static Ogre::Matrix4 Convert(const math::Matrix4d &_m);
 
-      /// \brief Ign-rendering PixelFormat to Ogre PixelFormat
+      /// \brief gz-rendering PixelFormat to Ogre PixelFormat
       /// \param[in] _format Ign-rendering PixelFormat
       /// return Ogre PixelFormat
       public: static Ogre::PixelFormat Convert(PixelFormat _format);

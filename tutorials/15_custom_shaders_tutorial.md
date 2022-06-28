@@ -8,7 +8,7 @@ Clone the source code, create a build directory and use `cmake` and `make` to co
 
 ```{.sh}
 git clone https://github.com/gazebosim/gz-rendering
-cd ign-rendering/examples/custom_shaders
+cd gz-rendering/examples/custom_shaders
 mkdir build
 cd build
 cmake ..

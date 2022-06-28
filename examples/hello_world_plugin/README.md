@@ -32,11 +32,11 @@ export GZ_SIM_RENDER_ENGINE_PATH=$PWD
 to set the environment variable accordingly.
 
 
-Now you can run `ign gazebo` with the name of the resultant library file (without the `lib` prefix
+Now you can run `gz sim` with the name of the resultant library file (without the `lib` prefix
 or the file extension, i.e., libHelloWorldPlugin.so -> HelloWorldPlugin):
 
 ~~~
-ign gazebo --render-engine HelloWorldPlugin
+gz sim --render-engine HelloWorldPlugin
 ~~~
 
 You should see a blank screen within the Gazebo GUI, as this mocked plugin provides no implementation

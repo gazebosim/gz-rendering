@@ -90,5 +90,5 @@ Lightmaps can be applied to a mesh in Gazebo the same way as other texture maps.
 There are existing example models on Gazebo Fuel that use light maps. The [Depot](https://app.gazebosim.org/OpenRobotics/fuel/models/Depot) model mentioned earlier is one such example, and another one is the [Indoor Lightmap](https://app.gazebosim.org/OpenRobotics/fuel/models/Indoor%20light map) model. To see the Indoor Lightmap model with [Gazebo](https://gazebosim.org/docs/all/getstarted), you can run the following command (requires Gazebo Edifice or above):
 
 ```
-ign gazebo -v lightmap.sdf
+gz sim -v lightmap.sdf
 ```

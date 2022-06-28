@@ -23,7 +23,7 @@
 
 #include <gz/math/Color.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/RenderingIface.hh"
@@ -247,12 +247,5 @@ TEST_P(SegmentationCameraTest, SegmentationCameraBoxes)
   SegmentationCameraBoxes(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(SegmentationCamera, SegmentationCameraTest,
+INSTANTIATE_TEST_SUITE_P(SegmentationCamera, SegmentationCameraTest,
     RENDER_ENGINE_VALUES, gz::rendering::PrintToStringParam());
-
-//////////////////////////////////////////////////
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

@@ -15,6 +15,9 @@ set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
 #============================================================================
 # Set up the project
 #============================================================================
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 gz_configure_project(
   REPLACE_IGNITION_INCLUDE_PATH gz/rendering
   VERSION_SUFFIX pre1)
@@ -22,8 +25,6 @@ gz_configure_project(
 #============================================================================
 # Set project-specific options
 #============================================================================
-
-set(CMAKE_CXX_STANDARD 14)
 option(USE_UNOFFICIAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the build" OFF)
 
 #============================================================================

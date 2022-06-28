@@ -20,7 +20,7 @@
 
 #include <gz/common/Console.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/LightVisual.hh"
 #include "gz/rendering/RenderEngine.hh"
@@ -77,12 +77,6 @@ TEST_P(LightVisualTest, LightVisual)
   LightVisual(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(Visual, LightVisualTest,
+INSTANTIATE_TEST_SUITE_P(Visual, LightVisualTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

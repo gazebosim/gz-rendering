@@ -231,10 +231,3 @@ TEST(ShaderParam, TextureType)
   EXPECT_EQ(texName, texNameRet3);
   EXPECT_EQ(uvSetIndex, uvSetIndexRet3);
 }
-
-//////////////////////////////////////////////////
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

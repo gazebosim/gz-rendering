@@ -2,12 +2,6 @@ cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(gz-rendering-simple-demo-qml)
 
 #------------------------------------------------------------------------
-# Compile as C++14
-
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-#------------------------------------------------------------------------
 # Find gz-cmake
 find_package(gz-cmake3 REQUIRED)
 set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})

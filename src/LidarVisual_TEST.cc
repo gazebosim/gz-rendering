@@ -18,7 +18,7 @@
 
 #include <gz/common/Console.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/LidarVisual.hh"
@@ -135,12 +135,6 @@ TEST_P(LidarVisualTest, LidarVisual)
   LidarVisual(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(LidarVisual, LidarVisualTest,
+INSTANTIATE_TEST_SUITE_P(LidarVisual, LidarVisualTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

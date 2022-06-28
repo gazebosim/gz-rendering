@@ -19,7 +19,7 @@
 
 #include <gz/common/Console.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/RayQuery.hh"
@@ -111,12 +111,6 @@ TEST_P(RayQueryTest, RayQuery)
   RayQuery(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(RayQuery, RayQueryTest,
+INSTANTIATE_TEST_SUITE_P(RayQuery, RayQueryTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

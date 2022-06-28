@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/BoundingBox.hh"
 
 using namespace gz;
@@ -31,11 +31,4 @@ class BoundingBoxTest : public testing::Test
 TEST(BoundingBoxTest, BoundingBox)
 {
   BoundingBox box;
-}
-
-/////////////////////////////////////////////////
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }

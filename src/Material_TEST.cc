@@ -21,7 +21,7 @@
 #include <gz/common/Console.hh>
 #include <gz/common/Material.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/Material.hh"
@@ -508,12 +508,6 @@ TEST_P(MaterialTest, Copy)
   Copy(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(Material, MaterialTest,
+INSTANTIATE_TEST_SUITE_P(Material, MaterialTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

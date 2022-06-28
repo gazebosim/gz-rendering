@@ -24,7 +24,7 @@
 #include <gz/common/Skeleton.hh>
 #include <gz/common/SkeletonAnimation.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/Mesh.hh"
 #include "gz/rendering/RenderEngine.hh"
@@ -291,12 +291,6 @@ TEST_P(MeshTest, MeshClone)
   MeshClone(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(Mesh, MeshTest,
+INSTANTIATE_TEST_SUITE_P(Mesh, MeshTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

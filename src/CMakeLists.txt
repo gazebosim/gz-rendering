@@ -21,7 +21,7 @@ if (MSVC)
 endif()
 
 # Create the library target.
-gz_create_core_library(SOURCES ${sources} CXX_STANDARD 17)
+gz_create_core_library(SOURCES ${sources})
 
 # Include the interface directories that we always need.
 #gz_target_interface_include_directories(${PROJECT_LIBRARY_TARGET_NAME}

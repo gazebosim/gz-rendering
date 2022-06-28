@@ -343,7 +343,7 @@
 1. [macOS] support OpenGL < 4.2 in PBS shader
     * [Pull request #377](https://github.com/gazebosim/gz-rendering/pull/377)
 
-1. Moved ScreenToPlane and ScreenToScene from ign-gui to ign-rendering
+1. Moved ScreenToPlane and ScreenToScene from gz-gui to gz-rendering
     * [Pull request #363](https://github.com/gazebosim/gz-rendering/pull/363)
     * [Pull request #368](https://github.com/gazebosim/gz-rendering/pull/368)
 
@@ -388,7 +388,7 @@
 1. Test re-enabling depth camera integration test on mac
     * [Pull request #335](https://github.com/gazebosim/gz-rendering/pull/335)
 
-1. Include MoveTo Helper class to ign-rendering
+1. Include MoveTo Helper class to gz-rendering
     * [Pull request #311](https://github.com/gazebosim/gz-rendering/pull/311)
 
 1. Remove `tools/code_check` and update codecov
@@ -521,7 +521,7 @@
 1. Fix floating point precision bug handling alpha channel (#332)
     * [Pull request #333](https://github.com/gazebosim/gz-rendering/pull/333)
 
-1. Include MoveTo Helper class to ign-rendering
+1. Include MoveTo Helper class to gz-rendering
     * [Pull request #311](https://github.com/gazebosim/gz-rendering/pull/311)
 
 1. Remove `tools/code_check` and update codecov
@@ -741,7 +741,7 @@
 1. Ogre: Do not assume that ogre plugins have lib prefix on macOS
     * [Pull request 454](https://github.com/gazebosim/gz-rendering/pull/454)
 
-1. Moved ScreenToPlane and ScreenToScene from ign-gui to ign-rendering
+1. Moved ScreenToPlane and ScreenToScene from gz-gui to gz-rendering
     * [Pull request 363](https://github.com/gazebosim/gz-rendering/pull/363)
     * [Pull request 368](https://github.com/gazebosim/gz-rendering/pull/368)
 
@@ -760,7 +760,7 @@
 
 ### Gazebo Rendering 3.5.0 (2021-05-25)
 
-1. Include MoveTo Helper class to ign-rendering
+1. Include MoveTo Helper class to gz-rendering
     * [Pull request 311](https://github.com/gazebosim/gz-rendering/pull/311)
 
 1. Remove tools/code_check and update codecov
@@ -835,7 +835,7 @@
 
 ### Gazebo Rendering 3.1.0 (2020-03-05)
 
-1. Use default material properties from ign-common PBR material when loading a mesh
+1. Use default material properties from gz-common PBR material when loading a mesh
     * [BitBucket pull request 242](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/242)
 
 1. Fix build for ogre version >= 1.12.0

@@ -14,7 +14,7 @@ which uses the ogre2 render engine.
 To see the example mesh, build and run the demo:
 
 ```{.sh}
-cd ign-rendering/examples/ogre2_demo
+cd gz-rendering/examples/ogre2_demo
 mkdir build
 cd build
 cmake ..

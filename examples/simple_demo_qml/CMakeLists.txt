@@ -7,7 +7,7 @@ find_package(gz-cmake3 REQUIRED)
 set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
 
 #------------------------------------------------------------------------
-# Find ign-rendering
+# Find gz-rendering
 find_package(gz-rendering7)
 
 #======================================

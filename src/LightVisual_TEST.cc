@@ -80,9 +80,3 @@ TEST_P(LightVisualTest, LightVisual)
 INSTANTIATE_TEST_SUITE_P(Visual, LightVisualTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

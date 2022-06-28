@@ -210,9 +210,3 @@ TEST_P(ShadowsTest, Shadows)
 INSTANTIATE_TEST_SUITE_P(Shadows, ShadowsTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

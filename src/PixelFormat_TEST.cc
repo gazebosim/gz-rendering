@@ -57,9 +57,3 @@ TEST(PixelFormatTest, PixelUtil)
   EXPECT_EQ(1u, PixelUtil::BytesPerChannel(format));
   EXPECT_EQ(4096u, PixelUtil::MemorySize(format, 32, 32));
 }
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

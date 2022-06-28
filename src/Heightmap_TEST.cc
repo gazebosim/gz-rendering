@@ -356,10 +356,3 @@ TEST_P(HeightmapTest, CopyAssignmentAfterMove)
 INSTANTIATE_TEST_SUITE_P(Heightmap, HeightmapTest,
     ::testing::ValuesIn({"ogre"}),
     gz::rendering::PrintToStringParam());
-
-/////////////////////////////////////////////////
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

@@ -829,9 +829,3 @@ TEST_P(SceneTest, Sky)
 INSTANTIATE_TEST_SUITE_P(Scene, SceneTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

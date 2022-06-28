@@ -238,9 +238,3 @@ TEST_P(OrbitViewControllerTest, Control)
 INSTANTIATE_TEST_SUITE_P(OrbitViewController, OrbitViewControllerTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

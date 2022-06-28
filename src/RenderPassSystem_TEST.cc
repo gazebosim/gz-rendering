@@ -81,9 +81,3 @@ TEST_P(RenderPassSystemTest, RenderPassSystem)
 INSTANTIATE_TEST_SUITE_P(GaussianNoise, RenderPassSystemTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

@@ -211,9 +211,3 @@ TEST_P(GizmoVisualTest, Material)
 INSTANTIATE_TEST_SUITE_P(Visual, GizmoVisualTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

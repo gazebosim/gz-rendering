@@ -2,6 +2,7 @@ set(TEST_TYPE "INTEGRATION")
 
 set(tests
   gpu_rays.cc
+  boundingbox_camera.cc
   depth_camera.cc
   camera.cc
   render_pass.cc

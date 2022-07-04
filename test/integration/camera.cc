@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 
 #include <ignition/common/Console.hh>
+#include <ignition/utils/ExtraTestMacros.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
@@ -835,7 +836,9 @@ TEST_P(CameraTest, VisualAt)
 }
 
 /////////////////////////////////////////////////
-TEST_P(CameraTest, ShaderSelection)
+// See: https://github.com/gazebosim/gz-rendering/issues/654
+TEST_P(CameraTest,
+       IGN_UTILS_TEST_DISABLED_ON_MAC(ShaderSelection))
 {
   ShaderSelection(GetParam());
 }

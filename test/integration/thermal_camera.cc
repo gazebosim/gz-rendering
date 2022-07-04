@@ -20,6 +20,7 @@
 #include <ignition/common/Console.hh>
 #include <ignition/common/Filesystem.hh>
 #include <ignition/common/Event.hh>
+#include <ignition/utils/ExtraTestMacros.hh>
 
 #include <ignition/math/Color.hh>
 
@@ -628,7 +629,9 @@ void ThermalCameraTest::ThermalCameraParticles(
   ignition::rendering::unloadEngine(engine->Name());
 }
 
-TEST_P(ThermalCameraTest, ThermalCameraBoxesUniformTemp)
+// See: https://github.com/gazebosim/gz-rendering/issues/654
+TEST_P(ThermalCameraTest,
+       IGN_UTILS_TEST_DISABLED_ON_MAC(ThermalCameraBoxesUniformTemp))
 {
   ThermalCameraBoxes(GetParam(), false);
 }

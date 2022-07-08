@@ -604,9 +604,9 @@ void OgreMaterial::SetTextureDataImpl(const std::string &_texture,
     unsigned int count;
     _img->RGBAData(&data, count);
     // TODO It seems we need to switch red and blue once again for OGRE1?
-    for (int r = 0; r < _img->Height(); ++r)
+    for (unsigned int r = 0; r < _img->Height(); ++r)
     {
-      for (int c = 0; c < _img->Width(); ++c)
+      for (unsigned int c = 0; c < _img->Width(); ++c)
       {
         int pixIdx = (r * _img->Width() + c) * 4;
         std::swap(data[pixIdx], data[pixIdx + 2]);

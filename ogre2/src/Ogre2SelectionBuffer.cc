@@ -224,7 +224,7 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
     ogreRoot->getRenderSystem()->getTextureGpuManager();
   this->dataPtr->renderTexture =
       textureMgr->createOrRetrieveTexture(
-        "SelectionPassTex",
+        "SelectionPassTex" + this->dataPtr->camera->getName(),
         Ogre::GpuPageOutStrategy::SaveToSystemRam,
         Ogre::TextureFlags::RenderToTexture,
         Ogre::TextureTypes::Type2D);

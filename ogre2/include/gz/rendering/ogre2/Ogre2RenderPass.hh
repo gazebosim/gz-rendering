@@ -38,7 +38,7 @@ namespace gz
      */
     /// \brief Ogre2 Implementation of a render pass.
     ///
-    /// The ogre2 compositor chain in ign-rendering is set up as follows:
+    /// The ogre2 compositor chain in gz-rendering is set up as follows:
     ///  * Base scene pass -> [0..N] RenderPass'es -> Final compositor pass.
     /// This is set up by Ogre2RenderTarget which loads the compositor workspace
     /// definiton from script. The base scene pass node is responsible for

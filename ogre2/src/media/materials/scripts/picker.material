@@ -33,7 +33,7 @@ vertex_program plaincolor_vs unified
   delegate plaincolor_vs_Metal
 }
 
-material ign-rendering/plain_color
+material gz-rendering/plain_color
 {
   // Material has one technique
   technique

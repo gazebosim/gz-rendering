@@ -239,7 +239,7 @@ void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
         }
         std::sort(paths.begin(), paths.end());
 
-        // Iterate over all the models in the current ign-rendering path
+        // Iterate over all the models in the current gz-rendering path
         for (auto dIter = paths.begin(); dIter != paths.end(); ++dIter)
         {
           std::string fullPath = *dIter;
@@ -385,7 +385,7 @@ void Ogre2RenderEngine::CreateLogger()
   // create log file path
   std::string logPath;
   gz::common::env(GZ_HOMEDIR, logPath);
-  logPath = common::joinPaths(logPath, ".ignition", "rendering");
+  logPath = common::joinPaths(logPath, ".gz", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre2.log");
 
@@ -753,7 +753,7 @@ void Ogre2RenderEngine::RegisterHlms()
   Ogre::ArchiveManager &archiveManager = Ogre::ArchiveManager::getSingleton();
 
   Ogre::Archive *customizationsArchiveLibrary =
-      archiveManager.load(common::joinPaths(rootHlmsFolder, "Hlms", "Ignition"),
+      archiveManager.load(common::joinPaths(rootHlmsFolder, "Hlms", "Gz"),
       "FileSystem", true);
 
   {

@@ -163,9 +163,9 @@ namespace Ogre
                                                                  mTerraSamplerblock );
 
 #if OGRE_DEBUG_MODE
-            // IGN CUSTOMIZE BEGIN
+            // GZ CUSTOMIZE BEGIN
             // Barriers dealt with in Ogre2Scene::UpdateAllHeightmaps
-    #ifdef IGN_DISABLED
+    #ifdef GZ_DISABLED
             const CompositorTextureVec &compositorTextures = mSceneManager->getCompositorTextures();
             CompositorTextureVec::const_iterator itor = compositorTextures.begin();
             CompositorTextureVec::const_iterator end  = compositorTextures.end();
@@ -179,7 +179,7 @@ namespace Ogre
                         " to the compositor pass so Ogre can place the proper Barriers" && false );
             }
     #endif
-            // IGN CUSTOMIZE END
+            // GZ CUSTOMIZE END
 #endif
         }
     }

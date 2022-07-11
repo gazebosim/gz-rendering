@@ -18,9 +18,7 @@ set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-gz_configure_project(
-  REPLACE_IGNITION_INCLUDE_PATH gz/rendering
-  VERSION_SUFFIX pre1)
+gz_configure_project(VERSION_SUFFIX pre1)
 
 #============================================================================
 # Set project-specific options
@@ -77,7 +75,7 @@ endif()
 # Find OGRE
 list(APPEND gz_ogre_components "RTShaderSystem" "Terrain" "Overlay" "Paging")
 
-gz_find_package(IgnOGRE VERSION 1.9.0
+gz_find_package(GzOGRE VERSION 1.9.0
   COMPONENTS ${gz_ogre_components}
   REQUIRED_BY ogre
   PRIVATE_FOR ogre)
@@ -87,7 +85,7 @@ gz_find_package(IgnOGRE VERSION 1.9.0
 # USE_UNOFFICIAL_OGRE_VERSIONS flag
 if (NOT USE_UNOFFICIAL_OGRE_VERSIONS)
   if (${OGRE_VERSION} VERSION_GREATER_EQUAL 1.10.0)
-    IGN_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
+    GZ_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
                       "The software might compile and even work but support from upstream"
                       "could be reduced to accepting patches for newer versions")
   endif()
@@ -105,16 +103,16 @@ endif()
 
 #--------------------------------------
 # Find OGRE2: first try to find OGRE2 built with PlanarReflections support and
-# fallback to look for OGRE2 without it. Both seems to works for ign-rendering.
+# fallback to look for OGRE2 without it. Both seems to works for gz-rendering.
 # See https://github.com/gazebosim/gz-rendering/issues/597
-gz_find_package(IgnOGRE2 VERSION 2.2.0
+gz_find_package(GzOGRE2 VERSION 2.2.0
     COMPONENTS HlmsPbs HlmsUnlit Overlay PlanarReflections
     PRIVATE_FOR ogre2
     QUIET)
 
 if ("${OGRE2-PlanarReflections}" STREQUAL "OGRE2-PlanarReflections-NOTFOUND")
   message(STATUS "PlanarReflections component was not found. Try looking without it:")
-  gz_find_package(IgnOGRE2 VERSION 2.2.0
+  gz_find_package(GzOGRE2 VERSION 2.2.0
     COMPONENTS HlmsPbs HlmsUnlit Overlay
     REQUIRED_BY ogre2
     PRIVATE_FOR ogre2)
@@ -126,7 +124,7 @@ endif()
 
 # Plugin install dirs
 set(GZ_RENDERING_ENGINE_INSTALL_DIR
-  ${CMAKE_INSTALL_PREFIX}/${IGN_LIB_INSTALL_DIR}/gz-${IGN_DESIGNATION}-${PROJECT_VERSION_MAJOR}/engine-plugins
+  ${CMAKE_INSTALL_PREFIX}/${GZ_LIB_INSTALL_DIR}/gz-${GZ_DESIGNATION}-${PROJECT_VERSION_MAJOR}/engine-plugins
 )
 
 #--------------------------------------
@@ -155,7 +153,7 @@ else()
   set(GZ_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 endif()
 
-set(GZ_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/${IGN_DATA_INSTALL_DIR})
+set(GZ_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/${GZ_DATA_INSTALL_DIR})
 
 #============================================================================
 # Configure the build
@@ -180,7 +178,7 @@ gz_configure_build(QUIT_IF_BUILD_ERRORS
 
 if (HAVE_OGRE2)
   # Must be done after gz_configure_build or else Terra
-  # won't see IGN_ADD_fPIC_TO_LIBRARIES
+  # won't see GZ_ADD_fPIC_TO_LIBRARIES
   add_subdirectory(ogre2/src/terrain/Terra)
 endif()
 

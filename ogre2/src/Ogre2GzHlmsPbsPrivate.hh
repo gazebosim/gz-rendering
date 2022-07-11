@@ -44,7 +44,7 @@ namespace Ogre
   ///   - Sends relevant data to the GPU buffers for shaders to use
   ///
   /// This listener requires Hlms to have been created with the piece data
-  /// files in ogre2/src/media/Hlms/Ignition registered
+  /// files in ogre2/src/media/Hlms/Gz registered
   ///
   /// We need to derive from HlmsPbs/HlmsUnlit (rather than just using
   /// HlmsListener) when we need to use code that sends data

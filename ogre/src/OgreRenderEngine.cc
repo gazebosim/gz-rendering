@@ -195,7 +195,7 @@ void OgreRenderEngine::AddResourcePath(const std::string &_uri)
         }
         std::sort(paths.begin(), paths.end());
 
-        // Iterate over all the models in the current ign-rendering path
+        // Iterate over all the models in the current gz-rendering path
         for (auto dIter = paths.begin(); dIter != paths.end(); ++dIter)
         {
           std::string fullPath = *dIter;
@@ -335,7 +335,7 @@ void OgreRenderEngine::CreateLogger()
   // create log file path
   std::string logPath;
   gz::common::env(GZ_HOMEDIR, logPath);
-  logPath = common::joinPaths(logPath, ".ignition", "rendering");
+  logPath = common::joinPaths(logPath, ".gz", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre.log");
 
@@ -804,7 +804,7 @@ void OgreRenderEngine::InitAttempt()
   Ogre::ColourValue ambient;
 
   /// Create a dummy rendering context.
-  /// This will allow ign-rendering to run headless. And it also allows OGRE to
+  /// This will allow gz-rendering to run headless. And it also allows OGRE to
   /// initialize properly
 
   // Set default mipmap level (NB some APIs ignore this)

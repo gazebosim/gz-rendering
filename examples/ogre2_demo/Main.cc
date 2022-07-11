@@ -161,7 +161,7 @@ void buildScene(ScenePtr _scene)
 
   // create a backpack
   // backpack mesh is mirrored and requires texture addressing mode to be
-  // set to 'wrap', which is the default in ign-rendering-ogre2
+  // set to 'wrap', which is the default in gz-rendering-ogre2
   VisualPtr backpack = _scene->CreateVisual("backpack");
   backpack->SetLocalPosition(2.5, -1, 0);
   backpack->SetLocalRotation(0, 0, -1.57);

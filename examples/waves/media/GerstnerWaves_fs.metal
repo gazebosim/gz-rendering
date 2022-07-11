@@ -56,7 +56,7 @@ fragment float4 main_metal
   float3 E = normalize(inPs.eyeVec);
   float3 R = reflect(E, N);
 
-  // Negate z for use with the skybox texture that comes with ign-rendering
+  // Negate z for use with the skybox texture that comes with gz-rendering
   R = float3(R.x, R.y, -R.z);
 
   // uncomment this line if using other textures that are Y up

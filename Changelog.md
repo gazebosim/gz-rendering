@@ -361,7 +361,7 @@
 1. relax gaussian test tolerance
     * [Pull request #344](https://github.com/gazebosim/gz-rendering/pull/344)
 
-1. Fix custom shaders uniforms ign version number
+1. Fix custom shaders uniforms gz version number
     * [Pull request #343](https://github.com/gazebosim/gz-rendering/pull/343)
 
 1. recreate node only when needed

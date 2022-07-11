@@ -75,7 +75,7 @@ Ogre::Technique *OgreMaterialSwitcher::handleSchemeNotFound(
     {
       // plain opaque material
       Ogre::ResourcePtr res =
-        Ogre::MaterialManager::getSingleton().load("ign-rendering/plain_color",
+        Ogre::MaterialManager::getSingleton().load("gz-rendering/plain_color",
             Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
       // OGRE 1.9 changes the shared pointer definition

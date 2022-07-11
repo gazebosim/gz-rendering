@@ -50,9 +50,9 @@ THE SOFTWARE.
 
 namespace Ogre
 {
-    // IGN CUSTOMIZE BEGIN
+    // GZ CUSTOMIZE BEGIN
     const size_t HlmsTerraDatablock::MaterialSizeInGpu          = 4 * 12 * 4;
-    // IGN CUSTOMIZE END
+    // GZ CUSTOMIZE END
     const size_t HlmsTerraDatablock::MaterialSizeInGpuAligned   = alignToNextMultiple(
                                                                     HlmsTerraDatablock::MaterialSizeInGpu,
                                                                     4 * 4 );
@@ -65,10 +65,10 @@ namespace Ogre
         HlmsTerraBaseTextureDatablock( name, creator, macroblock, blendblock, params ),
         mkDr( 0.318309886f ), mkDg( 0.318309886f ), mkDb( 0.318309886f ), //Max Diffuse = 1 / PI
         mShadowConstantBiasGpu( 0.0f ),
-        // IGN CUSTOMIZE BEGIN
+        // GZ CUSTOMIZE BEGIN
         mIgnWeightsMinHeight{ 0.0f, 0.0f, 0.0f, 0.0f },
         mIgnWeightsMaxHeight{ 0.0f, 0.0f, 0.0f, 0.0f },
-        // IGN CUSTOMIZE END
+        // GZ CUSTOMIZE END
         mBrdf( TerraBrdf::Default )
     {
         mShadowConstantBiasGpu = mShadowConstantBias = 0.0f;
@@ -163,7 +163,7 @@ namespace Ogre
         for( size_t i = 0u; i < numOffsetScale; ++i )
             detailsOffsetScale[i] = mDetailsOffsetScale[i];
 
-        // IGN CUSTOMIZE BEGIN
+        // GZ CUSTOMIZE BEGIN
         const size_t sizeOfIgnData = sizeof( mIgnWeightsMinHeight ) + sizeof( mIgnWeightsMinHeight );
 
         memcpy( dstPtr, &mkDr,
@@ -171,7 +171,7 @@ namespace Ogre
                     sizeOfIgnData );
         dstPtr += MaterialSizeInGpu - numOffsetScale * sizeof( float4 ) - sizeof( mTexIndices ) -
                   sizeOfIgnData;
-        // IGN CUSTOMIZE END
+        // GZ CUSTOMIZE END
 
         memcpy( dstPtr, &detailsOffsetScale, numOffsetScale * sizeof( float4 ) );
         dstPtr += numOffsetScale * sizeof( float4 );
@@ -179,10 +179,10 @@ namespace Ogre
         memcpy( dstPtr, texIndices, sizeof( texIndices ) );
         dstPtr += sizeof( texIndices );
 
-        // IGN CUSTOMIZE BEGIN
+        // GZ CUSTOMIZE BEGIN
         memcpy( dstPtr, mIgnWeightsMinHeight, sizeOfIgnData );
         dstPtr += sizeOfIgnData;
-        // IGN CUSTOMIZE END
+        // GZ CUSTOMIZE END
     }
     //-----------------------------------------------------------------------------------
     void HlmsTerraDatablock::setDiffuse( const Vector3 &diffuseColour )
@@ -278,7 +278,7 @@ namespace Ogre
         return mBrdf;
     }
     //-----------------------------------------------------------------------------------
-    // IGN CUSTOMIZE BEGIN
+    // GZ CUSTOMIZE BEGIN
     void HlmsTerraDatablock::setIgnWeightsHeights( const Vector4 &ignWeightsMinHeight,
                                                    const Vector4 &ignWeightsMaxHeight )
     {
@@ -327,7 +327,7 @@ namespace Ogre
         }
         setTexture( texUnit, texture, refParams );
     }
-    // IGN CUSTOMIZE END
+    // GZ CUSTOMIZE END
     //-----------------------------------------------------------------------------------
     bool HlmsTerraDatablock::suggestUsingSRGB( TerraTextureTypes type ) const
     {

@@ -18,7 +18,7 @@ Gazebo Rendering is a C++ library designed to provide an abstraction
 for different rendering engines. It offers unified APIs for creating
 3D graphics applications.
 
-Gazebo Rendering is a component in the ignition framework, a set
+Gazebo Rendering is a component in the Gazebo framework, a set
 of libraries designed to rapidly develop robot applications.
 
 # Table of Contents
@@ -51,7 +51,7 @@ See the [installation tutorial](https://gazebosim.org/api/rendering/5.0/installa
 
 # Usage
 
-The Ign Rendering API can be found in the documentation. See the
+The Gazebo Rendering API can be found in the documentation. See the
 [installation tutorial](https://gazebosim.org/api/rendering/5.0/installation.html)
 on how to build the documentation files using Doxygen.
 
@@ -59,14 +59,14 @@ You can also take a look at the sample applications in the `examples` folder.
 
 # Folder Structure
 
-* `include/ignition/rendering`: Contains all the public header files which will be installed
+* `include/gz/rendering`: Contains all the public header files which will be installed
 
 * `src`: Contains all the C++ source code which are not installed.
 
 * `test`: All integration, performance and regression tests go here, under their
   specific folders.
 
-* `examples`: Sample programs to demonstrate different features of ign-rendering
+* `examples`: Sample programs to demonstrate different features of gz-rendering
 
 * `doc`: Files used by Doxygen when generating documentation.
 
@@ -95,4 +95,3 @@ This library uses [Semantic Versioning](https://semver.org/). Additionally, this
 # License
 
 This library is licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0). See also the [LICENSE](https://github.com/gazebosim/gz-rendering/blob/main/LICENSE) file.
-

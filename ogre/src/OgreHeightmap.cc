@@ -422,7 +422,7 @@ OgreHeightmap::OgreHeightmap(const HeightmapDescriptor &_desc)
   gz::common::env(GZ_HOMEDIR, home);
 
   this->dataPtr->pagingDir =
-      common::joinPaths(home, ".ignition", "rendering",
+      common::joinPaths(home, ".gz", "rendering",
       this->dataPtr->pagingDirname);
 }
 
@@ -465,7 +465,7 @@ void OgreHeightmap::Init()
 
   // \todo These parameters shouldn't be hardcoded, and instead parametrized so
   // that they can be made consistent across different libraries (like
-  // ign-physics)
+  // gz-physics)
   bool flipY = false;
   // sampling size along image width and height
   unsigned int vertSize = (this->descriptor.Data()->Width() *
@@ -490,7 +490,7 @@ void OgreHeightmap::Init()
     {
       int index = (vertSize - y - 1) * vertSize + x;
 
-      // Sanity check in case we get NaNs from ign-common, this prevents a crash
+      // Sanity check in case we get NaNs from gz-common, this prevents a crash
       // in Ogre
       auto value = lookup[index];
       if (!std::isfinite(value))

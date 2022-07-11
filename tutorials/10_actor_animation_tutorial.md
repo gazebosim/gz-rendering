@@ -45,7 +45,7 @@ Create a `Visual` pointer with the scene manager and set the position and rotati
 
 \snippet examples/actor_animation/Main.cc create a visual for the actor
 
-Create the mesh in ign-rendering - this loads the animations into the render engine
+Create the mesh in gz-rendering - this loads the animations into the render engine
 
 \snippet examples/actor_animation/Main.cc create mesh
 

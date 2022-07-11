@@ -241,7 +241,7 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
     return;
   }
 
-  // Setup ign-rendering with an empty scene
+  // Setup gz-rendering with an empty scene
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {

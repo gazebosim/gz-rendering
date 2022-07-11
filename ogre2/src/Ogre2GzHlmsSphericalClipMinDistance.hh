@@ -41,7 +41,7 @@ namespace gz
     ///   - Sends relevant data to the GPU buffers for shaders to use
     ///
     /// This listener requires Hlms to have been created with the piece data
-    /// files in ogre2/src/media/Hlms/Ignition registered
+    /// files in ogre2/src/media/Hlms/Gz registered
     ///
     /// \internal
     /// \remark Public variables take effect immediately (i.e. for the

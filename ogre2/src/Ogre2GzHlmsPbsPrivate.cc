@@ -280,10 +280,10 @@ namespace Ogre
     HlmsPbs::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
 
     _outLibraryFoldersPaths.push_back(
-      common::joinPaths("Hlms", "Ignition", "SolidColor"));
+      common::joinPaths("Hlms", "Gz", "SolidColor"));
     _outLibraryFoldersPaths.push_back(
-      common::joinPaths("Hlms", "Ignition", "SphericalClipMinDistance"));
+      common::joinPaths("Hlms", "Gz", "SphericalClipMinDistance"));
     _outLibraryFoldersPaths.push_back(
-      common::joinPaths("Hlms", "Ignition", "Pbs"));
+      common::joinPaths("Hlms", "Gz", "Pbs"));
   }
 }  // namespace Ogre

@@ -74,7 +74,7 @@ release will remove the deprecated code.
       *Note*: Calling instead `Camera::Update` for each camera is a waste of CPU resources.
     + It is invalid to modify the scene between `Scene::PreRender` and `Scene::PostRender` (e.g. add/remove objects, lights, etc)
     + Added `Scene::SetCameraPassCountPerGpuFlush`. Setting this value to 0 forces legacy behavior which eases porting.
-    + Systems that rely on Graphics components like particle FXs and postprocessing are explicitly affected by Scene's Pre/PostRender. Once `Scene::PostRender` is called, the particle FXs' simulation is moved forward, as well as time values sent to postprocessing shaders. In previous ign-rendering versions each `Camera::Render` call would move the particle simulation forward, which could cause subtle bugs or inconsistencies when Cameras were rendering the same frame from different angles. Setting SetCameraPassCountPerGpuFlush to 0 will also cause these subtle bugs to reappear.
+    + Systems that rely on Graphics components like particle FXs and postprocessing are explicitly affected by Scene's Pre/PostRender. Once `Scene::PostRender` is called, the particle FXs' simulation is moved forward, as well as time values sent to postprocessing shaders. In previous gz-rendering versions each `Camera::Render` call would move the particle simulation forward, which could cause subtle bugs or inconsistencies when Cameras were rendering the same frame from different angles. Setting SetCameraPassCountPerGpuFlush to 0 will also cause these subtle bugs to reappear.
 
 1. **Visual.hh** and **Node.hh**
     + `*UserData` methods and the `Variant` type alias have been moved from the `Visual` class to the `Node` class.

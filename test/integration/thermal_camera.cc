@@ -107,7 +107,7 @@ void ThermalCameraTest::ThermalCameraBoxes(
     return;
   }
 
-  // Setup ign-rendering with an empty scene
+  // Setup gz-rendering with an empty scene
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -288,7 +288,7 @@ void ThermalCameraTest::ThermalCameraBoxes8Bit(
     return;
   }
 
-  // Setup ign-rendering with an empty scene
+  // Setup gz-rendering with an empty scene
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -476,7 +476,7 @@ void ThermalCameraTest::ThermalCameraParticles(
     return;
   }
 
-  // Setup ign-rendering with an empty scene
+  // Setup gz-rendering with an empty scene
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {

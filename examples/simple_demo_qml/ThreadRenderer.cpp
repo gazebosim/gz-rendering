@@ -69,7 +69,7 @@
 ****************************************************************************/
 
 #include "ThreadRenderer.h"
-#include "IgnitionRenderer.hh"
+#include "GzRenderer.hh"
 
 #include <QGuiApplication>
 #include <QMutex>
@@ -211,7 +211,7 @@ void RenderThread::InitialiseOnMainThread()
     Print(this->context->format());
 
     // create renderer
-    this->renderer = new IgnitionRenderer();
+    this->renderer = new GzRenderer();
     this->renderer->InitialiseOnMainThread();
 
     this->context->doneCurrent();

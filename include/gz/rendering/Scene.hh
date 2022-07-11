@@ -1210,7 +1210,7 @@ namespace gz
       ///
       /// # Legacy mode: Set this value to 0.
       ///
-      /// Old projects migrating to newer ign versions may break
+      /// Old projects migrating to newer gz versions may break
       /// these rules (e.g. not calling Render between Scene's
       /// Pre/PostRender).
       ///

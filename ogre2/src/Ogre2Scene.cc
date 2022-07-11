@@ -518,12 +518,12 @@ void Ogre2Scene::UpdateAllHeightmaps(Ogre::Camera *_camera)
 #if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 2
   if (!this->heightmaps.empty())
   {
-      // Ogre 2.2 expects ign to provide Terra's shadow texture
+      // Ogre 2.2 expects gz to provide Terra's shadow texture
       // to each compositor that may use it to properly set barriers
       // (otherwise GPU may start rendering before the Compute Shader
       // is done ray marching terrain shadows)
       //
-      // This is insane with so many possible compositors ign has,
+      // This is insane with so many possible compositors gz has,
       // so we do a brute-force approach here (not that expensive actually)
       //
       // Ogre 2.3 got rid of this requirement due to being very user-hostile

@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import IgnitionRendering 1.0
+import GzRendering 1.0
 
 Item {
   width: 800

@@ -94,13 +94,13 @@ namespace Ogre
         m_camera( camera ),
         mHlmsTerraIndex( std::numeric_limits<uint32>::max() )
     {
-      // IGN CUSTOMIZE BEGIN
+      // GZ CUSTOMIZE BEGIN
       for(int i = 0; i < 2; ++i)
       {
         mSolidColor[i] = Vector4::ZERO;
         mSolidColorSet[i] = false;
       }
-      // IGN CUSTOMIZE END
+      // GZ CUSTOMIZE END
     }
     //-----------------------------------------------------------------------------------
     Terra::~Terra()
@@ -530,7 +530,7 @@ namespace Ogre
         m_collectedCells[0].clear();
     }
     //-----------------------------------------------------------------------------------
-    // IGN CUSTOMIZE BEGIN
+    // GZ CUSTOMIZE BEGIN
     void Terra::SetSolidColor(size_t _idx, const Vector4 solidColor)
     {
       assert(_idx > 0u && _idx < 3u);
@@ -565,7 +565,7 @@ namespace Ogre
       mSolidColorSet[0] = false;
       mSolidColorSet[1] = false;
     }
-    // IGN CUSTOMIZE END
+    // GZ CUSTOMIZE END
     //-----------------------------------------------------------------------------------
     void Terra::update( const Vector3 &lightDir, float lightEpsilon )
     {

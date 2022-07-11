@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#if !OGRE_NO_JSON && defined( IGN_TERRA_JSON_ENABLED )
+#if !OGRE_NO_JSON && defined( GZ_TERRA_JSON_ENABLED )
 #ifndef _OgreHlmsJsonTerra_H_
 #define _OgreHlmsJsonTerra_H_
 

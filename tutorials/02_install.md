@@ -31,7 +31,7 @@ wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 Install:
 ```
 sudo apt-get update
-sudo apt-get install libignition-rendering<#>-dev
+sudo apt-get install libgz-rendering<#>-dev
 ```
 
 Be sure to replace `<#>` with a number value, such as `1` or `2`, depending on which version you need.
@@ -57,10 +57,10 @@ sudo apt install -y \
     freeglut3-dev \
     libxmu-dev \
     libxi-dev \
-    libignition-cmake3-dev \
-    libignition-math7-dev \
-    libignition-common5-dev \
-    libignition-plugin2-dev
+    libgz-cmake3-dev \
+    libgz-math7-dev \
+    libgz-common5-dev \
+    libgz-plugin2-dev
 ```
 
 ### Supported Rendering Engines
@@ -151,7 +151,7 @@ conda activate gz-ws
 
 ## Binary Installation
 
-`libignition-rendering<#>` Conda feedstock is not yet available, pending [conda-forge/staged-recipes#13551](https://github.com/conda-forge/staged-recipes/issues/13551).
+`libgz-rendering<#>` Conda feedstock is not yet available, pending [conda-forge/staged-recipes#13551](https://github.com/conda-forge/staged-recipes/issues/13551).
 
 ## Source Installation
 
@@ -166,12 +166,12 @@ This assumes you have created and activated a Conda environment while installing
 
   You can view available versions and their dependencies:
   ```
-  conda search libignition-rendering* --channel conda-forge --info
+  conda search libgz-rendering* --channel conda-forge --info
   ```
 
   Install dependencies, replacing `<#>` with the desired versions:
   ```
-  conda install libignition-cmake<#> libignition-common<#> libignition-math<#> libignition-plugin<#> --channel conda-forge
+  conda install libgz-cmake<#> libgz-common<#> libgz-math<#> libgz-plugin<#> --channel conda-forge
   ```
 
 3. Navigate to where you would like to build the library, and clone the repository.
@@ -206,7 +206,7 @@ On macOS, add OSRF packages:
 
 Install Gazebo Rendering:
   ```
-  brew install ignition-rendering<#>
+  brew install gz-rendering<#>
   ```
 
 Be sure to replace `<#>` with a number value, such as 5 or 6, depending on

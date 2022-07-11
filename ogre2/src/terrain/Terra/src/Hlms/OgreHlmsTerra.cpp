@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "OgreHlmsListener.h"
 #include "OgreLwString.h"
 
-#if !OGRE_NO_JSON && defined( IGN_TERRA_JSON_ENABLED )
+#if !OGRE_NO_JSON && defined( GZ_TERRA_JSON_ENABLED )
     #include "Terra/Hlms/OgreHlmsJsonTerra.h"
 #endif
 
@@ -377,7 +377,7 @@ namespace Ogre
 //            }
         }
 
-        // IGN CUSTOMIZE BEGIN
+        // GZ CUSTOMIZE BEGIN
         for( size_t i = 0u; i < 4u; ++i )
         {
             const IdString c_ignWeightProperties[4] = {
@@ -390,7 +390,7 @@ namespace Ogre
                          fabsf( datablock->mIgnWeightsMinHeight[i] -
                                 datablock->mIgnWeightsMaxHeight[i] ) >= 1e-6f );
         }
-        // IGN CUSTOMIZE END
+        // GZ CUSTOMIZE END
 
 #ifdef OGRE_BUILD_COMPONENT_PLANAR_REFLECTIONS
         if( mPlanarReflections && mPlanarReflections->hasPlanarReflections( renderable ) )
@@ -627,9 +627,9 @@ namespace Ogre
 //            mRenderSystem->_executeResourceTransition( &resourceTransition );
 //            mRenderSystem->_resourceTransitionDestroyed( &resourceTransition );
 
-            // IGN CUSTOMIZE BEGIN
+            // GZ CUSTOMIZE BEGIN
             // Barriers dealt with in Ogre2Scene::UpdateAllHeightmaps
-    #ifdef IGN_DISABLED
+    #ifdef GZ_DISABLED
             TextureGpu *terraShadowText = terraObj->_getShadowMapTex();
             const CompositorTextureVec &compositorTextures = queuedRenderable.movableObject->
                     _getManager()->getCompositorTextures();
@@ -645,7 +645,7 @@ namespace Ogre
                         " to the compositor pass so Ogre can place the proper Barriers" && false );
             }
     #endif
-            // IGN CUSTOMIZE END
+            // GZ CUSTOMIZE END
 #endif
 
             mLastMovableObject = queuedRenderable.movableObject;
@@ -750,7 +750,7 @@ namespace Ogre
         //Fill the data folder path
         outDataFolderPath = "Hlms/Terra/" + shaderSyntax;
     }
-#if !OGRE_NO_JSON && defined( IGN_TERRA_JSON_ENABLED )
+#if !OGRE_NO_JSON && defined( GZ_TERRA_JSON_ENABLED )
     //-----------------------------------------------------------------------------------
     void HlmsTerra::_loadJson( const rapidjson::Value &jsonValue, const HlmsJson::NamedBlocks &blocks,
                                HlmsDatablock *datablock, const String &resourceGroup,

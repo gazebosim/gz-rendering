@@ -71,7 +71,7 @@
 #ifndef GZ_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_THREAD_RENDERER_HH_
 #define GZ_RENDERING_EXAMPLES_SIMPLE_DEMO_QML_THREAD_RENDERER_HH_
 
-#include "IgnitionRenderer.hh"
+#include "GzRenderer.hh"
 
 #include <QQuickItem>
 #include <QMutex>
@@ -109,7 +109,7 @@ signals:
     void TextureReady(int _id, const QSize &_size);
 
 private:
-    IgnitionRenderer *renderer = nullptr;
+    GzRenderer *renderer = nullptr;
     QSize size;
 
     /// \brief reference to the render window item

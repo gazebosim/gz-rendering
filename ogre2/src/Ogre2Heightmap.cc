@@ -255,7 +255,7 @@ void Ogre2Heightmap::Init()
              "HlmsTerra incorrectly setup, memory corrupted, or "
              "HlmsTerra::getType changed while this code is out of sync");
 
-  Ogre::String datablockName = "IGN Terra " + this->name;
+  Ogre::String datablockName = "GZ Terra " + this->name;
 
   Ogre::HlmsDatablock *datablockBase = hlmsTerra->createDatablock(
               datablockName, datablockName, Ogre::HlmsMacroblock(),

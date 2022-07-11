@@ -753,7 +753,7 @@ void Ogre2RenderEngine::RegisterHlms()
   Ogre::ArchiveManager &archiveManager = Ogre::ArchiveManager::getSingleton();
 
   Ogre::Archive *customizationsArchiveLibrary =
-      archiveManager.load(common::joinPaths(rootHlmsFolder, "Hlms", "Ignition"),
+      archiveManager.load(common::joinPaths(rootHlmsFolder, "Hlms", "Gz"),
       "FileSystem", true);
 
   {

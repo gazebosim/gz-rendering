@@ -86,7 +86,7 @@ void DepthCameraTest::DepthCameraBoxes(
     return;
   }
 
-  // Setup ign-rendering with an empty scene
+  // Setup gz-rendering with an empty scene
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -501,7 +501,7 @@ void DepthCameraTest::DepthCameraParticles(
     return;
   }
 
-  // Setup ign-rendering with an empty scene
+  // Setup gz-rendering with an empty scene
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {

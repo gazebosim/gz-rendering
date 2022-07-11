@@ -218,7 +218,7 @@ void handleMouse()
 }
 
 //////////////////////////////////////////////////
-// From ign-sensors/src/DepthCameraSensor.cc
+// From gz-sensors/src/DepthCameraSensor.cc
 //! [convert depth to image]
 void ConvertDepthToImage(
     const float *_data,
@@ -295,7 +295,7 @@ void keyboardCB(unsigned char _key, int, int)
 }
 
 //////////////////////////////////////////////////
-// See ign-sensors/src/DepthCameraSensor.cc
+// See gz-sensors/src/DepthCameraSensor.cc
 //! [depth frame callback]
 void OnNewDepthFrame(const float *_scan,
                      unsigned int _width, unsigned int _height,
@@ -314,7 +314,7 @@ void initCamera(ir::CameraPtr _camera)
   g_camera = _camera;
   imgw = g_camera->ImageWidth();
   imgh = g_camera->ImageHeight();
-  ir::Image image = g_camera->CreateImage();  
+  ir::Image image = g_camera->CreateImage();
   g_image = std::make_shared<ir::Image>(image);
 
   ir::DepthCameraPtr depthCamera = std::dynamic_pointer_cast<ir::DepthCamera>(

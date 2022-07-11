@@ -98,14 +98,14 @@ CUDA: http://docs.nvidia.com/cuda
 OptiX: https://developer.nvidia.com/optix
 
 Update `LD_LIBRARY_PATH` and add an `OPTIX_INSTALL_DIR` environment variables
-so that ign-rendering can find Optix, e.g. if you installed version 4.0.2 in HOME/optix:
+so that gz-rendering can find Optix, e.g. if you installed version 4.0.2 in HOME/optix:
 ```
 export LD_LIBRARY_PATH=${HOME}/optix/NVIDIA-OptiX-SDK-4.0.2-linux64/lib64:${LD_LIBRARY_PATH}
 export OPTIX_INSTALL_DIR=${HOME}/optix/NVIDIA-OptiX-SDK-4.0.2-linux64
 ```
 
 Note: If you encounter errors about different exception specifiers in optix math
-when building Ign Rendering OptiX plugin, edit
+when building Gazebo Rendering OptiX plugin, edit
 `[optix_install_dir]/include/optixu/optixu_math_namespace.h` and comment
 out the section that defines `fminf`, fmaxf, and `copysignf` (for optix
 sdk 4.0.2, comment out lines 167-206).
@@ -223,7 +223,7 @@ which version you need.
 
 2. Install dependencies
   ```
-  brew install --only-dependencies ignition-rendering<#>
+  brew install --only-dependencies gz-rendering<#>
   ```
   Be sure to replace `<#>` with a number value, such as 5 or 6, depending on
   which version you need.

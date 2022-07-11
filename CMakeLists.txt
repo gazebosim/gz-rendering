@@ -19,7 +19,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 gz_configure_project(
-  REPLACE_GZ_INCLUDE_PATH gz/rendering
+  REPLACE_INCLUDE_PATH gz/rendering
   VERSION_SUFFIX pre1)
 
 #============================================================================
@@ -105,7 +105,7 @@ endif()
 
 #--------------------------------------
 # Find OGRE2: first try to find OGRE2 built with PlanarReflections support and
-# fallback to look for OGRE2 without it. Both seems to works for ign-rendering.
+# fallback to look for OGRE2 without it. Both seems to works for gz-rendering.
 # See https://github.com/gazebosim/gz-rendering/issues/597
 gz_find_package(GzOGRE2 VERSION 2.2.0
     COMPONENTS HlmsPbs HlmsUnlit Overlay PlanarReflections

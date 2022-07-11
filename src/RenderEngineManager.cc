@@ -61,7 +61,7 @@ class gz::rendering::RenderEngineManagerPrivate
   /// \return True if the engine is unloaded
   public: bool UnloadEngine(EngineIter _iter);
 
-  /// \brief Register default engines supplied by ign-rendering
+  /// \brief Register default engines supplied by gz-rendering
   public: void RegisterDefaultEngines();
 
   /// \brief Unregister an engine using an EngineMap iterator.

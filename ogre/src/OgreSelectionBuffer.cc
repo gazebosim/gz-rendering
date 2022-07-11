@@ -290,7 +290,7 @@ void OgreSelectionBuffer::CreateRTTOverlays()
   else
   {
     gzlog << "Unable to create selection buffer overlay. "
-      "This will not effect ignition-rendering unless you're trying to debug "
+      "This will not effect gz-rendering unless you're trying to debug "
       "the selection buffer.\n";
   }
 }

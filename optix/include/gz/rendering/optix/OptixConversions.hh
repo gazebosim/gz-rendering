@@ -44,7 +44,7 @@ namespace gz
       /// \return Optix color value
       public: static float4 ConvertColor(const math::Color &_color);
 
-      /// \brief Return the equivalent ign-math color
+      /// \brief Return the equivalent gz-math color
       /// \param[in] _color Optix color to convert
       /// \return Gazebo color value
       public: static math::Color ConvertColor(const float4 &_color);
@@ -54,7 +54,7 @@ namespace gz
       /// \return Optix vector
       public: static float3 ConvertVector(const math::Vector3d &_vector);
 
-      /// \brief return ign-math Vector from optix Vector3
+      /// \brief return gz-math Vector from optix Vector3
       /// \param[in] _vector Optix vector
       /// \return Gazebo vector
       public: static math::Vector3d ConvertVector(const float3 &_vector);

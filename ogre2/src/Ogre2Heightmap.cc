@@ -102,7 +102,7 @@ void Ogre2Heightmap::Init()
 
   // \todo These parameters shouldn't be hardcoded, and instead parametrized so
   // that they can be made consistent across different libraries (like
-  // ign-physics)
+  // gz-physics)
   bool flipY = false;
   // sampling size along image width and height
   const bool needsOgre1Compat =
@@ -168,7 +168,7 @@ void Ogre2Heightmap::Init()
       const size_t index = y * srcWidth + x;
       float heightVal = lookup[index];
 
-      // Sanity check in case we get NaNs from ign-common, this prevents a crash
+      // Sanity check in case we get NaNs from gz-common, this prevents a crash
       // in Ogre
       if (!std::isfinite(heightVal))
         heightVal = minElevation;

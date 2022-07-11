@@ -26,13 +26,13 @@
 /// and update of a Gazebo rendering engine instance and makes the
 /// rendered texture available in a shared context for an application
 /// to apply to a render surface.
-class IgnitionRenderer
+class GzRenderer
 {
   /// \brief Destructor
-  public: virtual ~IgnitionRenderer();
+  public: virtual ~GzRenderer();
 
   /// \brief Constructor
-  public: IgnitionRenderer();
+  public: GzRenderer();
 
   /// \brief Render the next frame. May be called on a render thread.
   public: void Render();

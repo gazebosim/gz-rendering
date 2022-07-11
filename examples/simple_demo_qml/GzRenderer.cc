@@ -18,7 +18,7 @@
 // The functions BuildScene and createCamera are copied from the simple_demo
 // example.
 
-#include "IgnitionRenderer.hh"
+#include "GzRenderer.hh"
 
 #include <QOpenGLContext>
 #include <QQuickWindow>
@@ -194,23 +194,23 @@ gz::rendering::CameraPtr CreateCamera(const std::string &_engineName)
 }
 
 //////////////////////////////////////////////////
-IgnitionRenderer::~IgnitionRenderer()
+GzRenderer::~GzRenderer()
 {
 }
 
 //////////////////////////////////////////////////
-IgnitionRenderer::IgnitionRenderer()
+GzRenderer::GzRenderer()
 {
 }
 
 //////////////////////////////////////////////////
-void IgnitionRenderer::Initialise()
+void GzRenderer::Initialise()
 {
   // no-op - all initialised on the main thread
 }
 
 //////////////////////////////////////////////////
-void IgnitionRenderer::InitialiseOnMainThread()
+void GzRenderer::InitialiseOnMainThread()
 {
   if (!this->initialised)
   {
@@ -220,7 +220,7 @@ void IgnitionRenderer::InitialiseOnMainThread()
 }
 
 //////////////////////////////////////////////////
-void IgnitionRenderer::Render()
+void GzRenderer::Render()
 {
   // pre-render may regenerate textureId if the size changes
   this->camera->PreRender();
@@ -234,25 +234,25 @@ void IgnitionRenderer::Render()
 }
 
 //////////////////////////////////////////////////
-bool IgnitionRenderer::Initialised() const
+bool GzRenderer::Initialised() const
 {
   return this->initialised;
 }
 
 //////////////////////////////////////////////////
-unsigned int IgnitionRenderer::TextureId() const
+unsigned int GzRenderer::TextureId() const
 {
   return this->textureId;
 }
 
 //////////////////////////////////////////////////
-QSize IgnitionRenderer::TextureSize() const
+QSize GzRenderer::TextureSize() const
 {
   return this->textureSize;
 }
 
 //////////////////////////////////////////////////
-void IgnitionRenderer::InitEngine()
+void GzRenderer::InitEngine()
 {
   std::string engineName("ogre2");
 
@@ -283,7 +283,7 @@ void IgnitionRenderer::InitEngine()
 }
 
 //////////////////////////////////////////////////
-void IgnitionRenderer::UpdateCamera()
+void GzRenderer::UpdateCamera()
 {
   double angle = this->cameraOffset / 2 * M_PI;
   double x = sin(angle) * 3.0 + 3.0;

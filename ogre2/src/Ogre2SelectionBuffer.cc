@@ -222,18 +222,24 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
 
   Ogre::TextureGpuManager *textureMgr =
     ogreRoot->getRenderSystem()->getTextureGpuManager();
+  std::string selectionTextureName = "SelectionPassTex";
+  bool HasSelectionTexture =
+      textureMgr->findTextureNoThrow(selectionTextureName);
   this->dataPtr->renderTexture =
       textureMgr->createOrRetrieveTexture(
-        "SelectionPassTex" + this->dataPtr->camera->getName(),
+        selectionTextureName,
         Ogre::GpuPageOutStrategy::SaveToSystemRam,
         Ogre::TextureFlags::RenderToTexture,
         Ogre::TextureTypes::Type2D);
-  this->dataPtr->renderTexture->setResolution(1, 1);
-  this->dataPtr->renderTexture->setNumMipmaps(1u);
-  this->dataPtr->renderTexture->setPixelFormat(Ogre::PFG_RGBA32_FLOAT);
+  if (!HasSelectionTexture)
+  {
+    this->dataPtr->renderTexture->setResolution(1, 1);
+    this->dataPtr->renderTexture->setNumMipmaps(1u);
+    this->dataPtr->renderTexture->setPixelFormat(Ogre::PFG_RGBA32_FLOAT);
 
-  this->dataPtr->renderTexture->scheduleTransitionTo(
-    Ogre::GpuResidency::Resident);
+    this->dataPtr->renderTexture->scheduleTransitionTo(
+      Ogre::GpuResidency::Resident);
+  }
 
   this->dataPtr->selectionCamera->addListener(
       this->dataPtr->materialSwitcher.get());

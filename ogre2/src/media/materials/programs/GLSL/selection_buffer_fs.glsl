@@ -35,9 +35,9 @@ out vec4 fragColor;
 vulkan( layout( ogre_P0 ) uniform Params { )
   uniform vec4 colorTexResolution;
 
-	uniform vec2 projectionParams;
-	uniform float far;
-	uniform float inf;
+  uniform vec2 projectionParams;
+  uniform float far;
+  uniform float inf;
 vulkan( }; )
 
 float packFloat(vec4 color)

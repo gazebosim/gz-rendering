@@ -99,14 +99,14 @@ void RayQueryTest::RayQuery(const std::string &_renderEngine)
   math::Vector2d pos(0.0, 0.0);
   rayQuery->SetFromCamera(camera, pos);
 
-  EXPECT_GT(rayQuery->Origin().X(), 0.0);
+  EXPECT_LT(0.0, rayQuery->Origin().X());
   EXPECT_EQ(math::Vector3d::UnitX, rayQuery->Direction().Normalize());
 
   RayQueryResult result = rayQuery->ClosestPoint();
   EXPECT_EQ(math::Vector3d::Zero, result.point);
-  EXPECT_LT(result.distance, 0.0);
+  EXPECT_GT(0.0, result.distance);
   EXPECT_EQ(0u, result.objectId);
-  EXPECT_FALSE((result));
+  EXPECT_FALSE(result);
 
   // testing multiple ray queries that are set from camera
   CameraPtr camera2 =  scene->CreateCamera("camera2");
@@ -119,14 +119,14 @@ void RayQueryTest::RayQuery(const std::string &_renderEngine)
   RayQueryPtr rayQuery2 = scene->CreateRayQuery();
   rayQuery2->SetFromCamera(camera2, pos2);
 
-  EXPECT_GT(rayQuery2->Origin().X(), 0.0);
+  EXPECT_LT(0.0, rayQuery2->Origin().X());
   EXPECT_EQ(math::Vector3d::UnitX, rayQuery2->Direction().Normalize());
 
   RayQueryResult result2 = rayQuery2->ClosestPoint();
   EXPECT_EQ(math::Vector3d::Zero, result2.point);
-  EXPECT_LT(result2.distance, 0.0);
+  EXPECT_GT(0.0, result2.distance);
   EXPECT_EQ(0u, result2.objectId);
-  EXPECT_FALSE((result2));
+  EXPECT_FALSE(result2);
 
   // Clean up
   engine->DestroyScene(scene);

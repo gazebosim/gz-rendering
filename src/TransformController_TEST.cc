@@ -128,8 +128,6 @@ void TransformControllerTest::TransformControl(const std::string &_renderEngine)
   EXPECT_EQ(math::Vector3d::UnitZ,
       transformControl.ToAxis(TransformAxis::TA_SCALE_Z));
 
-
-
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());
@@ -218,6 +216,15 @@ void TransformControllerTest::LocalSpace(const std::string &_renderEngine)
   camera->SetImageHeight(240);
 
   TransformController transformControl;
+
+  // test invalid callas and make sure no exceptions are thrown
+  EXPECT_NO_THROW(transformControl.SetCamera(nullptr));
+  EXPECT_NO_THROW(transformControl.Attach(nullptr));
+  EXPECT_NO_THROW(transformControl.Start());
+  EXPECT_NO_THROW(transformControl.Translate(math::Vector3d::Zero));
+  EXPECT_NO_THROW(transformControl.Rotate(math::Quaterniond::Identity));
+  EXPECT_NO_THROW(transformControl.Translate(math::Vector3d::One));
+  EXPECT_EQ(math::Vector3d::Zero, transformControl.AxisById(0u));
 
   // test setting camera
   transformControl.SetCamera(camera);
@@ -403,6 +410,12 @@ void TransformControllerTest::Control2d(const std::string &_renderEngine)
   EXPECT_DOUBLE_EQ(scale.X(), 1);
   EXPECT_GT(scale.Y(), 0);
   EXPECT_DOUBLE_EQ(scale.Z(), 1);
+
+  // test snapping with invalid args
+  EXPECT_EQ(math::Vector3d::Zero,
+      transformControl.SnapPoint(math::Vector3d::One, -1));
+  EXPECT_EQ(math::Vector3d::Zero,
+      transformControl.SnapPoint(math::Vector3d::One, 1, -1));
 
   // Clean up
   engine->DestroyScene(scene);

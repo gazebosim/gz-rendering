@@ -88,17 +88,45 @@ void RayQueryTest::RayQuery(const std::string &_renderEngine)
 
   // set from camera
   CameraPtr camera =  scene->CreateCamera("camera");
+  camera->SetLocalPosition(math::Vector3d::Zero);
+  unsigned int width = 320u;
+  unsigned int height = 240u;
+  camera->SetImageWidth(width);
+  camera->SetImageHeight(height);
+
+  VisualPtr root = scene->RootVisual();
+  root->AddChild(camera);
   math::Vector2d pos(0.0, 0.0);
   rayQuery->SetFromCamera(camera, pos);
 
-  EXPECT_GT(rayQuery->Origin().X(), 0.0);
+  EXPECT_LT(0.0, rayQuery->Origin().X());
   EXPECT_EQ(math::Vector3d::UnitX, rayQuery->Direction().Normalize());
 
   RayQueryResult result = rayQuery->ClosestPoint();
   EXPECT_EQ(math::Vector3d::Zero, result.point);
-  EXPECT_LT(result.distance, 0.0);
+  EXPECT_GT(0.0, result.distance);
   EXPECT_EQ(0u, result.objectId);
-  EXPECT_FALSE((result));
+  EXPECT_FALSE(result);
+
+  // testing multiple ray queries that are set from camera
+  CameraPtr camera2 =  scene->CreateCamera("camera2");
+  camera2->SetLocalPosition(math::Vector3d::Zero);
+  camera2->SetImageWidth(width);
+  camera2->SetImageHeight(height);
+
+  root->AddChild(camera2);
+  math::Vector2d pos2(0.0, 0.0);
+  RayQueryPtr rayQuery2 = scene->CreateRayQuery();
+  rayQuery2->SetFromCamera(camera2, pos2);
+
+  EXPECT_LT(0.0, rayQuery2->Origin().X());
+  EXPECT_EQ(math::Vector3d::UnitX, rayQuery2->Direction().Normalize());
+
+  RayQueryResult result2 = rayQuery2->ClosestPoint();
+  EXPECT_EQ(math::Vector3d::Zero, result2.point);
+  EXPECT_GT(0.0, result2.distance);
+  EXPECT_EQ(0u, result2.objectId);
+  EXPECT_FALSE(result2);
 
   // Clean up
   engine->DestroyScene(scene);

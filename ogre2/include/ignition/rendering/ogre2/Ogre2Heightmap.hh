@@ -64,6 +64,9 @@ namespace ignition
       // Documentation inherited.
       public: virtual void PreRender() override;
 
+      // Documentation inherited.
+      public: virtual void Destroy() override;
+
       /// \brief Returns the Terra pointer as it is a movable object that
       /// must be attached to a regular SceneNode
       /// \remarks This behavior is different from ogre1

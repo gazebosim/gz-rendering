@@ -20,6 +20,7 @@
 #include <ignition/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
+#include "ignition/rendering/DistortionPass.hh"
 #include "ignition/rendering/GaussianNoisePass.hh"
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/RenderingIface.hh"
@@ -70,6 +71,16 @@ void RenderPassSystemTest::RenderPassSystem(const std::string &_renderEngine)
   GaussianNoisePassPtr noisePass =
       std::dynamic_pointer_cast<GaussianNoisePass>(pass);
   EXPECT_NE(nullptr, noisePass);
+
+  // create distortion pass
+  RenderPassPtr dpass = rpSystem->Create<DistortionPass>();
+  if (_renderEngine == "ogre")
+  {
+    EXPECT_NE(nullptr, dpass);
+    DistortionPassPtr distortionPass =
+        std::dynamic_pointer_cast<DistortionPass>(dpass);
+    EXPECT_NE(nullptr, distortionPass);
+  }
 }
 
 /////////////////////////////////////////////////

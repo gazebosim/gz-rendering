@@ -179,8 +179,8 @@ namespace Ogre
         //uint16  mTexIndices[NUM_TERRA_TEXTURE_TYPES];
 
         // GZ CUSTOMIZE BEGIN
-        float mIgnWeightsMinHeight[4];
-        float mIgnWeightsMaxHeight[4];
+        float mGzWeightsMinHeight[4];
+        float mGzWeightsMaxHeight[4];
         // GZ CUSTOMIZE END
 
         /// @see TerraBrdf::TerraBrdf
@@ -244,7 +244,7 @@ namespace Ogre
         uint32 getBrdf(void) const;
 
         // GZ CUSTOMIZE BEGIN
-        void setIgnWeightsHeights( const Vector4 &ignWeightsMinHeight,
+        void setGzWeightsHeights( const Vector4 &ignWeightsMinHeight,
                                    const Vector4 &ignWeightsMaxHeight );
         using HlmsTerraBaseTextureDatablock::setTexture;
         void setTexture( TerraTextureTypes texUnit, const String &name,

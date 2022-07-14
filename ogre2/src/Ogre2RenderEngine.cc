@@ -76,13 +76,13 @@ class GZ_RENDERING_OGRE2_HIDDEN
   public: std::unique_ptr<Ogre::TerraWorkspaceListener> terraWorkspaceListener;
 
   /// \brief Custom PBS modifications
-  public: Ogre::Ogre2GzHlmsPbs *ignHlmsPbs{nullptr};
+  public: Ogre::Ogre2GzHlmsPbs *gzHlmsPbs{nullptr};
 
   /// \brief Custom Unlit modifications
-  public: Ogre::Ogre2GzHlmsUnlit *ignHlmsUnlit{nullptr};
+  public: Ogre::Ogre2GzHlmsUnlit *gzHlmsUnlit{nullptr};
 
   /// \brief Custom Terra modifications
-  public: Ogre::Ogre2GzHlmsTerra *ignHlmsTerra{nullptr};
+  public: Ogre::Ogre2GzHlmsTerra *gzHlmsTerra{nullptr};
 };
 
 using namespace gz;
@@ -788,7 +788,7 @@ void Ogre2RenderEngine::RegisterHlms()
     hlmsUnlit->setDebugOutputPath(false, false);
     hlmsUnlit->setListener(hlmsUnlit);
 
-    this->dataPtr->ignHlmsUnlit = hlmsUnlit;
+    this->dataPtr->gzHlmsUnlit = hlmsUnlit;
   }
 
   {
@@ -833,7 +833,7 @@ void Ogre2RenderEngine::RegisterHlms()
     hlmsPbs->setDebugOutputPath(false, false);
     hlmsPbs->setListener(hlmsPbs);
 
-    dataPtr->ignHlmsPbs = hlmsPbs;
+    dataPtr->gzHlmsPbs = hlmsPbs;
   }
 
   {
@@ -871,7 +871,7 @@ void Ogre2RenderEngine::RegisterHlms()
     this->dataPtr->terraWorkspaceListener.reset(
       new Ogre::TerraWorkspaceListener(hlmsTerra));
 
-    this->dataPtr->ignHlmsTerra = hlmsTerra;
+    this->dataPtr->gzHlmsTerra = hlmsTerra;
   }
 }
 
@@ -1085,9 +1085,9 @@ Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
 void Ogre2RenderEngine::SetIgnOgreRenderingMode(
   IgnOgreRenderingMode renderingMode)
 {
-  this->dataPtr->ignHlmsPbs->ignOgreRenderingMode = renderingMode;
-  this->dataPtr->ignHlmsUnlit->ignOgreRenderingMode = renderingMode;
-  this->dataPtr->ignHlmsTerra->ignOgreRenderingMode = renderingMode;
+  this->dataPtr->gzHlmsPbs->gzOgreRenderingMode = renderingMode;
+  this->dataPtr->gzHlmsUnlit->gzOgreRenderingMode = renderingMode;
+  this->dataPtr->gzHlmsTerra->gzOgreRenderingMode = renderingMode;
 }
 
 /////////////////////////////////////////////////

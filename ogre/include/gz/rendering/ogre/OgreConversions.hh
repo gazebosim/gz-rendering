@@ -32,7 +32,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    /// \addtogroup ign_rendering
+    /// \addtogroup gz_rendering
     /// \{
 
     /// \brief Conversions Conversions.hh rendering/Conversions.hh

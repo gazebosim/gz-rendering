@@ -108,7 +108,7 @@ namespace gz
 
       /// \brief See IgnOgreRenderingMode. Public variable.
       /// Modifying it takes change on the next render
-      public: IgnOgreRenderingMode ignOgreRenderingMode = IORM_NORMAL;
+      public: IgnOgreRenderingMode gzOgreRenderingMode = IORM_NORMAL;
     };
     }
   }

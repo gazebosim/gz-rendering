@@ -180,7 +180,7 @@ vertex_program laser_retro_vs_GLSL glsl
   {
     param_named_auto worldViewProj worldviewproj_matrix
     param_named_auto worldView worldview_matrix
-    param_named ignMinClipDistance float 0.0
+    param_named gzMinClipDistance float 0.0
   }
 }
 
@@ -204,7 +204,7 @@ vertex_program laser_retro_vs_Metal metal
   {
     param_named_auto worldViewProj worldviewproj_matrix
     param_named_auto worldView worldview_matrix
-    param_named ignMinClipDistance float 0.0
+    param_named gzMinClipDistance float 0.0
   }
 }
 

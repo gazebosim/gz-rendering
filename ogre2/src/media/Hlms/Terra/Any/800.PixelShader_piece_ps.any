@@ -100,12 +100,12 @@
 
 	@property( !detail_maps_diffuse && !detail_maps_normal )
 		float4 detailWeights = float4( 0.25f, 0.25f, 0.25f, 0.25f );
-		@insertpiece( ign_weights )
+		@insertpiece( gz_weights )
 	@else
 		// GZ CUSTOMIZE BEGIN
 		//pixelData.diffuse.xyz *= (detailCol0.xyz * detailWeights.x + detailCol1.xyz * detailWeights.y) +
 		//						 (detailCol2.xyz * detailWeights.z + detailCol3.xyz * detailWeights.w);
-		@insertpiece( ign_weights )
+		@insertpiece( gz_weights )
 		// GZ CUSTOMIZE END
 	@end
 

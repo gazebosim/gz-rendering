@@ -34,7 +34,7 @@ namespace gz
     // forward declaration
     class OgreRTShaderSystemPrivate;
 
-    /// \addtogroup ign_rendering
+    /// \addtogroup gz_rendering
     /// \{
 
     /// \class OgreRTShaderSystem OgreRTShaderSystem.hh rendering/rendering.hh

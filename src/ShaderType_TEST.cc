@@ -37,8 +37,10 @@ TEST(ShaderType, ShaderUtil)
 
   EXPECT_EQ("pixel", ShaderUtil::Name(ShaderType::ST_PIXEL));
   EXPECT_EQ("vertex", ShaderUtil::Name(ShaderType::ST_VERTEX));
-  EXPECT_EQ("normal_map_object_space", ShaderUtil::Name(ShaderType::ST_NORM_OBJ));
-  EXPECT_EQ("normal_map_tangent_space", ShaderUtil::Name(ShaderType::ST_NORM_TAN));
+  EXPECT_EQ("normal_map_object_space",
+      ShaderUtil::Name(ShaderType::ST_NORM_OBJ));
+  EXPECT_EQ("normal_map_tangent_space",
+      ShaderUtil::Name(ShaderType::ST_NORM_TAN));
   EXPECT_EQ("UNKNOWN", ShaderUtil::Name(ShaderType::ST_UNKNOWN));
 
   EXPECT_EQ(ST_PIXEL, ShaderUtil::Enum("pixel"));

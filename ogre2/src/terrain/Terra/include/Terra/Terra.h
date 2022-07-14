@@ -108,9 +108,9 @@ namespace Ogre
         Camera const            *m_camera;
 
         // GZ CUSTOMIZE BEGIN
-        /// See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
+        /// See GORM_SOLID_COLOR and GORM_SOLID_THERMAL_COLOR_TEXTURED
         Vector4 mSolidColor[2];
-        /// See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
+        /// See GORM_SOLID_COLOR and GORM_SOLID_THERMAL_COLOR_TEXTURED
         bool mSolidColorSet[2];
         // GZ CUSTOMIZE END
 
@@ -178,7 +178,7 @@ namespace Ogre
         float getCustomSkirtMinHeight( void ) const { return m_skirtSize; }
 
         // GZ CUSTOMIZE BEGIN
-        /// \brief See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
+        /// \brief See GORM_SOLID_COLOR and GORM_SOLID_THERMAL_COLOR_TEXTURED
         /// Replaces renderable->setCustomRenderable(...) because
         /// a Terrain may have many renderables but the color is the same
         /// for all of them
@@ -186,19 +186,19 @@ namespace Ogre
         /// \param[in] _idx _solidColor color to apply
         void SetSolidColor(size_t _idx, const Vector4 _solidColor);
 
-        /// \brief See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
+        /// \brief See GORM_SOLID_COLOR and GORM_SOLID_THERMAL_COLOR_TEXTURED
         /// Retrieves the value set with SetSolidColor. Throws if unset.
         /// \param[in] _idx must in range [1; 2]
         /// \return Color value
         Vector4 SolidColor(size_t _idx) const;
 
-        /// \brief See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
+        /// \brief See GORM_SOLID_COLOR and GORM_SOLID_THERMAL_COLOR_TEXTURED
         /// Checks whether a color has been set
         /// \param[in] _idx must in range [1; 2]
         /// \return True if color has been unset
         bool HasSolidColor(size_t _idx) const;
 
-        /// \brief See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
+        /// \brief See GORM_SOLID_COLOR and GORM_SOLID_THERMAL_COLOR_TEXTURED
         /// Marks all SetSolidColor as unset so that SolidColor throws
         /// if used again without setting.
         void UnsetSolidColors();

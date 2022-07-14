@@ -56,7 +56,7 @@ namespace Ogre
     const CompositorShadowNode *_shadowNode, bool _casterPass,
     bool _dualParaboloid, SceneManager *_sceneManager, Hlms *_hlms)
   {
-    if (!_casterPass && this->gzOgreRenderingMode == IORM_SOLID_COLOR)
+    if (!_casterPass && this->gzOgreRenderingMode == GORM_SOLID_COLOR)
     {
       _hlms->_setProperty("gz_render_solid_color", 1);
     }
@@ -135,7 +135,7 @@ namespace Ogre
       listener->hlmsTypeChanged(_casterPass, _commandBuffer, _datablock);
     }
 
-    if (_casterPass || this->gzOgreRenderingMode != IORM_SOLID_COLOR)
+    if (_casterPass || this->gzOgreRenderingMode != GORM_SOLID_COLOR)
     {
       return;
     }
@@ -151,7 +151,7 @@ namespace Ogre
     const uint32 instanceIdx = HlmsUnlit::fillBuffersForV1(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if (this->gzOgreRenderingMode == IORM_SOLID_COLOR && !_casterPass)
+    if (this->gzOgreRenderingMode == GORM_SOLID_COLOR && !_casterPass)
     {
       Vector4 customParam;
       try
@@ -192,7 +192,7 @@ namespace Ogre
     const uint32 instanceIdx = HlmsUnlit::fillBuffersForV2(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if (this->gzOgreRenderingMode == IORM_SOLID_COLOR && !_casterPass)
+    if (this->gzOgreRenderingMode == GORM_SOLID_COLOR && !_casterPass)
     {
       Vector4 customParam =
         _queuedRenderable.renderable->getCustomParameter(1u);

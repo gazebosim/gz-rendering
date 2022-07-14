@@ -1082,8 +1082,8 @@ Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
 }
 
 /////////////////////////////////////////////////
-void Ogre2RenderEngine::SetIgnOgreRenderingMode(
-  IgnOgreRenderingMode renderingMode)
+void Ogre2RenderEngine::SetGzOgreRenderingMode(
+  GzOgreRenderingMode renderingMode)
 {
   this->dataPtr->gzHlmsPbs->gzOgreRenderingMode = renderingMode;
   this->dataPtr->gzHlmsUnlit->gzOgreRenderingMode = renderingMode;

@@ -59,12 +59,12 @@ namespace Ogre
     bool _dualParaboloid, SceneManager *_sceneManager, Hlms *_hlms)
   {
     if (!_casterPass &&
-        (this->gzOgreRenderingMode == IORM_SOLID_COLOR ||
-         this->gzOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED))
+        (this->gzOgreRenderingMode == GORM_SOLID_COLOR ||
+         this->gzOgreRenderingMode == GORM_SOLID_THERMAL_COLOR_TEXTURED))
     {
       _hlms->_setProperty("gz_render_solid_color", 1);
 
-      if (this->gzOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED)
+      if (this->gzOgreRenderingMode == GORM_SOLID_THERMAL_COLOR_TEXTURED)
         _hlms->_setProperty("gz_render_solid_color_textured", 1);
     }
 
@@ -143,8 +143,8 @@ namespace Ogre
     }
 
     if (_casterPass ||
-        (this->gzOgreRenderingMode != IORM_SOLID_COLOR &&
-         this->gzOgreRenderingMode != IORM_SOLID_THERMAL_COLOR_TEXTURED))
+        (this->gzOgreRenderingMode != GORM_SOLID_COLOR &&
+         this->gzOgreRenderingMode != GORM_SOLID_THERMAL_COLOR_TEXTURED))
     {
       return;
     }
@@ -160,8 +160,8 @@ namespace Ogre
     const uint32 instanceIdx = HlmsTerra::fillBuffersForV1(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if ((this->gzOgreRenderingMode == IORM_SOLID_COLOR ||
-         this->gzOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED) &&
+    if ((this->gzOgreRenderingMode == GORM_SOLID_COLOR ||
+         this->gzOgreRenderingMode == GORM_SOLID_THERMAL_COLOR_TEXTURED) &&
         !_casterPass)
     {
       const Ogre::Terra *terra =
@@ -193,12 +193,12 @@ namespace Ogre
       dataPtr[1] = customParam.y;
       dataPtr[2] = customParam.z;
 
-      if (this->gzOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED &&
+      if (this->gzOgreRenderingMode == GORM_SOLID_THERMAL_COLOR_TEXTURED &&
           terra->HasSolidColor(2u))
       {
         GZ_ASSERT(customParam.w >= 0.0f,
                    "customParam.w can't be negative for "
-                   "IORM_SOLID_THERMAL_COLOR_TEXTURED");
+                   "GORM_SOLID_THERMAL_COLOR_TEXTURED");
 
         // Negate customParam.w to tell the shader we wish to multiply
         // against the diffuse texture. We substract 0.5f to avoid -0.0 = 0.0
@@ -221,8 +221,8 @@ namespace Ogre
     const uint32 instanceIdx = HlmsTerra::fillBuffersForV2(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if ((this->gzOgreRenderingMode == IORM_SOLID_COLOR ||
-         this->gzOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED) &&
+    if ((this->gzOgreRenderingMode == GORM_SOLID_COLOR ||
+         this->gzOgreRenderingMode == GORM_SOLID_THERMAL_COLOR_TEXTURED) &&
         !_casterPass)
     {
       const Ogre::Terra *terra =
@@ -255,12 +255,12 @@ namespace Ogre
       dataPtr[2] = customParam.z;
       dataPtr[3] = customParam.w;
 
-      if (this->gzOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED &&
+      if (this->gzOgreRenderingMode == GORM_SOLID_THERMAL_COLOR_TEXTURED &&
           terra->HasSolidColor(2u))
       {
         GZ_ASSERT(customParam.w >= 0.0f,
                    "customParam.w can't be negative for "
-                   "IORM_SOLID_THERMAL_COLOR_TEXTURED");
+                   "GORM_SOLID_THERMAL_COLOR_TEXTURED");
 
         // Negate customParam.w to tell the shader we wish to multiply
         // against the diffuse texture. We substract 0.5f to avoid -0.0 = 0.0

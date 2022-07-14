@@ -38,7 +38,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE
     {
-    typedef gz::rendering::IgnOgreRenderingMode IgnOgreRenderingMode;
+    typedef gz::rendering::GzOgreRenderingMode GzOgreRenderingMode;
     typedef Ogre::vector<Ogre::ConstBufferPacked*>::type ConstBufferPackedVec;
 
     /// \brief Implements code shared across all or most of our Hlms
@@ -106,9 +106,9 @@ namespace gz
       /// \internal
       protected: float *currPerObjectDataPtr = nullptr;
 
-      /// \brief See IgnOgreRenderingMode. Public variable.
+      /// \brief See GzOgreRenderingMode. Public variable.
       /// Modifying it takes change on the next render
-      public: IgnOgreRenderingMode gzOgreRenderingMode = IORM_NORMAL;
+      public: GzOgreRenderingMode gzOgreRenderingMode = GORM_NORMAL;
     };
     }
   }

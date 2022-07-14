@@ -241,7 +241,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
   auto engine = Ogre2RenderEngine::Instance();
-  engine->SetIgnOgreRenderingMode(IORM_SOLID_THERMAL_COLOR_TEXTURED);
+  engine->SetGzOgreRenderingMode(GORM_SOLID_THERMAL_COLOR_TEXTURED);
 
   // swap item to use v1 shader material
   // Note: keep an eye out for performance impact on switching materials
@@ -653,7 +653,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene(
   this->datablockMap.clear();
 
   // Remove the custom parameter. Why? If there are multiple cameras that
-  // use IORM_SOLID_COLOR (or any other mode), we want them to throw if
+  // use GORM_SOLID_COLOR (or any other mode), we want them to throw if
   // that code forgot to call setCustomParameter. We may miss those errors
   // if that code forgets to call but it was already carrying the value
   // we set here.
@@ -699,7 +699,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene(
     subItem->setDatablock(it.second);
   }
 
-  engine->SetIgnOgreRenderingMode(IORM_NORMAL);
+  engine->SetGzOgreRenderingMode(GORM_NORMAL);
 }
 
 //////////////////////////////////////////////////

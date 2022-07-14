@@ -153,6 +153,14 @@ TEST_P(HeightmapTest, IGN_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 
   scene->RootVisual()->AddChild(vis);
 
+  // \todo(iche033) this should not be needed once Ogre2Heightmap::Destroy is
+  // implemented.
+  if (renderEngine == "ogre2")
+  {
+    vis->Destroy();
+    heightmap.reset();
+  }
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

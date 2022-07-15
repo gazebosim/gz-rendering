@@ -120,6 +120,9 @@ void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
                           10, 3.5};
   lidar->SetPoints(pts);
   EXPECT_EQ(pts.size(), lidar->PointCount());
+
+  lidar->PreRender();
+
   lidar->ClearPoints();
   EXPECT_EQ(lidar->PointCount(), 0u);
 

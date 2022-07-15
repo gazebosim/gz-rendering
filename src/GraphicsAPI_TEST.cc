@@ -58,9 +58,3 @@ TEST(GraphicsAPITest, GraphicsAPI)
   str = GraphicsAPIUtils::Str(static_cast<GraphicsAPI>(99));
   EXPECT_TRUE(str.empty());
 }
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

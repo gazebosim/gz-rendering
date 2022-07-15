@@ -50,10 +50,3 @@ TEST(ShaderType, ShaderUtil)
   EXPECT_EQ(ST_UNKNOWN, ShaderUtil::Enum("UNKNOWN"));
   EXPECT_EQ(ST_UNKNOWN, ShaderUtil::Enum("invalid"));
 }
-
-//////////////////////////////////////////////////
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

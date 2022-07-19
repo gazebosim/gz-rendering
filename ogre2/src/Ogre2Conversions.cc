@@ -27,6 +27,21 @@
 using namespace ignition;
 using namespace rendering;
 
+/// \brief Converts an infinite float value to a max / min value.
+/// The narrowing conversion from double to float may result in infs for values
+/// above max, which eventually causes issues within Ogre.
+/// \param[in, out] _f Float value to fix.
+void infToMax(float &_f)
+{
+  if (!std::isinf(_f))
+    return;
+
+  if (_f > 0)
+    _f = std::numeric_limits<float>::max();
+  else
+    _f = -std::numeric_limits<float>::max();
+}
+
 //////////////////////////////////////////////////
 const Ogre::PixelFormatGpu Ogre2Conversions::ogrePixelFormats[PF_COUNT] =
     {
@@ -73,7 +88,13 @@ math::Color Ogre2Conversions::Convert(const Ogre::ColourValue &_color)
 //////////////////////////////////////////////////
 Ogre::Vector3 Ogre2Conversions::Convert(const math::Vector3d &_vector)
 {
-  return Ogre::Vector3(_vector.X(), _vector.Y(), _vector.Z());
+  auto ogreVec = Ogre::Vector3(_vector.X(), _vector.Y(), _vector.Z());
+
+  infToMax(ogreVec.x);
+  infToMax(ogreVec.y);
+  infToMax(ogreVec.z);
+
+  return ogreVec;
 }
 
 //////////////////////////////////////////////////
@@ -85,7 +106,14 @@ math::Vector3d Ogre2Conversions::Convert(const Ogre::Vector3 &_vector)
 //////////////////////////////////////////////////
 Ogre::Quaternion Ogre2Conversions::Convert(const math::Quaterniond &_quat)
 {
-  return Ogre::Quaternion(_quat.W(), _quat.X(), _quat.Y(), _quat.Z());
+  auto ogreQuat = Ogre::Quaternion(_quat.W(), _quat.X(), _quat.Y(), _quat.Z());
+
+  infToMax(ogreQuat.w);
+  infToMax(ogreQuat.x);
+  infToMax(ogreQuat.y);
+  infToMax(ogreQuat.z);
+
+  return ogreQuat;
 }
 
 //////////////////////////////////////////////////

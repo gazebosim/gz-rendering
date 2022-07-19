@@ -109,6 +109,13 @@ void Ogre2Node::SetRawLocalPosition(const math::Vector3d &_position)
   if (nullptr == this->ogreNode)
     return;
 
+  if (!_position.IsFinite())
+  {
+    ignerr << "Unable to set non-finite position [" << _position
+           << "] to node [" << this->Name() << "]" << std::endl;
+    return;
+  }
+
   this->ogreNode->setPosition(Ogre2Conversions::Convert(_position));
 }
 
@@ -126,6 +133,13 @@ void Ogre2Node::SetRawLocalRotation(const math::Quaterniond &_rotation)
 {
   if (nullptr == this->ogreNode)
     return;
+
+  if (!_rotation.IsFinite())
+  {
+    ignerr << "Unable to set non-finite rotation [" << _rotation
+           << "] to node [" << this->Name() << "]" << std::endl;
+    return;
+  }
 
   this->ogreNode->setOrientation(Ogre2Conversions::Convert(_rotation));
 }
@@ -266,6 +280,13 @@ void Ogre2Node::SetLocalScaleImpl(const math::Vector3d &_scale)
 {
   if (nullptr == this->ogreNode)
     return;
+
+  if (!_scale.IsFinite())
+  {
+    ignerr << "Unable to set non-finite scale [" << _scale
+           << "] to node [" << this->Name() << "]" << std::endl;
+    return;
+  }
 
   this->ogreNode->setScale(Ogre2Conversions::Convert(_scale));
 }

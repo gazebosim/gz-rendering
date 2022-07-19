@@ -69,6 +69,12 @@ if (USE_GLX)
 endif()
 
 # Build the unit tests
-ign_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre2_target})
+ign_build_tests(TYPE UNIT
+    SOURCES
+      ${gtest_sources}
+    LIB_DEPS
+      ${ogre2_target}
+      IgnOGRE2::IgnOGRE2
+)
 
 install(DIRECTORY "media"  DESTINATION ${IGN_RENDERING_RESOURCE_PATH}/ogre2)

@@ -15,13 +15,21 @@
  *
  */
 
-#version 330
+#version ogre_glsl_ver_330
 
-in vec4 vertex;
-in vec3 normal;
-uniform mat4 worldViewProj;
-uniform float size;
-out vec3 ptColor;
+vulkan_layout( OGRE_POSITION ) in vec4 vertex;
+vulkan_layout( OGRE_NORMAL ) in vec3 normal;
+
+vulkan( layout( ogre_P0 ) uniform Params { )
+  uniform mat4 worldViewProj;
+  uniform float size;
+vulkan( }; )
+
+vulkan_layout( location = 0 )
+out block
+{
+  vec3 ptColor;
+} outVs;
 
 out gl_PerVertex
 {
@@ -35,5 +43,5 @@ void main()
   gl_Position = worldViewProj * vertex;
   gl_PointSize = size;
   // We're abusing the normal variable to hold per-point colors
-  ptColor = normal;
+  outVs.ptColor = normal;
 }

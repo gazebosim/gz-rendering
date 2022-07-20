@@ -1,9 +1,26 @@
-﻿
+
 //#include "SyntaxHighlightingMisc.h"
 
 @property( hlms_num_shadow_map_lights )
 
 @piece( DeclShadowMapMacros )
+
+@property( shadows_receive_on_ps )
+	@foreach( hlms_num_shadow_map_lights, n )
+		@property( hlms_shadowmap@n_is_directional_light )
+			#define shadowMap@nLightDir light0Buf.lights[@value(hlms_shadowmap@n_light_idx)].position.xyz
+		@end
+		@property( hlms_shadowmap@n_is_point_light )
+			#define shadowMap@nLightDir normalize(light0Buf.lights[@value(hlms_shadowmap@n_light_idx)].position.xyz - inPs.pos)
+		@end
+		@property( hlms_shadowmap@n_is_spot )
+			#define shadowMap@nLightDir light0Buf.lights[@value(hlms_shadowmap@n_light_idx)].spotDirection.xyz
+		@end
+	@end
+
+	@insertpiece( DeclNormalOffsetBiasFunc )
+@end
+
 @foreach( hlms_num_shadow_map_lights, n )
 	#define hlms_shadowmap@n texShadowMap@value( hlms_shadowmap@n )
 	#define hlms_shadowmap@n_uv_min float2( @value( hlms_shadowmap@n_uv_min_x_int ).@value( hlms_shadowmap@n_uv_min_x_fract ), @value( hlms_shadowmap@n_uv_min_y_int ).@value( hlms_shadowmap@n_uv_min_y_fract ) )
@@ -12,10 +29,10 @@
 		@property( hlms_shadowmap@n_is_point_light )
 			#define hlms_shadowmap@n_uv_length float2( @value( hlms_shadowmap@n_uv_length_x_int ).@value( hlms_shadowmap@n_uv_length_x_fract ), @value( hlms_shadowmap@n_uv_length_y_int ).@value( hlms_shadowmap@n_uv_length_y_fract ) )
 			#define hlms_shadowmap@n_uv_param , hlms_shadowmap@n_uv_min, hlms_shadowmap@n_uv_max, hlms_shadowmap@n_uv_length
-		@end @property( !hlms_shadowmap@n_is_point_light )
+		@else
 			#define hlms_shadowmap@n_uv_param , hlms_shadowmap@n_uv_min, hlms_shadowmap@n_uv_max
 		@end
-	@end @property( !hlms_shadowmap@n_uvs_fulltex )
+	@else
 		#define hlms_shadowmap@n_uv_param
 	@end
 @end
@@ -23,6 +40,11 @@
 @property( syntax == glsl || syntax == glsles )
 	#define OGRE_SAMPLE_SHADOW( tex, sampler, uv, depth ) (OGRE_DEPTH_CMP_GE( depth, OGRE_DEPTH_DEFAULT_CLEAR ) ? 1.0 : texture( tex, vec3( uv, depth ) ))
 	#define OGRE_SAMPLE_SHADOW_ESM( tex, sampler, uv ) textureLod( tex, uv, 0 ).x
+@end
+
+@property( syntax == glslvk )
+	#define OGRE_SAMPLE_SHADOW( tex, sampler, uv, depth ) (OGRE_DEPTH_CMP_GE( depth, OGRE_DEPTH_DEFAULT_CLEAR ) ? 1.0 : texture( sampler2DShadow( tex, sampler ), vec3( uv, depth ) ) )
+	#define OGRE_SAMPLE_SHADOW_ESM( tex, sampler, uv ) textureLod( sampler2D( tex, sampler ), uv, 0 ).x
 @end
 
 @property( syntax == hlsl )
@@ -98,12 +120,25 @@
 			uniform @insertpiece( TEXTURE2DSHADOW ) texShadowMap@n;@end
 	@end
 @end
+@property( syntax == glslvk )
+	@piece( TEXTURE2DSHADOW )texture2D@end
+	@property( !exponential_shadow_maps )
+		@piece( SAMPLERSTATESHADOW )samplerShadow@end
+	@else
+		@piece( SAMPLERSTATESHADOW )sampler@end
+	@end
+	@piece( SamplerShadow )@insertpiece( SAMPLERSTATESHADOW ) shadowSampler, @end
+	@piece( DeclShadowSamplers )
+		layout( ogre_s@value(texShadowMap0) ) uniform @insertpiece( SAMPLERSTATESHADOW ) shadowSampler;
+		@foreach( hlms_num_shadow_map_textures, n )
+			layout( ogre_t@value(texShadowMap@n) ) uniform texture2D texShadowMap@n;@end
+	@end
+@end
 @property( syntax == hlsl )
 	@piece( TEXTURE2DSHADOW )Texture2D<float>@end
 	@property( !exponential_shadow_maps )
 		@piece( SAMPLERSTATESHADOW )SamplerComparisonState@end
-	@end
-	@property( exponential_shadow_maps )
+	@else
 		@piece( SAMPLERSTATESHADOW )SamplerState@end
 	@end
 	@piece( SamplerShadow )@insertpiece( SAMPLERSTATESHADOW ) shadowSampler, @end
@@ -116,8 +151,7 @@
 @property( syntax == metal )
 	@property( !exponential_shadow_maps )
 		@piece( TEXTURE2DSHADOW )depth2d<float>@end
-	@end
-	@property( exponential_shadow_maps )
+	@else
 		@piece( TEXTURE2DSHADOW )texture2d<float>@end
 	@end
 	@piece( SamplerShadow )sampler shadowSampler, @end
@@ -134,28 +168,37 @@
 
 	@property( shadows_receive_on_ps )
 		@foreach( hlms_num_shadow_map_lights, n )
+			@property( !skip_normal_offset_bias_vs )
+				@piece( shadowMapNormalOffsetBias@n )getNormalOffsetBias( inPs.worldNorm, pixelData.geomNormal, shadowMap@nLightDir, passBuf.shadowRcv[@n].invShadowMapSize.x, passBuf.shadowRcv[@n].shadowDepthRange.y, passBuf.shadowRcv[@n].normalOffsetBias hlms_shadowmap@n_uv_param )@end
+			@else
+				@piece( shadowMapNormalOffsetBias@n )float3( 0.0f, 0.0f, 0.0f )@end
+			@end
+
 			@property( hlms_shadowmap@n_is_directional_light )
-				#define inPs_posL@n worldPosToDirLightSpace( inPs.worldPos, passBuf.shadowRcv[@n] )
+				#define inPs_posL@n worldPosToDirLightSpace( inPs.worldPos, passBuf.shadowRcv[@n], @insertpiece( shadowMapNormalOffsetBias@n ) )
 			@end
 			@property( hlms_shadowmap@n_is_spot )
-				#define inPs_posL@n worldPosToSpotLightSpace( inPs.worldPos, passBuf.shadowRcv[@n] )
+				#define inPs_posL@n worldPosToSpotLightSpace( inPs.worldPos, passBuf.shadowRcv[@n], @insertpiece( shadowMapNormalOffsetBias@n ) )
 			@end
 		@end
 
 		@foreach( 2, m )
 			@property( @m == 0 )
-				INLINE float4 worldPosToDirLightSpace( float3 worldPos, ShadowReceiverData shadowRcv )
+				INLINE float4 worldPosToDirLightSpace( float3 worldPos, ShadowReceiverData shadowRcv,
+													   float3 normalOffsetBias )
 			@else
-				INLINE float4 worldPosToSpotLightSpace( float3 worldPos, ShadowReceiverData shadowRcv )
+				INLINE float4 worldPosToSpotLightSpace( float3 worldPos, ShadowReceiverData shadowRcv,
+														float3 normalOffsetBias )
 			@end
 			{
 				@property( !exponential_shadow_maps )
-					float4 lightSpacePos = mul( float4(worldPos.xyz, 1.0f), shadowRcv.texViewProj );
-					@property( @m == 1 )
+					float4 lightSpacePos = mul( float4(worldPos.xyz + normalOffsetBias, 1.0f),
+												shadowRcv.texViewProj );
+					@property( hlms_no_reverse_depth && @m == 1 )
 						// Spotlights only
 						lightSpacePos.z = lightSpacePos.z * shadowRcv.shadowDepthRange.y;
 					@end
-					@property( syntax == glsl || syntax == glsles )
+					@property( hlms_no_reverse_depth && (syntax == glsl || syntax == glsles) )
 						lightSpacePos.z = ( lightSpacePos.z * 0.5 ) + 0.5;
 					@end
 				@else
@@ -179,6 +222,26 @@
 		@end
 	@end
 
+	@foreach( 2, m )
+		// Perform normal offset bias. See https://github.com/OGRECave/ogre-next/issues/100
+		INLINE float3 getNormalOffsetBiasPoint( float3 geomNormal, float3 lightDir,
+												float normalOffsetBias, float shadowMapTexSize,
+												float depthRange
+		@property( @m == 0 )
+												)
+		@else
+												, float2 minUV, float2 maxUV )
+		@end
+		{
+			float tmpNdotL = saturate( dot( lightDir.xyz, geomNormal.xyz ) );
+
+			@property( @m == 1 )
+				shadowMapTexSize /= maxUV.x - minUV.x;
+			@end
+
+			return ( ( 1.0f - tmpNdotL ) * normalOffsetBias * geomNormal.xyz * shadowMapTexSize );
+		}
+	@end
 @foreach( 4, m )
 	@property( @m == 0 )
 		INLINE float getShadow( @insertpiece( TEXTURE2DSHADOW ) shadowMap, @insertpiece( SamplerShadow )
@@ -188,10 +251,12 @@
 								float4 psPosLN, float4 invShadowMapSize, float2 minUV, float2 maxUV )
 	@end @property( @m == 2 )
 		INLINE float getShadowPoint( @insertpiece( TEXTURE2DSHADOW ) shadowMap, @insertpiece( SamplerShadow )
-									 float3 posVS, float3 lightPos, float4 invShadowMapSize, float2 invDepthRange
+									 float3 geomNormal, float normalOffsetBias,
+									 float3 posVS, float3 lightPos,float4 invShadowMapSize, float2 invDepthRange
 									 PASSBUF_ARG_DECL )
 	@end @property( @m == 3 )
 		INLINE float getShadowPoint( @insertpiece( TEXTURE2DSHADOW ) shadowMap, @insertpiece( SamplerShadow )
+									 float3 geomNormal, float normalOffsetBias,
 									 float3 posVS, float3 lightPos, float4 invShadowMapSize, float2 invDepthRange,
 									 float2 minUV, float2 maxUV, float2 lengthUV
 									 PASSBUF_ARG_DECL )
@@ -212,10 +277,17 @@
 	@else
 		//Point lights
 		float3 cubemapDir = posVS.xyz - lightPos.xyz;
+		cubemapDir += getNormalOffsetBiasPoint( geomNormal, cubemapDir, normalOffsetBias,
+				@property( @m == 2 )
+												invShadowMapSize.x, invDepthRange.y );
+				@else
+												invShadowMapSize.x, invDepthRange.y, minUV, maxUV );
+				@end
+
 		float fDepth = length( cubemapDir );
 		cubemapDir *= 1.0 / fDepth;
 		cubemapDir = mul( cubemapDir.xyz, passBuf.invViewMatCubemap );
-		@property( hlms_no_reverse_depth )
+		@property( hlms_no_reverse_depth || exponential_shadow_maps )
 			fDepth = (fDepth - invDepthRange.x) * invDepthRange.y;
 		@else
 			fDepth = (invDepthRange.x - fDepth) * invDepthRange.y;
@@ -234,12 +306,11 @@
 
 		@property( pcf >= 3 )
 			float2 offsets[@value(pcf_iterations)] =
-            @property( syntax == glsl || syntax == glsles )
+			@property( syntax == glsl || syntax == glsles || syntax == glslvk )
 				float2[@value(pcf_iterations)](
-            @end
-            @property( syntax != glsl && syntax != glsles )
-            {
-            @end
+			@else
+			{
+			@end
 			@property( pcf == 3 )
 				float2( 0., 0. ),	//0, 0
 				float2( 1., 0. ),	//1, 0
@@ -311,16 +382,15 @@
 				float2(1, 0), // 1, 2
 				float2(1, 0)  // 2, 2
 			@end
-            @property( syntax == glsl || syntax == glsles )
-            );
-            @end
-            @property( syntax != glsl && syntax != glsles )
+			@property( syntax == glsl || syntax == glsles || syntax == glslvk )
+			);
+			@else
 			};
-            @end
+			@end
 		@end
 
 		@insertpiece( regularTexturePcfGlSampling )
-		@property( syntax != glsl && syntax != glsles || hlms_shadow_uses_depth_texture )
+		@property( (syntax != glsl && syntax != glsles && syntax != glslvk) || hlms_shadow_uses_depth_texture )
 			@foreach( pcf_iterations, n )
 				@property( pcf >= 3 )uv += offsets[@n] * invShadowMapSize.xy;@end
 				retVal += OGRE_SAMPLE_SHADOW( shadowMap, shadowSampler, uv, fDepth );@end
@@ -437,7 +507,7 @@
 								   inPs_posL0,
 								   passBuf.shadowRcv[@value(CurrentShadowMap)].invShadowMapSize
 								   hlms_shadowmap@counter(CurrentShadowMap)_uv_param );
-	@end @property( !receive_shadows )
+	@else
 		float fShadow = 1.0;
 	@end
 @end
@@ -445,6 +515,7 @@
 
 @property( receive_shadows )
 	@piece( DarkenWithShadowFirstLight )* fShadow@end
+
 	@piece( DarkenWithShadow )
 		* getShadow( hlms_shadowmap@value(CurrentShadowMap), @insertpiece( UseSamplerShadow )
 					 inPs_posL@value(CurrentShadowMap),
@@ -456,6 +527,8 @@
 	@pset( CurrentPointLight, hlms_lights_directional_non_caster )
 	@piece( DarkenWithShadowPoint )
 		* getShadowPoint( hlms_shadowmap@value(CurrentShadowMap), @insertpiece( UseSamplerShadow )
+						  pixelData.geomNormal,
+						  passBuf.shadowRcv[@value(CurrentShadowMap)].normalOffsetBias,
 						  inPs.pos.xyz, light0Buf.lights[@counter(CurrentPointLight)].position.xyz,
 						  passBuf.shadowRcv[@value(CurrentShadowMap)].invShadowMapSize,
 						  passBuf.shadowRcv[@value(CurrentShadowMap)].shadowDepthRange.xy

@@ -7,27 +7,14 @@
 @insertpiece( DefaultTerraHeaderPS )
 
 // START UNIFORM STRUCT DECLARATION
-@property( !hlms_shadowcaster )
-	@insertpiece( PassStructDecl )
-	@insertpiece( TerraMaterialStructDecl )
-	@insertpiece( TerraInstanceStructDecl )
-@end
-@insertpiece( custom_ps_uniformStructDeclaration )
 // END UNIFORM STRUCT DECLARATION
+
 struct PS_INPUT
 {
 	@insertpiece( Terra_VStoPS_block )
 };
 
-@padd( roughness_map0_sampler,	samplerStateStart )
-@padd( roughness_map1_sampler,	samplerStateStart )
-@padd( roughness_map2_sampler,	samplerStateStart )
-@padd( roughness_map3_sampler,	samplerStateStart )
-
-@padd( metalness_map0_sampler,	samplerStateStart )
-@padd( metalness_map1_sampler,	samplerStateStart )
-@padd( metalness_map2_sampler,	samplerStateStart )
-@padd( metalness_map3_sampler,	samplerStateStart )
+@pset( currSampler, samplerStateStart )
 
 @property( !hlms_shadowcaster )
 
@@ -125,12 +112,10 @@ fragment @insertpiece( output_type ) main_metal
 	@property( use_envprobe_map )
 		@property( !hlms_enable_cubemaps_auto )
 			, texturecube<float>	texEnvProbeMap [[texture(@value(texEnvProbeMap))]]
-		@end
-		@property( hlms_enable_cubemaps_auto )
+		@else
 			@property( !hlms_cubemaps_use_dpm )
 				, texturecube_array<float>	texEnvProbeMap [[texture(@value(texEnvProbeMap))]]
-			@end
-			@property( hlms_cubemaps_use_dpm )
+			@else
 				, texture2d_array<float>	texEnvProbeMap [[texture(@value(texEnvProbeMap))]]
 			@end
 		@end
@@ -139,11 +124,12 @@ fragment @insertpiece( output_type ) main_metal
 		@end
 	@end
 	@foreach( num_samplers, n )
-		, sampler samplerState@value(samplerStateStart) [[sampler(@counter(samplerStateStart))]]@end
+		, sampler samplerState@value(currSampler) [[sampler(@counter(currSampler))]]@end
 	@insertpiece( DeclDecalsSamplers )
 	@insertpiece( DeclShadowSamplers )
 	@insertpiece( DeclAreaLtcTextures )
 	@insertpiece( DeclVctTextures )
+	@insertpiece( DeclIrradianceFieldTextures )
 )
 {
 	PS_OUTPUT outPs;
@@ -156,12 +142,6 @@ fragment @insertpiece( output_type ) main_metal
 @end
 }
 @else ///!hlms_shadowcaster
-
-@insertpiece( DeclShadowCasterMacros )
-
-@property( hlms_shadowcaster_point || exponential_shadow_maps )
-	@insertpiece( PassStructDecl )
-@end
 
 @insertpiece( DeclOutputType )
 

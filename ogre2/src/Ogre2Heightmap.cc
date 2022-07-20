@@ -241,6 +241,8 @@ void Ogre2Heightmap::Init()
         image,
         Ogre2Conversions::Convert(center),
         Ogre2Conversions::Convert(size),
+        false,
+        false,
         this->descriptor.Name());
   this->dataPtr->autoSkirtValue =
       this->dataPtr->terra->getCustomSkirtMinHeight();

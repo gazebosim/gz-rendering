@@ -29,6 +29,7 @@
 #include <CommandBuffer/OgreCbShaderBuffer.h>
 #include <CommandBuffer/OgreCommandBuffer.h>
 #include <OgreRenderQueue.h>
+#include <OgreRootLayout.h>
 #include <Vao/OgreConstBufferPacked.h>
 #include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
@@ -51,6 +52,40 @@ namespace Ogre
     HlmsTerra(dataFolder, libraryFolders)
   {
     this->customizations.push_back(_sphericalClipMinDistance);
+  }
+
+  /////////////////////////////////////////////////
+  uint16 Ogre2GzHlmsTerra::getNumExtraPassTextures(
+    const HlmsPropertyVec &_properties, bool _casterPass) const
+  {
+    uint16 numExtraTextures = 0u;
+
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      numExtraTextures +=
+        listener->getNumExtraPassTextures(_properties, _casterPass);
+    }
+
+    return numExtraTextures;
+  }
+
+  /////////////////////////////////////////////////
+  void Ogre2GzHlmsTerra::propertiesMergedPreGenerationStep(
+    Hlms *_hlms,  //
+    const HlmsCache &_passCache,
+    const HlmsPropertyVec &_renderableCacheProperties,
+    const PiecesMap _renderableCachePieces[NumShaderTypes],
+    const HlmsPropertyVec &_properties,
+    const QueuedRenderable &_queuedRenderable)
+  {
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      listener->propertiesMergedPreGenerationStep(
+        _hlms, _passCache, _renderableCacheProperties, _renderableCachePieces,
+        _properties, _queuedRenderable);
+    }
   }
 
   /////////////////////////////////////////////////
@@ -109,6 +144,25 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
+  void Ogre2GzHlmsTerra::setupRootLayout(
+    RootLayout &_rootLayout, const HlmsPropertyVec &_properties) const
+  {
+    if (this->getProperty(_properties, "ign_render_solid_color") != 0)
+    {
+      // Account for the extra buffer bound at kPerObjectDataBufferSlot
+      // It should be the last buffer to be set, so kPerObjectDataBufferSlot + 1
+      _rootLayout.mDescBindingRanges[0][DescBindingTypes::ConstBuffer].end =
+        kPerObjectDataBufferSlot + 1u;
+    }
+
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      listener->setupRootLayout(_rootLayout, _properties);
+    }
+  }
+
+  /////////////////////////////////////////////////
   void Ogre2GzHlmsTerra::shaderCacheEntryCreated(
     const String &_shaderProfile, const HlmsCache *_hlmsCacheEntry,
     const HlmsCache &_passCache, const HlmsPropertyVec &_properties,
@@ -133,13 +187,15 @@ namespace Ogre
 
   /////////////////////////////////////////////////
   void Ogre2GzHlmsTerra::hlmsTypeChanged(bool _casterPass,
-                                          CommandBuffer *_commandBuffer,
-                                          const HlmsDatablock *_datablock)
+                                         CommandBuffer *_commandBuffer,
+                                         const HlmsDatablock *_datablock,
+                                         size_t _texUnit)
   {
     // Allow additional listener-only customizations to inject their stuff
     for (Ogre::HlmsListener *listener : this->customizations)
     {
-      listener->hlmsTypeChanged(_casterPass, _commandBuffer, _datablock);
+      listener->hlmsTypeChanged(_casterPass, _commandBuffer, _datablock,
+                                _texUnit);
     }
 
     if (_casterPass ||
@@ -181,8 +237,8 @@ namespace Ogre
         //     movableObject->setVisible(false) or use RenderQueue IDs
         //     or visibility flags to prevent rendering it
         gzerr << "A module is trying to render an object without "
-                  "specifying a parameter. Please report this bug at "
-                  "https://github.com/gazebosim/gz-rendering/issues\n";
+                 "specifying a parameter. Please report this bug at "
+                 "https://github.com/gazebosim/gz-rendering/issues\n";
         throw;
       }
       float *dataPtr = this->MapObjectDataBufferFor(
@@ -197,8 +253,8 @@ namespace Ogre
           terra->HasSolidColor(2u))
       {
         GZ_ASSERT(customParam.w >= 0.0f,
-                   "customParam.w can't be negative for "
-                   "IORM_SOLID_THERMAL_COLOR_TEXTURED");
+                  "customParam.w can't be negative for "
+                  "IORM_SOLID_THERMAL_COLOR_TEXTURED");
 
         // Negate customParam.w to tell the shader we wish to multiply
         // against the diffuse texture. We substract 0.5f to avoid -0.0 = 0.0
@@ -242,8 +298,8 @@ namespace Ogre
         //     movableObject->setVisible(false) or use RenderQueue IDs
         //     or visibility flags to prevent rendering it
         gzerr << "A module is trying to render an object without "
-                  "specifying a parameter. Please report this bug at "
-                  "https://github.com/gazebosim/gz-rendering/issues\n";
+                 "specifying a parameter. Please report this bug at "
+                 "https://github.com/gazebosim/gz-rendering/issues\n";
         throw;
       }
       float *dataPtr = this->MapObjectDataBufferFor(
@@ -259,8 +315,8 @@ namespace Ogre
           terra->HasSolidColor(2u))
       {
         GZ_ASSERT(customParam.w >= 0.0f,
-                   "customParam.w can't be negative for "
-                   "IORM_SOLID_THERMAL_COLOR_TEXTURED");
+                  "customParam.w can't be negative for "
+                  "IORM_SOLID_THERMAL_COLOR_TEXTURED");
 
         // Negate customParam.w to tell the shader we wish to multiply
         // against the diffuse texture. We substract 0.5f to avoid -0.0 = 0.0
@@ -295,7 +351,7 @@ namespace Ogre
 
   /////////////////////////////////////////////////
   void Ogre2GzHlmsTerra::GetDefaultPaths(String &_outDataFolderPath,
-                                          StringVector &_outLibraryFoldersPaths)
+                                         StringVector &_outLibraryFoldersPaths)
   {
     HlmsTerra::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
 

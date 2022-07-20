@@ -13,7 +13,8 @@ struct VS_INPUT
 @property( hlms_qtangent )	float4 qtangent : NORMAL;@end
 
 @property( normal_map && !hlms_qtangent )
-	float3 tangent	: TANGENT;
+	@property( hlms_tangent4 )float4 tangent	: TANGENT;@end
+	@property( !hlms_tangent4 )float3 tangent	: TANGENT;@end
 	@property( hlms_binormal )float3 binormal	: BINORMAL;@end
 @end
 
@@ -52,7 +53,7 @@ struct PS_INPUT
 };
 
 // START UNIFORM D3D DECLARATION
-Buffer<float4> worldMatBuf : register(t0);
+ReadOnlyBuffer( 0, float4, worldMatBuf );
 @property( hlms_pose )
 	Buffer<float4> poseBuf : register(t@value(poseBuf));
 @end
@@ -61,11 +62,6 @@ Buffer<float4> worldMatBuf : register(t0);
 PS_INPUT main( VS_INPUT input )
 {
 	PS_INPUT outVs;
-@property( !hlms_qtangent && hlms_normal )
-	float3 normal	= input.normal;
-	@property( normal_map )float3 tangent	= input.tangent;@end
-	@property( hlms_binormal )float3 binormal	= input.binormal;@end
-@end
 
 	@insertpiece( custom_vs_preExecution )
 	@insertpiece( DefaultBodyVS )

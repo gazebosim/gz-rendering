@@ -19,32 +19,28 @@
 vertex_program PointCloudVS_GLSL glsl
 {
   source point_vs.glsl
-
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-    param_named size float 1.0
-  }
 }
 
 fragment_program PointCloudFS_GLSL glsl
 {
   source point_fs.glsl
-  default_params
-  {
-  }
+}
+
+// Vulkan shaders
+vertex_program PointCloudVS_VK glslvk
+{
+  source point_vs.glsl
+}
+
+fragment_program PointCloudFS_VK glslvk
+{
+  source point_fs.glsl
 }
 
 // Metal shaders
 vertex_program PointCloudVS_Metal metal
 {
   source point_vs.metal
-
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-    param_named size float 1.0
-  }
 }
 
 fragment_program PointCloudFS_Metal metal
@@ -58,12 +54,25 @@ vertex_program PointCloudVS unified
 {
   delegate PointCloudVS_GLSL
   delegate PointCloudVS_Metal
+  delegate PointCloudVS_VK
+
+  default_params
+  {
+    param_named_auto worldViewProj worldviewproj_matrix
+    param_named size float 1.0
+  }
 }
 
 fragment_program PointCloudFS unified
 {
   delegate PointCloudFS_GLSL
   delegate PointCloudFS_Metal
+  delegate PointCloudFS_VK
+
+  default_params
+  {
+    param_named color float4 1.0 1.0 1.0 1.0
+  }
 }
 
 material PointCloudPoint

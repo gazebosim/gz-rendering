@@ -1,0 +1,4 @@
+gz-cmake:
+  type: git
+  url: https://github.com/gazebosim/gz-cmake
+  version: ci_matching_branch/ogre23

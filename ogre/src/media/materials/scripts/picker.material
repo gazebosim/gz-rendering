@@ -18,7 +18,7 @@ fragment_program plaincolor_fs glsl
   }
 }
 
-material ign-rendering/plain_color
+material gz-rendering/plain_color
 {
   // Material has one technique
   technique

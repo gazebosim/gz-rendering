@@ -21,7 +21,7 @@
 #include <gz/common/Console.hh>
 #include <gz/math/Color.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/ParticleEmitter.hh"
 #include "gz/rendering/RenderEngine.hh"
@@ -36,7 +36,7 @@ class ParticleEmitterTest : public testing::Test,
                             public testing::WithParamInterface<const char *>
 {
   /// \brief How to set up the environment.
-  public: bool SetUp(const std::string &_renderEngine);
+  public: bool ParticleEmitter(const std::string &_renderEngine);
 
   /// \brief Check setters/getters.
   public: void CheckBasicAPI();
@@ -57,7 +57,7 @@ class ParticleEmitterTest : public testing::Test,
 };
 
 /////////////////////////////////////////////////
-bool ParticleEmitterTest::SetUp(const std::string &_renderEngine)
+bool ParticleEmitterTest::ParticleEmitter(const std::string &_renderEngine)
 {
   this->engine = rendering::engine(_renderEngine);
   if (!this->engine)
@@ -176,19 +176,13 @@ void ParticleEmitterTest::TearDown()
 /////////////////////////////////////////////////
 TEST_P(ParticleEmitterTest, ParticleEmitter)
 {
-  if (SetUp(GetParam()))
+  if (ParticleEmitter(GetParam()))
   {
     this->CheckBasicAPI();
   }
   // TearDown() happens automatically.
 }
 
-INSTANTIATE_TEST_CASE_P(ParticleEmitter, ParticleEmitterTest,
+INSTANTIATE_TEST_SUITE_P(ParticleEmitter, ParticleEmitterTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

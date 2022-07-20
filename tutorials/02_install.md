@@ -1,7 +1,7 @@
 \page installation Installation
 
 These instructions are for installing only Gazebo Rendering.
-If you're interested in using all the Ignition libraries, check out this [Ignition installation](https://gazebosim.org/docs/latest/install).
+If you're interested in using all the Gazebo libraries, check out this [Gazebo installation](https://gazebosim.org/docs/latest/install).
 
 We recommend following the Binary Install instructions to get up and running as quickly and painlessly as possible.
 
@@ -31,7 +31,7 @@ wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 Install:
 ```
 sudo apt-get update
-sudo apt-get install libignition-rendering<#>-dev
+sudo apt-get install libgz-rendering<#>-dev
 ```
 
 Be sure to replace `<#>` with a number value, such as `1` or `2`, depending on which version you need.
@@ -57,10 +57,10 @@ sudo apt install -y \
     freeglut3-dev \
     libxmu-dev \
     libxi-dev \
-    libignition-cmake3-dev \
-    libignition-math7-dev \
-    libignition-common5-dev \
-    libignition-plugin2-dev
+    libgz-cmake3-dev \
+    libgz-math7-dev \
+    libgz-common5-dev \
+    libgz-plugin2-dev
 ```
 
 ### Supported Rendering Engines
@@ -74,7 +74,7 @@ build the relevant plugins if dependencies are found.
 sudo apt-get install libogre-1.9-dev
 ```
 
-**OGRE 2.x (supported in Versions >= ign-rendering1)**
+**OGRE 2.x (supported in Versions >= gz-rendering1)**
 
 Add OSRF packages if you have not done so already:
 ```
@@ -98,14 +98,14 @@ CUDA: http://docs.nvidia.com/cuda
 OptiX: https://developer.nvidia.com/optix
 
 Update `LD_LIBRARY_PATH` and add an `OPTIX_INSTALL_DIR` environment variables
-so that ign-rendering can find Optix, e.g. if you installed version 4.0.2 in HOME/optix:
+so that gz-rendering can find Optix, e.g. if you installed version 4.0.2 in HOME/optix:
 ```
 export LD_LIBRARY_PATH=${HOME}/optix/NVIDIA-OptiX-SDK-4.0.2-linux64/lib64:${LD_LIBRARY_PATH}
 export OPTIX_INSTALL_DIR=${HOME}/optix/NVIDIA-OptiX-SDK-4.0.2-linux64
 ```
 
 Note: If you encounter errors about different exception specifiers in optix math
-when building Ign Rendering OptiX plugin, edit
+when building Gazebo Rendering OptiX plugin, edit
 `[optix_install_dir]/include/optixu/optixu_math_namespace.h` and comment
 out the section that defines `fminf`, fmaxf, and `copysignf` (for optix
 sdk 4.0.2, comment out lines 167-206).
@@ -120,7 +120,7 @@ sdk 4.0.2, comment out lines 167-206).
 
 2. Configure and build
   ```
-  cd ign-rendering
+  cd gz-rendering
   mkdir build
   cd build
   cmake .. -DCMAKE_INSTALL_PREFIX=/path/to/install/dir
@@ -139,19 +139,19 @@ On Windows, only OGRE 1 is currently supported.
 
 ## Prerequisites
 
-First, follow the [ign-cmake](https://github.com/gazebosim/gz-cmake) tutorial for installing Conda, Visual Studio, CMake, and other prerequisites, and also for creating a Conda environment.
+First, follow the [gz-cmake](https://github.com/gazebosim/gz-cmake) tutorial for installing Conda, Visual Studio, CMake, and other prerequisites, and also for creating a Conda environment.
 
 Navigate to ``condabin`` if necessary to use the ``conda`` command (i.e., if Conda is not in your `PATH` environment variable. You can find the location of ``condabin`` in Anaconda Prompt, ``where conda``).
 
 Create if necessary, and activate a Conda environment:
 ```
-conda create -n ign-ws
-conda activate ign-ws
+conda create -n gz-ws
+conda activate gz-ws
 ```
 
 ## Binary Installation
 
-`libignition-rendering<#>` Conda feedstock is not yet available, pending [conda-forge/staged-recipes#13551](https://github.com/conda-forge/staged-recipes/issues/13551).
+`libgz-rendering<#>` Conda feedstock is not yet available, pending [conda-forge/staged-recipes#13551](https://github.com/conda-forge/staged-recipes/issues/13551).
 
 ## Source Installation
 
@@ -162,16 +162,16 @@ This assumes you have created and activated a Conda environment while installing
   conda install ogre --channel conda-forge
   ```
 
-2. Install Ignition dependencies:
+2. Install Gazebo dependencies:
 
   You can view available versions and their dependencies:
   ```
-  conda search libignition-rendering* --channel conda-forge --info
+  conda search libgz-rendering* --channel conda-forge --info
   ```
 
   Install dependencies, replacing `<#>` with the desired versions:
   ```
-  conda install libignition-cmake<#> libignition-common<#> libignition-math<#> libignition-plugin<#> --channel conda-forge
+  conda install libgz-cmake<#> libgz-common<#> libgz-math<#> libgz-plugin<#> --channel conda-forge
   ```
 
 3. Navigate to where you would like to build the library, and clone the repository.
@@ -182,7 +182,7 @@ This assumes you have created and activated a Conda environment while installing
 
 4. Configure and build
   ```
-  cd ign-rendering
+  cd gz-rendering
   mkdir build
   cd build
   cmake .. -DBUILD_TESTING=OFF  # Optionally, -DCMAKE_INSTALL_PREFIX=path\to\install
@@ -206,7 +206,7 @@ On macOS, add OSRF packages:
 
 Install Gazebo Rendering:
   ```
-  brew install ignition-rendering<#>
+  brew install gz-rendering<#>
   ```
 
 Be sure to replace `<#>` with a number value, such as 5 or 6, depending on
@@ -223,14 +223,14 @@ which version you need.
 
 2. Install dependencies
   ```
-  brew install --only-dependencies ignition-rendering<#>
+  brew install --only-dependencies gz-rendering<#>
   ```
   Be sure to replace `<#>` with a number value, such as 5 or 6, depending on
   which version you need.
 
 3. Configure and build
   ```
-  cd ign-rendering
+  cd gz-rendering
   mkdir build
   cd build
   cmake ..

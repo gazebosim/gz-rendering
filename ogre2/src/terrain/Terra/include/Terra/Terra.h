@@ -107,12 +107,12 @@ namespace Ogre
         CompositorManager2      *m_compositorManager;
         Camera const            *m_camera;
 
-        // IGN CUSTOMIZE BEGIN
+        // GZ CUSTOMIZE BEGIN
         /// See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
         Vector4 mSolidColor[2];
         /// See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
         bool mSolidColorSet[2];
-        // IGN CUSTOMIZE END
+        // GZ CUSTOMIZE END
 
         /// Converts value from Y-up to whatever the user up vector is (see m_zUp)
         inline Vector3 fromYUp( Vector3 value ) const;
@@ -177,7 +177,7 @@ namespace Ogre
         void setCustomSkirtMinHeight( const float skirtMinHeight ) { m_skirtSize = skirtMinHeight; }
         float getCustomSkirtMinHeight( void ) const { return m_skirtSize; }
 
-        // IGN CUSTOMIZE BEGIN
+        // GZ CUSTOMIZE BEGIN
         /// \brief See IORM_SOLID_COLOR and IORM_SOLID_THERMAL_COLOR_TEXTURED
         /// Replaces renderable->setCustomRenderable(...) because
         /// a Terrain may have many renderables but the color is the same
@@ -202,7 +202,7 @@ namespace Ogre
         /// Marks all SetSolidColor as unset so that SolidColor throws
         /// if used again without setting.
         void UnsetSolidColors();
-        // IGN CUSTOMIZE END
+        // GZ CUSTOMIZE END
 
         /** Must be called every frame so we can check the camera's position
             (passed in the constructor) and update our visible batches (and LODs)

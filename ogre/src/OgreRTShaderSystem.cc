@@ -525,7 +525,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
       const char *homeEnv = std::getenv(GZ_HOMEDIR);
       std::string tmpDir = (homeEnv) ? std::string(homeEnv) : std::string(".");
 
-      tmpDir = common::joinPaths(tmpDir, ".ignition", "rendering",
+      tmpDir = common::joinPaths(tmpDir, ".gz", "rendering",
           "ogre-rtshader");
       // Get the user
       std::string user = "nobody";

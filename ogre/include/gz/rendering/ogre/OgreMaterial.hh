@@ -204,7 +204,7 @@ namespace gz
       /// \brief bind shader parameters that have changed
       protected: void UpdateShaderParams();
 
-      /// \brief Transfer params from ign-rendering type to ogre type
+      /// \brief Transfer params from gz-rendering type to ogre type
       /// \param[in] _params Gazebo Rendering params
       /// \param[out] _ogreParams ogre type for holding params
       protected: void UpdateShaderParams(ConstShaderParamsPtr _params,

@@ -21,7 +21,7 @@
 #include <gz/common/geospatial/ImageHeightmap.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Heightmap.hh"
@@ -353,13 +353,6 @@ TEST_P(HeightmapTest, CopyAssignmentAfterMove)
 
 // TODO(anyone) Running test with Ogre1. Update once Ogre2 is supported.
 // https://github.com/gazebosim/gz-rendering/issues/187
-INSTANTIATE_TEST_CASE_P(Heightmap, HeightmapTest,
+INSTANTIATE_TEST_SUITE_P(Heightmap, HeightmapTest,
     ::testing::ValuesIn({"ogre"}),
     gz::rendering::PrintToStringParam());
-
-/////////////////////////////////////////////////
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

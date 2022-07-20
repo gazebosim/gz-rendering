@@ -122,7 +122,7 @@ namespace gz
       math::Matrix4d viewProjInv = (projectionMatrix * viewMatrix).Inverse();
 
       // rotate start and end
-      // ign math does not support matrix4 * vec4
+      // gz math does not support matrix4 * vec4
       // so calc homogeneous coordinate w ourselves
       double startw = viewProjInv(3, 0) * start[0] +
                       viewProjInv(3, 1) * start[1] +

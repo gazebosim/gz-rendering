@@ -194,7 +194,7 @@
 1. Fix particle effect randomness
     * [Pull request #388](https://github.com/gazebosim/gz-rendering/pull/388)
 
-1. Update test config to run ogre 1.x tests in ign-rendering6 on macOS
+1. Update test config to run ogre 1.x tests in gz-rendering6 on macOS
     * [Pull request #407](https://github.com/gazebosim/gz-rendering/pull/407)
     * [Pull request #409](https://github.com/gazebosim/gz-rendering/pull/409)
     * [Pull request #409](https://github.com/gazebosim/gz-rendering/pull/409)
@@ -334,7 +334,7 @@
     * [Pull request #398](https://github.com/gazebosim/gz-rendering/pull/398)
     * [Pull request #389](https://github.com/gazebosim/gz-rendering/pull/389)
 
-1. Set OGRE minimal version to 1.8. Warn on versions not supported (ign-rendering3)
+1. Set OGRE minimal version to 1.8. Warn on versions not supported (gz-rendering3)
     * [Pull request #376](https://github.com/gazebosim/gz-rendering/pull/376)
 
 1. 👩‍🌾 Remove bitbucket-pipelines.yml
@@ -343,7 +343,7 @@
 1. [macOS] support OpenGL < 4.2 in PBS shader
     * [Pull request #377](https://github.com/gazebosim/gz-rendering/pull/377)
 
-1. Moved ScreenToPlane and ScreenToScene from ign-gui to ign-rendering
+1. Moved ScreenToPlane and ScreenToScene from gz-gui to gz-rendering
     * [Pull request #363](https://github.com/gazebosim/gz-rendering/pull/363)
     * [Pull request #368](https://github.com/gazebosim/gz-rendering/pull/368)
 
@@ -361,7 +361,7 @@
 1. relax gaussian test tolerance
     * [Pull request #344](https://github.com/gazebosim/gz-rendering/pull/344)
 
-1. Fix custom shaders uniforms ign version number
+1. Fix custom shaders uniforms gz version number
     * [Pull request #343](https://github.com/gazebosim/gz-rendering/pull/343)
 
 1. recreate node only when needed
@@ -388,7 +388,7 @@
 1. Test re-enabling depth camera integration test on mac
     * [Pull request #335](https://github.com/gazebosim/gz-rendering/pull/335)
 
-1. Include MoveTo Helper class to ign-rendering
+1. Include MoveTo Helper class to gz-rendering
     * [Pull request #311](https://github.com/gazebosim/gz-rendering/pull/311)
 
 1. Remove `tools/code_check` and update codecov
@@ -455,7 +455,7 @@
 1. ogre2: explicitly request OpenGL 3.3 core profile context.
     * [Pull request #244](https://github.com/gazebosim/gz-rendering/pull/244)
 
-1. Bump in edifice: ign-common4
+1. Bump in edifice: gz-common4
     * [Pull request #209](https://github.com/gazebosim/gz-rendering/pull/209)
 
 1. Support setting horizontal and vertical resolution for GpuRays
@@ -496,7 +496,7 @@
     * [Pull request #378](https://github.com/gazebosim/gz-rendering/pull/378)
     * [Pull request #383](https://github.com/gazebosim/gz-rendering/pull/383)
 
-1. All changes merged forward from ign-rendering3
+1. All changes merged forward from gz-rendering3
     * [Pull request #382](https://github.com/gazebosim/gz-rendering/pull/382)
     * [Pull request #398](https://github.com/gazebosim/gz-rendering/pull/398)
 
@@ -521,7 +521,7 @@
 1. Fix floating point precision bug handling alpha channel (#332)
     * [Pull request #333](https://github.com/gazebosim/gz-rendering/pull/333)
 
-1. Include MoveTo Helper class to ign-rendering
+1. Include MoveTo Helper class to gz-rendering
     * [Pull request #311](https://github.com/gazebosim/gz-rendering/pull/311)
 
 1. Remove `tools/code_check` and update codecov
@@ -741,7 +741,7 @@
 1. Ogre: Do not assume that ogre plugins have lib prefix on macOS
     * [Pull request 454](https://github.com/gazebosim/gz-rendering/pull/454)
 
-1. Moved ScreenToPlane and ScreenToScene from ign-gui to ign-rendering
+1. Moved ScreenToPlane and ScreenToScene from gz-gui to gz-rendering
     * [Pull request 363](https://github.com/gazebosim/gz-rendering/pull/363)
     * [Pull request 368](https://github.com/gazebosim/gz-rendering/pull/368)
 
@@ -760,7 +760,7 @@
 
 ### Gazebo Rendering 3.5.0 (2021-05-25)
 
-1. Include MoveTo Helper class to ign-rendering
+1. Include MoveTo Helper class to gz-rendering
     * [Pull request 311](https://github.com/gazebosim/gz-rendering/pull/311)
 
 1. Remove tools/code_check and update codecov
@@ -835,7 +835,7 @@
 
 ### Gazebo Rendering 3.1.0 (2020-03-05)
 
-1. Use default material properties from ign-common PBR material when loading a mesh
+1. Use default material properties from gz-common PBR material when loading a mesh
     * [BitBucket pull request 242](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/242)
 
 1. Fix build for ogre version >= 1.12.0

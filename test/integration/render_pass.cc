@@ -20,7 +20,7 @@
 #include <gz/common/Console.hh>
 #include <gz/common/Image.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/DepthCamera.hh"
@@ -197,7 +197,7 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
     return;
   }
 
-  // Setup ign-rendering with an empty scene
+  // Setup gz-rendering with an empty scene
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -385,7 +385,7 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
       // Note: internal texture format used is RGB with no alpha channel
       // We observed the values can be either 255 or 0 but graphics card
       // drivers are free to fill it with any value they want.
-      // This should be fixed in ogre 2.2 in ign-rendering6 which forbids
+      // This should be fixed in ogre 2.2 in gz-rendering6 which forbids
       // the use of RGB format.
       // see https://github.com/gazebosim/gz-rendering/issues/315
       EXPECT_TRUE(255u == ma || 0u == ma);
@@ -563,12 +563,6 @@ TEST_P(RenderPassTest, Distortion)
   Distortion(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(RenderPass, RenderPassTest,
+INSTANTIATE_TEST_SUITE_P(RenderPass, RenderPassTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

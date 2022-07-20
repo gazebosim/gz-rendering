@@ -8,7 +8,7 @@ Clone the source code, create a build directory and use `cmake` and `make` to co
 
 ```{.sh}
 git clone https://github.com/gazebosim/gz-rendering
-cd ign-rendering/examples/text_geom
+cd gz-rendering/examples/text_geom
 mkdir build
 cd build
 cmake ..
@@ -23,7 +23,7 @@ Execute the example:
 You'll see:
 
 ```{.sh}
-[Msg] Loading plugin [ignition-rendering7-ogre]
+[Msg] Loading plugin [gz-rendering7-ogre]
 Engine 'optix' is not supported
 ===============================
   TAB - Switch render engines

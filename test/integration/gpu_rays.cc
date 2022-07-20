@@ -21,7 +21,7 @@
 #include <gz/common/Image.hh>
 #include <gz/common/Filesystem.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/GpuRays.hh"
 #include "gz/rendering/ParticleEmitter.hh"
@@ -840,12 +840,6 @@ TEST_P(GpuRaysTest, SingleRay)
 }
 
 
-INSTANTIATE_TEST_CASE_P(GpuRays, GpuRaysTest,
+INSTANTIATE_TEST_SUITE_P(GpuRays, GpuRaysTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

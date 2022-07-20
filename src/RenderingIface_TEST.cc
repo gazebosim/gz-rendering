@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include <gz/common/Console.hh>
 
@@ -132,10 +132,4 @@ TEST(RenderingIfaceTest, RegisterEngine)
   EXPECT_NO_THROW(unregisterEngine("no_such_engine"));
   EXPECT_NO_THROW(unregisterEngine(1000000u));
   EXPECT_NO_THROW(unregisterEngine(nullptr));
-}
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
 }

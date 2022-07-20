@@ -8,7 +8,7 @@ Clone the source code, Create a build directory and use `cmake` and `make` to co
 
 ```{.sh}
 git clone https://github.com/gazebosim/gz-rendering
-cd ign-rendering/examples/actor_animation
+cd gz-rendering/examples/actor_animation
 mkdir build
 cd build
 cmake ..
@@ -45,7 +45,7 @@ Create a `Visual` pointer with the scene manager and set the position and rotati
 
 \snippet examples/actor_animation/Main.cc create a visual for the actor
 
-Create the mesh in ign-rendering - this loads the animations into the render engine
+Create the mesh in gz-rendering - this loads the animations into the render engine
 
 \snippet examples/actor_animation/Main.cc create mesh
 

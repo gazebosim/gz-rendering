@@ -23,7 +23,7 @@
 
 #include <gz/math/Color.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 #include "gz/rendering/ParticleEmitter.hh"
 #include "gz/rendering/PixelFormat.hh"
@@ -107,7 +107,7 @@ void ThermalCameraTest::ThermalCameraBoxes(
     return;
   }
 
-  // Setup ign-rendering with an empty scene
+  // Setup gz-rendering with an empty scene
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -288,7 +288,7 @@ void ThermalCameraTest::ThermalCameraBoxes8Bit(
     return;
   }
 
-  // Setup ign-rendering with an empty scene
+  // Setup gz-rendering with an empty scene
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -476,7 +476,7 @@ void ThermalCameraTest::ThermalCameraParticles(
     return;
   }
 
-  // Setup ign-rendering with an empty scene
+  // Setup gz-rendering with an empty scene
   auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -648,12 +648,5 @@ TEST_P(ThermalCameraTest, ThermalCameraParticles)
   ThermalCameraParticles(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(ThermalCamera, ThermalCameraTest,
+INSTANTIATE_TEST_SUITE_P(ThermalCamera, ThermalCameraTest,
     RENDER_ENGINE_VALUES, gz::rendering::PrintToStringParam());
-
-//////////////////////////////////////////////////
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

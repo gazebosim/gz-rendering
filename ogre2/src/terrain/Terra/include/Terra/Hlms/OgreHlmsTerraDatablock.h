@@ -178,10 +178,10 @@ namespace Ogre
         Vector4 mDetailsOffsetScale[4];
         //uint16  mTexIndices[NUM_TERRA_TEXTURE_TYPES];
 
-        // IGN CUSTOMIZE BEGIN
+        // GZ CUSTOMIZE BEGIN
         float mIgnWeightsMinHeight[4];
         float mIgnWeightsMaxHeight[4];
-        // IGN CUSTOMIZE END
+        // GZ CUSTOMIZE END
 
         /// @see TerraBrdf::TerraBrdf
         uint32  mBrdf;
@@ -243,13 +243,13 @@ namespace Ogre
         void setBrdf( TerraBrdf::TerraBrdf brdf );
         uint32 getBrdf(void) const;
 
-        // IGN CUSTOMIZE BEGIN
+        // GZ CUSTOMIZE BEGIN
         void setIgnWeightsHeights( const Vector4 &ignWeightsMinHeight,
                                    const Vector4 &ignWeightsMaxHeight );
         using HlmsTerraBaseTextureDatablock::setTexture;
         void setTexture( TerraTextureTypes texUnit, const String &name,
                          const HlmsSamplerblock *refParams );
-        // IGN CUSTOMIZE END
+        // GZ CUSTOMIZE END
 
         /** Suggests the TextureMapType (aka texture category) for each type of texture
             (i.e. normals should load from TEXTURE_TYPE_NORMALS).

@@ -41,45 +41,45 @@ namespace gz
     class GZ_RENDERING_OGRE_VISIBLE OgreConversions
     {
       /// \brief Return the equivalent ogre color
-      /// \param[in] _color ign-math color to convert
+      /// \param[in] _color gz-math color to convert
       /// \return Ogre color value
       public: static Ogre::ColourValue Convert(
           const math::Color &_color);
 
-      /// \brief Return the equivalent ign-math color
+      /// \brief Return the equivalent gz-math color
       /// \param[in] _color Ogre color to convert
-      /// \return ign-math color value
+      /// \return gz-math color value
       public: static math::Color Convert(
           const Ogre::ColourValue &_color);
 
-      /// \brief return Ogre Vector from ign-math Vector3
-      /// \param[in] _vector ign-math vector
+      /// \brief return Ogre Vector from gz-math Vector3
+      /// \param[in] _vector gz-math vector
       /// \return Ogre vector
       public: static Ogre::Vector3 Convert(const math::Vector3d &_vector);
 
-      /// \brief return ign-math Vector from ogre Vector3
+      /// \brief return gz-math Vector from ogre Vector3
       /// \param[in] _vector Ogre vector
-      /// \return ign-math vector
+      /// \return gz-math vector
       public: static math::Vector3d Convert(const Ogre::Vector3 &_vector);
 
-      /// \brief Ign-math quaternion to Ogre quaternion
-      /// \param[in] _quat ign-math quaternion
+      /// \brief gz-math quaternion to Ogre quaternion
+      /// \param[in] _quat gz-math quaternion
       /// \return Ogre quaternion
       public: static Ogre::Quaternion Convert(const math::Quaterniond &_quat);
 
-      /// \brief Ogre quaternion to ign-math quaternion
+      /// \brief Ogre quaternion to gz-math quaternion
       /// \param[in] _quat Ogre quaternion
-      /// return ign-math quaternion
+      /// return gz-math quaternion
       public: static math::Quaterniond Convert(const Ogre::Quaternion &_quat);
 
-      /// \brief Ign-math angle to Ogre angle
-      /// \param[in] _angle ign-math angle
+      /// \brief gz-math angle to Ogre angle
+      /// \param[in] _angle gz-math angle
       /// \return Ogre angle
       public: static Ogre::Radian Convert(const math::Angle &_angle);
 
-      /// \brief Ogre angle to ign-math angle
+      /// \brief Ogre angle to gz-math angle
       /// \param[in] _angle Ogre angle
-      /// return Ign-math angle
+      /// return gz-math angle
       public: static math::Angle Convert(const Ogre::Radian &_angle);
 
       /// \brief Ogre Matrix4 to Gazebo Math Matrix4d
@@ -92,8 +92,8 @@ namespace gz
       /// \return Ogre Matrix4
       public: static Ogre::Matrix4 Convert(const math::Matrix4d &_m);
 
-      /// \brief Ign-rendering PixelFormat to Ogre PixelFormat
-      /// \param[in] _format Ign-rendering PixelFormat
+      /// \brief gz-rendering PixelFormat to Ogre PixelFormat
+      /// \param[in] _format gz-rendering PixelFormat
       /// return Ogre PixelFormat
       public: static Ogre::PixelFormat Convert(PixelFormat _format);
 

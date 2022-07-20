@@ -656,7 +656,7 @@ void Ogre2Material::SetLightMap(const std::string &_name, unsigned int _uvSet)
   this->lightMapName = _name;
   this->lightMapUvSet = _uvSet;
 
-  // in ign-rendering5 + ogre 2.1, we reserved detail map 0 for light map
+  // in gz-rendering5 + ogre 2.1, we reserved detail map 0 for light map
   // and set a blend mode (PBSM_BLEND_OVERLAY AND PBSM_BLEND_MULTIPLY2X
   // produces better results) to blend with base albedo map. However, this
   // creates unwanted red highlights with ogre 2.2. So switching to use the

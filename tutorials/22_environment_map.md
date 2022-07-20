@@ -4,7 +4,7 @@ This tutorial shows how to add an environment map to a mesh.
 
 An environment map, also known as a reflection map, is an efficient way to
 create reflective surfaces using a precomputed texture. The environment
-map texture used by ignition rendering needs to be the form of a cube map.
+map texture used by gz rendering needs to be the form of a cube map.
 
 ## Example mesh with Environment map
 
@@ -14,7 +14,7 @@ which uses the ogre2 render engine.
 To see the example mesh, build and run the demo:
 
 ```{.sh}
-cd ign-rendering/examples/ogre2_demo
+cd gz-rendering/examples/ogre2_demo
 mkdir build
 cd build
 cmake ..
@@ -57,14 +57,14 @@ to see that each face of the cube map is in its own individual layer.
 
 To create a new cube map, you will need to have a similar setup to the one
 shown above. One way to do this is to modify an existing cube map in
-ignition rendering and replace the image in each layer with your new cube map
+gz rendering and replace the image in each layer with your new cube map
 images (there should be 6 of them - one for each face). You can resize the
 canvas to match the texture size of you new cube map. Pay attention
 to the orientation of the image in each layer as it could be different from
-the orientation of other readily available cube maps online since ignition
+the orientation of other readily available cube maps online since gz
 rendering uses Z up instead of Y up.
 
 Once you are done, export the new cube map by going to `File` > `Export As`,
 give it a new name, and click `Export`. In the `Save as DDS` dialog, make sure
 to select `Save`: `As cube map` and `Mipmaps`: `No mipmaps`. Your newly
-exported cube map should be ready to use in ignition rendering.
+exported cube map should be ready to use in gz rendering.

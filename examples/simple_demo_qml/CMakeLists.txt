@@ -2,18 +2,12 @@ cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(gz-rendering-simple-demo-qml)
 
 #------------------------------------------------------------------------
-# Compile as C++14
-
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-#------------------------------------------------------------------------
 # Find gz-cmake
 find_package(gz-cmake3 REQUIRED)
 set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
 
 #------------------------------------------------------------------------
-# Find ign-rendering
+# Find gz-rendering
 find_package(gz-rendering7)
 
 #======================================
@@ -59,8 +53,8 @@ set(CMAKE_AUTOUIC ON)
 
 add_executable(simple_demo_qml
     Main.cc
-    IgnitionRenderer.hh
-    IgnitionRenderer.cc
+    GzRenderer.hh
+    GzRenderer.cc
     ThreadRenderer.h
     ThreadRenderer.cpp
     ${QT_RESOURCES}
@@ -85,7 +79,7 @@ target_link_libraries(simple_demo_qml PUBLIC
 set_target_properties(simple_demo_qml
     PROPERTIES
         QT_QML_MODULE_VERSION 1.0
-        QT_QML_MODULE_URI IgnitionRendering
+        QT_QML_MODULE_URI GzRendering
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}

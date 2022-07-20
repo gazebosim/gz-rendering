@@ -21,7 +21,7 @@
 
 #include <gz/common/Console.hh>
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Capsule.hh"
@@ -115,12 +115,6 @@ TEST_P(CapsuleTest, Capsule)
   Capsule(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(Capsule, CapsuleTest,
+INSTANTIATE_TEST_SUITE_P(Capsule, CapsuleTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

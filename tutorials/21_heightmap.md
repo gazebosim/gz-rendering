@@ -10,7 +10,7 @@ Clone the source code, create a build directory and use `cmake` and `make` to co
 
 ```{.sh}
 git clone https://github.com/gazebosim/gz-rendering
-cd ign-rendering/examples/heightmap
+cd gz-rendering/examples/heightmap
 mkdir build
 cd build
 cmake ..
@@ -25,7 +25,7 @@ Example 1 (image heightmap):
 You'll see:
 
 ```{.sh}
-[Msg] Loading plugin [ignition-rendering7-ogre]
+[Msg] Loading plugin [gz-rendering7-ogre]
 [Msg] Loading heightmap: scene::Heightmap(65528)
 [Msg] Heightmap loaded. Process took 217 ms.
 ===============================

@@ -40,7 +40,7 @@ class gz::rendering::OgreMovableText
   public: virtual ~OgreMovableText();
 
   /// \brief Set the font. Valid fonts are defined in
-  /// media/fonts/ignition-rendering.fontdef
+  /// media/fonts/gz-rendering.fontdef
   /// \param[in] _font Name of the font
   public: void SetFontName(const std::string &_font);
 

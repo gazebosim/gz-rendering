@@ -25,7 +25,7 @@
 #include "gz/rendering/Utils.hh"
 #include "gz/rendering/Visual.hh"
 
-#include "test_config.h"  // NOLINT(build/include)
+#include "test_config.hh"  // NOLINT(build/include)
 
 using namespace gz;
 using namespace rendering;
@@ -135,7 +135,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   result = screenToScene(centerClick, camera, rayQuery, rayResult);
 
   // high tol is used for z due to depth buffer precision.
-  // Do not merge the tol changes forward to ign-rendering6.
+  // Do not merge the tol changes forward to gz-rendering6.
   EXPECT_NEAR(0.5, result.Z(), 1e-3);
   EXPECT_NEAR(0.0, result.X(), 2e-6);
   EXPECT_NEAR(0.0, result.Y(), 2e-6);
@@ -172,12 +172,6 @@ TEST_P(UtilTest, ClickToScene)
   ClickToScene(GetParam());
 }
 
-INSTANTIATE_TEST_CASE_P(ClickToScene, UtilTest,
+INSTANTIATE_TEST_SUITE_P(ClickToScene, UtilTest,
     RENDER_ENGINE_VALUES,
     gz::rendering::PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}

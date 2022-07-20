@@ -61,7 +61,7 @@ class gz::rendering::RenderEngineManagerPrivate
   /// \return True if the engine is unloaded
   public: bool UnloadEngine(EngineIter _iter);
 
-  /// \brief Register default engines supplied by ign-rendering
+  /// \brief Register default engines supplied by gz-rendering
   public: void RegisterDefaultEngines();
 
   /// \brief Unregister an engine using an EngineMap iterator.
@@ -206,7 +206,7 @@ std::vector<std::string> RenderEngineManager::LoadedEngines() const
     std::string n = name;
     if (nullptr != engine)
     {
-      // ign-rendering3 changed loaded engine names to the actual lib name.
+      // gz-rendering3 changed loaded engine names to the actual lib name.
       // For backward compatibility, return engine name if it is one of the
       // default engines
       for (const auto &it : this->dataPtr->defaultEngines)

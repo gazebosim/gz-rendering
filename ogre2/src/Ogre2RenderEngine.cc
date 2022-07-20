@@ -591,7 +591,7 @@ void Ogre2RenderEngine::LoadPlugins()
       try
       {
         // Load the plugin into OGRE
-        this->ogreRoot->loadPlugin(filename, piter->bOptional);
+        this->ogreRoot->loadPlugin(filename, piter->bOptional, nullptr);
       }
       catch(Ogre::Exception &)
       {

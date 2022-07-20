@@ -54,7 +54,11 @@ namespace gz
         GORM_COUNT = 3,
         IORM_COUNT = 3,  // TODO(CH3): Deprecated. Remove on tock.
       };
-      using IgnOgreRenderingMode GZ_DEPRECATED(7) = GzOgreRenderingMode;  // TODO(CH3): Deprecated. Remove on tock.
+      #ifdef _WIN32
+        using IgnOgreRenderingMode = GzOgreRenderingMode;  // TODO(CH3): Deprecated. Remove on tock.
+      #else
+        using IgnOgreRenderingMode GZ_DEPRECATED(7) = GzOgreRenderingMode;  // TODO(CH3): Deprecated. Remove on tock.
+      #endif
     }  // namespace GZ_RENDERING_VERSION_NAMESPACE
   }    // namespace rendering
 }  // namespace gz

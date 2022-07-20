@@ -28,6 +28,8 @@ THE SOFTWARE.
 
 #include "Terra/TerraShadowMapper.h"
 
+#include "Terra/Terra.h"
+
 #include "OgreTextureGpuManager.h"
 
 #include "OgreSceneManager.h"
@@ -51,11 +53,17 @@ namespace Ogre
         m_shadowPerGroupData( 0 ),
         m_shadowWorkspace( 0 ),
         m_shadowMapTex( 0 ),
+        m_tmpGaussianFilterTex( 0 ),
         m_shadowJob( 0 ),
         m_jobParamDelta( 0 ),
         m_jobParamXYStep( 0 ),
         m_jobParamIsStep( 0 ),
         m_jobParamHeightDelta( 0 ),
+        m_jobParamResolutionShift( 0 ),
+        m_terraId( std::numeric_limits<IdType>::max() ),
+        m_minimizeMemoryConsumption( false ),
+        m_lowResShadow( false ),
+        m_sharedResources( 0 ),
         m_sceneManager( sceneManager ),
         m_compositorManager( compositorManager )
     {
@@ -66,11 +74,47 @@ namespace Ogre
         destroyShadowMap();
     }
     //-----------------------------------------------------------------------------------
-    void ShadowMapper::createShadowMap( IdType id, TextureGpu *heightMapTex )
+    void ShadowMapper::createCompositorWorkspace()
+    {
+        OGRE_ASSERT_LOW( !m_shadowWorkspace );
+        OGRE_ASSERT_LOW( !m_tmpGaussianFilterTex );
+
+        m_tmpGaussianFilterTex = TerraSharedResources::getTempTexture(
+            "Terra tmpGaussianFilter", m_terraId, m_sharedResources, TerraSharedResources::TmpShadows,
+            m_shadowMapTex, TextureFlags::Uav );
+
+        const bool bUseU16 = m_heightMapTex->getPixelFormat() == PFG_R16_UINT;
+
+        CompositorChannelVec finalTarget( 2, CompositorChannel() );
+        finalTarget[0] = m_shadowMapTex;
+        finalTarget[1] = m_tmpGaussianFilterTex;
+        m_shadowWorkspace = m_compositorManager->addWorkspace(
+            m_sceneManager, finalTarget, 0,
+            bUseU16 ? "Terra/ShadowGeneratorWorkspaceU16" : "Terra/ShadowGeneratorWorkspace", false );
+    }
+    //-----------------------------------------------------------------------------------
+    void ShadowMapper::destroyCompositorWorkspace()
+    {
+        if( m_shadowWorkspace )
+        {
+            m_compositorManager->removeWorkspace( m_shadowWorkspace );
+            m_shadowWorkspace = 0;
+        }
+
+        if( m_tmpGaussianFilterTex )
+        {
+            TerraSharedResources::destroyTempTexture( m_sharedResources, m_tmpGaussianFilterTex );
+            m_tmpGaussianFilterTex = 0;
+        }
+    }
+    //-----------------------------------------------------------------------------------
+    void ShadowMapper::createShadowMap( IdType id, TextureGpu *heightMapTex, bool bLowResShadow )
     {
         destroyShadowMap();
 
+        m_terraId = id;
         m_heightMapTex = heightMapTex;
+        m_lowResShadow = bLowResShadow;
 
         VaoManager *vaoManager = m_sceneManager->getDestinationRenderSystem()->getVaoManager();
 
@@ -88,6 +132,17 @@ namespace Ogre
         HlmsManager *hlmsManager = Root::getSingleton().getHlmsManager();
         HlmsCompute *hlmsCompute = hlmsManager->getComputeHlms();
         m_shadowJob = hlmsCompute->findComputeJob( "Terra/ShadowGenerator" );
+        const bool bUseU16 = heightMapTex->getPixelFormat() == PFG_R16_UINT;
+        if( bUseU16 )
+        {
+            HlmsComputeJob *jobU16 = hlmsCompute->findComputeJobNoThrow( "Terra/ShadowGeneratorU16" );
+            if( !jobU16 )
+            {
+                jobU16 = m_shadowJob->clone( "Terra/ShadowGeneratorU16" );
+                jobU16->setProperty( "terra_use_uint", 1 );
+            }
+            m_shadowJob = jobU16;
+        }
 
         //TODO: Mipmaps
         TextureGpuManager *textureManager =
@@ -97,22 +152,49 @@ namespace Ogre
                              GpuPageOutStrategy::SaveToSystemRam,
                              TextureFlags::Uav,
                              TextureTypes::Type2D );
-        m_shadowMapTex->setResolution( m_heightMapTex->getWidth(), m_heightMapTex->getHeight() );
-        m_shadowMapTex->setPixelFormat( PFG_R10G10B10A2_UNORM );
+
+        uint32 width = m_heightMapTex->getWidth();
+        uint32 height = m_heightMapTex->getHeight();
+        if( bLowResShadow )
+        {
+            width >>= 2u;
+            height >>= 2u;
+        }
+        m_shadowMapTex->setResolution( width, height );
+
+        {
+            // Check for something that is supported. If they all fail, we assume the driver
+            // is broken and at least PFG_RGBA8_UNORM must be supported
+            const size_t numFormats = 4u;
+            const PixelFormatGpu c_formats[numFormats] = { PFG_R10G10B10A2_UNORM, PFG_RGBA16_UNORM,
+                                                           PFG_RGBA16_FLOAT, PFG_RGBA8_UNORM };
+            for( size_t i = 0u; i < numFormats; ++i )
+            {
+                if( textureManager->checkSupport( c_formats[i], TextureTypes::Type2D,
+                                                  TextureFlags::Uav ) ||
+                    i == numFormats - 1u )
+                {
+                    m_shadowMapTex->setPixelFormat( c_formats[i] );
+                    break;
+                }
+            }
+        }
         m_shadowMapTex->scheduleTransitionTo( GpuResidency::Resident );
 
-        CompositorChannelVec finalTarget( 1, CompositorChannel() );
-        finalTarget[0] = m_shadowMapTex;
-        m_shadowWorkspace = m_compositorManager->addWorkspace( m_sceneManager, finalTarget, 0,
-                                                               "Terra/ShadowGeneratorWorkspace", false );
+        if( !m_minimizeMemoryConsumption )
+            createCompositorWorkspace();
 
         ShaderParams &shaderParams = m_shadowJob->getShaderParams( "default" );
         m_jobParamDelta = shaderParams.findParameter( "delta" );
         m_jobParamXYStep = shaderParams.findParameter( "xyStep" );
         m_jobParamIsStep = shaderParams.findParameter( "isSteep" );
         m_jobParamHeightDelta = shaderParams.findParameter( "heightDelta" );
+        m_jobParamResolutionShift = shaderParams.findParameter( "resolutionShift" );
 
-        setGaussianFilterParams( 8, 0.5f );
+        if( bLowResShadow )
+            setGaussianFilterParams( 4, 0.5f );
+        else
+            setGaussianFilterParams( 8, 0.5f );
     }
     //-----------------------------------------------------------------------------------
     void ShadowMapper::destroyShadowMap(void)
@@ -137,11 +219,7 @@ namespace Ogre
             m_shadowPerGroupData = 0;
         }
 
-        if( m_shadowWorkspace )
-        {
-            m_compositorManager->removeWorkspace( m_shadowWorkspace );
-            m_shadowWorkspace = 0;
-        }
+        destroyCompositorWorkspace();
 
         if( m_shadowMapTex )
         {
@@ -163,7 +241,7 @@ namespace Ogre
     //-----------------------------------------------------------------------------------
     inline int32 ShadowMapper::getXStepsNeededToReachY( uint32 y, float fStep )
     {
-        return static_cast<int32>( ceilf( Ogre::max( ( (y << 1u) - 1u ) * fStep, 0.0f ) ) );
+        return static_cast<int32>( ceilf( std::max( ( (y << 1u) - 1u ) * fStep, 0.0f ) ) );
     }
     //-----------------------------------------------------------------------------------
     inline float ShadowMapper::getErrorAfterXsteps( uint32 xIterationsToSkip, float dx, float dy )
@@ -179,6 +257,9 @@ namespace Ogre
     void ShadowMapper::updateShadowMap( const Vector3 &lightDir, const Vector2 &xzDimensions,
                                         float heightScale )
     {
+        if( m_minimizeMemoryConsumption )
+            createCompositorWorkspace();
+
         struct PerGroupData
         {
             int32 iterations;
@@ -278,8 +359,13 @@ namespace Ogre
         heightDelta = ( -heightDelta * (xzDimensions.x / width) ) / heightScale;
         //Avoid sending +/- inf (which causes NaNs inside the shader).
         //Values greater than 1.0 (or less than -1.0) are pointless anyway.
-        heightDelta = Ogre::max( -1.0f, Ogre::min( 1.0f, heightDelta ) );
+        heightDelta = std::max( -1.0f, std::min( 1.0f, heightDelta ) );
         m_jobParamHeightDelta->setManualValue( heightDelta );
+
+        if( m_lowResShadow )
+            m_jobParamResolutionShift->setManualValue( static_cast<uint32>( 2u ) );
+        else
+            m_jobParamResolutionShift->setManualValue( static_cast<uint32>( 0u ) );
 
         //y0 is not needed anymore, and we need it to be either 0 or heightOrWidth for the
         //algorithm to work correctly (depending on the sign of xyStep[1]). So do this now.
@@ -291,7 +377,7 @@ namespace Ogre
         const float fStep = (dx * 0.5f) / dy;
         //TODO numExtraIterations correct? -1? +1?
         uint32 numExtraIterations = static_cast<uint32>(
-                    Ogre::min( ceilf( dy ), ceilf( ((heightOrWidth - 1u) / fStep - 1u) * 0.5f ) ) );
+                    std::min( ceilf( dy ), ceilf( ((heightOrWidth - 1u) / fStep - 1u) * 0.5f ) ) );
 
         const uint32 threadsPerGroup = m_shadowJob->getThreadsPerGroupX();
         const uint32 firstThreadGroups = alignToNextMultiple( heightOrWidth,
@@ -362,17 +448,14 @@ namespace Ogre
         shaderParams.setDirty();
 
         m_shadowWorkspace->_update();
+
+        if( m_minimizeMemoryConsumption )
+            destroyCompositorWorkspace();
     }
     //-----------------------------------------------------------------------------------
-    void ShadowMapper::fillUavDataForCompositorChannel( TextureGpu **outChannel,
-                                                        ResourceLayoutMap &outInitialLayouts,
-                                                        ResourceAccessMap &outInitialUavAccess ) const
+    void ShadowMapper::fillUavDataForCompositorChannel( TextureGpu **outChannel ) const
     {
         *outChannel = m_shadowMapTex;
-        outInitialLayouts.insert( m_shadowWorkspace->getResourcesLayout().begin(),
-                                  m_shadowWorkspace->getResourcesLayout().end() );
-        outInitialUavAccess.insert( m_shadowWorkspace->getUavsAccess().begin(),
-                                    m_shadowWorkspace->getUavsAccess().end() );
     }
     //-----------------------------------------------------------------------------------
     void ShadowMapper::setGaussianFilterParams( uint8 kernelRadius, float gaussianDeviationFactor )
@@ -385,6 +468,31 @@ namespace Ogre
         setGaussianFilterParams( job, kernelRadius, gaussianDeviationFactor );
         job = hlmsCompute->findComputeJob( "Terra/GaussianBlurV" );
         setGaussianFilterParams( job, kernelRadius, gaussianDeviationFactor );
+    }
+    //-----------------------------------------------------------------------------------
+    void ShadowMapper::_setSharedResources( TerraSharedResources *sharedResources )
+    {
+        const bool bRecreateWorkspace = m_shadowWorkspace != 0;
+        destroyCompositorWorkspace();
+
+        m_sharedResources = sharedResources;
+
+        if( bRecreateWorkspace )
+            createCompositorWorkspace();
+    }
+    //-----------------------------------------------------------------------------------
+    void ShadowMapper::setMinimizeMemoryConsumption( bool bMinimizeMemoryConsumption )
+    {
+        if( bMinimizeMemoryConsumption != m_minimizeMemoryConsumption )
+        {
+            if( !bMinimizeMemoryConsumption && m_heightMapTex )
+                createCompositorWorkspace();
+
+            m_minimizeMemoryConsumption = bMinimizeMemoryConsumption;
+
+            if( bMinimizeMemoryConsumption )
+                destroyCompositorWorkspace();
+        }
     }
     //-----------------------------------------------------------------------------------
     void ShadowMapper::setGaussianFilterParams( HlmsComputeJob *job, uint8 kernelRadius,
@@ -410,7 +518,7 @@ namespace Ogre
         for( uint32 i=0; i<kernelRadius + 1u; ++i )
         {
             const float _X = i - fKernelRadius + ( 1.0f - 1.0f / stepSize );
-            float fWeight = 1.0f / sqrt ( 2.0f * Math::PI * gaussianDeviation * gaussianDeviation );
+            float fWeight = 1.0f / std::sqrt ( 2.0f * Math::PI * gaussianDeviation * gaussianDeviation );
             fWeight *= exp( - ( _X * _X ) / ( 2.0f * gaussianDeviation * gaussianDeviation ) );
 
             fWeightSum += fWeight;
@@ -442,7 +550,7 @@ namespace Ogre
             }
         }
 
-        const bool bIsHlsl = job->getCreator()->getShaderProfile() == "hlsl";
+        const bool bIsMetal = job->getCreator()->getShaderProfile() == "metal";
 
         //Set the shader constants, 16 at a time (since that's the limit of what ManualParam can hold)
         char tmp[32];
@@ -451,7 +559,7 @@ namespace Ogre
         for( uint32 i=0; i<kernelRadius + 1u; i += floatsPerParam )
         {
             weightsString.clear();
-            if( !bIsHlsl )
+            if( bIsMetal )
                 weightsString.a( "c_weights[", i, "]" );
             else
                 weightsString.a( "c_weights[", ( i >> 2u ), "]" );

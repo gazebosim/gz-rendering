@@ -137,12 +137,14 @@ namespace Ogre
   /////////////////////////////////////////////////
   void Ogre2GzHlmsPbs::hlmsTypeChanged(bool _casterPass,
                                         CommandBuffer *_commandBuffer,
-                                        const HlmsDatablock *_datablock)
+                                        const HlmsDatablock *_datablock,
+                                        size_t _texUnit)
   {
     // Allow additional listener-only customizations to inject their stuff
     for (Ogre::HlmsListener *listener : this->customizations)
     {
-      listener->hlmsTypeChanged(_casterPass, _commandBuffer, _datablock);
+      listener->hlmsTypeChanged(_casterPass, _commandBuffer, _datablock,
+                                _texUnit);
     }
 
     if (_casterPass ||

@@ -15,14 +15,6 @@
  *
  */
 
-// Not Apple or Windows
-#if !defined(__APPLE__) && !defined(_WIN32)
-# include <X11/Xlib.h>
-# include <X11/Xutil.h>
-# include <GL/glx.h>
-# include <GL/glxext.h>
-#endif
-
 #ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
   // pulled in by anybody (e.g., Boost).
@@ -50,6 +42,14 @@
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 #include "Terra/TerraWorkspaceListener.h"
 #include "Ogre2GzHlmsSphericalClipMinDistance.hh"
+
+// Not Apple or Windows
+#if !defined(__APPLE__) && !defined(_WIN32)
+# include <X11/Xlib.h>
+# include <X11/Xutil.h>
+# include <GL/glx.h>
+# include <GL/glxext.h>
+#endif
 
 class GZ_RENDERING_OGRE2_HIDDEN
     gz::rendering::Ogre2RenderEnginePrivate
@@ -553,7 +553,7 @@ void Ogre2RenderEngine::LoadPlugins()
       try
       {
         // Load the plugin into OGRE
-        this->ogreRoot->loadPlugin(filename);
+        this->ogreRoot->loadPlugin(filename,false);
       }
       catch(Ogre::Exception &)
       {

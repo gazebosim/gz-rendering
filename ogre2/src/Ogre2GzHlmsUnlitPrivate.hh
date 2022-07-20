@@ -99,7 +99,7 @@ namespace Ogre
         const HlmsPropertyVec &_renderableCacheProperties,
         const PiecesMap _renderableCachePieces[NumShaderTypes],
         const HlmsPropertyVec &_properties,
-        const QueuedRenderable &_queuedRenderable);
+        const QueuedRenderable &_queuedRenderable) override;
 
     // Documentation inherited
     public: using HlmsUnlit::preparePassHash;

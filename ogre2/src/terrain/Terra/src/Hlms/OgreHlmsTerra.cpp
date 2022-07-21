@@ -380,15 +380,15 @@ namespace Ogre
         // GZ CUSTOMIZE BEGIN
         for( size_t i = 0u; i < 4u; ++i )
         {
-            const IdString c_ignWeightProperties[4] = {
-                "ign_weight0",
-                "ign_weight1",
-                "ign_weight2",
-                "ign_weight3",
+            const IdString c_gzWeightProperties[4] = {
+                "gz_weight0",
+                "gz_weight1",
+                "gz_weight2",
+                "gz_weight3",
             };
-            setProperty( c_ignWeightProperties[i],
-                         fabsf( datablock->mIgnWeightsMinHeight[i] -
-                                datablock->mIgnWeightsMaxHeight[i] ) >= 1e-6f );
+            setProperty( c_gzWeightProperties[i],
+                         fabsf( datablock->mGzWeightsMinHeight[i] -
+                                datablock->mGzWeightsMaxHeight[i] ) >= 1e-6f );
         }
         // GZ CUSTOMIZE END
 

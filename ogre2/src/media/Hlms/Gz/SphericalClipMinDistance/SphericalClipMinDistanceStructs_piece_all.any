@@ -1,10 +1,10 @@
-@property( ign_spherical_clip_min_distance )
+@property( gz_spherical_clip_min_distance )
   @piece( custom_passBuffer_spherical_clip_min_distance )
-		#define ignMinClipDistance ignMinClipDistance_ignCameraPos.x
-		#define ignCameraPos ignMinClipDistance_ignCameraPos.yzw
-		float4 ignMinClipDistance_ignCameraPos;
+		#define gzMinClipDistance gzMinClipDistance_gzCameraPos.x
+		#define gzCameraPos gzMinClipDistance_gzCameraPos.yzw
+		float4 gzMinClipDistance_gzCameraPos;
 
-		@property( ign_spherical_clip_needs_worldPos )
+		@property( gz_spherical_clip_needs_worldPos )
 			float4x4 invViewProj;
 		@end
 	@end

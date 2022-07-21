@@ -369,7 +369,7 @@ void Ogre2Heightmap::Init()
               static_cast<Ogre::Real>(blend->MinHeight()+
                                       blend->FadeDistance());
     }
-    datablock->setIgnWeightsHeights(minBlendHeights, maxBlendHeights);
+    datablock->setGzWeightsHeights(minBlendHeights, maxBlendHeights);
   }
 
   this->dataPtr->terra->setDatablock(datablock);

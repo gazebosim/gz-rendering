@@ -8,7 +8,7 @@
 
 ### Gazebo Rendering 6.3.1 (2022-04-13)
 
-1.  Revert OGRE-Next custom support and back to use IgnOGRE2 module
+1.  Revert OGRE-Next custom support and back to use GzOGRE2 module
     * [Pull request #605](https://github.com/gazebosim/gz-rendering/pull/605)
 
 ### Gazebo Rendering 6.3.0 (2022-04-06)

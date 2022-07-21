@@ -132,7 +132,7 @@ namespace Ogre
     public: virtual void notifyPropertiesMergedPreGenerationStep() override;
 
     /// \brief Override HlmsListener::hlmsTypeChanged so we can
-    /// bind buffers which carry per-object data when in IORM_SOLID_COLOR
+    /// bind buffers which carry per-object data when in GORM_SOLID_COLOR
     /// \param[in] _casterPass true if this is a caster pass
     /// \param[in] _commandBuffer command buffer so we can add commands
     /// \param[in] _datablock material of the object that caused

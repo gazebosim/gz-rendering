@@ -66,8 +66,8 @@ namespace Ogre
         mkDr( 0.318309886f ), mkDg( 0.318309886f ), mkDb( 0.318309886f ), //Max Diffuse = 1 / PI
         mShadowConstantBiasGpu( 0.0f ),
         // GZ CUSTOMIZE BEGIN
-        mIgnWeightsMinHeight{ 0.0f, 0.0f, 0.0f, 0.0f },
-        mIgnWeightsMaxHeight{ 0.0f, 0.0f, 0.0f, 0.0f },
+        mGzWeightsMinHeight{ 0.0f, 0.0f, 0.0f, 0.0f },
+        mGzWeightsMaxHeight{ 0.0f, 0.0f, 0.0f, 0.0f },
         // GZ CUSTOMIZE END
         mBrdf( TerraBrdf::Default )
     {
@@ -164,13 +164,13 @@ namespace Ogre
             detailsOffsetScale[i] = mDetailsOffsetScale[i];
 
         // GZ CUSTOMIZE BEGIN
-        const size_t sizeOfIgnData = sizeof( mIgnWeightsMinHeight ) + sizeof( mIgnWeightsMinHeight );
+        const size_t sizeOfGzData = sizeof( mGzWeightsMinHeight ) + sizeof( mGzWeightsMinHeight );
 
         memcpy( dstPtr, &mkDr,
                 MaterialSizeInGpu - numOffsetScale * sizeof( float4 ) - sizeof( mTexIndices ) -
-                    sizeOfIgnData );
+                    sizeOfGzData );
         dstPtr += MaterialSizeInGpu - numOffsetScale * sizeof( float4 ) - sizeof( mTexIndices ) -
-                  sizeOfIgnData;
+                  sizeOfGzData;
         // GZ CUSTOMIZE END
 
         memcpy( dstPtr, &detailsOffsetScale, numOffsetScale * sizeof( float4 ) );
@@ -180,8 +180,8 @@ namespace Ogre
         dstPtr += sizeof( texIndices );
 
         // GZ CUSTOMIZE BEGIN
-        memcpy( dstPtr, mIgnWeightsMinHeight, sizeOfIgnData );
-        dstPtr += sizeOfIgnData;
+        memcpy( dstPtr, mGzWeightsMinHeight, sizeOfGzData );
+        dstPtr += sizeOfGzData;
         // GZ CUSTOMIZE END
     }
     //-----------------------------------------------------------------------------------
@@ -279,18 +279,18 @@ namespace Ogre
     }
     //-----------------------------------------------------------------------------------
     // GZ CUSTOMIZE BEGIN
-    void HlmsTerraDatablock::setIgnWeightsHeights( const Vector4 &ignWeightsMinHeight,
+    void HlmsTerraDatablock::setGzWeightsHeights( const Vector4 &ignWeightsMinHeight,
                                                    const Vector4 &ignWeightsMaxHeight )
     {
         bool bNeedsFlushing = false;
         for( size_t i = 0u; i < 4u; ++i )
         {
             const bool bWasDisabled =
-                fabsf( mIgnWeightsMinHeight[i] - mIgnWeightsMaxHeight[i] ) >= 1e-6f;
-            mIgnWeightsMinHeight[i] = ignWeightsMinHeight[i];
-            mIgnWeightsMaxHeight[i] = ignWeightsMaxHeight[i];
+                fabsf( mGzWeightsMinHeight[i] - mGzWeightsMaxHeight[i] ) >= 1e-6f;
+            mGzWeightsMinHeight[i] = ignWeightsMinHeight[i];
+            mGzWeightsMaxHeight[i] = ignWeightsMaxHeight[i];
             const bool bIsDisabled =
-                fabsf( mIgnWeightsMinHeight[i] - mIgnWeightsMaxHeight[i] ) >= 1e-6f;
+                fabsf( mGzWeightsMinHeight[i] - mGzWeightsMaxHeight[i] ) >= 1e-6f;
             bNeedsFlushing |= bWasDisabled != bIsDisabled;
         }
         if( bNeedsFlushing )

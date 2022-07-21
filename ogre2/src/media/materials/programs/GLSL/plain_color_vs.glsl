@@ -20,7 +20,7 @@
 in vec4 vertex;
 uniform mat4 worldViewProj;
 uniform mat4 worldView;
-uniform float ignMinClipDistance;
+uniform float gzMinClipDistance;
 
 out gl_PerVertex
 {
@@ -33,13 +33,13 @@ void main()
   // Calculate output position
   gl_Position = worldViewProj * vertex;
 
-  if( ignMinClipDistance > 0.0f )
+  if( gzMinClipDistance > 0.0f )
   {
 	// Frustum is rectangular; but the minimum lidar distance is spherical,
 	// so we can't rely on near plane to clip geometry that is too close,
 	// we have to do it by hand
 	vec3 viewSpacePos = (worldView * vertex).xyz;
-	gl_ClipDistance[0] = length( viewSpacePos.xyz ) - ignMinClipDistance;
+	gl_ClipDistance[0] = length( viewSpacePos.xyz ) - gzMinClipDistance;
   }
   else
   {

@@ -27,6 +27,9 @@ release will remove the deprecated code.
     3. `IGN_VISIBILITY_SELECTION`
     4. `IGN_VISIBILITY_GUI`
     5. `IGN_VISIBILITY_SELECTABLE`
+7. The `IgnRenderingMode` enum is deprecated and will be removed in future versions. Use `GzRenderingMode` instead.
+    1. Similarly, the `IORM_` prefixed enum values are deprecated. Use the `GORM_` prefix instead.
+    2. Also, `Ogre2RenderEngine->SetIgnOgreRenderingMode` is deprecated and will be removed. Use `Ogre2RenderEngine->SetGzOgreRenderingMode` instead.
 
 ### Breaking Changes
 

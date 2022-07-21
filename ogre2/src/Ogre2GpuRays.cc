@@ -219,7 +219,7 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
     return;
 
   auto engine = Ogre2RenderEngine::Instance();
-  engine->SetIgnOgreRenderingMode(IORM_SOLID_COLOR);
+  engine->SetGzOgreRenderingMode(GORM_SOLID_COLOR);
 
   this->materialMap.clear();
   this->datablockMap.clear();
@@ -452,7 +452,7 @@ void Ogre2LaserRetroMaterialSwitcher::passPosExecute(
   this->datablockMap.clear();
 
   // Remove the custom parameter. Why? If there are multiple cameras that
-  // use IORM_SOLID_COLOR (or any other mode), we want them to throw if
+  // use GORM_SOLID_COLOR (or any other mode), we want them to throw if
   // that code forgot to call setCustomParameter. We may miss those errors
   // if that code forgets to call but it was already carrying the value
   // we set here.
@@ -490,7 +490,7 @@ void Ogre2LaserRetroMaterialSwitcher::passPosExecute(
       heightmap->Terra()->UnsetSolidColors();
   }
 
-  engine->SetIgnOgreRenderingMode(IORM_NORMAL);
+  engine->SetGzOgreRenderingMode(GORM_NORMAL);
 }
 
 //////////////////////////////////////////////////
@@ -1186,7 +1186,7 @@ void Ogre2GpuRays::Setup1stPass()
           false);
 
     // add laser retro material switcher to workspace listener
-    // so we can switch to use IORM_SOLID_COLOR
+    // so we can switch to use GORM_SOLID_COLOR
     this->dataPtr->laserRetroMaterialSwitcher[i].reset(
       new Ogre2LaserRetroMaterialSwitcher(this->scene));
     this->dataPtr->ogreCompositorWorkspace1st[i]->addListener(

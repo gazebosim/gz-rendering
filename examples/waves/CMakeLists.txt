@@ -6,7 +6,7 @@ include_directories(SYSTEM
 )
 
 find_package(ignition-rendering6)
-#find_package(ignition-common4)
+find_package(ignition-common4)
 
 set(TARGET_THIRD_PARTY_DEPENDS "")
 
@@ -52,7 +52,7 @@ add_executable(waves Main.cc GlutWindow.cc)
 
 target_link_libraries(waves
   ${IGNITION-RENDERING_LIBRARIES}
-#  ${IGNITION-COMMON_LIBRARIES}
+  ${IGNITION-COMMON_LIBRARIES}
   ${TARGET_THIRD_PARTY_DEPENDS}
 )
 

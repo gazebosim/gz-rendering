@@ -1,0 +1,4 @@
+ignore:
+    - "ogre"
+    - "optix"
+    - "ogre2/terrain/Terra"

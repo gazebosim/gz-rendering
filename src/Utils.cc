@@ -106,7 +106,7 @@ float screenScalingFactor()
   float ratio = 1.0;
 
   // the scaling factor seems to cause issues with mouse picking.
-  // see https://github.com/ignitionrobotics/ign-gazebo/issues/147
+  // see https://github.com/gazebosim/gz-gazebo/issues/147
 #if 0
   auto closeDisplay = [](Display * display)
   {

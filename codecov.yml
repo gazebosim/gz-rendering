@@ -1,4 +1,4 @@
 ignore:
     - "ogre"
     - "optix"
-    - "ogre2/terrain/Terra"
+    - "ogre2/src/terrain/Terra"

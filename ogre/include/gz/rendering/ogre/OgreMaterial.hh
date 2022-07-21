@@ -17,6 +17,7 @@
 #ifndef GZ_RENDERING_OGRE_OGREMATERIAL_HH_
 #define GZ_RENDERING_OGRE_OGREMATERIAL_HH_
 
+#include <memory>
 #include <string>
 
 #include <gz/utils/SuppressWarning.hh>
@@ -189,8 +190,12 @@ namespace gz
       /// \param[in] _texture Name of the texture.
       protected: virtual void SetTextureImpl(const std::string &_texture);
 
+      /// \brief Set the texture for this material from an image that was
+      /// loaded from memory
+      /// \param[in] _texture Name of the texture.
+      /// \param[in] _img common::Image containing the texture data
       protected: void SetTextureDataImpl(const std::string &_texture,
-                                         const std::shared_ptr<common::Image> &_img);
+                     const std::shared_ptr<common::Image> &_img);
 
       protected: virtual Ogre::TexturePtr Texture(const std::string &_name);
 

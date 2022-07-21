@@ -17,6 +17,7 @@
 #ifndef GZ_RENDERING_MATERIAL_HH_
 #define GZ_RENDERING_MATERIAL_HH_
 
+#include <memory>
 #include <string>
 #include <gz/math/Color.hh>
 #include <gz/common/Material.hh>
@@ -227,8 +228,8 @@ namespace gz
         const std::shared_ptr<common::Image> &_img = nullptr) = 0;
 
       /// \brief Get the texture data
-      /// \return Pointer the common::Image with the data if the texture was loaded
-      /// from memory
+      /// \return Pointer the common::Image with the data if the texture
+      /// was loaded from memory
       public: virtual std::shared_ptr<common::Image> TextureData() const = 0;
 
       /// \brief Removes any texture mapped to this material
@@ -243,8 +244,8 @@ namespace gz
       public: virtual std::string NormalMap() const = 0;
 
       /// \brief Get the normal map data
-      /// \return Pointer the common::Image with the data if the texture was loaded
-      /// from memory
+      /// \return Pointer the common::Image with the data if the texture
+      /// was loaded from memory
       public: virtual std::shared_ptr<common::Image> NormalMapData() const = 0;
 
       /// \brief Set the material normal map
@@ -266,9 +267,10 @@ namespace gz
       public: virtual std::string RoughnessMap() const = 0;
 
       /// \brief Get the roughness map data
-      /// \return Pointer the common::Image with the data if the texture was loaded
-      /// from memory
-      public: virtual std::shared_ptr<common::Image> RoughnessMapData() const = 0;
+      /// \return Pointer the common::Image with the data if the texture
+      /// was loaded from memory
+      public: virtual std::shared_ptr<common::Image> RoughnessMapData()
+                  const = 0;
 
       /// \brief Set the material roughness map
       /// \param[in] _roughnessMap URI of the new roughness map file,
@@ -290,9 +292,10 @@ namespace gz
       public: virtual std::string MetalnessMap() const = 0;
 
       /// \brief Get the metalness map data
-      /// \return Pointer the common::Image with the data if the texture was loaded
-      /// from memory
-      public: virtual std::shared_ptr<common::Image> MetalnessMapData() const = 0;
+      /// \return Pointer the common::Image with the data if the texture
+      /// was loaded from memory
+      public: virtual std::shared_ptr<common::Image> MetalnessMapData()
+                  const = 0;
 
       /// \brief Set the material metalness map
       /// \param[in] _metalnessMap URI of the new metalness map file,

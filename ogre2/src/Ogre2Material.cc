@@ -503,9 +503,14 @@ void Ogre2Material::SetRoughnessMap(const std::string &_name,
   this->roughnessMapName = _name;
   this->dataPtr->roughnessMapData = _img;
   if (_img == nullptr)
+  {
     this->SetTextureMapImpl(this->roughnessMapName, Ogre::PBSM_ROUGHNESS);
+  }
   else
-    this->SetTextureMapDataImpl(this->roughnessMapName, _img, Ogre::PBSM_ROUGHNESS);
+  {
+    this->SetTextureMapDataImpl(this->roughnessMapName,
+                                _img, Ogre::PBSM_ROUGHNESS);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -548,9 +553,14 @@ void Ogre2Material::SetMetalnessMap(const std::string &_name,
   this->metalnessMapName = _name;
   this->dataPtr->metalnessMapData = _img;
   if (_img == nullptr)
+  {
     this->SetTextureMapImpl(this->metalnessMapName, Ogre::PBSM_METALLIC);
+  }
   else
-    this->SetTextureMapDataImpl(this->metalnessMapName, _img, Ogre::PBSM_METALLIC);
+  {
+    this->SetTextureMapDataImpl(this->metalnessMapName,
+                                _img, Ogre::PBSM_METALLIC);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -1120,11 +1130,7 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
   // Has to be loaded
   if (texture->getWidth() == 0)
   {
-    gzmsg << "Loading texture " << _name << " into gpu" << std::endl;
-
-    unsigned char* data = nullptr;
-    unsigned int length;
-    _img->RGBAData(&data, length);
+    auto data = _img->RGBAData();
 
     texture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
     texture->setTextureType(Ogre::TextureTypes::Type2D);
@@ -1135,14 +1141,8 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
 
     // upload raw color image data to gpu texture
     Ogre::Image2 img;
-    img.loadDynamicImage(data, false, texture);
-    gzmsg << "Image size is " << img.getWidth() << "," << img.getHeight() << std::endl;
-    gzmsg << "Image format is " << img.getPixelFormat() << ", type is " << img.getTextureType() << " num mipmaps is " << (int)img.getNumMipmaps() << " num slices is " << img.getNumSlices() << " depth is " << img.getDepth() << std::endl;
-    gzmsg << "total size in bytes is " << img.getSizeBytes() << std::endl;
+    img.loadDynamicImage(&data[0], false, texture);
     img.uploadTo(texture, 0, 0);
-
-    // img->RGBAData() allocates memory, free it
-    delete data;
   }
 
   // Now assign it to the material

@@ -311,6 +311,7 @@ void OgreMaterial::SetTexture(const std::string &_name,
 void OgreMaterial::ClearTexture()
 {
   this->textureName = "";
+  this->textureData = nullptr;
   this->ogreTexState->setBlank();
   this->UpdateColorOperation();
 }
@@ -579,13 +580,12 @@ void OgreMaterial::SetTextureImpl(const std::string &_texture)
 
 //////////////////////////////////////////////////
 void OgreMaterial::SetTextureDataImpl(const std::string &_texture,
-                                      const std::shared_ptr<common::Image> &_img)
+  const std::shared_ptr<common::Image> &_img)
 {
   // Create the texture only if it was not created already
   if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(
       this->ogreGroup, _texture))
   {
-    gzmsg << "Creating texture " << _texture << " with width " << _img->Width() << " and height " << _img->Height() << std::endl;
     auto ogreTexture =
     Ogre::TextureManager::getSingleton().createManual(
         _texture,
@@ -596,14 +596,11 @@ void OgreMaterial::SetTextureDataImpl(const std::string &_texture,
         0,
         Ogre::PF_R8G8B8A8);
     Ogre::HardwarePixelBufferSharedPtr pixelBuffer = ogreTexture->getBuffer();
-    gzmsg << "Buffer height is " << pixelBuffer->getHeight() << " width " << pixelBuffer->getWidth() << std::endl;
     pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
     const Ogre::PixelBox &pixelBox = pixelBuffer->getCurrentLock();
 
-    unsigned char *data = nullptr;
-    unsigned int count;
-    _img->RGBAData(&data, count);
-    // TODO It seems we need to switch red and blue once again for OGRE1?
+    auto data = _img->RGBAData();
+    // TODO(anyone) Why we need to switch red and blue again for OGRE1?
     for (unsigned int r = 0; r < _img->Height(); ++r)
     {
       for (unsigned int c = 0; c < _img->Width(); ++c)
@@ -613,12 +610,8 @@ void OgreMaterial::SetTextureDataImpl(const std::string &_texture,
       }
     }
 
-    memcpy(pixelBox.data, data, count);
+    memcpy(pixelBox.data, &data[0], data.size());
     pixelBuffer->unlock();
-    gzmsg << "Ogre size is " << pixelBox.rowPitch * pixelBox.getHeight() << " common size is " << count << std::endl;
-    gzmsg << "Pitch is " << pixelBox.rowPitch << " width is " << pixelBox.getWidth() << " height is " << pixelBox.getHeight() << std::endl;
-
-    delete[] data;
   }
 
   this->ogreTexState->setTextureName(_texture);

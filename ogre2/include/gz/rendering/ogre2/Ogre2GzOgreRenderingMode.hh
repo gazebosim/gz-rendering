@@ -48,7 +48,8 @@ namespace gz
         ///
         /// Used by thermal camera
         GORM_SOLID_THERMAL_COLOR_TEXTURED = 2,
-        IORM_SOLID_THERMAL_COLOR_TEXTURED = 2,  // TODO(CH3): Deprecated. Remove on tock.
+        // TODO(CH3): Deprecated. Remove on tock.
+        IORM_SOLID_THERMAL_COLOR_TEXTURED = 2,
 
         /// \brief Total number of rendering modes
         GORM_COUNT = 3,
@@ -56,7 +57,7 @@ namespace gz
       };
       // TODO(CH3): Deprecated. Remove on tock.
       #ifdef _WIN32
-        using IgnOgreRenderingMode = GzOgreRenderingMode;  
+        using IgnOgreRenderingMode = GzOgreRenderingMode;
       #else
         using IgnOgreRenderingMode GZ_DEPRECATED(7) = GzOgreRenderingMode;
       #endif

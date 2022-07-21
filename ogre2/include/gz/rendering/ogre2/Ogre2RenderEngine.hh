@@ -199,7 +199,9 @@ namespace gz
       public: void SetGzOgreRenderingMode(GzOgreRenderingMode renderingMode);
       // TODO(CH3): Deprecated. Remove on tock.
       public:
-        inline void GZ_DEPRECATED(7) SetIgnOgreRenderingMode(GzOgreRenderingMode renderingMode){
+        inline void GZ_DEPRECATED(7) SetIgnOgreRenderingMode(
+          GzOgreRenderingMode renderingMode)
+        {
           return SetGzOgreRenderingMode(renderingMode);
         }
 

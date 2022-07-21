@@ -149,10 +149,9 @@ void MarkerTest::Material(const std::string &_renderEngine)
   if (_renderEngine == "optix")
   {
     igndbg << "Marker not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
+           << _renderEngine << std::endl;
     return;
   }
-
 
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)

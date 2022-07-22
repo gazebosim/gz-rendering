@@ -174,6 +174,19 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   material->ClearTexture();
   EXPECT_FALSE(material->HasTexture());
 
+  // Set the texture from binary data
+  auto textureImg = std::make_shared<gz::common::Image>();
+  textureImg->Load(textureName);
+  ASSERT_NE(textureImg, nullptr);
+  ASSERT_TRUE(textureImg->Valid());
+  material->SetTexture(textureName, textureImg);
+  EXPECT_EQ(textureName, material->Texture());
+  EXPECT_EQ(material->TextureData(), textureImg);
+
+  material->ClearTexture();
+  EXPECT_FALSE(material->HasTexture());
+  EXPECT_EQ(material->TextureData(), nullptr);
+
   std::string noSuchTextureName = "no_such_texture.png";
   material->SetTexture(noSuchTextureName);
   EXPECT_EQ(noSuchTextureName, material->Texture());
@@ -187,6 +200,15 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
 
   material->ClearNormalMap();
   EXPECT_FALSE(material->HasNormalMap());
+
+  // Set the normal map from binary data
+  material->SetNormalMap(textureName, textureImg);
+  EXPECT_EQ(textureName, material->NormalMap());
+  EXPECT_EQ(material->NormalMapData(), textureImg);
+
+  material->ClearNormalMap();
+  EXPECT_FALSE(material->HasNormalMap());
+  EXPECT_EQ(material->NormalMapData(), nullptr);
 
   std::string noSuchNormalMapName = "no_such_normal.png";
   material->SetNormalMap(noSuchNormalMapName);
@@ -204,6 +226,15 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
     material->ClearMetalnessMap();
     EXPECT_FALSE(material->HasMetalnessMap());
 
+    // Set the metalness map from binary data
+    material->SetMetalnessMap(textureName, textureImg);
+    EXPECT_EQ(textureName, material->MetalnessMap());
+    EXPECT_EQ(material->MetalnessMapData(), textureImg);
+
+    material->ClearMetalnessMap();
+    EXPECT_FALSE(material->HasMetalnessMap());
+    EXPECT_EQ(material->MetalnessMapData(), nullptr);
+
     std::string noSuchMetalnessMapName = "no_such_metalness.png";
     material->SetMetalnessMap(noSuchMetalnessMapName);
     EXPECT_EQ(noSuchMetalnessMapName, material->MetalnessMap());
@@ -217,6 +248,15 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
 
     material->ClearRoughnessMap();
     EXPECT_FALSE(material->HasRoughnessMap());
+
+    // Set the roughness map from binary data
+    material->SetRoughnessMap(textureName, textureImg);
+    EXPECT_EQ(textureName, material->RoughnessMap());
+    EXPECT_EQ(material->RoughnessMapData(), textureImg);
+
+    material->ClearRoughnessMap();
+    EXPECT_FALSE(material->HasRoughnessMap());
+    EXPECT_EQ(material->RoughnessMapData(), nullptr);
 
     std::string noSuchRoughnessMapName = "no_such_roughness.png";
     material->SetRoughnessMap(noSuchRoughnessMapName);
@@ -324,6 +364,10 @@ void MaterialTest::Copy(const std::string &_renderEngine)
 
   std::string textureName =
     common::joinPaths(TEST_MEDIA_PATH, "texture.png");
+  auto textureImg = std::make_shared<gz::common::Image>();
+  textureImg->Load(textureName);
+  ASSERT_NE(textureImg, nullptr);
+  ASSERT_TRUE(textureImg->Valid());
   std::string normalMapName = textureName;
   std::string roughnessMapName = "roughness_" + textureName;
   std::string metalnessMapName = "metalness_" + textureName;
@@ -347,11 +391,11 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   material->SetLightingEnabled(lightingEnabled);
   material->SetDepthCheckEnabled(depthCheckEnabled);
   material->SetDepthWriteEnabled(depthWriteEnabled);
-  material->SetTexture(textureName);
-  material->SetNormalMap(normalMapName);
+  material->SetTexture(textureName, textureImg);
+  material->SetNormalMap(normalMapName, textureImg);
   material->SetShaderType(shaderType);
-  material->SetRoughnessMap(roughnessMapName);
-  material->SetMetalnessMap(metalnessMapName);
+  material->SetRoughnessMap(roughnessMapName, textureImg);
+  material->SetMetalnessMap(metalnessMapName, textureImg);
   material->SetEnvironmentMap(envMapName);
   material->SetEmissiveMap(emissiveMapName);
   material->SetLightMap(lightMapName, 1u);
@@ -378,8 +422,10 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   EXPECT_EQ(depthCheckEnabled, clone->DepthCheckEnabled());
   EXPECT_EQ(depthWriteEnabled, clone->DepthWriteEnabled());
   EXPECT_EQ(textureName, clone->Texture());
+  EXPECT_EQ(textureImg, clone->TextureData());
   EXPECT_TRUE(clone->HasTexture());
   EXPECT_EQ(normalMapName, clone->NormalMap());
+  EXPECT_EQ(textureImg, clone->NormalMapData());
   EXPECT_TRUE(clone->HasNormalMap());
   EXPECT_EQ(shaderType, clone->ShaderType());
   if (material->Type() == MaterialType::MT_PBS)
@@ -387,7 +433,9 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_FLOAT_EQ(roughness, clone->Roughness());
     EXPECT_FLOAT_EQ(metalness, clone->Metalness());
     EXPECT_EQ(roughnessMapName, clone->RoughnessMap());
+    EXPECT_EQ(textureImg, clone->RoughnessMapData());
     EXPECT_EQ(metalnessMapName, clone->MetalnessMap());
+    EXPECT_EQ(textureImg, clone->MetalnessMapData());
     EXPECT_EQ(envMapName, clone->EnvironmentMap());
     EXPECT_EQ(emissiveMapName, clone->EmissiveMap());
     EXPECT_EQ(lightMapName, clone->LightMap());
@@ -413,8 +461,10 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   EXPECT_EQ(reflectionEnabled, copy->ReflectionEnabled());
   EXPECT_EQ(lightingEnabled, copy->LightingEnabled());
   EXPECT_EQ(textureName, copy->Texture());
+  EXPECT_EQ(textureImg, copy->TextureData());
   EXPECT_TRUE(copy->HasTexture());
   EXPECT_EQ(normalMapName, copy->NormalMap());
+  EXPECT_EQ(textureImg, copy->NormalMapData());
   EXPECT_TRUE(copy->HasNormalMap());
   EXPECT_EQ(shaderType, copy->ShaderType());
   if (material->Type() == MaterialType::MT_PBS)
@@ -422,7 +472,9 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_FLOAT_EQ(roughness, copy->Roughness());
     EXPECT_FLOAT_EQ(metalness, copy->Metalness());
     EXPECT_EQ(roughnessMapName, copy->RoughnessMap());
+    EXPECT_EQ(textureImg, copy->RoughnessMapData());
     EXPECT_EQ(metalnessMapName, copy->MetalnessMap());
+    EXPECT_EQ(textureImg, copy->MetalnessMapData());
     EXPECT_EQ(envMapName, copy->EnvironmentMap());
     EXPECT_EQ(emissiveMapName, copy->EmissiveMap());
     EXPECT_EQ(lightMapName, copy->LightMap());
@@ -441,15 +493,16 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   comMat.SetAlphaFromTexture(alphaFromTexture, alphaThreshold,
       twoSidedEnabled);
   comMat.SetLighting(lightingEnabled);
-  comMat.SetTextureImage(textureName);
+  comMat.SetTextureImage(textureName, textureImg);
   common::Pbr pbr;
   pbr.SetType(common::PbrType::METAL);
   pbr.SetRoughness(roughness);
   pbr.SetMetalness(metalness);
   pbr.SetAlbedoMap(textureName);
-  pbr.SetNormalMap(normalMapName);
-  pbr.SetRoughnessMap(roughnessMapName);
-  pbr.SetMetalnessMap(metalnessMapName);
+  pbr.SetNormalMap(normalMapName,
+      common::NormalMapSpace::TANGENT, textureImg);
+  pbr.SetRoughnessMap(roughnessMapName, textureImg);
+  pbr.SetMetalnessMap(metalnessMapName, textureImg);
   pbr.SetEmissiveMap(emissiveMapName);
   pbr.SetEnvironmentMap(envMapName);
   pbr.SetLightMap(lightMapName, 1u);
@@ -471,6 +524,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   // EXPECT_DOUBLE_EQ(reflectivity, comCopy->Reflectivity());
   EXPECT_EQ(lightingEnabled, comCopy->LightingEnabled());
   EXPECT_EQ(textureName, comCopy->Texture());
+  EXPECT_EQ(textureImg, comCopy->TextureData());
   EXPECT_TRUE(comCopy->HasTexture());
   if (material->Type() == MaterialType::MT_PBS)
   {
@@ -478,10 +532,13 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_DOUBLE_EQ(metalness, comCopy->Metalness());
     EXPECT_TRUE(comCopy->HasNormalMap());
     EXPECT_EQ(normalMapName, comCopy->NormalMap());
+    EXPECT_EQ(textureImg, comCopy->NormalMapData());
     EXPECT_TRUE(comCopy->HasRoughnessMap());
     EXPECT_EQ(roughnessMapName, comCopy->RoughnessMap());
+    EXPECT_EQ(textureImg, comCopy->RoughnessMapData());
     EXPECT_TRUE(comCopy->HasMetalnessMap());
     EXPECT_EQ(metalnessMapName, comCopy->MetalnessMap());
+    EXPECT_EQ(textureImg, comCopy->MetalnessMapData());
     EXPECT_TRUE(comCopy->HasEmissiveMap());
     EXPECT_EQ(emissiveMapName, comCopy->EmissiveMap());
     EXPECT_TRUE(comCopy->HasLightMap());

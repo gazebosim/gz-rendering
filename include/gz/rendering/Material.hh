@@ -228,7 +228,7 @@ namespace gz
         const std::shared_ptr<common::Image> &_img = nullptr) = 0;
 
       /// \brief Get the texture data
-      /// \return Pointer the common::Image with the data if the texture
+      /// \return Pointer to the common::Image with the data if the texture
       /// was loaded from memory
       public: virtual std::shared_ptr<common::Image> TextureData() const = 0;
 
@@ -244,7 +244,7 @@ namespace gz
       public: virtual std::string NormalMap() const = 0;
 
       /// \brief Get the normal map data
-      /// \return Pointer the common::Image with the data if the texture
+      /// \return Pointer to the common::Image with the data if the texture
       /// was loaded from memory
       public: virtual std::shared_ptr<common::Image> NormalMapData() const = 0;
 
@@ -267,7 +267,7 @@ namespace gz
       public: virtual std::string RoughnessMap() const = 0;
 
       /// \brief Get the roughness map data
-      /// \return Pointer the common::Image with the data if the texture
+      /// \return Pointer to the common::Image with the data if the texture
       /// was loaded from memory
       public: virtual std::shared_ptr<common::Image> RoughnessMapData()
                   const = 0;
@@ -292,7 +292,7 @@ namespace gz
       public: virtual std::string MetalnessMap() const = 0;
 
       /// \brief Get the metalness map data
-      /// \return Pointer the common::Image with the data if the texture
+      /// \return Pointer to the common::Image with the data if the texture
       /// was loaded from memory
       public: virtual std::shared_ptr<common::Image> MetalnessMapData()
                   const = 0;
@@ -333,13 +333,14 @@ namespace gz
       public: virtual std::string EmissiveMap() const = 0;
 
       /// \brief Get the emissive map data
-      /// \return Pointer the common::Image with the data if the texture
+      /// \return Pointer to the common::Image with the data if the texture
       /// was loaded from memory
       public: virtual std::shared_ptr<common::Image> EmissiveMapData()
                   const = 0;
 
       /// \brief Set the material emissive map
-      /// \param[in] _emissiveMap URI of the new emissive map file
+      /// \param[in] _emissiveMap Map URI of the new emissive map file,
+      /// or identifying name if map was set from raw data
       /// \param[in] _img Image data
       public: virtual void SetEmissiveMap(
         const std::string &_emissiveMap,

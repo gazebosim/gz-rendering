@@ -303,7 +303,7 @@ namespace gz
       /// \param[in] _img common::Image containing the texture data
       /// \param[in] _type Type of texture, i.e. diffuse, normal, roughness,
       /// metalness
-      protected: void SetTextureMapDataImpl(const std::string& _name,
+      protected: void SetTextureMapDataImpl(const std::string& _texture,
           const std::shared_ptr<common::Image> &_img,
           Ogre::PbsTextureTypes _type);
 

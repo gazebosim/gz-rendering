@@ -72,6 +72,10 @@ class gz::rendering::Ogre2MaterialPrivate
   /// loaded from memory
   public: std::shared_ptr<common::Image> metalnessMapData;
 
+  /// \brief Pointer to image containing the emissive map data if it was
+  /// loaded from memory
+  public: std::shared_ptr<common::Image> emissiveMapData;
+
   /// \brief Path to vertex shader program.
   public: std::string vertexShaderPath;
 
@@ -539,7 +543,6 @@ std::shared_ptr<common::Image> Ogre2Material::MetalnessMapData() const
   return this->dataPtr->metalnessMapData;
 }
 
-
 //////////////////////////////////////////////////
 void Ogre2Material::SetMetalnessMap(const std::string &_name,
   const std::shared_ptr<common::Image> &_img)
@@ -617,7 +620,14 @@ std::string Ogre2Material::EmissiveMap() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetEmissiveMap(const std::string &_name)
+std::shared_ptr<common::Image> Ogre2Material::EmissiveMapData() const
+{
+  return this->dataPtr->emissiveMapData;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetEmissiveMap(const std::string &_name,
+  const std::shared_ptr<common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -626,13 +636,23 @@ void Ogre2Material::SetEmissiveMap(const std::string &_name)
   }
 
   this->emissiveMapName = _name;
-  this->SetTextureMapImpl(this->emissiveMapName, Ogre::PBSM_EMISSIVE);
+  this->dataPtr->emissiveMapData = _img;
+  if (_img == nullptr)
+  {
+    this->SetTextureMapImpl(this->metalnessMapName, Ogre::PBSM_EMISSIVE);
+  }
+  else
+  {
+    this->SetTextureMapDataImpl(this->metalnessMapName,
+                                _img, Ogre::PBSM_EMISSIVE);
+  }
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearEmissiveMap()
 {
   this->emissiveMapName = "";
+  this->dataPtr->emissiveMapData = nullptr;
   this->ogreDatablock->setTexture(Ogre::PBSM_EMISSIVE, this->emissiveMapName);
 }
 

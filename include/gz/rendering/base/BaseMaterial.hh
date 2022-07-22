@@ -244,8 +244,12 @@ namespace gz
       public: virtual std::string EmissiveMap() const override;
 
       // Documentation inherited
-      public: virtual void SetEmissiveMap(const std::string &_emissiveMap)
-          override;
+      public: virtual std::shared_ptr<common::Image> EmissiveMapData()
+          const override;
+
+      // Documentation inherited
+      public: virtual void SetEmissiveMap(const std::string &_emissiveMap,
+          const std::shared_ptr<common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual void ClearEmissiveMap() override;
@@ -899,7 +903,15 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetEmissiveMap(const std::string &)
+    std::shared_ptr<common::Image> BaseMaterial<T>::EmissiveMapData() const
+    {
+      return {};
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetEmissiveMap(const std::string &,
+        const std::shared_ptr<common::Image> &)
     {
       // no op
     }
@@ -1019,7 +1031,8 @@ namespace gz
       this->SetRoughness(_material->Roughness());
       this->SetMetalness(_material->Metalness());
       this->SetEnvironmentMap(_material->EnvironmentMap());
-      this->SetEmissiveMap(_material->EmissiveMap());
+      this->SetEmissiveMap(_material->EmissiveMap(),
+          _material->EmissiveMapData());
       this->SetLightMap(_material->LightMap(),
           _material->LightMapTexCoordSet());
       this->SetShaderType(_material->ShaderType());
@@ -1064,7 +1077,7 @@ namespace gz
       this->SetRoughness(pbrMat->Roughness());
       this->SetMetalness(pbrMat->Metalness());
       this->SetEnvironmentMap(pbrMat->EnvironmentMap());
-      this->SetEmissiveMap(pbrMat->EmissiveMap());
+      this->SetEmissiveMap(pbrMat->EmissiveMap(), pbrMat->EmissiveMapData());
       this->SetLightMap(pbrMat->LightMap(), pbrMat->LightMapTexCoordSet());
     }
 

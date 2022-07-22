@@ -332,10 +332,18 @@ namespace gz
       /// \return URI of the emissive map file
       public: virtual std::string EmissiveMap() const = 0;
 
+      /// \brief Get the emissive map data
+      /// \return Pointer the common::Image with the data if the texture
+      /// was loaded from memory
+      public: virtual std::shared_ptr<common::Image> EmissiveMapData()
+                  const = 0;
+
       /// \brief Set the material emissive map
       /// \param[in] _emissiveMap URI of the new emissive map file
+      /// \param[in] _img Image data
       public: virtual void SetEmissiveMap(
-        const std::string &_emissiveMap) = 0;
+        const std::string &_emissiveMap,
+        const std::shared_ptr<common::Image> &_img = nullptr) = 0;
 
       /// \brief Removes any emissive map mapped to this material
       public: virtual void ClearEmissiveMap() = 0;

@@ -286,6 +286,15 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
     material->ClearEmissiveMap();
     EXPECT_FALSE(material->HasEmissiveMap());
 
+    // Set the emissive map from binary data
+    material->SetEmissiveMap(emissiveMapName, textureImg);
+    EXPECT_EQ(emissiveMapName, material->EmissiveMap());
+    EXPECT_EQ(material->EmissiveMapData(), textureImg);
+
+    material->ClearEmissiveMap();
+    EXPECT_FALSE(material->HasEmissiveMap());
+    EXPECT_EQ(material->EmissiveMapData(), nullptr);
+
     std::string noSuchEmissiveMapName = "no_such_emissive.png";
     material->SetEmissiveMap(noSuchEmissiveMapName);
     EXPECT_EQ(noSuchEmissiveMapName, material->EmissiveMap());
@@ -397,7 +406,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   material->SetRoughnessMap(roughnessMapName, textureImg);
   material->SetMetalnessMap(metalnessMapName, textureImg);
   material->SetEnvironmentMap(envMapName);
-  material->SetEmissiveMap(emissiveMapName);
+  material->SetEmissiveMap(emissiveMapName, textureImg);
   material->SetLightMap(lightMapName, 1u);
   material->SetRoughness(roughness);
   material->SetMetalness(metalness);
@@ -438,6 +447,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(textureImg, clone->MetalnessMapData());
     EXPECT_EQ(envMapName, clone->EnvironmentMap());
     EXPECT_EQ(emissiveMapName, clone->EmissiveMap());
+    EXPECT_EQ(textureImg, clone->EmissiveMapData());
     EXPECT_EQ(lightMapName, clone->LightMap());
     EXPECT_EQ(1u, clone->LightMapTexCoordSet());
   }
@@ -477,6 +487,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(textureImg, copy->MetalnessMapData());
     EXPECT_EQ(envMapName, copy->EnvironmentMap());
     EXPECT_EQ(emissiveMapName, copy->EmissiveMap());
+    EXPECT_EQ(textureImg, copy->EmissiveMapData());
     EXPECT_EQ(lightMapName, copy->LightMap());
     EXPECT_EQ(1u, copy->LightMapTexCoordSet());
   }
@@ -503,7 +514,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
       common::NormalMapSpace::TANGENT, textureImg);
   pbr.SetRoughnessMap(roughnessMapName, textureImg);
   pbr.SetMetalnessMap(metalnessMapName, textureImg);
-  pbr.SetEmissiveMap(emissiveMapName);
+  pbr.SetEmissiveMap(emissiveMapName, textureImg);
   pbr.SetEnvironmentMap(envMapName);
   pbr.SetLightMap(lightMapName, 1u);
   comMat.SetPbrMaterial(pbr);
@@ -541,6 +552,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(textureImg, comCopy->MetalnessMapData());
     EXPECT_TRUE(comCopy->HasEmissiveMap());
     EXPECT_EQ(emissiveMapName, comCopy->EmissiveMap());
+    EXPECT_EQ(textureImg, comCopy->EmissiveMapData());
     EXPECT_TRUE(comCopy->HasLightMap());
     EXPECT_EQ(lightMapName, comCopy->LightMap());
     EXPECT_EQ(1u, comCopy->LightMapTexCoordSet());

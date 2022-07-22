@@ -192,8 +192,13 @@ namespace gz
       public: virtual std::string EmissiveMap() const override;
 
       // Documentation inherited
+      public: virtual std::shared_ptr<common::Image> EmissiveMapData()
+          const override;
+
+      // Documentation inherited
       public: virtual void SetEmissiveMap(
-        const std::string &_emissiveMap) override;
+        const std::string &_emissiveMap,
+        const std::shared_ptr<common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual void ClearEmissiveMap() override;

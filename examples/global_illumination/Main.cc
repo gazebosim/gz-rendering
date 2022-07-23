@@ -18,9 +18,9 @@
 #include <iostream>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/rendering.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/rendering.hh>
 
 #include "GlutWindow.hh"
 #include "example_config.hh"
@@ -268,7 +268,7 @@ void buildScene(ScenePtr _scene)
   camera->SetImageHeight(900);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
-  camera->SetHFOV(IGN_PI / 2);
+  camera->SetHFOV(GZ_PI / 2);
   root->AddChild(camera);
 
 #define GI_METHOD 2

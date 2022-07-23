@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
-project(ignition-rendering-global_illumination)
+project(gz-rendering-global_illumination)
 
-find_package(ignition-rendering7)
+find_package(gz-rendering7)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
@@ -24,7 +24,7 @@ add_executable(global_illumination Main.cc GlutWindow.cc)
 
 target_link_libraries(global_illumination
   ${SDL2_LIBRARIES}
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
   )
 
 add_custom_command(TARGET global_illumination POST_BUILD

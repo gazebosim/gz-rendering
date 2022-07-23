@@ -30,8 +30,8 @@ struct Params
   // The minimum and maximum temprature values (in Kelvin) that the
   // heat signature texture should be normalized to
   // (users can override these defaults)
-  float minTemp = 0.0;
-  float maxTemp = 100.0;
+  float minTemp;
+  float maxTemp;
 
   int bitDepth;
   float resolution;

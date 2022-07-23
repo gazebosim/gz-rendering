@@ -5,7 +5,7 @@ vertex_program Ogre/Compositor/Quad_vs_GLSL glsl
 
 vertex_program Ogre/Compositor/Quad_vs_VK glslvk
 {
-	source Quad_vs.glsl
+  source Quad_vs.glsl
 }
 
 vertex_program Ogre/Compositor/Quad_vs_GLSLES glsles

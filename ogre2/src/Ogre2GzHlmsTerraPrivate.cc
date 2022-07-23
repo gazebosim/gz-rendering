@@ -29,6 +29,7 @@
 #include <CommandBuffer/OgreCbShaderBuffer.h>
 #include <CommandBuffer/OgreCommandBuffer.h>
 #include <OgreRenderQueue.h>
+#include <OgreRootLayout.h>
 #include <Vao/OgreConstBufferPacked.h>
 #include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
@@ -106,6 +107,25 @@ namespace Ogre
                                     _sceneManager, _passBufferPtr);
     }
     return _passBufferPtr;
+  }
+
+  /////////////////////////////////////////////////
+  void Ogre2GzHlmsTerra::setupRootLayout(
+    RootLayout &_rootLayout, const HlmsPropertyVec &_properties) const
+  {
+    if (this->getProperty(_properties, "ign_render_solid_color") != 0)
+    {
+      // Account for the extra buffer bound at kPerObjectDataBufferSlot
+      // It should be the last buffer to be set, so kPerObjectDataBufferSlot + 1
+      _rootLayout.mDescBindingRanges[0][DescBindingTypes::ConstBuffer].end =
+        kPerObjectDataBufferSlot + 1u;
+    }
+
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      listener->setupRootLayout(_rootLayout, _properties);
+    }
   }
 
   /////////////////////////////////////////////////

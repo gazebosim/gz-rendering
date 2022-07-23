@@ -147,7 +147,7 @@ namespace Ogre
   void Ogre2GzHlmsTerra::setupRootLayout(
     RootLayout &_rootLayout, const HlmsPropertyVec &_properties) const
   {
-    if (this->getProperty(_properties, "ign_render_solid_color") != 0)
+    if (this->getProperty(_properties, "gz_render_solid_color") != 0)
     {
       // Account for the extra buffer bound at kPerObjectDataBufferSlot
       // It should be the last buffer to be set, so kPerObjectDataBufferSlot + 1

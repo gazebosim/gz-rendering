@@ -76,6 +76,13 @@ Ogre2Heightmap::Ogre2Heightmap(const HeightmapDescriptor &_desc)
 //////////////////////////////////////////////////
 Ogre2Heightmap::~Ogre2Heightmap()
 {
+  this->DestroyImpl();
+}
+
+//////////////////////////////////////////////////
+void Ogre2Heightmap::DestroyImpl()
+{
+  this->dataPtr->terra.reset();
 }
 
 //////////////////////////////////////////////////

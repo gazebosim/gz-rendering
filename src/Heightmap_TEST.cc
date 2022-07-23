@@ -50,12 +50,6 @@ class HeightmapTest : public testing::Test,
 TEST_P(HeightmapTest, IGN_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 {
   std::string renderEngine{this->GetParam()};
-  if (renderEngine != "ogre")
-  {
-    igndbg << "Heightmap not supported yet in rendering engine: "
-            << renderEngine << std::endl;
-    return;
-  }
 
   auto engine = rendering::engine(renderEngine);
   if (!engine)
@@ -158,6 +152,14 @@ TEST_P(HeightmapTest, IGN_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   EXPECT_EQ(heightmap, vis->GeometryByIndex(0));
 
   scene->RootVisual()->AddChild(vis);
+
+  // \todo(iche033) this should not be needed once Ogre2Heightmap::Destroy is
+  // implemented.
+  if (renderEngine == "ogre2")
+  {
+    vis->Destroy();
+    heightmap.reset();
+  }
 
   // Clean up
   engine->DestroyScene(scene);
@@ -351,10 +353,8 @@ TEST_P(HeightmapTest, CopyAssignmentAfterMove)
   EXPECT_DOUBLE_EQ(123.456, blend2.MinHeight());
 }
 
-// TODO(anyone) Running test with Ogre1. Update once Ogre2 is supported.
-// https://github.com/ignitionrobotics/ign-rendering/issues/187
 INSTANTIATE_TEST_CASE_P(Heightmap, HeightmapTest,
-    ::testing::ValuesIn({"ogre"}),
+    RENDER_ENGINE_VALUES,
     ignition::rendering::PrintToStringParam());
 
 /////////////////////////////////////////////////

@@ -187,7 +187,7 @@ void MarkerTest::Material(const std::string &_renderEngine)
   EXPECT_EQ(MarkerType::MT_LINE_STRIP, marker->Type());
   marker->SetMaterial(material, true);
   EXPECT_NE(material, marker->Material());
-  EXPECT_EQ(math::Color(0.1, 0.2, 0.3), marker->Material()->Diffuse());
+  EXPECT_EQ(math::Color(0.1f, 0.2f, 0.3f), marker->Material()->Diffuse());
 }
 
 /////////////////////////////////////////////////

@@ -20,7 +20,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <gz/common/SuppressWarning.hh>
 #include "gz/rendering/NativeWindow.hh"
 #include "gz/rendering/Storage.hh"
 

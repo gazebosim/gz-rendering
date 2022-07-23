@@ -584,8 +584,7 @@ uint8_t Ogre2RenderTarget::TargetFSAA() const
 
       gzwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
               << "is not supported; valid FSAA levels are: " << os.str()
-              << ". Setting to 0" << std::endl;
-      targetFSAA = 0u;
+              << ". Setting to 1" << std::endl;
       ogre2FSAAWarn = true;
     }
   }

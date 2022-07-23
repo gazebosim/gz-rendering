@@ -16,24 +16,26 @@
  */
 
 
-#version 330
+#version ogre_glsl_ver_330
 
 in vec4 vertex;
 in vec3 normal;
 in vec2 uv0;
-uniform mat4 worldViewProj;
+
+vulkan( layout( ogre_P0 ) uniform Params { )
+	uniform mat4 worldViewProj;
+vulkan( }; )
 
 out gl_PerVertex
 {
   vec4 gl_Position;
 };
 
+vulkan_layout( location = 0 )
 out block
 {
   vec2 uv0;
 } outVs;
-
-out vec4 point;
 
 void main()
 {

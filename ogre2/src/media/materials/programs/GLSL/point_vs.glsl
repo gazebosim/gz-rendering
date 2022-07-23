@@ -15,12 +15,16 @@
  *
  */
 
-#version 330
+#version ogre_glsl_ver_330
 
 in vec4 vertex;
 in vec3 normal;
-uniform mat4 worldViewProj;
-uniform float size;
+
+vulkan( layout( ogre_P0 ) uniform Params { )
+	uniform mat4 worldViewProj;
+	uniform float size;
+vulkan( }; )
+
 out vec3 ptColor;
 
 out gl_PerVertex

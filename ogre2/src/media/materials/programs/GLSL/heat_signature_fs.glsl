@@ -15,28 +15,33 @@
  *
  */
 
-#version 330
+#version ogre_glsl_ver_330
 
 // The input texture, which is set up by the Ogre Compositor infrastructure.
-uniform sampler2D RT;
+vulkan_layout( ogre_t0 ) uniform texture2D RT;
+vulkan( layout( ogre_s0 ) uniform sampler texSampler );
 
 // input params from vertex shader
+vulkan_layout( location = 0 )
 in block
 {
   vec2 uv0;
 } inPs;
 
 // final output color
+vulkan_layout( location = 0 )
 out vec4 fragColor;
 
-// The minimum and maximum temprature values (in Kelvin) that the
-// heat signature texture should be normalized to
-// (users can override these defaults)
-uniform float minTemp = 0.0;
-uniform float maxTemp = 100.0;
+vulkan( layout( ogre_P0 ) uniform Params { )
+	// The minimum and maximum temprature values (in Kelvin) that the
+	// heat signature texture should be normalized to
+	// (users can override these defaults)
+	uniform float minTemp = 0.0;
+	uniform float maxTemp = 100.0;
 
-uniform int bitDepth;
-uniform float resolution;
+	uniform int bitDepth;
+	uniform float resolution;
+vulkan( }; )
 
 // map a temperature from the [min, max] range to the user defined
 // [minTemp, maxTemp] range
@@ -48,7 +53,7 @@ float mapNormalized(float num)
 
 void main()
 {
-  float heat = texture(RT, inPs.uv0.xy).x;
+  float heat = texture(vkSampler2D(RT,texSampler), inPs.uv0.xy).x;
 
   // set g, b, a to 0. This will be used by thermal_camera_fs.glsl to determine
   // if a particular fragment is a heat source or not

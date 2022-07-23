@@ -56,7 +56,7 @@ namespace Ogre
 
   /////////////////////////////////////////////////
   uint16 Ogre2GzHlmsTerra::getNumExtraPassTextures(
-          const HlmsPropertyVec &_properties, bool _casterPass) const
+    const HlmsPropertyVec &_properties, bool _casterPass) const
   {
     uint16 numExtraTextures = 0u;
 
@@ -72,7 +72,8 @@ namespace Ogre
 
   /////////////////////////////////////////////////
   void Ogre2GzHlmsTerra::propertiesMergedPreGenerationStep(
-    Hlms *_hlms, const HlmsCache &_passCache,
+    Hlms *_hlms,  //
+    const HlmsCache &_passCache,
     const HlmsPropertyVec &_renderableCacheProperties,
     const PiecesMap _renderableCachePieces[NumShaderTypes],
     const HlmsPropertyVec &_properties,
@@ -186,9 +187,9 @@ namespace Ogre
 
   /////////////////////////////////////////////////
   void Ogre2GzHlmsTerra::hlmsTypeChanged(bool _casterPass,
-                                          CommandBuffer *_commandBuffer,
-                                          const HlmsDatablock *_datablock,
-                                          size_t _texUnit)
+                                         CommandBuffer *_commandBuffer,
+                                         const HlmsDatablock *_datablock,
+                                         size_t _texUnit)
   {
     // Allow additional listener-only customizations to inject their stuff
     for (Ogre::HlmsListener *listener : this->customizations)
@@ -236,8 +237,8 @@ namespace Ogre
         //     movableObject->setVisible(false) or use RenderQueue IDs
         //     or visibility flags to prevent rendering it
         gzerr << "A module is trying to render an object without "
-                  "specifying a parameter. Please report this bug at "
-                  "https://github.com/gazebosim/gz-rendering/issues\n";
+                 "specifying a parameter. Please report this bug at "
+                 "https://github.com/gazebosim/gz-rendering/issues\n";
         throw;
       }
       float *dataPtr = this->MapObjectDataBufferFor(
@@ -252,8 +253,8 @@ namespace Ogre
           terra->HasSolidColor(2u))
       {
         GZ_ASSERT(customParam.w >= 0.0f,
-                   "customParam.w can't be negative for "
-                   "GORM_SOLID_THERMAL_COLOR_TEXTURED");
+                  "customParam.w can't be negative for "
+                  "GORM_SOLID_THERMAL_COLOR_TEXTURED");
 
         // Negate customParam.w to tell the shader we wish to multiply
         // against the diffuse texture. We substract 0.5f to avoid -0.0 = 0.0
@@ -297,8 +298,8 @@ namespace Ogre
         //     movableObject->setVisible(false) or use RenderQueue IDs
         //     or visibility flags to prevent rendering it
         gzerr << "A module is trying to render an object without "
-                  "specifying a parameter. Please report this bug at "
-                  "https://github.com/gazebosim/gz-rendering/issues\n";
+                 "specifying a parameter. Please report this bug at "
+                 "https://github.com/gazebosim/gz-rendering/issues\n";
         throw;
       }
       float *dataPtr = this->MapObjectDataBufferFor(
@@ -314,8 +315,8 @@ namespace Ogre
           terra->HasSolidColor(2u))
       {
         GZ_ASSERT(customParam.w >= 0.0f,
-                   "customParam.w can't be negative for "
-                   "GORM_SOLID_THERMAL_COLOR_TEXTURED");
+                  "customParam.w can't be negative for "
+                  "GORM_SOLID_THERMAL_COLOR_TEXTURED");
 
         // Negate customParam.w to tell the shader we wish to multiply
         // against the diffuse texture. We substract 0.5f to avoid -0.0 = 0.0
@@ -350,7 +351,7 @@ namespace Ogre
 
   /////////////////////////////////////////////////
   void Ogre2GzHlmsTerra::GetDefaultPaths(String &_outDataFolderPath,
-                                          StringVector &_outLibraryFoldersPaths)
+                                         StringVector &_outLibraryFoldersPaths)
   {
     HlmsTerra::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
 

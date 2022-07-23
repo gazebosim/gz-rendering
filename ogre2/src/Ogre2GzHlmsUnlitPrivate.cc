@@ -22,7 +22,7 @@
 #include <gz/common/Util.hh>
 
 #ifdef _MSC_VER
-  #pragma warning(push, 0)
+#  pragma warning(push, 0)
 #endif
 #include <CommandBuffer/OgreCbShaderBuffer.h>
 #include <CommandBuffer/OgreCommandBuffer.h>
@@ -31,7 +31,7 @@
 #include <Vao/OgreConstBufferPacked.h>
 #include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
-  #pragma warning(pop)
+#  pragma warning(pop)
 #endif
 
 using namespace gz;
@@ -54,7 +54,7 @@ namespace Ogre
 
   /////////////////////////////////////////////////
   uint16 Ogre2GzHlmsUnlit::getNumExtraPassTextures(
-          const HlmsPropertyVec &_properties, bool _casterPass) const
+    const HlmsPropertyVec &_properties, bool _casterPass) const
   {
     uint16 numExtraTextures = 0u;
 
@@ -70,7 +70,8 @@ namespace Ogre
 
   /////////////////////////////////////////////////
   void Ogre2GzHlmsUnlit::propertiesMergedPreGenerationStep(
-    Hlms *_hlms, const HlmsCache &_passCache,
+    Hlms *_hlms,  //
+    const HlmsCache &_passCache,
     const HlmsPropertyVec &_renderableCacheProperties,
     const PiecesMap _renderableCachePieces[NumShaderTypes],
     const HlmsPropertyVec &_properties,
@@ -179,9 +180,9 @@ namespace Ogre
 
   /////////////////////////////////////////////////
   void Ogre2GzHlmsUnlit::hlmsTypeChanged(bool _casterPass,
-                                          CommandBuffer *_commandBuffer,
-                                          const HlmsDatablock *_datablock,
-                                          size_t _texUnit)
+                                         CommandBuffer *_commandBuffer,
+                                         const HlmsDatablock *_datablock,
+                                         size_t _texUnit)
   {
     // Allow additional listener-only customizations to inject their stuff
     for (Ogre::HlmsListener *listener : this->customizations)
@@ -222,8 +223,8 @@ namespace Ogre
         //     movableObject->setVisible(false) or use RenderQueue IDs
         //     or visibility flags to prevent rendering it
         gzerr << "A module is trying to render an object without "
-                  "specifying a parameter. Please report this bug at "
-                  "https://github.com/gazebosim/gz-rendering/issues\n";
+                 "specifying a parameter. Please report this bug at "
+                 "https://github.com/gazebosim/gz-rendering/issues\n";
         throw;
       }
       float *dataPtr = this->MapObjectDataBufferFor(
@@ -284,7 +285,7 @@ namespace Ogre
 
   /////////////////////////////////////////////////
   void Ogre2GzHlmsUnlit::GetDefaultPaths(String &_outDataFolderPath,
-                                          StringVector &_outLibraryFoldersPaths)
+                                         StringVector &_outLibraryFoldersPaths)
   {
     HlmsUnlit::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
 

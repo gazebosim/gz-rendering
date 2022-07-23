@@ -1,39 +1,3 @@
-// GLSL shaders
-vertex_program plaincolor_vs_GLSL glsl
-{
-  source plain_color_vs.glsl
-  num_clip_distances 1
-}
-
-// Vulkan shaders
-vertex_program plaincolor_vs_VK glslvk
-{
-  source plain_color_vs.glsl
-  num_clip_distances 1
-}
-
-// Metal shaders
-vertex_program plaincolor_vs_Metal metal
-{
-  source plain_color_vs.metal
-  num_clip_distances 1
-}
-
-// Unified shaders
-vertex_program plaincolor_vs unified
-{
-  delegate plaincolor_vs_GLSL
-  delegate plaincolor_vs_Metal
-  delegate plaincolor_vs_VK
-
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-    param_named_auto worldView worldview_matrix
-    param_named gzMinClipDistance float 0.0
-  }
-}
-
 
 material gz-rendering/plain_color
 {

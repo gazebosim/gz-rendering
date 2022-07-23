@@ -842,8 +842,6 @@ void Ogre2GpuRays::CreateSampleTexture()
   this->dataPtr->cubeUVTexture->_transitionTo(
     Ogre::GpuResidency::Resident,
     reinterpret_cast<Ogre::uint8*>(pDest) );
-  this->dataPtr->cubeUVTexture->_setNextResidencyStatus(
-    Ogre::GpuResidency::Resident);
   // We have to upload the data via a StagingTexture, which acts as an
   // intermediate stash memory that is both visible to CPU and GPU.
   Ogre::StagingTexture *stagingTexture = textureMgr->getStagingTexture(
@@ -875,7 +873,6 @@ void Ogre2GpuRays::CreateSampleTexture()
   stagingTexture = 0;
   // Do not free the pointer if texture's paging strategy is
   // GpuPageOutStrategy::AlwaysKeepSystemRamCopy
-  this->dataPtr->cubeUVTexture->notifyDataIsReady();
 }
 
 /////////////////////////////////////////////////////////

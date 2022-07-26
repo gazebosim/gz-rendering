@@ -14,7 +14,8 @@ set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
 
 #------------------------------------------------------------------------
 # Find ign-rendering
-find_package(ignition-rendering6)
+find_package(ignition-rendering6 REQUIRED)
+find_package(ignition-common4 REQUIRED)
 
 #======================================
 # Find Qt
@@ -68,11 +69,13 @@ add_executable(simple_demo_qml
 
 target_include_directories(simple_demo_qml PUBLIC
     ${IGNITION-RENDERING_INCLUDE_DIRS}
+    ${IGNITION-COMMON_INCLUDE_DIRS}
     ${OGRE2_INCLUDE_DIRS}
     ${OpenGL_INCLUDE_DIRS}
 )
 
 target_link_libraries(simple_demo_qml PUBLIC
+    ${IGNITION-COMMON_LIBRARIES}
     ${IGNITION-RENDERING_LIBRARIES}
     ${OGRE2_LIBRARIES}
     ${OPENGL_LIBRARIES}

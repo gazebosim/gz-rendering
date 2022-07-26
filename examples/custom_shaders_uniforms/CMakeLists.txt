@@ -5,7 +5,8 @@ include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
 )
 
-find_package(ignition-rendering6)
+find_package(ignition-rendering6 REQUIRED)
+find_package(ignition-common4 REQUIRED)
 
 set(TARGET_THIRD_PARTY_DEPENDS "")
 
@@ -50,6 +51,7 @@ endif()
 add_executable(custom_shaders_uniforms Main.cc GlutWindow.cc)
 
 target_link_libraries(custom_shaders_uniforms
+  ${IGNITION-COMMON_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
   ${TARGET_THIRD_PARTY_DEPENDS}
 )

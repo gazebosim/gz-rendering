@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(ignition-rendering-custom-scene-viewer)
+
 find_package(ignition-rendering6 REQUIRED)
+find_package(ignition-common4 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
@@ -39,6 +41,7 @@ target_link_libraries(custom_scene_viewer
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
+  ${IGNITION-COMMON_LIBRARIES}
 )
 
 add_custom_command(TARGET custom_scene_viewer POST_BUILD

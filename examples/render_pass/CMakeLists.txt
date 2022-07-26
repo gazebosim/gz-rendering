@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(ignition-rendering-render-pass)
 
-find_package(ignition-rendering6)
+find_package(ignition-rendering6 REQUIRED)
+find_package(ignition-common4 REQUIRED)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
@@ -25,5 +26,6 @@ target_link_libraries(render_pass
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
+  ${IGNITION-COMMON_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
-  )
+)

@@ -1,6 +1,6 @@
 # set compile definitions for tests
 set_property(
-  SOURCE Camera_TEST.cc RenderTarget.cc
+  SOURCE RenderTarget.cc
   PROPERTY COMPILE_DEFINITIONS
   HAVE_OPENGL="${HAVE_OPENGL}"
 )

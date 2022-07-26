@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(ignition-rendering-camera-tracking)
+
 find_package(ignition-rendering6 REQUIRED)
+find_package(ignition-common4)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
@@ -24,5 +26,6 @@ target_link_libraries(camera_tracking
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
+  ${IGNITION-COMMON_LIBRARIES}
   ${IGNITION-RENDERING_LIBRARIES}
 )

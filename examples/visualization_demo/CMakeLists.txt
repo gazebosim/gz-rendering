@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(ignition-rendering-visualization-demo)
 
-find_package(ignition-rendering6)
-find_package(ignition-common4)
+find_package(ignition-rendering6 REQUIRED)
+find_package(ignition-find_package(ignition-common4 REQUIRED)
 
 if (APPLE OR UNIX)
   find_package(GLUT REQUIRED)

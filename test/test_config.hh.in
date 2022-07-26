@@ -9,8 +9,7 @@
 #define RENDER_ENGINE_VALUES ::testing::ValuesIn(\
     gz::rendering::TestValues())
 
-/// \todo(anyone) re-enable ogre2 test once ogre 2.2 works on macOS
-static const std::vector<const char *> kRenderEngineTestValues{"ogre2"};
+static const std::vector<const char *> kRenderEngineTestValues{"ogre2", "optix"};
 
 #include <vector>
 #include <gz/common/Util.hh>

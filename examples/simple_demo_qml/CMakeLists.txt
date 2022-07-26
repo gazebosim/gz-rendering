@@ -15,7 +15,7 @@ set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
 #------------------------------------------------------------------------
 # Find ign-rendering
 find_package(ignition-rendering6 REQUIRED)
-find_package(ignition-find_package(ignition-common4 REQUIRED)
+find_package(ignition-common4 REQUIRED)
 
 #======================================
 # Find Qt

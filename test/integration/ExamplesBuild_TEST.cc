@@ -163,8 +163,9 @@ bool not_found_error(int _errval)
   return _errval == ERROR_FILE_NOT_FOUND
     || _errval == ERROR_PATH_NOT_FOUND
     || _errval == ERROR_INVALID_NAME  // "tools/src/:sys:stat.h", "//foo"
-    || _errval == ERROR_INVALID_DRIVE  // USB card reade# Location of "fake install folder" used in tests
-# Defined here at root scope so it is available for tests in src and test folders
+    // USB card reade# Location of "fake install folder" used in tests
+    || _errval == ERROR_INVALID_DRIVE
+#Defined here at root scope so it is available for tests in src and test folders
 set(FAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/fake/install")r with no card
     || _errval == ERROR_NOT_READY  // CD/DVD drive with no disc inserted
     || _errval == ERROR_INVALID_PARAMETER  // ":sys:stat.h"
@@ -380,7 +381,9 @@ TEST(ExamplesBuild, Build)
   std::string examplesDir = std::string(PROJECT_SOURCE_PATH) + "/examples/";
 
   ignition::common::DirIter endIter;
-  for (ignition::common::DirIter dirIter(examplesDir); dirIter != endIter; ++dirIter)
+  for (ignition::common::DirIter dirIter(examplesDir);
+       dirIter != endIter;
+       ++dirIter)
   {
     // Create a temp build directory
     std::string tmpBuildDir;

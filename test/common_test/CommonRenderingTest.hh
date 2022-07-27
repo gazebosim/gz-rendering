@@ -60,7 +60,7 @@ class CommonRenderingTest: public testing::Test
         }
         else if(backend == "metal")
         {
-          gzdbg << "Using OGRE2-VULKAN backend to test" << std::endl;
+          gzdbg << "Using OGRE2-METAL backend to test" << std::endl;
           engineParams["metal"] = "1";
         }
       }

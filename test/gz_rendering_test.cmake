@@ -86,10 +86,11 @@ macro(gz_rendering_test)
         TARGET ${TEST_NAME}
         RENDER_ENGINE "ogre2"
         RENDER_ENGINE_BACKEND "gl3plus")
-      gz_configure_rendering_test(
-        TARGET ${TEST_NAME}
-        RENDER_ENGINE "ogre2"
-        RENDER_ENGINE_BACKEND "vulkan")
+      # Disable vulkan until deb is fixed
+      #gz_configure_rendering_test(
+      #  TARGET ${TEST_NAME}
+      #  RENDER_ENGINE "ogre2"
+      #  RENDER_ENGINE_BACKEND "vulkan")
     endif()
   endif()
   if (HAVE_OPTIX)

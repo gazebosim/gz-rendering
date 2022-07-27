@@ -21,6 +21,7 @@
 
 #include <gz/common/Image.hh>
 #include <gz/common/Filesystem.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "gz/rendering/GpuRays.hh"
 #include "gz/rendering/ParticleEmitter.hh"
@@ -134,6 +135,10 @@ TEST_F(GpuRaysTest, Configure)
 TEST_F(GpuRaysTest, RaysUnitBox)
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
+
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35."
+  #endif
 
   // Test GPU rays with 3 boxes in the world.
   // First GPU rays at identity orientation, second at 90 degree roll
@@ -305,6 +310,9 @@ TEST_F(GpuRaysTest, RaysUnitBox)
 TEST_F(GpuRaysTest, LaserVertical)
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35."
+  #endif
 
   // Test a rays that has a vertical range component.
   // Place a box within range and verify range values,
@@ -428,6 +436,9 @@ TEST_F(GpuRaysTest, RaysParticles)
 {
   // Ogre2 is the only engine with particle effects
   CHECK_SUPPORTED_ENGINE("ogre2");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35."
+  #endif
 
   // Test GPU ray with 3 boxes in the world.
   // Add noise in btewen GPU ray and box in the center
@@ -625,6 +636,9 @@ TEST_F(GpuRaysTest, RaysParticles)
 TEST_F(GpuRaysTest, SingleRay)
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35."
+  #endif
 
   // Test GPU single ray box intersection.
   // Place GPU above box looking downwards

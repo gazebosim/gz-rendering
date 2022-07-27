@@ -22,6 +22,11 @@ function(configure_test RENDER_ENGINE_NAME test_name)
   )
   set_tests_properties(${test_name}_${RENDER_ENGINE_NAME}
     PROPERTIES ENVIRONMENT "GZ_ENGINE_TO_TEST=${RENDER_ENGINE_NAME}")
+
+  if (APPLE)
+    set_tests_properties(${test_name}_${RENDER_ENGINE_NAME}
+      PROPERTIES ENVIRONMENT "GZ_ENGINE_BACKEND=metal")
+  endif()
 endfunction()
 
 foreach(test ${tests})

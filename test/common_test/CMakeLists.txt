@@ -38,17 +38,21 @@ set(tests
   WireBox_TEST
 )
 
-function(configure_common_test RENDER_ENGINE_NAME test_name)
+function(configure_test RENDER_ENGINE_NAME test_name)
   add_test(NAME ${test_name}_${RENDER_ENGINE_NAME}
     COMMAND
       ${test_name}
   )
+  set(test_env "GZ_ENGINE_TO_TEST=${RENDERING_ENGINE_NAME}")
+
   set_tests_properties(${test_name}_${RENDER_ENGINE_NAME}
     PROPERTIES ENVIRONMENT "GZ_ENGINE_TO_TEST=${RENDER_ENGINE_NAME}")
 
-  if (APPLE)
-    set_tests_properties(${test_name}_${RENDER_ENGINE_NAME}
-      PROPERTIES ENVIRONMENT "GZ_ENGINE_BACKEND=metal")
+  if (APPLE AND "${RENDER_ENGINE_NAME}" STREQUAL "ogre2")
+    set_property(
+        TEST ${test_name}_${RENDER_ENGINE_NAME}
+        APPEND PROPERTY
+            ENVIRONMENT "GZ_ENGINE_BACKEND=metal")
   endif()
 endfunction()
 
@@ -70,13 +74,13 @@ foreach(test ${tests})
   endif()
 
   if (HAVE_OGRE)
-    configure_common_test("ogre" ${TEST_NAME})
+    configure_test("ogre" ${TEST_NAME})
   endif()
   if (HAVE_OGRE2)
-    configure_common_test("ogre2" ${TEST_NAME})
+    configure_test("ogre2" ${TEST_NAME})
   endif()
+  configure_test("optix" ${TEST_NAME})
   if (HAVE_OPTIX)
-    configure_common_test("optix" ${TEST_NAME})
   endif()
 endforeach()
 

@@ -20,12 +20,16 @@ function(configure_test RENDER_ENGINE_NAME test_name)
     COMMAND
       ${test_name}
   )
+  set(test_env "GZ_ENGINE_TO_TEST=${RENDERING_ENGINE_NAME}")
+
   set_tests_properties(${test_name}_${RENDER_ENGINE_NAME}
     PROPERTIES ENVIRONMENT "GZ_ENGINE_TO_TEST=${RENDER_ENGINE_NAME}")
 
-  if (APPLE)
-    set_tests_properties(${test_name}_${RENDER_ENGINE_NAME}
-      PROPERTIES ENVIRONMENT "GZ_ENGINE_BACKEND=metal")
+  if (APPLE AND "${RENDER_ENGINE_NAME}" STREQUAL "ogre2")
+    set_property(
+        TEST ${test_name}_${RENDER_ENGINE_NAME}
+        APPEND PROPERTY
+            ENVIRONMENT "GZ_ENGINE_BACKEND=metal")
   endif()
 endfunction()
 

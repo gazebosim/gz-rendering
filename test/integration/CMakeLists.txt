@@ -41,6 +41,10 @@ foreach(test ${tests})
       gtest_main
   )
 
+  if (UNIX)
+    target_link_libraries(${TEST_NAME} PUBLIC pthread)
+  endif()
+
   target_include_directories(${TEST_NAME}
     PRIVATE
     ${PROJECT_SOURCE_DIR}/test/common_test

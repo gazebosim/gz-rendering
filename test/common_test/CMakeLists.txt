@@ -61,8 +61,13 @@ foreach(test ${tests})
       gz-plugin${GZ_PLUGIN_VER}::loader
       gz-common${GZ_COMMON_VER}::gz-common${GZ_COMMON_VER}
       ${PROJECT_LIBRARY_TARGET_NAME}
+      gtest
       gtest_main
   )
+
+  if (UNIX)
+    target_link_libraries(${TEST_NAME} PUBLIC pthread)
+  endif()
 
   if (HAVE_OGRE)
     configure_common_test("ogre" ${TEST_NAME})

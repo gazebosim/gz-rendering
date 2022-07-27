@@ -49,7 +49,7 @@ void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
 }
 
 /////////////////////////////////////////////////
-class GpuRaysTest: public CommonRenderingTest 
+class GpuRaysTest: public CommonRenderingTest
 {
 };
 

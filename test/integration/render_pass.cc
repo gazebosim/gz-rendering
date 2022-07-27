@@ -48,7 +48,7 @@ using namespace gz;
 using namespace rendering;
 
 /////////////////////////////////////////////////
-class RenderPassTest: public CommonRenderingTest 
+class RenderPassTest: public CommonRenderingTest
 {
 };
 

@@ -47,7 +47,7 @@ void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
 }
 
 /////////////////////////////////////////////////
-class LidarVisualTest: public CommonRenderingTest 
+class LidarVisualTest: public CommonRenderingTest
 {
 };
 

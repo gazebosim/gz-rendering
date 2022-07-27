@@ -214,7 +214,7 @@ TEST_F(ThermalCameraTest, ThermalCameraBoxesUniform)
 //////////////////////////////////////////////////
 TEST_F(ThermalCameraTest, ThermalCameraBoxesHeatSignature)
 {
-  CHECK_UNSUPPORTED_ENGINE("optix"); // Optix does not support thermal
+  CHECK_UNSUPPORTED_ENGINE("optix");  // Optix does not support thermal
   CHECK_SUPPORTED_ENGINE("ogre2");  // Only OGRE2 supports heat signatures
 
   int imgWidth = 50;

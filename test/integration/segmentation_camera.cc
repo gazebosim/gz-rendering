@@ -31,7 +31,7 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-class SegmentationCameraTest: public CommonRenderingTest 
+class SegmentationCameraTest: public CommonRenderingTest
 {
 };
 

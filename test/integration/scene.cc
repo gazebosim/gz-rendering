@@ -25,7 +25,7 @@
 using namespace gz;
 using namespace rendering;
 
-class SceneTest: public CommonRenderingTest 
+class SceneTest: public CommonRenderingTest
 {
 };
 
@@ -33,7 +33,7 @@ class SceneTest: public CommonRenderingTest
 TEST_F(SceneTest, AddRemoveVisuals)
 {
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_NE(nullptr, scene); 
+  ASSERT_NE(nullptr, scene);
 
   VisualPtr root = scene->RootVisual();
   ASSERT_NE(nullptr, root);

@@ -29,7 +29,7 @@
 using namespace gz;
 using namespace rendering;
 
-class SkyTest: public CommonRenderingTest 
+class SkyTest: public CommonRenderingTest
 {
 };
 

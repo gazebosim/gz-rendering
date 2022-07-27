@@ -137,7 +137,7 @@ TEST_F(GpuRaysTest, RaysUnitBox)
   CHECK_UNSUPPORTED_ENGINE("optix");
 
   #ifdef __APPLE__
-    GTEST_SKIP() << "Unsupported on apple, see issue #35."
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
 
   // Test GPU rays with 3 boxes in the world.
@@ -311,7 +311,7 @@ TEST_F(GpuRaysTest, LaserVertical)
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__
-    GTEST_SKIP() << "Unsupported on apple, see issue #35."
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
 
   // Test a rays that has a vertical range component.
@@ -637,7 +637,7 @@ TEST_F(GpuRaysTest, SingleRay)
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__
-    GTEST_SKIP() << "Unsupported on apple, see issue #35."
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
 
   // Test GPU single ray box intersection.

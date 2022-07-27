@@ -135,7 +135,7 @@ TEST_F(LidarVisualTest, RaysUnitBox)
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__
-    GTEST_SKIP() << "Unsupported on apple, see issue #35."
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
 
   // Test lidar visual with 3 boxes in the world, using reading from GPU rays
@@ -361,7 +361,7 @@ TEST_F(LidarVisualTest, LaserVertical)
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__
-    GTEST_SKIP() << "Unsupported on apple, see issue #35."
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
 
   // Test a rays that has a vertical range component.

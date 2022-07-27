@@ -369,6 +369,23 @@ namespace gz
       public: virtual void SetLightMap(const std::string &_lightMap,
           unsigned int _uvSet = 0u) = 0;
 
+      /// \brief Set the material light map from an image loaded in memory
+      /// \param[in] _lightMap URI of the new light map file
+      /// \param[in] _img Image data
+      /// \param[in] _uvSet Texture coordinate set to use
+      public: virtual void SetLightMap(const std::string &_lightMap,
+          const std::shared_ptr<const common::Image> &_img,
+          unsigned int _uvSet = 0)
+      {
+        this->SetLightMap(_lightMap);
+      }
+
+      /// \brief Get the light map data
+      /// \return Pointer to the common::Image with the data if the texture
+      /// was loaded from memory
+      public: virtual std::shared_ptr<const common::Image> LightMapData()
+                  const = 0;
+
       /// \brief Removes any light map mapped to this material
       public: virtual void ClearLightMap() = 0;
 

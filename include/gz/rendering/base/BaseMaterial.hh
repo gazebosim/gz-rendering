@@ -268,6 +268,15 @@ namespace gz
           unsigned int _uvSet = 0u) override;
 
       // Documentation inherited
+      public: virtual void SetLightMap(const std::string &_lightMap,
+          const std::shared_ptr<const common::Image> &_img,
+          unsigned int _uvSet = 0u) override;
+
+      // Documentation inherited
+      public: virtual std::shared_ptr<const common::Image> LightMapData()
+                  const override;
+
+      // Documentation inherited
       public: virtual void ClearLightMap() override;
 
       // Documentation inherited
@@ -956,6 +965,22 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
+    void BaseMaterial<T>::SetLightMap(const std::string &,
+        const std::shared_ptr<const common::Image> &,
+        unsigned int)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    std::shared_ptr<const common::Image> BaseMaterial<T>::LightMapData() const
+    {
+      return {};
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseMaterial<T>::ClearLightMap()
     {
       // no op
@@ -1036,7 +1061,7 @@ namespace gz
       this->SetEnvironmentMap(_material->EnvironmentMap());
       this->SetEmissiveMap(_material->EmissiveMap(),
           _material->EmissiveMapData());
-      this->SetLightMap(_material->LightMap(),
+      this->SetLightMap(_material->LightMap(), _material->LightMapData(),
           _material->LightMapTexCoordSet());
       this->SetShaderType(_material->ShaderType());
       this->SetVertexShader(_material->VertexShader());
@@ -1081,7 +1106,8 @@ namespace gz
       this->SetMetalness(pbrMat->Metalness());
       this->SetEnvironmentMap(pbrMat->EnvironmentMap());
       this->SetEmissiveMap(pbrMat->EmissiveMap(), pbrMat->EmissiveMapData());
-      this->SetLightMap(pbrMat->LightMap(), pbrMat->LightMapTexCoordSet());
+      this->SetLightMap(pbrMat->LightMap(), pbrMat->LightMapData(),
+          pbrMat->LightMapTexCoordSet());
     }
 
     //////////////////////////////////////////////////

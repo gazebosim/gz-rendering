@@ -310,6 +310,16 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
     material->ClearLightMap();
     EXPECT_FALSE(material->HasLightMap());
 
+    // Set the light map from binary data
+    material->SetLightMap(lightMapName, textureImg, 1);
+    EXPECT_EQ(1u, material->LightMapTexCoordSet());
+    EXPECT_EQ(lightMapName, material->LightMap());
+    EXPECT_EQ(material->LightMapData(), textureImg);
+
+    material->ClearLightMap();
+    EXPECT_FALSE(material->HasLightMap());
+    EXPECT_EQ(material->LightMapData(), nullptr);
+
     std::string noSuchLightMapName = "no_such_light.png";
     material->SetLightMap(noSuchLightMapName);
     EXPECT_EQ(noSuchLightMapName, material->LightMap());
@@ -407,7 +417,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   material->SetMetalnessMap(metalnessMapName, textureImg);
   material->SetEnvironmentMap(envMapName);
   material->SetEmissiveMap(emissiveMapName, textureImg);
-  material->SetLightMap(lightMapName, 1u);
+  material->SetLightMap(lightMapName, textureImg, 1u);
   material->SetRoughness(roughness);
   material->SetMetalness(metalness);
 
@@ -449,6 +459,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(emissiveMapName, clone->EmissiveMap());
     EXPECT_EQ(textureImg, clone->EmissiveMapData());
     EXPECT_EQ(lightMapName, clone->LightMap());
+    EXPECT_EQ(textureImg, clone->LightMapData());
     EXPECT_EQ(1u, clone->LightMapTexCoordSet());
   }
 
@@ -489,6 +500,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(emissiveMapName, copy->EmissiveMap());
     EXPECT_EQ(textureImg, copy->EmissiveMapData());
     EXPECT_EQ(lightMapName, copy->LightMap());
+    EXPECT_EQ(textureImg, copy->LightMapData());
     EXPECT_EQ(1u, copy->LightMapTexCoordSet());
   }
 
@@ -516,7 +528,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   pbr.SetMetalnessMap(metalnessMapName, textureImg);
   pbr.SetEmissiveMap(emissiveMapName, textureImg);
   pbr.SetEnvironmentMap(envMapName);
-  pbr.SetLightMap(lightMapName, 1u);
+  pbr.SetLightMap(lightMapName, 1u, textureImg);
   comMat.SetPbrMaterial(pbr);
 
   MaterialPtr comCopy = scene->CreateMaterial("comCopy");
@@ -556,6 +568,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_TRUE(comCopy->HasLightMap());
     EXPECT_EQ(lightMapName, comCopy->LightMap());
     EXPECT_EQ(1u, comCopy->LightMapTexCoordSet());
+    EXPECT_EQ(textureImg, comCopy->LightMapData());
     EXPECT_TRUE(comCopy->HasEnvironmentMap());
     EXPECT_EQ(envMapName, comCopy->EnvironmentMap());
   }

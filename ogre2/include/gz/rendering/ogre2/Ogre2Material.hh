@@ -217,6 +217,15 @@ namespace gz
           unsigned int _uvSet = 0u) override;
 
       // Documentation inherited
+      public: virtual void SetLightMap(const std::string &_lightMap,
+          const std::shared_ptr<const common::Image> &_img,
+          unsigned int _uvSet = 0u) override;
+
+      // Documentation inherited
+      public: virtual std::shared_ptr<const common::Image> LightMapData()
+          const override;
+
+      // Documentation inherited
       public: virtual void ClearLightMap() override;
 
       // Documentation inherited

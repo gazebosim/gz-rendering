@@ -437,7 +437,7 @@ TEST_F(GpuRaysTest, RaysParticles)
   // Ogre2 is the only engine with particle effects
   CHECK_SUPPORTED_ENGINE("ogre2");
   #ifdef __APPLE__
-    GTEST_SKIP() << "Unsupported on apple, see issue #35."
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
 
   // Test GPU ray with 3 boxes in the world.

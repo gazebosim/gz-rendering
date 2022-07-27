@@ -58,23 +58,23 @@ class gz::rendering::Ogre2MaterialPrivate
 
   /// \brief Pointer to image containing the texture data if it was
   /// loaded from memory
-  public: std::shared_ptr<common::Image> textureData;
+  public: std::shared_ptr<const common::Image> textureData;
 
   /// \brief Pointer to image containing the normal map data if it was
   /// loaded from memory
-  public: std::shared_ptr<common::Image> normalMapData;
+  public: std::shared_ptr<const common::Image> normalMapData;
 
   /// \brief Pointer to image containing the roughness map data if it was
   /// loaded from memory
-  public: std::shared_ptr<common::Image> roughnessMapData;
+  public: std::shared_ptr<const common::Image> roughnessMapData;
 
   /// \brief Pointer to image containing the metalness map data if it was
   /// loaded from memory
-  public: std::shared_ptr<common::Image> metalnessMapData;
+  public: std::shared_ptr<const common::Image> metalnessMapData;
 
   /// \brief Pointer to image containing the emissive map data if it was
   /// loaded from memory
-  public: std::shared_ptr<common::Image> emissiveMapData;
+  public: std::shared_ptr<const common::Image> emissiveMapData;
 
   /// \brief Path to vertex shader program.
   public: std::string vertexShaderPath;
@@ -403,7 +403,7 @@ std::string Ogre2Material::Texture() const
 
 //////////////////////////////////////////////////
 void Ogre2Material::SetTexture(const std::string &_name,
-                               const std::shared_ptr<common::Image> &_img)
+                               const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -419,7 +419,7 @@ void Ogre2Material::SetTexture(const std::string &_name,
 }
 
 //////////////////////////////////////////////////
-std::shared_ptr<common::Image> Ogre2Material::TextureData() const
+std::shared_ptr<const common::Image> Ogre2Material::TextureData() const
 {
   return this->dataPtr->textureData;
 }
@@ -445,14 +445,14 @@ std::string Ogre2Material::NormalMap() const
 }
 
 //////////////////////////////////////////////////
-std::shared_ptr<common::Image> Ogre2Material::NormalMapData() const
+std::shared_ptr<const common::Image> Ogre2Material::NormalMapData() const
 {
   return this->dataPtr->normalMapData;
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::SetNormalMap(const std::string &_name,
-  const std::shared_ptr<common::Image> &_img)
+  const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -489,14 +489,14 @@ std::string Ogre2Material::RoughnessMap() const
 }
 
 //////////////////////////////////////////////////
-std::shared_ptr<common::Image> Ogre2Material::RoughnessMapData() const
+std::shared_ptr<const common::Image> Ogre2Material::RoughnessMapData() const
 {
   return this->dataPtr->roughnessMapData;
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::SetRoughnessMap(const std::string &_name,
-  const std::shared_ptr<common::Image> &_img)
+  const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -538,14 +538,14 @@ std::string Ogre2Material::MetalnessMap() const
 }
 
 //////////////////////////////////////////////////
-std::shared_ptr<common::Image> Ogre2Material::MetalnessMapData() const
+std::shared_ptr<const common::Image> Ogre2Material::MetalnessMapData() const
 {
   return this->dataPtr->metalnessMapData;
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::SetMetalnessMap(const std::string &_name,
-  const std::shared_ptr<common::Image> &_img)
+  const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -620,14 +620,14 @@ std::string Ogre2Material::EmissiveMap() const
 }
 
 //////////////////////////////////////////////////
-std::shared_ptr<common::Image> Ogre2Material::EmissiveMapData() const
+std::shared_ptr<const common::Image> Ogre2Material::EmissiveMapData() const
 {
   return this->dataPtr->emissiveMapData;
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::SetEmissiveMap(const std::string &_name,
-  const std::shared_ptr<common::Image> &_img)
+  const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -1129,7 +1129,7 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
 
 //////////////////////////////////////////////////
 void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
-  const std::shared_ptr<common::Image> &_img,
+  const std::shared_ptr<const common::Image> &_img,
   Ogre::PbsTextureTypes _type)
 {
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();

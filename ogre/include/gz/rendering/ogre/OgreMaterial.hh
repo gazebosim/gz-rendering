@@ -128,7 +128,7 @@ namespace gz
 
       // Documentation inherited.
       public: virtual void SetTexture(const std::string &_texture,
-        const std::shared_ptr<common::Image> &_img = nullptr) override;
+        const std::shared_ptr<const common::Image> &_img = nullptr) override;
 
       public: virtual void ClearTexture() override;
 
@@ -138,7 +138,7 @@ namespace gz
 
       // Documentation inherited.
       public: virtual void SetNormalMap(const std::string &_normalMap,
-        const std::shared_ptr<common::Image> &_img = nullptr) override;
+        const std::shared_ptr<const common::Image> &_img = nullptr) override;
 
       public: virtual void ClearNormalMap() override;
 
@@ -195,7 +195,7 @@ namespace gz
       /// \param[in] _texture Name of the texture.
       /// \param[in] _img common::Image containing the texture data
       protected: void SetTextureDataImpl(const std::string &_texture,
-                     const std::shared_ptr<common::Image> &_img);
+                     const std::shared_ptr<const common::Image> &_img);
 
       protected: virtual Ogre::TexturePtr Texture(const std::string &_name);
 
@@ -234,7 +234,7 @@ namespace gz
       protected: std::string textureName;
 
       /// \brief Diffuse texture image if it was passed as binary data
-      protected: std::shared_ptr<common::Image> textureData;
+      protected: std::shared_ptr<const common::Image> textureData;
 
       protected: std::string normalMapName;
 

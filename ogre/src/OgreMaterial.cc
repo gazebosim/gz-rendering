@@ -291,7 +291,7 @@ std::string OgreMaterial::Texture() const
 
 //////////////////////////////////////////////////
 void OgreMaterial::SetTexture(const std::string &_name,
-                              const std::shared_ptr<common::Image> &_img)
+                              const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -330,7 +330,7 @@ std::string OgreMaterial::NormalMap() const
 
 //////////////////////////////////////////////////
 void OgreMaterial::SetNormalMap(const std::string &_name,
-  const std::shared_ptr<common::Image>& /*_img*/)
+  const std::shared_ptr<const common::Image>& /*_img*/)
 {
   if (_name.empty())
   {
@@ -580,7 +580,7 @@ void OgreMaterial::SetTextureImpl(const std::string &_texture)
 
 //////////////////////////////////////////////////
 void OgreMaterial::SetTextureDataImpl(const std::string &_texture,
-  const std::shared_ptr<common::Image> &_img)
+  const std::shared_ptr<const common::Image> &_img)
 {
   // Create the texture only if it was not created already
   if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(

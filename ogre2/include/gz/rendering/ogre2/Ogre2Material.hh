@@ -109,10 +109,10 @@ namespace gz
 
       // Documentation inherited
       public: virtual void SetTexture(const std::string &_texture,
-          const std::shared_ptr<common::Image> &_img = nullptr) override;
+          const std::shared_ptr<const common::Image> &_img = nullptr) override;
 
       // Documentation inherited
-      public: virtual std::shared_ptr<common::Image> TextureData()
+      public: virtual std::shared_ptr<const common::Image> TextureData()
           const override;
 
       // Documentation inherited
@@ -125,12 +125,12 @@ namespace gz
       public: virtual std::string NormalMap() const override;
 
       // Documentation inherited
-      public: virtual std::shared_ptr<common::Image> NormalMapData()
+      public: virtual std::shared_ptr<const common::Image> NormalMapData()
           const override;
 
       // Documentation inherited
       public: virtual void SetNormalMap(const std::string &_normalMap,
-          const std::shared_ptr<common::Image> &_img = nullptr) override;
+          const std::shared_ptr<const common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual void ClearNormalMap() override;
@@ -142,12 +142,12 @@ namespace gz
       public: virtual std::string RoughnessMap() const override;
 
       // Documentation inherited
-      public: virtual std::shared_ptr<common::Image> RoughnessMapData()
+      public: virtual std::shared_ptr<const common::Image> RoughnessMapData()
           const override;
 
       // Documentation inherited
       public: virtual void SetRoughnessMap(const std::string &_roughnessMap,
-          const std::shared_ptr<common::Image> &_img = nullptr) override;
+          const std::shared_ptr<const common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual void ClearRoughnessMap() override;
@@ -159,12 +159,12 @@ namespace gz
       public: virtual std::string MetalnessMap() const override;
 
       // Documentation inherited
-      public: virtual std::shared_ptr<common::Image> MetalnessMapData()
+      public: virtual std::shared_ptr<const common::Image> MetalnessMapData()
           const override;
 
       // Documentation inherited
       public: virtual void SetMetalnessMap(const std::string &_metalnessMap,
-          const std::shared_ptr<common::Image> &_img = nullptr) override;
+          const std::shared_ptr<const common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual void ClearMetalnessMap() override;
@@ -192,13 +192,13 @@ namespace gz
       public: virtual std::string EmissiveMap() const override;
 
       // Documentation inherited
-      public: virtual std::shared_ptr<common::Image> EmissiveMapData()
+      public: virtual std::shared_ptr<const common::Image> EmissiveMapData()
           const override;
 
       // Documentation inherited
       public: virtual void SetEmissiveMap(
         const std::string &_emissiveMap,
-        const std::shared_ptr<common::Image> &_img = nullptr) override;
+        const std::shared_ptr<const common::Image> &_img = nullptr) override;
 
       // Documentation inherited
       public: virtual void ClearEmissiveMap() override;
@@ -304,7 +304,7 @@ namespace gz
       /// \param[in] _type Type of texture, i.e. diffuse, normal, roughness,
       /// metalness
       protected: void SetTextureMapDataImpl(const std::string& _texture,
-          const std::shared_ptr<common::Image> &_img,
+          const std::shared_ptr<const common::Image> &_img,
           Ogre::PbsTextureTypes _type);
 
       /// \brief Get a pointer to the ogre texture by name

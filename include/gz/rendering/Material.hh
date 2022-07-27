@@ -225,12 +225,13 @@ namespace gz
       /// if _img is set
       /// \param[in] _img Image data
       public: virtual void SetTexture(const std::string &_texture,
-        const std::shared_ptr<common::Image> &_img = nullptr) = 0;
+        const std::shared_ptr<const common::Image> &_img = nullptr) = 0;
 
       /// \brief Get the texture data
       /// \return Pointer to the common::Image with the data if the texture
       /// was loaded from memory
-      public: virtual std::shared_ptr<common::Image> TextureData() const = 0;
+      public: virtual std::shared_ptr<const common::Image> TextureData()
+        const = 0;
 
       /// \brief Removes any texture mapped to this material
       public: virtual void ClearTexture() = 0;
@@ -246,14 +247,15 @@ namespace gz
       /// \brief Get the normal map data
       /// \return Pointer to the common::Image with the data if the texture
       /// was loaded from memory
-      public: virtual std::shared_ptr<common::Image> NormalMapData() const = 0;
+      public: virtual std::shared_ptr<const common::Image> NormalMapData()
+        const = 0;
 
       /// \brief Set the material normal map
       /// \param[in] _normalMap URI of the new normal map file,
       /// or identifying name if map was set from raw data
       /// \param[in] _img Image data
       public: virtual void SetNormalMap(const std::string &_normalMap,
-        const std::shared_ptr<common::Image> &_img = nullptr) = 0;
+        const std::shared_ptr<const common::Image> &_img = nullptr) = 0;
 
       /// \brief Removes any normal map mapped to this material
       public: virtual void ClearNormalMap() = 0;
@@ -269,7 +271,7 @@ namespace gz
       /// \brief Get the roughness map data
       /// \return Pointer to the common::Image with the data if the texture
       /// was loaded from memory
-      public: virtual std::shared_ptr<common::Image> RoughnessMapData()
+      public: virtual std::shared_ptr<const common::Image> RoughnessMapData()
                   const = 0;
 
       /// \brief Set the material roughness map
@@ -278,7 +280,7 @@ namespace gz
       /// \param[in] _img Image data
       public: virtual void SetRoughnessMap(
         const std::string &_roughnessMap,
-        const std::shared_ptr<common::Image> &_img = nullptr) = 0;
+        const std::shared_ptr<const common::Image> &_img = nullptr) = 0;
 
       /// \brief Removes any roughness map mapped to this material
       public: virtual void ClearRoughnessMap() = 0;
@@ -294,7 +296,7 @@ namespace gz
       /// \brief Get the metalness map data
       /// \return Pointer to the common::Image with the data if the texture
       /// was loaded from memory
-      public: virtual std::shared_ptr<common::Image> MetalnessMapData()
+      public: virtual std::shared_ptr<const common::Image> MetalnessMapData()
                   const = 0;
 
       /// \brief Set the material metalness map
@@ -303,7 +305,7 @@ namespace gz
       /// \param[in] _img Image data
       public: virtual void SetMetalnessMap(
         const std::string &_metalnessMap,
-        const std::shared_ptr<common::Image> &_img = nullptr) = 0;
+        const std::shared_ptr<const common::Image> &_img = nullptr) = 0;
 
       /// \brief Removes any metalness map mapped to this material
       public: virtual void ClearMetalnessMap() = 0;
@@ -335,7 +337,7 @@ namespace gz
       /// \brief Get the emissive map data
       /// \return Pointer to the common::Image with the data if the texture
       /// was loaded from memory
-      public: virtual std::shared_ptr<common::Image> EmissiveMapData()
+      public: virtual std::shared_ptr<const common::Image> EmissiveMapData()
                   const = 0;
 
       /// \brief Set the material emissive map
@@ -344,7 +346,7 @@ namespace gz
       /// \param[in] _img Image data
       public: virtual void SetEmissiveMap(
         const std::string &_emissiveMap,
-        const std::shared_ptr<common::Image> &_img = nullptr) = 0;
+        const std::shared_ptr<const common::Image> &_img = nullptr) = 0;
 
       /// \brief Removes any emissive map mapped to this material
       public: virtual void ClearEmissiveMap() = 0;

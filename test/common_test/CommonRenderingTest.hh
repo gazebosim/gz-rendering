@@ -48,36 +48,28 @@ class CommonRenderingTest: public testing::Test
 
     std::map<std::string, std::string> engineParams;
 
-    std::string backend;
-    if (gz::utils::env(kEngineBackend, backend))
+    if (this->engineToTest == "ogre2")
     {
-      if(this->engineToTest != "ogre2")
+      std::string backend;
+      if (gz::utils::env(kEngineBackend, backend))
       {
-        GTEST_SKIP() << "Attempted to change BACKEND with engine '" 
-            << this->engineToTest << " is unsupported";
+        if(backend == "vulkan")
+        {
+          gzdbg << "Using OGRE2-VULKAN backend to test" << std::endl;
+          engineParams["vulkan"] = "1";
+        }
+        else if(backend == "metal")
+        {
+          gzdbg << "Using OGRE2-VULKAN backend to test" << std::endl;
+          engineParams["metal"] = "1";
+        }
       }
 
-      if(backend == "vulkan")
+      std::string headless;
+      if (gz::utils::env(kEngineHeadless, headless) && headless == "1")
       {
-        gzdbg << "Using OGRE2-VULKAN backend to test" << std::endl;
-        engineParams["vulkan"] = "1";
+        engineParams["headless"] = "1";
       }
-      else if(backend == "metal")
-      {
-        gzdbg << "Using OGRE2-VULKAN backend to test" << std::endl;
-        engineParams["metal"] = "1";
-      }
-    }
-
-    std::string headless;
-    if (gz::utils::env(kEngineHeadless, headless))
-    {
-      if(this->engineToTest != "ogre2")
-      {
-        GTEST_SKIP() << "Attempted to use HEADLESS with engine '" 
-            << this->engineToTest << " is unsupported";
-      }
-      engineParams["headless"] = "1";
     }
 
     engine = gz::rendering::engine(this->engineToTest, engineParams);

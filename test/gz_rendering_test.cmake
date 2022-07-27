@@ -41,6 +41,20 @@ macro(gz_configure_rendering_test)
   endif()
 endmacro()
 
+if (UNIX AND NOT APPLE)
+  execute_process(COMMAND lsb_release -cs
+    OUTPUT_VARIABLE RELEASE_CODENAME
+    RESULT_VARIABLE LSB_RESULT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+
+  if( NOT (${LSB_RESULT} STREQUAL "0"))
+    message(WARNING "lsb_release executable not found. Disabling focal-specific workarounds")
+  elseif (${RELEASE_CODENAME} STREQUAL "jammy")
+    set(UBUNTU_JAMMY 1)
+  endif()
+endif()
+
 macro(gz_rendering_test)
   set(options)
   set(oneValueArgs TYPE SOURCE)
@@ -75,6 +89,7 @@ macro(gz_rendering_test)
       RENDER_ENGINE "ogre"
     )
   endif()
+
   if (HAVE_OGRE2)
     if (APPLE)
       gz_configure_rendering_test(
@@ -86,11 +101,13 @@ macro(gz_rendering_test)
         TARGET ${TEST_NAME}
         RENDER_ENGINE "ogre2"
         RENDER_ENGINE_BACKEND "gl3plus")
-      # Disable vulkan until deb is fixed
-      #gz_configure_rendering_test(
-      #  TARGET ${TEST_NAME}
-      #  RENDER_ENGINE "ogre2"
-      #  RENDER_ENGINE_BACKEND "vulkan")
+      if(UBUNTU_JAMMY)
+        gz_configure_rendering_test(
+          TARGET ${TEST_NAME}
+          RENDER_ENGINE "ogre2"
+          RENDER_ENGINE_BACKEND "vulkan"
+          HEADLESS)
+      endif()
     endif()
   endif()
   if (HAVE_OPTIX)

@@ -17,44 +17,25 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/GaussianNoisePass.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/RenderPassSystem.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class RenderPassSystemTest : public testing::Test,
-                             public testing::WithParamInterface<const char*>
+class RenderPassSystemTest : public CommonRenderingTest
 {
-  /// \brief Test creating render passes
-  public: void RenderPassSystem(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void RenderPassSystemTest::RenderPassSystem(const std::string &_renderEngine)
+TEST_F(RenderPassSystemTest, RenderPassSystem)
 {
-  //  get engine
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
+  CHECK_RENDERPASS_SUPPORTED();
 
   // get the render pass system
   RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
-  if (!rpSystem)
-  {
-    gzwarn << "Render engin '" << _renderEngine << "' does not support "
-            << "render pass system" << std::endl;
-    return;
-  }
 
   // test creating abstract render pass
   RenderPassPtr nullPass = rpSystem->Create<RenderPass>();
@@ -71,13 +52,3 @@ void RenderPassSystemTest::RenderPassSystem(const std::string &_renderEngine)
       std::dynamic_pointer_cast<GaussianNoisePass>(pass);
   EXPECT_NE(nullptr, noisePass);
 }
-
-/////////////////////////////////////////////////
-TEST_P(RenderPassSystemTest, RenderPassSystem)
-{
-  RenderPassSystem(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(GaussianNoise, RenderPassSystemTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

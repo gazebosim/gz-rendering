@@ -17,35 +17,19 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
-
-#include "test_config.hh"  // NOLINT(build/include)
-
-#include "gz/rendering/RenderingIface.hh"
+#include "CommonRenderingTest.hh"
 #include "gz/rendering/Scene.hh"
-#include "gz/rendering/RenderEngine.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class RenderEngineTest : public testing::Test,
-                  public testing::WithParamInterface<const char *>
+class RenderEngineTest : public CommonRenderingTest 
 {
-  public: void RenderEngine(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void RenderEngineTest::RenderEngine(const std::string &_renderEngine)
+TEST_F(RenderEngineTest, RenderEngine)
 {
-  // Get engine
-  auto engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-           << "' is not supported" << std::endl;
-    return;
-  }
-
   // Check there are no scenes
   EXPECT_EQ(0u, engine->SceneCount());
   EXPECT_FALSE(engine->HasSceneName("scene1"));
@@ -128,17 +112,4 @@ void RenderEngineTest::RenderEngine(const std::string &_renderEngine)
 
   engine->DestroyScenes();
   EXPECT_EQ(engine->SceneCount(), 0u);
-
-  // Clean up
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(RenderEngineTest, RenderEngine)
-{
-  RenderEngine(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(RenderEngine, RenderEngineTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

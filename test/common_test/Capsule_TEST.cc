@@ -19,40 +19,22 @@
 
 #include <memory>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Capsule.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class CapsuleTest : public testing::Test,
-                 public testing::WithParamInterface<const char *>
+class CapsuleTest : public CommonRenderingTest 
 {
-  public: void Capsule(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void CapsuleTest::Capsule(const std::string &_renderEngine)
+TEST_F(CapsuleTest, Capsule)
 {
-  if (_renderEngine != "ogre" && _renderEngine != "ogre2")
-  {
-    gzdbg << "Capsule not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-           << "' is not supported" << std::endl;
-    return;
-  }
+  CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
 
   ScenePtr scene = engine->CreateScene("scene");
 
@@ -106,15 +88,4 @@ void CapsuleTest::Capsule(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(CapsuleTest, Capsule)
-{
-  Capsule(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(Capsule, CapsuleTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

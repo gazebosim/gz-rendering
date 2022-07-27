@@ -17,62 +17,40 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
-#include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/RenderTarget.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class SceneTest : public testing::Test,
-                  public testing::WithParamInterface<const char *>
+class SceneTest : public CommonRenderingTest 
 {
-  // Documentation inherited
-  public: void SetUp() override
-  {
-    gz::common::Console::SetVerbosity(4);
-  }
-
-  public: void Scene(const std::string &_renderEngine);
-  public: void Nodes(const std::string &_renderEngine);
-
-  /// \brief Test removing nodes
-  public: void RemoveNodes(const std::string &_renderEngine);
-
-  /// \brief Test destroying nodes
-  public: void DestroyNodes(const std::string &_renderEngine);
-
-  /// \brief Test if node cycles (child pointing to parent) are handled properly
-  public: void NodeCycle(const std::string &_renderEngine);
-
-  /// \brief Test creating and destroying materials
-  public: void Materials(const std::string &_renderEngine);
-
-  /// \brief Test setting and getting Time
-  public: void Time(const std::string &_renderEngine);
-
-  /// \brief Test background material
-  public: void BackgroundMaterial(const std::string &_renderEngine);
-
-  /// \brief Test enablng sky
-  public: void Sky(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void SceneTest::Scene(const std::string &_renderEngine)
+TEST_F(SceneTest, Scene)
 {
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-           << "' is not supported" << std::endl;
-    return;
-  }
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  // Check background color
+  EXPECT_EQ(math::Color::Black, scene->BackgroundColor());
+  scene->SetBackgroundColor(0, 1, 0, 1);
+  EXPECT_EQ(math::Color(0, 1, 0, 1), scene->BackgroundColor());
+  math::Color red(1, 0, 0, 1);
+  scene->SetBackgroundColor(red);
+  EXPECT_EQ(red, scene->BackgroundColor());
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(SceneTest, SceneGradient)
+{
+  CHECK_SUPPORTED_ENGINE("ogre");
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
@@ -85,59 +63,46 @@ void SceneTest::Scene(const std::string &_renderEngine)
   scene->SetBackgroundColor(red);
   EXPECT_EQ(red, scene->BackgroundColor());
 
-  // TODO(anyone) gradient background color and render window only supported
-  // by ogre
-  if (_renderEngine == "ogre")
-  {
-    EXPECT_FALSE(scene->IsGradientBackgroundColor());
+  EXPECT_FALSE(scene->IsGradientBackgroundColor());
 
-    // Check gradient background color
-    std::array<math::Color, 4> gradientBackgroundColor =
-        scene->GradientBackgroundColor();
-    for (auto i = 0u; i < 4; ++i)
-      EXPECT_EQ(math::Color::Black, gradientBackgroundColor[i]);
-    gradientBackgroundColor[0] = math::Color::Red;
-    gradientBackgroundColor[1] = math::Color::Green;
-    gradientBackgroundColor[2] = math::Color::Blue;
-    gradientBackgroundColor[3] = math::Color::Black;
-    scene->SetGradientBackgroundColor(gradientBackgroundColor);
-    EXPECT_TRUE(scene->IsGradientBackgroundColor());
-    auto currentGradientBackgroundColor = scene->GradientBackgroundColor();
-    EXPECT_EQ(math::Color::Red, currentGradientBackgroundColor[0]);
-    EXPECT_EQ(math::Color::Green, currentGradientBackgroundColor[1]);
-    EXPECT_EQ(math::Color::Blue, currentGradientBackgroundColor[2]);
-    EXPECT_EQ(math::Color::Black, currentGradientBackgroundColor[3]);
-    gradientBackgroundColor[0] = math::Color::White;
-    scene->SetGradientBackgroundColor(gradientBackgroundColor);
-    currentGradientBackgroundColor = scene->GradientBackgroundColor();
-    EXPECT_EQ(math::Color::White, currentGradientBackgroundColor[0]);
-    EXPECT_EQ(math::Color::Green, currentGradientBackgroundColor[1]);
-    EXPECT_EQ(math::Color::Blue, currentGradientBackgroundColor[2]);
-    EXPECT_EQ(math::Color::Black, currentGradientBackgroundColor[3]);
-    scene->RemoveGradientBackgroundColor();
-    EXPECT_FALSE(scene->IsGradientBackgroundColor());
+  // Check gradient background color
+  std::array<math::Color, 4> gradientBackgroundColor =
+      scene->GradientBackgroundColor();
+  for (auto i = 0u; i < 4; ++i)
+    EXPECT_EQ(math::Color::Black, gradientBackgroundColor[i]);
+  gradientBackgroundColor[0] = math::Color::Red;
+  gradientBackgroundColor[1] = math::Color::Green;
+  gradientBackgroundColor[2] = math::Color::Blue;
+  gradientBackgroundColor[3] = math::Color::Black;
+  scene->SetGradientBackgroundColor(gradientBackgroundColor);
+  EXPECT_TRUE(scene->IsGradientBackgroundColor());
+  auto currentGradientBackgroundColor = scene->GradientBackgroundColor();
+  EXPECT_EQ(math::Color::Red, currentGradientBackgroundColor[0]);
+  EXPECT_EQ(math::Color::Green, currentGradientBackgroundColor[1]);
+  EXPECT_EQ(math::Color::Blue, currentGradientBackgroundColor[2]);
+  EXPECT_EQ(math::Color::Black, currentGradientBackgroundColor[3]);
+  gradientBackgroundColor[0] = math::Color::White;
+  scene->SetGradientBackgroundColor(gradientBackgroundColor);
+  currentGradientBackgroundColor = scene->GradientBackgroundColor();
+  EXPECT_EQ(math::Color::White, currentGradientBackgroundColor[0]);
+  EXPECT_EQ(math::Color::Green, currentGradientBackgroundColor[1]);
+  EXPECT_EQ(math::Color::Blue, currentGradientBackgroundColor[2]);
+  EXPECT_EQ(math::Color::Black, currentGradientBackgroundColor[3]);
+  scene->RemoveGradientBackgroundColor();
+  EXPECT_FALSE(scene->IsGradientBackgroundColor());
 
-    // test creating render window from scene
-    RenderWindowPtr renderWindow = scene->CreateRenderWindow();
-    EXPECT_NE(nullptr, renderWindow->Scene());
-    EXPECT_EQ(scene, renderWindow->Scene());
-  }
+  // test creating render window from scene
+  RenderWindowPtr renderWindow = scene->CreateRenderWindow();
+  EXPECT_NE(nullptr, renderWindow->Scene());
+  EXPECT_EQ(scene, renderWindow->Scene());
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void SceneTest::Nodes(const std::string &_renderEngine)
+TEST_F(SceneTest, Nodes)
 {
-  auto engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
-    return;
-  }
-
   auto scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -209,19 +174,11 @@ void SceneTest::Nodes(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void SceneTest::RemoveNodes(const std::string &_renderEngine)
+TEST_F(SceneTest, RemoveNodes)
 {
-  auto engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
-    return;
-  }
-
   auto scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -311,19 +268,11 @@ void SceneTest::RemoveNodes(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void SceneTest::DestroyNodes(const std::string &_renderEngine)
+TEST_F(SceneTest, DestroyNodes)
 {
-  auto engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
-    return;
-  }
-
   auto scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -460,19 +409,11 @@ void SceneTest::DestroyNodes(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void SceneTest::NodeCycle(const std::string &_renderEngine)
+TEST_F(SceneTest, NodeCycle)
 {
-  auto engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
-    return;
-  }
-
   auto scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -526,19 +467,11 @@ void SceneTest::NodeCycle(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void SceneTest::Materials(const std::string &_renderEngine)
+TEST_F(SceneTest, Materials)
 {
-  auto engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
-    return;
-  }
-
   auto scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -656,19 +589,11 @@ void SceneTest::Materials(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void SceneTest::Time(const std::string &_renderEngine)
+TEST_F(SceneTest, Time)
 {
-  auto engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
-    return;
-  }
-
   auto scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -694,19 +619,11 @@ void SceneTest::Time(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void SceneTest::BackgroundMaterial(const std::string &_renderEngine)
+TEST_F(SceneTest, BackgroundMaterial)
 {
-  auto engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
-    return;
-  }
-
   auto scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -721,25 +638,12 @@ void SceneTest::BackgroundMaterial(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void SceneTest::Sky(const std::string &_renderEngine)
+TEST_F(SceneTest, Sky)
 {
-  auto engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
-    return;
-  }
-
-  if (_renderEngine != "ogre2")
-  {
-    gzdbg << "Sky not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
+  CHECK_SUPPORTED_ENGINE("ogre2");
 
   auto scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
@@ -769,63 +673,4 @@ void SceneTest::Sky(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(SceneTest, Scene)
-{
-  Scene(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(SceneTest, Nodes)
-{
-  Nodes(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(SceneTest, RemoveNodes)
-{
-  RemoveNodes(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(SceneTest, DestroyNodes)
-{
-  DestroyNodes(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(SceneTest, NodeCycle)
-{
-  NodeCycle(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(SceneTest, Materials)
-{
-  Materials(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(SceneTest, Time)
-{
-  Time(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(SceneTest, BackgroundMaterial)
-{
-  BackgroundMaterial(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(SceneTest, Sky)
-{
-  Sky(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(Scene, SceneTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

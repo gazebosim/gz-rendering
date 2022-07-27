@@ -17,68 +17,43 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
-#include <gz/common/Image.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
+#include <gz/common/Image.hh>
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/PixelFormat.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class SkyTest: public testing::Test,
-               public testing::WithParamInterface<const char *>
+class SkyTest: public CommonRenderingTest 
 {
-  // Documentation inherited
-  public: void SetUp() override
-  {
-    gz::common::Console::SetVerbosity(4);
-  }
-
-  // Test and verify sky is created
-  public: void Sky(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void SkyTest::Sky(const std::string &_renderEngine)
+TEST_F(SkyTest::Sky)
 {
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
-  if (_renderEngine != "ogre2")
-  {
-    gzdbg << "Sky not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
+  CHECK_SUPPORTED_ENGINE("ogre2");
 
   // add resources in build dir
   engine->AddResourcePath(
       common::joinPaths(std::string(PROJECT_BUILD_PATH), "src"));
 
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(0.3, 0.3, 0.3);
 
   scene->SetBackgroundColor(1.0, 0.0, 0.0);
 
   VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
 
   // create  camera
   CameraPtr camera = scene->CreateCamera();
-  ASSERT_TRUE(camera != nullptr);
+  ASSERT_NE(nullptr, camera);
   camera->SetImageWidth(100);
   camera->SetImageHeight(100);
   // look up into the sky
@@ -141,15 +116,4 @@ void SkyTest::Sky(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(SkyTest, Sky)
-{
-  Sky(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(Sky, SkyTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

@@ -17,16 +17,13 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "../common_test/CommonRenderingTest.hh"
+
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Event.hh>
 
-#include "test_config.hh"  // NOLINT(build/include)
-
 #include "gz/rendering/DepthCamera.hh"
 #include "gz/rendering/ParticleEmitter.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 #define DEPTH_TOL 1e-4
@@ -35,6 +32,7 @@
 unsigned int g_depthCounter = 0;
 unsigned int g_pointCloudCounter = 0;
 
+/////////////////////////////////////////////////
 void OnNewDepthFrame(float *_scanDest, const float *_scan,
                   unsigned int _width, unsigned int _height,
                   unsigned int _channels,
@@ -46,6 +44,7 @@ void OnNewDepthFrame(float *_scanDest, const float *_scan,
   g_depthCounter++;
 }
 
+/////////////////////////////////////////////////
 void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
                   unsigned int _width, unsigned int _height,
                   unsigned int _channels,
@@ -57,20 +56,17 @@ void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
   g_pointCloudCounter++;
 }
 
-class DepthCameraTest: public testing::Test,
-  public testing::WithParamInterface<const char *>
-{
-  // Create a Camera sensor from a SDF and gets a image message
-  public: void DepthCameraBoxes(const std::string &_renderEngine);
 
-  // Compare depth camera image before and after adding particles
-  // in the scene
-  public: void DepthCameraParticles(const std::string &_renderEngine);
+/////////////////////////////////////////////////
+class DepthCameraTest: public CommonRenderingTest
+{
 };
 
-void DepthCameraTest::DepthCameraBoxes(
-    const std::string &_renderEngine)
+/////////////////////////////////////////////////
+TEST_F(DepthCameraTest, DepthCameraBoxes)
 {
+  CHECK_UNSUPPORTED_ENGINE("optix");
+
   int imgWidth_ = 256;
   int imgHeight_ = 256;
   double aspectRatio_ = imgWidth_/imgHeight_;
@@ -78,24 +74,8 @@ void DepthCameraTest::DepthCameraBoxes(
   double unitBoxSize = 1.0;
   gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
 
-  // Optix is not supported
-  if (_renderEngine.compare("optix") == 0)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' doesn't support depth cameras" << std::endl;
-    return;
-  }
-
-  // Setup gz-rendering with an empty scene
-  auto *engine = gz::rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
 
   // red background
   scene->SetBackgroundColor(1.0, 0.0, 0.0);
@@ -477,13 +457,15 @@ void DepthCameraTest::DepthCameraBoxes(
   }
 
   engine->DestroyScene(scene);
-  gz::rendering::unloadEngine(engine->Name());
 }
 
 
-void DepthCameraTest::DepthCameraParticles(
-    const std::string &_renderEngine)
+/////////////////////////////////////////////////
+TEST_F(DepthCameraTest, DepthCameraParticles)
 {
+  // particle emitter is only supported in ogre2
+  CHECK_SUPPORTED_ENGINE("ogre2");
+
   int imgWidth_ = 256;
   int imgHeight_ = 256;
   double aspectRatio_ = imgWidth_ / imgHeight_;
@@ -493,24 +475,8 @@ void DepthCameraTest::DepthCameraParticles(
   gz::math::Vector3d boxSize(1.0, 10.0, 10.0);
   gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
 
-  // particle emitter is only supported in ogre2
-  if (_renderEngine.compare("ogre2") != 0)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' doesn't support depth cameras" << std::endl;
-    return;
-  }
-
-  // Setup gz-rendering with an empty scene
-  auto *engine = gz::rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
 
   // red background
   scene->SetBackgroundColor(1.0, 0.0, 0.0);
@@ -772,18 +738,4 @@ void DepthCameraTest::DepthCameraParticles(
   }
 
   engine->DestroyScene(scene);
-  gz::rendering::unloadEngine(engine->Name());
 }
-
-TEST_P(DepthCameraTest, DepthCameraBoxes)
-{
-  DepthCameraBoxes(GetParam());
-}
-
-TEST_P(DepthCameraTest, DepthCameraParticles)
-{
-  DepthCameraParticles(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(DepthCamera, DepthCameraTest,
-    RENDER_ENGINE_VALUES, gz::rendering::PrintToStringParam());

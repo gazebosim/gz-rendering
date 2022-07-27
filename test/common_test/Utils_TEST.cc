@@ -15,46 +15,29 @@
 */
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/RayQuery.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/Utils.hh"
 #include "gz/rendering/Visual.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
-
 using namespace gz;
 using namespace rendering;
 
-class UtilTest : public testing::Test,
-                 public testing::WithParamInterface<const char *>
+class UtilTest : public CommonRenderingTest 
 {
-  // Documentation inherited
-  public: void SetUp() override
-  {
-    gz::common::Console::SetVerbosity(4);
-  }
-
-  public: void ClickToScene(const std::string &_renderEngine);
 };
 
-void UtilTest::ClickToScene(const std::string &_renderEngine)
+/////////////////////////////////////////////////
+TEST_F(UtilTest, ClickToScene)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-           << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
 
   CameraPtr camera(scene->CreateCamera());
-  EXPECT_TRUE(camera != nullptr);
+  EXPECT_NE(nullptr, camera);
 
   camera->SetLocalPosition(0.0, 0.0, 15);
   camera->SetLocalRotation(0.0, GZ_PI / 2, 0.0);
@@ -128,7 +111,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   // from the expected position. However, fixing the centerClick above caused
   // the screenToPlane tests to fail so only modifying the pos here, and the
   // cause of test failure need to be investigated.
-  if (_renderEngine == "ogre2")
+  if (this->engineToTest == "ogre2")
     centerClick = gz::math::Vector2i(halfWidth-1, halfHeight-1);
 
   // API without RayQueryResult and default max distance
@@ -164,14 +147,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
   EXPECT_TRUE(rayResult);
   EXPECT_NEAR(6.5 - camera->NearClipPlane(), rayResult.distance, 1e-4);
   EXPECT_EQ(box->Id(), rayResult.objectId);
-}
 
-/////////////////////////////////////////////////
-TEST_P(UtilTest, ClickToScene)
-{
-  ClickToScene(GetParam());
+  // Clean up
+  engine->DestroyScene(scene);
 }
-
-INSTANTIATE_TEST_SUITE_P(ClickToScene, UtilTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

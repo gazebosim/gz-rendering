@@ -18,63 +18,26 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
+
 #include <gz/math/AxisAlignedBox.hh>
 
-#include "test_config.hh"  // NOLINT(build/include)
-
 #include "gz/rendering/Geometry.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/Visual.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class VisualTest : public testing::Test,
-                   public testing::WithParamInterface<const char *>
+class VisualTest : public CommonRenderingTest 
 {
-  /// \brief Test visual material
-  public: void Material(const std::string &_renderEngine);
-
-  /// \brief Test adding removing children
-  public: void Children(const std::string &_renderEngine);
-
-  /// \brief Test visual scale
-  public: void Scale(const std::string &_renderEngine);
-
-  /// \brief User data
-  public: void UserData(const std::string &_renderEngine);
-
-  /// \brief Test adding removing geometry
-  public: void Geometry(const std::string &_renderEngine);
-
-  /// \brief Test setting visibility flags
-  public: void VisibilityFlags(const std::string &_renderEngine);
-
-  /// \brief Test getting setting bounding boxes
-  public: void BoundingBox(const std::string &_renderEngine);
-
-  /// \brief Test changing to wireframe
-  public: void Wireframe(const std::string &_renderEngine);
-
-  /// \brief Test cloning visuals
-  public: void Clone(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void VisualTest::Material(const std::string &_renderEngine)
+TEST_F(VisualTest, Material)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
 
   // create visual
   VisualPtr visual = scene->CreateVisual();
@@ -139,27 +102,13 @@ void VisualTest::Material(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-TEST_P(VisualTest, Material)
+TEST_F(VisualTest, Children)
 {
-  Material(GetParam());
-}
-
-/////////////////////////////////////////////////
-void VisualTest::Children(const std::string &_renderEngine)
-{
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene2");
+  ASSERT_NE(nullptr, scene);
 
   // create visual
   VisualPtr visual = scene->CreateVisual();
@@ -208,27 +157,13 @@ void VisualTest::Children(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-TEST_P(VisualTest, Children)
+TEST_F(VisualTest, Scale)
 {
-  Children(GetParam());
-}
-
-/////////////////////////////////////////////////
-void VisualTest::Scale(const std::string &_renderEngine)
-{
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene2");
+  ASSERT_NE(nullptr, scene);
 
   // create visual
   VisualPtr visual = scene->CreateVisual();
@@ -299,27 +234,13 @@ void VisualTest::Scale(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-TEST_P(VisualTest, Scale)
+TEST_F(VisualTest, UserData)
 {
-  Scale(GetParam());
-}
-
-/////////////////////////////////////////////////
-void VisualTest::UserData(const std::string &_renderEngine)
-{
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene3");
+  ASSERT_NE(nullptr, scene);
 
   // create visual
   VisualPtr visual = scene->CreateVisual();
@@ -416,27 +337,13 @@ void VisualTest::UserData(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-TEST_P(VisualTest, UserData)
+TEST_F(VisualTest, Geometry)
 {
-  UserData(GetParam());
-}
-
-/////////////////////////////////////////////////
-void VisualTest::Geometry(const std::string &_renderEngine)
-{
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene4");
+  ASSERT_NE(nullptr, scene);
 
   // create visual
   VisualPtr visual = scene->CreateVisual();
@@ -491,27 +398,13 @@ void VisualTest::Geometry(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-TEST_P(VisualTest, Geometry)
+TEST_F(VisualTest, VisibilityFlags)
 {
-  Geometry(GetParam());
-}
-
-/////////////////////////////////////////////////
-void VisualTest::VisibilityFlags(const std::string &_renderEngine)
-{
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene5");
+  ASSERT_NE(nullptr, scene);
 
   // create visual
   VisualPtr visual = scene->CreateVisual();
@@ -558,27 +451,13 @@ void VisualTest::VisibilityFlags(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-TEST_P(VisualTest, VisibilityFlags)
+TEST_F(VisualTest, BoundingBox)
 {
-  VisibilityFlags(GetParam());
-}
-
-/////////////////////////////////////////////////
-void VisualTest::BoundingBox(const std::string &_renderEngine)
-{
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene6");
+  ASSERT_NE(nullptr, scene);
 
   // create visual
   VisualPtr visual = scene->CreateVisual();
@@ -599,27 +478,13 @@ void VisualTest::BoundingBox(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-TEST_P(VisualTest, BoundingBox)
+TEST_F(VisualTest, Wireframe)
 {
-  BoundingBox(GetParam());
-}
-
-/////////////////////////////////////////////////
-void VisualTest::Wireframe(const std::string &_renderEngine)
-{
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported\n";
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene7");
+  ASSERT_NE(nullptr, scene);
 
   // create visual
   VisualPtr visual = scene->CreateVisual();
@@ -629,25 +494,14 @@ void VisualTest::Wireframe(const std::string &_renderEngine)
   // set wireframe
   visual->SetWireframe(true);
   EXPECT_EQ(true, visual->Wireframe());
+
+  // Clean up
+  engine->DestroyScene(scene);
 }
 
 /////////////////////////////////////////////////
-TEST_P(VisualTest, Wireframe)
+TEST_F(VisualTest, Clone)
 {
-  Wireframe(GetParam());
-}
-
-/////////////////////////////////////////////////
-void VisualTest::Clone(const std::string &_renderEngine)
-{
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene8");
   ASSERT_NE(nullptr, scene);
 
@@ -772,16 +626,4 @@ void VisualTest::Clone(const std::string &_renderEngine)
 
   // clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(VisualTest, Clone)
-{
-  Clone(GetParam());
-}
-
-
-INSTANTIATE_TEST_SUITE_P(Visual, VisualTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

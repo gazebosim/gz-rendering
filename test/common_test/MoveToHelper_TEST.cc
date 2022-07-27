@@ -18,23 +18,16 @@
 
 #include <chrono>
 
+#include "CommonRenderingTest.hh"
+
 #include <gz/rendering/MoveToHelper.hh>
-#include <gz/common/Console.hh>
-
-#include "test_config.hh"  // NOLINT(build/include)
-
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class MoveToHelperTest : public testing::Test,
-                 public testing::WithParamInterface<const char *>
+class MoveToHelperTest : public CommonRenderingTest 
 {
-  public: void MoveTo(const std::string &_renderEngine);
-
   public: void OnMoveToComplete();
 
   public: void checkIsCompleted(double timeout);
@@ -43,12 +36,14 @@ class MoveToHelperTest : public testing::Test,
 
   public: bool isMoveCompleted = false;
 };
+/////////////////////////////////////////////////
 
 void MoveToHelperTest::OnMoveToComplete()
 {
   this->isMoveCompleted = true;
 }
 
+/////////////////////////////////////////////////
 void MoveToHelperTest::checkIsCompleted(double timeout)
 {
   isMoveCompleted = false;
@@ -71,16 +66,9 @@ void MoveToHelperTest::checkIsCompleted(double timeout)
   }
 }
 
-void MoveToHelperTest::MoveTo(const std::string &_renderEngine)
+/////////////////////////////////////////////////
+TEST_F(MoveToHelperTest, MoveTo)
 {
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -137,15 +125,4 @@ void MoveToHelperTest::MoveTo(const std::string &_renderEngine)
   EXPECT_EQ(math::Quaterniond(0.0, -0.785398, 1.5708), camera->LocalRotation());
 
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(MoveToHelperTest, MoveToHelper)
-{
-  MoveTo(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(MoveToHelper, MoveToHelperTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

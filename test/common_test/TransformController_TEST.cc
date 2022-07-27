@@ -17,45 +17,22 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
-
-#include "test_config.hh"  // NOLINT(build/include)
+#include "CommonRenderingTest.hh"
 
 #include "gz/rendering/Camera.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/TransformController.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class TransformControllerTest : public testing::Test,
-                         public testing::WithParamInterface<const char *>
+class TransformControllerTest : public CommonRenderingTest 
 {
-  /// \brief Test basic api
-  public: void TransformControl(const std::string &_renderEngine);
-
-  /// \brief test rotate, translate, scale transformations in world space
-  public: void WorldSpace(const std::string &_renderEngine);
-
-  /// \brief test rotate, translate, scale transformations in local space
-  public: void LocalSpace(const std::string &_renderEngine);
-
-  /// \brief test rotate, translate, scale transformations from 2d movements
-  public: void Control2d(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void TransformControllerTest::TransformControl(const std::string &_renderEngine)
+TEST_F(TransformControllerTest, TransformControl)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
   EXPECT_NE(scene, nullptr);
 
@@ -130,19 +107,11 @@ void TransformControllerTest::TransformControl(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void TransformControllerTest::WorldSpace(const std::string &_renderEngine)
+TEST_F(TransformControllerTest, WorldSpace)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -193,19 +162,11 @@ void TransformControllerTest::WorldSpace(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void TransformControllerTest::LocalSpace(const std::string &_renderEngine)
+TEST_F(TransformControllerTest, LocalSpace)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -262,19 +223,11 @@ void TransformControllerTest::LocalSpace(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void TransformControllerTest::Control2d(const std::string &_renderEngine)
+TEST_F(TransformControllerTest, Control2d)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -341,32 +294,4 @@ void TransformControllerTest::Control2d(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-/////////////////////////////////////////////////
-TEST_P(TransformControllerTest, TransformControl)
-{
-  TransformControl(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(TransformControllerTest, WorldSpace)
-{
-  WorldSpace(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(TransformControllerTest, LocalSpace)
-{
-  LocalSpace(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(TransformControllerTest, Control2d)
-{
-  Control2d(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(TransformController, TransformControllerTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

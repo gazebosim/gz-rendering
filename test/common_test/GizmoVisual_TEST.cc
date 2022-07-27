@@ -18,39 +18,21 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include <gz/common/Console.hh>
-
-#include "test_config.hh"  // NOLINT(build/include)
+#include "CommonRenderingTest.hh"
 
 #include "gz/rendering/GizmoVisual.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class GizmoVisualTest : public testing::Test,
-                        public testing::WithParamInterface<const char *>
+class GizmoVisualTest : public CommonRenderingTest 
 {
-  /// \brief Test basic API
-  public: void GizmoVisual(const std::string &_renderEngine);
-
-  /// \brief Test gizmo material
-  public: void Material(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void GizmoVisualTest::GizmoVisual(const std::string &_renderEngine)
+TEST_F(GizmoVisualTest, GizmoVisual)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
 
   // create visual
@@ -108,20 +90,11 @@ void GizmoVisualTest::GizmoVisual(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void GizmoVisualTest::Material(const std::string &_renderEngine)
+TEST_F(GizmoVisualTest, Material)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
 
   // create visual
@@ -193,21 +166,4 @@ void GizmoVisualTest::Material(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(GizmoVisualTest, GizmoVisual)
-{
-  GizmoVisual(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(GizmoVisualTest, Material)
-{
-  Material(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(Visual, GizmoVisualTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

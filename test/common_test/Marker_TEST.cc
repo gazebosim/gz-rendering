@@ -16,11 +16,8 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Marker.hh"
 #include "gz/rendering/Scene.hh"
 
@@ -28,30 +25,14 @@ using namespace gz;
 using namespace rendering;
 using namespace std::chrono_literals;
 
-class MarkerTest : public testing::Test,
-                   public testing::WithParamInterface<const char *>
+class MarkerTest : public CommonRenderingTest 
 {
-  public: void Marker(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void MarkerTest::Marker(const std::string &_renderEngine)
+TEST_F(MarkerTest, Marker)
 {
-  if (_renderEngine == "optix")
-  {
-    gzdbg << "Marker not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
-
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-           << "' is not supported" << std::endl;
-    return;
-  }
+  CHECK_UNSUPPORTED_ENGINE("optix");
 
   ScenePtr scene = engine->CreateScene("scene");
 
@@ -115,15 +96,4 @@ void MarkerTest::Marker(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(MarkerTest, Marker)
-{
-  Marker(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(Marker, MarkerTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

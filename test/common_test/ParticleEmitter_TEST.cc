@@ -18,63 +18,33 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
+
 #include <gz/math/Color.hh>
 
-#include "test_config.hh"  // NOLINT(build/include)
-
 #include "gz/rendering/ParticleEmitter.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
 /// \brief The test fixture.
-class ParticleEmitterTest : public testing::Test,
-                            public testing::WithParamInterface<const char *>
+class ParticleEmitterTest : public CommonRenderingTest 
 {
-  /// \brief How to set up the environment.
-  public: bool ParticleEmitter(const std::string &_renderEngine);
-
-  /// \brief Check setters/getters.
-  public: void CheckBasicAPI();
-
-  /// \brief How to tear down the environment.
-  public: void TearDown();
-
   /// \brief A directory under test/ with some textures.
   protected: const std::string TEST_MEDIA_PATH =
       common::joinPaths(std::string(PROJECT_SOURCE_PATH),
       "test", "media", "materials", "textures");
-
-  /// \brief The rendering engine used.
-  protected: RenderEngine *engine;
-
-  /// \brief The scene.
-  protected: ScenePtr scene;
 };
 
 /////////////////////////////////////////////////
-bool ParticleEmitterTest::ParticleEmitter(const std::string &_renderEngine)
+TEST_F(ParticleEmitterTest, ParticleEmitter)
 {
-  this->engine = rendering::engine(_renderEngine);
-  if (!this->engine)
-  {
-    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
-    return false;
-  }
+  ScenePtr scene = engine->CreateScene("scene");
+  EXPECT_NE(nullptr, scene);
 
-  this->scene = this->engine->CreateScene("scene");
-  return this->scene != nullptr;
-}
-
-/////////////////////////////////////////////////
-void ParticleEmitterTest::CheckBasicAPI()
-{
   // Create a particle emitter.
-  ParticleEmitterPtr particleEmitter = this->scene->CreateParticleEmitter();
+  ParticleEmitterPtr particleEmitter = scene->CreateParticleEmitter();
 
   // Default values.
   EmitterType    expectedEmitterType     = EmitterType::EM_POINT;
@@ -160,29 +130,6 @@ void ParticleEmitterTest::CheckBasicAPI()
   EXPECT_EQ(expectedColorRangeImage,  particleEmitter->ColorRangeImage());
   EXPECT_FLOAT_EQ(expectedScatterRatio,
       particleEmitter->ParticleScatterRatio());
-}
 
-/////////////////////////////////////////////////
-void ParticleEmitterTest::TearDown()
-{
-  // Clean up
-  if (this->scene && this->engine)
-  {
-    this->engine->DestroyScene(this->scene);
-    rendering::unloadEngine(this->engine->Name());
-  }
+  engine->DestroyScene(scene);
 }
-
-/////////////////////////////////////////////////
-TEST_P(ParticleEmitterTest, ParticleEmitter)
-{
-  if (ParticleEmitter(GetParam()))
-  {
-    this->CheckBasicAPI();
-  }
-  // TearDown() happens automatically.
-}
-
-INSTANTIATE_TEST_SUITE_P(ParticleEmitter, ParticleEmitterTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

@@ -17,44 +17,24 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
-
-#include "test_config.hh"  // NOLINT(build/include)
+#include "CommonRenderingTest.hh"
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/RayQuery.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class RayQueryTest : public testing::Test,
-                     public testing::WithParamInterface<const char *>
+class RayQueryTest : public CommonRenderingTest
 {
-  /// \brief Test ray query basic API
-  public: void RayQuery(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void RayQueryTest::RayQuery(const std::string &_renderEngine)
+TEST_F(RayQueryTest, RayQuery)
 {
-  if (_renderEngine == "optix")
-  {
-    gzdbg << "RayQuery not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
+  CHECK_UNSUPPORTED_ENGINE("optix");
 
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
 
   RayQueryPtr rayQuery = scene->CreateRayQuery();
@@ -130,15 +110,4 @@ void RayQueryTest::RayQuery(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(RayQueryTest, RayQuery)
-{
-  RayQuery(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(RayQuery, RayQueryTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

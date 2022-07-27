@@ -18,59 +18,36 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include <gz/common/Console.hh>
-#include <gz/common/Material.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
+#include <gz/common/Material.hh>
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/Material.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/ShaderType.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class MaterialTest : public testing::Test,
-                     public testing::WithParamInterface<const char *>
+class MaterialTest : public CommonRenderingTest 
 {
-  // Documentation inherited
-  public: void SetUp() override
-  {
-    gz::common::Console::SetVerbosity(4);
-  }
-
-  /// \brief Test material basic API
-  public: void MaterialProperties(const std::string &_renderEngine);
-
-  /// \brief Test copying and cloning a material
-  public: void Copy(const std::string &_renderEngine);
-
   public: const std::string TEST_MEDIA_PATH =
         common::joinPaths(std::string(PROJECT_SOURCE_PATH),
         "test", "media", "materials", "textures");
 };
 
 /////////////////////////////////////////////////
-void MaterialTest::MaterialProperties(const std::string &_renderEngine)
+TEST_F(MaterialTest, MaterialProperties)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
 
   MaterialPtr material = scene->CreateMaterial();
-  ASSERT_TRUE(material != nullptr);
+  ASSERT_NE(nullptr, material);
 
   material = scene->CreateMaterial("unique");
-  ASSERT_TRUE(material != nullptr);
+  ASSERT_NE(nullptr, scene);
   EXPECT_TRUE(scene->MaterialRegistered("unique"));
 
   // ambient
@@ -284,24 +261,16 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void MaterialTest::Copy(const std::string &_renderEngine)
+TEST_F(MaterialTest, Copy)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("copy_scene");
+  ASSERT_NE(nullptr, scene);
 
   MaterialPtr material = scene->CreateMaterial();
-  ASSERT_TRUE(material != nullptr);
+  ASSERT_NE(nullptr, material);
 
   math::Color ambient(0.5f, 0.2f, 0.4f, 1.0f);
   math::Color diffuse(0.1f, 0.9f, 0.3f, 1.0f);
@@ -493,21 +462,4 @@ void MaterialTest::Copy(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(MaterialTest, MaterialProperties)
-{
-  MaterialProperties(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(MaterialTest, Copy)
-{
-  Copy(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(Material, MaterialTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

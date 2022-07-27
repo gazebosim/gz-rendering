@@ -18,36 +18,21 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include <gz/common/Console.hh>
-
-#include "test_config.hh"  // NOLINT(build/include)
+#include "CommonRenderingTest.hh"
 
 #include "gz/rendering/InertiaVisual.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class InertiaVisualTest : public testing::Test,
-                        public testing::WithParamInterface<const char *>
+class InertiaVisualTest : public CommonRenderingTest 
 {
-  /// \brief Test basic API
-  public: void InertiaVisual(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void InertiaVisualTest::InertiaVisual(const std::string &_renderEngine)
+TEST_F(InertiaVisualTest, InertiaVisual)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
 
   // create visual
@@ -72,15 +57,4 @@ void InertiaVisualTest::InertiaVisual(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(InertiaVisualTest, InertiaVisual)
-{
-  InertiaVisual(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(Visual, InertiaVisualTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

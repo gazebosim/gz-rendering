@@ -19,62 +19,42 @@
 #include <memory>
 #include <string>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
+
 #include <gz/common/MeshManager.hh>
 #include <gz/common/Skeleton.hh>
 #include <gz/common/SkeletonAnimation.hh>
 
-#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/Mesh.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class MeshTest : public testing::Test,
-                 public testing::WithParamInterface<const char *>
+class MeshTest : public CommonRenderingTest 
 {
-  /// \brief Test mesh and submesh basic API
-  public: void MeshSubMesh(const std::string &_renderEngine);
-
-  /// \brief Test mesh skeleton animation API
-  public: void MeshSkeletonAnimation(const std::string &_renderEngine);
-
-  /// \brief Test mesh clone API
-  public: void MeshClone(const std::string &_renderEngine);
-
   public: const std::string TEST_MEDIA_PATH =
         common::joinPaths(std::string(PROJECT_SOURCE_PATH),
         "test", "media", "meshes");
 };
 
 /////////////////////////////////////////////////
-void MeshTest::MeshSubMesh(const std::string &_renderEngine)
+TEST_F(MeshTest, MeshSubMesh)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   // create the mesh using mesh descriptor
   MeshDescriptor descriptor("unit_box");
   MeshPtr mesh = scene->CreateMesh(descriptor);
-  ASSERT_TRUE(mesh!= nullptr);
+  ASSERT_NE(nullptr, mesh);
 
   // test mesh API
   EXPECT_EQ(mesh->SubMeshCount(), 1u);
 
   SubMeshPtr submesh = mesh->SubMeshByIndex(0u);
-  ASSERT_TRUE(submesh != nullptr);
+  ASSERT_NE(nullptr, submesh);
 
   EXPECT_TRUE(mesh->HasSubMesh(submesh));
   EXPECT_TRUE(mesh->HasSubMeshName(submesh->Name()));
@@ -83,7 +63,7 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
 
   // test submesh API
   MaterialPtr mat = submesh->Material();
-  ASSERT_TRUE(mat != nullptr);
+  ASSERT_NE(nullptr, mat);
 
   // set submesh non-unique material
   MaterialPtr matClone = mat->Clone();
@@ -101,33 +81,18 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-TEST_P(MeshTest, MeshSubMesh)
+TEST_F(MeshTest, MeshSkeletonAnimation)
 {
-  MeshSubMesh(GetParam());
-}
-
-/////////////////////////////////////////////////
-void MeshTest::MeshSkeletonAnimation(const std::string &_renderEngine)
-{
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   // test box mesh with no skeleton animation
   MeshDescriptor boxDescriptor("unit_box");
   MeshPtr boxMesh = scene->CreateMesh(boxDescriptor);
-  ASSERT_TRUE(boxMesh != nullptr);
+  ASSERT_NE(nullptr, boxMesh);
 
   EXPECT_FALSE(boxMesh->HasSkeleton());
   EXPECT_NO_THROW(boxMesh->SetSkeletonAnimationEnabled("invalid", false));
@@ -197,28 +162,13 @@ void MeshTest::MeshSkeletonAnimation(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-TEST_P(MeshTest, MeshSkeletonAnimation)
+TEST_F(MeshTest, MeshClone)
 {
-  MeshSkeletonAnimation(GetParam());
-}
-
-/////////////////////////////////////////////////
-void MeshTest::MeshClone(const std::string &_renderEngine)
-{
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-           << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   // create the mesh using mesh descriptor
   MeshDescriptor descriptor("unit_box");
@@ -282,15 +232,4 @@ void MeshTest::MeshClone(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(MeshTest, MeshClone)
-{
-  MeshClone(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(Mesh, MeshTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

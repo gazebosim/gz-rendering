@@ -17,13 +17,14 @@
 
 #include <gtest/gtest.h>
 
-#include "test_config.hh"  // NOLINT(build/include)
+#include "CommonRenderingTest.hh"
+
 #include "gz/rendering/BoundingBox.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class BoundingBoxTest : public testing::Test
+class BoundingBoxTest : public CommonRenderingTest 
 {
 };
 

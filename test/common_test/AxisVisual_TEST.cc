@@ -18,38 +18,23 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include <gz/common/Console.hh>
-
-#include "test_config.hh"  // NOLINT(build/include)
+#include "CommonRenderingTest.hh"
 
 #include "gz/rendering/ArrowVisual.hh"
 #include "gz/rendering/AxisVisual.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/Visual.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class AxisVisualTest : public testing::Test,
-                       public testing::WithParamInterface<const char *>
+class AxisVisualTest : public CommonRenderingTest 
 {
-  /// \brief Test adding removing children
-  public: void AxisVisual(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void AxisVisualTest::AxisVisual(const std::string &_renderEngine)
+TEST_F(AxisVisualTest, AxisVisual)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
 
   // create axis visual
@@ -89,15 +74,4 @@ void AxisVisualTest::AxisVisual(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(AxisVisualTest, AxisVisual)
-{
-  AxisVisual(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(AxisVisual, AxisVisualTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

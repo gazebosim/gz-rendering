@@ -18,44 +18,25 @@
 #include <gtest/gtest.h>
 #include <cmath>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/GaussianNoisePass.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/RenderPassSystem.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class GaussianNoisePassTest : public testing::Test,
-                              public testing::WithParamInterface<const char*>
+class GaussianNoisePassTest : public CommonRenderingTest 
 {
-  /// \brief Test Gaussian noise pass properties
-  public: void GaussianNoise(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void GaussianNoisePassTest::GaussianNoise(const std::string &_renderEngine)
+TEST_F(GaussianNoisePassTest, GaussianNoise)
 {
-  // get engine
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
+  CHECK_RENDERPASS_SUPPORTED();
 
   // get the render pass system
   RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
-  if (!rpSystem)
-  {
-    gzwarn << "Render engin '" << _renderEngine << "' does not support "
-            << "render pass system" << std::endl;
-    return;
-  }
   RenderPassPtr pass = rpSystem->Create<GaussianNoisePass>();
   GaussianNoisePassPtr noisePass =
       std::dynamic_pointer_cast<GaussianNoisePass>(pass);
@@ -89,13 +70,3 @@ void GaussianNoisePassTest::GaussianNoise(const std::string &_renderEngine)
   EXPECT_LE(std::fabs(noisePass->Bias()), biasMean + biasStdDev*4);
   EXPECT_GE(std::fabs(noisePass->Bias()), biasMean - biasStdDev*4);
 }
-
-/////////////////////////////////////////////////
-TEST_P(GaussianNoisePassTest, GaussianNoise)
-{
-  GaussianNoise(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(GaussianNoise, GaussianNoisePassTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

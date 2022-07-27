@@ -17,38 +17,22 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/OrthoViewController.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class OrthoViewControllerTest : public testing::Test,
-                         public testing::WithParamInterface<const char *>
+class OrthoViewControllerTest : public CommonRenderingTest 
 {
-  /// \brief Test basic api
-  public: void OrthoViewControl(const std::string &_renderEngine);
-
-  /// \brief test zoom, pan, orbit
-  public: void Control(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void OrthoViewControllerTest::OrthoViewControl(const std::string &_renderEngine)
+TEST_F(OrthoViewControllerTest, OrthoViewControl)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
   EXPECT_NE(nullptr, scene);
 
@@ -79,19 +63,11 @@ void OrthoViewControllerTest::OrthoViewControl(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void OrthoViewControllerTest::Control(const std::string &_renderEngine)
+TEST_F(OrthoViewControllerTest, Control)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -223,21 +199,4 @@ void OrthoViewControllerTest::Control(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(OrthoViewControllerTest, OrthoViewController)
-{
-  OrthoViewControl(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(OrthoViewControllerTest, Control)
-{
-  Control(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(OrthoViewController, OrthoViewControllerTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

@@ -17,44 +17,23 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/SegmentationCamera.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class SegmentationCameraTest : public testing::Test,
-                          public testing::WithParamInterface<const char *>
+class SegmentationCameraTest : public CommonRenderingTest 
 {
-  /// \brief Test basic api
-  public: void SegmentationCamera(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void SegmentationCameraTest::SegmentationCamera(
-  const std::string &_renderEngine)
+TEST_F(SegmentationCameraTest, SegmentationCamera)
 {
-  // Currently, only ogre2 supports segmentation cameras
-  if (_renderEngine.compare("ogre2") != 0)
-  {
-    gzerr << "Engine '" << _renderEngine
-              << "' doesn't support segmentation cameras" << std::endl;
-    return;
-  }
+  CHECK_SUPPORTED_ENGINE("ogre2");
 
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzerr << "Engine '" << _renderEngine
-              << "' was unable to be retrieved" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -77,15 +56,4 @@ void SegmentationCameraTest::SegmentationCamera(
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(SegmentationCameraTest, SegmentationCamera)
-{
-  SegmentationCamera(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(SegmentationCamera, SegmentationCameraTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

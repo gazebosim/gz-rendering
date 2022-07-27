@@ -18,37 +18,22 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include <gz/common/Console.hh>
-
-#include "test_config.hh"  // NOLINT(build/include)
+#include "CommonRenderingTest.hh"
 
 #include "gz/rendering/Node.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/Visual.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class NodeTest : public testing::Test,
-                 public testing::WithParamInterface<const char *>
+class NodeTest : public CommonRenderingTest 
 {
-  /// \brief Test visual material
-  public: void Pose(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void NodeTest::Pose(const std::string &_renderEngine)
+TEST_F(NodeTest, Pose)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
 
   // create visual
@@ -121,15 +106,4 @@ void NodeTest::Pose(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(NodeTest, Pose)
-{
-  Pose(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(Node, NodeTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

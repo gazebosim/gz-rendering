@@ -17,14 +17,10 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
-
-#include "test_config.hh"  // NOLINT(build/include)
+#include "CommonRenderingTest.hh"
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/GaussianNoisePass.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/RenderTarget.hh"
 #include "gz/rendering/Scene.hh"
@@ -32,39 +28,21 @@
 using namespace gz;
 using namespace rendering;
 
-class RenderTargetTest : public testing::Test,
-                         public testing::WithParamInterface<const char*>
+class RenderTargetTest : public CommonRenderingTest
 {
-  /// \brief test RenderTexture properties
-  public: void RenderTexture(const std::string &_renderEngine);
-
-  /// \brief test RenderWindow properties
-  public: void RenderWindow(const std::string &_renderEngine);
-
-  /// \brief test adding and removing render passes
-  public: void AddRemoveRenderPass(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void RenderTargetTest::RenderTexture(const std::string &_renderEngine)
+TEST_F(RenderTargetTest, RenderTexture)
 {
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
 
   RenderTexturePtr renderTexture = scene->CreateRenderTexture();
 
   // default properties
   EXPECT_EQ(scene->BackgroundColor(), renderTexture->BackgroundColor());
-  EXPECT_EQ(0u, renderTexture->GLId());
-
   // test basic properties
+  EXPECT_EQ(0u, renderTexture->GLId());
   renderTexture->SetFormat(PF_R8G8B8);
   renderTexture->SetWidth(800u);
   renderTexture->SetHeight(600u);
@@ -75,27 +53,13 @@ void RenderTargetTest::RenderTexture(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void RenderTargetTest::RenderWindow(const std::string &_renderEngine)
+TEST_F(RenderTargetTest, RenderWindow)
 {
-  if (_renderEngine != "ogre")
-  {
-    gzdbg << "RenderWindow not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
+  CHECK_SUPPORTED_ENGINE("ogre");
 
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
 
   CameraPtr camera =  scene->CreateCamera("camera");
@@ -124,27 +88,14 @@ void RenderTargetTest::RenderWindow(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void RenderTargetTest::AddRemoveRenderPass(const std::string &_renderEngine)
+TEST_F(RenderTargetTest, AddRemoveRenderPass)
 {
-  if (_renderEngine != "ogre")
-  {
-    gzdbg << "RenderWindow not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
+  CHECK_RENDERPASS_SUPPORTED();
+  CHECK_SUPPORTED_ENGINE("ogre");
 
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
 
   // create a render texture and verify no render pass exists
@@ -153,12 +104,6 @@ void RenderTargetTest::AddRemoveRenderPass(const std::string &_renderEngine)
 
   // get the render pass system
   RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
-  if (!rpSystem)
-  {
-    gzwarn << "Render engin '" << _renderEngine << "' does not support "
-            << "render pass system" << std::endl;
-    return;
-  }
   RenderPassPtr pass1 = rpSystem->Create<GaussianNoisePass>();
   EXPECT_NE(nullptr, pass1);
 
@@ -182,27 +127,4 @@ void RenderTargetTest::AddRemoveRenderPass(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(RenderTargetTest, RenderTexture)
-{
-  RenderTexture(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(RenderTargetTest, RenderWindow)
-{
-  RenderWindow(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(RenderTargetTest, AddRemoveRenderPass)
-{
-  AddRemoveRenderPass(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(RenderTarget, RenderTargetTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

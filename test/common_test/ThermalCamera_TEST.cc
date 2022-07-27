@@ -17,35 +17,21 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/ThermalCamera.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class ThermalCameraTest : public testing::Test,
-                          public testing::WithParamInterface<const char *>
+class ThermalCameraTest : public CommonRenderingTest 
 {
-  /// \brief Test basic api
-  public: void ThermalCamera(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void ThermalCameraTest::ThermalCamera(const std::string &_renderEngine)
+TEST_F(ThermalCameraTest, ThermalCamera)
 {
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -74,15 +60,4 @@ void ThermalCameraTest::ThermalCamera(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(ThermalCameraTest, ThermalCamera)
-{
-  ThermalCamera(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(ThermalCamera, ThermalCameraTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

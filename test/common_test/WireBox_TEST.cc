@@ -17,41 +17,25 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/WireBox.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class WireBoxTest : public testing::Test,
-                    public testing::WithParamInterface<const char *>
+class WireBoxTest : public CommonRenderingTest
 {
-  public: void WireBox(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void WireBoxTest::WireBox(const std::string &_renderEngine)
+TEST_F(WireBoxTest, WireBox)
 {
-  if (_renderEngine != "ogre" && _renderEngine != "ogre2")
-  {
-    gzdbg << "WireBox not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
+  CHECK_UNSUPPORTED_ENGINE("ogre", "ogre2");
 
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-           << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
 
   WireBoxPtr wireBox = scene->CreateWireBox();
   ASSERT_NE(nullptr, wireBox);
@@ -79,15 +63,4 @@ void WireBoxTest::WireBox(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(WireBoxTest, WireBox)
-{
-  WireBox(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(WireBox, WireBoxTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

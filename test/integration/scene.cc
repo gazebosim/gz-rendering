@@ -17,56 +17,31 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
-
-#include "test_config.hh"  // NOLINT(build/include)
+#include "CommonRenderingTest.hh"
 
 #include "gz/rendering/Camera.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class SceneTest: public testing::Test,
-                 public testing::WithParamInterface<const char *>
+class SceneTest: public CommonRenderingTest 
 {
-  // Documentation inherited
-  public: void SetUp() override
-  {
-    gz::common::Console::SetVerbosity(4);
-  }
-
-  // Test adding and removing visuals
-  // Simulates 'levels' where visuals are added and removed throughout
-  // frame updates
-  public: void AddRemoveVisuals(const std::string &_renderEngine);
-
-  // Test and verify camera tracking
-  public: void VisualAt(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void SceneTest::AddRemoveVisuals(const std::string &_renderEngine)
+TEST_F(SceneTest, AddRemoveVisuals)
 {
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene); 
 
   VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
 
   // create camera
   CameraPtr camera = scene->CreateCamera("camera");
-  ASSERT_TRUE(camera != nullptr);
+  ASSERT_NE(nullptr, camera);
+
   camera->SetLocalPosition(0.0, 0.0, 0.0);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
@@ -98,7 +73,7 @@ void SceneTest::AddRemoveVisuals(const std::string &_renderEngine)
       // create box
       std::string name = "box" + std::to_string(i) + std::to_string(j);
       VisualPtr box = scene->CreateVisual(name);
-      ASSERT_TRUE(box != nullptr);
+      ASSERT_NE(nullptr, box);
       EXPECT_TRUE(scene->HasVisualName(name));
       GeometryPtr boxGeom = scene->CreateBox();
       boxGeom->SetMaterial(material);
@@ -142,36 +117,23 @@ void SceneTest::AddRemoveVisuals(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void SceneTest::VisualAt(const std::string &_renderEngine)
+TEST_F(SceneTest, VisualAt)
 {
-  if (_renderEngine == "optix")
-  {
-    gzdbg << "RayQuery not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
+  // Optix doesn't support RayQuery
+  CHECK_UNSUPPORTED_ENGINE("optix");
 
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
 
   // create box visual
   VisualPtr box = scene->CreateVisual("box");
-  ASSERT_TRUE(box != nullptr);
+  ASSERT_NE(nullptr, box);
   box->AddGeometry(scene->CreateBox());
   box->SetOrigin(0.0, 0.5, 0.0);
   box->SetLocalPosition(3, 0, 0);
@@ -181,7 +143,7 @@ void SceneTest::VisualAt(const std::string &_renderEngine)
 
   // create sphere visual
   VisualPtr sphere = scene->CreateVisual("sphere");
-  ASSERT_TRUE(sphere != nullptr);
+  ASSERT_NE(nullptr, sphere);
   sphere->AddGeometry(scene->CreateSphere());
   sphere->SetOrigin(0.0, -0.5, 0.0);
   sphere->SetLocalPosition(3, 0, 0);
@@ -191,7 +153,7 @@ void SceneTest::VisualAt(const std::string &_renderEngine)
 
   // create camera
   CameraPtr camera = scene->CreateCamera("camera");
-  ASSERT_TRUE(camera != nullptr);
+  ASSERT_NE(nullptr, camera);
   camera->SetLocalPosition(0.0, 0.0, 0.0);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
@@ -207,38 +169,20 @@ void SceneTest::VisualAt(const std::string &_renderEngine)
   // test get sphere object
   gz::math::Vector2i spherePosition(220, 307);
   VisualPtr sphere_visual = scene->VisualAt(camera, spherePosition);
-  ASSERT_TRUE(sphere_visual != nullptr);
+  ASSERT_NE(nullptr, sphere_visual);
   EXPECT_EQ("sphere", sphere_visual->Name());
 
   // test get box object
   gz::math::Vector2i boxPosition(452, 338);
   VisualPtr box_visual = scene->VisualAt(camera, boxPosition);
-  ASSERT_TRUE(box_visual != nullptr);
+  ASSERT_NE(nullptr, box_visual);
   EXPECT_EQ("box", box_visual->Name());
 
   // test get no object
   gz::math::Vector2i emptyPosition(300, 150);
   VisualPtr empty_visual = scene->VisualAt(camera, emptyPosition);
-  ASSERT_TRUE(empty_visual == nullptr);
+  ASSERT_EQ(nullptr, empty_visual);
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(SceneTest, AddRemoveVisuals)
-{
-  AddRemoveVisuals(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(SceneTest, VisualAt)
-{
-  VisualAt(GetParam());
-}
-
-// It doesn't suppot optix just yet
-INSTANTIATE_TEST_SUITE_P(Scene, SceneTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

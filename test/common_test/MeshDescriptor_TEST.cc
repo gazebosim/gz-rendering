@@ -18,40 +18,26 @@
 #include <gtest/gtest.h>
 #include <string>
 
-#include <gz/common/Console.hh>
-#include <gz/common/MeshManager.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
+#include <gz/common/MeshManager.hh>
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/MeshDescriptor.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class MeshDescriptorTest : public testing::Test,
-                           public testing::WithParamInterface<const char *>
+class MeshDescriptorTest : public CommonRenderingTest 
 {
-  /// \brief Test MeshDescriptor basic API
-  public: void Descriptor(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void MeshDescriptorTest::Descriptor(const std::string &_renderEngine)
+TEST_F(MeshDescriptorTest, Descriptor)
 {
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   // empty constructor
   MeshDescriptor emptyDescriptor;
@@ -70,7 +56,7 @@ void MeshDescriptorTest::Descriptor(const std::string &_renderEngine)
 
   // describe mesh by common mesh obj
   common::MeshManager *meshManager = common::MeshManager::Instance();
-  ASSERT_TRUE(meshManager != nullptr);
+  ASSERT_NE(nullptr,  meshManager);
   const common::Mesh *comMesh = meshManager->MeshByName("unit_cylinder");
   MeshDescriptor cylinderDescriptor(comMesh);
   EXPECT_TRUE(cylinderDescriptor.meshName.empty());
@@ -84,15 +70,4 @@ void MeshDescriptorTest::Descriptor(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(MeshDescriptorTest, Descriptor)
-{
-  Descriptor(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(MeshDescriptor, MeshDescriptorTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

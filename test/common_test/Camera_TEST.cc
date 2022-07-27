@@ -17,48 +17,18 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/GaussianNoisePass.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/Scene.hh"
-
-#include <gz/utils/Environment.hh>
 
 using namespace gz;
 using namespace rendering;
 
-class CameraTest : public testing::Test
+class CameraTest : public CommonRenderingTest
 {
-  public: void SetUp() override
-  {
-    gz::common::Console::SetVerbosity(4);
-    gz::utils::env("GZ_ENGINE_TO_TEST", this->engineToTest);
-
-    if (this->engineToTest.empty())
-    {
-      GTEST_SKIP();
-    }
-
-    engine = rendering::engine(this->engineToTest);
-    if (!engine)
-    {
-      GTEST_SKIP() << "Engine '" << this->engineToTest << "' could not be loaded" << std::endl;
-    }
-  }
-
-  public: void TearDown() override
-  {
-    ASSERT_TRUE(rendering::unloadEngine(this->engineToTest));
-  }
-
-  public: std::string engineToTest;
-
-  public: RenderEngine *engine = nullptr;
 };
 
 /////////////////////////////////////////////////
@@ -258,6 +228,8 @@ TEST_F(CameraTest, TrackFollow)
 /////////////////////////////////////////////////
 TEST_F(CameraTest, AddRemoveRenderPass)
 {
+  CHECK_RENDERPASS_SUPPORTED();
+
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -269,12 +241,6 @@ TEST_F(CameraTest, AddRemoveRenderPass)
 
   // get the render pass system
   RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
-  if (!rpSystem)
-  {
-    GTEST_SKIP() << "Render engin '" << this->engineToTest << "' does not support "
-            << "render pass system" << std::endl;
-    return;
-  }
   RenderPassPtr pass1 = rpSystem->Create<GaussianNoisePass>();
   EXPECT_NE(nullptr, pass1);
 

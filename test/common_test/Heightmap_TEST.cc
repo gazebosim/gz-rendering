@@ -17,28 +17,19 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
+
 #include <gz/common/geospatial/ImageHeightmap.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
-#include "test_config.hh"  // NOLINT(build/include)
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Heightmap.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class HeightmapTest : public testing::Test,
-                 public testing::WithParamInterface<const char *>
+class HeightmapTest : public CommonRenderingTest 
 {
-  // Documentation inherited
-  protected: void SetUp() override
-  {
-    common::Console::SetVerbosity(4);
-  }
-
   /// \brief Path to test media files.
   public: const std::string TEST_MEDIA_PATH{
         common::joinPaths(std::string(PROJECT_SOURCE_PATH),
@@ -47,23 +38,9 @@ class HeightmapTest : public testing::Test,
 
 /////////////////////////////////////////////////
 // ogre1 not supported on Windows
-TEST_P(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
+TEST_F(HeightmapTest, Heightmap)
 {
-  std::string renderEngine{this->GetParam()};
-  if (renderEngine != "ogre")
-  {
-    gzdbg << "Heightmap not supported yet in rendering engine: "
-            << renderEngine << std::endl;
-    return;
-  }
-
-  auto engine = rendering::engine(renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << renderEngine
-           << "' is not supported" << std::endl;
-    return;
-  }
+  CHECK_SUPPORTED_ENGINE("ogre");
 
   auto scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
@@ -161,11 +138,10 @@ TEST_P(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 //////////////////////////////////////////////////
-TEST_P(HeightmapTest, MoveConstructor)
+TEST_F(HeightmapTest, MoveConstructor)
 {
   HeightmapDescriptor descriptor;
   descriptor.SetSize({0.1, 0.2, 0.3});
@@ -199,7 +175,7 @@ TEST_P(HeightmapTest, MoveConstructor)
 }
 
 /////////////////////////////////////////////////
-TEST_P(HeightmapTest, CopyConstructor)
+TEST_F(HeightmapTest, CopyConstructor)
 {
   HeightmapDescriptor descriptor;
   descriptor.SetSize({0.1, 0.2, 0.3});
@@ -233,7 +209,7 @@ TEST_P(HeightmapTest, CopyConstructor)
 }
 
 /////////////////////////////////////////////////
-TEST_P(HeightmapTest, CopyAssignmentOperator)
+TEST_F(HeightmapTest, CopyAssignmentOperator)
 {
   HeightmapDescriptor descriptor;
   descriptor.SetSize({0.1, 0.2, 0.3});
@@ -270,7 +246,7 @@ TEST_P(HeightmapTest, CopyAssignmentOperator)
 }
 
 /////////////////////////////////////////////////
-TEST_P(HeightmapTest, MoveAssignmentOperator)
+TEST_F(HeightmapTest, MoveAssignmentOperator)
 {
   HeightmapDescriptor descriptor;
   descriptor.SetSize({0.1, 0.2, 0.3});
@@ -307,7 +283,7 @@ TEST_P(HeightmapTest, MoveAssignmentOperator)
 }
 
 /////////////////////////////////////////////////
-TEST_P(HeightmapTest, CopyAssignmentAfterMove)
+TEST_F(HeightmapTest, CopyAssignmentAfterMove)
 {
   HeightmapDescriptor descriptor1;
   descriptor1.SetSampling(123u);
@@ -350,9 +326,3 @@ TEST_P(HeightmapTest, CopyAssignmentAfterMove)
   EXPECT_DOUBLE_EQ(456.123, blend1.MinHeight());
   EXPECT_DOUBLE_EQ(123.456, blend2.MinHeight());
 }
-
-// TODO(anyone) Running test with Ogre1. Update once Ogre2 is supported.
-// https://github.com/gazebosim/gz-rendering/issues/187
-INSTANTIATE_TEST_SUITE_P(Heightmap, HeightmapTest,
-    ::testing::ValuesIn({"ogre"}),
-    gz::rendering::PrintToStringParam());

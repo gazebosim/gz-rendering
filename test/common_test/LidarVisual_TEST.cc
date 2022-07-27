@@ -16,11 +16,8 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/LidarVisual.hh"
 #include "gz/rendering/Scene.hh"
 
@@ -28,30 +25,14 @@ using namespace gz;
 using namespace rendering;
 using namespace std::chrono_literals;
 
-class LidarVisualTest : public testing::Test,
-                   public testing::WithParamInterface<const char *>
+class LidarVisualTest : public CommonRenderingTest 
 {
-  public: void LidarVisual(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
+TEST_F(LidarVisualTest, LidarVisual)
 {
-  if (_renderEngine == "optix")
-  {
-    gzdbg << "LidarVisual not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
-
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-           << "' is not supported" << std::endl;
-    return;
-  }
+  CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
 
   // check scene creation
   ScenePtr scene = engine->CreateScene("scene");
@@ -123,18 +104,6 @@ void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
   lidar->ClearPoints();
   EXPECT_EQ(lidar->PointCount(), 0u);
 
-
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(LidarVisualTest, LidarVisual)
-{
-  LidarVisual(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(LidarVisual, LidarVisualTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

@@ -16,40 +16,23 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Text.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class TextTest : public testing::Test,
-                 public testing::WithParamInterface<const char *>
+class TextTest : public CommonRenderingTest 
 {
-  public: void Text(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void TextTest::Text(const std::string &_renderEngine)
+TEST_F(TextTest, Text)
 {
-  if (_renderEngine != "ogre")
-  {
-    gzdbg << "Text not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
+  CHECK_SUPPORTED_ENGINE("ogre");
 
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-           << "' is not supported" << std::endl;
-    return;
-  }
   ScenePtr scene = engine->CreateScene("scene");
 
   TextPtr text = scene->CreateText();
@@ -111,15 +94,4 @@ void TextTest::Text(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(TextTest, Text)
-{
-  Text(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(Text, TextTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

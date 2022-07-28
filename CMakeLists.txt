@@ -9,7 +9,7 @@ project(ignition-rendering6 VERSION 6.5.1)
 # Find ignition-cmake
 #============================================================================
 # If you get an error at this line, you need to install ignition-cmake
-find_package(ignition-cmake2 2.12.1 REQUIRED)
+find_package(ignition-cmake2 2.14.0 REQUIRED)
 set(IGN_CMAKE_VER ${ignition-cmake2_VERSION_MAJOR})
 
 #============================================================================
@@ -118,7 +118,7 @@ endif()
 
 # Plugin install dirs
 set(IGNITION_RENDERING_ENGINE_INSTALL_DIR
-  ${CMAKE_INSTALL_PREFIX}/${IGN_LIB_INSTALL_DIR}/ign-${IGN_DESIGNATION}-${PROJECT_VERSION_MAJOR}/engine-plugins
+  ${CMAKE_INSTALL_PREFIX}/${IGN_LIB_INSTALL_DIR}/ign-${GZ_DESIGNATION}-${PROJECT_VERSION_MAJOR}/engine-plugins
 )
 
 #--------------------------------------

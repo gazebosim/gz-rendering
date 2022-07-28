@@ -101,13 +101,15 @@ macro(gz_rendering_test)
         TARGET ${TEST_NAME}
         RENDER_ENGINE "ogre2"
         RENDER_ENGINE_BACKEND "gl3plus")
-      if(UBUNTU_JAMMY)
-        gz_configure_rendering_test(
-          TARGET ${TEST_NAME}
-          RENDER_ENGINE "ogre2"
-          RENDER_ENGINE_BACKEND "vulkan"
-          HEADLESS)
-      endif()
+      # \TODO(mjcarroll) Re-enable when Github Actions
+      # supports it
+      # if(UBUNTU_JAMMY)
+      #   gz_configure_rendering_test(
+      #     TARGET ${TEST_NAME}
+      #     RENDER_ENGINE "ogre2"
+      #     RENDER_ENGINE_BACKEND "vulkan"
+      #     HEADLESS)
+      # endif()
     endif()
   endif()
   if (HAVE_OPTIX)

@@ -1,5 +1,43 @@
 ## Ignition Rendering
 
+### Ignition Rendering 6.5.1 (2022-07-28)
+
+1. Backport multiple ray queries fix (#665)
+    * [Pull request #690](https://github.com/gazebosim/gz-rendering/pull/690)
+
+1. Fixed CMakeLists.txt in examples
+    * [Pull request #686](https://github.com/gazebosim/gz-rendering/pull/686)
+
+1. Update Marker test
+    * [Pull request #673](https://github.com/gazebosim/gz-rendering/pull/673)
+
+1. Increase TransformControl test converage
+    * [Pull request #668](https://github.com/gazebosim/gz-rendering/pull/668)
+
+1. Enable ogre2 heightmap test
+    * [Pull request #670](https://github.com/gazebosim/gz-rendering/pull/670)
+
+1. Add tests for ShaderType, GraphicsAPI, and DistortionPass
+    * [Pull request #671](https://github.com/gazebosim/gz-rendering/pull/671)
+
+1. Fixed waves example CMakeLists.txt
+    * [Pull request #678](https://github.com/gazebosim/gz-rendering/pull/678)
+
+1. Ignition -> Gazebo
+    * [Pull request #674](https://github.com/gazebosim/gz-rendering/pull/674)
+
+1. Disable thermal camera tests on MacOS
+    * [Pull request #659](https://github.com/gazebosim/gz-rendering/pull/659)
+
+1. Fix Ogre2RenderTarget::TargetFSAA method that caused black screen when used with llvmpipe
+    * [Pull request #661](https://github.com/gazebosim/gz-rendering/pull/661)
+
+1. Protect against non-finite inputs on Node and OrbitViewController
+    * [Pull request #655](https://github.com/gazebosim/gz-rendering/pull/655)
+
+1. Fix checking unofficial ogre version when ogre 1.x is not installed
+    * [Pull request #648](https://github.com/gazebosim/gz-rendering/pull/648)
+
 ### Ignition Rendering 6.5.0 (2022-06-15)
 
 1. Bounding Box Camera

@@ -164,7 +164,7 @@ namespace gz
 
       // Documentation inherited
       public: virtual void SetTexture(const std::string &_texture,
-          const std::shared_ptr<const common::Image> &_img = nullptr) override;
+          const std::shared_ptr<const common::Image> &_img) override;
 
       // Documentation inherited
       public: virtual std::shared_ptr<const common::Image> TextureData()
@@ -185,7 +185,7 @@ namespace gz
 
       // Documentation inherited
       public: virtual void SetNormalMap(const std::string &_normalMap,
-          const std::shared_ptr<const common::Image> &_img = nullptr) override;
+          const std::shared_ptr<const common::Image> &_img) override;
 
       // Documentation inherited
       public: virtual void ClearNormalMap() override;
@@ -202,7 +202,7 @@ namespace gz
 
       // Documentation inherited
       public: virtual void SetRoughnessMap(const std::string &_roughnessMap,
-          const std::shared_ptr<const common::Image> &_img = nullptr) override;
+          const std::shared_ptr<const common::Image> &_img) override;
 
       // Documentation inherited
       public: virtual void ClearRoughnessMap() override;
@@ -219,7 +219,7 @@ namespace gz
 
       // Documentation inherited
       public: virtual void SetMetalnessMap(const std::string &_metalnessMap,
-          const std::shared_ptr<const common::Image> &_img = nullptr) override;
+          const std::shared_ptr<const common::Image> &_img) override;
 
       // Documentation inherited
       public: virtual void ClearMetalnessMap() override;
@@ -249,7 +249,7 @@ namespace gz
 
       // Documentation inherited
       public: virtual void SetEmissiveMap(const std::string &_emissiveMap,
-          const std::shared_ptr<const common::Image> &_img = nullptr) override;
+          const std::shared_ptr<const common::Image> &_img) override;
 
       // Documentation inherited
       public: virtual void ClearEmissiveMap() override;
@@ -262,10 +262,6 @@ namespace gz
 
       // Documentation inherited
       public: virtual unsigned int LightMapTexCoordSet() const override;
-
-      // Documentation inherited
-      public: virtual void SetLightMap(const std::string &_lightMap,
-          unsigned int _uvSet = 0u) override;
 
       // Documentation inherited
       public: virtual void SetLightMap(const std::string &_lightMap,
@@ -954,13 +950,6 @@ namespace gz
     unsigned int BaseMaterial<T>::LightMapTexCoordSet() const
     {
       return 0u;
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseMaterial<T>::SetLightMap(const std::string &, unsigned int)
-    {
-      // no op
     }
 
     //////////////////////////////////////////////////

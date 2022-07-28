@@ -167,7 +167,7 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   // texture
   std::string textureName =
       common::joinPaths(TEST_MEDIA_PATH, "texture.png");
-  material->SetTexture(textureName);
+  material->SetTexture(textureName, nullptr);
   EXPECT_EQ(textureName, material->Texture());
   EXPECT_TRUE(material->HasTexture());
 
@@ -188,13 +188,13 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   EXPECT_EQ(material->TextureData(), nullptr);
 
   std::string noSuchTextureName = "no_such_texture.png";
-  material->SetTexture(noSuchTextureName);
+  material->SetTexture(noSuchTextureName, nullptr);
   EXPECT_EQ(noSuchTextureName, material->Texture());
   EXPECT_TRUE(material->HasTexture());
 
   // normal map
   std::string normalMapName = textureName;
-  material->SetNormalMap(normalMapName);
+  material->SetNormalMap(normalMapName, nullptr);
   EXPECT_EQ(normalMapName, material->NormalMap());
   EXPECT_TRUE(material->HasNormalMap());
 
@@ -211,7 +211,7 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   EXPECT_EQ(material->NormalMapData(), nullptr);
 
   std::string noSuchNormalMapName = "no_such_normal.png";
-  material->SetNormalMap(noSuchNormalMapName);
+  material->SetNormalMap(noSuchNormalMapName, nullptr);
   EXPECT_EQ(noSuchNormalMapName, material->NormalMap());
   EXPECT_TRUE(material->HasNormalMap());
 
@@ -219,7 +219,7 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
   {
     // metalness map
     std::string metalnessMapName = textureName;
-    material->SetMetalnessMap(metalnessMapName);
+    material->SetMetalnessMap(metalnessMapName, nullptr);
     EXPECT_EQ(metalnessMapName, material->MetalnessMap());
     EXPECT_TRUE(material->HasMetalnessMap());
 
@@ -236,13 +236,13 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
     EXPECT_EQ(material->MetalnessMapData(), nullptr);
 
     std::string noSuchMetalnessMapName = "no_such_metalness.png";
-    material->SetMetalnessMap(noSuchMetalnessMapName);
+    material->SetMetalnessMap(noSuchMetalnessMapName, nullptr);
     EXPECT_EQ(noSuchMetalnessMapName, material->MetalnessMap());
     EXPECT_TRUE(material->HasMetalnessMap());
 
     // roughness map
     std::string roughnessMapName = textureName;
-    material->SetRoughnessMap(roughnessMapName);
+    material->SetRoughnessMap(roughnessMapName, nullptr);
     EXPECT_EQ(roughnessMapName, material->RoughnessMap());
     EXPECT_TRUE(material->HasRoughnessMap());
 
@@ -259,7 +259,7 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
     EXPECT_EQ(material->RoughnessMapData(), nullptr);
 
     std::string noSuchRoughnessMapName = "no_such_roughness.png";
-    material->SetRoughnessMap(noSuchRoughnessMapName);
+    material->SetRoughnessMap(noSuchRoughnessMapName, nullptr);
     EXPECT_EQ(noSuchRoughnessMapName, material->RoughnessMap());
     EXPECT_TRUE(material->HasRoughnessMap());
 
@@ -279,7 +279,7 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
 
     // emissive map
     std::string emissiveMapName = textureName;
-    material->SetEmissiveMap(emissiveMapName);
+    material->SetEmissiveMap(emissiveMapName, nullptr);
     EXPECT_EQ(emissiveMapName, material->EmissiveMap());
     EXPECT_TRUE(material->HasEmissiveMap());
 
@@ -296,13 +296,13 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
     EXPECT_EQ(material->EmissiveMapData(), nullptr);
 
     std::string noSuchEmissiveMapName = "no_such_emissive.png";
-    material->SetEmissiveMap(noSuchEmissiveMapName);
+    material->SetEmissiveMap(noSuchEmissiveMapName, nullptr);
     EXPECT_EQ(noSuchEmissiveMapName, material->EmissiveMap());
     EXPECT_TRUE(material->HasEmissiveMap());
 
     // light map
     std::string lightMapName = textureName;
-    material->SetLightMap(lightMapName, 1u);
+    material->SetLightMap(lightMapName, nullptr, 1u);
     EXPECT_EQ(lightMapName, material->LightMap());
     EXPECT_EQ(1u, material->LightMapTexCoordSet());
     EXPECT_TRUE(material->HasLightMap());
@@ -321,7 +321,7 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
     EXPECT_EQ(material->LightMapData(), nullptr);
 
     std::string noSuchLightMapName = "no_such_light.png";
-    material->SetLightMap(noSuchLightMapName);
+    material->SetLightMap(noSuchLightMapName, nullptr);
     EXPECT_EQ(noSuchLightMapName, material->LightMap());
     EXPECT_TRUE(material->HasLightMap());
 

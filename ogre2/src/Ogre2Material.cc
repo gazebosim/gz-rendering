@@ -679,34 +679,6 @@ unsigned int Ogre2Material::LightMapTexCoordSet() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetLightMap(const std::string &_name, unsigned int _uvSet)
-{
-  if (_name.empty())
-  {
-    this->ClearLightMap();
-    return;
-  }
-
-  this->lightMapName = _name;
-  this->dataPtr->lightMapData = nullptr;
-  this->lightMapUvSet = _uvSet;
-
-  // in gz-rendering5 + ogre 2.1, we reserved detail map 0 for light map
-  // and set a blend mode (PBSM_BLEND_OVERLAY AND PBSM_BLEND_MULTIPLY2X
-  // produces better results) to blend with base albedo map. However, this
-  // creates unwanted red highlights with ogre 2.2. So switching to use the
-  // emissive map slot and calling setUseEmissiveAsLightmap(true)
-  // Ogre::PbsTextureTypes type = Ogre::PBSM_DETAIL0;
-  // this->ogreDatablock->setDetailMapBlendMode(0, Ogre::PBSM_BLEND_OVERLAY);
-  Ogre::PbsTextureTypes type = Ogre::PBSM_EMISSIVE;
-
-  // lightmap usually uses a different tex coord set
-  this->SetTextureMapImpl(this->lightMapName, type);
-  this->ogreDatablock->setTextureUvSource(type, this->lightMapUvSet);
-  this->ogreDatablock->setUseEmissiveAsLightmap(true);
-}
-
-//////////////////////////////////////////////////
 void Ogre2Material::SetLightMap(const std::string &_name,
   const std::shared_ptr<const common::Image> &_img,
   unsigned int _uvSet)
@@ -731,7 +703,10 @@ void Ogre2Material::SetLightMap(const std::string &_name,
   Ogre::PbsTextureTypes type = Ogre::PBSM_EMISSIVE;
 
   // lightmap usually uses a different tex coord set
-  this->SetTextureMapDataImpl(this->lightMapName, _img, type);
+  if (_img == nullptr)
+    this->SetTextureMapImpl(this->lightMapName, type);
+  else
+    this->SetTextureMapDataImpl(this->lightMapName, _img, type);
   this->ogreDatablock->setTextureUvSource(type, this->lightMapUvSet);
   this->ogreDatablock->setUseEmissiveAsLightmap(true);
 }
@@ -746,6 +721,7 @@ std::shared_ptr<const common::Image> Ogre2Material::LightMapData() const
 void Ogre2Material::ClearLightMap()
 {
   this->lightMapName = "";
+  this->dataPtr->lightMapData = nullptr;
   this->lightMapUvSet = 0u;
 
   // in ogre 2.2, we swtiched to use the emissive map slot for light map

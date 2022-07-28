@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef COMMON_TEST_HH_
-#define COMMON_TEST_HH_
+#ifndef COMMON_RENDERING_TEST_HH_
+#define COMMON_RENDERING_TEST_HH_
 
 #include <gtest/gtest.h>
 
@@ -33,6 +33,9 @@ constexpr const char * kEngineToTestEnv = "GZ_ENGINE_TO_TEST";
 constexpr const char * kEngineBackend = "GZ_ENGINE_BACKEND";
 constexpr const char * kEngineHeadless = "GZ_ENGINE_HEADLESS";
 
+/// \brief Common test fixture for all rendering tests
+/// This allows for the engine, backend, and headless parameters
+/// to be controlled via environment variables
 class CommonRenderingTest: public testing::Test
 {
   /// \brief Set up the test case
@@ -43,7 +46,7 @@ class CommonRenderingTest: public testing::Test
 
     if (this->engineToTest.empty())
     {
-      GTEST_SKIP() << kEngineToTestEnv << "environment not set";
+      GTEST_SKIP() << kEngineToTestEnv << " environment not set";
     }
 
     std::map<std::string, std::string> engineParams;
@@ -93,14 +96,26 @@ class CommonRenderingTest: public testing::Test
 };
 
 
+/// \brief Check that the current engine being tested is supported.
+/// If the engine is not in the set of passed arguments, the test is skipped
+/// Example: 
+/// Skip test if engine is not ogre or ogre2
+/// CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
 #define CHECK_SUPPORTED_ENGINE(...) \
 if(std::unordered_set<std::string>({__VA_ARGS__}).count(this->engineToTest) == 0) \
   GTEST_SKIP() << "Engine '" << this->engineToTest << "' unsupported";
 
+/// \brief Check that the current engine being tested is unsupported
+/// If the engine is in the set of passed arguments, the test is skipped
+/// Example: 
+/// Skip test if engine is ogre2
+/// CHECK_UNSUPPORTED_ENGINE("ogre");
 #define CHECK_UNSUPPORTED_ENGINE(...) \
 if(std::unordered_set<std::string>({__VA_ARGS__}).count(this->engineToTest) != 0) \
   GTEST_SKIP() << "Engine '" << this->engineToTest << "' unsupported";
 
+/// \brief Check that renderpass is supported by the engine under test
+/// Skip the test if the engine doesn't support renderpass
 #define CHECK_RENDERPASS_SUPPORTED() \
 { \
   gz::rendering::RenderPassSystemPtr rpSystem = this->engine->RenderPassSystem(); \
@@ -110,5 +125,4 @@ if(std::unordered_set<std::string>({__VA_ARGS__}).count(this->engineToTest) != 0
   } \
 } \
 
-
-#endif  // COMMON_TEST_HH_
+#endif  // COMMON_RENDERING_TEST_HH_

@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+project(ignition-rendering-hello-world-plugin)
 
 set(IGN_PLUGIN_VER 1)
 set(IGN_COMMON_VER 3)

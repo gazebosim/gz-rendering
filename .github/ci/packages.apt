@@ -1,6 +1,5 @@
 freeglut3-dev
 libfreeimage-dev
-libgazebo11-dev
 libglew-dev
 libignition-cmake2-dev
 libignition-common3-dev

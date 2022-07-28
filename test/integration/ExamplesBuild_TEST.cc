@@ -385,10 +385,20 @@ TEST(ExamplesBuild, Build)
        dirIter != endIter;
        ++dirIter)
   {
+    // gazebo_scene_viewer example needs gazebo11. Don't compile this example
+    // as we need to bring many dependencies and it's complicated to install it
+    // on Windows.
+    if ((*dirIter).find("gazebo_scene_viewer") != std::string::npos)
+    {
+      continue;
+    }
+
+    std::cout << "Compiling : " << *dirIter << std::endl;
+
     // Create a temp build directory
     std::string tmpBuildDir;
     ASSERT_TRUE(createAndSwitchToTempDir(tmpBuildDir));
-    std::cout << "Build directory: " << tmpBuildDir<< std::endl;
+    std::cout << "Build directory: " << tmpBuildDir << std::endl;
 
     char cmd[1024];
 

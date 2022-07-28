@@ -371,10 +371,32 @@ namespace gz
       /// \return URI of the environment map file
       public: virtual std::string EnvironmentMap() const = 0;
 
+      /// \brief Get the environment map data
+      /// \return Pointer to the common::Image with the data if the texture
+      /// was loaded from memory
+      public: virtual std::shared_ptr<const common::Image> EnvironmentMapData()
+                  const = 0;
+
       /// \brief Set the material environment map
-      /// \param[in] _metalnessMap URI of the new environment map file
+      /// \param[in] _environmentMap URI of the new environment map file
+      public: virtual void GZ_DEPRECATED(7) SetEnvironmentMap(
+        const std::string &_environmentMap)
+      {
+        (void)_environmentMap;
+      }
+
+      /// \brief Set the material environment map
+      /// \param[in] _environmentMap URI of the new environment map file,
+      /// or identifying name if map was set from raw data
+      /// \param[in] _img Image data, nullptr if the image should be loaded
+      /// from a file
       public: virtual void SetEnvironmentMap(
-        const std::string &_metalnessMap) = 0;
+        const std::string &_environmentMap,
+        const std::shared_ptr<const common::Image> &_img)
+      {
+        (void)_environmentMap;
+        (void)_img;
+      }
 
       /// \brief Removes any environment map mapped to this material
       public: virtual void ClearEnvironmentMap() = 0;

@@ -231,8 +231,16 @@ namespace gz
       public: virtual std::string EnvironmentMap() const override;
 
       // Documentation inherited
-      public: virtual void SetEnvironmentMap(const std::string &_metalnessMap)
+      public: virtual std::shared_ptr<const common::Image> EnvironmentMapData()
+          const override;
+
+      // Documentation inherited
+      public: virtual void SetEnvironmentMap(const std::string &_environmentMap)
           override;
+
+      // Documentation inherited
+      public: virtual void SetEnvironmentMap(const std::string &_environmentMap,
+          const std::shared_ptr<const common::Image> &_img) override;
 
       // Documentation inherited
       public: virtual void ClearEnvironmentMap() override;
@@ -882,7 +890,24 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
+    std::shared_ptr<const common::Image> BaseMaterial<T>::EnvironmentMapData()
+        const
+    {
+      return {};
+    }
+
+
+    //////////////////////////////////////////////////
+    template <class T>
     void BaseMaterial<T>::SetEnvironmentMap(const std::string &)
+    {
+      // no op
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseMaterial<T>::SetEnvironmentMap(const std::string &,
+        const std::shared_ptr<const common::Image> &)
     {
       // no op
     }
@@ -1047,7 +1072,8 @@ namespace gz
           _material->MetalnessMapData());
       this->SetRoughness(_material->Roughness());
       this->SetMetalness(_material->Metalness());
-      this->SetEnvironmentMap(_material->EnvironmentMap());
+      this->SetEnvironmentMap(_material->EnvironmentMap(),
+          _material->EnvironmentMapData());
       this->SetEmissiveMap(_material->EmissiveMap(),
           _material->EmissiveMapData());
       this->SetLightMap(_material->LightMap(), _material->LightMapData(),
@@ -1093,7 +1119,8 @@ namespace gz
       this->SetMetalnessMap(pbrMat->MetalnessMap(), pbrMat->MetalnessMapData());
       this->SetRoughness(pbrMat->Roughness());
       this->SetMetalness(pbrMat->Metalness());
-      this->SetEnvironmentMap(pbrMat->EnvironmentMap());
+      // TODO(anyone): update when pbrMat has EnvironmentMapData API
+      this->SetEnvironmentMap(pbrMat->EnvironmentMap(), nullptr);
       this->SetEmissiveMap(pbrMat->EmissiveMap(), pbrMat->EmissiveMapData());
       this->SetLightMap(pbrMat->LightMap(), pbrMat->LightMapData(),
           pbrMat->LightMapTexCoordSet());

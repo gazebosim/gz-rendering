@@ -265,15 +265,24 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
 
     // environment map
     std::string environmentMapName = textureName;
-    material->SetEnvironmentMap(environmentMapName);
+    material->SetEnvironmentMap(environmentMapName, nullptr);
     EXPECT_EQ(environmentMapName, material->EnvironmentMap());
     EXPECT_TRUE(material->HasEnvironmentMap());
 
     material->ClearEnvironmentMap();
     EXPECT_FALSE(material->HasEnvironmentMap());
 
+    // Set the environment map from binary data
+    material->SetEnvironmentMap(environmentMapName, textureImg);
+    EXPECT_EQ(environmentMapName, material->EnvironmentMap());
+    EXPECT_EQ(material->EnvironmentMapData(), textureImg);
+
+    material->ClearEnvironmentMap();
+    EXPECT_FALSE(material->HasEnvironmentMap());
+    EXPECT_EQ(material->EnvironmentMapData(), nullptr);
+
     std::string noSuchEnvironmentMapName = "no_such_environment.png";
-    material->SetEnvironmentMap(noSuchEnvironmentMapName);
+    material->SetEnvironmentMap(noSuchEnvironmentMapName, nullptr);
     EXPECT_EQ(noSuchEnvironmentMapName, material->EnvironmentMap());
     EXPECT_TRUE(material->HasEnvironmentMap());
 
@@ -415,7 +424,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   material->SetShaderType(shaderType);
   material->SetRoughnessMap(roughnessMapName, textureImg);
   material->SetMetalnessMap(metalnessMapName, textureImg);
-  material->SetEnvironmentMap(envMapName);
+  material->SetEnvironmentMap(envMapName, textureImg);
   material->SetEmissiveMap(emissiveMapName, textureImg);
   material->SetLightMap(lightMapName, textureImg, 1u);
   material->SetRoughness(roughness);
@@ -456,6 +465,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(metalnessMapName, clone->MetalnessMap());
     EXPECT_EQ(textureImg, clone->MetalnessMapData());
     EXPECT_EQ(envMapName, clone->EnvironmentMap());
+    EXPECT_EQ(textureImg, clone->EnvironmentMapData());
     EXPECT_EQ(emissiveMapName, clone->EmissiveMap());
     EXPECT_EQ(textureImg, clone->EmissiveMapData());
     EXPECT_EQ(lightMapName, clone->LightMap());
@@ -497,6 +507,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
     EXPECT_EQ(metalnessMapName, copy->MetalnessMap());
     EXPECT_EQ(textureImg, copy->MetalnessMapData());
     EXPECT_EQ(envMapName, copy->EnvironmentMap());
+    EXPECT_EQ(textureImg, copy->EnvironmentMapData());
     EXPECT_EQ(emissiveMapName, copy->EmissiveMap());
     EXPECT_EQ(textureImg, copy->EmissiveMapData());
     EXPECT_EQ(lightMapName, copy->LightMap());
@@ -527,6 +538,8 @@ void MaterialTest::Copy(const std::string &_renderEngine)
   pbr.SetRoughnessMap(roughnessMapName, textureImg);
   pbr.SetMetalnessMap(metalnessMapName, textureImg);
   pbr.SetEmissiveMap(emissiveMapName, textureImg);
+  // TODO(anyone) Add support for binary environment maps to pbr material
+  // when a format that supports it is introduced
   pbr.SetEnvironmentMap(envMapName);
   pbr.SetLightMap(lightMapName, 1u, textureImg);
   comMat.SetPbrMaterial(pbr);

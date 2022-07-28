@@ -76,6 +76,10 @@ class gz::rendering::Ogre2MaterialPrivate
   /// loaded from memory
   public: std::shared_ptr<const common::Image> emissiveMapData;
 
+  /// \brief Pointer to image containing the environment map data if it was
+  /// loaded from memory
+  public: std::shared_ptr<const common::Image> environmentMapData;
+
   /// \brief Pointer to image containing the light map data if it was
   /// loaded from memory
   public: std::shared_ptr<const common::Image> lightMapData;
@@ -591,7 +595,14 @@ std::string Ogre2Material::EnvironmentMap() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetEnvironmentMap(const std::string &_name)
+std::shared_ptr<const common::Image> Ogre2Material::EnvironmentMapData() const
+{
+  return this->dataPtr->environmentMapData;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetEnvironmentMap(const std::string &_name,
+  const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -600,13 +611,24 @@ void Ogre2Material::SetEnvironmentMap(const std::string &_name)
   }
 
   this->environmentMapName = _name;
-  this->SetTextureMapImpl(this->environmentMapName, Ogre::PBSM_REFLECTION);
+  this->dataPtr->environmentMapData = _img;
+
+  if (_img == nullptr)
+  {
+    this->SetTextureMapImpl(this->environmentMapName, Ogre::PBSM_REFLECTION);
+  }
+  else
+  {
+    this->SetTextureMapDataImpl(this->environmentMapName,
+                                _img, Ogre::PBSM_REFLECTION);
+  }
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearEnvironmentMap()
 {
   this->environmentMapName = "";
+  this->dataPtr->environmentMapData = nullptr;
   this->ogreDatablock->setTexture(
     Ogre::PBSM_REFLECTION, this->environmentMapName);
 }

@@ -176,8 +176,13 @@ namespace gz
       public: virtual std::string EnvironmentMap() const override;
 
       // Documentation inherited
+      public: virtual std::shared_ptr<const common::Image> EnvironmentMapData()
+          const override;
+
+      // Documentation inherited
       public: virtual void SetEnvironmentMap(
-        const std::string &_metalnessMap) override;
+        const std::string &_environmentMap,
+        const std::shared_ptr<const common::Image> &_img) override;
 
       // Documentation inherited
       public: virtual void ClearEnvironmentMap() override;

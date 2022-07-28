@@ -9,7 +9,7 @@ project(ignition-rendering3 VERSION 3.6.0)
 # Find ignition-cmake
 #============================================================================
 # If you get an error at this line, you need to install ignition-cmake
-find_package(ignition-cmake2 2.8.0 REQUIRED)
+find_package(ignition-cmake2 2.14.0 REQUIRED)
 
 #============================================================================
 # Set up the project

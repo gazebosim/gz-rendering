@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include "test_config.hh"  // NOLINT(build/include)
+#include "CommonRenderingTest.hh"
 
 #include <gz/common/Console.hh>
 
@@ -28,31 +28,53 @@
 using namespace gz;
 using namespace rendering;
 
+#if HAVE_OGRE
+static bool kHaveOgre = true;
+#else
+static bool kHaveOgre = false;
+#endif
+
+#if HAVE_OGRE2
+static bool kHaveOgre2 = true;
+#else
+static bool kHaveOgre2 = false;
+#endif
+
+#if HAVE_OPTIX
+static bool kHaveOptix = true;
+#else
+static bool kHaveOptix = false;
+#endif
+
+
 /////////////////////////////////////////////////
 // get the number of default engines available
 unsigned int defaultEnginesForTest()
 {
   unsigned int count = 0u;
-#if HAVE_OGRE
-  count++;
-#endif
-#if HAVE_OGRE2
-  count++;
-#endif
-#if HAVE_OPTIX
-  count++;
-#endif
+  count += kHaveOgre;
+  count += kHaveOgre2;
+  count += kHaveOptix;
   return count;
+}
+
+/////////////////////////////////////////////////
+TEST(RenderingIfaceTest, HasEngine)
+{
+  unsigned int count = defaultEnginesForTest();
+  EXPECT_EQ(count, engineCount());
+
+  EXPECT_EQ(kHaveOgre, rendering::hasEngine("ogre"));
+  EXPECT_EQ(kHaveOgre2, rendering::hasEngine("ogre2"));
+  EXPECT_EQ(kHaveOptix, rendering::hasEngine("optix"));
 }
 
 /////////////////////////////////////////////////
 TEST(RenderingIfaceTest, GetEngine)
 {
   common::Console::SetVerbosity(4);
-
+  auto [envEngine, envBackend, envHeadless] = GetTestParams();
   unsigned int count = defaultEnginesForTest();
-  EXPECT_GT(count, 0u);
-
   EXPECT_EQ(count, engineCount());
 
   EXPECT_TRUE(loadedEngines().empty());
@@ -62,39 +84,25 @@ TEST(RenderingIfaceTest, GetEngine)
   EXPECT_FALSE(isEngineLoaded("no_such_engine"));
   EXPECT_EQ(nullptr, sceneFromFirstRenderEngine());
 
-  // check get engine
-  for (unsigned int i = 0; i < count; ++i)
+  RenderEngine *eng = engine(envEngine, std::map<std::string, std::string>());
+  ASSERT_NE(nullptr, eng);
+  auto engineName = eng->Name();
+  ASSERT_FALSE(engineName.empty());
+
+  EXPECT_TRUE(isEngineLoaded(engineName));
+  EXPECT_TRUE(hasEngine(engineName));
+  EXPECT_EQ(eng, engine(engineName));
+
   {
-    RenderEngine *eng = engine(i, std::map<std::string, std::string>(),
-        GZ_RENDERING_TEST_PLUGIN_PATH);
-    ASSERT_NE(nullptr, eng);
-    EXPECT_TRUE(isEngineLoaded(eng->Name()));
-    EXPECT_TRUE(hasEngine(eng->Name()));
-    EXPECT_EQ(eng, engine(eng->Name()));
-
-#if HAVE_OGRE && HAVE_OGRE2
-    // TODO(anyone): ogre and ogre2 cannot be loaded at the same time
-    // so for now only test rendering engine API with one ogre version
-    if (eng->Name() == "ogre" || eng->Name() == "ogre2")
-      ++i;
-#endif
-
-#ifndef _WIN32
-    // Windows CI fails with
-    // Ogre::RenderingAPIException::RenderingAPIException: OpenGL 1.5 is not
-    // supported in GLRenderSystem::initialiseContext
     auto scene = eng->CreateScene("scene");
     EXPECT_NE(nullptr, scene);
-
     EXPECT_EQ(scene, sceneFromFirstRenderEngine());
-#endif
-
     ASSERT_EQ(1u, loadedEngines().size());
     EXPECT_EQ(eng->Name(), loadedEngines()[0]);
-
-    rendering::unloadEngine(eng->Name());
-    EXPECT_FALSE(isEngineLoaded(eng->Name()));
   }
+
+  rendering::unloadEngine(engineName);
+  EXPECT_FALSE(isEngineLoaded(engineName));
 
   EXPECT_TRUE(loadedEngines().empty());
   EXPECT_EQ(nullptr, sceneFromFirstRenderEngine());
@@ -116,9 +124,13 @@ TEST(RenderingIfaceTest, RegisterEngine)
 
   // unregister existing engine by index
   RenderEngine *eng = engine(0u);
-  EXPECT_TRUE(hasEngine(eng->Name()));
+  ASSERT_NE(nullptr, eng);
+  auto engineName = eng->Name();
+  ASSERT_FALSE(engineName.empty());
+
+  EXPECT_TRUE(hasEngine(engineName));
   EXPECT_NO_THROW(unregisterEngine(0u));
-  EXPECT_FALSE(hasEngine(eng->Name()));
+  EXPECT_FALSE(hasEngine(engineName));
 
   // register engine back with a different name
   EXPECT_NO_THROW(registerEngine("my_new_engine", eng));

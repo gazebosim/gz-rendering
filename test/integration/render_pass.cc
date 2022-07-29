@@ -20,6 +20,7 @@
 #include "CommonRenderingTest.hh"
 
 #include <gz/common/Image.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/DepthCamera.hh"
@@ -155,7 +156,7 @@ TEST_F(RenderPassTest, GaussianNoise)
 }
 
 /////////////////////////////////////////////////
-TEST_F(RenderPassTest, DepthGaussianNoise)
+TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_MAC(DepthGaussianNoise))
 {
   CHECK_RENDERPASS_SUPPORTED();
   CHECK_SUPPORTED_ENGINE("ogre2");

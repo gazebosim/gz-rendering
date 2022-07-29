@@ -17,10 +17,9 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
-#include <gz/common/Image.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
+#include <gz/common/Image.hh>
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/DepthCamera.hh"
@@ -28,14 +27,13 @@
 #include "gz/rendering/GaussianNoisePass.hh"
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/PixelFormat.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/Scene.hh"
 
 #define DOUBLE_TOL 1e-6
 unsigned int g_pointCloudCounter = 0;
 
+/////////////////////////////////////////////////
 void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
                   unsigned int _width, unsigned int _height,
                   unsigned int _channels,
@@ -49,44 +47,32 @@ void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
 using namespace gz;
 using namespace rendering;
 
-class RenderPassTest: public testing::Test,
-                      public testing::WithParamInterface<const char *>
+/////////////////////////////////////////////////
+class RenderPassTest: public CommonRenderingTest
 {
-  // Test and verify Gaussian noise pass is applied to a camera
-  public: void GaussianNoise(const std::string &_renderEngine);
-
-  // Test and verify Gaussian noise pass is applied to a depth camera
-  public: void DepthGaussianNoise(const std::string &_renderEngine);
-
-  // Test and verify Distortion pass is applied to a camera
-  public: void Distortion(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void RenderPassTest::GaussianNoise(const std::string &_renderEngine)
+TEST_F(RenderPassTest, GaussianNoise)
 {
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
+  CHECK_RENDERPASS_SUPPORTED();
 
+  // get the render pass system
+  RenderPassSystemPtr rpSystem = this->engine->RenderPassSystem();
   // add resources in build dir
   engine->AddResourcePath(
       common::joinPaths(std::string(PROJECT_BUILD_PATH), "src"));
 
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(0.3, 0.3, 0.3);
 
   VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
 
   // create  camera
   CameraPtr camera = scene->CreateCamera();
-  ASSERT_TRUE(camera != nullptr);
+  ASSERT_NE(nullptr, camera);
   camera->SetImageWidth(100);
   camera->SetImageHeight(100);
   root->AddChild(camera);
@@ -117,23 +103,14 @@ void RenderPassTest::GaussianNoise(const std::string &_renderEngine)
   // add Gaussian noise render pass to camera
   double noiseMean = 0.1;
   double noiseStdDev = 0.01;
-  RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
-  if (rpSystem)
-  {
-    // add gaussian noise pass
-    RenderPassPtr pass = rpSystem->Create<GaussianNoisePass>();
-    GaussianNoisePassPtr noisePass =
-        std::dynamic_pointer_cast<GaussianNoisePass>(pass);
-    noisePass->SetMean(noiseMean);
-    noisePass->SetStdDev(noiseStdDev);
-    camera->AddRenderPass(noisePass);
-  }
-  else
-  {
-    gzwarn << "Engine '" << _renderEngine << "' does not support "
-            << "render pass  system" << std::endl;
-    return;
-  }
+
+  // add gaussian noise pass
+  RenderPassPtr pass = rpSystem->Create<GaussianNoisePass>();
+  GaussianNoisePassPtr noisePass =
+      std::dynamic_pointer_cast<GaussianNoisePass>(pass);
+  noisePass->SetMean(noiseMean);
+  noisePass->SetStdDev(noiseStdDev);
+  camera->AddRenderPass(noisePass);
 
   // capture image with noise
   Image imageNoise = camera->CreateImage();
@@ -175,12 +152,14 @@ void RenderPassTest::GaussianNoise(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
+TEST_F(RenderPassTest, DepthGaussianNoise)
 {
+  CHECK_RENDERPASS_SUPPORTED();
+  CHECK_SUPPORTED_ENGINE("ogre2");
+
   int imgWidth = 10;
   int imgHeight = 10;
 
@@ -189,24 +168,8 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
   double unitBoxSize = 1.0;
   gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
 
-  // Optix is not supported
-  if (_renderEngine != "ogre2")
-  {
-    gzdbg << "Engine '" << _renderEngine
-           << "' doesn't support render pass for depth cameras " << std::endl;
-    return;
-  }
-
-  // Setup gz-rendering with an empty scene
-  auto *engine = gz::rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
 
   // red background
   scene->SetBackgroundColor(1.0, 0.0, 0.0);
@@ -264,23 +227,15 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
     // Add Gaussian noise
     double noiseMean = 0.1;
     double noiseStdDev = 0.01;
+
+    // add gaussian noise pass
     RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
-    if (rpSystem)
-    {
-      // add gaussian noise pass
-      RenderPassPtr pass = rpSystem->Create<GaussianNoisePass>();
-      GaussianNoisePassPtr noisePass =
-          std::dynamic_pointer_cast<GaussianNoisePass>(pass);
-      noisePass->SetMean(noiseMean);
-      noisePass->SetStdDev(noiseStdDev);
-      depthCamera->AddRenderPass(noisePass);
-    }
-    else
-    {
-      gzwarn << "Engine '" << _renderEngine << "' does not support "
-              << "render pass  system" << std::endl;
-      return;
-    }
+    RenderPassPtr pass = rpSystem->Create<GaussianNoisePass>();
+    GaussianNoisePassPtr noisePass =
+        std::dynamic_pointer_cast<GaussianNoisePass>(pass);
+    noisePass->SetMean(noiseMean);
+    noisePass->SetStdDev(noiseStdDev);
+    depthCamera->AddRenderPass(noisePass);
 
     // rgb point cloud data callback
     unsigned int pointCloudChannelCount = 4u;
@@ -400,43 +355,32 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
   }
 
   engine->DestroyScene(scene);
-  gz::rendering::unloadEngine(engine->Name());
 }
 
-void RenderPassTest::Distortion(const std::string &_renderEngine)
+/////////////////////////////////////////////////
+TEST_F(RenderPassTest, Distortion)
 {
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
-  if (_renderEngine == "ogre2")
-  {
-    gzdbg << "Distortion is currently not supported in OGRE2" << std::endl;
-    return;
-
-  }
+  CHECK_RENDERPASS_SUPPORTED();
+  // Distortion isn't supported in ogre2
+  CHECK_UNSUPPORTED_ENGINE("ogre2");
 
   // add resources in build dir
-  engine->AddResourcePath(
+  this->engine->AddResourcePath(
       common::joinPaths(std::string(PROJECT_BUILD_PATH), "src"));
 
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(0.3, 0.3, 0.3);
 
   VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
 
   unsigned int width = 320;
   unsigned int height = 240;
 
   // create  camera
   CameraPtr camera = scene->CreateCamera();
-  ASSERT_TRUE(camera != nullptr);
+  ASSERT_NE(nullptr, camera);
   camera->SetImageWidth(width);
   camera->SetImageHeight(height);
   root->AddChild(camera);
@@ -470,38 +414,29 @@ void RenderPassTest::Distortion(const std::string &_renderEngine)
   camera->Capture(image);
 
   RenderPassSystemPtr rpSystem = engine->RenderPassSystem();
-  if (rpSystem)
+  // add barrel distortion pass
   {
-    // add barrel distortion pass
-    {
-      RenderPassPtr pass = rpSystem->Create<DistortionPass>();
-      DistortionPassPtr distortionPass =
-          std::dynamic_pointer_cast<DistortionPass>(pass);
-      distortionPass->SetK1(-0.1349);
-      distortionPass->SetK2(-0.51868);
-      distortionPass->SetK3(-0.001);
-      camera->AddRenderPass(distortionPass);
-      camera->Capture(imageBarrel);
-      camera->RemoveRenderPass(distortionPass);
-    }
-    // add pincushion distortion pass
-    {
-      RenderPassPtr pass = rpSystem->Create<DistortionPass>();
-      DistortionPassPtr distortionPass =
-          std::dynamic_pointer_cast<DistortionPass>(pass);
-      distortionPass->SetK1(0.1349);
-      distortionPass->SetK2(0.51868);
-      distortionPass->SetK3(0.001);
-      camera->AddRenderPass(distortionPass);
-      camera->Capture(imagePincushion);
-      camera->RemoveRenderPass(distortionPass);
-    }
+    RenderPassPtr pass = rpSystem->Create<DistortionPass>();
+    DistortionPassPtr distortionPass =
+        std::dynamic_pointer_cast<DistortionPass>(pass);
+    distortionPass->SetK1(-0.1349);
+    distortionPass->SetK2(-0.51868);
+    distortionPass->SetK3(-0.001);
+    camera->AddRenderPass(distortionPass);
+    camera->Capture(imageBarrel);
+    camera->RemoveRenderPass(distortionPass);
   }
-  else
+  // add pincushion distortion pass
   {
-    gzwarn << "Engine '" << _renderEngine << "' does not support "
-            << "render pass  system" << std::endl;
-    return;
+    RenderPassPtr pass = rpSystem->Create<DistortionPass>();
+    DistortionPassPtr distortionPass =
+        std::dynamic_pointer_cast<DistortionPass>(pass);
+    distortionPass->SetK1(0.1349);
+    distortionPass->SetK2(0.51868);
+    distortionPass->SetK3(0.001);
+    camera->AddRenderPass(distortionPass);
+    camera->Capture(imagePincushion);
+    camera->RemoveRenderPass(distortionPass);
   }
 
   unsigned char* imageData = static_cast<unsigned char*>(image.Data());
@@ -542,27 +477,4 @@ void RenderPassTest::Distortion(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(RenderPassTest, GaussianNoise)
-{
-  GaussianNoise(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(RenderPassTest, DepthGaussianNoise)
-{
-  DepthGaussianNoise(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(RenderPassTest, Distortion)
-{
-  Distortion(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(RenderPass, RenderPassTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

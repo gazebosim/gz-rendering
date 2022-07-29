@@ -17,57 +17,43 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
-#include <gz/common/Image.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
+#include <gz/common/Image.hh>
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/PixelFormat.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
 using namespace rendering;
 
-class ShadowsTest: public testing::Test,
-                   public testing::WithParamInterface<const char *>
+class ShadowsTest: public CommonRenderingTest
 {
-  // Test and verify shadows are generated
-  public: void Shadows(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
-void ShadowsTest::Shadows(const std::string &_renderEngine)
+TEST_F(ShadowsTest, Shadows)
 {
   // override and make sure not to look for resources in installed share dir
   std::string projectSrcPath = PROJECT_SOURCE_PATH;
   std::string env = "GZ_RENDERING_RESOURCE_PATH=" + projectSrcPath;
   putenv(const_cast<char *>(env.c_str()));
 
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   // add resources in build dir
   engine->AddResourcePath(
       common::joinPaths(std::string(PROJECT_BUILD_PATH), "src"));
 
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(0.3, 0.3, 0.3);
 
   VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
 
   CameraPtr camera = scene->CreateCamera();
-  ASSERT_TRUE(camera != nullptr);
+  ASSERT_NE(nullptr, camera);
 
   // downward looking camera
   camera->SetImageWidth(10);
@@ -198,15 +184,4 @@ void ShadowsTest::Shadows(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(ShadowsTest, Shadows)
-{
-  Shadows(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(Shadows, ShadowsTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

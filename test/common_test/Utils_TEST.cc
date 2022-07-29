@@ -17,6 +17,8 @@
 
 #include "CommonRenderingTest.hh"
 
+#include <gz/utils/ExtraTestMacros.hh>
+
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/Scene.hh"
@@ -31,7 +33,7 @@ class UtilTest : public CommonRenderingTest
 };
 
 /////////////////////////////////////////////////
-TEST_F(UtilTest, ClickToScene)
+TEST_F(UtilTest, GZ_UTILS_TEST_DISABLED_ON_MAC(ClickToScene))
 {
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);

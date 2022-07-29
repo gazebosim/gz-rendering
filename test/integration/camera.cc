@@ -26,6 +26,8 @@
 #include "gz/rendering/ShaderParams.hh"
 #include "gz/rendering/ThermalCamera.hh"
 
+#include <gz/utils/ExtraTestMacros.hh>
+
 using namespace gz;
 using namespace rendering;
 
@@ -160,7 +162,7 @@ TEST_F(CameraTest, Track)
 }
 
 /////////////////////////////////////////////////
-TEST_F(CameraTest, VisualAt)
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_MAC(VisualAt))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
 

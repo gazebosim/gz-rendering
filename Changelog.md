@@ -6,6 +6,43 @@
 
 ### Gazebo Rendering 6.X
 
+### Gazebo Rendering 6.5.0 (2022-06-15)
+
+1. Bounding Box Camera
+    * [Pull request #334](https://github.com/gazebosim/gz-rendering/pull/334)
+
+1. Make GLX dependencies optional for Ogre2.
+    * [Pull request #646](https://github.com/gazebosim/gz-rendering/pull/646)
+
+1. Add missing utility include for `std::exchange`
+    * [Pull request #650](https://github.com/gazebosim/gz-rendering/pull/650)
+
+1. Change `aspect` to `AspectRatio()`
+    * [Pull request #635](https://github.com/gazebosim/gz-rendering/pull/635)
+
+1. `Camera::HFOV` override for Ogre and Ogre2
+    * [Pull request #636](https://github.com/gazebosim/gz-rendering/pull/636)
+
+### Gazebo Rendering 6.4.0 (2022-05-12)
+
+1. Add support for GpuRays (lidar) visibility mask
+    * [Pull request #625](https://github.com/gazebosim/gz-rendering/pull/625)
+
+1. Use gz-utils test macros
+    * [Pull request #624](https://github.com/gazebosim/gz-rendering/pull/624)
+
+1. Cleanup depth camera resources on destroy
+    * [Pull request #623](https://github.com/gazebosim/gz-rendering/pull/623)
+
+1. Fixed Readme.md typo
+    * [Pull request #620](https://github.com/gazebosim/gz-rendering/pull/620)
+
+1. Destroy root node and clean up sensor resources on exit
+    * [Pull request #617](https://github.com/gazebosim/gz-rendering/pull/617)
+
+1. Add repo specific issue templates
+    * [Pull request #616](https://github.com/gazebosim/gz-rendering/pull/616)
+
 ### Gazebo Rendering 6.3.1 (2022-04-13)
 
 1.  Revert OGRE-Next custom support and back to use GzOGRE2 module

@@ -1,6 +1,7 @@
 set(TEST_TYPE "INTEGRATION")
 
 set(tests
+  boundingbox_camera
   camera
   depth_camera
   gpu_rays
@@ -9,6 +10,7 @@ set(tests
   scene
   segmentation_camera 
   shadows 
+  sky
   thermal_camera
   wide_angle_camera
 )

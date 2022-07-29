@@ -33,7 +33,7 @@ class UtilTest : public CommonRenderingTest
 };
 
 /////////////////////////////////////////////////
-TEST_F(UtilTest, GZ_UTILS_TEST_DISABLED_ON_MAC(ClickToScene))
+TEST_F(UtilTest, GZ_UTILS_TEST_ENABLED_ONLY_ON_LINUX(ClickToScene))
 {
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);

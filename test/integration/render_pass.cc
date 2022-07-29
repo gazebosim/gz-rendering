@@ -20,7 +20,6 @@
 #include "CommonRenderingTest.hh"
 
 #include <gz/common/Image.hh>
-#include <gz/utils/ExtraTestMacros.hh>
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/DepthCamera.hh"
@@ -30,6 +29,8 @@
 #include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/Scene.hh"
+
+#include <gz/utils/ExtraTestMacros.hh>
 
 #define DOUBLE_TOL 1e-6
 unsigned int g_pointCloudCounter = 0;
@@ -54,7 +55,7 @@ class RenderPassTest: public CommonRenderingTest
 };
 
 /////////////////////////////////////////////////
-TEST_F(RenderPassTest, GaussianNoise)
+TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(GaussianNoise))
 {
   CHECK_RENDERPASS_SUPPORTED();
 
@@ -359,7 +360,7 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_MAC(DepthGaussianNoise))
 }
 
 /////////////////////////////////////////////////
-TEST_F(RenderPassTest, Distortion)
+TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Distortion))
 {
   CHECK_RENDERPASS_SUPPORTED();
   // Distortion isn't supported in ogre2

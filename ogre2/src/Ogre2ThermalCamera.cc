@@ -170,7 +170,7 @@ class gz::rendering::Ogre2ThermalCameraPrivate
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace;
 
   /// \brief Thermal textures.
-  public: Ogre::TextureGpu *ogreThermalTexture;
+  public: Ogre::TextureGpu *ogreThermalTexture{nullptr};
 
   /// \brief Dummy render texture for the thermal data
   public: RenderTexturePtr thermalTexture = nullptr;
@@ -294,7 +294,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           {
             try
             {
-              temp = std::get<int>(tempAny);
+              temp = static_cast<float>(std::get<int>(tempAny));
             }
             catch(std::bad_variant_access &e)
             {
@@ -573,7 +573,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           {
             try
             {
-              temp = std::get<int>(tempAny);
+              temp = static_cast<float>(std::get<int>(tempAny));
             }
             catch (std::bad_variant_access &e)
             {
@@ -753,6 +753,7 @@ void Ogre2ThermalCamera::Destroy()
   {
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->thermalMaterial->getName());
+    this->dataPtr->thermalMaterial.setNull();
   }
 
   if (!this->dataPtr->ogreCompositorWorkspaceDef.empty())
@@ -777,6 +778,8 @@ void Ogre2ThermalCamera::Destroy()
       this->ogreCamera = nullptr;
     }
   }
+
+  this->dataPtr->thermalMaterialSwitcher.reset();
 }
 
 //////////////////////////////////////////////////
@@ -827,8 +830,8 @@ void Ogre2ThermalCamera::CreateRenderTexture()
 void Ogre2ThermalCamera::CreateThermalTexture()
 {
   // set aspect ratio and fov
-  double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / this->aspect);
-  this->ogreCamera->setAspectRatio(this->aspect);
+  double vfov;
+  vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / this->AspectRatio());
   this->ogreCamera->setFOVy(Ogre::Radian(vfov));
 
   // Load thermal material

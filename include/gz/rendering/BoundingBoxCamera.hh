@@ -58,7 +58,9 @@ namespace gz
       public: virtual ~BoundingBoxCamera() { }
 
       /// \brief Get the BoundingBox data
-      /// \return Buffer of bounding boxes info (label, minX, minY, maxX, maxY)
+      /// \return Buffer of bounding boxes info (label, minX, minY, maxX, maxY).
+      /// If the camera's bounding box type is 3D, minZ and maxZ are also
+      /// defined)
       public: virtual const std::vector<BoundingBox> &BoundingBoxData()
               const = 0;
 

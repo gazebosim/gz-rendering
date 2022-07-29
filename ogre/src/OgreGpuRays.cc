@@ -434,7 +434,7 @@ void OgreGpuRays::CreateGpuRaysTextures()
     vp->setSkiesEnabled(false);
     vp->setBackgroundColour(
         Ogre::ColourValue(this->dataMaxVal, 0.0, 1.0));
-    vp->setVisibilityMask(GZ_VISIBILITY_ALL &
+    vp->setVisibilityMask(this->VisibilityMask() &
         ~(GZ_VISIBILITY_GUI | GZ_VISIBILITY_SELECTABLE));
   }
 

@@ -318,6 +318,13 @@ void Ogre2DepthCamera::Destroy()
   {
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->depthMaterial->getName());
+    this->dataPtr->depthMaterial.setNull();
+  }
+  if (this->dataPtr->depthFinalMaterial)
+  {
+    Ogre::MaterialManager::getSingleton().remove(
+        this->dataPtr->depthFinalMaterial->getName());
+    this->dataPtr->depthFinalMaterial.setNull();
   }
 
   if (!this->dataPtr->ogreCompositorWorkspaceDef.empty())
@@ -328,6 +335,13 @@ void Ogre2DepthCamera::Destroy()
         this->dataPtr->ogreCompositorBaseNodeDef);
     ogreCompMgr->removeNodeDefinition(
         this->dataPtr->ogreCompositorFinalNodeDef);
+  }
+
+  if (this->dataPtr->particleNoiseListener)
+  {
+    this->ogreCamera->removeListener(
+        this->dataPtr->particleNoiseListener.get());
+    this->dataPtr->particleNoiseListener.reset();
   }
 
   Ogre::SceneManager *ogreSceneManager;
@@ -395,8 +409,8 @@ void Ogre2DepthCamera::CreateRenderTexture()
 void Ogre2DepthCamera::CreateDepthTexture()
 {
   // set aspect ratio and fov
-  double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / this->aspect);
-  this->ogreCamera->setAspectRatio(this->aspect);
+  double vfov;
+  vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / this->AspectRatio());
   this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(vfov)));
 
   // Load depth material

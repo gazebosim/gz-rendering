@@ -336,15 +336,15 @@ namespace gz
     template <class T>
     void BaseNode<T>::SetLocalPose(const math::Pose3d &_pose)
     {
-      math::Pose3d pose = _pose;
-      pose.Pos() = pose.Pos() - pose.Rot() * this->origin;
-
-      if (!pose.IsFinite())
+      if (!_pose.IsFinite())
       {
-        gzerr << "Unable to set pose of a node: "
-               << "non-finite (nan, inf) values detected." << std::endl;
+        gzerr << "Unable to set non-finite pose [" << _pose
+               << "] to node [" << this->Name() << "]" << std::endl;
         return;
       }
+
+      math::Pose3d pose = _pose;
+      pose.Pos() = pose.Pos() - pose.Rot() * this->origin;
 
       if (!initialLocalPoseSet)
       {
@@ -380,6 +380,13 @@ namespace gz
     template <class T>
     void BaseNode<T>::SetLocalPosition(const math::Vector3d &_position)
     {
+      if (!_position.IsFinite())
+      {
+        gzerr << "Unable to set non-finite position [" << _position
+               << "] to node [" << this->Name() << "]" << std::endl;
+        return;
+      }
+
       math::Pose3d pose = this->LocalPose();
       pose.Pos() = _position;
       this->SetLocalPose(pose);
@@ -411,6 +418,13 @@ namespace gz
     template <class T>
     void BaseNode<T>::SetLocalRotation(const math::Quaterniond &_rotation)
     {
+      if (!_rotation.IsFinite())
+      {
+        gzerr << "Unable to set non-finite rotation [" << _rotation
+               << "] to node [" << this->Name() << "]" << std::endl;
+        return;
+      }
+
       math::Pose3d pose = this->LocalPose();
       pose.Rot() = _rotation;
       this->SetLocalPose(pose);
@@ -525,6 +539,12 @@ namespace gz
     template <class T>
     void BaseNode<T>::SetOrigin(const math::Vector3d &_origin)
     {
+      if (!_origin.IsFinite())
+      {
+        gzerr << "Unable to set non-finite origin [" << _origin
+               << "] to node [" << this->Name() << "]" << std::endl;
+        return;
+      }
       this->origin = _origin;
     }
 

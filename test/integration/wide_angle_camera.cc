@@ -27,6 +27,8 @@
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/WideAngleCamera.hh"
 
+#include <gz/utils/ExtraTestMacros.hh>
+
 using namespace gz;
 using namespace rendering;
 
@@ -64,7 +66,7 @@ void OnNewWideAngleFrame(const unsigned char *_data,
 }
 
 //////////////////////////////////////////////////
-TEST_F(WideAngleCameraTest, WideAngleCamera)
+TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
 {
   CHECK_SUPPORTED_ENGINE("ogre");
 
@@ -201,7 +203,7 @@ TEST_F(WideAngleCameraTest, WideAngleCamera)
 }
 
 //////////////////////////////////////////////////
-TEST_F(WideAngleCameraTest, Projection)
+TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Projection))
 {
   CHECK_SUPPORTED_ENGINE("ogre");
 
@@ -315,4 +317,6 @@ TEST_F(WideAngleCameraTest, Projection)
 
   // Clean up
   engine->DestroyScene(scene);
+
+  ASSERT_EQ(1u, camera.use_count());
 }

@@ -20,6 +20,8 @@
 #include "CommonRenderingTest.hh"
 #include "gz/rendering/Scene.hh"
 
+#include <gz/utils/ExtraTestMacros.hh>
+
 using namespace gz;
 using namespace rendering;
 
@@ -28,7 +30,7 @@ class RenderEngineTest : public CommonRenderingTest
 };
 
 /////////////////////////////////////////////////
-TEST_F(RenderEngineTest, RenderEngine)
+TEST_F(RenderEngineTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RenderEngine))
 {
   // Check there are no scenes
   EXPECT_EQ(0u, engine->SceneCount());

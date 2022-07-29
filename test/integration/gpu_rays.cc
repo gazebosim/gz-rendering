@@ -132,7 +132,7 @@ TEST_F(GpuRaysTest, Configure)
 
 /////////////////////////////////////////////////
 /// \brief Test detection of different boxes
-TEST_F(GpuRaysTest, RaysUnitBox)
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
 
@@ -307,7 +307,7 @@ TEST_F(GpuRaysTest, RaysUnitBox)
 
 /////////////////////////////////////////////////
 /// \brief Test GPU rays vertical component
-TEST_F(GpuRaysTest, LaserVertical)
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__
@@ -633,7 +633,7 @@ TEST_F(GpuRaysTest, RaysParticles)
 
 /////////////////////////////////////////////////
 /// \brief Test single ray box intersection
-TEST_F(GpuRaysTest, SingleRay)
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(SingleRay))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__
@@ -706,6 +706,115 @@ TEST_F(GpuRaysTest, SingleRay)
 
   delete [] scan;
 
+  scan = nullptr;
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
+{
+  CHECK_UNSUPPORTED_ENGINE("optix");
+#ifdef __APPLE__
+  GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+#endif
+
+  // Test GPU rays with 3 boxes in the world.
+  // One of the boxes has visibility flags set to a value that
+  // makes it invisible to the sensor
+  const double hMinAngle = -GZ_PI / 2.0;
+  const double hMaxAngle = GZ_PI / 2.0;
+  const double minRange = 0.1;
+  const double maxRange = 10.0;
+  const int hRayCount = 320;
+  const int vRayCount = 1;
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_TRUE(scene != nullptr);
+
+  VisualPtr root = scene->RootVisual();
+
+  // Create ray caster
+  math::Pose3d testPose(math::Vector3d(0, 0, 0.1),
+      math::Quaterniond::Identity);
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays_1");
+  gpuRays->SetWorldPosition(testPose.Pos());
+  gpuRays->SetWorldRotation(testPose.Rot());
+  gpuRays->SetNearClipPlane(minRange);
+  gpuRays->SetFarClipPlane(maxRange);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+  gpuRays->SetVisibilityMask(0x1011);
+
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  // Create testing boxes
+  // box in the center
+  // GpuRays should see box because default flags have all bits set to 1
+  math::Pose3d box01Pose(math::Vector3d(3, 0, 0.5),
+                                   math::Quaterniond::Identity);
+  VisualPtr visualBox1 = scene->CreateVisual("UnitBox1");
+  visualBox1->AddGeometry(scene->CreateBox());
+  visualBox1->SetWorldPosition(box01Pose.Pos());
+  visualBox1->SetWorldRotation(box01Pose.Rot());
+  root->AddChild(visualBox1);
+
+  // box on the right of the first gpu rays caster
+  // GpuRays should see box because mask & flags evaluates to non-zero
+  math::Pose3d box02Pose(math::Vector3d(0, -5, 0.5),
+                                   math::Quaterniond::Identity);
+  VisualPtr visualBox2 = scene->CreateVisual("UnitBox2");
+  visualBox2->AddGeometry(scene->CreateBox());
+  visualBox2->SetWorldPosition(box02Pose.Pos());
+  visualBox2->SetWorldRotation(box02Pose.Rot());
+  visualBox2->SetVisibilityFlags(0x0010);
+  root->AddChild(visualBox2);
+
+  // box on the left of the rays caster
+  // GpuRays should not see box because mask & flags evaluates to 0
+  math::Pose3d box03Pose(
+      math::Vector3d(0, 5, 0.5),
+      math::Quaterniond::Identity);
+  VisualPtr visualBox3 = scene->CreateVisual("UnitBox3");
+  visualBox3->AddGeometry(scene->CreateBox());
+  visualBox3->SetWorldPosition(box03Pose.Pos());
+  visualBox3->SetWorldRotation(box03Pose.Rot());
+  visualBox3->SetVisibilityFlags(0x0100);
+  root->AddChild(visualBox3);
+
+  // Verify rays caster range readings
+  // listen to new gpu rays frames
+  unsigned int channels = gpuRays->Channels();
+  float *scan = new float[hRayCount * vRayCount * channels];
+  common::ConnectionPtr c =
+    gpuRays->ConnectNewGpuRaysFrame(
+        std::bind(&::OnNewGpuRaysFrame, scan,
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
+
+  gpuRays->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+
+  int mid = static_cast<int>(hRayCount / 2) * channels;
+  int last = (hRayCount - 1) * channels;
+  double unitBoxSize = 1.0;
+  double expectedRangeAtMidPointBox1 =
+      abs(box01Pose.Pos().X()) - unitBoxSize / 2;
+  double expectedRangeAtMidPointBox2 =
+      abs(box02Pose.Pos().Y()) - unitBoxSize / 2;
+
+  // rays caster should see box01 and box02 but not box03
+  EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox1, LASER_TOL);
+  EXPECT_NEAR(scan[0], expectedRangeAtMidPointBox2, LASER_TOL);
+  EXPECT_FLOAT_EQ(scan[last], math::INF_F);
+
+  c.reset();
+
+  delete [] scan;
   scan = nullptr;
 
   // Clean up

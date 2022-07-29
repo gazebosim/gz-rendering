@@ -290,6 +290,8 @@ namespace gz
     void BaseCamera<T>::SetImageWidth(const unsigned int _width)
     {
       this->RenderTarget()->SetWidth(_width);
+      this->SetAspectRatio(
+        static_cast<double>(_width) / static_cast<double>(this->ImageHeight()));
     }
 
     //////////////////////////////////////////////////
@@ -304,6 +306,8 @@ namespace gz
     void BaseCamera<T>::SetImageHeight(const unsigned int _height)
     {
       this->RenderTarget()->SetHeight(_height);
+      this->SetAspectRatio(
+        static_cast<double>(this->ImageWidth()) / static_cast<double>(_height));
     }
 
     //////////////////////////////////////////////////

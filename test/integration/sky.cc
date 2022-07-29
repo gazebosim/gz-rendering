@@ -34,7 +34,7 @@ class SkyTest: public CommonRenderingTest
 };
 
 /////////////////////////////////////////////////
-TEST_F(SkyTest::Sky)
+TEST_F(SkyTest, Sky)
 {
   CHECK_SUPPORTED_ENGINE("ogre2");
 

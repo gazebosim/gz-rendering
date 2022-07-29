@@ -72,11 +72,19 @@ void Ogre2Camera::Destroy()
 }
 
 //////////////////////////////////////////////////
+math::Angle Ogre2Camera::HFOV() const
+{
+  double vfov = this->ogreCamera->getFOVy().valueRadians();
+  double hFOV = 2.0 * atan(tan(vfov / 2.0) * this->AspectRatio());
+  return math::Angle(hFOV);
+}
+
+//////////////////////////////////////////////////
 void Ogre2Camera::SetHFOV(const math::Angle &_angle)
 {
   BaseCamera::SetHFOV(_angle);
   double angle = _angle.Radian();
-  double vfov = 2.0 * atan(tan(angle / 2.0) / this->aspect);
+  double vfov = 2.0 * atan(tan(angle / 2.0) / this->AspectRatio());
   this->ogreCamera->setFOVy(Ogre::Radian(vfov));
 }
 

@@ -26,6 +26,8 @@
 
 #include "gz/rendering/Scene.hh"
 
+#include <gz/utils/ExtraTestMacros.hh>
+
 using namespace gz;
 using namespace rendering;
 
@@ -114,7 +116,7 @@ void SceneFactoryTest::checkMemLeak(const std::function<void(ScenePtr)> &_cb)
 }
 
 /////////////////////////////////////////////////
-TEST_F(SceneFactoryTest, MaterialMemoryLeak)
+TEST_F(SceneFactoryTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(MaterialMemoryLeak))
 {
   auto function = [](ScenePtr _scene)
   {
@@ -130,7 +132,7 @@ TEST_F(SceneFactoryTest, MaterialMemoryLeak)
 }
 
 /////////////////////////////////////////////////
-TEST_F(SceneFactoryTest, VisualMemoryLeak)
+TEST_F(SceneFactoryTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(VisualMemoryLeak))
 {
   auto function = [](ScenePtr _scene)
   {

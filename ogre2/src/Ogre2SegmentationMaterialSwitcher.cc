@@ -65,8 +65,8 @@ bool Ogre2SegmentationMaterialSwitcher::IsTakenColor(const math::Color &_color)
 {
   // Get the int value of the 24 bit color
   // Multiply by 255 as color values are normalized
-  int64_t colorId = (_color.R() * 255) * 256 * 256 +
-    (_color.G() * 255) * 256 + (_color.B() * 255);
+  int64_t colorId = static_cast<int64_t>((_color.R() * 255) * 256 * 256 +
+    (_color.G() * 255) * 256 + (_color.B() * 255));
 
   if (this->takenColors.count(colorId))
   {
@@ -186,7 +186,10 @@ math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
   int g = distribution(this->generator);
   int b = distribution(this->generator);
 
-  math::Color color(r, g, b);
+  math::Color color(
+    static_cast<float>(r),
+    static_cast<float>(g),
+    static_cast<float>(b));
 
   // if the label is colored before return the color
   // don't check for taken colors in that case, all items

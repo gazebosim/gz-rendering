@@ -1416,7 +1416,13 @@ bool BaseScene::LegacyAutoGpuFlush() const
 //////////////////////////////////////////////////
 void BaseScene::Clear()
 {
-  this->nodes->DestroyAll();
+  this->DestroyNodes();
+  auto root = this->RootVisual();
+  if (root)
+  {
+    root->RemoveChildren();
+    this->DestroyNode(root);
+  }
   this->DestroyMaterials();
   this->nextObjectId = gz::math::MAX_UI16;
 }

@@ -20,6 +20,8 @@
 # pragma GCC diagnostic ignored "-Wunused-parameter"
 #else
 # pragma warning(push, 0)
+# pragma warning(disable: 4005)
+# pragma warning(disable: 4275)
 #endif
 // leave this out of OgreIncludes as it conflicts with other files requiring
 // gl.h

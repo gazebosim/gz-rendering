@@ -40,6 +40,7 @@ target_include_directories(${ogre2_target}
 target_link_libraries(${ogre2_target}
   PUBLIC
     ${gz-common${GZ_COMMON_VER}_LIBRARIES}
+    gz-math${GZ_MATH_VER}::eigen3
   PRIVATE
     gz-plugin${GZ_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}
@@ -61,6 +62,15 @@ if (WIN32)
 else()
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink ${versioned} ${unversioned})
   INSTALL(FILES ${PROJECT_BINARY_DIR}/${unversioned} DESTINATION ${GZ_RENDERING_ENGINE_INSTALL_DIR})
+endif()
+
+if (NOT (APPLE OR WIN32))
+  option(USE_GLX "Use GLX to create OpenGL contexts." ON)
+else()
+  option(USE_GLX "Use GLX to create OpenGL contexts." OFF)
+endif()
+if (USE_GLX)
+  add_definitions(-DHAVE_GLX=1)
 endif()
 
 # Build the unit tests

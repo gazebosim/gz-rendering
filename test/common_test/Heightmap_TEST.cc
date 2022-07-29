@@ -20,10 +20,11 @@
 #include "CommonRenderingTest.hh"
 
 #include <gz/common/geospatial/ImageHeightmap.hh>
-#include <gz/utils/ExtraTestMacros.hh>
 
 #include "gz/rendering/Heightmap.hh"
 #include "gz/rendering/Scene.hh"
+
+#include <gz/utils/ExtraTestMacros.hh>
 
 using namespace gz;
 using namespace rendering;
@@ -38,7 +39,7 @@ class HeightmapTest : public CommonRenderingTest
 
 /////////////////////////////////////////////////
 // ogre1 not supported on Windows
-TEST_F(HeightmapTest, Heightmap)
+TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 {
   CHECK_SUPPORTED_ENGINE("ogre");
 

@@ -40,7 +40,7 @@ class CameraTest: public CommonRenderingTest
 };
 
 /////////////////////////////////////////////////
-TEST_F(CameraTest, Track)
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Track))
 {
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
@@ -162,7 +162,7 @@ TEST_F(CameraTest, Track)
 }
 
 /////////////////////////////////////////////////
-TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_MAC(VisualAt))
+TEST_F(CameraTest, GZ_UTILS_TEST_ENABLED_ONLY_ON_LINUX(VisualAt))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
 
@@ -275,7 +275,7 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_MAC(VisualAt))
 }
 
 /////////////////////////////////////////////////
-TEST_F(CameraTest, Follow)
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Follow))
 {
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
@@ -388,7 +388,7 @@ TEST_F(CameraTest, Follow)
 }
 
 /////////////////////////////////////////////////
-TEST_F(CameraTest, Visibility)
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
 {
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
@@ -511,7 +511,7 @@ TEST_F(CameraTest, Visibility)
 }
 
 /////////////////////////////////////////////////
-TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_MAC(ShaderSelection))
+TEST_F(CameraTest, GZ_UTILS_TEST_ENABLED_ONLY_ON_LINUX(ShaderSelection))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
   // This test checks that custom shaders are being rendering correctly in
@@ -695,4 +695,13 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_MAC(ShaderSelection))
 
   // Clean up
   engine->DestroyScene(scene);
+
+  ASSERT_EQ(1u, camera.use_count());
+  ASSERT_EQ(1u, gpuRays.use_count());
+  ASSERT_EQ(1u, thermalCamera.use_count());
+  if (segmentationCamera)
+  {
+    ASSERT_EQ(1u, segmentationCamera.use_count());
+  }
 }
+

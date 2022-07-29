@@ -47,7 +47,7 @@ TEST_F(CameraTest, ViewProjectionMatrix)
   EXPECT_GT(camera->HFOV(), 0);
   math::Angle hfov(1.57);
   camera->SetHFOV(hfov);
-  EXPECT_DOUBLE_EQ(hfov.Radian(), camera->HFOV().Radian());
+  EXPECT_NEAR(hfov.Radian(), camera->HFOV().Radian(), 1e-6);
 
   EXPECT_GT(camera->AspectRatio(), 0);
   camera->SetAspectRatio(1.7777);
@@ -137,17 +137,26 @@ TEST_F(CameraTest, RenderTexture)
 
   // render texture parameters
   EXPECT_GT(camera->ImageWidth(), 0u);
-  camera->SetImageWidth(100u);
-  EXPECT_EQ(100u, camera->ImageWidth());
-
   EXPECT_GT(camera->ImageHeight(), 0u);
-  camera->SetImageHeight(80u);
-  EXPECT_EQ(80u, camera->ImageHeight());
+
+  unsigned int height = 80;
+  camera->SetImageHeight(height);
+  EXPECT_EQ(height, camera->ImageHeight());
+  double aspectRatio =
+    static_cast<double>(camera->ImageWidth()) / static_cast<double>(height);
+  EXPECT_NEAR(aspectRatio, camera->AspectRatio(), 1e-6);
+
+  unsigned int width = 100;
+  camera->SetImageWidth(width);
+  EXPECT_EQ(width, camera->ImageWidth());
+  aspectRatio =
+    static_cast<double>(width) / static_cast<double>(camera->ImageHeight());
+  EXPECT_NEAR(aspectRatio, camera->AspectRatio(), 1e-6);
 
   EXPECT_NE(PixelFormat::PF_UNKNOWN, camera->ImageFormat());
   camera->SetImageFormat(PixelFormat::PF_B8G8R8);
   EXPECT_EQ(PixelFormat::PF_B8G8R8, camera->ImageFormat());
-  EXPECT_EQ(100u*80u*3u, camera->ImageMemorySize());
+  EXPECT_EQ(width*height*3u, camera->ImageMemorySize());
 
 
   // verify render texture GL Id

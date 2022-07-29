@@ -240,6 +240,10 @@ namespace gz
                      unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited
+      protected: virtual BoundingBoxCameraPtr CreateBoundingBoxCameraImpl(
+                     unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited
       protected: virtual SegmentationCameraPtr CreateSegmentationCameraImpl(
                      unsigned int _id, const std::string &_name) override;
 

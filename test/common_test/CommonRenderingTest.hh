@@ -33,6 +33,21 @@ constexpr const char * kEngineToTestEnv = "GZ_ENGINE_TO_TEST";
 constexpr const char * kEngineBackend = "GZ_ENGINE_BACKEND";
 constexpr const char * kEngineHeadless = "GZ_ENGINE_HEADLESS";
 
+static std::tuple<std::string, std::string, std::string> GetTestParams()
+{
+  std::string engine = "";
+  std::string backend = "";
+  std::string headless = "";
+
+  if (gz::utils::env(kEngineToTestEnv, engine))
+  {
+    gz::utils::env(kEngineBackend, backend);
+    gz::utils::env(kEngineHeadless, headless);
+  }
+
+  return {engine, backend, headless};
+}
+
 /// \brief Common test fixture for all rendering tests
 /// This allows for the engine, backend, and headless parameters
 /// to be controlled via environment variables
@@ -42,40 +57,32 @@ class CommonRenderingTest: public testing::Test
   public: void SetUp() override
   {
     gz::common::Console::SetVerbosity(4);
-    gz::utils::env(kEngineToTestEnv, this->engineToTest);
 
-    if (this->engineToTest.empty())
+    auto [envEngine, envBackend, envHeadless] = GetTestParams();
+    if (envEngine.empty())
     {
       GTEST_SKIP() << kEngineToTestEnv << " environment not set";
     }
 
     std::map<std::string, std::string> engineParams;
 
-    if (this->engineToTest == "ogre2")
+    if (envEngine == "ogre2" && envBackend == "vulkan")
     {
-      std::string backend;
-      if (gz::utils::env(kEngineBackend, backend))
-      {
-        if(backend == "vulkan")
-        {
-          gzdbg << "Using OGRE2-VULKAN backend to test" << std::endl;
-          engineParams["vulkan"] = "1";
-        }
-        else if(backend == "metal")
-        {
-          gzdbg << "Using OGRE2-METAL backend to test" << std::endl;
-          engineParams["metal"] = "1";
-        }
-      }
-
-      std::string headless;
-      if (gz::utils::env(kEngineHeadless, headless) && headless == "1")
-      {
-        engineParams["headless"] = "1";
-      }
+      gzdbg << "Using OGRE2-VULKAN backend to test" << std::endl;
+      engineParams["vulkan"] = "1";
+    } 
+    else if (envEngine == "ogre2" && envBackend == "metal")
+    {
+      gzdbg << "Using OGRE2-METAL backend to test" << std::endl;
+      engineParams["metal"] = "1";
     }
 
-    engine = gz::rendering::engine(this->engineToTest, engineParams);
+    if (!envHeadless.empty())
+    {
+      engineParams["headless"] = "1";
+    }
+
+    engine = gz::rendering::engine(envEngine, engineParams);
     if (!engine)
     {
       GTEST_SKIP() << "Engine '" << this->engineToTest << "' could not be loaded" << std::endl;

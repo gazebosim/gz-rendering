@@ -17,16 +17,13 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
+
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Event.hh>
 
 #include <gz/math/Color.hh>
 
-#include "test_config.hh"  // NOLINT(build/include)
-
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/SegmentationCamera.hh"
 
@@ -34,16 +31,8 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-class SegmentationCameraTest: public testing::Test,
-  public testing::WithParamInterface<const char *>
+class SegmentationCameraTest: public CommonRenderingTest
 {
-  public: void SegmentationCameraBoxes(const std::string &_renderEngine);
-
-  // Documentation inherited
-  protected: void SetUp() override
-  {
-    gz::common::Console::SetVerbosity(4);
-  }
 };
 
 /// \brief mutex for thread safety
@@ -114,32 +103,18 @@ void BuildScene(rendering::ScenePtr scene)
 }
 
 //////////////////////////////////////////////////
-void SegmentationCameraTest::SegmentationCameraBoxes(
-  const std::string &_renderEngine)
+TEST_F(SegmentationCameraTest, SegmentationCameraBoxes)
 {
   // Currently, only ogre2 supports segmentation cameras
-  if (_renderEngine.compare("ogre2") != 0)
-  {
-    gzerr << "Engine '" << _renderEngine
-              << "' doesn't support segmentation cameras" << std::endl;
-    return;
-  }
+  CHECK_SUPPORTED_ENGINE("ogre2");
 
-  // Setup gz-rendering with an empty scene
-  auto *engine = gz::rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzerr << "Engine '" << _renderEngine
-              << "' was unable to be retrieved" << std::endl;
-    return;
-  }
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   BuildScene(scene);
 
   // Create Segmentation camera
   auto camera = scene->CreateSegmentationCamera("SegmentationCamera");
-  ASSERT_NE(camera, nullptr);
+  ASSERT_NE(nullptr, camera);
 
   camera->SetLocalPosition(0.0, 0.0, 0.0);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
@@ -239,13 +214,4 @@ void SegmentationCameraTest::SegmentationCameraBoxes(
 
   // Clean up
   engine->DestroyScene(scene);
-  gz::rendering::unloadEngine(engine->Name());
 }
-
-TEST_P(SegmentationCameraTest, SegmentationCameraBoxes)
-{
-  SegmentationCameraBoxes(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(SegmentationCamera, SegmentationCameraTest,
-    RENDER_ENGINE_VALUES, gz::rendering::PrintToStringParam());

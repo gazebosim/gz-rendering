@@ -376,14 +376,14 @@ void Ogre2RenderTarget::Copy(Image &_image) const
   }
 
   Ogre::TextureBox dstBox(
-    texture->getWidth(), texture->getHeight(),
+    texture->getInternalWidth(), texture->getInternalHeight(),
     texture->getDepth(), texture->getNumSlices(),
     static_cast<uint32_t>(
       Ogre::PixelFormatGpuUtils::getBytesPerPixel(dstOgrePf)),
     static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
-      texture->getWidth(), 1u, 1u, 1u, dstOgrePf, 1u)),
+      texture->getInternalWidth(), 1u, 1u, 1u, dstOgrePf, 1u)),
     static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
-      texture->getWidth(), texture->getHeight(), 1u, 1u,
+      texture->getInternalWidth(), texture->getInternalHeight(), 1u, 1u,
       dstOgrePf, 1u)));
   dstBox.data = _image.Data();
 
@@ -584,8 +584,7 @@ uint8_t Ogre2RenderTarget::TargetFSAA() const
 
       gzwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
               << "is not supported; valid FSAA levels are: " << os.str()
-              << ". Setting to 0" << std::endl;
-      targetFSAA = 0u;
+              << ". Setting to 1" << std::endl;
       ogre2FSAAWarn = true;
     }
   }

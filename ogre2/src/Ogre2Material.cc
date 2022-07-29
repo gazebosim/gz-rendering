@@ -232,8 +232,16 @@ void Ogre2Material::Destroy()
   Ogre::SceneManager *sceneManager = s->OgreSceneManager();
   sceneManager->shrinkToFitMemoryPools();
 
-  Ogre::VaoManager *vaoManager = textureManager->getVaoManager();
-  vaoManager->cleanupEmptyPools();
+  try
+  {
+    Ogre::VaoManager *vaoManager = textureManager->getVaoManager();
+    vaoManager->cleanupEmptyPools();
+  }
+  catch (Ogre::UnimplementedException &)
+  {
+    // Do nothing. Vulkan does not implement this and is not needed
+    // It might be implemented in the future though
+  }
 }
 
 //////////////////////////////////////////////////
@@ -854,6 +862,12 @@ Ogre::MaterialPtr Ogre2Material::Material()
     case GraphicsAPI::OPENGL:
     case GraphicsAPI::VULKAN:
       this->dataPtr->ogreSolidColorShader->setSourceFile("plain_color_fs.glsl");
+      this->dataPtr->ogreSolidColorShader->setReplaceVersionMacro(true);
+      if (graphicsApi == GraphicsAPI::VULKAN)
+      {
+        this->dataPtr->ogreSolidColorShader->setPrefabRootLayout(
+          Ogre::PrefabRootLayout::Standard);
+      }
       break;
     case GraphicsAPI::DIRECT3D11:
       this->dataPtr->ogreSolidColorShader->setSourceFile("plain_color_fs.hlsl");
@@ -1194,6 +1208,9 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
         Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
 
   vertexShader->setSourceFile(_path);
+  vertexShader->setPrefabRootLayout(Ogre::PrefabRootLayout::Standard);
+  vertexShader->setReplaceVersionMacro(true);
+
   vertexShader->load();
 
   assert(vertexShader->isLoaded());
@@ -1295,6 +1312,8 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
   }
 
   fragmentShader->setSourceFile(_path);
+  fragmentShader->setPrefabRootLayout(Ogre::PrefabRootLayout::Standard);
+  fragmentShader->setReplaceVersionMacro(true);
   fragmentShader->load();
 
   assert(fragmentShader->isLoaded());

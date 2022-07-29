@@ -17,47 +17,22 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
-
-#include "test_config.hh"  // NOLINT(build/include)
+#include "CommonRenderingTest.hh"
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/GpuRays.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/SegmentationCamera.hh"
 #include "gz/rendering/ShaderParams.hh"
 #include "gz/rendering/ThermalCamera.hh"
 
+#include <gz/utils/ExtraTestMacros.hh>
 
 using namespace gz;
 using namespace rendering;
 
-class CameraTest: public testing::Test,
-                  public testing::WithParamInterface<const char *>
+class CameraTest: public CommonRenderingTest
 {
-  // Documentation inherited
-  public: void SetUp() override
-  {
-    gz::common::Console::SetVerbosity(4);
-  }
-
-  // Test and verify camera tracking
-  public: void Track(const std::string &_renderEngine);
-
-  // Test and verify camera following
-  public: void Follow(const std::string &_renderEngine);
-
-  // Test and verify camera visibilty mask and visual visibility flags
-  public: void Visibility(const std::string &_renderEngine);
-
-  // Test and verify camera select function method using Selection Buffer
-  public: void VisualAt(const std::string &_renderEngine);
-
-  // Test selecting visual with custom shader
-  public: void ShaderSelection(const std::string &_renderEngine);
-
   // Path to test media directory
   public: const std::string TEST_MEDIA_PATH =
           gz::common::joinPaths(std::string(PROJECT_SOURCE_PATH),
@@ -65,24 +40,15 @@ class CameraTest: public testing::Test,
 };
 
 /////////////////////////////////////////////////
-void CameraTest::Track(const std::string &_renderEngine)
+TEST_F(CameraTest, Track)
 {
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   VisualPtr root = scene->RootVisual();
 
   CameraPtr camera = scene->CreateCamera();
-  ASSERT_TRUE(camera != nullptr);
+  ASSERT_NE(nullptr, camera);
   root->AddChild(camera);
 
   // create visual to be tracked
@@ -193,36 +159,22 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void CameraTest::VisualAt(const std::string &_renderEngine)
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_MAC(VisualAt))
 {
-  if (_renderEngine == "optix")
-  {
-    gzdbg << "VisualAt not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
+  CHECK_UNSUPPORTED_ENGINE("optix");
 
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
 
   // create box visual
   VisualPtr box = scene->CreateVisual("box");
-  ASSERT_TRUE(box != nullptr);
+  ASSERT_NE(nullptr, box);
   box->AddGeometry(scene->CreateBox());
   box->SetOrigin(0.0, 0.7, 0.0);
   box->SetLocalPosition(2, 0, 0);
@@ -230,7 +182,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
 
   // create sphere visual
   VisualPtr sphere = scene->CreateVisual("sphere");
-  ASSERT_TRUE(sphere != nullptr);
+  ASSERT_NE(nullptr, sphere);
   sphere->AddGeometry(scene->CreateSphere());
   sphere->SetOrigin(0.0, -0.7, 0.0);
   sphere->SetLocalPosition(2, 0, 0);
@@ -238,7 +190,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
 
   // create camera
   CameraPtr camera = scene->CreateCamera("camera");
-  ASSERT_TRUE(camera != nullptr);
+  ASSERT_NE(nullptr, camera);
   camera->SetLocalPosition(0.0, 0.0, 0.0);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
@@ -320,28 +272,19 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void CameraTest::Follow(const std::string &_renderEngine)
+TEST_F(CameraTest, Follow)
 {
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
 
   CameraPtr camera = scene->CreateCamera();
-  ASSERT_TRUE(camera != nullptr);
+  ASSERT_NE(nullptr, camera);
   root->AddChild(camera);
 
   // create to be followed
@@ -442,36 +385,27 @@ void CameraTest::Follow(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void CameraTest::Visibility(const std::string &_renderEngine)
+TEST_F(CameraTest, Visibility)
 {
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
   scene->SetBackgroundColor(0, 0, 0);
   scene->SetAmbientLight(1, 1, 1);
 
   VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
 
   CameraPtr cameraA = scene->CreateCamera();
-  ASSERT_TRUE(cameraA != nullptr);
+  ASSERT_NE(nullptr, cameraA);
   cameraA->SetWorldPosition(-1, 0, 0);
   cameraA->SetVisibilityMask(0x01);
   root->AddChild(cameraA);
 
   CameraPtr cameraB = scene->CreateCamera();
-  ASSERT_TRUE(cameraB != nullptr);
+  ASSERT_NE(nullptr, cameraB);
   cameraB->SetWorldPosition(-1, 0, 0);
   cameraB->SetVisibilityMask(0x02);
   root->AddChild(cameraB);
@@ -574,37 +508,22 @@ void CameraTest::Visibility(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
-void CameraTest::ShaderSelection(const std::string &_renderEngine)
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_MAC(ShaderSelection))
 {
-  if (_renderEngine == "optix")
-  {
-    gzdbg << "Custom shaders are not supported yet in rendering engine: "
-           << _renderEngine << std::endl;
-    return;
-  }
-
+  CHECK_UNSUPPORTED_ENGINE("optix");
   // This test checks that custom shaders are being rendering correctly in
   // camera view. It also verifies that visual selection is working and the
   // visual's material remains the same after selection.
 
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-           << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(1, 1, 1);
 
   VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
 
   // create directional light
   DirectionalLightPtr light = scene->CreateDirectionalLight();
@@ -615,12 +534,12 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
 
   std::string vertexShaderFile;
   std::string fragmentShaderFile;
-  if (_renderEngine == "ogre2")
+  if (this->engineToTest == "ogre2")
   {
     vertexShaderFile = "simple_color_330_vs.glsl";
     fragmentShaderFile = "simple_color_330_fs.glsl";
   }
-  else if (_renderEngine == "ogre")
+  else if (this->engineToTest == "ogre")
   {
     vertexShaderFile = "simple_color_vs.glsl";
     fragmentShaderFile = "simple_color_fs.glsl";
@@ -656,7 +575,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
 
   // create camera
   CameraPtr camera = scene->CreateCamera("camera");
-  ASSERT_TRUE(camera != nullptr);
+  ASSERT_NE(nullptr, camera);
   camera->SetLocalPosition(0.0, 0.0, 0.0);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
@@ -697,7 +616,7 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
 
   // Currently, only ogre2 supports segmentation cameras
   SegmentationCameraPtr segmentationCamera;
-  if (_renderEngine == "ogre2")
+  if (this->engineToTest == "ogre2")
   {
     // Create segmentation camera
     // segmentation material switching may also affect shader materials
@@ -776,39 +695,4 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(CameraTest, Track)
-{
-  Track(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(CameraTest, Follow)
-{
-  Follow(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(CameraTest, Visibility)
-{
-  Visibility(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(CameraTest, VisualAt)
-{
-  VisualAt(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(CameraTest, ShaderSelection)
-{
-  ShaderSelection(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(Camera, CameraTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

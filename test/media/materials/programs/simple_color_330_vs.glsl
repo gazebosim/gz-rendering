@@ -1,3 +1,5 @@
+#version ogre_glsl_ver_330
+
 /*
  * Copyright (C) 2022 Open Source Robotics Foundation
  *
@@ -15,10 +17,11 @@
  *
  */
 
-#version 330
+vulkan_layout( OGRE_POSITION ) in vec4 vertex;
 
-in vec4 vertex;
-uniform mat4 worldviewproj_matrix;
+vulkan( layout( ogre_P0 ) uniform Params { )
+  uniform mat4 worldviewproj_matrix;
+vulkan( }; )
 
 out gl_PerVertex
 {

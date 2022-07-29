@@ -268,7 +268,41 @@ Tests can be run by building the `test` target:
   make test
   ```
 
-To run tests specific to a render engine, set the `RENDER_ENGINE_VALUES` environment variable, e.g.
+Most tests can be run against multiple render engine configurations (if available).
+To control the testing configuration, use the following environment variables:
+
   ```
-  RENDER_ENGINE_VALUES=ogre2 make test
+  # Specify the rendering engine to use (ogre, ogre2, optix)
+  GZ_ENGINE_TO_TEST=ogre2 
+
+  # Specify the ogre2 backend to use (vulkan, gl3plus, metal (macOS))
+  GZ_ENGINE_BACKEND=vulkan
+
+  # Specify if using "headless mode" (EGL or vulkan NULL window)
+  GZ_ENGINE_HEADLESS=1
+  ```
+
+A full invocation of a test would be
+  ```
+  GZ_ENGINE_TO_TEST=ogre2 GZ_ENGINE_BACKEND=gl3plus ./bin/UNIT_Camera_TEST
+  ```
+
+Additionally, each test is registered with `ctest` for each engine/backend configuration
+available at build time.  These can then be filtered with the `ctest` command line.
+
+  ```
+  # See a list of all available tests
+  ctest -N
+
+  # Run all ogre2 tests (verbose)
+  ctest -R ogre2 -V
+
+  # Run all ogre2/vulkan tests (verbose)
+  ctest -R ogre2_vulkan -V
+
+  # Run all OpenGL tests (verbose)
+  ctest -R gl3plus -V
+
+  # Run all INTEGRATION tests (verbose)
+  ctest -R INTEGRATION -V
   ```

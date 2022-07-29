@@ -17,16 +17,13 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
+
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Event.hh>
 
 #include <gz/math/Color.hh>
 
-#include "test_config.hh"  // NOLINT(build/include)
-
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/WideAngleCamera.hh"
 
@@ -34,20 +31,8 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-class WideAngleCameraTest: public testing::Test,
-  public testing::WithParamInterface<const char *>
+class WideAngleCameraTest: public CommonRenderingTest
 {
-  /// \brief Verify generated image and compare with regular camera
-  public: void WideAngleCamera(const std::string &_renderEngine);
-
-  /// \brief Test 2d to 3d projection with wide angle camera
-  public: void Projection(const std::string &_renderEngine);
-
-  // Documentation inherited
-  protected: void SetUp() override
-  {
-    gz::common::Console::SetVerbosity(4);
-  }
 };
 
 /// \brief mutex for thread safety
@@ -79,24 +64,10 @@ void OnNewWideAngleFrame(const unsigned char *_data,
 }
 
 //////////////////////////////////////////////////
-void WideAngleCameraTest::WideAngleCamera(
-  const std::string &_renderEngine)
+TEST_F(WideAngleCameraTest, WideAngleCamera)
 {
-  // Currently, only ogre supports wide angle cameras
-  if (_renderEngine.compare("ogre") != 0)
-  {
-    gzerr << "Engine '" << _renderEngine
-           << "' doesn't support wide angle cameras" << std::endl;
-    return;
-  }
+  CHECK_SUPPORTED_ENGINE("ogre");
 
-  auto *engine = gz::rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzerr << "Engine '" << _renderEngine
-           << "' was unable to be retrieved" << std::endl;
-    return;
-  }
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(1.0, 1.0, 1.0);
@@ -127,7 +98,7 @@ void WideAngleCameraTest::WideAngleCamera(
 
   // create regular camera for comparison
   CameraPtr cameraRegular = scene->CreateCamera();
-  ASSERT_TRUE(camera != nullptr);
+  ASSERT_NE(nullptr, camera);
   cameraRegular->SetImageWidth(width);
   cameraRegular->SetImageHeight(height);
   cameraRegular->SetAspectRatio(1.333);
@@ -227,28 +198,13 @@ void WideAngleCameraTest::WideAngleCamera(
 
   // Clean up
   engine->DestroyScene(scene);
-  gz::rendering::unloadEngine(engine->Name());
 }
 
 //////////////////////////////////////////////////
-void WideAngleCameraTest::Projection(const std::string &_renderEngine)
+TEST_F(WideAngleCameraTest, Projection)
 {
-  // Currently, only ogre supports wideAngle cameras
-  if (_renderEngine.compare("ogre") != 0)
-  {
-    gzerr << "Engine '" << _renderEngine
-           << "' doesn't support wide angle cameras" << std::endl;
-    return;
-  }
+  CHECK_SUPPORTED_ENGINE("ogre");
 
-  // Setup gz-rendering with an empty scene
-  auto *engine = gz::rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzerr << "Engine '" << _renderEngine
-              << "' was unable to be retrieved" << std::endl;
-    return;
-  }
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(1.0, 1.0, 1.0);
@@ -359,18 +315,4 @@ void WideAngleCameraTest::Projection(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  gz::rendering::unloadEngine(engine->Name());
 }
-
-TEST_P(WideAngleCameraTest, WideAngleCamera)
-{
-  WideAngleCamera(GetParam());
-}
-
-TEST_P(WideAngleCameraTest, Projection)
-{
-  Projection(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(WideAngleCamera, WideAngleCameraTest,
-    RENDER_ENGINE_VALUES, gz::rendering::PrintToStringParam());

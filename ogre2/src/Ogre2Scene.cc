@@ -52,12 +52,13 @@
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
-#include <OgreMatrix4.h>
 #include <Compositor/OgreCompositorManager2.h>
 #include <Compositor/Pass/PassClear/OgreCompositorPassClearDef.h>
 #include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
 #include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
 #include <OgreDepthBuffer.h>
+#include <OgreMatrix4.h>
+#include <OgrePlatformInformation.h>
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
 #include <Overlay/OgreOverlayManager.h>

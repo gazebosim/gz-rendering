@@ -39,6 +39,14 @@ namespace gz
       private: virtual void cameraPreRenderScene(
           Ogre::Camera *_cam) override;
 
+      /// \brief Setups the material with particle noise params
+      /// \param[in,out] _pass Ogre Pass to setup.
+      /// \param[in] _scene Scene.
+      /// \param[in] _cam Ogre camera.
+      public: static void SetupMaterial(Ogre::Pass *_pass,
+                                        Ogre2ScenePtr _scene,
+                                        Ogre::Camera *_cam);
+
       /// \brief Pointer to scene
       private: Ogre2ScenePtr scene;
 

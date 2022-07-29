@@ -23,15 +23,6 @@
   #include <windows.h>
 #endif
 
-#ifdef __APPLE__
-  #define GL_SILENCE_DEPRECATION
-  #include <OpenGL/gl.h>
-#else
-#ifndef _WIN32
-  #include <GL/gl.h>
-#endif
-#endif
-
 #include <math.h>
 
 #include <algorithm>
@@ -1101,16 +1092,13 @@ void Ogre2ThermalCamera::CreateThermalTexture()
 //////////////////////////////////////////////////
 void Ogre2ThermalCamera::Render()
 {
-  // GL_DEPTH_CLAMP is disabled in later version of ogre2.2
-  // however our shaders rely on clamped values so enable it for this sensor
-  auto engine = Ogre2RenderEngine::Instance();
-  std::string renderSystemName =
-      engine->OgreRoot()->getRenderSystem()->getFriendlyName();
-  bool useGL = renderSystemName.find("OpenGL") != std::string::npos;
-#ifndef _WIN32
-  if (useGL)
-    glEnable(GL_DEPTH_CLAMP);
-#endif
+  // Our shaders rely on clamped values so enable it for this sensor
+  //
+  // TODO(anyone): Matias N. Goldberg (dark_sylinc) insists this is a hack
+  // and something is wrong. We should not need depth clamp. Depth clamp is
+  // just masking a bug
+  const bool bOldDepthClamp = this->ogreCamera->getNeedsDepthClamp();
+  this->ogreCamera->_setNeedsDepthClamp(true);
 
   // update the compositors
   this->scene->StartRendering(this->ogreCamera);
@@ -1126,10 +1114,7 @@ void Ogre2ThermalCamera::Render()
 
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 
-#ifndef _WIN32
-  if (useGL)
-    glDisable(GL_DEPTH_CLAMP);
-#endif
+  this->ogreCamera->_setNeedsDepthClamp(bOldDepthClamp);
 }
 
 //////////////////////////////////////////////////

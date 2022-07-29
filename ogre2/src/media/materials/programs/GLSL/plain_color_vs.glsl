@@ -15,12 +15,15 @@
  *
  */
 
-#version 330
+#version ogre_glsl_ver_330
 
-in vec4 vertex;
-uniform mat4 worldViewProj;
-uniform mat4 worldView;
-uniform float gzMinClipDistance;
+vulkan_layout( OGRE_POSITION ) in vec4 vertex;
+
+vulkan( layout( ogre_P0 ) uniform Params { )
+  uniform mat4 worldViewProj;
+  uniform mat4 worldView;
+  uniform float gzMinClipDistance;
+vulkan( }; )
 
 out gl_PerVertex
 {

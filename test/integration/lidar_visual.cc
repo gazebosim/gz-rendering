@@ -17,16 +17,13 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
+
 #include <gz/common/Image.hh>
 #include <gz/common/Filesystem.hh>
 
-#include "test_config.hh"  // NOLINT(build/include)
-
 #include "gz/rendering/GpuRays.hh"
 #include "gz/rendering/LidarVisual.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 #define LASER_TOL 2e-4
@@ -38,6 +35,7 @@
 using namespace gz;
 using namespace rendering;
 
+/////////////////////////////////////////////////
 void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
                   unsigned int _width, unsigned int _height,
                   unsigned int _channels,
@@ -48,46 +46,25 @@ void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
   memcpy(_scanDest, _scan, size * sizeof(f));
 }
 
-class LidarVisualTest: public testing::Test,
-                  public testing::WithParamInterface<const char *>
+/////////////////////////////////////////////////
+class LidarVisualTest: public CommonRenderingTest
 {
-  // Test and verify lidar visual properties setters and getters
-  public: void Configure(const std::string &_renderEngine);
-
-  // Test boxes detection
-  public: void RaysUnitBox(const std::string &_renderEngine);
-
-  // Test vertical measurements
-  public: void LaserVertical(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
 /// \brief Test LidarVisual configuraions
-void LidarVisualTest::Configure(const std::string &_renderEngine)
+TEST_F(LidarVisualTest, Configure)
 {
-  if (_renderEngine == "optix")
-  {
-    gzdbg << "LidarVisual not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
+  CHECK_UNSUPPORTED_ENGINE("optix");
 
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
 
   LidarVisualPtr lidarVis = scene->CreateLidarVisual();
-  ASSERT_TRUE(lidarVis != nullptr);
+  ASSERT_NE(nullptr, lidarVis);
   root->AddChild(lidarVis);
 
   // set initial pose for lidar
@@ -150,25 +127,16 @@ void LidarVisualTest::Configure(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
 
 /////////////////////////////////////////////////
 /// \brief Test detection of different boxes
-void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
+TEST_F(LidarVisualTest, RaysUnitBox)
 {
-#ifdef __APPLE__
-  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
-  return;
-#endif
-
-  if (_renderEngine == "optix")
-  {
-    gzdbg << "LidarVisual not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
+  CHECK_UNSUPPORTED_ENGINE("optix");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
 
   // Test lidar visual with 3 boxes in the world, using reading from GPU rays
   // First GPU rays at identity orientation, second at 90 degree roll
@@ -182,19 +150,11 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
   const int hRayCount = 320;
   const int vRayCount = 1;
 
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
 
   // Create first ray caster
   gz::math::Pose3d testPose(gz::math::Vector3d(0, 0, 0.1),
@@ -393,24 +353,16 @@ void LidarVisualTest::RaysUnitBox(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
 /// \brief Test GPU rays vertical component
-void LidarVisualTest::LaserVertical(const std::string &_renderEngine)
+TEST_F(LidarVisualTest, LaserVertical)
 {
-#ifdef __APPLE__
-  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
-  return;
-#endif
-
-  if (_renderEngine == "optix")
-  {
-    gzdbg << "LidarVisual not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
+  CHECK_UNSUPPORTED_ENGINE("optix");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
 
   // Test a rays that has a vertical range component.
   // Place a box within range and verify range values,
@@ -425,19 +377,11 @@ void LidarVisualTest::LaserVertical(const std::string &_renderEngine)
   unsigned int hRayCount = 640;
   unsigned int vRayCount = 4;
 
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
 
   // Create first ray caster
   gz::math::Pose3d testPose(gz::math::Vector3d(0.25, 0, 0.5),
@@ -560,27 +504,4 @@ void LidarVisualTest::LaserVertical(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(LidarVisualTest, Configure)
-{
-  Configure(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(LidarVisualTest, RaysUnitBox)
-{
-  RaysUnitBox(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(LidarVisualTest, LaserVertical)
-{
-  LaserVertical(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(LidarVisual, LidarVisualTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

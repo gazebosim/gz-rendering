@@ -86,9 +86,12 @@ TEST(RenderingIfaceTest, GetEngine)
 
   RenderEngine *eng = engine(envEngine, std::map<std::string, std::string>());
   ASSERT_NE(nullptr, eng);
-  EXPECT_TRUE(isEngineLoaded(eng->Name()));
-  EXPECT_TRUE(hasEngine(eng->Name()));
-  EXPECT_EQ(eng, engine(eng->Name()));
+  auto engineName = eng->Name();
+  ASSERT_FALSE(engineName.empty());
+
+  EXPECT_TRUE(isEngineLoaded(engineName));
+  EXPECT_TRUE(hasEngine(engineName));
+  EXPECT_EQ(eng, engine(engineName));
 
   {
     auto scene = eng->CreateScene("scene");
@@ -98,8 +101,8 @@ TEST(RenderingIfaceTest, GetEngine)
     EXPECT_EQ(eng->Name(), loadedEngines()[0]);
   }
 
-  rendering::unloadEngine(eng->Name());
-  EXPECT_FALSE(isEngineLoaded(eng->Name()));
+  rendering::unloadEngine(engineName);
+  EXPECT_FALSE(isEngineLoaded(engineName));
 
   EXPECT_TRUE(loadedEngines().empty());
   EXPECT_EQ(nullptr, sceneFromFirstRenderEngine());
@@ -121,9 +124,13 @@ TEST(RenderingIfaceTest, RegisterEngine)
 
   // unregister existing engine by index
   RenderEngine *eng = engine(0u);
-  EXPECT_TRUE(hasEngine(eng->Name()));
+  ASSERT_NE(nullptr, eng);
+  auto engineName = eng->Name();
+  ASSERT_FALSE(engineName.empty());
+
+  EXPECT_TRUE(hasEngine(engineName));
   EXPECT_NO_THROW(unregisterEngine(0u));
-  EXPECT_FALSE(hasEngine(eng->Name()));
+  EXPECT_FALSE(hasEngine(engineName));
 
   // register engine back with a different name
   EXPECT_NO_THROW(registerEngine("my_new_engine", eng));

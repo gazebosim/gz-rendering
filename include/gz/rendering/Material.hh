@@ -226,7 +226,7 @@ namespace gz
       public: virtual void GZ_DEPRECATED(7) SetTexture(
         const std::string &_texture)
       {
-        (void)_texture;
+        this->SetTexture(_texture, nullptr);
       }
 
       /// \brief Set the material texture
@@ -269,7 +269,7 @@ namespace gz
       public: virtual void GZ_DEPRECATED(7) SetNormalMap(
         const std::string &_normalMap)
       {
-        (void)_normalMap;
+        this->SetNormalMap(_normalMap, nullptr);
       }
 
       /// \brief Set the material normal map
@@ -306,7 +306,7 @@ namespace gz
       public: virtual void GZ_DEPRECATED(7) SetRoughnessMap(
         const std::string &_roughnessMap)
       {
-        (void)_roughnessMap;
+        this->SetRoughnessMap(_roughnessMap, nullptr);
       }
 
       /// \brief Set the material roughness map
@@ -344,7 +344,7 @@ namespace gz
       public: virtual void GZ_DEPRECATED(7) SetMetalnessMap(
         const std::string &_metalnessMap)
       {
-        (void)_metalnessMap;
+        this->SetMetalnessMap(_metalnessMap, nullptr);
       }
 
       /// \brief Set the material metalness map
@@ -382,7 +382,7 @@ namespace gz
       public: virtual void GZ_DEPRECATED(7) SetEnvironmentMap(
         const std::string &_environmentMap)
       {
-        (void)_environmentMap;
+        this->SetEnvironmentMap(_environmentMap, nullptr);
       }
 
       /// \brief Set the material environment map
@@ -420,7 +420,7 @@ namespace gz
       public: virtual void GZ_DEPRECATED(7) SetEmissiveMap(
         const std::string &_emissiveMap)
       {
-        (void)_emissiveMap;
+        this->SetEmissiveMap(_emissiveMap, nullptr);
       }
 
       /// \brief Set the material emissive map
@@ -458,8 +458,7 @@ namespace gz
           const std::string &_lightMap,
           unsigned int _uvSet = 0u)
       {
-        (void)_lightMap;
-        (void)_uvSet;
+        this->SetLightMap(_lightMap, nullptr, _uvSet);
       }
 
       /// \brief Set the material light map from an image loaded in memory

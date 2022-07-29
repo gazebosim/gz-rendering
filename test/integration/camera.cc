@@ -511,7 +511,7 @@ TEST_F(CameraTest, Visibility)
 }
 
 /////////////////////////////////////////////////
-TEST_F(CameraTest, ShaderSelection)
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_MAC(ShaderSelection))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
   // This test checks that custom shaders are being rendering correctly in

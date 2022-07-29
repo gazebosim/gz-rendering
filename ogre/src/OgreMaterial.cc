@@ -308,6 +308,12 @@ void OgreMaterial::SetTexture(const std::string &_name,
 }
 
 //////////////////////////////////////////////////
+std::shared_ptr<const common::Image> OgreMaterial::TextureData() const
+{
+  return this->textureData;
+}
+
+//////////////////////////////////////////////////
 void OgreMaterial::ClearTexture()
 {
   this->textureName = "";
@@ -329,8 +335,14 @@ std::string OgreMaterial::NormalMap() const
 }
 
 //////////////////////////////////////////////////
+std::shared_ptr<const common::Image> OgreMaterial::NormalMapData() const
+{
+  return this->normalMapData;
+}
+
+//////////////////////////////////////////////////
 void OgreMaterial::SetNormalMap(const std::string &_name,
-  const std::shared_ptr<const common::Image>& /*_img*/)
+  const std::shared_ptr<const common::Image>& _img)
 {
   if (_name.empty())
   {
@@ -339,6 +351,7 @@ void OgreMaterial::SetNormalMap(const std::string &_name,
   }
 
   this->normalMapName = _name;
+  this->normalMapData = _img;
   // TODO(anyone): implement
   // this->SetNormalMapImpl(texture);
 }
@@ -347,6 +360,7 @@ void OgreMaterial::SetNormalMap(const std::string &_name,
 void OgreMaterial::ClearNormalMap()
 {
   this->normalMapName = "";
+  this->normalMapData = nullptr;
 }
 
 //////////////////////////////////////////////////

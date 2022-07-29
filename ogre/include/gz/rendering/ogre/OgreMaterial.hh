@@ -132,9 +132,15 @@ namespace gz
 
       public: virtual void ClearTexture() override;
 
+      public: virtual std::shared_ptr<const common::Image> TextureData()
+          const override;
+
       public: virtual bool HasNormalMap() const override;
 
       public: virtual std::string NormalMap() const override;
+
+      public: virtual std::shared_ptr<const common::Image> NormalMapData()
+          const override;
 
       // Documentation inherited.
       public: virtual void SetNormalMap(const std::string &_normalMap,
@@ -237,6 +243,9 @@ namespace gz
       protected: std::shared_ptr<const common::Image> textureData;
 
       protected: std::string normalMapName;
+
+      /// \brief Normal map image if it was passed as binary data
+      protected: std::shared_ptr<const common::Image> normalMapData;
 
       protected: enum ShaderType shaderType = ST_PIXEL;
 

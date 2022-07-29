@@ -16,9 +16,9 @@
 
 #include <gtest/gtest.h>
 
-#include "ignition/rendering/ShaderType.hh"
+#include "gz/rendering/ShaderType.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 /////////////////////////////////////////////////

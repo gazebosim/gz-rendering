@@ -15,16 +15,21 @@ set(engine_name "ogre2")
 
 gz_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre2_target)
 
-find_package(OpenGL)
-
-add_definitions(-DOGRE_IGNORE_UNKNOWN_DEBUG)
-
 set_property(
   SOURCE Ogre2RenderEngine.cc
   PROPERTY COMPILE_DEFINITIONS
   GZ_RENDERING_RESOURCE_PATH="${GZ_RENDERING_RESOURCE_PATH}"
   OGRE2_RESOURCE_PATH="${OGRE2_RESOURCE_PATH}"
   OGRE2_VERSION="${OGRE2_VERSION}"
+)
+
+target_compile_definitions(${ogre2_target}
+  PRIVATE OGRE_IGNORE_UNKNOWN_DEBUG)
+
+set_property(
+  TARGET ${ogre2_target}
+  PROPERTY INSTALL_RPATH
+  ${OGRE2_LIBRARY_DIRS}
 )
 
 target_include_directories(${ogre2_target}
@@ -39,7 +44,7 @@ target_link_libraries(${ogre2_target}
     gz-plugin${GZ_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}
     terra
-    IgnOGRE2::IgnOGRE2)
+    GzOGRE2::GzOGRE2)
 
 set (versioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
 set (unversioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_NO_VERSION_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})

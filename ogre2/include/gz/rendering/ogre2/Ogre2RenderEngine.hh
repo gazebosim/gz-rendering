@@ -193,10 +193,17 @@ namespace gz
       public: Ogre::v1::OverlaySystem *OverlaySystem() const;
 
       /// \internal
-      /// \brief Sets the current rendering mode. See IgnOgreRenderingMode
+      /// \brief Sets the current rendering mode. See GzOgreRenderingMode
       /// and see Ogre::GzHlmsPbs
       /// \param[in] renderingMode
-      public: void SetIgnOgreRenderingMode(IgnOgreRenderingMode renderingMode);
+      public: void SetGzOgreRenderingMode(GzOgreRenderingMode renderingMode);
+      // TODO(CH3): Deprecated. Remove on tock.
+      public:
+        inline void GZ_DEPRECATED(7) SetIgnOgreRenderingMode(
+          GzOgreRenderingMode renderingMode)
+        {
+          return SetGzOgreRenderingMode(renderingMode);
+        }
 
       /// \internal
       /// \brief Get a pointer to the Pbs listener that adds terra shadows.

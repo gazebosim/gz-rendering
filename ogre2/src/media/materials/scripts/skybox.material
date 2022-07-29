@@ -32,10 +32,6 @@ THE SOFTWARE.
 vertex_program SkyBox_vs_GLSL glsl
 {
   source skybox_vs.glsl
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program SkyBox_fs_GLSL glsl
@@ -47,14 +43,21 @@ fragment_program SkyBox_fs_GLSL glsl
   }
 }
 
+// Vulkan shaders
+vertex_program SkyBox_vs_VK glslvk
+{
+  source skybox_vs.glsl
+}
+
+fragment_program SkyBox_fs_VK glslvk
+{
+  source skybox_fs.glsl
+}
+
 // Metal shaders
 vertex_program SkyBox_vs_Metal metal
 {
   source skybox_vs.metal
-  default_params
-  {
-    param_named_auto worldViewProj worldviewproj_matrix
-  }
 }
 
 fragment_program SkyBox_fs_Metal metal
@@ -68,12 +71,19 @@ vertex_program SkyBox_vs unified
 {
     delegate SkyBox_vs_GLSL
     delegate SkyBox_vs_Metal
+    delegate SkyBox_vs_VK
+
+    default_params
+    {
+      param_named_auto worldViewProj worldviewproj_matrix
+    }
 }
 
 fragment_program SkyBox_fs unified
 {
     delegate SkyBox_fs_GLSL
     delegate SkyBox_fs_Metal
+    delegate SkyBox_fs_VK
 }
 
 // Material definition

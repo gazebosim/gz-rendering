@@ -45,8 +45,8 @@ void Ogre2GzHlmsSphericalClipMinDistance::preparePassHash(
   {
     const Ogre::int32 numClipPlanes =
       _hlms->_getProperty("hlms_pso_clip_distances");
-    _hlms->_setProperty("ign_spherical_clip_min_distance", 1);
-    _hlms->_setProperty("ign_spherical_clip_idx", numClipPlanes);
+    _hlms->_setProperty("gz_spherical_clip_min_distance", 1);
+    _hlms->_setProperty("gz_spherical_clip_idx", numClipPlanes);
     _hlms->_setProperty("hlms_pso_clip_distances", numClipPlanes + 1);
 
     if (_hlms->getType() == Ogre::HLMS_UNLIT)
@@ -54,7 +54,7 @@ void Ogre2GzHlmsSphericalClipMinDistance::preparePassHash(
       if (_hlms->_getProperty("hlms_global_clip_planes") == 0)
       {
         this->needsWorldPos = true;
-        _hlms->_setProperty("ign_spherical_clip_needs_worldPos", 1);
+        _hlms->_setProperty("gz_spherical_clip_needs_worldPos", 1);
       }
     }
   }
@@ -87,7 +87,7 @@ float *Ogre2GzHlmsSphericalClipMinDistance::preparePassBuffer(
       _sceneManager->getCamerasInProgress().renderingCamera;
     const Ogre::Vector3 &camPos = camera->getDerivedPosition();
 
-    // float4 ignMinClipDistance_ignCameraPos
+    // float4 gzMinClipDistance_gzCameraPos
     *_passBufferPtr++ = this->minDistanceClip;
     *_passBufferPtr++ = camPos.x;
     *_passBufferPtr++ = camPos.y;

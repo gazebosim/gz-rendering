@@ -22,7 +22,6 @@
 #define NO_INTERPOLATION_PREFIX nointerpolation
 #define NO_INTERPOLATION_SUFFIX
 
-#define finalDrawId input.drawId
 #define PARAMS_ARG_DECL
 #define PARAMS_ARG
 
@@ -34,9 +33,13 @@
 
 #define inVs_vertexId input.vertexId
 #define inVs_vertex input.vertex
+#define inVs_normal input.normal
+#define inVs_tangent input.tangent
+#define inVs_binormal input.binormal
 #define inVs_blendWeights input.blendWeights
 #define inVs_blendIndices input.blendIndices
 #define inVs_qtangent input.qtangent
+#define inVs_colour input.colour
 @property( !hlms_instanced_stereo )
 	#define inVs_drawId input.drawId
 @else
@@ -44,12 +47,13 @@
 	#define inVs_stereoDrawId input.drawId
 @end
 
+#define finalDrawId input.drawId
+
 @foreach( hlms_uv_count, n )
 	#define inVs_uv@n input.uv@n@end
 
 #define outVs_Position outVs.gl_Position
 #define outVs_viewportIndex outVs.gl_ViewportIndex
-#define outVs_clipDistance outVs.gl_ClipDistance
 #define outVs_clipDistance0 outVs.gl_ClipDistance0.x
 
 #define gl_SampleMaskIn0 gl_SampleMask
@@ -79,7 +83,19 @@
 
 #define structuredBufferFetch( buffer, idx ) buffer[idx]
 
+@property( hlms_readonly_is_tex )
+	#define ReadOnlyBuffer( slot, varType, varName ) Buffer<varType> varName : register(t##slot)
+	#define readOnlyFetch( buffer, idx ) buffer.Load( idx )
+	#define readOnlyFetch1( buffer, idx ) buffer.Load( idx ).x
+@else
+	#define ReadOnlyBuffer( slot, varType, varName ) StructuredBuffer<varType> varName : register(t##slot)
+	#define readOnlyFetch( bufferVar, idx ) bufferVar[idx]
+	#define readOnlyFetch1( bufferVar, idx ) bufferVar[idx].x
+@end
+
 #define OGRE_Texture3D_float4 Texture3D
+
+#define OGRE_ArrayTex( declType, varName, arrayCount ) declType varName[arrayCount]
 
 #define OGRE_SAMPLER_ARG_DECL( samplerName ) , SamplerState samplerName
 #define OGRE_SAMPLER_ARG( samplerName ) , samplerName

@@ -37,7 +37,7 @@ target_link_libraries(${ogre_target}
   PRIVATE
     gz-plugin${GZ_PLUGIN_VER}::register
     ${OPENGL_LIBRARIES}
-    IgnOGRE::IgnOGRE
+    GzOGRE::GzOGRE
     )
 
 # Build the unit tests

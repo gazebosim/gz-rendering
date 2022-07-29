@@ -17,16 +17,14 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
+
 #include <gz/common/Image.hh>
 #include <gz/common/Filesystem.hh>
-
-#include "test_config.hh"  // NOLINT(build/include)
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "gz/rendering/GpuRays.hh"
 #include "gz/rendering/ParticleEmitter.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 #define LASER_TOL 2e-4
@@ -40,6 +38,7 @@
 using namespace gz;
 using namespace rendering;
 
+/////////////////////////////////////////////////
 void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
                   unsigned int _width, unsigned int _height,
                   unsigned int _channels,
@@ -50,52 +49,24 @@ void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
   memcpy(_scanDest, _scan, size * sizeof(f));
 }
 
-class GpuRaysTest: public testing::Test,
-                  public testing::WithParamInterface<const char *>
+/////////////////////////////////////////////////
+class GpuRaysTest: public CommonRenderingTest
 {
-  // Test and verify gpu rays properties setters and getters
-  public: void Configure(const std::string &_renderEngine);
-
-  // Test boxes detection
-  public: void RaysUnitBox(const std::string &_renderEngine);
-
-  // Test vertical measurements
-  public: void LaserVertical(const std::string &_renderEngine);
-
-  // Test detection of particles
-  public: void RaysParticles(const std::string &_renderEngine);
-
-  // Test single ray box intersection
-  public: void SingleRay(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
 /// \brief Test GPU rays configuraions
-void GpuRaysTest::Configure(const std::string &_renderEngine)
+TEST_F(GpuRaysTest, Configure)
 {
-  if (_renderEngine == "optix")
-  {
-    gzdbg << "GpuRays not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
-
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
+  CHECK_UNSUPPORTED_ENGINE("optix");
 
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   VisualPtr root = scene->RootVisual();
 
   GpuRaysPtr gpuRays = scene->CreateGpuRays();
-  ASSERT_TRUE(gpuRays != nullptr);
+  ASSERT_NE(nullptr, gpuRays);
   root->AddChild(gpuRays);
 
   // set gpu rays caster initial pose
@@ -157,25 +128,17 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
 
 /////////////////////////////////////////////////
 /// \brief Test detection of different boxes
-void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
+TEST_F(GpuRaysTest, RaysUnitBox)
 {
-#ifdef __APPLE__
-  gzerr << "Skipping test for apple, see issue #35." << std::endl;
-  return;
-#endif
+  CHECK_UNSUPPORTED_ENGINE("optix");
 
-  if (_renderEngine == "optix")
-  {
-    gzdbg << "GpuRays not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
 
   // Test GPU rays with 3 boxes in the world.
   // First GPU rays at identity orientation, second at 90 degree roll
@@ -189,17 +152,8 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   const int hRayCount = 320;
   const int vRayCount = 1;
 
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   VisualPtr root = scene->RootVisual();
 
@@ -296,7 +250,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   EXPECT_FLOAT_EQ(scan[last], gz::math::INF_F);
 
   // laser retro is currently only supported in ogre2
-  if (_renderEngine == "ogre2")
+  if (this->engineToTest == "ogre2")
   {
     // rays cater should see box01 with laser retro value set to laserRetro1
     // and box02 with laser retro value set to laserRetro2
@@ -349,24 +303,16 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
 /// \brief Test GPU rays vertical component
-void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
+TEST_F(GpuRaysTest, LaserVertical)
 {
-#ifdef __APPLE__
-  gzerr << "Skipping test for apple, see issue #35." << std::endl;
-  return;
-#endif
-
-  if (_renderEngine == "optix")
-  {
-    gzdbg << "GpuRays not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
+  CHECK_UNSUPPORTED_ENGINE("optix");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
 
   // Test a rays that has a vertical range component.
   // Place a box within range and verify range values,
@@ -381,17 +327,8 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   unsigned int hRayCount = 640;
   unsigned int vRayCount = 4;
 
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   VisualPtr root = scene->RootVisual();
 
@@ -458,7 +395,7 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
         gz::math::INF_F);
 
     // laser retro is currently only supported in ogre2
-    if (_renderEngine == "ogre2")
+    if (this->engineToTest == "ogre2")
     {
       // object does not have retro value set so it should be 0
       EXPECT_FLOAT_EQ(scan[i * hRayCount * channels + 1], 0.0);
@@ -491,24 +428,17 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
 /// \brief Test detection of particles
-void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
+TEST_F(GpuRaysTest, RaysParticles)
 {
-#ifdef __APPLE__
-  gzerr << "Skipping test for apple, see issue #35." << std::endl;
-  return;
-#endif
-
-  if (_renderEngine != "ogre2")
-  {
-    gzdbg << "GpuRays with particle effect is not supported yet in rendering "
-           << "engine: " << _renderEngine << std::endl;
-    return;
-  }
+  // Ogre2 is the only engine with particle effects
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
 
   // Test GPU ray with 3 boxes in the world.
   // Add noise in btewen GPU ray and box in the center
@@ -520,17 +450,8 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
   const int hRayCount = 320;
   const int vRayCount = 1;
 
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   VisualPtr root = scene->RootVisual();
 
@@ -708,24 +629,16 @@ void GpuRaysTest::RaysParticles(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
 /// \brief Test single ray box intersection
-void GpuRaysTest::SingleRay(const std::string &_renderEngine)
+TEST_F(GpuRaysTest, SingleRay)
 {
-#ifdef __APPLE__
-  gzerr << "Skipping test for apple, see issue #35." << std::endl;
-  return;
-#endif
-
-  if (_renderEngine == "optix")
-  {
-    gzdbg << "GpuRays not supported yet in rendering engine: "
-            << _renderEngine << std::endl;
-    return;
-  }
+  CHECK_UNSUPPORTED_ENGINE("optix");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
 
   // Test GPU single ray box intersection.
   // Place GPU above box looking downwards
@@ -738,17 +651,8 @@ void GpuRaysTest::SingleRay(const std::string &_renderEngine)
   const int hRayCount = 1;
   const int vRayCount = 1;
 
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-
   ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_TRUE(scene != nullptr);
+  ASSERT_NE(nullptr, scene);
 
   VisualPtr root = scene->RootVisual();
 
@@ -806,40 +710,4 @@ void GpuRaysTest::SingleRay(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
 }
-
-/////////////////////////////////////////////////
-TEST_P(GpuRaysTest, Configure)
-{
-  Configure(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(GpuRaysTest, RaysUnitBox)
-{
-  RaysUnitBox(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(GpuRaysTest, LaserVertical)
-{
-  LaserVertical(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(GpuRaysTest, RaysParticles)
-{
-  RaysParticles(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(GpuRaysTest, SingleRay)
-{
-  SingleRay(GetParam());
-}
-
-
-INSTANTIATE_TEST_SUITE_P(GpuRays, GpuRaysTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

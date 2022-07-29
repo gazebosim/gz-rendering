@@ -15,7 +15,7 @@
  *
  */
 
-#version 330
+#version ogre_glsl_ver_330
 
 // This fragment shader will add Gaussian noise to a rendered image.  It's
 // intended to be instantiated via Ogre's Compositor framework so that we're
@@ -54,27 +54,31 @@
 // the input image.
 
 // The input texture, which is set up by the Ogre Compositor infrastructure.
-uniform sampler2D RT;
+vulkan_layout( ogre_t0 ) uniform texture2D RT;
+vulkan( layout( ogre_s0 ) uniform sampler texSampler );
 
 // Other parameters are set in C++, via
 // Ogre::GpuProgramParameters::setNamedConstant()
 
-// Random values sampled on the CPU, which we'll use as offsets into our 2-D
-// pseudo-random sampler here.
-uniform vec3 offsets;
-// Mean of the Gaussian distribution that we want to sample from.
-uniform float mean;
-// Standard deviation of the Gaussian distribution that we want to sample from.
-uniform float stddev;
-
+vulkan( layout( ogre_P0 ) uniform Params { )
+	// Random values sampled on the CPU, which we'll use as offsets into our 2-D
+	// pseudo-random sampler here.
+	uniform vec3 offsets;
+	// Mean of the Gaussian distribution that we want to sample from.
+	uniform float mean;
+	// Standard deviation of the Gaussian distribution that we want to sample from.
+	uniform float stddev;
+vulkan( }; )
 
 // input params from vertex shader
+vulkan_layout( location = 0 )
 in block
 {
   vec2 uv0;
 } inPs;
 
 // final output color
+vulkan_layout( location = 0 )
 out vec4 fragColor;
 
 #define PI 3.14159265358979323846264
@@ -131,5 +135,5 @@ void main()
   float n = pow(abs(z), 2.1);
   if (z < 0)
     n = -n;
-  fragColor = clamp(texture(RT, inPs.uv0.xy) + vec4(n, n, n, 0.0), 0.0, 1.0);
+  fragColor = clamp(texture(vkSampler2D(RT,texSampler), inPs.uv0.xy) + vec4(n, n, n, 0.0), 0.0, 1.0);
 }

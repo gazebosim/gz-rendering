@@ -29,6 +29,7 @@
 #include <CommandBuffer/OgreCbShaderBuffer.h>
 #include <CommandBuffer/OgreCommandBuffer.h>
 #include <OgreRenderQueue.h>
+#include <OgreRootLayout.h>
 #include <Vao/OgreConstBufferPacked.h>
 #include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
@@ -54,18 +55,52 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
+  uint16 Ogre2GzHlmsTerra::getNumExtraPassTextures(
+    const HlmsPropertyVec &_properties, bool _casterPass) const
+  {
+    uint16 numExtraTextures = 0u;
+
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      numExtraTextures +=
+        listener->getNumExtraPassTextures(_properties, _casterPass);
+    }
+
+    return numExtraTextures;
+  }
+
+  /////////////////////////////////////////////////
+  void Ogre2GzHlmsTerra::propertiesMergedPreGenerationStep(
+    Hlms *_hlms,  //
+    const HlmsCache &_passCache,
+    const HlmsPropertyVec &_renderableCacheProperties,
+    const PiecesMap _renderableCachePieces[NumShaderTypes],
+    const HlmsPropertyVec &_properties,
+    const QueuedRenderable &_queuedRenderable)
+  {
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      listener->propertiesMergedPreGenerationStep(
+        _hlms, _passCache, _renderableCacheProperties, _renderableCachePieces,
+        _properties, _queuedRenderable);
+    }
+  }
+
+  /////////////////////////////////////////////////
   void Ogre2GzHlmsTerra::preparePassHash(
     const CompositorShadowNode *_shadowNode, bool _casterPass,
     bool _dualParaboloid, SceneManager *_sceneManager, Hlms *_hlms)
   {
     if (!_casterPass &&
-        (this->ignOgreRenderingMode == IORM_SOLID_COLOR ||
-         this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED))
+        (this->gzOgreRenderingMode == GORM_SOLID_COLOR ||
+         this->gzOgreRenderingMode == GORM_SOLID_THERMAL_COLOR_TEXTURED))
     {
-      _hlms->_setProperty("ign_render_solid_color", 1);
+      _hlms->_setProperty("gz_render_solid_color", 1);
 
-      if (this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED)
-        _hlms->_setProperty("ign_render_solid_color_textured", 1);
+      if (this->gzOgreRenderingMode == GORM_SOLID_THERMAL_COLOR_TEXTURED)
+        _hlms->_setProperty("gz_render_solid_color_textured", 1);
     }
 
     // Allow additional listener-only customizations to inject their stuff
@@ -109,6 +144,25 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
+  void Ogre2GzHlmsTerra::setupRootLayout(
+    RootLayout &_rootLayout, const HlmsPropertyVec &_properties) const
+  {
+    if (this->getProperty(_properties, "gz_render_solid_color") != 0)
+    {
+      // Account for the extra buffer bound at kPerObjectDataBufferSlot
+      // It should be the last buffer to be set, so kPerObjectDataBufferSlot + 1
+      _rootLayout.mDescBindingRanges[0][DescBindingTypes::ConstBuffer].end =
+        kPerObjectDataBufferSlot + 1u;
+    }
+
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      listener->setupRootLayout(_rootLayout, _properties);
+    }
+  }
+
+  /////////////////////////////////////////////////
   void Ogre2GzHlmsTerra::shaderCacheEntryCreated(
     const String &_shaderProfile, const HlmsCache *_hlmsCacheEntry,
     const HlmsCache &_passCache, const HlmsPropertyVec &_properties,
@@ -128,23 +182,25 @@ namespace Ogre
   {
     HlmsTerra::notifyPropertiesMergedPreGenerationStep();
 
-    setProperty("IgnPerObjectDataSlot", kPerObjectDataBufferSlot);
+    setProperty("GzPerObjectDataSlot", kPerObjectDataBufferSlot);
   }
 
   /////////////////////////////////////////////////
   void Ogre2GzHlmsTerra::hlmsTypeChanged(bool _casterPass,
-                                          CommandBuffer *_commandBuffer,
-                                          const HlmsDatablock *_datablock)
+                                         CommandBuffer *_commandBuffer,
+                                         const HlmsDatablock *_datablock,
+                                         size_t _texUnit)
   {
     // Allow additional listener-only customizations to inject their stuff
     for (Ogre::HlmsListener *listener : this->customizations)
     {
-      listener->hlmsTypeChanged(_casterPass, _commandBuffer, _datablock);
+      listener->hlmsTypeChanged(_casterPass, _commandBuffer, _datablock,
+                                _texUnit);
     }
 
     if (_casterPass ||
-        (this->ignOgreRenderingMode != IORM_SOLID_COLOR &&
-         this->ignOgreRenderingMode != IORM_SOLID_THERMAL_COLOR_TEXTURED))
+        (this->gzOgreRenderingMode != GORM_SOLID_COLOR &&
+         this->gzOgreRenderingMode != GORM_SOLID_THERMAL_COLOR_TEXTURED))
     {
       return;
     }
@@ -160,8 +216,8 @@ namespace Ogre
     const uint32 instanceIdx = HlmsTerra::fillBuffersForV1(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if ((this->ignOgreRenderingMode == IORM_SOLID_COLOR ||
-         this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED) &&
+    if ((this->gzOgreRenderingMode == GORM_SOLID_COLOR ||
+         this->gzOgreRenderingMode == GORM_SOLID_THERMAL_COLOR_TEXTURED) &&
         !_casterPass)
     {
       const Ogre::Terra *terra =
@@ -181,8 +237,8 @@ namespace Ogre
         //     movableObject->setVisible(false) or use RenderQueue IDs
         //     or visibility flags to prevent rendering it
         gzerr << "A module is trying to render an object without "
-                  "specifying a parameter. Please report this bug at "
-                  "https://github.com/gazebosim/gz-rendering/issues\n";
+                 "specifying a parameter. Please report this bug at "
+                 "https://github.com/gazebosim/gz-rendering/issues\n";
         throw;
       }
       float *dataPtr = this->MapObjectDataBufferFor(
@@ -193,12 +249,12 @@ namespace Ogre
       dataPtr[1] = customParam.y;
       dataPtr[2] = customParam.z;
 
-      if (this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED &&
+      if (this->gzOgreRenderingMode == GORM_SOLID_THERMAL_COLOR_TEXTURED &&
           terra->HasSolidColor(2u))
       {
         GZ_ASSERT(customParam.w >= 0.0f,
-                   "customParam.w can't be negative for "
-                   "IORM_SOLID_THERMAL_COLOR_TEXTURED");
+                  "customParam.w can't be negative for "
+                  "GORM_SOLID_THERMAL_COLOR_TEXTURED");
 
         // Negate customParam.w to tell the shader we wish to multiply
         // against the diffuse texture. We substract 0.5f to avoid -0.0 = 0.0
@@ -221,8 +277,8 @@ namespace Ogre
     const uint32 instanceIdx = HlmsTerra::fillBuffersForV2(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if ((this->ignOgreRenderingMode == IORM_SOLID_COLOR ||
-         this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED) &&
+    if ((this->gzOgreRenderingMode == GORM_SOLID_COLOR ||
+         this->gzOgreRenderingMode == GORM_SOLID_THERMAL_COLOR_TEXTURED) &&
         !_casterPass)
     {
       const Ogre::Terra *terra =
@@ -242,8 +298,8 @@ namespace Ogre
         //     movableObject->setVisible(false) or use RenderQueue IDs
         //     or visibility flags to prevent rendering it
         gzerr << "A module is trying to render an object without "
-                  "specifying a parameter. Please report this bug at "
-                  "https://github.com/gazebosim/gz-rendering/issues\n";
+                 "specifying a parameter. Please report this bug at "
+                 "https://github.com/gazebosim/gz-rendering/issues\n";
         throw;
       }
       float *dataPtr = this->MapObjectDataBufferFor(
@@ -255,12 +311,12 @@ namespace Ogre
       dataPtr[2] = customParam.z;
       dataPtr[3] = customParam.w;
 
-      if (this->ignOgreRenderingMode == IORM_SOLID_THERMAL_COLOR_TEXTURED &&
+      if (this->gzOgreRenderingMode == GORM_SOLID_THERMAL_COLOR_TEXTURED &&
           terra->HasSolidColor(2u))
       {
         GZ_ASSERT(customParam.w >= 0.0f,
-                   "customParam.w can't be negative for "
-                   "IORM_SOLID_THERMAL_COLOR_TEXTURED");
+                  "customParam.w can't be negative for "
+                  "GORM_SOLID_THERMAL_COLOR_TEXTURED");
 
         // Negate customParam.w to tell the shader we wish to multiply
         // against the diffuse texture. We substract 0.5f to avoid -0.0 = 0.0
@@ -295,7 +351,7 @@ namespace Ogre
 
   /////////////////////////////////////////////////
   void Ogre2GzHlmsTerra::GetDefaultPaths(String &_outDataFolderPath,
-                                          StringVector &_outLibraryFoldersPaths)
+                                         StringVector &_outLibraryFoldersPaths)
   {
     HlmsTerra::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
 

@@ -15,14 +15,6 @@
  *
  */
 
-// Not Apple or Windows
-#if !defined(__APPLE__) && !defined(_WIN32)
-# include <X11/Xlib.h>
-# include <X11/Xutil.h>
-# include <GL/glx.h>
-# include <GL/glxext.h>
-#endif
-
 #ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
   // pulled in by anybody (e.g., Boost).
@@ -51,6 +43,14 @@
 #include "Terra/TerraWorkspaceListener.h"
 #include "Ogre2GzHlmsSphericalClipMinDistance.hh"
 
+// Not Apple or Windows
+#if !defined(__APPLE__) && !defined(_WIN32)
+# include <X11/Xlib.h>
+# include <X11/Xutil.h>
+# include <GL/glx.h>
+# include <GL/glxext.h>
+#endif
+
 class GZ_RENDERING_OGRE2_HIDDEN
     gz::rendering::Ogre2RenderEnginePrivate
 {
@@ -76,13 +76,13 @@ class GZ_RENDERING_OGRE2_HIDDEN
   public: std::unique_ptr<Ogre::TerraWorkspaceListener> terraWorkspaceListener;
 
   /// \brief Custom PBS modifications
-  public: Ogre::Ogre2GzHlmsPbs *ignHlmsPbs{nullptr};
+  public: Ogre::Ogre2GzHlmsPbs *gzHlmsPbs{nullptr};
 
   /// \brief Custom Unlit modifications
-  public: Ogre::Ogre2GzHlmsUnlit *ignHlmsUnlit{nullptr};
+  public: Ogre::Ogre2GzHlmsUnlit *gzHlmsUnlit{nullptr};
 
   /// \brief Custom Terra modifications
-  public: Ogre::Ogre2GzHlmsTerra *ignHlmsTerra{nullptr};
+  public: Ogre::Ogre2GzHlmsTerra *gzHlmsTerra{nullptr};
 };
 
 using namespace gz;
@@ -178,13 +178,20 @@ void Ogre2RenderEngine::Destroy()
   if (this->dummyDisplay)
   {
     Display *x11Display = static_cast<Display*>(this->dummyDisplay);
-    GLXContext x11Context = static_cast<GLXContext>(this->dummyContext);
-    glXDestroyContext(x11Display, x11Context);
+    if (this->dummyContext)
+    {
+      GLXContext x11Context = static_cast<GLXContext>(this->dummyContext);
+      glXDestroyContext(x11Display, x11Context);
+      this->dummyContext = nullptr;
+    }
     XDestroyWindow(x11Display, this->dummyWindowId);
     XCloseDisplay(x11Display);
     this->dummyDisplay = nullptr;
-    XFree(this->dataPtr->dummyFBConfigs);
-    this->dataPtr->dummyFBConfigs = nullptr;
+    if (this->dataPtr->dummyFBConfigs)
+    {
+      XFree(this->dataPtr->dummyFBConfigs);
+      this->dataPtr->dummyFBConfigs = nullptr;
+    }
   }
 #endif
 }
@@ -330,6 +337,15 @@ bool Ogre2RenderEngine::LoadImpl(
         this->dataPtr->graphicsAPI = GraphicsAPI::METAL;
   }
 
+  it = _params.find("vulkan");
+  if (it != _params.end())
+  {
+    bool useVulkan;
+    std::istringstream(it->second) >> useVulkan;
+    if(useVulkan)
+        this->dataPtr->graphicsAPI = GraphicsAPI::VULKAN;
+  }
+
   try
   {
     this->LoadAttempt();
@@ -368,8 +384,11 @@ void Ogre2RenderEngine::LoadAttempt()
 {
   this->CreateLogger();
   if (!this->useCurrentGLContext &&
-      this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
+      (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL ||
+       this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN))
+  {
     this->CreateContext();
+  }
   this->CreateRoot();
   this->CreateOverlay();
   this->LoadPlugins();
@@ -427,56 +446,61 @@ void Ogre2RenderEngine::CreateContext()
     None
   };
 
-  int nelements = 0;
-
-  this->dataPtr->dummyFBConfigs =
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
+  {
+    int nelements = 0;
+    this->dataPtr->dummyFBConfigs =
       glXChooseFBConfig(x11Display, screenId, attributeList, &nelements);
 
-  if (nelements <= 0)
-  {
-    gzerr << "Unable to create glx fbconfig" << std::endl;
-    return;
+    if (nelements <= 0)
+    {
+      gzerr << "Unable to create glx fbconfig" << std::endl;
+      return;
+    }
   }
 
   // create X11 context
   this->dummyWindowId = XCreateSimpleWindow(x11Display,
       RootWindow(this->dummyDisplay, screenId), 0, 0, 1, 1, 0, 0, 0);
 
-  PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = 0;
-  glXCreateContextAttribsARB =
-      (PFNGLXCREATECONTEXTATTRIBSARBPROC)
-      glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
-
-  if (glXCreateContextAttribsARB)
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
   {
-    int contextAttribs[] = {
-      GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
-      GLX_CONTEXT_MINOR_VERSION_ARB, 3,
-      None
-    };
-    this->dummyContext =
-        glXCreateContextAttribsARB(x11Display,
-                                  this->dataPtr->dummyFBConfigs[0], nullptr,
-                                  1, contextAttribs);
-  }
-  else
-  {
-    gzwarn << "glXCreateContextAttribsARB() not found" << std::endl;
-    this->dummyContext = glXCreateNewContext(x11Display,
-                                             this->dataPtr->dummyFBConfigs[0],
-                                             GLX_RGBA_TYPE, nullptr, 1);
-  }
+    PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = 0;
+    glXCreateContextAttribsARB =
+      (PFNGLXCREATECONTEXTATTRIBSARBPROC)glXGetProcAddress(
+        (const GLubyte *)"glXCreateContextAttribsARB");
 
-  GLXContext x11Context = static_cast<GLXContext>(this->dummyContext);
+    if (glXCreateContextAttribsARB)
+    {
+      int contextAttribs[] = {
+        GLX_CONTEXT_MAJOR_VERSION_ARB, 3,  //
+        GLX_CONTEXT_MINOR_VERSION_ARB, 3,  //
+        None                               //
+      };
+      // clang-format on
+      this->dummyContext =
+        glXCreateContextAttribsARB(x11Display, this->dataPtr->dummyFBConfigs[0],
+                                   nullptr, 1, contextAttribs);
+    }
+    else
+    {
+      gzwarn << "glXCreateContextAttribsARB() not found" << std::endl;
+      this->dummyContext =
+        glXCreateNewContext(x11Display, this->dataPtr->dummyFBConfigs[0],
+                            GLX_RGBA_TYPE, nullptr, 1);
+    }
 
-  if (!this->dummyContext)
-  {
-    gzerr << "Unable to create glx context" << std::endl;
-    return;
+    GLXContext x11Context = static_cast<GLXContext>(this->dummyContext);
+
+    if (!this->dummyContext)
+    {
+      gzerr << "Unable to create glx context" << std::endl;
+      return;
+    }
+
+    // select X11 context
+    glXMakeCurrent(x11Display, this->dummyWindowId, x11Context);
   }
-
-  // select X11 context
-  glXMakeCurrent(x11Display, this->dummyWindowId, x11Context);
 #endif
 }
 
@@ -509,8 +533,13 @@ void Ogre2RenderEngine::LoadPlugins()
     if (!common::isDirectory(path))
       continue;
 
-    std::vector<std::string> plugins;
-    std::vector<std::string>::iterator piter;
+    struct PluginName
+    {
+      std::string name;
+      bool bOptional;
+    };
+
+    std::vector<PluginName> plugins;
 
 #ifdef __APPLE__
     std::string extension = ".dylib";
@@ -520,28 +549,37 @@ void Ogre2RenderEngine::LoadPlugins()
     std::string extension = ".so";
 #endif
     std::string p = common::joinPaths(path, "RenderSystem_GL3Plus");
-    plugins.push_back(p);
+    plugins.push_back({ p, false });
     p = common::joinPaths(path, "Plugin_ParticleFX");
-    plugins.push_back(p);
+    plugins.push_back({ p, false });
+
+    if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
+    {
+      p = common::joinPaths(path, "RenderSystem_Vulkan");
+      // Vulkan is very recent, so mark it as optional, as it
+      // can easily fail to load
+      plugins.push_back({ p, true });
+    }
 
     if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
     {
       p = common::joinPaths(path, "RenderSystem_Metal");
-      plugins.push_back(p);
+      plugins.push_back({ p, false });
     }
 
-    for (piter = plugins.begin(); piter != plugins.end(); ++piter)
+    for (std::vector<PluginName>::iterator piter = plugins.begin();
+         piter != plugins.end(); ++piter)
     {
       // check if plugin library exists
-      std::string filename = *piter+extension;
+      std::string filename = piter->name + extension;
       if (!common::exists(filename))
       {
         filename = filename + "." + std::string(OGRE2_VERSION);
         if (!common::exists(filename))
         {
-          if ((*piter).find("RenderSystem") != std::string::npos)
+          if (piter->name.find("RenderSystem") != std::string::npos)
           {
-            gzerr << "Unable to find Ogre Plugin[" << *piter
+            gzerr << "Unable to find Ogre Plugin[" << piter->name
                    << "]. Rendering will not be possible."
                    << "Make sure you have installed OGRE properly.\n";
           }
@@ -553,13 +591,13 @@ void Ogre2RenderEngine::LoadPlugins()
       try
       {
         // Load the plugin into OGRE
-        this->ogreRoot->loadPlugin(filename);
+        this->ogreRoot->loadPlugin(filename, piter->bOptional, nullptr);
       }
       catch(Ogre::Exception &)
       {
-        if ((*piter).find("RenderSystem") != std::string::npos)
+        if (piter->name.find("RenderSystem") != std::string::npos)
         {
-          gzerr << "Unable to load Ogre Plugin[" << *piter
+          gzerr << "Unable to load Ogre Plugin[" << piter->name
                  << "]. Rendering will not be possible."
                  << "Make sure you have installed OGRE properly.\n";
         }
@@ -576,6 +614,10 @@ void Ogre2RenderEngine::CreateRenderSystem()
 
   rsList = &(this->ogreRoot->getAvailableRenderers());
   std::string targetRenderSysName("OpenGL 3+ Rendering Subsystem");
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
+  {
+    targetRenderSysName = "Vulkan Rendering Subsystem";
+  }
   if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
   {
     targetRenderSysName = "Metal Rendering Subsystem";
@@ -585,19 +627,24 @@ void Ogre2RenderEngine::CreateRenderSystem()
 
   renderSys = nullptr;
 
-  do
   {
-    if (c == static_cast<int>(rsList->size()))
-      break;
+    bool bContinue = false;
+    do
+    {
+      if (c == static_cast<int>(rsList->size()))
+        break;
 
-    renderSys = rsList->at(c);
-    c++;
+      renderSys = rsList->at(c);
+      c++;
+
+      // cpplint has a false positive when extending a while call to multiple
+      // lines (it thinks the while loop is empty), so we must put the whole
+      // while statement on one line and add NOLINT at the end so that cpplint
+      // doesn't complain about the line being too long
+      bContinue =
+        renderSys && renderSys->getName().compare(targetRenderSysName) != 0;
+    } while (bContinue);
   }
-  // cpplint has a false positive when extending a while call to multiple lines
-  // (it thinks the while loop is empty), so we must put the whole while
-  // statement on one line and add NOLINT at the end so that cpplint doesn't
-  // complain about the line being too long
-  while (renderSys && renderSys->getName().compare(targetRenderSysName) != 0); // NOLINT
 
   if (renderSys == nullptr)
   {
@@ -612,12 +659,16 @@ void Ogre2RenderEngine::CreateRenderSystem()
     // We operate in windowed mode
     renderSys->setConfigOption("Full Screen", "No");
 
-    /// We used to allow the user to set the RTT mode to PBuffer, FBO, or Copy.
-    ///   Copy is slow, and there doesn't seem to be a good reason to use it
-    ///   PBuffer limits the size of the renderable area of the RTT to the
-    ///           size of the first window created.
-    ///   FBO seem to be the only good option
-    renderSys->setConfigOption("RTT Preferred Mode", "FBO");
+    if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
+    {
+      /// We used to allow the user to set the RTT mode to PBuffer,
+      /// FBO, or Copy.
+      ///   Copy is slow, and there doesn't seem to be a good reason to use it
+      ///   PBuffer limits the size of the renderable area of the RTT to the
+      ///           size of the first window created.
+      ///   FBO is the only good option
+      renderSys->setConfigOption("RTT Preferred Mode", "FBO");
+    }
   }
   else
   {
@@ -710,10 +761,6 @@ void Ogre2RenderEngine::RegisterHlms()
       rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSL");
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
       commonGLSLMaterialFolder, "FileSystem", "General");
-  Ogre::String commonGLSLESMaterialFolder = common::joinPaths(
-      rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSLES");
-  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-      commonGLSLESMaterialFolder, "FileSystem", "General");
   Ogre::String terraMaterialFolder = common::joinPaths(
       rootHlmsFolder, "2.0", "scripts", "materials", "Terra");
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
@@ -788,7 +835,7 @@ void Ogre2RenderEngine::RegisterHlms()
     hlmsUnlit->setDebugOutputPath(false, false);
     hlmsUnlit->setListener(hlmsUnlit);
 
-    this->dataPtr->ignHlmsUnlit = hlmsUnlit;
+    this->dataPtr->gzHlmsUnlit = hlmsUnlit;
   }
 
   {
@@ -833,7 +880,7 @@ void Ogre2RenderEngine::RegisterHlms()
     hlmsPbs->setDebugOutputPath(false, false);
     hlmsPbs->setListener(hlmsPbs);
 
-    dataPtr->ignHlmsPbs = hlmsPbs;
+    dataPtr->gzHlmsPbs = hlmsPbs;
   }
 
   {
@@ -871,7 +918,7 @@ void Ogre2RenderEngine::RegisterHlms()
     this->dataPtr->terraWorkspaceListener.reset(
       new Ogre::TerraWorkspaceListener(hlmsTerra));
 
-    this->dataPtr->ignHlmsTerra = hlmsTerra;
+    this->dataPtr->gzHlmsTerra = hlmsTerra;
   }
 }
 
@@ -941,8 +988,31 @@ void Ogre2RenderEngine::CreateResources()
 void Ogre2RenderEngine::CreateRenderWindow()
 {
   // create dummy window
-  auto res = this->CreateRenderWindow(std::to_string(this->dummyWindowId),
-      1, 1, 1, 0);
+  std::string handle;
+
+  struct SDLx11
+  {
+    void *display;    // The X11 display
+    uint64_t window;  // The X11 window
+  };
+
+  SDLx11 vulkanX11Data;
+
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
+  {
+    if(this->dummyWindowId && this->dummyDisplay)
+    {
+      vulkanX11Data.window = this->dummyWindowId;
+      vulkanX11Data.display = this->dummyDisplay;
+      handle = std::to_string((uintptr_t)&vulkanX11Data);
+    }
+  }
+  else
+  {
+    handle = std::to_string(this->dummyWindowId);
+  }
+
+  auto res = this->CreateRenderWindow(handle, 1, 1, 1, 0);
   if (res.empty())
   {
     gzerr << "Failed to create dummy render window." << std::endl;
@@ -958,15 +1028,25 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   Ogre::NameValuePairList params;
   window = nullptr;
 
-  // if use current gl then don't include window handle params
-  if (!this->useCurrentGLContext)
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
   {
-    // Mac and Windows *must* use externalWindow handle.
+    if (!_handle.empty())
+    {
+      params["SDL2x11"] = _handle;
+    }
+  }
+  else
+  {
+    // if use current gl then don't include window handle params
+    if (!this->useCurrentGLContext)
+    {
+      // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
-    params["externalWindowHandle"] = _handle;
+      params["externalWindowHandle"] = _handle;
 #else
-    params["parentWindowHandle"] = _handle;
+      params["parentWindowHandle"] = _handle;
 #endif
+    }
   }
 
   params["FSAA"] = std::to_string(_antiAliasing);
@@ -1082,12 +1162,12 @@ Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
 }
 
 /////////////////////////////////////////////////
-void Ogre2RenderEngine::SetIgnOgreRenderingMode(
-  IgnOgreRenderingMode renderingMode)
+void Ogre2RenderEngine::SetGzOgreRenderingMode(
+  GzOgreRenderingMode renderingMode)
 {
-  this->dataPtr->ignHlmsPbs->ignOgreRenderingMode = renderingMode;
-  this->dataPtr->ignHlmsUnlit->ignOgreRenderingMode = renderingMode;
-  this->dataPtr->ignHlmsTerra->ignOgreRenderingMode = renderingMode;
+  this->dataPtr->gzHlmsPbs->gzOgreRenderingMode = renderingMode;
+  this->dataPtr->gzHlmsUnlit->gzOgreRenderingMode = renderingMode;
+  this->dataPtr->gzHlmsTerra->gzOgreRenderingMode = renderingMode;
 }
 
 /////////////////////////////////////////////////

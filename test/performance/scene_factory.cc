@@ -22,12 +22,8 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
 
-#include "test_config.hh"  // NOLINT(build/include)
-
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 
 using namespace gz;
@@ -36,16 +32,10 @@ using namespace rendering;
 
 /// \brief Create and destroy objects using Scene, profile memory usage and
 /// check for memory leak
-class SceneFactoryTest: public testing::Test,
-                     public testing::WithParamInterface<const char *>
+class SceneFactoryTest: public CommonRenderingTest
 {
-  /// \brief Test creating and destroying materials
-  public: void MaterialMemoryLeak(const std::string &_renderEngine);
-
-  /// \brief Test creating and destroying visuals
-  public: void VisualMemoryLeak(const std::string &_renderEngine);
+  public: void checkMemLeak(const std::function<void(ScenePtr)> &_cb);
 };
-
 
 /////////////////////////////////////////////////
 void getMemInfo(double &_resident, double &_share)
@@ -85,17 +75,9 @@ void getMemInfo(double &_resident, double &_share)
 }
 
 /////////////////////////////////////////////////
-void checkMemLeak(const std::string &_renderEngine,
-    const std::function<void(ScenePtr)> &_cb)
+void SceneFactoryTest::checkMemLeak(const std::function<void(ScenePtr)> &_cb)
 {
-  auto engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
-    return;
-  }
-
-  auto scene = engine->CreateScene("scene");
+  auto scene = this->engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
   // max memory change allowed
@@ -128,12 +110,11 @@ void checkMemLeak(const std::string &_renderEngine,
   EXPECT_LT(sharePercentChange, shareMaxPercentChange);
 
   // Clean up
-  engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  this->engine->DestroyScene(scene);
 }
 
 /////////////////////////////////////////////////
-void SceneFactoryTest::MaterialMemoryLeak(const std::string &_renderEngine)
+TEST_F(SceneFactoryTest, MaterialMemoryLeak)
 {
   auto function = [](ScenePtr _scene)
   {
@@ -145,11 +126,11 @@ void SceneFactoryTest::MaterialMemoryLeak(const std::string &_renderEngine)
     }
   };
 
-  checkMemLeak(_renderEngine, function);
+  checkMemLeak(function);
 }
 
 /////////////////////////////////////////////////
-void SceneFactoryTest::VisualMemoryLeak(const std::string &_renderEngine)
+TEST_F(SceneFactoryTest, VisualMemoryLeak)
 {
   auto function = [](ScenePtr _scene)
   {
@@ -175,21 +156,5 @@ void SceneFactoryTest::VisualMemoryLeak(const std::string &_renderEngine)
     }
   };
 
-  checkMemLeak(_renderEngine, function);
+  this->checkMemLeak(function);
 }
-
-/////////////////////////////////////////////////
-TEST_P(SceneFactoryTest, MaterialMemoryLeak)
-{
-  MaterialMemoryLeak(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(SceneFactoryTest, VisualMemoryLeak)
-{
-  VisualMemoryLeak(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(SceneFactory, SceneFactoryTest,
-    RENDER_ENGINE_VALUES,
-    gz::rendering::PrintToStringParam());

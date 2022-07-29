@@ -241,6 +241,8 @@ void Ogre2Heightmap::Init()
         image,
         Ogre2Conversions::Convert(center),
         Ogre2Conversions::Convert(size),
+        false,
+        false,
         this->descriptor.Name());
   this->dataPtr->autoSkirtValue =
       this->dataPtr->terra->getCustomSkirtMinHeight();
@@ -369,7 +371,7 @@ void Ogre2Heightmap::Init()
               static_cast<Ogre::Real>(blend->MinHeight()+
                                       blend->FadeDistance());
     }
-    datablock->setIgnWeightsHeights(minBlendHeights, maxBlendHeights);
+    datablock->setGzWeightsHeights(minBlendHeights, maxBlendHeights);
   }
 
   this->dataPtr->terra->setDatablock(datablock);

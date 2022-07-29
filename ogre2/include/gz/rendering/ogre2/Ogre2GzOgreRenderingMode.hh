@@ -29,27 +29,38 @@ namespace gz
       /// \brief Rendering modes so that GzHlms implementations
       /// follow alternate code paths or extra customizations
       /// when they're enabled
-      enum IgnOgreRenderingMode
+      enum GzOgreRenderingMode
       {
         /// \brief Normal rendering
-        IORM_NORMAL,
+        GORM_NORMAL = 0,
+        IORM_NORMAL = 0,  // TODO(CH3): Deprecated. Remove on tock.
 
         /// \brief Render a solid color explicit per object.
         /// Used by e.g. Segmentation camera mode
-        IORM_SOLID_COLOR,
+        GORM_SOLID_COLOR = 1,
+        IORM_SOLID_COLOR = 1,  // TODO(CH3): Deprecated. Remove on tock.
 
-        /// \brief Like IORM_SOLID_COLOR, but if CustomParameter 2u
+        /// \brief Like GORM_SOLID_COLOR, but if CustomParameter 2u
         /// is present, raw diffuse texture will be multiplied against
         /// the solid colour.
         ///
-        /// Also Unlit will behave as if IORM_NORMAL
+        /// Also Unlit will behave as if GORM_NORMAL
         ///
         /// Used by thermal camera
-        IORM_SOLID_THERMAL_COLOR_TEXTURED,
+        GORM_SOLID_THERMAL_COLOR_TEXTURED = 2,
+        // TODO(CH3): Deprecated. Remove on tock.
+        IORM_SOLID_THERMAL_COLOR_TEXTURED = 2,
 
         /// \brief Total number of rendering modes
-        IORM_COUNT,
+        GORM_COUNT = 3,
+        IORM_COUNT = 3,  // TODO(CH3): Deprecated. Remove on tock.
       };
+      // TODO(CH3): Deprecated. Remove on tock.
+      #ifdef _WIN32
+        using IgnOgreRenderingMode = GzOgreRenderingMode;
+      #else
+        using IgnOgreRenderingMode GZ_DEPRECATED(7) = GzOgreRenderingMode;
+      #endif
     }  // namespace GZ_RENDERING_VERSION_NAMESPACE
   }    // namespace rendering
 }  // namespace gz

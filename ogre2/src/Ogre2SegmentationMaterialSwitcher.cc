@@ -232,7 +232,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
 
   auto engine = Ogre2RenderEngine::Instance();
-  engine->SetIgnOgreRenderingMode(IORM_SOLID_COLOR);
+  engine->SetGzOgreRenderingMode(GORM_SOLID_COLOR);
 
   // Used for multi-link models, where each model has many ogre items but
   // belongs to the same object, and all of them has the same parent name
@@ -403,7 +403,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
   this->datablockMap.clear();
 
   // Remove the custom parameter. Why? If there are multiple cameras that
-  // use IORM_SOLID_COLOR (or any other mode), we want them to throw if
+  // use GORM_SOLID_COLOR (or any other mode), we want them to throw if
   // that code forgot to call setCustomParameter. We may miss those errors
   // if that code forgets to call but it was already carrying the value
   // we set here.
@@ -441,7 +441,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
       heightmap->Terra()->UnsetSolidColors();
   }
 
-  engine->SetIgnOgreRenderingMode(IORM_NORMAL);
+  engine->SetGzOgreRenderingMode(GORM_NORMAL);
 }
 
 ////////////////////////////////////////////////

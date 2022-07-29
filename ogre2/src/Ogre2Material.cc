@@ -260,8 +260,16 @@ void Ogre2Material::Destroy()
   Ogre::SceneManager *sceneManager = s->OgreSceneManager();
   sceneManager->shrinkToFitMemoryPools();
 
-  Ogre::VaoManager *vaoManager = textureManager->getVaoManager();
-  vaoManager->cleanupEmptyPools();
+  try
+  {
+    Ogre::VaoManager *vaoManager = textureManager->getVaoManager();
+    vaoManager->cleanupEmptyPools();
+  }
+  catch (Ogre::UnimplementedException &)
+  {
+    // Do nothing. Vulkan does not implement this and is not needed
+    // It might be implemented in the future though
+  }
 }
 
 //////////////////////////////////////////////////
@@ -977,7 +985,7 @@ Ogre::MaterialPtr Ogre2Material::Material()
 
     this->dataPtr->ogreSolidColorShader =
       Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
-        "_ign_" + this->name + "_solid_fs",
+        "_gz_" + this->name + "_solid_fs",
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         this->dataPtr->shaderLanguageCode(graphicsApi),
         Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
@@ -987,6 +995,12 @@ Ogre::MaterialPtr Ogre2Material::Material()
     case GraphicsAPI::OPENGL:
     case GraphicsAPI::VULKAN:
       this->dataPtr->ogreSolidColorShader->setSourceFile("plain_color_fs.glsl");
+      this->dataPtr->ogreSolidColorShader->setReplaceVersionMacro(true);
+      if (graphicsApi == GraphicsAPI::VULKAN)
+      {
+        this->dataPtr->ogreSolidColorShader->setPrefabRootLayout(
+          Ogre::PrefabRootLayout::Standard);
+      }
       break;
     case GraphicsAPI::DIRECT3D11:
       this->dataPtr->ogreSolidColorShader->setSourceFile("plain_color_fs.hlsl");
@@ -1065,8 +1079,8 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
     if (img.BPP() == 8u)
     {
       std::string parentPath = common::parentPath(_texture);
-      // set a custom name for the rgb texture by appending ign_ prefix
-      std::string rgbTexName = "ign_" + baseName;
+      // set a custom name for the rgb texture by appending gz_ prefix
+      std::string rgbTexName = "gz_" + baseName;
       baseName = rgbTexName;
       auto tex = textureMgr->findTextureNoThrow(rgbTexName);
       if (!tex)
@@ -1375,13 +1389,16 @@ void Ogre2Material::SetVertexShader(const std::string &_path)
 
   Ogre::HighLevelGpuProgramPtr vertexShader =
     Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
-        "_ign_" + baseName,
+        "_gz_" + baseName,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         this->dataPtr->shaderLanguageCode(
             Ogre2RenderEngine::Instance()->GraphicsAPI()),
         Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
 
   vertexShader->setSourceFile(_path);
+  vertexShader->setPrefabRootLayout(Ogre::PrefabRootLayout::Standard);
+  vertexShader->setReplaceVersionMacro(true);
+
   vertexShader->load();
 
   assert(vertexShader->isLoaded());
@@ -1465,7 +1482,7 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
   std::string baseName = common::basename(_path);
   Ogre::HighLevelGpuProgramPtr fragmentShader =
     Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
-        "_ign_" + baseName,
+        "_gz_" + baseName,
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
         this->dataPtr->shaderLanguageCode(
             Ogre2RenderEngine::Instance()->GraphicsAPI()),
@@ -1478,11 +1495,13 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
     // otherwise the parameters (uniforms) will not be set correctly
     std::string paramName("shader_reflection_pair_hint");
     std::string paramValue =
-        "_ign_" + common::basename(this->dataPtr->vertexShaderPath);
+        "_gz_" + common::basename(this->dataPtr->vertexShaderPath);
     fragmentShader->setParameter(paramName, paramValue);
   }
 
   fragmentShader->setSourceFile(_path);
+  fragmentShader->setPrefabRootLayout(Ogre::PrefabRootLayout::Standard);
+  fragmentShader->setReplaceVersionMacro(true);
   fragmentShader->load();
 
   assert(fragmentShader->isLoaded());

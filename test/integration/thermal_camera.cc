@@ -17,18 +17,15 @@
 
 #include <gtest/gtest.h>
 
-#include <gz/common/Console.hh>
+#include "CommonRenderingTest.hh"
+
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Event.hh>
 
 #include <gz/math/Color.hh>
 
-#include "test_config.hh"  // NOLINT(build/include)
-
 #include "gz/rendering/ParticleEmitter.hh"
 #include "gz/rendering/PixelFormat.hh"
-#include "gz/rendering/RenderEngine.hh"
-#include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/ThermalCamera.hh"
 
@@ -54,67 +51,24 @@ void OnNewThermalFrame(uint16_t *_scanDest, const uint16_t *_scan,
 }
 
 //////////////////////////////////////////////////
-class ThermalCameraTest: public testing::Test,
-  public testing::WithParamInterface<const char *>
+class ThermalCameraTest: public CommonRenderingTest
 {
-  // Create a Camera sensor from a SDF and gets a image message.
-  // If _useHeatSignature is false, uniform surface temperature is tested
-  // (if _useHeatSignature is true, applying a heat signature is tested)
-  public: void ThermalCameraBoxes(const std::string &_renderEngine,
-              const bool _useHeatSignature);
-
-  // Test 8 bit thermal camera output
-  public: void ThermalCameraBoxes8Bit(const std::string &_renderEngine);
-
-  // Test that particles do not appear in thermal camera image
-  public: void ThermalCameraParticles(const std::string &_renderEngine);
-
   // Path to test textures
   public: const std::string TEST_MEDIA_PATH =
           gz::common::joinPaths(std::string(PROJECT_SOURCE_PATH),
                 "test", "media", "materials", "textures");
-
-  // Documentation inherited
-  protected: void SetUp() override
-  {
-    gz::common::Console::SetVerbosity(4);
-  }
 };
 
 //////////////////////////////////////////////////
-void ThermalCameraTest::ThermalCameraBoxes(
-    const std::string &_renderEngine, const bool _useHeatSignature)
+TEST_F(ThermalCameraTest, ThermalCameraBoxesUniform)
 {
+  CHECK_UNSUPPORTED_ENGINE("optix");
   int imgWidth = 50;
   int imgHeight = 50;
   double aspectRatio = imgWidth/imgHeight;
 
   double unitBoxSize = 1.0;
   gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
-
-  // Optix is not supported
-  if (_renderEngine.compare("optix") == 0)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' doesn't support thermal cameras" << std::endl;
-    return;
-  }
-  // Only ogre2 supports heat signatures
-  else if (_useHeatSignature && (_renderEngine.compare("ogre2") != 0))
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' doesn't support heat signatures" << std::endl;
-    return;
-  }
-
-  // Setup gz-rendering with an empty scene
-  auto *engine = gz::rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
 
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
 
@@ -136,17 +90,6 @@ void ThermalCameraTest::ThermalCameraBoxes(
   // set box temperature
   float boxTemp = 310.0;
   box->SetUserData("temperature", boxTemp);
-  if (_useHeatSignature)
-  {
-    std::string textureName =
-      gz::common::joinPaths(TEST_MEDIA_PATH, "gray_texture.png");
-    box->SetUserData("temperature", textureName);
-    box->SetUserData("minTemp", 100.0f);
-    box->SetUserData("maxTemp", 200.0f);
-    // (the heat signature is just a texture of gray pixels,
-    // so the box's temperature should be midway between minTemp and maxTemp)
-    boxTemp = 150.0f;
-  }
 
   root->AddChild(box);
   {
@@ -266,36 +209,182 @@ void ThermalCameraTest::ThermalCameraBoxes(
   }
 
   engine->DestroyScene(scene);
-  gz::rendering::unloadEngine(engine->Name());
 }
 
 //////////////////////////////////////////////////
-void ThermalCameraTest::ThermalCameraBoxes8Bit(
-    const std::string &_renderEngine)
+TEST_F(ThermalCameraTest, ThermalCameraBoxesHeatSignature)
 {
+  CHECK_UNSUPPORTED_ENGINE("optix");  // Optix does not support thermal
+  CHECK_SUPPORTED_ENGINE("ogre2");  // Only OGRE2 supports heat signatures
+
+  int imgWidth = 50;
+  int imgHeight = 50;
+  double aspectRatio = imgWidth/imgHeight;
+
+  double unitBoxSize = 1.0;
+  gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+
+  // red background
+  scene->SetBackgroundColor(1.0, 0.0, 0.0);
+
+  // Create an scene with a box in it
+  scene->SetAmbientLight(1.0, 1.0, 1.0);
+  gz::rendering::VisualPtr root = scene->RootVisual();
+
+  // create box visual
+  gz::rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  box->SetOrigin(0.0, 0.0, 0.0);
+  box->SetLocalPosition(boxPosition);
+  box->SetLocalRotation(0, 0, 0);
+  box->SetLocalScale(unitBoxSize, unitBoxSize, unitBoxSize);
+
+  // set box temperature
+  float boxTemp = 310.0;
+  box->SetUserData("temperature", boxTemp);
+  std::string textureName =
+    gz::common::joinPaths(TEST_MEDIA_PATH, "gray_texture.png");
+  box->SetUserData("temperature", textureName);
+  box->SetUserData("minTemp", 100.0f);
+  box->SetUserData("maxTemp", 200.0f);
+  // (the heat signature is just a texture of gray pixels,
+  // so the box's temperature should be midway between minTemp and maxTemp)
+  boxTemp = 150.0f;
+
+  root->AddChild(box);
+  {
+    // range is hardcoded in shaders
+    float boxTempRange = 3.0;
+    double farDist = 10.0;
+    double nearDist = 0.15;
+    double hfov = 1.05;
+    // Create thermal camera
+    auto thermalCamera = scene->CreateThermalCamera("ThermalCamera");
+    ASSERT_NE(thermalCamera, nullptr);
+
+    gz::math::Pose3d testPose(gz::math::Vector3d(0, 0, 0),
+        gz::math::Quaterniond::Identity);
+    thermalCamera->SetLocalPose(testPose);
+
+    // Configure thermal camera
+    thermalCamera->SetImageWidth(imgWidth);
+    EXPECT_EQ(thermalCamera->ImageWidth(),
+      static_cast<unsigned int>(imgWidth));
+    thermalCamera->SetImageHeight(imgHeight);
+    EXPECT_EQ(thermalCamera->ImageHeight(),
+      static_cast<unsigned int>(imgHeight));
+    thermalCamera->SetFarClipPlane(farDist);
+    EXPECT_NEAR(thermalCamera->FarClipPlane(), farDist, DOUBLE_TOL);
+    thermalCamera->SetNearClipPlane(nearDist);
+    EXPECT_NEAR(thermalCamera->NearClipPlane(), nearDist, DOUBLE_TOL);
+    thermalCamera->SetAspectRatio(aspectRatio);
+    EXPECT_NEAR(thermalCamera->AspectRatio(), aspectRatio, DOUBLE_TOL);
+    thermalCamera->SetHFOV(hfov);
+    EXPECT_NEAR(thermalCamera->HFOV().Radian(), hfov, DOUBLE_TOL);
+
+    // thermal-specific params
+    // set room temperature: 294 ~ 298 Kelvin
+    float ambientTemp = 296.0f;
+    float ambientTempRange = 4.0f;
+    float linearResolution = 0.01f;
+    thermalCamera->SetAmbientTemperature(ambientTemp);
+    EXPECT_FLOAT_EQ(ambientTemp, thermalCamera->AmbientTemperature());
+    thermalCamera->SetAmbientTemperatureRange(ambientTempRange);
+    EXPECT_FLOAT_EQ(ambientTempRange, thermalCamera->AmbientTemperatureRange());
+    thermalCamera->SetLinearResolution(linearResolution);
+    EXPECT_FLOAT_EQ(linearResolution, thermalCamera->LinearResolution());
+    thermalCamera->SetHeatSourceTemperatureRange(boxTempRange);
+    EXPECT_FLOAT_EQ(boxTempRange, thermalCamera->HeatSourceTemperatureRange());
+    scene->RootVisual()->AddChild(thermalCamera);
+
+    // Set a callback on the  camera sensor to get a thermal camera frame
+    uint16_t *thermalData = new uint16_t[imgHeight * imgWidth];
+    gz::common::ConnectionPtr connection =
+      thermalCamera->ConnectNewThermalFrame(
+          std::bind(&::OnNewThermalFrame, thermalData,
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+            std::placeholders::_4, std::placeholders::_5));
+    EXPECT_NE(nullptr, connection);
+
+    // Update once to create image
+    thermalCamera->Update();
+
+    // thermal image indices
+    int midWidth = static_cast<int>(thermalCamera->ImageWidth() * 0.5);
+    int midHeight = static_cast<int>(thermalCamera->ImageHeight() * 0.5);
+    int mid = midHeight * thermalCamera->ImageWidth() + midWidth -1;
+    int left = midHeight * thermalCamera->ImageWidth();
+    int right = (midHeight+1) * thermalCamera->ImageWidth() - 1;
+
+    // verify temperature
+    // Box should be in the middle of image and return box temp
+    // Left and right side of the image frame should be ambient temp
+    EXPECT_NEAR(ambientTemp, thermalData[left] * linearResolution,
+        ambientTempRange);
+    EXPECT_NEAR(ambientTemp, thermalData[right] * linearResolution,
+        ambientTempRange);
+    EXPECT_FLOAT_EQ(thermalData[right], thermalData[left]);
+    EXPECT_NEAR(boxTemp, thermalData[mid] * linearResolution, boxTempRange);
+
+    // move box in front of near clip plane and verify the thermal
+    // image returns all box temperature values
+    gz::math::Vector3d boxPositionNear(
+        unitBoxSize * 0.5 + nearDist * 0.5, 0.0, 0.0);
+    box->SetLocalPosition(boxPositionNear);
+    thermalCamera->Update();
+
+    for (unsigned int i = 0; i < thermalCamera->ImageHeight(); ++i)
+    {
+      unsigned int step = i * thermalCamera->ImageWidth();
+      for (unsigned int j = 0; j < thermalCamera->ImageWidth(); ++j)
+      {
+        float temp = thermalData[step + j] * linearResolution;
+#ifndef __APPLE__
+        // https://github.com/gazebosim/gz-rendering/issues/253
+        EXPECT_NEAR(boxTemp, temp, boxTempRange);
+#endif
+      }
+    }
+
+    // move box beyond far clip plane and verify the thermal
+    // image returns all ambient temperature values
+    gz::math::Vector3d boxPositionFar(
+        unitBoxSize * 0.5 + farDist * 1.5, 0.0, 0.0);
+    box->SetLocalPosition(boxPositionFar);
+    thermalCamera->Update();
+
+    for (unsigned int i = 0; i < thermalCamera->ImageHeight(); ++i)
+    {
+      unsigned int step = i * thermalCamera->ImageWidth();
+      for (unsigned int j = 0; j < thermalCamera->ImageWidth(); ++j)
+      {
+        float temp = thermalData[step + j] * linearResolution;
+        EXPECT_NEAR(ambientTemp, temp, ambientTempRange);
+      }
+    }
+
+    // Clean up
+    connection.reset();
+    delete [] thermalData;
+  }
+
+  engine->DestroyScene(scene);
+}
+
+//////////////////////////////////////////////////
+TEST_F(ThermalCameraTest, ThermalCameraBoxes8Bit)
+{
+  // Only ogre2 supports 8 bit image format
+  CHECK_SUPPORTED_ENGINE("ogre2");
+
   int imgWidth = 50;
   int imgHeight = 50;
   double aspectRatio = imgWidth / imgHeight;
 
   double unitBoxSize = 1.0;
   gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
-
-  // Only ogre2 supports 8 bit image format
-  if (_renderEngine.compare("ogre2") != 0)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' doesn't support 8 bit thermal cameras" << std::endl;
-    return;
-  }
-
-  // Setup gz-rendering with an empty scene
-  auto *engine = gz::rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
 
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
 
@@ -454,36 +543,20 @@ void ThermalCameraTest::ThermalCameraBoxes8Bit(
   }
 
   engine->DestroyScene(scene);
-  gz::rendering::unloadEngine(engine->Name());
 }
 
 //////////////////////////////////////////////////
-void ThermalCameraTest::ThermalCameraParticles(
-    const std::string &_renderEngine)
+TEST_F(ThermalCameraTest, ThermalCameraParticles)
 {
+  // Only ogre2 supports 8 bit image format
+  CHECK_SUPPORTED_ENGINE("ogre2");
+
   int imgWidth = 50;
   int imgHeight = 50;
   double aspectRatio = imgWidth / imgHeight;
 
   double unitBoxSize = 1.0;
   gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
-
-  // Only ogre2 supports 8 bit image format
-  if (_renderEngine.compare("ogre2") != 0)
-  {
-    gzdbg << "Engine '" << _renderEngine
-           << "' doesn't support 8 bit thermal cameras" << std::endl;
-    return;
-  }
-
-  // Setup gz-rendering with an empty scene
-  auto *engine = gz::rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    gzdbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
 
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
 
@@ -625,28 +698,4 @@ void ThermalCameraTest::ThermalCameraParticles(
   }
 
   engine->DestroyScene(scene);
-  gz::rendering::unloadEngine(engine->Name());
 }
-
-TEST_P(ThermalCameraTest, ThermalCameraBoxesUniformTemp)
-{
-  ThermalCameraBoxes(GetParam(), false);
-}
-
-TEST_P(ThermalCameraTest, ThermalCameraBoxesHeatSignature)
-{
-  ThermalCameraBoxes(GetParam(), true);
-}
-
-TEST_P(ThermalCameraTest, ThermalCameraBoxesUniformTemp8Bit)
-{
-  ThermalCameraBoxes8Bit(GetParam());
-}
-
-TEST_P(ThermalCameraTest, ThermalCameraParticles)
-{
-  ThermalCameraParticles(GetParam());
-}
-
-INSTANTIATE_TEST_SUITE_P(ThermalCamera, ThermalCameraTest,
-    RENDER_ENGINE_VALUES, gz::rendering::PrintToStringParam());

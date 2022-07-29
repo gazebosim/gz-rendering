@@ -17,8 +17,6 @@
 
 #include <gtest/gtest.h>
 
-#include "test_config.hh"  // NOLINT(build/include)
-
 #include "gz/rendering/PixelFormat.hh"
 
 using namespace gz;

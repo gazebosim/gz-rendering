@@ -22,15 +22,16 @@
 #include <gz/common/Util.hh>
 
 #ifdef _MSC_VER
-  #pragma warning(push, 0)
+#  pragma warning(push, 0)
 #endif
 #include <CommandBuffer/OgreCbShaderBuffer.h>
 #include <CommandBuffer/OgreCommandBuffer.h>
 #include <OgreRenderQueue.h>
+#include <OgreRootLayout.h>
 #include <Vao/OgreConstBufferPacked.h>
 #include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
-  #pragma warning(pop)
+#  pragma warning(pop)
 #endif
 
 using namespace gz;
@@ -52,13 +53,47 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
+  uint16 Ogre2GzHlmsUnlit::getNumExtraPassTextures(
+    const HlmsPropertyVec &_properties, bool _casterPass) const
+  {
+    uint16 numExtraTextures = 0u;
+
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      numExtraTextures +=
+        listener->getNumExtraPassTextures(_properties, _casterPass);
+    }
+
+    return numExtraTextures;
+  }
+
+  /////////////////////////////////////////////////
+  void Ogre2GzHlmsUnlit::propertiesMergedPreGenerationStep(
+    Hlms *_hlms,  //
+    const HlmsCache &_passCache,
+    const HlmsPropertyVec &_renderableCacheProperties,
+    const PiecesMap _renderableCachePieces[NumShaderTypes],
+    const HlmsPropertyVec &_properties,
+    const QueuedRenderable &_queuedRenderable)
+  {
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      listener->propertiesMergedPreGenerationStep(
+        _hlms, _passCache, _renderableCacheProperties, _renderableCachePieces,
+        _properties, _queuedRenderable);
+    }
+  }
+
+  /////////////////////////////////////////////////
   void Ogre2GzHlmsUnlit::preparePassHash(
     const CompositorShadowNode *_shadowNode, bool _casterPass,
     bool _dualParaboloid, SceneManager *_sceneManager, Hlms *_hlms)
   {
-    if (!_casterPass && this->ignOgreRenderingMode == IORM_SOLID_COLOR)
+    if (!_casterPass && this->gzOgreRenderingMode == GORM_SOLID_COLOR)
     {
-      _hlms->_setProperty("ign_render_solid_color", 1);
+      _hlms->_setProperty("gz_render_solid_color", 1);
     }
 
     // Allow additional listener-only customizations to inject their stuff
@@ -102,6 +137,25 @@ namespace Ogre
   }
 
   /////////////////////////////////////////////////
+  void Ogre2GzHlmsUnlit::setupRootLayout(
+    RootLayout &_rootLayout, const HlmsPropertyVec &_properties) const
+  {
+    if (this->getProperty(_properties, "gz_render_solid_color") != 0)
+    {
+      // Account for the extra buffer bound at kPerObjectDataBufferSlot
+      // It should be the last buffer to be set, so kPerObjectDataBufferSlot + 1
+      _rootLayout.mDescBindingRanges[0][DescBindingTypes::ConstBuffer].end =
+        kPerObjectDataBufferSlot + 1u;
+    }
+
+    // Allow additional listener-only customizations to inject their stuff
+    for (Ogre::HlmsListener *listener : this->customizations)
+    {
+      listener->setupRootLayout(_rootLayout, _properties);
+    }
+  }
+
+  /////////////////////////////////////////////////
   void Ogre2GzHlmsUnlit::shaderCacheEntryCreated(
     const String &_shaderProfile, const HlmsCache *_hlmsCacheEntry,
     const HlmsCache &_passCache, const HlmsPropertyVec &_properties,
@@ -121,21 +175,23 @@ namespace Ogre
   {
     HlmsUnlit::notifyPropertiesMergedPreGenerationStep();
 
-    setProperty("IgnPerObjectDataSlot", kPerObjectDataBufferSlot);
+    setProperty("GzPerObjectDataSlot", kPerObjectDataBufferSlot);
   }
 
   /////////////////////////////////////////////////
   void Ogre2GzHlmsUnlit::hlmsTypeChanged(bool _casterPass,
-                                          CommandBuffer *_commandBuffer,
-                                          const HlmsDatablock *_datablock)
+                                         CommandBuffer *_commandBuffer,
+                                         const HlmsDatablock *_datablock,
+                                         size_t _texUnit)
   {
     // Allow additional listener-only customizations to inject their stuff
     for (Ogre::HlmsListener *listener : this->customizations)
     {
-      listener->hlmsTypeChanged(_casterPass, _commandBuffer, _datablock);
+      listener->hlmsTypeChanged(_casterPass, _commandBuffer, _datablock,
+                                _texUnit);
     }
 
-    if (_casterPass || this->ignOgreRenderingMode != IORM_SOLID_COLOR)
+    if (_casterPass || this->gzOgreRenderingMode != GORM_SOLID_COLOR)
     {
       return;
     }
@@ -151,7 +207,7 @@ namespace Ogre
     const uint32 instanceIdx = HlmsUnlit::fillBuffersForV1(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if (this->ignOgreRenderingMode == IORM_SOLID_COLOR && !_casterPass)
+    if (this->gzOgreRenderingMode == GORM_SOLID_COLOR && !_casterPass)
     {
       Vector4 customParam;
       try
@@ -167,8 +223,8 @@ namespace Ogre
         //     movableObject->setVisible(false) or use RenderQueue IDs
         //     or visibility flags to prevent rendering it
         gzerr << "A module is trying to render an object without "
-                  "specifying a parameter. Please report this bug at "
-                  "https://github.com/gazebosim/gz-rendering/issues\n";
+                 "specifying a parameter. Please report this bug at "
+                 "https://github.com/gazebosim/gz-rendering/issues\n";
         throw;
       }
       float *dataPtr = this->MapObjectDataBufferFor(
@@ -192,7 +248,7 @@ namespace Ogre
     const uint32 instanceIdx = HlmsUnlit::fillBuffersForV2(
       _cache, _queuedRenderable, _casterPass, _lastCacheHash, _commandBuffer);
 
-    if (this->ignOgreRenderingMode == IORM_SOLID_COLOR && !_casterPass)
+    if (this->gzOgreRenderingMode == GORM_SOLID_COLOR && !_casterPass)
     {
       Vector4 customParam =
         _queuedRenderable.renderable->getCustomParameter(1u);
@@ -229,7 +285,7 @@ namespace Ogre
 
   /////////////////////////////////////////////////
   void Ogre2GzHlmsUnlit::GetDefaultPaths(String &_outDataFolderPath,
-                                          StringVector &_outLibraryFoldersPaths)
+                                         StringVector &_outLibraryFoldersPaths)
   {
     HlmsUnlit::getDefaultPaths(_outDataFolderPath, _outLibraryFoldersPaths);
 

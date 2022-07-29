@@ -66,8 +66,9 @@ void buildScene(ScenePtr _scene)
   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
   mesh->AddGeometry(meshGeom);
   root->AddChild(mesh);
+//! [create a mesh]
 
-//! [create a glb pbr mesh]
+  // create a pbr glb mesh
   mesh = _scene->CreateVisual();
   mesh->SetLocalPosition(3, 2, 0);
   mesh->SetLocalRotation(0, 0, 0);

@@ -82,7 +82,8 @@ class CommonRenderingTest: public testing::Test
       engineParams["headless"] = "1";
     }
 
-    engine = gz::rendering::engine(envEngine, engineParams);
+    this->engineToTest = envEngine;
+    engine = gz::rendering::engine(this->engineToTest, engineParams);
     if (!engine)
     {
       GTEST_SKIP() << "Engine '" << this->engineToTest << "' could not be loaded" << std::endl;
@@ -92,7 +93,10 @@ class CommonRenderingTest: public testing::Test
   /// \brief Tear down the test case 
   public: void TearDown() override
   {
-    ASSERT_TRUE(gz::rendering::unloadEngine(this->engineToTest));
+    if(engine)
+    {
+      ASSERT_TRUE(gz::rendering::unloadEngine(this->engineToTest));
+    }
   }
 
   /// \brief String name of the engine to test 

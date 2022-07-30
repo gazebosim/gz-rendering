@@ -235,10 +235,6 @@ namespace gz
           const override;
 
       // Documentation inherited
-      public: virtual void SetEnvironmentMap(const std::string &_environmentMap)
-          override;
-
-      // Documentation inherited
       public: virtual void SetEnvironmentMap(const std::string &_environmentMap,
           const std::shared_ptr<const common::Image> &_img) override;
 
@@ -894,14 +890,6 @@ namespace gz
         const
     {
       return {};
-    }
-
-
-    //////////////////////////////////////////////////
-    template <class T>
-    void BaseMaterial<T>::SetEnvironmentMap(const std::string &)
-    {
-      // no op
     }
 
     //////////////////////////////////////////////////

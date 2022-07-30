@@ -223,8 +223,7 @@ namespace gz
       /// \brief Set the material texture
       /// \param[in] _texture URI of the new texture file or identifying name
       /// if _img is set
-      public: virtual void GZ_DEPRECATED(7) SetTexture(
-        const std::string &_texture)
+      public: virtual void SetTexture(const std::string &_texture)
       {
         this->SetTexture(_texture, nullptr);
       }
@@ -266,8 +265,7 @@ namespace gz
 
       /// \brief Set the material normal map
       /// \param[in] _normalMap URI of the new normal map file
-      public: virtual void GZ_DEPRECATED(7) SetNormalMap(
-        const std::string &_normalMap)
+      public: virtual void SetNormalMap(const std::string &_normalMap)
       {
         this->SetNormalMap(_normalMap, nullptr);
       }
@@ -303,8 +301,7 @@ namespace gz
 
       /// \brief Set the material roughness map
       /// \param[in] _roughnessMap URI of the new roughness map file
-      public: virtual void GZ_DEPRECATED(7) SetRoughnessMap(
-        const std::string &_roughnessMap)
+      public: virtual void SetRoughnessMap(const std::string &_roughnessMap)
       {
         this->SetRoughnessMap(_roughnessMap, nullptr);
       }
@@ -341,8 +338,7 @@ namespace gz
 
       /// \brief Set the material metalness map
       /// \param[in] _metalnessMap URI of the new metalness map file
-      public: virtual void GZ_DEPRECATED(7) SetMetalnessMap(
-        const std::string &_metalnessMap)
+      public: virtual void SetMetalnessMap(const std::string &_metalnessMap)
       {
         this->SetMetalnessMap(_metalnessMap, nullptr);
       }
@@ -379,8 +375,7 @@ namespace gz
 
       /// \brief Set the material environment map
       /// \param[in] _environmentMap URI of the new environment map file
-      public: virtual void GZ_DEPRECATED(7) SetEnvironmentMap(
-        const std::string &_environmentMap)
+      public: virtual void SetEnvironmentMap(const std::string &_environmentMap)
       {
         this->SetEnvironmentMap(_environmentMap, nullptr);
       }
@@ -417,8 +412,7 @@ namespace gz
 
       /// \brief Set the material emissive map
       /// \param[in] _emissiveMap Map URI of the new emissive map file
-      public: virtual void GZ_DEPRECATED(7) SetEmissiveMap(
-        const std::string &_emissiveMap)
+      public: virtual void SetEmissiveMap(const std::string &_emissiveMap)
       {
         this->SetEmissiveMap(_emissiveMap, nullptr);
       }
@@ -454,8 +448,7 @@ namespace gz
       /// \brief Set the material light map
       /// \param[in] _lightMap URI of the new light map file
       /// \param[in] _uvSet Texture coordinate set to use
-      public: virtual void GZ_DEPRECATED(7) SetLightMap(
-          const std::string &_lightMap,
+      public: virtual void SetLightMap(const std::string &_lightMap,
           unsigned int _uvSet = 0u)
       {
         this->SetLightMap(_lightMap, nullptr, _uvSet);

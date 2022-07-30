@@ -240,6 +240,9 @@ void displayCB()
   g_cameras[g_cameraIndex]->Capture(*g_image);
   handleMouse();
 
+  auto scene = g_cameras[g_cameraIndex]->Scene();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+
 #if __APPLE__
   CGLSetCurrentContext(g_glutContext);
 #elif _WIN32

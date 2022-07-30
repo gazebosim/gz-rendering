@@ -297,6 +297,16 @@ void OgreThermalCamera::Destroy()
   if (!this->ogreCamera || !this->scene->IsInitialized())
     return;
 
+  if (this->dataPtr->thermalInstance)
+  {
+    // Do not leave a reference to this->dataPtr->thermalMaterial
+    Ogre::MaterialPtr nullMaterial;
+    this->dataPtr->thermalInstance->getTechnique()
+      ->getOutputTargetPass()
+      ->getPass(0)
+      ->setMaterial(nullMaterial);
+  }
+
   // remove thermal textures
   if (this->dataPtr->ogreThermalTexture)
   {
@@ -310,6 +320,13 @@ void OgreThermalCamera::Destroy()
     Ogre::TextureManager::getSingleton().remove(
         this->dataPtr->ogreHeatSourceTexture->getName());
     this->dataPtr->ogreHeatSourceTexture = nullptr;
+  }
+
+  if (!this->dataPtr->thermalMaterial.isNull())
+  {
+    Ogre::MaterialManager::getSingleton().remove(
+      this->dataPtr->thermalMaterial->getHandle());
+    this->dataPtr->thermalMaterial.setNull();
   }
 
   Ogre::SceneManager *ogreSceneManager;

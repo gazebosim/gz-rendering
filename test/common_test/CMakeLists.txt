@@ -4,6 +4,7 @@ set(tests
   ArrowVisual_TEST
   AxisVisual_TEST
   BoundingBox_TEST
+  BoundingBoxCamera_TEST
   Camera_TEST
   Capsule_TEST
   COMVisual_TEST

@@ -22,6 +22,8 @@
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/Scene.hh"
 
+#include <gz/utils/ExtraTestMacros.hh>
+
 using namespace gz;
 using namespace rendering;
 
@@ -30,7 +32,7 @@ class SceneTest: public CommonRenderingTest
 };
 
 /////////////////////////////////////////////////
-TEST_F(SceneTest, AddRemoveVisuals)
+TEST_F(SceneTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(AddRemoveVisuals))
 {
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
@@ -120,7 +122,7 @@ TEST_F(SceneTest, AddRemoveVisuals)
 }
 
 /////////////////////////////////////////////////
-TEST_F(SceneTest, VisualAt)
+TEST_F(SceneTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(VisualAt))
 {
   // Optix doesn't support RayQuery
   CHECK_UNSUPPORTED_ENGINE("optix");

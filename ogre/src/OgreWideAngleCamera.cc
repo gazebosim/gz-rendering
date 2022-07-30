@@ -158,15 +158,20 @@ void OgreWideAngleCamera::Destroy()
 
   for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
   {
-    OgreRTShaderSystem::DetachViewport(this->dataPtr->envViewports[i],
-        this->scene);
+    if (this->dataPtr->envRenderTargets[i])
+    {
+      OgreRTShaderSystem::DetachViewport(this->dataPtr->envViewports[i],
+                                         this->scene);
+      this->dataPtr->envRenderTargets[i]->removeAllViewports();
+      this->dataPtr->envRenderTargets[i] = nullptr;
+    }
 
-    this->dataPtr->envRenderTargets[i]->removeAllViewports();
-    this->dataPtr->envRenderTargets[i] = nullptr;
-
-    this->scene->OgreSceneManager()->destroyCamera(
-        this->dataPtr->envCameras[i]->getName());
-    this->dataPtr->envCameras[i] = nullptr;
+    if (this->dataPtr->envCameras[i])
+    {
+      this->scene->OgreSceneManager()->destroyCamera(
+          this->dataPtr->envCameras[i]->getName());
+      this->dataPtr->envCameras[i] = nullptr;
+    }
   }
 
   if (this->dataPtr->envCubeMapTexture)

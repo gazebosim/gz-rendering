@@ -42,7 +42,7 @@ of libraries designed to rapidly develop robot applications.
 # Features
 
 * Support for rendering engines including OGRE and OptiX (experimental)
-* Plugin-based architecture. Mulitple rendering engine plugins can be loaded at run time.
+* Plugin-based architecture. Multiple rendering engine plugins can be loaded at run time.
 * Object-oriented scene management.
 
 # Install

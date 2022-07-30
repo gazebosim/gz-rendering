@@ -29,6 +29,8 @@
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/ThermalCamera.hh"
 
+#include <gz/utils/ExtraTestMacros.hh>
+
 #define DEPTH_TOL 1e-4
 #define DOUBLE_TOL 1e-6
 
@@ -60,7 +62,8 @@ class ThermalCameraTest: public CommonRenderingTest
 };
 
 //////////////////////////////////////////////////
-TEST_F(ThermalCameraTest, ThermalCameraBoxesUniform)
+TEST_F(ThermalCameraTest,
+       GZ_UTILS_TEST_DISABLED_ON_WIN32(ThermalCameraBoxesUniform))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
   int imgWidth = 50;

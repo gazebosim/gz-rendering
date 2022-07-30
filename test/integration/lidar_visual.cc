@@ -26,6 +26,8 @@
 #include "gz/rendering/LidarVisual.hh"
 #include "gz/rendering/Scene.hh"
 
+#include <gz/utils/ExtraTestMacros.hh>
+
 #define LASER_TOL 2e-4
 #define DOUBLE_TOL 1e-6
 
@@ -131,7 +133,7 @@ TEST_F(LidarVisualTest, Configure)
 
 /////////////////////////////////////////////////
 /// \brief Test detection of different boxes
-TEST_F(LidarVisualTest, RaysUnitBox)
+TEST_F(LidarVisualTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__
@@ -357,7 +359,7 @@ TEST_F(LidarVisualTest, RaysUnitBox)
 
 /////////////////////////////////////////////////
 /// \brief Test GPU rays vertical component
-TEST_F(LidarVisualTest, LaserVertical)
+TEST_F(LidarVisualTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__

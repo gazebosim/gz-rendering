@@ -17,7 +17,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../common_test/CommonRenderingTest.hh"
+#include "CommonRenderingTest.hh"
 
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Event.hh>
@@ -25,6 +25,8 @@
 #include "gz/rendering/DepthCamera.hh"
 #include "gz/rendering/ParticleEmitter.hh"
 #include "gz/rendering/Scene.hh"
+
+#include <gz/utils/ExtraTestMacros.hh>
 
 #define DEPTH_TOL 1e-4
 #define DOUBLE_TOL 1e-6
@@ -63,7 +65,7 @@ class DepthCameraTest: public CommonRenderingTest
 };
 
 /////////////////////////////////////////////////
-TEST_F(DepthCameraTest, DepthCameraBoxes)
+TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
 

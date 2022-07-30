@@ -26,6 +26,8 @@
 #include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/Scene.hh"
 
+#include <gz/utils/ExtraTestMacros.hh>
+
 using namespace gz;
 using namespace rendering;
 
@@ -34,7 +36,7 @@ class ShadowsTest: public CommonRenderingTest
 };
 
 /////////////////////////////////////////////////
-TEST_F(ShadowsTest, Shadows)
+TEST_F(ShadowsTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Shadows))
 {
   // override and make sure not to look for resources in installed share dir
   std::string projectSrcPath = PROJECT_SOURCE_PATH;

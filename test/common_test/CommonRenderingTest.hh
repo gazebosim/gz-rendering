@@ -86,7 +86,7 @@ class CommonRenderingTest: public testing::Test
     engine = gz::rendering::engine(this->engineToTest, engineParams);
     if (!engine)
     {
-      GTEST_SKIP() << "Engine '" << this->engineToTest << "' could not be loaded" << std::endl;
+      GTEST_FAIL() << "Engine '" << this->engineToTest << "' could not be loaded" << std::endl;
     }
   }
 

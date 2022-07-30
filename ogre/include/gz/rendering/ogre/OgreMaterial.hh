@@ -17,9 +17,12 @@
 #ifndef GZ_RENDERING_OGRE_OGREMATERIAL_HH_
 #define GZ_RENDERING_OGRE_OGREMATERIAL_HH_
 
+#include <memory>
 #include <string>
 
 #include <gz/utils/SuppressWarning.hh>
+
+#include <gz/common/Image.hh>
 
 #include "gz/rendering/base/BaseMaterial.hh"
 #include "gz/rendering/ogre/OgreObject.hh"
@@ -124,16 +127,24 @@ namespace gz
       public: virtual std::string Texture() const override;
 
       // Documentation inherited.
-      public: virtual void SetTexture(const std::string &_texture) override;
+      public: virtual void SetTexture(const std::string &_texture,
+        const std::shared_ptr<const common::Image> &_img = nullptr) override;
 
       public: virtual void ClearTexture() override;
+
+      public: virtual std::shared_ptr<const common::Image> TextureData()
+          const override;
 
       public: virtual bool HasNormalMap() const override;
 
       public: virtual std::string NormalMap() const override;
 
+      public: virtual std::shared_ptr<const common::Image> NormalMapData()
+          const override;
+
       // Documentation inherited.
-      public: virtual void SetNormalMap(const std::string &_normalMap) override;
+      public: virtual void SetNormalMap(const std::string &_normalMap,
+        const std::shared_ptr<const common::Image> &_img = nullptr) override;
 
       public: virtual void ClearNormalMap() override;
 
@@ -185,6 +196,13 @@ namespace gz
       /// \param[in] _texture Name of the texture.
       protected: virtual void SetTextureImpl(const std::string &_texture);
 
+      /// \brief Set the texture for this material from an image that was
+      /// loaded from memory
+      /// \param[in] _texture Name of the texture.
+      /// \param[in] _img common::Image containing the texture data
+      protected: void SetTextureDataImpl(const std::string &_texture,
+                     const std::shared_ptr<const common::Image> &_img);
+
       protected: virtual Ogre::TexturePtr Texture(const std::string &_name);
 
       protected: virtual Ogre::TexturePtr CreateTexture(
@@ -221,7 +239,13 @@ namespace gz
 #endif
       protected: std::string textureName;
 
+      /// \brief Diffuse texture image if it was passed as binary data
+      protected: std::shared_ptr<const common::Image> textureData;
+
       protected: std::string normalMapName;
+
+      /// \brief Normal map image if it was passed as binary data
+      protected: std::shared_ptr<const common::Image> normalMapData;
 
       protected: enum ShaderType shaderType = ST_PIXEL;
 

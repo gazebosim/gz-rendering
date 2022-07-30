@@ -68,6 +68,16 @@ void buildScene(ScenePtr _scene)
   root->AddChild(mesh);
 //! [create a mesh]
 
+  // create a pbr glb mesh
+  mesh = _scene->CreateVisual();
+  mesh->SetLocalPosition(3, 2, 0);
+  mesh->SetLocalRotation(0, 0, 0);
+  descriptor.meshName = common::joinPaths(RESOURCE_PATH, "AmbulanceStretcher.glb");
+  descriptor.mesh = meshManager->Load(descriptor.meshName);
+  meshGeom = _scene->CreateMesh(descriptor);
+  mesh->AddGeometry(meshGeom);
+  root->AddChild(mesh);
+
   // create gray material
   MaterialPtr gray = _scene->CreateMaterial();
   gray->SetAmbient(0.7, 0.7, 0.7);
@@ -88,7 +98,7 @@ void buildScene(ScenePtr _scene)
 
 //! [create camera]
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(0.0, 0.0, 0.5);
+  camera->SetLocalPosition(0.0, 1.0, 0.5);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);

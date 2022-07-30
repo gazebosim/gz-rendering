@@ -56,6 +56,34 @@ class gz::rendering::Ogre2MaterialPrivate
   /// store the material hash name
   public: std::string hashName;
 
+  /// \brief Pointer to image containing the texture data if it was
+  /// loaded from memory
+  public: std::shared_ptr<const common::Image> textureData;
+
+  /// \brief Pointer to image containing the normal map data if it was
+  /// loaded from memory
+  public: std::shared_ptr<const common::Image> normalMapData;
+
+  /// \brief Pointer to image containing the roughness map data if it was
+  /// loaded from memory
+  public: std::shared_ptr<const common::Image> roughnessMapData;
+
+  /// \brief Pointer to image containing the metalness map data if it was
+  /// loaded from memory
+  public: std::shared_ptr<const common::Image> metalnessMapData;
+
+  /// \brief Pointer to image containing the emissive map data if it was
+  /// loaded from memory
+  public: std::shared_ptr<const common::Image> emissiveMapData;
+
+  /// \brief Pointer to image containing the environment map data if it was
+  /// loaded from memory
+  public: std::shared_ptr<const common::Image> environmentMapData;
+
+  /// \brief Pointer to image containing the light map data if it was
+  /// loaded from memory
+  public: std::shared_ptr<const common::Image> lightMapData;
+
   /// \brief Path to vertex shader program.
   public: std::string vertexShaderPath;
 
@@ -390,22 +418,33 @@ std::string Ogre2Material::Texture() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetTexture(const std::string &_name)
+void Ogre2Material::SetTexture(const std::string &_name,
+                               const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
     this->ClearTexture();
     return;
   }
-
   this->textureName = _name;
-  this->SetTextureMapImpl(this->textureName, Ogre::PBSM_DIFFUSE);
+  this->dataPtr->textureData = _img;
+  if (_img == nullptr)
+    this->SetTextureMapImpl(this->textureName, Ogre::PBSM_DIFFUSE);
+  else
+    this->SetTextureMapDataImpl(this->textureName, _img, Ogre::PBSM_DIFFUSE);
+}
+
+//////////////////////////////////////////////////
+std::shared_ptr<const common::Image> Ogre2Material::TextureData() const
+{
+  return this->dataPtr->textureData;
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearTexture()
 {
   this->textureName = "";
+  this->dataPtr->textureData = nullptr;
   this->ogreDatablock->setTexture(Ogre::PBSM_DIFFUSE, this->textureName);
 }
 
@@ -422,7 +461,14 @@ std::string Ogre2Material::NormalMap() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetNormalMap(const std::string &_name)
+std::shared_ptr<const common::Image> Ogre2Material::NormalMapData() const
+{
+  return this->dataPtr->normalMapData;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetNormalMap(const std::string &_name,
+  const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -431,13 +477,18 @@ void Ogre2Material::SetNormalMap(const std::string &_name)
   }
 
   this->normalMapName = _name;
-  this->SetTextureMapImpl(this->normalMapName, Ogre::PBSM_NORMAL);
+  this->dataPtr->normalMapData = _img;
+  if (_img == nullptr)
+    this->SetTextureMapImpl(this->normalMapName, Ogre::PBSM_NORMAL);
+  else
+    this->SetTextureMapDataImpl(this->normalMapName, _img, Ogre::PBSM_NORMAL);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearNormalMap()
 {
   this->normalMapName = "";
+  this->dataPtr->normalMapData = nullptr;
   this->ogreDatablock->setTexture(Ogre::PBSM_NORMAL, this->normalMapName);
 }
 
@@ -454,7 +505,14 @@ std::string Ogre2Material::RoughnessMap() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetRoughnessMap(const std::string &_name)
+std::shared_ptr<const common::Image> Ogre2Material::RoughnessMapData() const
+{
+  return this->dataPtr->roughnessMapData;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetRoughnessMap(const std::string &_name,
+  const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -463,13 +521,23 @@ void Ogre2Material::SetRoughnessMap(const std::string &_name)
   }
 
   this->roughnessMapName = _name;
-  this->SetTextureMapImpl(this->roughnessMapName, Ogre::PBSM_ROUGHNESS);
+  this->dataPtr->roughnessMapData = _img;
+  if (_img == nullptr)
+  {
+    this->SetTextureMapImpl(this->roughnessMapName, Ogre::PBSM_ROUGHNESS);
+  }
+  else
+  {
+    this->SetTextureMapDataImpl(this->roughnessMapName,
+                                _img, Ogre::PBSM_ROUGHNESS);
+  }
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearRoughnessMap()
 {
   this->roughnessMapName = "";
+  this->dataPtr->roughnessMapData = nullptr;
   this->ogreDatablock->setTexture(Ogre::PBSM_ROUGHNESS, this->roughnessMapName);
 }
 
@@ -486,7 +554,14 @@ std::string Ogre2Material::MetalnessMap() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetMetalnessMap(const std::string &_name)
+std::shared_ptr<const common::Image> Ogre2Material::MetalnessMapData() const
+{
+  return this->dataPtr->metalnessMapData;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetMetalnessMap(const std::string &_name,
+  const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -495,13 +570,23 @@ void Ogre2Material::SetMetalnessMap(const std::string &_name)
   }
 
   this->metalnessMapName = _name;
-  this->SetTextureMapImpl(this->metalnessMapName, Ogre::PBSM_METALLIC);
+  this->dataPtr->metalnessMapData = _img;
+  if (_img == nullptr)
+  {
+    this->SetTextureMapImpl(this->metalnessMapName, Ogre::PBSM_METALLIC);
+  }
+  else
+  {
+    this->SetTextureMapDataImpl(this->metalnessMapName,
+                                _img, Ogre::PBSM_METALLIC);
+  }
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearMetalnessMap()
 {
   this->metalnessMapName = "";
+  this->dataPtr->metalnessMapData = nullptr;
   this->ogreDatablock->setTexture(Ogre::PBSM_METALLIC, this->metalnessMapName);
 }
 
@@ -518,7 +603,14 @@ std::string Ogre2Material::EnvironmentMap() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetEnvironmentMap(const std::string &_name)
+std::shared_ptr<const common::Image> Ogre2Material::EnvironmentMapData() const
+{
+  return this->dataPtr->environmentMapData;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetEnvironmentMap(const std::string &_name,
+  const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -527,13 +619,24 @@ void Ogre2Material::SetEnvironmentMap(const std::string &_name)
   }
 
   this->environmentMapName = _name;
-  this->SetTextureMapImpl(this->environmentMapName, Ogre::PBSM_REFLECTION);
+  this->dataPtr->environmentMapData = _img;
+
+  if (_img == nullptr)
+  {
+    this->SetTextureMapImpl(this->environmentMapName, Ogre::PBSM_REFLECTION);
+  }
+  else
+  {
+    this->SetTextureMapDataImpl(this->environmentMapName,
+                                _img, Ogre::PBSM_REFLECTION);
+  }
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearEnvironmentMap()
 {
   this->environmentMapName = "";
+  this->dataPtr->environmentMapData = nullptr;
   this->ogreDatablock->setTexture(
     Ogre::PBSM_REFLECTION, this->environmentMapName);
 }
@@ -551,7 +654,14 @@ std::string Ogre2Material::EmissiveMap() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetEmissiveMap(const std::string &_name)
+std::shared_ptr<const common::Image> Ogre2Material::EmissiveMapData() const
+{
+  return this->dataPtr->emissiveMapData;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetEmissiveMap(const std::string &_name,
+  const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -560,13 +670,23 @@ void Ogre2Material::SetEmissiveMap(const std::string &_name)
   }
 
   this->emissiveMapName = _name;
-  this->SetTextureMapImpl(this->emissiveMapName, Ogre::PBSM_EMISSIVE);
+  this->dataPtr->emissiveMapData = _img;
+  if (_img == nullptr)
+  {
+    this->SetTextureMapImpl(this->metalnessMapName, Ogre::PBSM_EMISSIVE);
+  }
+  else
+  {
+    this->SetTextureMapDataImpl(this->metalnessMapName,
+                                _img, Ogre::PBSM_EMISSIVE);
+  }
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearEmissiveMap()
 {
   this->emissiveMapName = "";
+  this->dataPtr->emissiveMapData = nullptr;
   this->ogreDatablock->setTexture(Ogre::PBSM_EMISSIVE, this->emissiveMapName);
 }
 
@@ -589,7 +709,9 @@ unsigned int Ogre2Material::LightMapTexCoordSet() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Material::SetLightMap(const std::string &_name, unsigned int _uvSet)
+void Ogre2Material::SetLightMap(const std::string &_name,
+  const std::shared_ptr<const common::Image> &_img,
+  unsigned int _uvSet)
 {
   if (_name.empty())
   {
@@ -598,6 +720,7 @@ void Ogre2Material::SetLightMap(const std::string &_name, unsigned int _uvSet)
   }
 
   this->lightMapName = _name;
+  this->dataPtr->lightMapData = _img;
   this->lightMapUvSet = _uvSet;
 
   // in gz-rendering5 + ogre 2.1, we reserved detail map 0 for light map
@@ -610,15 +733,25 @@ void Ogre2Material::SetLightMap(const std::string &_name, unsigned int _uvSet)
   Ogre::PbsTextureTypes type = Ogre::PBSM_EMISSIVE;
 
   // lightmap usually uses a different tex coord set
-  this->SetTextureMapImpl(this->lightMapName, type);
+  if (_img == nullptr)
+    this->SetTextureMapImpl(this->lightMapName, type);
+  else
+    this->SetTextureMapDataImpl(this->lightMapName, _img, type);
   this->ogreDatablock->setTextureUvSource(type, this->lightMapUvSet);
   this->ogreDatablock->setUseEmissiveAsLightmap(true);
+}
+
+//////////////////////////////////////////////////
+std::shared_ptr<const common::Image> Ogre2Material::LightMapData() const
+{
+  return this->dataPtr->lightMapData;
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::ClearLightMap()
 {
   this->lightMapName = "";
+  this->dataPtr->lightMapData = nullptr;
   this->lightMapUvSet = 0u;
 
   // in ogre 2.2, we swtiched to use the emissive map slot for light map
@@ -1044,6 +1177,61 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
         }
       }
     }
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
+  const std::shared_ptr<const common::Image> &_img,
+  Ogre::PbsTextureTypes _type)
+{
+  Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::TextureGpuManager *textureMgr =
+      root->getRenderSystem()->getTextureGpuManager();
+
+  // create the gpu texture
+  Ogre::uint32 textureFlags = 0;
+  textureFlags |= Ogre::TextureFlags::AutomaticBatching;
+  Ogre::TextureGpu *texture = textureMgr->createOrRetrieveTexture(
+      _name,
+      Ogre::GpuPageOutStrategy::Discard,
+      textureFlags | Ogre::TextureFlags::ManualTexture,
+      Ogre::TextureTypes::Type2D,
+      Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+      0u);
+
+  // Has to be loaded
+  if (texture->getWidth() == 0)
+  {
+    auto data = _img->RGBAData();
+
+    texture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+    texture->setTextureType(Ogre::TextureTypes::Type2D);
+    texture->setNumMipmaps(1u);
+    texture->setResolution(_img->Width(), _img->Height());
+    texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+    texture->waitForData();
+
+    // upload raw color image data to gpu texture
+    Ogre::Image2 img;
+    img.loadDynamicImage(&data[0], false, texture);
+    img.uploadTo(texture, 0, 0);
+  }
+
+  // Now assign it to the material
+  Ogre::HlmsSamplerblock samplerBlockRef;
+  samplerBlockRef.mU = Ogre::TAM_WRAP;
+  samplerBlockRef.mV = Ogre::TAM_WRAP;
+  samplerBlockRef.mW = Ogre::TAM_WRAP;
+
+  this->ogreDatablock->setTexture(_type, _name, &samplerBlockRef);
+
+  auto tex = textureMgr->findTextureNoThrow(_name);
+
+  if (tex)
+  {
+    tex->waitForMetadata();
+    this->dataPtr->hashName = tex->getName().getFriendlyText();
   }
 }
 

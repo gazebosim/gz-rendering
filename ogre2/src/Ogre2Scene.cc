@@ -1416,7 +1416,7 @@ void Ogre2Scene::SetSkyEnabled(bool _enabled)
       // paths are already set up in Ogre2RenderEngine.cc
       std::string skyboxEnvMap = "skybox.dds";
       skyboxMat = this->CreateMaterial(skyboxMatName);
-      skyboxMat->SetEnvironmentMap(skyboxEnvMap);
+      skyboxMat->SetEnvironmentMap(skyboxEnvMap, nullptr);
     }
   }
   this->SetBackgroundMaterial(skyboxMat);

@@ -290,7 +290,8 @@ std::string OgreMaterial::Texture() const
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetTexture(const std::string &_name)
+void OgreMaterial::SetTexture(const std::string &_name,
+                              const std::shared_ptr<const common::Image> &_img)
 {
   if (_name.empty())
   {
@@ -299,13 +300,24 @@ void OgreMaterial::SetTexture(const std::string &_name)
   }
 
   this->textureName = _name;
-  this->SetTextureImpl(this->textureName);
+  this->textureData = _img;
+  if (_img == nullptr)
+    this->SetTextureImpl(this->textureName);
+  else
+    this->SetTextureDataImpl(this->textureName, _img);
+}
+
+//////////////////////////////////////////////////
+std::shared_ptr<const common::Image> OgreMaterial::TextureData() const
+{
+  return this->textureData;
 }
 
 //////////////////////////////////////////////////
 void OgreMaterial::ClearTexture()
 {
   this->textureName = "";
+  this->textureData = nullptr;
   this->ogreTexState->setBlank();
   this->UpdateColorOperation();
 }
@@ -323,7 +335,14 @@ std::string OgreMaterial::NormalMap() const
 }
 
 //////////////////////////////////////////////////
-void OgreMaterial::SetNormalMap(const std::string &_name)
+std::shared_ptr<const common::Image> OgreMaterial::NormalMapData() const
+{
+  return this->normalMapData;
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::SetNormalMap(const std::string &_name,
+  const std::shared_ptr<const common::Image>& _img)
 {
   if (_name.empty())
   {
@@ -332,6 +351,7 @@ void OgreMaterial::SetNormalMap(const std::string &_name)
   }
 
   this->normalMapName = _name;
+  this->normalMapData = _img;
   // TODO(anyone): implement
   // this->SetNormalMapImpl(texture);
 }
@@ -340,6 +360,7 @@ void OgreMaterial::SetNormalMap(const std::string &_name)
 void OgreMaterial::ClearNormalMap()
 {
   this->normalMapName = "";
+  this->normalMapData = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -565,6 +586,46 @@ void OgreMaterial::SetTextureImpl(const std::string &_texture)
   {
     Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
         _texture, "FileSystem", this->ogreGroup);
+  }
+
+  this->ogreTexState->setTextureName(_texture);
+  this->UpdateColorOperation();
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::SetTextureDataImpl(const std::string &_texture,
+  const std::shared_ptr<const common::Image> &_img)
+{
+  // Create the texture only if it was not created already
+  if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(
+      this->ogreGroup, _texture))
+  {
+    auto ogreTexture =
+    Ogre::TextureManager::getSingleton().createManual(
+        _texture,
+        "General",
+        Ogre::TEX_TYPE_2D,
+        _img->Width(),
+        _img->Height(),
+        0,
+        Ogre::PF_R8G8B8A8);
+    Ogre::HardwarePixelBufferSharedPtr pixelBuffer = ogreTexture->getBuffer();
+    pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
+    const Ogre::PixelBox &pixelBox = pixelBuffer->getCurrentLock();
+
+    auto data = _img->RGBAData();
+    // TODO(anyone) Why we need to switch red and blue again for OGRE1?
+    for (unsigned int r = 0; r < _img->Height(); ++r)
+    {
+      for (unsigned int c = 0; c < _img->Width(); ++c)
+      {
+        int pixIdx = (r * _img->Width() + c) * 4;
+        std::swap(data[pixIdx], data[pixIdx + 2]);
+      }
+    }
+
+    memcpy(pixelBox.data, &data[0], data.size());
+    pixelBuffer->unlock();
   }
 
   this->ogreTexState->setTextureName(_texture);

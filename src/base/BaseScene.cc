@@ -1575,7 +1575,7 @@ void BaseScene::CreateMaterials()
   std::string com_material_texture_path = common::joinPaths(
       resourcePath, "media", "materials", "textures", "com.png");
   material = this->CreateMaterial("Default/CoM");
-  material->SetTexture(com_material_texture_path);
+  material->SetTexture(com_material_texture_path, nullptr);
   material->SetTransparency(0);
   material->SetCastShadows(false);
   material->SetReceiveShadows(true);

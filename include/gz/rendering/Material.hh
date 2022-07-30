@@ -17,6 +17,7 @@
 #ifndef GZ_RENDERING_MATERIAL_HH_
 #define GZ_RENDERING_MATERIAL_HH_
 
+#include <memory>
 #include <string>
 #include <gz/math/Color.hh>
 #include <gz/common/Material.hh>
@@ -220,8 +221,30 @@ namespace gz
       public: virtual std::string Texture() const = 0;
 
       /// \brief Set the material texture
-      /// \param[in] _texture URI of the new texture file
-      public: virtual void SetTexture(const std::string &_texture) = 0;
+      /// \param[in] _texture URI of the new texture file or identifying name
+      /// if _img is set
+      public: virtual void SetTexture(const std::string &_texture)
+      {
+        this->SetTexture(_texture, nullptr);
+      }
+
+      /// \brief Set the material texture
+      /// \param[in] _texture URI of the new texture file or identifying name
+      /// if _img is set
+      /// \param[in] _img Image data, nullptr if the image should be loaded
+      /// from a file
+      public: virtual void SetTexture(const std::string &_texture,
+        const std::shared_ptr<const common::Image> &_img)
+      {
+        (void)_texture;
+        (void)_img;
+      }
+
+      /// \brief Get the texture data
+      /// \return Pointer to the common::Image with the data if the texture
+      /// was loaded from memory
+      public: virtual std::shared_ptr<const common::Image> TextureData()
+        const = 0;
 
       /// \brief Removes any texture mapped to this material
       public: virtual void ClearTexture() = 0;
@@ -234,9 +257,30 @@ namespace gz
       /// \return URI of the normal map file
       public: virtual std::string NormalMap() const = 0;
 
+      /// \brief Get the normal map data
+      /// \return Pointer to the common::Image with the data if the texture
+      /// was loaded from memory
+      public: virtual std::shared_ptr<const common::Image> NormalMapData()
+        const = 0;
+
       /// \brief Set the material normal map
       /// \param[in] _normalMap URI of the new normal map file
-      public: virtual void SetNormalMap(const std::string &_normalMap) = 0;
+      public: virtual void SetNormalMap(const std::string &_normalMap)
+      {
+        this->SetNormalMap(_normalMap, nullptr);
+      }
+
+      /// \brief Set the material normal map
+      /// \param[in] _normalMap URI of the new normal map file,
+      /// or identifying name if map was set from raw data
+      /// \param[in] _img Image data, nullptr if the image should be loaded
+      /// from a file
+      public: virtual void SetNormalMap(const std::string &_normalMap,
+        const std::shared_ptr<const common::Image> &_img)
+      {
+        (void)_normalMap;
+        (void)_img;
+      }
 
       /// \brief Removes any normal map mapped to this material
       public: virtual void ClearNormalMap() = 0;
@@ -249,10 +293,31 @@ namespace gz
       /// \return URI of the roughness map file
       public: virtual std::string RoughnessMap() const = 0;
 
+      /// \brief Get the roughness map data
+      /// \return Pointer to the common::Image with the data if the texture
+      /// was loaded from memory
+      public: virtual std::shared_ptr<const common::Image> RoughnessMapData()
+                  const = 0;
+
       /// \brief Set the material roughness map
       /// \param[in] _roughnessMap URI of the new roughness map file
+      public: virtual void SetRoughnessMap(const std::string &_roughnessMap)
+      {
+        this->SetRoughnessMap(_roughnessMap, nullptr);
+      }
+
+      /// \brief Set the material roughness map
+      /// \param[in] _roughnessMap URI of the new roughness map file,
+      /// or identifying name if map was set from raw data
+      /// \param[in] _img Image data, nullptr if the image should be loaded
+      /// from a file
       public: virtual void SetRoughnessMap(
-        const std::string &_roughnessMap) = 0;
+        const std::string &_roughnessMap,
+        const std::shared_ptr<const common::Image> &_img)
+      {
+        (void)_roughnessMap;
+        (void)_img;
+      }
 
       /// \brief Removes any roughness map mapped to this material
       public: virtual void ClearRoughnessMap() = 0;
@@ -265,10 +330,31 @@ namespace gz
       /// \return URI of the metalness map file
       public: virtual std::string MetalnessMap() const = 0;
 
+      /// \brief Get the metalness map data
+      /// \return Pointer to the common::Image with the data if the texture
+      /// was loaded from memory
+      public: virtual std::shared_ptr<const common::Image> MetalnessMapData()
+                  const = 0;
+
       /// \brief Set the material metalness map
       /// \param[in] _metalnessMap URI of the new metalness map file
+      public: virtual void SetMetalnessMap(const std::string &_metalnessMap)
+      {
+        this->SetMetalnessMap(_metalnessMap, nullptr);
+      }
+
+      /// \brief Set the material metalness map
+      /// \param[in] _metalnessMap URI of the new metalness map file,
+      /// or identifying name if map was set from raw data
+      /// \param[in] _img Image data, nullptr if the image should be loaded
+      /// from a file
       public: virtual void SetMetalnessMap(
-        const std::string &_metalnessMap) = 0;
+        const std::string &_metalnessMap,
+        const std::shared_ptr<const common::Image> &_img)
+      {
+        (void)_metalnessMap;
+        (void)_img;
+      }
 
       /// \brief Removes any metalness map mapped to this material
       public: virtual void ClearMetalnessMap() = 0;
@@ -281,10 +367,31 @@ namespace gz
       /// \return URI of the environment map file
       public: virtual std::string EnvironmentMap() const = 0;
 
+      /// \brief Get the environment map data
+      /// \return Pointer to the common::Image with the data if the texture
+      /// was loaded from memory
+      public: virtual std::shared_ptr<const common::Image> EnvironmentMapData()
+                  const = 0;
+
       /// \brief Set the material environment map
-      /// \param[in] _metalnessMap URI of the new environment map file
+      /// \param[in] _environmentMap URI of the new environment map file
+      public: virtual void SetEnvironmentMap(const std::string &_environmentMap)
+      {
+        this->SetEnvironmentMap(_environmentMap, nullptr);
+      }
+
+      /// \brief Set the material environment map
+      /// \param[in] _environmentMap URI of the new environment map file,
+      /// or identifying name if map was set from raw data
+      /// \param[in] _img Image data, nullptr if the image should be loaded
+      /// from a file
       public: virtual void SetEnvironmentMap(
-        const std::string &_metalnessMap) = 0;
+        const std::string &_environmentMap,
+        const std::shared_ptr<const common::Image> &_img)
+      {
+        (void)_environmentMap;
+        (void)_img;
+      }
 
       /// \brief Removes any environment map mapped to this material
       public: virtual void ClearEnvironmentMap() = 0;
@@ -297,10 +404,31 @@ namespace gz
       /// \return URI of the emissive map file
       public: virtual std::string EmissiveMap() const = 0;
 
+      /// \brief Get the emissive map data
+      /// \return Pointer to the common::Image with the data if the texture
+      /// was loaded from memory
+      public: virtual std::shared_ptr<const common::Image> EmissiveMapData()
+                  const = 0;
+
       /// \brief Set the material emissive map
-      /// \param[in] _emissiveMap URI of the new emissive map file
+      /// \param[in] _emissiveMap Map URI of the new emissive map file
+      public: virtual void SetEmissiveMap(const std::string &_emissiveMap)
+      {
+        this->SetEmissiveMap(_emissiveMap, nullptr);
+      }
+
+      /// \brief Set the material emissive map
+      /// \param[in] _emissiveMap Map URI of the new emissive map file,
+      /// or identifying name if map was set from raw data
+      /// \param[in] _img Image data, nullptr if the image should be loaded
+      /// from a file
       public: virtual void SetEmissiveMap(
-        const std::string &_emissiveMap) = 0;
+        const std::string &_emissiveMap,
+        const std::shared_ptr<const common::Image> &_img)
+      {
+        (void)_emissiveMap;
+        (void)_img;
+      }
 
       /// \brief Removes any emissive map mapped to this material
       public: virtual void ClearEmissiveMap() = 0;
@@ -321,7 +449,30 @@ namespace gz
       /// \param[in] _lightMap URI of the new light map file
       /// \param[in] _uvSet Texture coordinate set to use
       public: virtual void SetLightMap(const std::string &_lightMap,
-          unsigned int _uvSet = 0u) = 0;
+          unsigned int _uvSet = 0u)
+      {
+        this->SetLightMap(_lightMap, nullptr, _uvSet);
+      }
+
+      /// \brief Set the material light map from an image loaded in memory
+      /// \param[in] _lightMap URI of the new light map file
+      /// \param[in] _img Image data, nullptr if the image should be loaded
+      /// from a file
+      /// \param[in] _uvSet Texture coordinate set to use
+      public: virtual void SetLightMap(const std::string &_lightMap,
+          const std::shared_ptr<const common::Image> &_img,
+          unsigned int _uvSet = 0)
+      {
+        (void)_lightMap;
+        (void)_img;
+        (void)_uvSet;
+      }
+
+      /// \brief Get the light map data
+      /// \return Pointer to the common::Image with the data if the texture
+      /// was loaded from memory
+      public: virtual std::shared_ptr<const common::Image> LightMapData()
+                  const = 0;
 
       /// \brief Removes any light map mapped to this material
       public: virtual void ClearLightMap() = 0;

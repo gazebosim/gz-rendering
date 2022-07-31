@@ -1211,7 +1211,6 @@ namespace gz
       /// will automatically be assigned to the GI. If the given ID is
       /// already in use, NULL will be returned.
       /// \param[in] _id ID of the new particle emitter
-      /// \param[in] _name Name of the new GI CIVCT solution
       /// \return The created GI CIVCT
       public: virtual GlobalIlluminationCiVctPtr CreateGlobalIlluminationCiVct(
                   unsigned int _id) = 0;

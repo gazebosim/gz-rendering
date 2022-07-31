@@ -22,16 +22,23 @@
 #include <gz/common/MeshManager.hh>
 #include <gz/rendering.hh>
 
+#include "GiConfig.hh"
 #include "GlutWindow.hh"
 #include "example_config.hh"
 
 #include <SDL.h>
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 const std::string RESOURCE_PATH =
   common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
+
+#if GI_METHOD == 1
+gz::rendering::GlobalIlluminationVctPtr g_gi = nullptr;
+#else
+gz::rendering::GlobalIlluminationCiVctPtr g_gi = nullptr;
+#endif
 
 //////////////////////////////////////////////////
 void buildScene(ScenePtr _scene)
@@ -271,8 +278,6 @@ void buildScene(ScenePtr _scene)
   camera->SetHFOV(GZ_PI / 2);
   root->AddChild(camera);
 
-#define GI_METHOD 2
-
 #if GI_METHOD == 1
   auto gi = _scene->CreateGlobalIlluminationVct();
   const uint32_t resolution[3]{ 128u, 128u, 32u };
@@ -285,7 +290,6 @@ void buildScene(ScenePtr _scene)
   gi->SetAnisotropic(false);
   gi->Build();
   _scene->SetActiveGlobalIllumination(gi);
-  // gi->SetDebugVisualization(GlobalIlluminationVct::DVM_Lighting);
 #elif GI_METHOD == 2
   auto gi = _scene->CreateGlobalIlluminationCiVct();
 
@@ -294,28 +298,28 @@ void buildScene(ScenePtr _scene)
   CiVctCascadePtr cascade = gi->AddCascade(nullptr);
   const uint32_t resolution[3]{ 128u, 128u, 128u };
   const uint32_t octantCount[3]{ 4, 4, 2 };
-  cascade->SetAreaHalfSize(ignition::math::Vector3d(5.0, 5.0, 5.0));
+  cascade->SetAreaHalfSize(gz::math::Vector3d(5.0, 5.0, 5.0));
   cascade->SetResolution(resolution);
-  cascade->SetCameraStepSize(ignition::math::Vector3d(
+  cascade->SetCameraStepSize(gz::math::Vector3d(
     1.0, 1.0, 1.0));  // Will be overriden by autoCalculateStepSizes
   cascade->SetThinWallCounter(1.0f);
   cascade->SetOctantCount(octantCount);
 
   cascade = gi->AddCascade(cascade.get());
-  cascade->SetAreaHalfSize(ignition::math::Vector3d(10.0, 10.0, 10.0));
+  cascade->SetAreaHalfSize(gz::math::Vector3d(10.0, 10.0, 10.0));
 
   cascade = gi->AddCascade(cascade.get());
-  cascade->SetAreaHalfSize(ignition::math::Vector3d(20.0, 20.0, 20.0));
+  cascade->SetAreaHalfSize(gz::math::Vector3d(20.0, 20.0, 20.0));
 
-  gi->AutoCalculateStepSizes(ignition::math::Vector3d(3.0, 3.0, 3.0));
+  gi->AutoCalculateStepSizes(gz::math::Vector3d(3.0, 3.0, 3.0));
 
   gi->Bind(camera);
   gi->SetHighQuality(false);
   gi->Start(2u, true);
   gi->Build();
   _scene->SetActiveGlobalIllumination(gi);
-  // gi->SetDebugVisualization(GlobalIlluminationVct::DVM_Lighting);
 #endif
+  g_gi = gi;
 }
 
 //////////////////////////////////////////////////

@@ -19,6 +19,8 @@
 
 #include <gz/common/Console.hh>
 #include <gz/rendering/Camera.hh>
+#include <gz/rendering/GlobalIlluminationCiVct.hh>
+#include <gz/rendering/GlobalIlluminationVct.hh>
 #include <gz/rendering/Image.hh>
 #include <gz/rendering/NativeWindow.hh>
 #include <gz/rendering/OrbitViewController.hh>
@@ -27,6 +29,7 @@
 #include <gz/rendering/RenderPass.hh>
 #include <gz/rendering/Scene.hh>
 
+#include "GiConfig.hh"
 #include "GlutWindow.hh"
 
 #include <SDL.h>
@@ -42,7 +45,7 @@ static ir::CameraPtr g_currCamera;
 static unsigned int g_cameraIndex = 0;
 
 static SDL_Window *g_sdlWindow = nullptr;
-static ignition::rendering::NativeWindowPtr g_nativeWindow;
+static gz::rendering::NativeWindowPtr g_nativeWindow;
 
 // view control variables
 static ir::RayQueryPtr g_rayQuery;
@@ -139,7 +142,7 @@ void handleMouse()
     {
       // Get visual using Selection Buffer from Camera
       ir::VisualPtr visual;
-      ignition::math::Vector2i mousePos(g_mouse.x, g_mouse.y);
+      gz::math::Vector2i mousePos(g_mouse.x, g_mouse.y);
       visual = rayCamera->VisualAt(mousePos);
       if (visual)
       {
@@ -159,7 +162,7 @@ void handleMouse()
       2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
     double ny =
       1.0 - 2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
-    g_rayQuery->SetFromCamera(rayCamera, ignition::math::Vector2d(nx, ny));
+    g_rayQuery->SetFromCamera(rayCamera, gz::math::Vector2d(nx, ny));
     g_target = g_rayQuery->ClosestPoint();
     if (!g_target)
     {
@@ -189,7 +192,7 @@ void handleMouse()
   if (g_mouse.motionDirty)
   {
     g_mouse.motionDirty = false;
-    auto drag = ignition::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
+    auto drag = gz::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
 
     // left mouse button pan
     if (g_mouse.button == SDL_BUTTON_LEFT && g_mouse.state == SDL_PRESSED)
@@ -283,6 +286,37 @@ void keyReleased(const SDL_KeyboardEvent &_arg)
       camera->Scene()->SetSkyEnabled(!camera->Scene()->SkyEnabled());
     }
   }
+  else if (_arg.keysym.sym == SDLK_d)
+  {
+    if (g_gi)
+    {
+#if GI_METHOD == 1
+      if (g_gi->DebugVisualization() ==
+          gz::rendering::GlobalIlluminationVct::DVM_None)
+      {
+        g_gi->SetDebugVisualization(
+          gz::rendering::GlobalIlluminationVct::DVM_Lighting);
+      }
+      else
+      {
+        g_gi->SetDebugVisualization(
+          gz::rendering::GlobalIlluminationVct::DVM_None);
+      }
+#else
+      if (g_gi->DebugVisualization() ==
+          gz::rendering::GlobalIlluminationCiVct::DVM_None)
+      {
+        g_gi->SetDebugVisualization(
+          gz::rendering::GlobalIlluminationCiVct::DVM_Lighting);
+      }
+      else
+      {
+        g_gi->SetDebugVisualization(
+          gz::rendering::GlobalIlluminationCiVct::DVM_None);
+      }
+#endif
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -348,11 +382,11 @@ void run(std::vector<ir::CameraPtr> _cameras)
     return;
   }
 
-  g_sdlWindow = SDL_CreateWindow("Ignition Demo",  // window title
-                                 0,                // initial x position
-                                 0,                // initial y position
-                                 1280,             // width, in pixels
-                                 720,              // height, in pixels
+  g_sdlWindow = SDL_CreateWindow("Gazebo Demo",  // window title
+                                 0,              // initial x position
+                                 0,              // initial y position
+                                 1280,           // width, in pixels
+                                 720,            // height, in pixels
                                  SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
   auto renderEngine = _cameras.back()->Scene()->Engine();
@@ -381,7 +415,7 @@ void run(std::vector<ir::CameraPtr> _cameras)
     break;
 #else
   case SDL_SYSWM_X11:
-    if (renderEngine->GraphicsAPI() != ignition::rendering::GraphicsAPI::VULKAN)
+    if (renderEngine->GraphicsAPI() != gz::rendering::GraphicsAPI::VULKAN)
     {
       winHandle = std::to_string((uintptr_t)wmInfo.info.x11.window);
     }

@@ -117,7 +117,7 @@ namespace gz
     /// be stable.
     /// Very big step sizes may cause periodic performance spikes or sudden
     /// changes in brightness.
-    /// \param[in] _stepSize
+    /// \param[in] _stepSize Step size in units
     public: virtual void SetCameraStepSize(
           const gz::math::Vector3d &_stepSize) = 0;
 
@@ -165,6 +165,7 @@ namespace gz
     /// \remark Cannot be called anymore after Start() has been called
     /// \param[in] _ref Can be nullptr. If you already have a cascade,
     /// we will clone its settings.
+    /// \return New Cascade to control its settings.
     public: virtual CiVctCascadePtr AddCascade(const CiVctCascade *_ref) = 0;
 
     /// \brief Removes the last added cascade.

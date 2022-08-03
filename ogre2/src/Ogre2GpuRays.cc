@@ -661,7 +661,22 @@ void Ogre2GpuRays::Destroy()
     ogreCompMgr->removeWorkspace(this->dataPtr->ogreCompositorWorkspace2nd);
     this->dataPtr->ogreCompositorWorkspace2nd = nullptr;
   }
+
+  if (this->scene)
+  {
+    Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
+    if (ogreSceneManager == nullptr)
+    {
+      ignerr << "Scene manager not available. "
+             << "Unable to remove cameras and listeners" << std::endl;
+    }
+    else
+    {
+      ogreSceneManager->destroyCamera(this->dataPtr->ogreCamera);
+      this->dataPtr->ogreCamera = nullptr;
+    }
   }
+}
 
 /////////////////////////////////////////////////
 void Ogre2GpuRays::CreateRenderTexture()

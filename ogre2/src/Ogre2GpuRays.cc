@@ -665,12 +665,7 @@ void Ogre2GpuRays::Destroy()
   if (this->scene)
   {
     Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
-    if (ogreSceneManager == nullptr)
-    {
-      ignerr << "Scene manager not available. "
-             << "Unable to remove cameras and listeners" << std::endl;
-    }
-    else
+    if (ogreSceneManager)
     {
       ogreSceneManager->destroyCamera(this->dataPtr->ogreCamera);
       this->dataPtr->ogreCamera = nullptr;

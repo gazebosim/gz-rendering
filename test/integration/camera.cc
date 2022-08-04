@@ -579,10 +579,6 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ShaderSelection))
   visual->SetWorldRotation(0.0, 0.0, 0.0);
   visual->SetMaterial(shader);
   root->AddChild(visual);
-  // for thermal camera
-  visual->SetUserData("temperature", 310.0f);
-  // for segmentation camera
-  visual->SetUserData("label", 1);
 
   // visual will clone and create a unique material
   // so destroy this one
@@ -600,75 +596,10 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ShaderSelection))
   camera->SetHFOV(GZ_PI / 2);
   root->AddChild(camera);
 
-  // Create a gpu ray
-  // laser retro material switching may also affect shader materials
-  const double hMinAngle = -GZ_PI/2.0;
-  const double hMaxAngle = GZ_PI/2.0;
-  const double minRange = 0.1;
-  const double maxRange = 10.0;
-  const int hRayCount = 320;
-  const int vRayCount = 1;
-  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays");
-  gpuRays->SetWorldPosition(0, 0, 0);
-  gpuRays->SetNearClipPlane(minRange);
-  gpuRays->SetFarClipPlane(maxRange);
-  gpuRays->SetAngleMin(hMinAngle);
-  gpuRays->SetAngleMax(hMaxAngle);
-  gpuRays->SetRayCount(hRayCount);
-  gpuRays->SetVerticalRayCount(vRayCount);
-  root->AddChild(gpuRays);
-
-  // Create thermal camera
-  // heat map material switching may also affect shader materials
-  auto thermalCamera = scene->CreateThermalCamera("ThermalCamera");
-  ASSERT_NE(thermalCamera, nullptr);
-  thermalCamera->SetAmbientTemperature(296.0f);
-  thermalCamera->SetAspectRatio(1.333);
-  thermalCamera->SetImageWidth(320);
-  thermalCamera->SetImageHeight(240);
-  thermalCamera->SetHFOV(GZ_PI_2);
-  root->AddChild(thermalCamera);
-
-  // Currently, only ogre2 supports segmentation cameras
-  SegmentationCameraPtr segmentationCamera;
-  if (this->engineToTest == "ogre2")
-  {
-    // Create segmentation camera
-    // segmentation material switching may also affect shader materials
-    segmentationCamera =
-        scene->CreateSegmentationCamera("SegmentationCamera");
-    ASSERT_NE(camera, nullptr);
-    segmentationCamera->SetLocalPosition(0.0, 0.0, 0.0);
-    segmentationCamera->SetLocalRotation(0.0, 0.0, 0.0);
-    segmentationCamera->SetBackgroundLabel(23);
-    segmentationCamera->SetSegmentationType(SegmentationType::ST_SEMANTIC);
-    segmentationCamera->EnableColoredMap(false);
-    segmentationCamera->SetAspectRatio(1.333);
-    segmentationCamera->SetImageWidth(320);
-    segmentationCamera->SetImageHeight(240);
-    segmentationCamera->SetHFOV(GZ_PI_2);
-    root->AddChild(segmentationCamera);
-
-    // worldviewproj_matrix is a constant defined by ogre.
-    // Here we add a line to add this constant to the params.
-    // The specified value is ignored as it will be auto bound to the
-    // correct type and value.
-    auto params = visual->Material()->VertexShaderParams();
-    (*params)["worldviewproj_matrix"] = 1;
-
-    // check setting invalid param - this should print a warning msg and
-    // not cause the program to crash.
-    (*params)["worldviewproj_matrix_invalid"] = 1;
-  }
-
   // render a few frames
   for (auto i = 0; i < 30; ++i)
   {
     camera->Update();
-    gpuRays->Update();
-    thermalCamera->Update();
-    if (segmentationCamera)
-      segmentationCamera->Update();
     scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
   }
 
@@ -712,11 +643,5 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ShaderSelection))
   engine->DestroyScene(scene);
 
   ASSERT_EQ(1u, camera.use_count());
-  ASSERT_EQ(1u, gpuRays.use_count());
-  ASSERT_EQ(1u, thermalCamera.use_count());
-  if (segmentationCamera)
-  {
-    ASSERT_EQ(1u, segmentationCamera.use_count());
-  }
 }
 

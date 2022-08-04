@@ -169,7 +169,9 @@ namespace gz
       public: virtual rendering::GraphicsAPI GraphicsAPI() const = 0;
 
       /// \brief Set headless mode
-      /// Only available in OGRE 2.2, which makes use of EGL
+      /// Available in OGRE 2.2+, 
+      /// Makes use of EGL when using OpenGL3+ backend
+      /// Makes use of Vulkan Null target when using Vulkan
       /// \param[in] _headless Set to true to enable headless mode.
       public: virtual void SetHeadless(bool _headless) = 0;
 

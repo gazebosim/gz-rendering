@@ -5,7 +5,7 @@ include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
 )
 
-find_package(gz-rendering7)
+find_package(gz-rendering8)
 
 set(TARGET_THIRD_PARTY_DEPENDS "")
 

@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_OGRE2_DEMO_GLUTWINDOW_HH_
-#define IGNITION_RENDERING_EXAMPLES_OGRE2_DEMO_GLUTWINDOW_HH_
+#ifndef GZ_RENDERING_EXAMPLES_OGRE2_DEMO_SDLWINDOW_HH_
+#define GZ_RENDERING_EXAMPLES_OGRE2_DEMO_SDLWINDOW_HH_
 
 #include <vector>
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/rendering/RenderTypes.hh"
 
-namespace ir = ignition::rendering;
+namespace ir = gz::rendering;
 
 /// \brief Run the demo and render the scene from the cameras
 /// \param[in] _cameras Cameras in the scene

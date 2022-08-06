@@ -44,7 +44,6 @@ gz::rendering::GlobalIlluminationCiVctPtr g_gi = nullptr;
 void buildScene(ScenePtr _scene)
 {
   // initialize _scene
-  //_scene->SetAmbientLight(0.2, 0.2, 0.2);
   _scene->SetBackgroundColor(0.2, 0.2, 0.2);
   VisualPtr root = _scene->RootVisual();
 

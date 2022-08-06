@@ -109,6 +109,9 @@ namespace gz
                   &_mousePos) override;
 
       // Documentation inherited.
+      public: virtual math::Matrix3d CameraIntrinsicMatrix() const override;
+
+      // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
       // Documentation inherited.
@@ -496,6 +499,32 @@ namespace gz
       gzerr << "Render window not supported for render engine: " <<
           this->Scene()->Engine()->Name() << std::endl;
       return RenderWindowPtr();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    math::Matrix3d BaseCamera<T>::CameraIntrinsicMatrix() const
+    {
+      const math::Matrix4d& projectionMat = this->ProjectionMatrix();
+
+      double right = this->ImageWidth();
+      double left = 0.0;
+      double top = this->ImageHeight();
+      double bottom = 0.0;
+
+      double inverseWidth = 1.0 / (right - left);
+      double inverseHeight = 1.0 / (top - bottom);
+
+      double fX = projectionMat(0, 0)/ (2*inverseWidth);
+      double fY = projectionMat(1, 1) / (2*inverseHeight);
+      double cX = -((projectionMat(0, 2) -
+          ((right + left) / (right - left))) * (right - left)) / 2;
+      double cY = this->ImageHeight() + ((projectionMat(1, 2) -
+          ((top + bottom) / (top - bottom))) * (top - bottom)) / 2;
+
+      return math::Matrix3d(fX, 0, cX,
+                            0, fY, cY,
+                            0, 0, 1);
     }
 
     //////////////////////////////////////////////////

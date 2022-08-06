@@ -94,6 +94,9 @@ namespace gz
       public: virtual RenderWindowPtr CreateRenderWindow() override;
 
       // Documentation inherited.
+      public: virtual math::Matrix3d CameraIntrinsicMatrix() const override;
+
+      // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
       // Documentation inherited.
@@ -179,7 +182,7 @@ namespace gz
 
       /// \brief Make scene our friend so it can create a camera
       private: friend class Ogre2Scene;
-
+\
       /// \brief Make ray query our friend so it can use the internal ogre
       /// camera to execute queries
       private: friend class Ogre2RayQuery;

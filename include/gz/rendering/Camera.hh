@@ -194,6 +194,13 @@ namespace gz
       /// \return A pointer to the render window.
       public: virtual RenderWindowPtr CreateRenderWindow() = 0;
 
+      /// \brief Get the camera intrinsic matrix, this matrix is different
+      ///        than the matrix returned from ProjectionMatrix() which is
+      ///        used bY OpenGL internally. The matrix returned contains the
+      ///        camera calibrated values.
+      /// \return intrinsic matrix
+      public: virtual math::Matrix3d CameraIntrinsicMatrix() const = 0;
+
       /// \brief Get the projection matrix for this camera
       /// \return Camera projection matrix
       public: virtual math::Matrix4d ProjectionMatrix() const = 0;

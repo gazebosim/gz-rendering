@@ -318,6 +318,12 @@ RenderWindowPtr Ogre2Camera::CreateRenderWindow()
 }
 
 //////////////////////////////////////////////////
+math::Matrix3d Ogre2Camera::CameraIntrinsicMatrix() const
+{
+  return BaseCamera::CameraIntrinsicMatrix();
+}
+
+//////////////////////////////////////////////////
 math::Matrix4d Ogre2Camera::ProjectionMatrix() const
 {
   return Ogre2Conversions::Convert(this->ogreCamera->getProjectionMatrix());

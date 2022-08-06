@@ -30,7 +30,7 @@
 #include <gz/rendering/Scene.hh>
 
 #include "GiConfig.hh"
-#include "GlutWindow.hh"
+#include "Sdl2Window.hh"
 
 #include <SDL.h>
 #include <SDL_syswm.h>

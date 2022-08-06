@@ -23,7 +23,8 @@
 #include <gz/rendering.hh>
 
 #include "GiConfig.hh"
-#include "GlutWindow.hh"
+#include "Sdl2Window.hh"
+
 #include "example_config.hh"
 
 #include <SDL.h>

@@ -20,7 +20,7 @@ list (SORT _variableNames)
 foreach (_variableName ${_variableNames})
   message(STATUS "${_variableName}=${${_variableName}}")
 endforeach()
-add_executable(global_illumination Main.cc GlutWindow.cc)
+add_executable(global_illumination Main.cc Sdl2Window.cc)
 
 target_link_libraries(global_illumination
   ${SDL2_LIBRARIES}

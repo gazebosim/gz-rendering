@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(gz-rendering-gazebo-scene-viewer)
-find_package(gz-rendering7 REQUIRED)
+find_package(gz-rendering8 REQUIRED)
 find_package(gazebo REQUIRED)
 
 include_directories(SYSTEM ${GAZEBO_INCLUDE_DIRS})

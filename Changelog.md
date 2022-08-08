@@ -1,5 +1,9 @@
 ## Gazebo Rendering
 
+### Gazebo Rendering 8.X
+
+### Gazebo Rendering 8.0.0 (202X-XX-XX)
+
 ### Gazebo Rendering 7.X
 
 ### Gazebo Rendering 7.0.0 (202X-XX-XX)

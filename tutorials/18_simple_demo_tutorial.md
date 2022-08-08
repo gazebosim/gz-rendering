@@ -23,7 +23,7 @@ Execute the example:
 You'll see:
 
 ```{.sh}
-[Msg] Loading plugin [gz-rendering7-ogre]
+[Msg] Loading plugin [gz-rendering8-ogre]
 Engine 'optix' is not supported
 ===============================
   TAB - Switch render engines

@@ -253,7 +253,7 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -435,7 +435,7 @@ void MaterialTest::Copy(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -452,7 +452,7 @@ TEST_P(MaterialTest, Copy)
 
 INSTANTIATE_TEST_CASE_P(Material, MaterialTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

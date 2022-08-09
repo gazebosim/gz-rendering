@@ -64,7 +64,7 @@ bool OgreMesh::HasSkeleton() const
 std::map<std::string, math::Matrix4d>
         OgreMesh::SkeletonLocalTransforms() const
 {
-  std::map<std::string, ignition::math::Matrix4d> mapTfs;
+  std::map<std::string, math::Matrix4d> mapTfs;
   if (this->ogreEntity->hasSkeleton())
   {
     Ogre::SkeletonInstance *skel = this->ogreEntity->getSkeleton();
@@ -74,10 +74,10 @@ std::map<std::string, math::Matrix4d>
       Ogre::Quaternion quat(bone->getOrientation());
       Ogre::Vector3 p(bone->getPosition());
 
-      ignition::math::Quaterniond tfQuat(quat.w, quat.x, quat.y, quat.z);
-      ignition::math::Vector3d tfTrans(p.x, p.y, p.z);
+      math::Quaterniond tfQuat(quat.w, quat.x, quat.y, quat.z);
+      math::Vector3d tfTrans(p.x, p.y, p.z);
 
-      ignition::math::Matrix4d tf(tfQuat);
+      math::Matrix4d tf(tfQuat);
       tf.SetTranslation(tfTrans);
 
       mapTfs[bone->getName()] = tf;
@@ -102,9 +102,9 @@ void OgreMesh::SetSkeletonLocalTransforms(
     if (skel->hasBone(pair.first))
     {
       Ogre::Bone *bone = skel->getBone(pair.first);
-      ignition::math::Matrix4d tf = pair.second;
-      ignition::math::Vector3d tf_trans = tf.Translation();
-      ignition::math::Quaterniond tf_quat = tf.Rotation();
+      math::Matrix4d tf = pair.second;
+      math::Vector3d tf_trans = tf.Translation();
+      math::Quaterniond tf_quat = tf.Rotation();
 
       Ogre::Vector3 p(tf_trans.X(), tf_trans.Y(), tf_trans.Z());
 

@@ -51,9 +51,9 @@ void Ogre2GaussianNoisePass::PreRender()
   // Sample three values within the range [0,1.0] and set them for use in
   // the fragment shader, which will interpret them as offsets from (0,0)
   // to use when computing pseudo-random values.
-  Ogre::Vector3 offsets(ignition::math::Rand::DblUniform(0.0, 1.0),
-                        ignition::math::Rand::DblUniform(0.0, 1.0),
-                        ignition::math::Rand::DblUniform(0.0, 1.0));
+  Ogre::Vector3 offsets(math::Rand::DblUniform(0.0, 1.0),
+                        math::Rand::DblUniform(0.0, 1.0),
+                        math::Rand::DblUniform(0.0, 1.0));
   // These calls are setting parameters that are declared in two places:
   // 1. media/materials/scripts/gaussian_noise.material, in
   //    fragment_program GaussianNoiseFS

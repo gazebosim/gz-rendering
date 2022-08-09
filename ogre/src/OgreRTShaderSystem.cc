@@ -708,7 +708,7 @@ void OgreRTShaderSystem::Update()
 bool OgreRTShaderSystem::SetShadowTextureSize(const unsigned int _size)
 {
   // check if texture size is a power of 2
-  if (!ignition::math::isPowerOfTwo(_size))
+  if (!math::isPowerOfTwo(_size))
   {
     ignerr << "Shadow texture size must be a power of 2" << std::endl;
     return false;

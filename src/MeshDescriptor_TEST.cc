@@ -84,7 +84,7 @@ void MeshDescriptorTest::Descriptor(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -95,7 +95,7 @@ TEST_P(MeshDescriptorTest, Descriptor)
 
 INSTANTIATE_TEST_CASE_P(MeshDescriptor, MeshDescriptorTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -130,7 +130,7 @@ void RenderEngineTest::RenderEngine(const std::string &_renderEngine)
   EXPECT_EQ(engine->SceneCount(), 0u);
 
   // Clean up
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -141,7 +141,7 @@ TEST_P(RenderEngineTest, RenderEngine)
 
 INSTANTIATE_TEST_CASE_P(RenderEngine, RenderEngineTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -35,7 +35,7 @@ class CameraTest: public testing::Test,
   // Documentation inherited
   public: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    common::Console::SetVerbosity(4);
   }
 
   // Test and verify camera tracking
@@ -172,7 +172,7 @@ void CameraTest::Track(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -276,7 +276,7 @@ void CameraTest::VisualAt(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -393,7 +393,7 @@ void CameraTest::Follow(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -416,7 +416,7 @@ TEST_P(CameraTest, VisualAt)
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -171,7 +171,7 @@ void RenderPassTest::GaussianNoise(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -183,7 +183,7 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
   double aspectRatio_ = imgWidth/imgHeight;
 
   double unitBoxSize = 1.0;
-  ignition::math::Vector3d boxPosition(1.8, 0.0, 0.0);
+  math::Vector3d boxPosition(1.8, 0.0, 0.0);
 
   // Optix is not supported
   if (_renderEngine != "ogre2")
@@ -194,7 +194,7 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
   }
 
   // Setup ign-rendering with an empty scene
-  auto *engine = ignition::rendering::engine(_renderEngine);
+  auto *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
     igndbg << "Engine '" << _renderEngine
@@ -202,23 +202,23 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
     return;
   }
 
-  ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ScenePtr scene = engine->CreateScene("scene");
 
   // red background
   scene->SetBackgroundColor(1.0, 0.0, 0.0);
 
   // Create an scene with a box in it
   scene->SetAmbientLight(1.0, 1.0, 1.0);
-  ignition::rendering::VisualPtr root = scene->RootVisual();
+  VisualPtr root = scene->RootVisual();
 
   // create blue material
-  ignition::rendering::MaterialPtr blue = scene->CreateMaterial();
+  MaterialPtr blue = scene->CreateMaterial();
   blue->SetAmbient(0.0, 0.0, 1.0);
   blue->SetDiffuse(0.0, 0.0, 1.0);
   blue->SetSpecular(0.0, 0.0, 1.0);
 
   // create box visual
-  ignition::rendering::VisualPtr box = scene->CreateVisual();
+  VisualPtr box = scene->CreateVisual();
   box->AddGeometry(scene->CreateBox());
   box->SetOrigin(0.0, 0.0, 0.0);
   box->SetLocalPosition(boxPosition);
@@ -234,8 +234,8 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
     auto depthCamera = scene->CreateDepthCamera("DepthCamera");
     ASSERT_NE(depthCamera, nullptr);
 
-    ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0),
-        ignition::math::Quaterniond::Identity);
+    math::Pose3d testPose(math::Vector3d(0, 0, 0),
+        math::Quaterniond::Identity);
     depthCamera->SetLocalPose(testPose);
 
     // Configure depth camera
@@ -282,7 +282,7 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
     unsigned int pointCloudChannelCount = 4u;
     float *pointCloudData = new float[
         imgHeight * imgWidth * pointCloudChannelCount];
-    ignition::common::ConnectionPtr connection =
+    common::ConnectionPtr connection =
       depthCamera->ConnectNewRgbPointCloud(
           std::bind(&::OnNewRgbPointCloud, pointCloudData,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
@@ -308,7 +308,7 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
         * (depthCamera->ImageWidth() * pointCloudChannelCount)
         - pointCloudChannelCount;
 
-    float maxVal = ignition::math::INF_D;
+    float maxVal = math::INF_D;
 
     // values should be well within 4-sigma
     float noiseTol = 4.0*noiseStdDev;
@@ -396,7 +396,7 @@ void RenderPassTest::DepthGaussianNoise(const std::string &_renderEngine)
   }
 
   engine->DestroyScene(scene);
-  ignition::rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -413,7 +413,7 @@ TEST_P(RenderPassTest, DepthGaussianNoise)
 
 INSTANTIATE_TEST_CASE_P(GaussianNoise, RenderPassTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -1058,7 +1058,7 @@ void Ogre2GpuRays::SetRangeCount(
 }
 
 //////////////////////////////////////////////////
-ignition::common::ConnectionPtr Ogre2GpuRays::ConnectNewGpuRaysFrame(
+common::ConnectionPtr Ogre2GpuRays::ConnectNewGpuRaysFrame(
     std::function<void(const float *_frame, unsigned int _width,
     unsigned int _height, unsigned int _channels,
     const std::string &/*_format*/)> _subscriber)

@@ -710,7 +710,7 @@ void OgreGpuRays::CreateOrthoCam()
   }
 
   Ogre::SceneNode *rootSceneNode = std::dynamic_pointer_cast<
-      ignition::rendering::OgreNode>(this->scene->RootVisual())->Node();
+      OgreNode>(this->scene->RootVisual())->Node();
   this->dataPtr->pitchNodeOrtho = rootSceneNode->createChildSceneNode();
   this->dataPtr->pitchNodeOrtho->attachObject(this->dataPtr->orthoCam);
 
@@ -893,7 +893,7 @@ void OgreGpuRays::CreateCanvas()
       this->Name() + "second_pass_canvas");
 
   Ogre::SceneNode *visualSceneNode =  std::dynamic_pointer_cast<
-    ignition::rendering::OgreNode>(this->dataPtr->visual)->Node();
+    OgreNode>(this->dataPtr->visual)->Node();
 
   Ogre::Node *visualParent = visualSceneNode->getParent();
   if (visualParent != nullptr)
@@ -902,7 +902,7 @@ void OgreGpuRays::CreateCanvas()
   }
   this->dataPtr->pitchNodeOrtho->addChild(visualSceneNode);
 
-  // Convert mesh from common::Mesh to rendering::mesh and add it to
+  // Convert mesh from common::Mesh to mesh and add it to
   // the canvas visual
   MeshPtr renderingMesh = this->scene->CreateMesh(
       this->dataPtr->undistMesh);
@@ -913,7 +913,7 @@ void OgreGpuRays::CreateCanvas()
 
   MaterialPtr canvasMaterial =
     this->scene->CreateMaterial(this->Name() + "_green");
-  canvasMaterial->SetAmbient(ignition::math::Color(0, 1, 0, 1));
+  canvasMaterial->SetAmbient(math::Color(0, 1, 0, 1));
   this->dataPtr->visual->SetMaterial(canvasMaterial);
 
   this->dataPtr->visual->SetVisible(true);
@@ -975,7 +975,7 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
 }
 
 //////////////////////////////////////////////////
-ignition::common::ConnectionPtr OgreGpuRays::ConnectNewGpuRaysFrame(
+common::ConnectionPtr OgreGpuRays::ConnectNewGpuRaysFrame(
     std::function<void(const float *_frame, unsigned int _width,
     unsigned int _height, unsigned int _channels,
     const std::string &/*_format*/)> _subscriber)

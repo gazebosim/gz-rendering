@@ -130,7 +130,7 @@ void TransformControllerTest::TransformControl(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -193,7 +193,7 @@ void TransformControllerTest::WorldSpace(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -262,7 +262,7 @@ void TransformControllerTest::LocalSpace(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -341,7 +341,7 @@ void TransformControllerTest::Control2d(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 /////////////////////////////////////////////////
 TEST_P(TransformControllerTest, TransformControl)
@@ -369,7 +369,7 @@ TEST_P(TransformControllerTest, Control2d)
 
 INSTANTIATE_TEST_CASE_P(TransformController, TransformControllerTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

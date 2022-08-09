@@ -36,7 +36,7 @@ class UtilTest : public testing::Test,
   // Documentation inherited
   public: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    common::Console::SetVerbosity(4);
   }
 
   public: void ClickToScene(const std::string &_renderEngine);
@@ -66,7 +66,7 @@ void UtilTest::ClickToScene(const std::string &_renderEngine)
 
   const int halfWidth  = static_cast<int>(width / 2);
   const int halfHeight = static_cast<int>(height / 2);
-  const ignition::math::Vector2i centerClick(halfWidth, halfHeight);
+  const math::Vector2i centerClick(halfWidth, halfHeight);
 
   RayQueryPtr rayQuery = scene->CreateRayQuery();
   EXPECT_TRUE(rayQuery != nullptr);
@@ -158,7 +158,7 @@ TEST_P(UtilTest, ClickToScene)
 
 INSTANTIATE_TEST_CASE_P(ClickToScene, UtilTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

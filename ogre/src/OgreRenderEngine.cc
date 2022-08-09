@@ -324,7 +324,7 @@ void OgreRenderEngine::CreateLogger()
 {
   // create log file path
   std::string logPath;
-  ignition::common::env(IGN_HOMEDIR, logPath);
+  common::env(IGN_HOMEDIR, logPath);
   logPath = common::joinPaths(logPath, ".ignition", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre.log");
@@ -812,5 +812,5 @@ Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
 #endif
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(ignition::rendering::OgreRenderEnginePlugin,
-                    ignition::rendering::RenderEnginePlugin)
+IGNITION_ADD_PLUGIN(OgreRenderEnginePlugin,
+                    rendering::RenderEnginePlugin)

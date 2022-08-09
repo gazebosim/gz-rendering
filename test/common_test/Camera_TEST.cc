@@ -298,3 +298,52 @@ TEST_F(CameraTest, VisibilityMask)
   // Clean up
   engine->DestroyScene(scene);
 }
+
+TEST_F(CameraTest, IntrinsicMatrix)
+{
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  CameraPtr camera = scene->CreateCamera();
+  EXPECT_TRUE(camera != nullptr);
+
+  unsigned int height = 320;
+  unsigned int width = 240;
+  double hfov = 1.047;
+
+  camera->SetImageHeight(height);
+  camera->SetImageWidth(width);
+  camera->SetHFOV(hfov);
+
+  double error = 1e-1;
+  EXPECT_DOUBLE_EQ(camera->ImageHeight(), height);
+  EXPECT_DOUBLE_EQ(camera->ImageWidth(), width);
+  EXPECT_NEAR(camera->HFOV().Radian(), hfov, error);
+
+  // Verify Intrinsics
+  auto cameraIntrinsics = camera->CameraIntrinsicMatrix();
+  EXPECT_NEAR(cameraIntrinsics(0, 0), 277.1913, error);
+  EXPECT_NEAR(cameraIntrinsics(1, 1), 277.1913, error);
+  EXPECT_DOUBLE_EQ(cameraIntrinsics(0, 2), 160);
+  EXPECT_DOUBLE_EQ(cameraIntrinsics(1, 2), 120);
+
+  // Verify that changing camera size changes intrinsics
+  height = 1000;
+  width = 1000;
+  camera->SetImageHeight(height);
+  camera->SetImageWidth(width);
+
+  EXPECT_DOUBLE_EQ(camera->ImageHeight(), height);
+  EXPECT_DOUBLE_EQ(camera->ImageWidth(), width);
+  EXPECT_NEAR(camera->HFOV().Radian(), hfov, error);
+
+  // Verify if intrinsics have changed
+  cameraIntrinsics = camera->CameraIntrinsicMatrix();
+  EXPECT_NEAR(cameraIntrinsics(0, 0), 866.223, error);
+  EXPECT_NEAR(cameraIntrinsics(1, 1), 866.223, error);
+  EXPECT_DOUBLE_EQ(cameraIntrinsics(0, 2), 500);
+  EXPECT_DOUBLE_EQ(cameraIntrinsics(1, 2), 500);
+
+  // Clean up
+  engine->DestroyScene(scene);
+}

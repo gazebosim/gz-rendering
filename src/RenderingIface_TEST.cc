@@ -92,7 +92,7 @@ TEST(RenderingIfaceTest, GetEngine)
     ASSERT_EQ(1u, loadedEngines().size());
     EXPECT_EQ(eng->Name(), loadedEngines()[0]);
 
-    rendering::unloadEngine(eng->Name());
+    unloadEngine(eng->Name());
     EXPECT_FALSE(isEngineLoaded(eng->Name()));
   }
 

@@ -440,7 +440,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
 {
   ignmsg << "Loading plugin [" << _filename << "]" << std::endl;
 
-  ignition::common::SystemPaths systemPaths;
+  common::SystemPaths systemPaths;
 
   // Add default install folder.
   systemPaths.AddPluginPaths(std::string(IGN_RENDERING_PLUGIN_PATH));
@@ -472,7 +472,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   }
 
   auto engineNames = pluginLoader.PluginsImplementing<
-      ignition::rendering::RenderEnginePlugin>();
+      rendering::RenderEnginePlugin>();
 
   if (engineNames.empty())
   {
@@ -512,7 +512,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   }
 
   auto renderPlugin =
-      plugin->QueryInterface<ignition::rendering::RenderEnginePlugin>();
+      plugin->QueryInterface<rendering::RenderEnginePlugin>();
 
   if (!renderPlugin)
   {

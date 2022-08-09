@@ -108,7 +108,7 @@ void GizmoVisualTest::GizmoVisual(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -193,7 +193,7 @@ void GizmoVisualTest::Material(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -210,7 +210,7 @@ TEST_P(GizmoVisualTest, Material)
 
 INSTANTIATE_TEST_CASE_P(Visual, GizmoVisualTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -175,14 +175,14 @@ MaterialPtr OgreMarker::Material() const
 
 //////////////////////////////////////////////////
 void OgreMarker::SetPoint(unsigned int _index,
-    const ignition::math::Vector3d &_value)
+    const math::Vector3d &_value)
 {
   this->dataPtr->dynamicRenderable->SetPoint(_index, _value);
 }
 
 //////////////////////////////////////////////////
-void OgreMarker::AddPoint(const ignition::math::Vector3d &_pt,
-    const ignition::math::Color &_color)
+void OgreMarker::AddPoint(const math::Vector3d &_pt,
+    const math::Color &_color)
 {
   this->dataPtr->dynamicRenderable->AddPoint(_pt, _color);
 }

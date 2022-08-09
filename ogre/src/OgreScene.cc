@@ -243,7 +243,7 @@ void OgreScene::SetGradientBackgroundColor(
     return;
   }
 
-  // Convert the ignition::math::Color to Ogre::ColourValue.
+  // Convert the math::Color to Ogre::ColourValue.
   std::array<Ogre::ColourValue, 4> ogreColors;
   for (auto i = 0u; i < 4; ++i)
     ogreColors[i].setAsRGBA(_colors[i].AsRGBA());

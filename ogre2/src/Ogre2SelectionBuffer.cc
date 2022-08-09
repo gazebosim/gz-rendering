@@ -243,14 +243,14 @@ Ogre::Item *Ogre2SelectionBuffer::OnSelectionClick(const int _x, const int _y)
   this->Update();
 
   size_t posInStream = 0;
-  ignition::math::Color::BGRA color(0);
+  math::Color::BGRA color(0);
   if (!this->dataPtr->buffer)
   {
     ignerr << "Selection buffer is null." << std::endl;
     return nullptr;
   }
   memcpy(static_cast<void *>(&color), this->dataPtr->buffer + posInStream, 4);
-  ignition::math::Color cv;
+  math::Color cv;
   cv.SetFromARGB(color);
   cv.A(1.0);
   const std::string &entName =

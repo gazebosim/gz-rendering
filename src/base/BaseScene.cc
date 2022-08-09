@@ -49,7 +49,7 @@ BaseScene::BaseScene(unsigned int _id, const std::string &_name) :
   name(_name),
   loaded(false),
   initialized(false),
-  nextObjectId(ignition::math::MAX_UI16),
+  nextObjectId(math::MAX_UI16),
   nodes(nullptr)
 {
 }
@@ -129,7 +129,7 @@ void BaseScene::SetSimTime(const common::Time &_time)
 
 //////////////////////////////////////////////////
 VisualPtr BaseScene::VisualAt(const CameraPtr &_camera,
-                              const ignition::math::Vector2i &_mousePos)
+                              const math::Vector2i &_mousePos)
 {
   VisualPtr visual;
   RayQueryPtr rayQuery = this->CreateRayQuery();
@@ -1065,7 +1065,7 @@ void BaseScene::Clear()
 {
   this->nodes->DestroyAll();
   this->DestroyMaterials();
-  this->nextObjectId = ignition::math::MAX_UI16;
+  this->nextObjectId = math::MAX_UI16;
 }
 
 //////////////////////////////////////////////////

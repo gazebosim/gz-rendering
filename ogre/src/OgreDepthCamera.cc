@@ -528,7 +528,7 @@ const float *OgreDepthCamera::DepthData() const
 }
 
 //////////////////////////////////////////////////
-ignition::common::ConnectionPtr OgreDepthCamera::ConnectNewDepthFrame(
+common::ConnectionPtr OgreDepthCamera::ConnectNewDepthFrame(
     std::function<void(const float *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {
@@ -536,7 +536,7 @@ ignition::common::ConnectionPtr OgreDepthCamera::ConnectNewDepthFrame(
 }
 
 //////////////////////////////////////////////////
-ignition::common::ConnectionPtr OgreDepthCamera::ConnectNewRgbPointCloud(
+common::ConnectionPtr OgreDepthCamera::ConnectNewRgbPointCloud(
     std::function<void(const float *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {

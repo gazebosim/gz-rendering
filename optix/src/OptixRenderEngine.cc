@@ -134,5 +134,5 @@ bool OptixRenderEngine::InitImpl()
 }
 
 // Register this plugin
-IGNITION_ADD_PLUGIN(ignition::rendering::OptixRenderEnginePlugin,
-                    ignition::rendering::RenderEnginePlugin)
+IGNITION_ADD_PLUGIN(OptixRenderEnginePlugin,
+                    rendering::RenderEnginePlugin)

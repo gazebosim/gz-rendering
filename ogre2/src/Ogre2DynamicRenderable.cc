@@ -404,8 +404,8 @@ MarkerType Ogre2DynamicRenderable::OperationType() const
 }
 
 /////////////////////////////////////////////////
-void Ogre2DynamicRenderable::AddPoint(const ignition::math::Vector3d &_pt,
-                                      const ignition::math::Color &_color)
+void Ogre2DynamicRenderable::AddPoint(const math::Vector3d &_pt,
+                                      const math::Color &_color)
 {
   this->dataPtr->vertices.push_back(_pt);
 
@@ -420,14 +420,14 @@ void Ogre2DynamicRenderable::AddPoint(const ignition::math::Vector3d &_pt,
 
 /////////////////////////////////////////////////
 void Ogre2DynamicRenderable::AddPoint(double _x, double _y, double _z,
-                                      const ignition::math::Color &_color)
+                                      const math::Color &_color)
 {
-  this->AddPoint(ignition::math::Vector3d(_x, _y, _z), _color);
+  this->AddPoint(math::Vector3d(_x, _y, _z), _color);
 }
 
 /////////////////////////////////////////////////
 void Ogre2DynamicRenderable::SetPoint(unsigned int _index,
-                                      const ignition::math::Vector3d &_value)
+                                      const math::Vector3d &_value)
 {
   if (_index >= this->dataPtr->vertices.size())
   {
@@ -443,7 +443,7 @@ void Ogre2DynamicRenderable::SetPoint(unsigned int _index,
 
 /////////////////////////////////////////////////
 void Ogre2DynamicRenderable::SetColor(unsigned int _index,
-                                      const ignition::math::Color &_color)
+                                      const math::Color &_color)
 {
   if (_index >= this->dataPtr->colors.size())
   {
@@ -463,7 +463,7 @@ void Ogre2DynamicRenderable::SetColor(unsigned int _index,
 }
 
 /////////////////////////////////////////////////
-ignition::math::Vector3d Ogre2DynamicRenderable::Point(
+math::Vector3d Ogre2DynamicRenderable::Point(
     const unsigned int _index) const
 {
   if (_index >= this->dataPtr->vertices.size())
@@ -471,9 +471,9 @@ ignition::math::Vector3d Ogre2DynamicRenderable::Point(
     ignerr << "Point index[" << _index << "] is out of bounds[0-"
            << this->dataPtr->vertices.size()-1 << "]\n";
 
-    return ignition::math::Vector3d(ignition::math::INF_D,
-                                    ignition::math::INF_D,
-                                    ignition::math::INF_D);
+    return math::Vector3d(math::INF_D,
+                                    math::INF_D,
+                                    math::INF_D);
   }
 
   return this->dataPtr->vertices[_index];

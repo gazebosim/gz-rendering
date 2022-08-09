@@ -231,7 +231,7 @@ void OgreRayQuery::MeshInformation(const Ogre::Mesh *_mesh,
            ++j, vertex += vbuf->getVertexSize())
      {
         posElem->baseVertexPointerToElement(vertex, &pReal);
-        ignition::math::Vector3d pt(pReal[0], pReal[1], pReal[2]);
+        math::Vector3d pt(pReal[0], pReal[1], pReal[2]);
         _vertices[current_offset + j] =
             OgreConversions::Convert((_orient * (pt * _scale)) + _position);
       }

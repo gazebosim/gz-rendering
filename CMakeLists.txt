@@ -203,3 +203,19 @@ gz_create_docs(
 )
 
 file(COPY ${CMAKE_SOURCE_DIR}/tutorials/img/ DESTINATION ${CMAKE_BINARY_DIR}/doxygen/html/img/)
+
+#============================================================================
+# Build examples
+#============================================================================
+if (BUILD_TESTING)
+  gz_build_examples(
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/examples
+    BINARY_DIR ${PROJECT_BINARY_DIR}/examples
+    DEPENDENCIES
+      gz-cmake${GZ_CMAKE_VER}
+      gz-common${GZ_COMMON_VER}
+      gz-math${GZ_MATH_VER}
+      gz-plugin${GZ_PLUGIN_VER}
+      gz-utils${GZ_UTILS_VER}
+  )
+endif()

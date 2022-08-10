@@ -35,5 +35,5 @@ target_link_libraries(actor_animation
 
 add_custom_command(TARGET actor_animation POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
-  ${CMAKE_SOURCE_DIR}/media
+  ${CMAKE_CURRENT_SOURCE_DIR}/media
   $<TARGET_FILE_DIR:actor_animation>/media)

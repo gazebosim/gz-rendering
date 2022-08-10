@@ -67,5 +67,5 @@ endif()
 
 add_custom_command(TARGET waves POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
-  ${CMAKE_SOURCE_DIR}/media
+  ${CMAKE_CURRENT_SOURCE_DIR}/media
   $<TARGET_FILE_DIR:waves>/media)

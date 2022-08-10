@@ -35,5 +35,5 @@ target_link_libraries(segmentation_camera
 
 add_custom_command(TARGET segmentation_camera POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
-  ${CMAKE_SOURCE_DIR}/media
+  ${CMAKE_CURRENT_SOURCE_DIR}/media
   $<TARGET_FILE_DIR:segmentation_camera>/media)

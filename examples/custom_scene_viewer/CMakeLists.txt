@@ -43,5 +43,5 @@ target_link_libraries(custom_scene_viewer
 
 add_custom_command(TARGET custom_scene_viewer POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
-  ${CMAKE_SOURCE_DIR}/media
+  ${CMAKE_CURRENT_SOURCE_DIR}/media
   $<TARGET_FILE_DIR:custom_scene_viewer>/media)

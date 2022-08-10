@@ -35,5 +35,5 @@ target_link_libraries(particles_demo
 
 add_custom_command(TARGET particles_demo POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
-  ${CMAKE_SOURCE_DIR}/media
+  ${CMAKE_CURRENT_SOURCE_DIR}/media
   $<TARGET_FILE_DIR:particles_demo>/media)

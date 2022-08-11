@@ -39,9 +39,6 @@ class gz::rendering::OgreDepthCameraPrivate
   /// \brief Point cloud xyz data buffer
   public: float *pcdBuffer = nullptr;
 
-  /// \brief Point cloud view port
-  public: Ogre::Viewport *pcdViewport = nullptr;
-
   /// \brief Point cloud material
   public: MaterialPtr pcdMaterial = nullptr;
 
@@ -108,6 +105,16 @@ void OgreDepthCamera::Destroy()
   {
     delete [] this->dataPtr->colorBuffer;
     this->dataPtr->colorBuffer = nullptr;
+  }
+
+  if (this->dataPtr->pcdTexture)
+  {
+    this->dataPtr->pcdTexture->RenderTarget()->removeAllViewports();
+  }
+
+  if (this->dataPtr->colorTexture)
+  {
+    this->dataPtr->colorTexture->RenderTarget()->removeAllViewports();
   }
 
   if (!this->ogreCamera || !this->scene->IsInitialized())

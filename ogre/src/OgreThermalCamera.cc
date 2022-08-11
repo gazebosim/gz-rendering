@@ -104,9 +104,6 @@ class gz::rendering::OgreThermalCameraPrivate
   /// \brief Dummy texture
   public: OgreRenderTexturePtr thermalTexture;
 
-  /// \brief Point cloud texture
-  public: OgreRenderTexturePtr colorTexture;
-
   /// \brief Lens distortion compositor
   public: Ogre::CompositorInstance *thermalInstance = nullptr;
 

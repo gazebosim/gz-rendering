@@ -210,7 +210,7 @@ TEST_F(ReloadEngineTest, ThermalCamera)
 /////////////////////////////////////////////////
 TEST_F(ReloadEngineTest, WideAngleCamera)
 {
-  CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre");
 
   this->Run([](auto engine){
     auto scene = engine->CreateScene("scene");

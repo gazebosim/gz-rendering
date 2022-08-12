@@ -109,12 +109,14 @@ void OgreDepthCamera::Destroy()
 
   if (this->dataPtr->pcdTexture)
   {
-    this->dataPtr->pcdTexture->RenderTarget()->removeAllViewports();
+    this->dataPtr->pcdTexture->Destroy();
+    this->dataPtr->pcdTexture.reset();
   }
 
   if (this->dataPtr->colorTexture)
   {
-    this->dataPtr->colorTexture->RenderTarget()->removeAllViewports();
+    this->dataPtr->colorTexture->Destroy();
+    this->dataPtr->colorTexture.reset();
   }
 
   if (!this->ogreCamera || !this->scene->IsInitialized())

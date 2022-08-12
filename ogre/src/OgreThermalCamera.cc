@@ -291,6 +291,12 @@ void OgreThermalCamera::Destroy()
     this->dataPtr->thermalImage = nullptr;
   }
 
+  if (this->dataPtr->thermalTexture)
+  {
+    this->dataPtr->thermalTexture->Destroy();
+    this->dataPtr->thermalTexture = nullptr;
+  }
+
   if (!this->ogreCamera || !this->scene->IsInitialized())
     return;
 

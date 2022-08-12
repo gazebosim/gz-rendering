@@ -44,6 +44,12 @@ void OgreCamera::Destroy()
   if (!this->ogreCamera)
     return;
 
+  if (this->renderTexture)
+  {
+    this->renderTexture->Destroy();
+    this->renderTexture = nullptr;
+  }
+
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)

@@ -307,8 +307,8 @@ TEST_F(CameraTest, IntrinsicMatrix)
   CameraPtr camera = scene->CreateCamera();
   EXPECT_TRUE(camera != nullptr);
 
-  unsigned int height = 320;
-  unsigned int width = 240;
+  unsigned int width = 320;
+  unsigned int height = 240;
   double hfov = 1.047;
 
   camera->SetImageHeight(height);
@@ -316,25 +316,33 @@ TEST_F(CameraTest, IntrinsicMatrix)
   camera->SetHFOV(hfov);
 
   double error = 1e-1;
-  EXPECT_DOUBLE_EQ(camera->ImageHeight(), height);
-  EXPECT_DOUBLE_EQ(camera->ImageWidth(), width);
+  EXPECT_EQ(camera->ImageHeight(), height);
+  EXPECT_EQ(camera->ImageWidth(), width);
   EXPECT_NEAR(camera->HFOV().Radian(), hfov, error);
 
-  // Verify Intrinsics
+  // Verify focal length and optical center from intrinsics
   auto cameraIntrinsics = camera->CameraIntrinsicMatrix();
   EXPECT_NEAR(cameraIntrinsics(0, 0), 277.1913, error);
   EXPECT_NEAR(cameraIntrinsics(1, 1), 277.1913, error);
   EXPECT_DOUBLE_EQ(cameraIntrinsics(0, 2), 160);
   EXPECT_DOUBLE_EQ(cameraIntrinsics(1, 2), 120);
+  // Verify rest of the intrinsics
+  EXPECT_EQ(cameraIntrinsics(0, 1), 0);
+  EXPECT_EQ(cameraIntrinsics(1, 0), 0);
+  EXPECT_EQ(cameraIntrinsics(0, 1), 0);
+  EXPECT_EQ(cameraIntrinsics(2, 0), 0);
+  EXPECT_EQ(cameraIntrinsics(2, 1), 0);
+  EXPECT_EQ(cameraIntrinsics(2, 2), 1);
 
   // Verify that changing camera size changes intrinsics
   height = 1000;
   width = 1000;
   camera->SetImageHeight(height);
   camera->SetImageWidth(width);
+  camera->SetHFOV(hfov);
 
-  EXPECT_DOUBLE_EQ(camera->ImageHeight(), height);
-  EXPECT_DOUBLE_EQ(camera->ImageWidth(), width);
+  EXPECT_EQ(camera->ImageHeight(), height);
+  EXPECT_EQ(camera->ImageWidth(), width);
   EXPECT_NEAR(camera->HFOV().Radian(), hfov, error);
 
   // Verify if intrinsics have changed

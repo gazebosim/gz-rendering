@@ -38,10 +38,23 @@
 #include "Ogre2GzHlmsTerraPrivate.hh"
 #include "Ogre2GzHlmsUnlitPrivate.hh"
 
+#ifdef OGRE_BUILD_RENDERSYSTEM_VULKAN
+// Deal with old vulkan headers causing build errors
+#  ifndef VK_NV_device_generated_commands
+#    define VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV 0x00020000
+#  endif
+#  ifndef VK_NV_ray_tracing
+#    define VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR 0x00200000
+#  endif
+// Needed headers to receive an external Vulkan device from Qt
+// and inject it into OgreNext
+#  include "OGRE/RenderSystems/Vulkan/OgreVulkanDevice.h"
+#  include "gz/rendering/RenderEngineVulkanExternalDeviceStructs.hh"
+#endif
+#include "Ogre2GzHlmsSphericalClipMinDistance.hh"
 #include "Terra/Hlms/OgreHlmsTerra.h"
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 #include "Terra/TerraWorkspaceListener.h"
-#include "Ogre2GzHlmsSphericalClipMinDistance.hh"
 
 #if HAVE_GLX
 # include <X11/Xlib.h>
@@ -82,6 +95,24 @@ class GZ_RENDERING_OGRE2_HIDDEN
 
   /// \brief Custom Terra modifications
   public: Ogre::Ogre2GzHlmsTerra *gzHlmsTerra{nullptr};
+
+#ifdef OGRE_BUILD_RENDERSYSTEM_VULKAN
+  /// \brief Needed to receive an external Vulkan device from Qt
+  /// and inject it into OgreNext.
+  ///
+  /// TODO(anyone): This struct doesn't need to live forever.
+  /// It only needs to live until Root::loadPlugin( "RenderSystem_Vulkan" )
+  /// is called.
+  public: Ogre::VulkanExternalInstance vkExternalInstance{};
+
+  /// \brief Needed to receive an external Vulkan device from Qt
+  /// and inject it into OgreNext.
+  ///
+  /// TODO(anyone): This struct doesn't need to live forever.
+  /// It only needs to live until the first Root::createRenderWindow
+  /// is called.
+  public: Ogre::VulkanExternalDevice vkExternalDevice{};
+#endif
 };
 
 using namespace gz;
@@ -336,13 +367,63 @@ bool Ogre2RenderEngine::LoadImpl(
         this->dataPtr->graphicsAPI = GraphicsAPI::METAL;
   }
 
+#ifdef OGRE_BUILD_RENDERSYSTEM_VULKAN
+  this->dataPtr->vkExternalInstance.instance = nullptr;
+  this->dataPtr->vkExternalDevice.physicalDevice = nullptr;
+  this->dataPtr->vkExternalDevice.device = nullptr;
+  this->dataPtr->vkExternalDevice.graphicsQueue = nullptr;
+  this->dataPtr->vkExternalDevice.presentQueue = nullptr;
+#endif
+
   it = _params.find("vulkan");
   if (it != _params.end())
   {
     bool useVulkan;
     std::istringstream(it->second) >> useVulkan;
     if(useVulkan)
-        this->dataPtr->graphicsAPI = GraphicsAPI::VULKAN;
+    {
+      this->dataPtr->graphicsAPI = GraphicsAPI::VULKAN;
+
+#ifdef OGRE_BUILD_RENDERSYSTEM_VULKAN
+      it = _params.find("external_instance");
+      if (it != _params.end())
+      {
+        auto *gzExternalInstance =
+          reinterpret_cast<const GzVulkanExternalInstance *>(
+            Ogre::StringConverter::parseUnsignedLong(it->second));
+
+        this->dataPtr->vkExternalInstance.instance =
+          gzExternalInstance->instance;
+        // This works as long as std::vector memory is actually contiguous
+        this->dataPtr->vkExternalInstance.instanceLayers.appendPOD(
+          &*gzExternalInstance->instanceLayers.begin(),
+          &*gzExternalInstance->instanceLayers.end());
+        this->dataPtr->vkExternalInstance.instanceExtensions.appendPOD(
+          &*gzExternalInstance->instanceExtensions.begin(),
+          &*gzExternalInstance->instanceExtensions.end());
+      }
+
+      it = _params.find("external_device");
+      if (it != _params.end())
+      {
+        auto *gzExternalDevice =
+          reinterpret_cast<const GzVulkanExternalDevice *>(
+            Ogre::StringConverter::parseUnsignedLong(it->second));
+
+        this->dataPtr->vkExternalDevice.physicalDevice =
+          gzExternalDevice->physicalDevice;
+        this->dataPtr->vkExternalDevice.device = gzExternalDevice->device;
+        this->dataPtr->vkExternalDevice.graphicsQueue =
+          gzExternalDevice->graphicsQueue;
+        this->dataPtr->vkExternalDevice.presentQueue =
+          gzExternalDevice->presentQueue;
+        // This works as long as std::vector memory is actually contiguous
+        this->dataPtr->vkExternalDevice.deviceExtensions.appendPOD(
+          &*gzExternalDevice->deviceExtensions.begin(),
+          &*gzExternalDevice->deviceExtensions.end());
+      }
+#endif
+    }
   }
 
   try
@@ -415,6 +496,12 @@ void Ogre2RenderEngine::CreateLogger()
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::CreateContext()
 {
+#ifdef OGRE_BUILD_RENDERSYSTEM_VULKAN
+  if (this->dataPtr->vkExternalInstance.instance)
+  {
+    return;
+  }
+#endif
 #if !defined(__APPLE__) && !defined(_WIN32)
   if (this->Headless())
   {
@@ -568,6 +655,8 @@ void Ogre2RenderEngine::LoadPlugins()
       plugins.push_back({ p, false });
     }
 
+    Ogre::NameValuePairList pluginParams;
+
     for (std::vector<PluginName>::iterator piter = plugins.begin();
          piter != plugins.end(); ++piter)
     {
@@ -591,8 +680,18 @@ void Ogre2RenderEngine::LoadPlugins()
       // load the plugin
       try
       {
+        pluginParams.clear();
+
+#ifdef OGRE_BUILD_RENDERSYSTEM_VULKAN
+        if (this->dataPtr->vkExternalInstance.instance &&
+            filename.find("RenderSystem_Vulkan") != std::string::npos)
+        {
+          pluginParams["external_instance"] = std::to_string(
+            reinterpret_cast<uintptr_t>(&this->dataPtr->vkExternalInstance));
+        }
+#endif
         // Load the plugin into OGRE
-        this->ogreRoot->loadPlugin(filename, piter->bOptional, nullptr);
+        this->ogreRoot->loadPlugin(filename, piter->bOptional, &pluginParams);
       }
       catch(Ogre::Exception &)
       {
@@ -1072,6 +1171,17 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   // Ogre 2 PBS expects gamma correction
   params["gamma"] = "Yes";
+
+#ifdef OGRE_BUILD_RENDERSYSTEM_VULKAN
+  if (this->dataPtr->vkExternalDevice.device)
+  {
+    params.insert({ "windowType", "null" });
+    params.insert({ "surface_less", "Yes" });
+    params.insert(
+      { "external_device", std::to_string(reinterpret_cast<uintptr_t>(
+                             &this->dataPtr->vkExternalDevice)) });
+  }
+#endif
 
   if (this->useCurrentGLContext)
   {

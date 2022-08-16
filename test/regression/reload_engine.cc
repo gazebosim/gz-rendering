@@ -29,10 +29,16 @@
 #include <gz/rendering/ThermalCamera.hh>
 #include <gz/rendering/WideAngleCamera.hh>
 
+#include <gz/utils/ExtraTestMacros.hh>
+
 constexpr auto kNumRetries = 3;
 
+/// \brief Test fixture for reloading engines.
+/// Since the CommonRenderingTest loads an engine by default,
+/// we are doing a custom implementation here.
 class ReloadEngineTest: public ::testing::Test
 {
+  /// \brief Set up the test fixture
   public: void SetUp() override
   {
     gz::common::Console::SetVerbosity(4);
@@ -43,23 +49,28 @@ class ReloadEngineTest: public ::testing::Test
     }
 
     this->engineToTest = envEngine;
-    this->params = GetEngineParams(envEngine, envBackend, envHeadless);
+    this->engineParams = GetEngineParams(envEngine, envBackend, envHeadless);
   }
 
+  /// \brief Load the configured engine and run a series of rendering commands
+  /// \param[in] _exec Function to execute on loaded engine
   public: void Run(std::function<void(gz::rendering::RenderEngine*)> _exec)
   {
     for (size_t ii = 0; ii < kNumRetries; ++ii)
     {
-      auto engine = gz::rendering::engine(this->engineToTest, this->params);
-      _exec(engine);
+      auto engine = gz::rendering::engine(this->engineToTest,
+                                          this->engineParams);
       ASSERT_NE(nullptr, engine);
+      _exec(engine);
       ASSERT_TRUE(gz::rendering::unloadEngine(this->engineToTest));
     }
   }
 
+  /// \brief Engine under test
   protected: std::string engineToTest;
 
-  protected: std::map<std::string, std::string> params;
+  /// \brief Parameters for spawning rendering engine
+  protected: std::map<std::string, std::string> engineParams;
 };
 
 /////////////////////////////////////////////////
@@ -102,7 +113,7 @@ TEST_F(ReloadEngineTest, BoundingBoxCamera)
 }
 
 /////////////////////////////////////////////////
-TEST_F(ReloadEngineTest, Camera)
+TEST_F(ReloadEngineTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Camera))
 {
   this->Run([](auto engine){
     auto scene = engine->CreateScene("scene");
@@ -122,7 +133,7 @@ TEST_F(ReloadEngineTest, Camera)
 }
 
 /////////////////////////////////////////////////
-TEST_F(ReloadEngineTest, DepthCamera)
+TEST_F(ReloadEngineTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCamera))
 {
   this->Run([](auto engine){
     auto scene = engine->CreateScene("scene");
@@ -142,7 +153,7 @@ TEST_F(ReloadEngineTest, DepthCamera)
 }
 
 /////////////////////////////////////////////////
-TEST_F(ReloadEngineTest, GpuRays)
+TEST_F(ReloadEngineTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(GpuRays))
 {
   this->Run([](auto engine){
     auto scene = engine->CreateScene("scene");
@@ -186,7 +197,7 @@ TEST_F(ReloadEngineTest, SegmentationCamera)
 }
 
 /////////////////////////////////////////////////
-TEST_F(ReloadEngineTest, ThermalCamera)
+TEST_F(ReloadEngineTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ThermalCamera))
 {
   CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
 
@@ -208,7 +219,7 @@ TEST_F(ReloadEngineTest, ThermalCamera)
 }
 
 /////////////////////////////////////////////////
-TEST_F(ReloadEngineTest, WideAngleCamera)
+TEST_F(ReloadEngineTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
 {
   CHECK_SUPPORTED_ENGINE("ogre");
 
@@ -228,4 +239,3 @@ TEST_F(ReloadEngineTest, WideAngleCamera)
     engine->DestroyScene(scene);
   });
 }
-

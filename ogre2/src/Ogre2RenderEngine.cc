@@ -123,7 +123,7 @@ void Ogre2RenderEngine::Destroy()
   delete this->ogreLogManager;
   this->ogreLogManager = nullptr;
 
-#if not (__APPLE__ || _WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32)
   if (this->dummyDisplay)
   {
     Display *x11Display = static_cast<Display*>(this->dummyDisplay);
@@ -328,7 +328,7 @@ void Ogre2RenderEngine::CreateLogger()
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::CreateContext()
 {
-#if not (__APPLE__ || _WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32)
   // create X11 display
   this->dummyDisplay = XOpenDisplay(0);
   Display *x11Display = static_cast<Display*>(this->dummyDisplay);

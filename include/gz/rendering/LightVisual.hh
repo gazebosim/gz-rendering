@@ -50,7 +50,7 @@ namespace gz
       public virtual Visual
     {
       /// \brief Descructor
-      public: virtual ~LightVisual() {}
+      public: virtual ~LightVisual();
 
       /// \brief set type of the light
       /// \param[in] _type type of the light

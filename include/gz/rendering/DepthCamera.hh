@@ -39,7 +39,7 @@ namespace gz
           unsigned int, unsigned int, const std::string&)> NewFrameListener;
 
       /// \brief Destructor
-      public: virtual ~DepthCamera() { }
+      public: virtual ~DepthCamera();
 
       /// \brief Create a texture which will hold the depth data
       public: virtual void CreateDepthTexture() = 0;

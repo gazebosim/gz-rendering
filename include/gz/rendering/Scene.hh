@@ -48,7 +48,7 @@ namespace gz
     class GZ_RENDERING_VISIBLE Scene
     {
       /// \brief Destructor
-      public: virtual ~Scene() { }
+      public: virtual ~Scene();
 
       /// \brief Load scene-specific resources
       public: virtual void Load() = 0;

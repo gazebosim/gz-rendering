@@ -91,9 +91,7 @@ BoundingBox::BoundingBox() :
 }
 
 /////////////////////////////////////////////////
-BoundingBox::~BoundingBox()
-{
-}
+BoundingBox::~BoundingBox() = default;
 
 //////////////////////////////////////////////////
 BoundingBox::BoundingBox(const BoundingBox &_box)

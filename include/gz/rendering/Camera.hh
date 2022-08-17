@@ -54,7 +54,7 @@ namespace gz
           unsigned int, unsigned int, const std::string&)> NewFrameListener;
 
       /// \brief Destructor
-      public: virtual ~Camera() { }
+      public: virtual ~Camera();
 
       /// \brief Get the image width in pixels
       /// \return The image width in pixels

@@ -25,9 +25,7 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-MeshDescriptor::MeshDescriptor()
-{
-}
+MeshDescriptor::MeshDescriptor() = default;
 
 //////////////////////////////////////////////////
 MeshDescriptor::MeshDescriptor(const std::string &_meshName) :

@@ -55,7 +55,7 @@ namespace gz
       public virtual Camera
     {
       /// \brief Destructor
-      public: virtual ~BoundingBoxCamera() { }
+      public: virtual ~BoundingBoxCamera();
 
       /// \brief Get the BoundingBox data
       /// \return Buffer of bounding boxes info (label, minX, minY, maxX, maxY).

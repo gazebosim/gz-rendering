@@ -22,11 +22,7 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-Marker::Marker()
-{
-}
+Marker::Marker() = default;
 
 //////////////////////////////////////////////////
-Marker::~Marker()
-{
-}
+Marker::~Marker() = default;

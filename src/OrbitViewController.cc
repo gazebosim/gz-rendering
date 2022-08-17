@@ -60,9 +60,7 @@ OrbitViewController::OrbitViewController(const CameraPtr &_camera)
 }
 
 //////////////////////////////////////////////////
-OrbitViewController::~OrbitViewController()
-{
-}
+OrbitViewController::~OrbitViewController() = default;
 
 //////////////////////////////////////////////////
 void OrbitViewController::SetCamera(const CameraPtr &_camera)

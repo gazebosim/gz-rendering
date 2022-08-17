@@ -41,9 +41,7 @@ Image::Image(unsigned int _width, unsigned int _height,
 }
 
 //////////////////////////////////////////////////
-Image::~Image()
-{
-}
+Image::~Image() = default;
 
 //////////////////////////////////////////////////
 unsigned int Image::Width() const

@@ -22,11 +22,7 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-LidarVisual::LidarVisual()
-{
-}
+LidarVisual::LidarVisual() = default;
 
 //////////////////////////////////////////////////
-LidarVisual::~LidarVisual()
-{
-}
+LidarVisual::~LidarVisual() = default;

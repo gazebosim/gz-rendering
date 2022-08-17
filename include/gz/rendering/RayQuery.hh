@@ -64,7 +64,7 @@ namespace gz
         : public virtual Object
     {
       /// \brief Destructor
-      public: virtual ~RayQuery() { }
+      public: virtual ~RayQuery();
 
       /// \brief Set ray origin
       /// \param[in] _origin Ray origin

@@ -35,7 +35,7 @@ namespace gz
     class GZ_RENDERING_VISIBLE ViewController
     {
       /// \brief Destructor
-      public: virtual ~ViewController() { }
+      public: virtual ~ViewController();
 
       /// \brief Set the camera that will be controlled by this view controller.
       /// \param[in] _camera Camera to control

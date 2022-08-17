@@ -66,7 +66,7 @@ namespace gz
       public: Text() = default;
 
       /// \brief Destructor
-      public: virtual ~Text() = default;
+      public: virtual ~Text();
 
       /// \brief Set the font.
       /// \param[in] _font Name of the font

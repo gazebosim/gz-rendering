@@ -16,7 +16,6 @@
 */
 
 #include <gz/common/Mesh.hh>
-#include <gz/common/MeshManager.hh>
 #include <gz/common/SubMesh.hh>
 
 #include <gz/math/Color.hh>
@@ -201,6 +200,12 @@ void OgreGpuRays::Destroy()
   {
     this->scene->OgreSceneManager()->destroyCamera(this->dataPtr->orthoCam);
     this->dataPtr->orthoCam = nullptr;
+  }
+
+  if (this->dataPtr->undistMesh)
+  {
+    delete this->dataPtr->undistMesh;
+    this->dataPtr->undistMesh = nullptr;
   }
 
   this->dataPtr->visual.reset();
@@ -886,8 +891,6 @@ void OgreGpuRays::CreateMesh()
   mesh->AddSubMesh(*submesh);
 
   this->dataPtr->undistMesh = mesh;
-
-  common::MeshManager::Instance()->AddMesh(this->dataPtr->undistMesh);
 }
 
 /////////////////////////////////////////////////

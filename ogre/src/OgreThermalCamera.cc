@@ -104,9 +104,6 @@ class gz::rendering::OgreThermalCameraPrivate
   /// \brief Dummy texture
   public: OgreRenderTexturePtr thermalTexture;
 
-  /// \brief Point cloud texture
-  public: OgreRenderTexturePtr colorTexture;
-
   /// \brief Lens distortion compositor
   public: Ogre::CompositorInstance *thermalInstance = nullptr;
 
@@ -292,6 +289,12 @@ void OgreThermalCamera::Destroy()
   {
     delete [] this->dataPtr->thermalImage;
     this->dataPtr->thermalImage = nullptr;
+  }
+
+  if (this->dataPtr->thermalTexture)
+  {
+    this->dataPtr->thermalTexture->Destroy();
+    this->dataPtr->thermalTexture = nullptr;
   }
 
   if (!this->ogreCamera || !this->scene->IsInitialized())

@@ -1,8 +1,11 @@
 set(TEST_TYPE "REGRESSION")
 
-set(tests
+gz_rendering_test(
+  TYPE ${TEST_TYPE}
+  SOURCE reload_engine
+  LIB_DEPS
+    gz-plugin${GZ_PLUGIN_VER}::loader
+    gz-common${GZ_COMMON_VER}::gz-common${GZ_COMMON_VER}
+    ${PROJECT_LIBRARY_TARGET_NAME}
 )
 
-link_directories(${PROJECT_BINARY_DIR}/test)
-
-gz_build_tests(TYPE REGRESSION SOURCES ${tests})

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,5 +15,33 @@
  *
  */
 
-#include <gz/rendering/ogre2/Ogre2BoundingBoxCamera.hh>
-#include <ignition/rendering/config.hh>
+#include <metal_stdlib>
+using namespace metal;
+
+struct VS_INPUT
+{
+  float4 position [[attribute(VES_POSITION)]];
+};
+
+struct PS_INPUT
+{
+  float4 gl_Position [[position]];
+};
+
+struct Params
+{
+  float4x4 worldviewproj_matrix;
+};
+
+vertex PS_INPUT main_metal
+(
+  VS_INPUT input [[stage_in]],
+  constant Params &p [[buffer(PARAMETER_SLOT)]]
+)
+{
+  PS_INPUT outVs;
+
+  outVs.gl_Position = ( p.worldviewproj_matrix * input.position ).xyzw;
+
+  return outVs;
+}

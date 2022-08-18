@@ -61,10 +61,7 @@ OgreRenderTarget::OgreRenderTarget()
 //////////////////////////////////////////////////
 OgreRenderTarget::~OgreRenderTarget()
 {
-  // TODO(anyone): clean up check null
-
-  OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
-      this->scene);
+  GZ_ASSERT(this->ogreViewport == nullptr, "Destroy() not called!");
 }
 
 //////////////////////////////////////////////////
@@ -339,6 +336,8 @@ void OgreRenderTexture::DestroyTarget()
   if (nullptr == this->ogreTexture)
     return;
 
+  this->materialApplicator.reset();
+
   OgreRTShaderSystem::Instance()->DetachViewport(this->ogreViewport,
       this->scene);
 
@@ -351,6 +350,7 @@ void OgreRenderTexture::DestroyTarget()
   auto engine = OgreRenderEngine::Instance();
   engine->OgreRoot()->getRenderSystem()->_cleanupDepthBuffers(false);
 
+  this->ogreViewport = nullptr;
   this->ogreTexture = nullptr;
 }
 

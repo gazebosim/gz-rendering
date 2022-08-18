@@ -27,6 +27,8 @@
 #include "gz/rendering/ShaderType.hh"
 #include "gz/rendering/Scene.hh"
 
+#include <gz/utils/ExtraTestMacros.hh>
+
 using namespace gz;
 using namespace rendering;
 
@@ -332,7 +334,7 @@ TEST_F(MaterialTest, MaterialProperties)
 }
 
 /////////////////////////////////////////////////
-TEST_F(MaterialTest, Copy)
+TEST_F(MaterialTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Copy))
 {
   ScenePtr scene = engine->CreateScene("copy_scene");
   ASSERT_NE(nullptr, scene);

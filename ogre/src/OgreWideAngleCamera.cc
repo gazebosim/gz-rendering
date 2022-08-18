@@ -156,6 +156,12 @@ void OgreWideAngleCamera::Destroy()
     this->dataPtr->wideAngleImage = nullptr;
   }
 
+  if (this->dataPtr->wideAngleTexture)
+  {
+    this->dataPtr->wideAngleTexture->Destroy();
+    this->dataPtr->wideAngleTexture = nullptr;
+  }
+
   for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
   {
     if (this->dataPtr->envRenderTargets[i])

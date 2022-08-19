@@ -38,7 +38,7 @@
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
@@ -72,7 +72,7 @@ class Ogre2DepthGaussianNoisePass : public Ogre2GaussianNoisePass
 
 /// \internal
 /// \brief Private data for the Ogre2DepthCamera class
-class ignition::rendering::Ogre2DepthCameraPrivate
+class gz::rendering::Ogre2DepthCameraPrivate
 {
   /// \brief The depth buffer
   public: float *depthBuffer = nullptr;
@@ -84,10 +84,10 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: float *pointCloudImage = nullptr;
 
   /// \brief maximum value used for data outside sensor range
-  public: float dataMaxVal = ignition::math::INF_D;
+  public: float dataMaxVal = gz::math::INF_D;
 
   /// \brief minimum value used for data outside sensor range
-  public: float dataMinVal = -ignition::math::INF_D;
+  public: float dataMinVal = -gz::math::INF_D;
 
   /// \brief 1st pass compositor workspace definition
   public: std::string ogreCompositorWorkspaceDef;
@@ -120,17 +120,17 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: bool renderPassDirty = false;
 
   /// \brief Event used to signal rgb point cloud data
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newRgbPointCloud;
 
   /// \brief Event used to signal depth data
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newDepthFrame;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

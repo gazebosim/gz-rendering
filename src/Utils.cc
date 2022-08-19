@@ -28,7 +28,7 @@
 #include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/Utils.hh"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
@@ -91,7 +91,7 @@ math::Vector3d screenToPlane(
   _rayQuery->SetFromCamera(
       _camera, math::Vector2d(nx, ny));
 
-  ignition::math::Planed plane(ignition::math::Vector3d(0, 0, 1), offset);
+  gz::math::Planed plane(gz::math::Vector3d(0, 0, 1), offset);
 
   math::Vector3d origin = _rayQuery->Origin();
   math::Vector3d direction = _rayQuery->Direction();

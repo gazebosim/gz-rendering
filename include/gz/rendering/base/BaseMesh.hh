@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEMESH_HH_
-#define IGNITION_RENDERING_BASE_BASEMESH_HH_
+#ifndef GZ_RENDERING_BASE_BASEMESH_HH_
+#define GZ_RENDERING_BASE_BASEMESH_HH_
 
 #include <map>
 #include <string>
@@ -23,7 +23,7 @@
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/base/BaseObject.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -154,7 +154,7 @@ namespace ignition
     std::map<std::string, math::Matrix4d>
           BaseMesh<T>::SkeletonLocalTransforms() const
     {
-      std::map<std::string, ignition::math::Matrix4d> tmpMap;
+      std::map<std::string, gz::math::Matrix4d> tmpMap;
       return tmpMap;
     }
 

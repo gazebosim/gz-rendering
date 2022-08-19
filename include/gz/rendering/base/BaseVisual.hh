@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEVISUAL_HH_
-#define IGNITION_RENDERING_BASE_BASEVISUAL_HH_
+#ifndef GZ_RENDERING_BASE_BASEVISUAL_HH_
+#define GZ_RENDERING_BASE_BASEVISUAL_HH_
 
 #include <map>
 #include <string>
@@ -25,7 +25,7 @@
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/base/BaseStorage.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -234,7 +234,7 @@ namespace ignition
       _material = (_unique && count > 0) ? _material->Clone() : _material;
 
       auto children_ =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!children_)
       {
@@ -294,7 +294,7 @@ namespace ignition
     void BaseVisual<T>::PreRenderChildren()
     {
       auto children_ =
-          std::dynamic_pointer_cast<BaseStore<ignition::rendering::Node, T>>(
+          std::dynamic_pointer_cast<BaseStore<gz::rendering::Node, T>>(
           this->Children());
       if (!children_)
       {

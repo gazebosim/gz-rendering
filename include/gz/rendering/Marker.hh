@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_MARKER_HH_
-#define IGNITION_RENDERING_MARKER_HH_
+#ifndef GZ_RENDERING_MARKER_HH_
+#define GZ_RENDERING_MARKER_HH_
 
 #include <ignition/common/Time.hh>
 #include <ignition/math/Color.hh>
@@ -25,7 +25,7 @@
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/RenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -99,11 +99,11 @@ namespace ignition
       /// \brief Set the render type of this Marker
       /// \param[in] _markerType The desired render type
       public: virtual void SetType(
-                  const ignition::rendering::MarkerType _markerType) = 0;
+                  const gz::rendering::MarkerType _markerType) = 0;
 
       /// \brief Get the render type of this Marker
       /// \return The render type of the marker
-      public: virtual ignition::rendering::MarkerType Type() const = 0;
+      public: virtual gz::rendering::MarkerType Type() const = 0;
 
       /// \brief Clear the points of the marker, if applicable
       public: virtual void ClearPoints() = 0;
@@ -115,19 +115,19 @@ namespace ignition
       /// \param[in] _color The color the point is set to
       public: virtual void AddPoint(double _x,
                   double _y, double _z,
-                  const ignition::math::Color &_color) = 0;
+                  const gz::math::Color &_color) = 0;
 
       /// \brief Add a point with its respective color to the marker
       /// \param[in] _pt A vector containing the position of the point
       /// \param[in] _color The color the point is set to
-      public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
-                  const ignition::math::Color &_color) = 0;
+      public: virtual void AddPoint(const gz::math::Vector3d &_pt,
+                  const gz::math::Color &_color) = 0;
 
       /// \brief Set an existing point's vector
       /// \param[in] _index The index of the point
       /// \param[in] _value The new positional vector of the point
       public: virtual void SetPoint(unsigned int _index,
-                  const ignition::math::Vector3d &_value) = 0;
+                  const gz::math::Vector3d &_value) = 0;
     };
     }
   }

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXGRID_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXGRID_HH_
+#ifndef GZ_RENDERING_OPTIX_OPTIXGRID_HH_
+#define GZ_RENDERING_OPTIX_OPTIXGRID_HH_
 
 #include <string>
 #include <vector>
@@ -24,7 +24,7 @@
 #include "ignition/rendering/optix/OptixObject.hh"
 #include "ignition/rendering/optix/OptixRenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

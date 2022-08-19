@@ -30,7 +30,7 @@
 #include "ignition/rendering/ShaderType.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class MaterialTest : public testing::Test,

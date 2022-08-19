@@ -25,7 +25,7 @@
 #include "ignition/rendering/Grid.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class GridTest : public testing::Test,

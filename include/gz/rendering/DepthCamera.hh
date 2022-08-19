@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_DEPTHCAMERA_HH_
-#define IGNITION_RENDERING_DEPTHCAMERA_HH_
+#ifndef GZ_RENDERING_DEPTHCAMERA_HH_
+#define GZ_RENDERING_DEPTHCAMERA_HH_
 
 #include <string>
 
 #include <ignition/common/Event.hh>
 #include "ignition/rendering/Camera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -51,7 +51,7 @@ namespace ignition
       /// \brief Connect to the new depth image signal
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr ConnectNewDepthFrame(
+      public: virtual gz::common::ConnectionPtr ConnectNewDepthFrame(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) = 0;
 
@@ -71,7 +71,7 @@ namespace ignition
       ///  _depth Point cloud image depth
       ///  _format Point cloud image format
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr ConnectNewRgbPointCloud(
+      public: virtual gz::common::ConnectionPtr ConnectNewRgbPointCloud(
           std::function<void(const float *_pointCloud, unsigned int _width,
           unsigned int _height, unsigned int _depth,
           const std::string &_format)> _subscriber) = 0;

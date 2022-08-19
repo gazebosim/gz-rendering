@@ -41,7 +41,7 @@
 #include "ignition/rendering/ogre2/Ogre2Storage.hh"
 
 
-class ignition::rendering::Ogre2RenderEnginePrivate
+class gz::rendering::Ogre2RenderEnginePrivate
 {
 #if !defined(__APPLE__) && !defined(_WIN32)
   public: XVisualInfo *dummyVisual = nullptr;
@@ -51,7 +51,7 @@ class ignition::rendering::Ogre2RenderEnginePrivate
   public: std::vector<unsigned int> fsaaLevels;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

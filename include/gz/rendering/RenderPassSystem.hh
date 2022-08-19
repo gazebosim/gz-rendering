@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RENDERPASSSYSTEM_HH_
-#define IGNITION_RENDERING_RENDERPASSSYSTEM_HH_
+#ifndef GZ_RENDERING_RENDERPASSSYSTEM_HH_
+#define GZ_RENDERING_RENDERPASSSYSTEM_HH_
 
 #include <map>
 #include <memory>
@@ -29,7 +29,7 @@
 #include "ignition/rendering/RenderPass.hh"
 #include "ignition/rendering/RenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -93,11 +93,11 @@ namespace ignition
     ///
     /// Use this macro to register render pass with the render pass factory.
     #define IGN_RENDERING_REGISTER_RENDER_PASS(classname, interface) \
-    class classname##Factory : public ignition::rendering::RenderPassFactory \
+    class classname##Factory : public gz::rendering::RenderPassFactory \
     { \
       public: classname##Factory() \
               { \
-                ignition::rendering::RenderPassSystem::Register( \
+                gz::rendering::RenderPassSystem::Register( \
                     typeid(interface).name(), this); \
               } \
       public: RenderPass *New() const override \

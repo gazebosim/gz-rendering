@@ -23,14 +23,14 @@
 #include "CameraWindow.hh"
 #include "SceneManager.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 void Connect()
 {
   common::Console::SetVerbosity(4);
-  gazebo::transport::init();
-  gazebo::transport::run();
+  sim::transport::init();
+  sim::transport::run();
 
   SceneManager* manager = SceneManager::Instance();
   manager->Load();

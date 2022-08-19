@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2RENDERPASS_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2RENDERPASS_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2RENDERPASS_HH_
+#define GZ_RENDERING_OGRE2_OGRE2RENDERPASS_HH_
 
 #include <string>
 
@@ -24,7 +24,7 @@
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Ogre2Object.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

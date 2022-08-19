@@ -20,7 +20,7 @@
 #include "ignition/rendering/RenderPassSystem.hh"
 #include "ignition/rendering/base/BaseRenderEngine.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

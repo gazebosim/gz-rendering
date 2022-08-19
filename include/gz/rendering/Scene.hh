@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_SCENE_HH_
-#define IGNITION_RENDERING_SCENE_HH_
+#ifndef GZ_RENDERING_SCENE_HH_
+#define GZ_RENDERING_SCENE_HH_
 
 #include <array>
 #include <string>
@@ -33,7 +33,7 @@
 #include "ignition/rendering/Storage.hh"
 #include "ignition/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -16,7 +16,7 @@
  */
 #include "ignition/rendering/optix/OptixArrowVisual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

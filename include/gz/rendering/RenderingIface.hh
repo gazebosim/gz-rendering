@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RENDERINGIFACE_HH_
-#define IGNITION_RENDERING_RENDERINGIFACE_HH_
+#ifndef GZ_RENDERING_RENDERINGIFACE_HH_
+#define GZ_RENDERING_RENDERINGIFACE_HH_
 
 #include <list>
 #include <map>
@@ -26,7 +26,7 @@
 #include "ignition/rendering/Export.hh"
 #include "ignition/rendering/RenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

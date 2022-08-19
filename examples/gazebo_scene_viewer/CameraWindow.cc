@@ -124,8 +124,8 @@ void GlutIdle()
   }
 #endif
 
-  ignition::rendering::SceneManager* manager =
-      ignition::rendering::SceneManager::Instance();
+  gz::rendering::SceneManager* manager =
+      gz::rendering::SceneManager::Instance();
 
   manager->UpdateScenes();
 

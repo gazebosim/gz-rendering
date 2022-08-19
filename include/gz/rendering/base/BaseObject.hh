@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEOBJECT_HH_
-#define IGNITION_RENDERING_BASE_BASEOBJECT_HH_
+#ifndef GZ_RENDERING_BASE_BASEOBJECT_HH_
+#define GZ_RENDERING_BASE_BASEOBJECT_HH_
 
 #include <map>
 #include <string>
 #include <ignition/common/SuppressWarning.hh>
 #include "ignition/rendering/Object.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

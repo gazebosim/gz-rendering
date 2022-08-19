@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASESCENE_HH_
-#define IGNITION_RENDERING_BASE_BASESCENE_HH_
+#ifndef GZ_RENDERING_BASE_BASESCENE_HH_
+#define GZ_RENDERING_BASE_BASESCENE_HH_
 
 #include <array>
 #include <set>
@@ -28,7 +28,7 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -195,7 +195,7 @@ namespace ignition
 
       // Documentation inherited
       public: virtual VisualPtr VisualAt(const CameraPtr &_camera,
-                          const ignition::math::Vector2i &_mousePos) override;
+                          const gz::math::Vector2i &_mousePos) override;
 
       // Documentation inherited.
       public: virtual void DestroyVisual(VisualPtr _visual,

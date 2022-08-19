@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE_OGRETEXT_HH_
-#define IGNITION_RENDERING_OGRE_OGRETEXT_HH_
+#ifndef GZ_RENDERING_OGRE_OGRETEXT_HH_
+#define GZ_RENDERING_OGRE_OGRETEXT_HH_
 
 #include <memory>
 #include <string>
@@ -29,7 +29,7 @@
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -71,7 +71,7 @@ namespace ignition
       public: virtual void SetTextString(const std::string &_text) override;
 
       // Documentation inherited.
-      public: virtual void SetColor(const ignition::math::Color &_color)
+      public: virtual void SetColor(const gz::math::Color &_color)
           override;
 
       // Documentation inherited.
@@ -91,7 +91,7 @@ namespace ignition
       public: virtual void SetShowOnTop(const bool _onTop) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::AxisAlignedBox AABB() const override;
+      public: virtual gz::math::AxisAlignedBox AABB() const override;
 
       /// \brief Set material to text geometry.
       /// \param[in] _material Ogre material.

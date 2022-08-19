@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RENDERPASS_HH_
-#define IGNITION_RENDERING_RENDERPASS_HH_
+#ifndef GZ_RENDERING_RENDERPASS_HH_
+#define GZ_RENDERING_RENDERPASS_HH_
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

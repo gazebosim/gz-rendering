@@ -27,7 +27,7 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/TransformController.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class TransformControllerTest : public testing::Test,

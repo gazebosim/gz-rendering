@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_MESH_HH_
-#define IGNITION_RENDERING_MESH_HH_
+#ifndef GZ_RENDERING_MESH_HH_
+#define GZ_RENDERING_MESH_HH_
 
 #include <map>
 #include <string>
@@ -24,7 +24,7 @@
 #include "ignition/rendering/Geometry.hh"
 #include "ignition/rendering/Object.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

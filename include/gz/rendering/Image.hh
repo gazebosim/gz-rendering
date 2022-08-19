@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_IMAGE_HH_
-#define IGNITION_RENDERING_IMAGE_HH_
+#ifndef GZ_RENDERING_IMAGE_HH_
+#define GZ_RENDERING_IMAGE_HH_
 
 #include <memory>
 
@@ -25,7 +25,7 @@
 #include "ignition/rendering/PixelFormat.hh"
 #include "ignition/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

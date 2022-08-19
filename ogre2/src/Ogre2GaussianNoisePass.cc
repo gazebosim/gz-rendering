@@ -23,7 +23,7 @@
 #include "ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

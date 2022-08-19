@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
-#define IGNITION_RENDERING_RENDERENGINEMANAGER_HH_
+#ifndef GZ_RENDERING_RENDERENGINEMANAGER_HH_
+#define GZ_RENDERING_RENDERENGINEMANAGER_HH_
 
 #include <list>
 #include <map>
@@ -27,7 +27,7 @@
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -141,7 +141,7 @@ namespace ignition
       IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
 
       /// \brief required SingletonT friendship
-      private: friend class ignition::common::SingletonT<RenderEngineManager>;
+      private: friend class gz::common::SingletonT<RenderEngineManager>;
     };
     }
   }

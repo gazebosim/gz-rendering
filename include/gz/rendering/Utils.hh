@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_UTILS_HH_
-#define IGNITION_RENDERING_UTILS_HH_
+#ifndef GZ_RENDERING_UTILS_HH_
+#define GZ_RENDERING_UTILS_HH_
 
 #include <ignition/math/Helpers.hh>
 #include <ignition/math/Vector2.hh>
@@ -27,7 +27,7 @@
 #include "ignition/rendering/RayQuery.hh"
 
 
-namespace ignition
+namespace gz
 {
   /// \brief Rendering classes and function useful in robot applications.
   namespace rendering

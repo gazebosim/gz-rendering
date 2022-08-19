@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2CONVERSIONS_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2CONVERSIONS_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2CONVERSIONS_HH_
+#define GZ_RENDERING_OGRE2_OGRE2CONVERSIONS_HH_
 
 #include <ignition/math/Color.hh>
 #include <ignition/math/Matrix4.hh>
@@ -27,7 +27,7 @@
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 #include "ignition/rendering/ogre2/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

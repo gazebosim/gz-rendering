@@ -27,7 +27,7 @@
 
 #include "test_config.h"  // NOLINT(build/include)
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class UtilTest : public testing::Test,

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2GEOMETRY_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2GEOMETRY_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2GEOMETRY_HH_
+#define GZ_RENDERING_OGRE2_OGRE2GEOMETRY_HH_
 
 #include "ignition/rendering/base/BaseGeometry.hh"
 #include "ignition/rendering/ogre2/Ogre2Object.hh"
@@ -25,7 +25,7 @@ namespace Ogre
   class MovableObject;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -33,7 +33,7 @@
 #include "ignition/rendering/ogre/OgreStorage.hh"
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

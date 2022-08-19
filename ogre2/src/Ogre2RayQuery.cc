@@ -27,13 +27,13 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 
 /// \brief Private data class for Ogre2RayQuery
-class ignition::rendering::Ogre2RayQueryPrivate
+class gz::rendering::Ogre2RayQueryPrivate
 {
   /// \brief Ogre ray scene query object for computing intersection.
   public: Ogre::RaySceneQuery *rayQuery = nullptr;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

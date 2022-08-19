@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2GPURAYS_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2GPURAYS_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2GPURAYS_HH_
+#define GZ_RENDERING_OGRE2_OGRE2GPURAYS_HH_
 
 #include <string>
 #include <memory>
@@ -41,7 +41,7 @@ namespace Ogre
   class Viewport;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

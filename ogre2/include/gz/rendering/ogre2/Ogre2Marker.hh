@@ -15,15 +15,15 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGREMARKER_HH_
-#define IGNITION_RENDERING_OGRE2_OGREMARKER_HH_
+#ifndef GZ_RENDERING_OGRE2_OGREMARKER_HH_
+#define GZ_RENDERING_OGRE2_OGREMARKER_HH_
 
 #include <memory>
 #include "ignition/rendering/base/BaseMarker.hh"
 #include "ignition/rendering/ogre2/Ogre2Geometry.hh"
 #include "ignition/rendering/ogre2/Ogre2Includes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -63,11 +63,11 @@ namespace ignition
 
       // Documentation inherited
       public: virtual void SetPoint(unsigned int _index,
-                           const ignition::math::Vector3d &_value) override;
+                           const gz::math::Vector3d &_value) override;
 
       // Documentation inherited
-      public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
-                           const ignition::math::Color &_color) override;
+      public: virtual void AddPoint(const gz::math::Vector3d &_pt,
+                           const gz::math::Color &_color) override;
 
       // Documentation inherited
       public: virtual void ClearPoints() override;

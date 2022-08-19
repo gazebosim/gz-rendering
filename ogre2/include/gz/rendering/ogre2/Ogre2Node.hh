@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2NODE_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2NODE_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2NODE_HH_
+#define GZ_RENDERING_OGRE2_OGRE2NODE_HH_
 
 #include "ignition/rendering/base/BaseNode.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
@@ -26,7 +26,7 @@ namespace Ogre
   class SceneNode;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

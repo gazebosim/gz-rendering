@@ -45,7 +45,7 @@ void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
   memcpy(_scanDest, _scan, size * sizeof(f));
   g_pointCloudCounter++;
 }
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class RenderPassTest: public testing::Test,

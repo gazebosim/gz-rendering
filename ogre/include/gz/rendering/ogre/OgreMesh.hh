@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGREMESH_HH_
-#define IGNITION_RENDERING_OGRE_OGREMESH_HH_
+#ifndef GZ_RENDERING_OGRE_OGREMESH_HH_
+#define GZ_RENDERING_OGRE_OGREMESH_HH_
 
 #include <map>
 #include <string>
@@ -31,7 +31,7 @@ namespace Ogre
   class SubEntity;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

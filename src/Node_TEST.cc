@@ -28,7 +28,7 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/Visual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class NodeTest : public testing::Test,

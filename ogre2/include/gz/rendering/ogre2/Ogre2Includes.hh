@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2INCLUDES_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2INCLUDES_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2INCLUDES_HH_
+#define GZ_RENDERING_OGRE2_OGRE2INCLUDES_HH_
 
 // This disables warning messages for OGRE
 #ifndef _MSC_VER

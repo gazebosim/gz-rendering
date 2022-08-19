@@ -25,7 +25,7 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/RenderEngine.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class RenderEngineTest : public testing::Test,

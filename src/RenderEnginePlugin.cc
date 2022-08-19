@@ -17,11 +17,11 @@
 
 #include "ignition/rendering/RenderEnginePlugin.hh"
 
-class ignition::rendering::RenderEnginePluginPrivate
+class gz::rendering::RenderEnginePluginPrivate
 {
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

@@ -33,7 +33,7 @@
 #include "ignition/rendering/ogre2/Ogre2Sensor.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
@@ -83,7 +83,7 @@ class Ogre2LaserRetroMaterialSwitcher : public Ogre::RenderTargetListener
 
 /// \internal
 /// \brief Private data for the Ogre2GpuRays class
-class ignition::rendering::Ogre2GpuRaysPrivate
+class gz::rendering::Ogre2GpuRaysPrivate
 {
   /// \brief Event triggered when new gpu rays range data are available.
   /// \param[in] _frame New frame containing raw gpu rays data.
@@ -91,7 +91,7 @@ class ignition::rendering::Ogre2GpuRaysPrivate
   /// \param[in] _height Height of frame.
   /// \param[in] _channel Number of channels
   /// \param[in] _format Format of frame.
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
                unsigned int, unsigned int, unsigned int,
                const std::string &)> newGpuRaysFrame;
 
@@ -164,7 +164,7 @@ class ignition::rendering::Ogre2GpuRaysPrivate
       laserRetroMaterialSwitcher[6];
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 

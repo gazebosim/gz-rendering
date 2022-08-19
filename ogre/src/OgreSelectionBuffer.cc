@@ -24,10 +24,10 @@
 #include "ignition/rendering/ogre/OgreMaterialSwitcher.hh"
 #include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
-class ignition::rendering::OgreSelectionBufferPrivate
+class gz::rendering::OgreSelectionBufferPrivate
 {
   /// \brief This is a material listener and a RenderTargetListener.
   /// The material switcher is applied to only the selection camera

@@ -24,7 +24,7 @@
 #include "ignition/rendering/Text.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class TextTest : public testing::Test,

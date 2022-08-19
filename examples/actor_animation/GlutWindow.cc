@@ -164,7 +164,7 @@ void handleMouse()
         2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
     double ny = 1.0 -
         2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
-    g_rayQuery->SetFromCamera(rayCamera, ignition::math::Vector2d(nx, ny));
+    g_rayQuery->SetFromCamera(rayCamera, gz::math::Vector2d(nx, ny));
     g_target  = g_rayQuery->ClosestPoint();
     if (!g_target)
     {
@@ -194,7 +194,7 @@ void handleMouse()
   if (g_mouse.motionDirty)
   {
     g_mouse.motionDirty = false;
-    auto drag = ignition::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
+    auto drag = gz::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
 
     // left mouse button pan
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
@@ -239,10 +239,10 @@ void handleMouse()
 //////////////////////////////////////////////////
 void updatePose(double _time)
 {
-  std::map<std::string, ignition::math::Matrix4d> animFrames;
+  std::map<std::string, gz::math::Matrix4d> animFrames;
   animFrames = g_skelAnim->PoseAt(_time, true);
 
-  std::map<std::string, ignition::math::Matrix4d> skinFrames;
+  std::map<std::string, gz::math::Matrix4d> skinFrames;
 
   for (auto pair : animFrames)
   {
@@ -250,7 +250,7 @@ void updatePose(double _time)
     auto animTf = pair.second;
 
     std::string skinName = g_skel->NodeNameAnimToSkin(g_animIdx, animName);
-    ignition::math::Matrix4d skinTf =
+    gz::math::Matrix4d skinTf =
             g_skel->AlignTranslation(g_animIdx, animName)
             * animTf * g_skel->AlignRotation(g_animIdx, animName);
 

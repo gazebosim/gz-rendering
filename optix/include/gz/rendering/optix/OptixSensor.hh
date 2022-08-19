@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXSENSOR_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXSENSOR_HH_
+#ifndef GZ_RENDERING_OPTIX_OPTIXSENSOR_HH_
+#define GZ_RENDERING_OPTIX_OPTIXSENSOR_HH_
 
 #include "ignition/rendering/base/BaseSensor.hh"
 #include "ignition/rendering/optix/OptixNode.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

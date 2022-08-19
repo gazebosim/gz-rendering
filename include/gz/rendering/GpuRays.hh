@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_GPURAYS_HH_
-#define IGNITION_RENDERING_GPURAYS_HH_
+#ifndef GZ_RENDERING_GPURAYS_HH_
+#define GZ_RENDERING_GPURAYS_HH_
 
 #include <string>
 
@@ -26,7 +26,7 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/Camera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -106,14 +106,14 @@ namespace ignition
 
       /// \brief Get minimal horizontal angle value
       // \return minimal horizontal angle value
-      public: virtual ignition::math::Angle AngleMin() const = 0;
+      public: virtual gz::math::Angle AngleMin() const = 0;
 
       /// \brief Set minimal horizontal angle value
       public: virtual void SetAngleMin(double _angle) = 0;
 
       /// \brief Get maximal horizontal angle value
       // \return maximal horizontal angle value
-      public: virtual ignition::math::Angle AngleMax() const = 0;
+      public: virtual gz::math::Angle AngleMax() const = 0;
 
       /// \brief Set maximal horizontal angle value
       public: virtual void SetAngleMax(double _angle) = 0;
@@ -142,14 +142,14 @@ namespace ignition
 
       /// \brief Get minimal vertical angle value
       // \return minimal vertical angle value
-      public: virtual ignition::math::Angle VerticalAngleMin() const = 0;
+      public: virtual gz::math::Angle VerticalAngleMin() const = 0;
 
       /// \brief Set minimal vertical angle value
       public: virtual void SetVerticalAngleMin(const double _angle) = 0;
 
       /// \brief Get maximal vertical angle value
       // \return maximal vertical angle value
-      public: virtual ignition::math::Angle VerticalAngleMax() const = 0;
+      public: virtual gz::math::Angle VerticalAngleMax() const = 0;
 
       /// \brief Set maximal vertical angle value
       // \return minimal vertical angle value

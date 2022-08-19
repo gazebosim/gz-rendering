@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RAYQUERY_HH_
-#define IGNITION_RENDERING_RAYQUERY_HH_
+#ifndef GZ_RENDERING_RAYQUERY_HH_
+#define GZ_RENDERING_RAYQUERY_HH_
 
 #include <ignition/common/SuppressWarning.hh>
 #include <ignition/math/Vector3.hh>
@@ -25,7 +25,7 @@
 #include "ignition/rendering/Scene.hh"
 #include "ignition/rendering/Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

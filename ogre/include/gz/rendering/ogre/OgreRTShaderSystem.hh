@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRERTSHADERSYSTEM_HH_
-#define IGNITION_RENDERING_OGRE_OGRERTSHADERSYSTEM_HH_
+#ifndef GZ_RENDERING_OGRE_OGRERTSHADERSYSTEM_HH_
+#define GZ_RENDERING_OGRE_OGRERTSHADERSYSTEM_HH_
 
 #include <memory>
 #include <string>
@@ -25,7 +25,7 @@
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 #include "ignition/rendering/ogre/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

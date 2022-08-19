@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef IGNITION_RENDERING_SHADERPARAMS_HH_
-#define IGNITION_RENDERING_SHADERPARAMS_HH_
+#ifndef GZ_RENDERING_SHADERPARAMS_HH_
+#define GZ_RENDERING_SHADERPARAMS_HH_
 
 #include <memory>
 #include <string>
@@ -25,7 +25,7 @@
 #include "ignition/rendering/Export.hh"
 #include "ignition/rendering/ShaderParam.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

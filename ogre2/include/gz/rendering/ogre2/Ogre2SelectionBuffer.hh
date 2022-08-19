@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2SELECTIONBUFFER_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2SELECTIONBUFFER_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2SELECTIONBUFFER_HH_
+#define GZ_RENDERING_OGRE2_OGRE2SELECTIONBUFFER_HH_
 
 #include <memory>
 #include <string>
@@ -30,7 +30,7 @@ namespace Ogre
   class SceneManager;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

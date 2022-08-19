@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2GRID_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2GRID_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2GRID_HH_
+#define GZ_RENDERING_OGRE2_OGRE2GRID_HH_
 
 #include <memory>
 #include "ignition/rendering/base/BaseGrid.hh"
@@ -28,7 +28,7 @@ namespace Ogre
   class MovableObject;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

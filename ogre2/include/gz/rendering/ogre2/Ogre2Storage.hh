@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2STORAGE_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2STORAGE_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2STORAGE_HH_
+#define GZ_RENDERING_OGRE2_OGRE2STORAGE_HH_
 
 #include <memory>
 
@@ -28,7 +28,7 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

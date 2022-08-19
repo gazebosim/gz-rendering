@@ -21,7 +21,7 @@
 #include "ignition/rendering/optix/OptixScene.hh"
 #include "ignition/rendering/optix/OptixTextureFactory.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

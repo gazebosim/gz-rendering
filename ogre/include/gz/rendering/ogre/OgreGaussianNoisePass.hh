@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGREGAUSSIANNOISEPASS_HH_
-#define IGNITION_RENDERING_OGRE_OGREGAUSSIANNOISEPASS_HH_
+#ifndef GZ_RENDERING_OGRE_OGREGAUSSIANNOISEPASS_HH_
+#define GZ_RENDERING_OGRE_OGREGAUSSIANNOISEPASS_HH_
 
 #include <memory>
 
@@ -26,7 +26,7 @@
 #include "ignition/rendering/ogre/OgreRenderPass.hh"
 #include "ignition/rendering/ogre/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

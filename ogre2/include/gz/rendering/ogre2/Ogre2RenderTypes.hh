@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2RENDERTYPES_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2RENDERTYPES_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2RENDERTYPES_HH_
+#define GZ_RENDERING_OGRE2_OGRE2RENDERTYPES_HH_
 
 #include <memory>
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

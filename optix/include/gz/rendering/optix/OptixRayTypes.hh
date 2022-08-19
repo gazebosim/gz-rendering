@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXRAYTYPES_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXRAYTYPES_HH_
+#ifndef GZ_RENDERING_OPTIX_OPTIXRAYTYPES_HH_
+#define GZ_RENDERING_OPTIX_OPTIXRAYTYPES_HH_
 
 #include <optix.h>
 
 #ifndef __CUDA_ARCH__
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASERENDERENGINE_HH_
-#define IGNITION_RENDERING_BASE_BASERENDERENGINE_HH_
+#ifndef GZ_RENDERING_BASE_BASERENDERENGINE_HH_
+#define GZ_RENDERING_BASE_BASERENDERENGINE_HH_
 
 #include <map>
 #include <string>
@@ -24,7 +24,7 @@
 #include "ignition/rendering/RenderEngine.hh"
 #include "ignition/rendering/Storage.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

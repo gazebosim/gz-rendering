@@ -20,7 +20,7 @@
 #include "ignition/rendering/ogre/OgreMaterialSwitcher.hh"
 #include "ignition/rendering/RenderTypes.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 

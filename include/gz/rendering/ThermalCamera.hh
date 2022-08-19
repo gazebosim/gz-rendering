@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_THERMALCAMERA_HH_
-#define IGNITION_RENDERING_THERMALCAMERA_HH_
+#ifndef GZ_RENDERING_THERMALCAMERA_HH_
+#define GZ_RENDERING_THERMALCAMERA_HH_
 
 #include <string>
 #include "ignition/rendering/Camera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -115,7 +115,7 @@ namespace ignition
       /// \param[in] _subscriber Subscriber callback function. The callback
       /// function arguments are: <thermal data, width, height, depth, format>
       /// \return Pointer to the new Connection. This must be kept in scope
-      public: virtual ignition::common::ConnectionPtr ConnectNewThermalFrame(
+      public: virtual gz::common::ConnectionPtr ConnectNewThermalFrame(
           std::function<void(const uint16_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) = 0;
     };

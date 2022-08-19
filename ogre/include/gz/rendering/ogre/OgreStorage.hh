@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRESTORAGE_HH_
-#define IGNITION_RENDERING_OGRE_OGRESTORAGE_HH_
+#ifndef GZ_RENDERING_OGRE_OGRESTORAGE_HH_
+#define GZ_RENDERING_OGRE_OGRESTORAGE_HH_
 
 #include <memory>
 #include "ignition/rendering/base/BaseStorage.hh"
@@ -29,7 +29,7 @@
 #include "ignition/rendering/ogre/OgreSensor.hh"
 #include "ignition/rendering/ogre/OgreVisual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

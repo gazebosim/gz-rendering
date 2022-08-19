@@ -24,7 +24,7 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
-class ignition::rendering::Ogre2MarkerPrivate
+class gz::rendering::Ogre2MarkerPrivate
 {
   /// \brief Marker material
   public: Ogre2MaterialPtr material = nullptr;
@@ -40,7 +40,7 @@ class ignition::rendering::Ogre2MarkerPrivate
   public: std::shared_ptr<Ogre2DynamicRenderable> dynamicRenderable;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

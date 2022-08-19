@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_MOVETOHELPER_HH_
-#define IGNITION_RENDERING_MOVETOHELPER_HH_
+#ifndef GZ_RENDERING_MOVETOHELPER_HH_
+#define GZ_RENDERING_MOVETOHELPER_HH_
 
 #include <memory>
 
@@ -27,7 +27,7 @@
 
 #include "ignition/rendering/Camera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -23,7 +23,7 @@
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreScene.hh"
 
-class ignition::rendering::OgreMarkerPrivate
+class gz::rendering::OgreMarkerPrivate
 {
   /// \brief Marker material
   public: OgreMaterialPtr material = nullptr;
@@ -35,7 +35,7 @@ class ignition::rendering::OgreMarkerPrivate
   public: OgreMeshPtr mesh = nullptr;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

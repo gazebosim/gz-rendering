@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2CAMERA_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2CAMERA_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2CAMERA_HH_
+#define GZ_RENDERING_OGRE2_OGRE2CAMERA_HH_
 
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
@@ -26,7 +26,7 @@ namespace Ogre
   class Camera;
 }
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -83,7 +83,7 @@ namespace ignition
       public: virtual math::Matrix4d ViewMatrix() const override;
 
       // Documentation inherited
-      public: virtual VisualPtr VisualAt(const ignition::math::Vector2i
+      public: virtual VisualPtr VisualAt(const gz::math::Vector2i
                   &_mousePos) override;
 
       // Documentation Inherited.

@@ -35,7 +35,7 @@
 #include "ignition/rendering/ogre/OgreMesh.hh"
 #include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
 
-class ignition::rendering::OgreRTShaderSystemPrivate
+class gz::rendering::OgreRTShaderSystemPrivate
 {
   /// \brief The shader generator.
   public: Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
@@ -72,7 +72,7 @@ class ignition::rendering::OgreRTShaderSystemPrivate
   public: bool resetShadows = false;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

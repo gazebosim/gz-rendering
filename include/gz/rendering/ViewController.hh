@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_VIEWCONTROLLER_HH_
-#define IGNITION_RENDERING_VIEWCONTROLLER_HH_
+#ifndef GZ_RENDERING_VIEWCONTROLLER_HH_
+#define GZ_RENDERING_VIEWCONTROLLER_HH_
 
 #include <ignition/math/Vector2.hh>
 #include <ignition/math/Vector3.hh>
@@ -23,7 +23,7 @@
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Camera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

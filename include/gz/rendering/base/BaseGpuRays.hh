@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEGPURAYS_HH_
-#define IGNITION_RENDERING_BASE_BASEGPURAYS_HH_
+#ifndef GZ_RENDERING_BASE_BASEGPURAYS_HH_
+#define GZ_RENDERING_BASE_BASEGPURAYS_HH_
 
 #include <string>
 
@@ -32,7 +32,7 @@
 #include "ignition/rendering/RenderTypes.hh"
 
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -95,13 +95,13 @@ namespace ignition
                   const double _rayCountRatio) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::Angle AngleMin() const override;
+      public: virtual gz::math::Angle AngleMin() const override;
 
       // Documentation inherited.
       public: virtual void SetAngleMin(double _angle) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::Angle AngleMax() const override;
+      public: virtual gz::math::Angle AngleMax() const override;
 
       // Documentation inherited.
       public: virtual void SetAngleMax(double _angle) override;
@@ -125,13 +125,13 @@ namespace ignition
       public: virtual int VerticalRangeCount() const override;
 
       // Documentation inherited.
-      public: virtual ignition::math::Angle VerticalAngleMin() const override;
+      public: virtual gz::math::Angle VerticalAngleMin() const override;
 
       // Documentation inherited.
       public: virtual void SetVerticalAngleMin(const double _angle) override;
 
       // Documentation inherited.
-      public: virtual ignition::math::Angle VerticalAngleMax() const override;
+      public: virtual gz::math::Angle VerticalAngleMax() const override;
 
       // Documentation inherited.
       public: virtual void SetVerticalAngleMax(const double _angle) override;
@@ -140,10 +140,10 @@ namespace ignition
       public: virtual unsigned int Channels() const override;
 
       /// \brief maximum value used for data outside sensor range
-      public: float dataMaxVal = ignition::math::INF_D;
+      public: float dataMaxVal = gz::math::INF_D;
 
       /// \brief minimum value used for data outside sensor range
-      public: float dataMinVal = -ignition::math::INF_D;
+      public: float dataMinVal = -gz::math::INF_D;
 
       /// \brief True if data values are clamped to camera clip distances,
       // false if data outside of camera range is +/- inf
@@ -231,8 +231,8 @@ namespace ignition
       }
       else
       {
-        this->dataMinVal = -ignition::math::INF_D;
-        this->dataMaxVal = ignition::math::INF_D;
+        this->dataMinVal = -gz::math::INF_D;
+        this->dataMaxVal = gz::math::INF_D;
       }
     }
 
@@ -246,7 +246,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::common::ConnectionPtr BaseGpuRays<T>::ConnectNewGpuRaysFrame(
+    gz::common::ConnectionPtr BaseGpuRays<T>::ConnectNewGpuRaysFrame(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>)
     {
@@ -304,7 +304,7 @@ namespace ignition
 
     template <class T>
     //////////////////////////////////////////////////
-    ignition::math::Angle BaseGpuRays<T>::AngleMin() const
+    gz::math::Angle BaseGpuRays<T>::AngleMin() const
     {
       return this->minAngle;
     }
@@ -318,7 +318,7 @@ namespace ignition
 
     template <class T>
     //////////////////////////////////////////////////
-    ignition::math::Angle BaseGpuRays<T>::AngleMax() const
+    gz::math::Angle BaseGpuRays<T>::AngleMax() const
     {
       return this->maxAngle;
     }
@@ -374,7 +374,7 @@ namespace ignition
 
     template <class T>
     //////////////////////////////////////////////////
-    ignition::math::Angle BaseGpuRays<T>::VerticalAngleMin() const
+    gz::math::Angle BaseGpuRays<T>::VerticalAngleMin() const
     {
       return this->vMinAngle;
     }
@@ -388,7 +388,7 @@ namespace ignition
 
     template <class T>
     //////////////////////////////////////////////////
-    ignition::math::Angle BaseGpuRays<T>::VerticalAngleMax() const
+    gz::math::Angle BaseGpuRays<T>::VerticalAngleMax() const
     {
       return this->vMaxAngle;
     }

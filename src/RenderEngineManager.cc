@@ -36,11 +36,11 @@ struct EngineInfo
   std::string name;
 
   /// \brief The pointer to the render engine.
-  ignition::rendering::RenderEngine *engine;
+  gz::rendering::RenderEngine *engine;
 };
 
 /// \brief Private implementation of the RenderEngineManager class.
-class ignition::rendering::RenderEngineManagerPrivate
+class gz::rendering::RenderEngineManagerPrivate
 {
   /// \brief EngineMap that maps engine name to an engine pointer.
   typedef std::map<std::string, RenderEngine *> EngineMap;
@@ -93,7 +93,7 @@ class ignition::rendering::RenderEngineManagerPrivate
   public: std::map<std::string, std::string> enginePlugins;
 
   /// \brief Plugin loader for managing render engine plugin libraries.
-  public: ignition::plugin::Loader pluginLoader;
+  public: gz::plugin::Loader pluginLoader;
 
   /// \brief List which holds paths to look for engine plugins.
   public: std::list<std::string> pluginPaths;
@@ -102,7 +102,7 @@ class ignition::rendering::RenderEngineManagerPrivate
   public: std::recursive_mutex enginesMutex;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

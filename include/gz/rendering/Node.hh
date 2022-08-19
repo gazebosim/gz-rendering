@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_NODE_HH_
-#define IGNITION_RENDERING_NODE_HH_
+#ifndef GZ_RENDERING_NODE_HH_
+#define GZ_RENDERING_NODE_HH_
 
 #include <string>
 #include <ignition/math/Pose3.hh>
@@ -26,7 +26,7 @@
 #include "ignition/rendering/Object.hh"
 #include "ignition/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

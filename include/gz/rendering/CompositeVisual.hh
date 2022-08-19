@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_COMPOSITEVISUAL_HH_
-#define IGNITION_RENDERING_COMPOSITEVISUAL_HH_
+#ifndef GZ_RENDERING_COMPOSITEVISUAL_HH_
+#define GZ_RENDERING_COMPOSITEVISUAL_HH_
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Visual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

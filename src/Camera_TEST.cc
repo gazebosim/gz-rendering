@@ -27,7 +27,7 @@
 #include "ignition/rendering/RenderPassSystem.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class CameraTest : public testing::Test,

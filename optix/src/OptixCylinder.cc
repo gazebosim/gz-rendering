@@ -16,7 +16,7 @@
  */
 #include "ignition/rendering/optix/OptixCylinder.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

@@ -21,7 +21,7 @@
 #include "ignition/rendering/optix/OptixRenderTarget.hh"
 #include "ignition/rendering/optix/OptixScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

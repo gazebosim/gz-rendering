@@ -25,7 +25,7 @@
 
 #include "ignition/rendering/Camera.hh"
 
-class ignition::rendering::MoveToHelperPrivate
+class gz::rendering::MoveToHelperPrivate
 {
   /// \brief Pose animation object
   public: std::unique_ptr<common::PoseAnimation> poseAnim;
@@ -40,7 +40,7 @@ class ignition::rendering::MoveToHelperPrivate
   public: math::Pose3d initCameraPose;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 ////////////////////////////////////////////////

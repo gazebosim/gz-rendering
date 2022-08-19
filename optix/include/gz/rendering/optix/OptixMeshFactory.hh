@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXMESHFACTORY_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXMESHFACTORY_HH_
+#ifndef GZ_RENDERING_OPTIX_OPTIXMESHFACTORY_HH_
+#define GZ_RENDERING_OPTIX_OPTIXMESHFACTORY_HH_
 
 #include <map>
 #include <string>
@@ -26,7 +26,7 @@
 #include "ignition/rendering/optix/OptixMesh.hh"
 #include "ignition/rendering/optix/OptixIncludes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

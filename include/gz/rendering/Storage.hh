@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_STORAGE_HH_
-#define IGNITION_RENDERING_STORAGE_HH_
+#ifndef GZ_RENDERING_STORAGE_HH_
+#define GZ_RENDERING_STORAGE_HH_
 
 #include <memory>
 #include <string>
@@ -36,7 +36,7 @@
 #undef DestroyAll
 #endif
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -29,7 +29,7 @@
 #include "ignition/rendering/RenderTarget.hh"
 #include "ignition/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class RenderTargetTest : public testing::Test,

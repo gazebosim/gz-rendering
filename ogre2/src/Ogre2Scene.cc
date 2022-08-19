@@ -38,7 +38,7 @@
 #include "ignition/rendering/ogre2/Ogre2ThermalCamera.hh"
 #include "ignition/rendering/ogre2/Ogre2Visual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 // TODO(anyone) make this a member variable in ign-rendering4

@@ -59,7 +59,7 @@ class ThermalCameraTest: public testing::Test,
   // Documentation inherited
   protected: void SetUp() override
   {
-    ignition::common::Console::SetVerbosity(4);
+    gz::common::Console::SetVerbosity(4);
   }
 };
 
@@ -72,7 +72,7 @@ void ThermalCameraTest::ThermalCameraBoxes(
   double aspectRatio = imgWidth/imgHeight;
 
   double unitBoxSize = 1.0;
-  ignition::math::Vector3d boxPosition(1.8, 0.0, 0.0);
+  gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
 
   // Optix is not supported
   if (_renderEngine.compare("optix") == 0)
@@ -83,7 +83,7 @@ void ThermalCameraTest::ThermalCameraBoxes(
   }
 
   // Setup ign-rendering with an empty scene
-  auto *engine = ignition::rendering::engine(_renderEngine);
+  auto *engine = gz::rendering::engine(_renderEngine);
   if (!engine)
   {
     igndbg << "Engine '" << _renderEngine
@@ -91,17 +91,17 @@ void ThermalCameraTest::ThermalCameraBoxes(
     return;
   }
 
-  ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
 
   // red background
   scene->SetBackgroundColor(1.0, 0.0, 0.0);
 
   // Create an scene with a box in it
   scene->SetAmbientLight(1.0, 1.0, 1.0);
-  ignition::rendering::VisualPtr root = scene->RootVisual();
+  gz::rendering::VisualPtr root = scene->RootVisual();
 
   // create box visual
-  ignition::rendering::VisualPtr box = scene->CreateVisual();
+  gz::rendering::VisualPtr box = scene->CreateVisual();
   box->AddGeometry(scene->CreateBox());
   box->SetOrigin(0.0, 0.0, 0.0);
   box->SetLocalPosition(boxPosition);
@@ -123,8 +123,8 @@ void ThermalCameraTest::ThermalCameraBoxes(
     auto thermalCamera = scene->CreateThermalCamera("ThermalCamera");
     ASSERT_NE(thermalCamera, nullptr);
 
-    ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0),
-        ignition::math::Quaterniond::Identity);
+    gz::math::Pose3d testPose(gz::math::Vector3d(0, 0, 0),
+        gz::math::Quaterniond::Identity);
     thermalCamera->SetLocalPose(testPose);
 
     // Configure thermal camera
@@ -160,7 +160,7 @@ void ThermalCameraTest::ThermalCameraBoxes(
 
     // Set a callback on the  camera sensor to get a thermal camera frame
     uint16_t *thermalData = new uint16_t[imgHeight * imgWidth];
-    ignition::common::ConnectionPtr connection =
+    gz::common::ConnectionPtr connection =
       thermalCamera->ConnectNewThermalFrame(
           std::bind(&::OnNewThermalFrame, thermalData,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
@@ -189,7 +189,7 @@ void ThermalCameraTest::ThermalCameraBoxes(
 
     // move box in front of near clip plane and verify the thermal
     // image returns all box temperature values
-    ignition::math::Vector3d boxPositionNear(
+    gz::math::Vector3d boxPositionNear(
         unitBoxSize * 0.5 + nearDist * 0.5, 0.0, 0.0);
     box->SetLocalPosition(boxPositionNear);
     thermalCamera->Update();
@@ -209,7 +209,7 @@ void ThermalCameraTest::ThermalCameraBoxes(
 
     // move box beyond far clip plane and verify the thermal
     // image returns all ambient temperature values
-    ignition::math::Vector3d boxPositionFar(
+    gz::math::Vector3d boxPositionFar(
         unitBoxSize * 0.5 + farDist * 1.5, 0.0, 0.0);
     box->SetLocalPosition(boxPositionFar);
     thermalCamera->Update();
@@ -230,7 +230,7 @@ void ThermalCameraTest::ThermalCameraBoxes(
   }
 
   engine->DestroyScene(scene);
-  ignition::rendering::unloadEngine(engine->Name());
+  gz::rendering::unloadEngine(engine->Name());
 }
 
 TEST_P(ThermalCameraTest, ThermalCameraBoxes)
@@ -239,7 +239,7 @@ TEST_P(ThermalCameraTest, ThermalCameraBoxes)
 }
 
 INSTANTIATE_TEST_CASE_P(ThermalCamera, ThermalCameraTest,
-    RENDER_ENGINE_VALUES, ignition::rendering::PrintToStringParam());
+    RENDER_ENGINE_VALUES, gz::rendering::PrintToStringParam());
 
 //////////////////////////////////////////////////
 int main(int argc, char **argv)

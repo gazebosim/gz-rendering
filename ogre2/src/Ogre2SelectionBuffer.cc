@@ -27,10 +27,10 @@
 #include "ignition/rendering/ogre2/Ogre2Scene.hh"
 #include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
-class ignition::rendering::Ogre2SelectionBufferPrivate
+class gz::rendering::Ogre2SelectionBufferPrivate
 {
   /// \brief This is a material listener and a RenderTargetListener.
   /// The material switcher is applied to only the selection camera

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASEDEPTHCAMERA_HH_
-#define IGNITION_RENDERING_BASE_BASEDEPTHCAMERA_HH_
+#ifndef GZ_RENDERING_BASE_BASEDEPTHCAMERA_HH_
+#define GZ_RENDERING_BASE_BASEDEPTHCAMERA_HH_
 
 #include <string>
 
@@ -24,7 +24,7 @@
 #include "ignition/rendering/base/BaseCamera.hh"
 #include "ignition/rendering/DepthCamera.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -43,11 +43,11 @@ namespace ignition
 
       public: virtual const float *DepthData() const;
 
-      public: virtual ignition::common::ConnectionPtr ConnectNewDepthFrame(
+      public: virtual gz::common::ConnectionPtr ConnectNewDepthFrame(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber);
 
-      public: virtual ignition::common::ConnectionPtr ConnectNewRGBPointCloud(
+      public: virtual gz::common::ConnectionPtr ConnectNewRGBPointCloud(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber);
     };
@@ -79,7 +79,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::common::ConnectionPtr BaseDepthCamera<T>::ConnectNewDepthFrame(
+    gz::common::ConnectionPtr BaseDepthCamera<T>::ConnectNewDepthFrame(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>)
     {
@@ -88,7 +88,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::common::ConnectionPtr BaseDepthCamera<T>::ConnectNewRGBPointCloud(
+    gz::common::ConnectionPtr BaseDepthCamera<T>::ConnectNewRGBPointCloud(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>)
     {

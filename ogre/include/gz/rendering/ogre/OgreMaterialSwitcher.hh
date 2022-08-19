@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE_OGREMATERIALSWITCHER_HH_
-#define IGNITION_RENDERING_OGRE_OGREMATERIALSWITCHER_HH_
+#ifndef GZ_RENDERING_OGRE_OGREMATERIALSWITCHER_HH_
+#define GZ_RENDERING_OGRE_OGREMATERIALSWITCHER_HH_
 
 #include <map>
 #include <string>
@@ -28,7 +28,7 @@
 #include "ignition/rendering/ogre/OgreIncludes.hh"
 #include "ignition/rendering/ogre/OgreRenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -60,7 +60,7 @@ namespace ignition
       /// \brief Get the entity with a specific color
       /// \param[in] _color The entity's color.
       public: std::string EntityName(
-              const ignition::math::Color &_color) const;
+              const gz::math::Color &_color) const;
 
       /// \brief Reset the color value incrementor
       public: void Reset();
@@ -93,7 +93,7 @@ namespace ignition
                   const Ogre::RenderTargetEvent &_evt);
 
       /// \brief Current unique color value
-      private: ignition::math::Color currentColor;
+      private: gz::math::Color currentColor;
 
       /// \brief last entity assigned an unique color value
       private: std::string lastEntity;

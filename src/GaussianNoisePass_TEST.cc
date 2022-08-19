@@ -26,7 +26,7 @@
 #include "ignition/rendering/RenderingIface.hh"
 #include "ignition/rendering/RenderPassSystem.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class GaussianNoisePassTest : public testing::Test,

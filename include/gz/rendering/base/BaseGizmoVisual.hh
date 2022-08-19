@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef IGNITION_RENDERING_BASE_BASEGIZMOVISUAL_HH_
-#define IGNITION_RENDERING_BASE_BASEGIZMOVISUAL_HH_
+#ifndef GZ_RENDERING_BASE_BASEGIZMOVISUAL_HH_
+#define GZ_RENDERING_BASE_BASEGIZMOVISUAL_HH_
 
 #include <map>
 #include <string>
@@ -29,7 +29,7 @@
 #include "ignition/rendering/Camera.hh"
 #include "ignition/rendering/GizmoVisual.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

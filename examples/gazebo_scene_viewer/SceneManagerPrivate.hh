@@ -30,7 +30,7 @@
 #include "ignition/rendering/ShaderType.hh"
 #include "gazebo/transport/Node.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -114,27 +114,27 @@ namespace ignition
 
       private: NewSceneManager *newSceneManager;
 
-      private: gazebo::transport::NodePtr transportNode;
+      private: sim::transport::NodePtr transportNode;
 
-      private: gazebo::transport::PublisherPtr requestPub;
+      private: sim::transport::PublisherPtr requestPub;
 
-      private: gazebo::transport::SubscriberPtr requestSub;
+      private: sim::transport::SubscriberPtr requestSub;
 
-      private: gazebo::transport::SubscriberPtr responseSub;
+      private: sim::transport::SubscriberPtr responseSub;
 
-      private: gazebo::transport::SubscriberPtr lightSub;
+      private: sim::transport::SubscriberPtr lightSub;
 
-      private: gazebo::transport::SubscriberPtr modelSub;
+      private: sim::transport::SubscriberPtr modelSub;
 
-      private: gazebo::transport::SubscriberPtr jointSub;
+      private: sim::transport::SubscriberPtr jointSub;
 
-      private: gazebo::transport::SubscriberPtr visualSub;
+      private: sim::transport::SubscriberPtr visualSub;
 
-      private: gazebo::transport::SubscriberPtr sensorSub;
+      private: sim::transport::SubscriberPtr sensorSub;
 
-      private: gazebo::transport::SubscriberPtr poseSub;
+      private: sim::transport::SubscriberPtr poseSub;
 
-      private: gazebo::event::ConnectionPtr preRenderConn;
+      private: sim::event::ConnectionPtr preRenderConn;
 
       private: int sceneRequestId;
 
@@ -149,10 +149,10 @@ namespace ignition
 
     class SubSceneManager
     {
-      protected: typedef gazebo::msgs::Geometry::Type GeomType;
+      protected: typedef sim::msgs::Geometry::Type GeomType;
 
       protected: typedef void (SubSceneManager::*GeomFunc)
-                     (const gazebo::msgs::Geometry&, VisualPtr);
+                     (const sim::msgs::Geometry&, VisualPtr);
 
       public: SubSceneManager();
 
@@ -209,104 +209,104 @@ namespace ignition
       protected: virtual void ProcessLights() = 0;
 
       protected: virtual void ProcessLight(
-          const gazebo::msgs::Light &_lightMsg);
+          const sim::msgs::Light &_lightMsg);
 
       public: virtual void ProcessLight(
-          const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
+          const sim::msgs::Light &_lightMsg, VisualPtr _parent);
 
       protected: virtual void ProcessDirectionalLight(
-                     const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
+                     const sim::msgs::Light &_lightMsg, VisualPtr _parent);
 
       protected: virtual void ProcessDirectionalLightImpl(
-          const gazebo::msgs::Light &_lightMsg, DirectionalLightPtr _light);
+          const sim::msgs::Light &_lightMsg, DirectionalLightPtr _light);
 
       protected: virtual DirectionalLightPtr DirectionalLight(
-                     const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
+                     const sim::msgs::Light &_lightMsg, VisualPtr _parent);
 
       protected: virtual DirectionalLightPtr CreateDirectionalLight(
-                     const gazebo::msgs::Light &_lightMsg);
+                     const sim::msgs::Light &_lightMsg);
 
       protected: virtual void ProcessPointLight(
-          const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
+          const sim::msgs::Light &_lightMsg, VisualPtr _parent);
 
       protected: virtual void ProcessPointLightImpl(
-          const gazebo::msgs::Light &_lightMsg, PointLightPtr _light);
+          const sim::msgs::Light &_lightMsg, PointLightPtr _light);
 
       protected: virtual PointLightPtr PointLight(
-                     const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
+                     const sim::msgs::Light &_lightMsg, VisualPtr _parent);
 
       protected: virtual PointLightPtr CreatePointLight(
-                     const gazebo::msgs::Light &_lightMsg);
+                     const sim::msgs::Light &_lightMsg);
 
       protected: virtual void ProcessSpotLight(
-          const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
+          const sim::msgs::Light &_lightMsg, VisualPtr _parent);
 
       protected: virtual void ProcessSpotLightImpl(
-          const gazebo::msgs::Light &_lightMsg, SpotLightPtr _light);
+          const sim::msgs::Light &_lightMsg, SpotLightPtr _light);
 
       protected: virtual SpotLightPtr SpotLight(
-          const gazebo::msgs::Light &_lightMsg, VisualPtr _parent);
+          const sim::msgs::Light &_lightMsg, VisualPtr _parent);
 
       protected: virtual SpotLightPtr CreateSpotLight(
-                     const gazebo::msgs::Light &_lightMsg);
+                     const sim::msgs::Light &_lightMsg);
 
       protected: virtual void ProcessLightImpl(
-          const gazebo::msgs::Light &_lightMsg, LightPtr _light);
+          const sim::msgs::Light &_lightMsg, LightPtr _light);
 
       protected: virtual void ProcessSensors() = 0;
 
       protected: virtual void ProcessSensor(
-          const gazebo::msgs::Sensor &_sensorMsg);
+          const sim::msgs::Sensor &_sensorMsg);
 
       protected: virtual void ProcessSensor(
-          const gazebo::msgs::Sensor &_sensorMsg, VisualPtr _parent);
+          const sim::msgs::Sensor &_sensorMsg, VisualPtr _parent);
 
       protected: virtual void ProcessCamera(
-          const gazebo::msgs::Sensor &_sensorMsg, VisualPtr _parent);
+          const sim::msgs::Sensor &_sensorMsg, VisualPtr _parent);
 
       protected: virtual CameraPtr Camera(
-          const gazebo::msgs::Sensor &_sensorMsg, VisualPtr _parent);
+          const sim::msgs::Sensor &_sensorMsg, VisualPtr _parent);
 
       protected: virtual CameraPtr CreateCamera(
-         const gazebo::msgs::Sensor &_sensorMsg);
+         const sim::msgs::Sensor &_sensorMsg);
 
       protected: virtual void ProcessModels() = 0;
 
       protected: virtual void ProcessModel(
-          const gazebo::msgs::Model &_modelMsg);
+          const sim::msgs::Model &_modelMsg);
 
       protected: virtual void ProcessModel(
-          const gazebo::msgs::Model &_modelMsg, VisualPtr _parent);
+          const sim::msgs::Model &_modelMsg, VisualPtr _parent);
 
-      protected: virtual VisualPtr Model(const gazebo::msgs::Model &_modelMsg,
+      protected: virtual VisualPtr Model(const sim::msgs::Model &_modelMsg,
                      VisualPtr _parent);
 
       protected: virtual void ProcessJoints() = 0;
 
       protected: virtual void ProcessJoint(
-          const gazebo::msgs::Joint &_jointMsg);
+          const sim::msgs::Joint &_jointMsg);
 
       protected: virtual void ProcessJoint(
-          const gazebo::msgs::Joint &_jointMsg, VisualPtr _parent);
+          const sim::msgs::Joint &_jointMsg, VisualPtr _parent);
 
-      protected: virtual VisualPtr Joint(const gazebo::msgs::Joint &_jointMsg,
+      protected: virtual VisualPtr Joint(const sim::msgs::Joint &_jointMsg,
                      VisualPtr _parent);
 
       protected: virtual void ProcessVisuals() = 0;
 
       protected: virtual void ProcessVisual(
-          const gazebo::msgs::Visual &_visualMsg);
+          const sim::msgs::Visual &_visualMsg);
 
       protected: virtual void ProcessVisual(
-          const gazebo::msgs::Visual &_visualMsg, VisualPtr _parent);
+          const sim::msgs::Visual &_visualMsg, VisualPtr _parent);
 
       protected: virtual VisualPtr Visual(
-          const gazebo::msgs::Visual &_visualMsg, VisualPtr _parent);
+          const sim::msgs::Visual &_visualMsg, VisualPtr _parent);
 
-      protected: virtual void ProcessLink(const gazebo::msgs::Link &_linkMsg,
+      protected: virtual void ProcessLink(const sim::msgs::Link &_linkMsg,
                      VisualPtr _parent);
 
-      protected: virtual VisualPtr Link(const gazebo::msgs::Link &_linkMsg,
+      protected: virtual VisualPtr Link(const sim::msgs::Link &_linkMsg,
                      VisualPtr _parent);
 
       protected: virtual VisualPtr Visual(bool _hasId, unsigned int _id,
@@ -316,41 +316,41 @@ namespace ignition
                      const std::string &_name);
 
       protected: virtual void ProcessGeometry(
-          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
+          const sim::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
       protected: virtual void ProcessBox(
-          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
+          const sim::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
       protected: virtual void ProcessCone(
-          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
+          const sim::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
       protected: virtual void ProcessCylinder(
-          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
+          const sim::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
       protected: virtual void ProcessEmpty(
-          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
+          const sim::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
       protected: virtual void ProcessMesh(
-          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
+          const sim::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
       protected: virtual void ProcessPlane(
-          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
+          const sim::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
       protected: virtual void ProcessSphere(
-          const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent);
+          const sim::msgs::Geometry &_geometryMsg, VisualPtr _parent);
 
       protected: virtual MaterialPtr CreateMaterial(
-                  const gazebo::msgs::Material &_materialMsg);
+                  const sim::msgs::Material &_materialMsg);
 
       protected: virtual void ProcessPoses() = 0;
 
-      protected: virtual void ProcessPose(const gazebo::msgs::Pose &_poseMsg);
+      protected: virtual void ProcessPose(const sim::msgs::Pose &_poseMsg);
 
       protected: virtual void SetPose(NodePtr _node,
-                     const gazebo::msgs::Pose &_poseMsg);
+                     const sim::msgs::Pose &_poseMsg);
 
       protected: virtual void SetScale(VisualPtr _visual,
-                     const gazebo::msgs::Vector3d &_scaleMsg);
+                     const sim::msgs::Vector3d &_scaleMsg);
 
       protected: virtual void ProcessRemovals() = 0;
 
@@ -359,19 +359,19 @@ namespace ignition
       protected: virtual VisualPtr Parent(const std::string &_name);
 
       protected: static math::Color Convert(
-          const gazebo::msgs::Color &_colorMsg);
+          const sim::msgs::Color &_colorMsg);
 
       protected: static math::Pose3d Convert(
-          const gazebo::msgs::Pose &_poseMsg);
+          const sim::msgs::Pose &_poseMsg);
 
       protected: static math::Vector3d Convert(
-          const gazebo::msgs::Vector3d &_vecMsg);
+          const sim::msgs::Vector3d &_vecMsg);
 
       protected: static math::Quaterniond Convert(
-                     const gazebo::msgs::Quaternion &_quatMsg);
+                     const sim::msgs::Quaternion &_quatMsg);
 
       protected: static ShaderType Convert(
-          gazebo::msgs::Material::ShaderType _type);
+          sim::msgs::Material::ShaderType _type);
 
       private: void CreateGeometryFunctionMap();
 
@@ -381,15 +381,15 @@ namespace ignition
 
       protected: common::Time timePosesReceived;
 
-      protected: std::vector<gazebo::msgs::Light> lightMsgs;
+      protected: std::vector<sim::msgs::Light> lightMsgs;
 
-      protected: std::vector<gazebo::msgs::Model> modelMsgs;
+      protected: std::vector<sim::msgs::Model> modelMsgs;
 
-      protected: std::vector<gazebo::msgs::Joint> jointMsgs;
+      protected: std::vector<sim::msgs::Joint> jointMsgs;
 
-      protected: std::vector<gazebo::msgs::Visual> visualMsgs;
+      protected: std::vector<sim::msgs::Visual> visualMsgs;
 
-      protected: std::vector<gazebo::msgs::Sensor> sensorMsgs;
+      protected: std::vector<sim::msgs::Sensor> sensorMsgs;
 
       protected: std::vector<std::string> approvedRemovals;
 
@@ -421,7 +421,7 @@ namespace ignition
 
       protected: virtual void ProcessRemovals();
 
-      private: std::map<std::string, gazebo::msgs::Pose> poseMsgs;
+      private: std::map<std::string, sim::msgs::Pose> poseMsgs;
     };
 
     class NewSceneManager :
@@ -454,15 +454,15 @@ namespace ignition
       protected: virtual void ProcessPoses();
 
       protected: virtual void ProcessPoses(
-          const gazebo::msgs::PosesStamped &_posesMsg);
+          const sim::msgs::PosesStamped &_posesMsg);
 
       protected: virtual void ProcessRemovals();
 
       protected: bool sceneReceived;
 
-      protected: gazebo::msgs::Scene sceneMsg;
+      protected: sim::msgs::Scene sceneMsg;
 
-      private: std::vector<gazebo::msgs::PosesStamped> posesMsgs;
+      private: std::vector<sim::msgs::PosesStamped> posesMsgs;
     };
   }
 }

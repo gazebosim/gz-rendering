@@ -30,7 +30,7 @@
 #include <ignition/common/SingletonT.hh>
 #include "ignition/rendering/RenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

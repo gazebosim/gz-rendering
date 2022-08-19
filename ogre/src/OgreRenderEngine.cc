@@ -44,7 +44,7 @@
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreStorage.hh"
 
-class ignition::rendering::OgreRenderEnginePrivate
+class gz::rendering::OgreRenderEnginePrivate
 {
 #if !defined(__APPLE__) && !defined(_WIN32)
   public: XVisualInfo *dummyVisual = nullptr;
@@ -54,7 +54,7 @@ class ignition::rendering::OgreRenderEnginePrivate
   public: std::vector<unsigned int> fsaaLevels;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

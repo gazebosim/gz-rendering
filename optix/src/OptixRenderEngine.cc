@@ -25,7 +25,7 @@
 #include "ignition/rendering/optix/OptixStorage.hh"
 #include "ignition/rendering/optix/OptixRenderEngine.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

@@ -29,7 +29,7 @@
 
 /// \internal
 /// \brief Private data for the OgreGpuRays class
-class ignition::rendering::OgreGpuRaysPrivate
+class gz::rendering::OgreGpuRaysPrivate
 {
   /// \brief Event triggered when new gpu rays range data are available.
   /// \param[in] _frame New frame containing raw gpu rays data.
@@ -37,7 +37,7 @@ class ignition::rendering::OgreGpuRaysPrivate
   /// \param[in] _height Height of frame.
   /// \param[in] _channels Number of channels
   /// \param[in] _format Format of frame.
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
                unsigned int, unsigned int, unsigned int,
                const std::string &)> newGpuRaysFrame;
 
@@ -126,7 +126,7 @@ class ignition::rendering::OgreGpuRaysPrivate
   public: unsigned int cameraCount = 1;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

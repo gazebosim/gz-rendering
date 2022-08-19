@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef IGNITION_RENDERING_BASEMARKER_HH_
-#define IGNITION_RENDERING_BASEMARKER_HH_
+#ifndef GZ_RENDERING_BASEMARKER_HH_
+#define GZ_RENDERING_BASEMARKER_HH_
 
 #include <ignition/common/SuppressWarning.hh>
 
@@ -23,7 +23,7 @@
 #include "ignition/rendering/base/BaseObject.hh"
 #include "ignition/rendering/base/BaseRenderTypes.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -72,15 +72,15 @@ namespace ignition
       // Documentation inherited
       public: virtual void AddPoint(double _x,
                   double _y, double _z,
-                  const ignition::math::Color &_color) override;
+                  const gz::math::Color &_color) override;
 
       // Documentation inherited
-      public: virtual void AddPoint(const ignition::math::Vector3d &_pt,
-                  const ignition::math::Color &_color) override;
+      public: virtual void AddPoint(const gz::math::Vector3d &_pt,
+                  const gz::math::Color &_color) override;
 
       // Documentation inherited
       public: virtual void SetPoint(unsigned int _index,
-                  const ignition::math::Vector3d &_value) override;
+                  const gz::math::Vector3d &_value) override;
 
       /// \brief Life time of a marker
       IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
@@ -96,7 +96,7 @@ namespace ignition
 
       /// \brief Marker type
       protected: MarkerType markerType =
-          ignition::rendering::MarkerType::MT_NONE;
+          gz::rendering::MarkerType::MT_NONE;
     };
 
     /////////////////////////////////////////////////
@@ -182,8 +182,8 @@ namespace ignition
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseMarker<T>::AddPoint(const ignition::math::Vector3d &,
-                                 const ignition::math::Color &)
+    void BaseMarker<T>::AddPoint(const gz::math::Vector3d &,
+                                 const gz::math::Color &)
     {
         // no op
     }
@@ -191,15 +191,15 @@ namespace ignition
     /////////////////////////////////////////////////
     template <class T>
     void BaseMarker<T>::AddPoint(double _x, double _y, double _z,
-                  const ignition::math::Color &_color)
+                  const gz::math::Color &_color)
     {
-      this->AddPoint(ignition::math::Vector3d(_x, _y, _z), _color);
+      this->AddPoint(gz::math::Vector3d(_x, _y, _z), _color);
     }
 
     /////////////////////////////////////////////////
     template <class T>
     void BaseMarker<T>::SetPoint(unsigned int,
-                  const ignition::math::Vector3d &)
+                  const gz::math::Vector3d &)
     {
       // no op
     }

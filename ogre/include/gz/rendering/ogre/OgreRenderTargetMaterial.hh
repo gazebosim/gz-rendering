@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGRRENDERTARGETMATERIAL_HH_
-#define IGNITION_RENDERING_OGRE_OGRRENDERTARGETMATERIAL_HH_
+#ifndef GZ_RENDERING_OGRE_OGRRENDERTARGETMATERIAL_HH_
+#define GZ_RENDERING_OGRE_OGRRENDERTARGETMATERIAL_HH_
 
 #include <vector>
 
@@ -31,7 +31,7 @@
   #pragma warning(disable:4275)
 #endif
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RENDERTYPES_HH_
-#define IGNITION_RENDERING_RENDERTYPES_HH_
+#ifndef GZ_RENDERING_RENDERTYPES_HH_
+#define GZ_RENDERING_RENDERTYPES_HH_
 
 #include <memory>
 #include <ignition/rendering/config.hh>
@@ -37,7 +37,7 @@
 /// \brief Render visuals that are selectable mask.
 #define IGN_VISIBILITY_SELECTABLE      0x00000002
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

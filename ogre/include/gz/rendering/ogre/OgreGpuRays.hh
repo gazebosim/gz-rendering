@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef IGNITION_RENDERING_OGRE_OGREGPURAYS_HH_
-#define IGNITION_RENDERING_OGRE_OGREGPURAYS_HH_
+#ifndef GZ_RENDERING_OGRE_OGREGPURAYS_HH_
+#define GZ_RENDERING_OGRE_OGREGPURAYS_HH_
 
 #include <string>
 #include <vector>
@@ -41,7 +41,7 @@
   #include <Winsock2.h>
 #endif
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

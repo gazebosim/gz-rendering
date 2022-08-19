@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_GIZMOVISUAL_HH_
-#define IGNITION_RENDERING_GIZMOVISUAL_HH_
+#ifndef GZ_RENDERING_GIZMOVISUAL_HH_
+#define GZ_RENDERING_GIZMOVISUAL_HH_
 
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/CompositeVisual.hh"
@@ -23,7 +23,7 @@
 #include "ignition/rendering/Export.hh"
 #include "ignition/rendering/TransformType.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

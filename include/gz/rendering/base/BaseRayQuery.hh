@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASERAYQUERY_HH_
-#define IGNITION_RENDERING_BASE_BASERAYQUERY_HH_
+#ifndef GZ_RENDERING_BASE_BASERAYQUERY_HH_
+#define GZ_RENDERING_BASE_BASERAYQUERY_HH_
 
 #include <ignition/math/Matrix4.hh>
 #include <ignition/math/Vector3.hh>
@@ -23,7 +23,7 @@
 #include "ignition/rendering/RayQuery.hh"
 #include "ignition/rendering/Scene.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {
@@ -90,7 +90,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::Vector3d BaseRayQuery<T>::Origin() const
+    gz::math::Vector3d BaseRayQuery<T>::Origin() const
     {
       return this->origin;
     }
@@ -104,7 +104,7 @@ namespace ignition
 
     //////////////////////////////////////////////////
     template <class T>
-    ignition::math::Vector3d BaseRayQuery<T>::Direction() const
+    gz::math::Vector3d BaseRayQuery<T>::Direction() const
     {
       return this->direction;
     }
@@ -112,7 +112,7 @@ namespace ignition
     //////////////////////////////////////////////////
     template <class T>
     void BaseRayQuery<T>::SetFromCamera(const CameraPtr &_camera,
-        const ignition::math::Vector2d &_coord)
+        const gz::math::Vector2d &_coord)
     {
       math::Matrix4d projectionMatrix = _camera->ProjectionMatrix();
       math::Matrix4d viewMatrix = _camera->ViewMatrix();

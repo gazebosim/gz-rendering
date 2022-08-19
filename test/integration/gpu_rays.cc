@@ -36,7 +36,7 @@
 
 #define WAIT_TIME 0.02
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,

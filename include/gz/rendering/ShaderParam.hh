@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef IGNITION_RENDERING_SHADERPARAM_HH_
-#define IGNITION_RENDERING_SHADERPARAM_HH_
+#ifndef GZ_RENDERING_SHADERPARAM_HH_
+#define GZ_RENDERING_SHADERPARAM_HH_
 
 #include <cstdint>
 #include <memory>
@@ -26,7 +26,7 @@
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"
 
-namespace ignition
+namespace gz
 {
   namespace rendering
   {

@@ -22,7 +22,7 @@
 #include "ignition/rendering/RenderEngineManager.hh"
 #include "ignition/rendering/Scene.hh"
 
-namespace ignition
+namespace gz
 {
 namespace rendering
 {
@@ -129,7 +129,7 @@ void setPluginPaths(const std::list<std::string> &_paths)
 //////////////////////////////////////////////////
 ScenePtr sceneFromFirstRenderEngine()
 {
-  auto loadedEngNames = ignition::rendering::loadedEngines();
+  auto loadedEngNames = gz::rendering::loadedEngines();
   if (loadedEngNames.empty())
   {
     igndbg << "No rendering engine is loaded yet" << std::endl;
@@ -143,7 +143,7 @@ ScenePtr sceneFromFirstRenderEngine()
       << "Using engine [" << engineName << "]" << std::endl;
   }
 
-  auto engine = ignition::rendering::engine(engineName);
+  auto engine = gz::rendering::engine(engineName);
   if (!engine)
   {
     ignerr << "Internal error: failed to load engine [" << engineName

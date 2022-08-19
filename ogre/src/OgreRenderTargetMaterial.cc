@@ -18,7 +18,7 @@
 #include "ignition/rendering/ogre/OgreScene.hh"
 #include "ignition/rendering/ogre/OgreRenderTargetMaterial.hh"
 
-using namespace ignition::rendering;
+using namespace gz::rendering;
 
 
 //////////////////////////////////////////////////

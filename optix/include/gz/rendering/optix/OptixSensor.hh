@@ -17,8 +17,8 @@
 #ifndef GZ_RENDERING_OPTIX_OPTIXSENSOR_HH_
 #define GZ_RENDERING_OPTIX_OPTIXSENSOR_HH_
 
-#include "ignition/rendering/base/BaseSensor.hh"
-#include "ignition/rendering/optix/OptixNode.hh"
+#include "gz/rendering/base/BaseSensor.hh"
+#include "gz/rendering/optix/OptixNode.hh"
 
 namespace gz
 {

@@ -18,7 +18,7 @@
 #define GZ_RENDERING_BASE_BASERENDERPASS_HH_
 
 #include <string>
-#include "ignition/rendering/RenderPass.hh"
+#include "gz/rendering/RenderPass.hh"
 
 namespace gz
 {

@@ -18,9 +18,9 @@
 #define GZ_RENDERING_BASE_BASEGAUSSIANNOISEPASS_HH_
 
 #include <string>
-#include <ignition/math/Rand.hh>
+#include <gz/math/Rand.hh>
 
-#include "ignition/rendering/GaussianNoisePass.hh"
+#include "gz/rendering/GaussianNoisePass.hh"
 
 namespace gz
 {

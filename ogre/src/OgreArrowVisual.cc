@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre/OgreArrowVisual.hh"
+#include "gz/rendering/ogre/OgreArrowVisual.hh"
 
 using namespace gz;
 using namespace rendering;

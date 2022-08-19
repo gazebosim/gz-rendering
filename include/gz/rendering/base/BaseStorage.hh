@@ -22,10 +22,10 @@
 #include <string>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/SuppressWarning.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/SuppressWarning.hh>
 
-#include "ignition/rendering/Storage.hh"
+#include "gz/rendering/Storage.hh"
 
 namespace gz
 {

@@ -18,7 +18,7 @@
 #define GZ_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_TESTYPES_HH_
 
 #include <vector>
-#include <ignition/rendering.hh>
+#include <gz/rendering.hh>
 
 namespace gz
 {

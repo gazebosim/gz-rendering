@@ -17,13 +17,13 @@
 #ifndef GZ_RENDERING_MARKER_HH_
 #define GZ_RENDERING_MARKER_HH_
 
-#include <ignition/common/Time.hh>
-#include <ignition/math/Color.hh>
-#include <ignition/math/Vector3.hh>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/Object.hh"
-#include "ignition/rendering/RenderTypes.hh"
+#include <gz/common/Time.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Vector3.hh>
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/Object.hh"
+#include "gz/rendering/RenderTypes.hh"
 
 namespace gz
 {

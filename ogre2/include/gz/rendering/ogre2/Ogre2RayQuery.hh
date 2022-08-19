@@ -19,10 +19,10 @@
 
 #include <memory>
 
-#include "ignition/rendering/base/BaseRayQuery.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2Object.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/base/BaseRayQuery.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2Object.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 
 namespace gz
 {

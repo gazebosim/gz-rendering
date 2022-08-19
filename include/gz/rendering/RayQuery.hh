@@ -17,13 +17,13 @@
 #ifndef GZ_RENDERING_RAYQUERY_HH_
 #define GZ_RENDERING_RAYQUERY_HH_
 
-#include <ignition/common/SuppressWarning.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/common/SuppressWarning.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/Visual.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/Visual.hh"
 
 namespace gz
 {

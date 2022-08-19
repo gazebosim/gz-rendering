@@ -15,11 +15,11 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre/OgreVisual.hh"
-#include "ignition/rendering/ogre/OgreConversions.hh"
-#include "ignition/rendering/ogre/OgreStorage.hh"
+#include "gz/rendering/ogre/OgreVisual.hh"
+#include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreStorage.hh"
 
 using namespace gz;
 using namespace rendering;

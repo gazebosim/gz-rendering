@@ -19,13 +19,13 @@
 
 #include <string>
 #include <vector>
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/base/BaseRenderTypes.hh"
-#include "ignition/rendering/base/BaseRenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2Object.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/base/BaseRenderTarget.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2Object.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
 
 namespace Ogre
 {

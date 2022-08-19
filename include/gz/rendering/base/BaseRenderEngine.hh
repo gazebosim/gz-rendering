@@ -20,9 +20,9 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <ignition/common/SuppressWarning.hh>
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/Storage.hh"
+#include <gz/common/SuppressWarning.hh>
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/Storage.hh"
 
 namespace gz
 {

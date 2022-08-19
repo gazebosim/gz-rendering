@@ -19,9 +19,9 @@
 
 #include <map>
 #include <string>
-#include "ignition/rendering/Mesh.hh"
-#include "ignition/rendering/Storage.hh"
-#include "ignition/rendering/base/BaseObject.hh"
+#include "gz/rendering/Mesh.hh"
+#include "gz/rendering/Storage.hh"
+#include "gz/rendering/base/BaseObject.hh"
 
 namespace gz
 {

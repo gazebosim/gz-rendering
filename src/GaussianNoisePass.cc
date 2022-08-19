@@ -16,7 +16,7 @@
  */
 
 
-#include "ignition/rendering/GaussianNoisePass.hh"
+#include "gz/rendering/GaussianNoisePass.hh"
 
 using namespace gz;
 using namespace rendering;

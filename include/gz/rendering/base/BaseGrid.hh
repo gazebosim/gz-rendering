@@ -18,8 +18,8 @@
 #define GZ_RENDERING_BASE_BASEGRID_HH_
 
 #include <string>
-#include "ignition/rendering/Grid.hh"
-#include "ignition/rendering/base/BaseObject.hh"
+#include "gz/rendering/Grid.hh"
+#include "gz/rendering/base/BaseObject.hh"
 
 namespace gz
 {

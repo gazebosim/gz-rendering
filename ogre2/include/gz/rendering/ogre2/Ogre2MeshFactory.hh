@@ -20,11 +20,11 @@
 #include <string>
 #include <vector>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/MeshDescriptor.hh"
-#include "ignition/rendering/ogre2/Ogre2Mesh.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/MeshDescriptor.hh"
+#include "gz/rendering/ogre2/Ogre2Mesh.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Export.hh"
 
 namespace Ogre
 {

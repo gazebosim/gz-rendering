@@ -19,8 +19,8 @@
 
 #include <memory>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
 
 namespace gz
 {

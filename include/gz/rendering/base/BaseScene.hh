@@ -21,12 +21,12 @@
 #include <set>
 #include <string>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/SuppressWarning.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/SuppressWarning.hh>
 
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
 
 namespace gz
 {

@@ -20,8 +20,8 @@
 #include <memory>
 #include <string>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre2/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre2/Export.hh"
 
 namespace Ogre
 {

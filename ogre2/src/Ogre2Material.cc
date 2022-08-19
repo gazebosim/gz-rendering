@@ -25,15 +25,15 @@
 #pragma warning(pop)
 #endif
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
 
-#include "ignition/rendering/ShaderParams.hh"
-#include "ignition/rendering/ShaderType.hh"
-#include "ignition/rendering/ogre2/Ogre2Material.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ShaderParams.hh"
+#include "gz/rendering/ShaderType.hh"
+#include "gz/rendering/ogre2/Ogre2Material.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
 
 using namespace gz;
 using namespace rendering;

@@ -17,11 +17,11 @@
 #ifndef GZ_RENDERING_BASEMARKER_HH_
 #define GZ_RENDERING_BASEMARKER_HH_
 
-#include <ignition/common/SuppressWarning.hh>
+#include <gz/common/SuppressWarning.hh>
 
-#include "ignition/rendering/Marker.hh"
-#include "ignition/rendering/base/BaseObject.hh"
-#include "ignition/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/Marker.hh"
+#include "gz/rendering/base/BaseObject.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
 
 namespace gz
 {

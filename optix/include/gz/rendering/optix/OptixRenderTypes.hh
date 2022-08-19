@@ -17,7 +17,7 @@
 #ifndef GZ_RENDERING_OPTIX_OPTIXRENDERTYPES_HH_
 #define GZ_RENDERING_OPTIX_OPTIXRENDERTYPES_HH_
 
-#include "ignition/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
 
 namespace gz
 {

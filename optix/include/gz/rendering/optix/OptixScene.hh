@@ -19,11 +19,11 @@
 
 #include <string>
 
-#include "ignition/rendering/base/BaseScene.hh"
+#include "gz/rendering/base/BaseScene.hh"
 
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
-#include "ignition/rendering/optix/Export.hh"
+#include "gz/rendering/optix/OptixRenderTypes.hh"
+#include "gz/rendering/optix/OptixIncludes.hh"
+#include "gz/rendering/optix/Export.hh"
 
 namespace gz
 {

@@ -22,9 +22,9 @@
   #endif
   #include <windows.h>
 #endif
-#include <ignition/math/Helpers.hh>
-#include "ignition/rendering/ogre/OgreDepthCamera.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
+#include <gz/math/Helpers.hh>
+#include "gz/rendering/ogre/OgreDepthCamera.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
 
 /// \internal
 /// \brief Private data for the OgreDepthCamera class

@@ -18,7 +18,7 @@
 #define GZ_RENDERING_OGRE_OGRERENDERTYPES_HH_
 
 #include <memory>
-#include "ignition/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
 
 namespace gz
 {

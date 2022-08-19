@@ -20,14 +20,14 @@
 
 #include <map>
 #include <string>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/SuppressWarning.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/common/SuppressWarning.hh>
 
-#include "ignition/rendering/base/BaseScene.hh"
-#include "ignition/rendering/base/BaseNode.hh"
-#include "ignition/rendering/ArrowVisual.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/GizmoVisual.hh"
+#include "gz/rendering/base/BaseScene.hh"
+#include "gz/rendering/base/BaseNode.hh"
+#include "gz/rendering/ArrowVisual.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/GizmoVisual.hh"
 
 namespace gz
 {

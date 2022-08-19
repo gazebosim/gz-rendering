@@ -19,8 +19,8 @@
 
 #include <map>
 #include <string>
-#include <ignition/common/SuppressWarning.hh>
-#include "ignition/rendering/Object.hh"
+#include <gz/common/SuppressWarning.hh>
+#include "gz/rendering/Object.hh"
 
 namespace gz
 {

@@ -32,7 +32,7 @@
 #include <string>
 #include <vector>
 
-#include <ignition/rendering.hh>
+#include <gz/rendering.hh>
 
 #include "ManualSceneDemo.hh"
 #include "DemoWindow.hh"

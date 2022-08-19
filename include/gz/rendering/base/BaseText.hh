@@ -18,8 +18,8 @@
 #define GZ_RENDERING_BASE_BASETEXT_HH_
 
 #include <string>
-#include "ignition/rendering/Text.hh"
-#include "ignition/rendering/base/BaseObject.hh"
+#include "gz/rendering/Text.hh"
+#include "gz/rendering/base/BaseObject.hh"
 
 namespace gz
 {

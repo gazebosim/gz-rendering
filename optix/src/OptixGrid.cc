@@ -15,9 +15,9 @@
  *
  */
 
-#include "ignition/rendering/optix/OptixGrid.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
-#include "ignition/rendering/optix/OptixVisual.hh"
+#include "gz/rendering/optix/OptixGrid.hh"
+#include "gz/rendering/optix/OptixIncludes.hh"
+#include "gz/rendering/optix/OptixVisual.hh"
 
 using namespace gz;
 using namespace rendering;

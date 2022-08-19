@@ -19,8 +19,8 @@
 
 #include <variant>
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Node.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Node.hh"
 
 namespace gz
 {

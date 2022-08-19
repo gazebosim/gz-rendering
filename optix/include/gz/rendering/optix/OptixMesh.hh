@@ -19,10 +19,10 @@
 
 #include <string>
 #include <vector>
-#include "ignition/rendering/base/BaseMesh.hh"
-#include "ignition/rendering/optix/OptixGeometry.hh"
-#include "ignition/rendering/optix/OptixObject.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
+#include "gz/rendering/base/BaseMesh.hh"
+#include "gz/rendering/optix/OptixGeometry.hh"
+#include "gz/rendering/optix/OptixObject.hh"
+#include "gz/rendering/optix/OptixRenderTypes.hh"
 
 namespace gz
 {

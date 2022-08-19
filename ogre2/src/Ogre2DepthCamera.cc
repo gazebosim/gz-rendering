@@ -24,18 +24,18 @@
 #endif
 
 #include <math.h>
-#include <ignition/math/Helpers.hh>
+#include <gz/math/Helpers.hh>
 
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Sensor.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2DepthCamera.hh"
+#include "gz/rendering/ogre2/Ogre2GaussianNoisePass.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Sensor.hh"
 
 
 namespace gz

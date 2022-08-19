@@ -18,7 +18,7 @@
 #define GZ_RENDERING_EXAMPLES_VIEW_CONTROL_GLUTWINDOW_HH_
 
 #include <vector>
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/rendering/RenderTypes.hh"
 
 namespace ir = gz::rendering;
 

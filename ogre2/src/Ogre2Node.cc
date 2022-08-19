@@ -15,13 +15,13 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre2/Ogre2Node.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Storage.hh"
+#include "gz/rendering/ogre2/Ogre2Node.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Storage.hh"
 
 using namespace gz;
 using namespace rendering;

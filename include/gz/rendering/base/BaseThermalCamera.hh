@@ -19,8 +19,8 @@
 
 #include <string>
 
-#include "ignition/rendering/base/BaseCamera.hh"
-#include "ignition/rendering/ThermalCamera.hh"
+#include "gz/rendering/base/BaseCamera.hh"
+#include "gz/rendering/ThermalCamera.hh"
 
 namespace gz
 {

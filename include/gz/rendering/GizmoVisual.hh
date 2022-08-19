@@ -17,11 +17,11 @@
 #ifndef GZ_RENDERING_GIZMOVISUAL_HH_
 #define GZ_RENDERING_GIZMOVISUAL_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/CompositeVisual.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Export.hh"
-#include "ignition/rendering/TransformType.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/CompositeVisual.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Export.hh"
+#include "gz/rendering/TransformType.hh"
 
 namespace gz
 {

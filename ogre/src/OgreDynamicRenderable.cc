@@ -15,8 +15,8 @@
  *
 */
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/ogre/OgreDynamicRenderable.hh"
+#include "gz/common/Console.hh"
+#include "gz/rendering/ogre/OgreDynamicRenderable.hh"
 
 using namespace gz;
 using namespace rendering;

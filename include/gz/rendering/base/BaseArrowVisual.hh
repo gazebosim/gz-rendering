@@ -17,8 +17,8 @@
 #ifndef GZ_RENDERING_BASE_BASEARROWVISUAL_HH_
 #define GZ_RENDERING_BASE_BASEARROWVISUAL_HH_
 
-#include "ignition/rendering/ArrowVisual.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/ArrowVisual.hh"
+#include "gz/rendering/Scene.hh"
 
 namespace gz
 {

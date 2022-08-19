@@ -17,11 +17,11 @@
 #ifndef GZ_RENDERING_BASE_BASERAYQUERY_HH_
 #define GZ_RENDERING_BASE_BASERAYQUERY_HH_
 
-#include <ignition/math/Matrix4.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Matrix4.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/RayQuery.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/RayQuery.hh"
+#include "gz/rendering/Scene.hh"
 
 namespace gz
 {

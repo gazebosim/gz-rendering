@@ -15,7 +15,7 @@
  *
  */
 
-#include "ignition/rendering/ShaderParam.hh"
+#include "gz/rendering/ShaderParam.hh"
 
 using namespace gz::rendering;
 

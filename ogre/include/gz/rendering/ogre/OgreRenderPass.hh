@@ -17,10 +17,10 @@
 #ifndef GZ_RENDERING_OGRE_OGRERENDERPASS_HH_
 #define GZ_RENDERING_OGRE_OGRERENDERPASS_HH_
 
-#include "ignition/rendering/base/BaseRenderPass.hh"
-#include "ignition/rendering/ogre/Export.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreObject.hh"
+#include "gz/rendering/base/BaseRenderPass.hh"
+#include "gz/rendering/ogre/Export.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreObject.hh"
 
 namespace gz
 {

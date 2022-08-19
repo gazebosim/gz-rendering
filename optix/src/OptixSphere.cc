@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/optix/OptixSphere.hh"
+#include "gz/rendering/optix/OptixSphere.hh"
 
 using namespace gz;
 using namespace rendering;

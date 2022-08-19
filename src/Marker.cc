@@ -16,7 +16,7 @@
  */
 
 
-#include "ignition/rendering/Marker.hh"
+#include "gz/rendering/Marker.hh"
 
 using namespace gz;
 using namespace rendering;

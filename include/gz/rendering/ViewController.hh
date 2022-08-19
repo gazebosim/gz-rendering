@@ -17,11 +17,11 @@
 #ifndef GZ_RENDERING_VIEWCONTROLLER_HH_
 #define GZ_RENDERING_VIEWCONTROLLER_HH_
 
-#include <ignition/math/Vector2.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Vector2.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Camera.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Camera.hh"
 
 namespace gz
 {

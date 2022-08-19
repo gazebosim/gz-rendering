@@ -12,7 +12,7 @@
 static const std::vector<const char *> kRenderEngineTestValues{"ogre2", "optix"};
 
 #include <vector>
-#include <ignition/common/Util.hh>
+#include <gz/common/Util.hh>
 
 namespace gz
 {

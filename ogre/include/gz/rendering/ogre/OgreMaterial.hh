@@ -19,11 +19,11 @@
 
 #include <string>
 
-#include <ignition/common/SuppressWarning.hh>
+#include <gz/common/SuppressWarning.hh>
 
-#include "ignition/rendering/base/BaseMaterial.hh"
-#include "ignition/rendering/ogre/OgreObject.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/base/BaseMaterial.hh"
+#include "gz/rendering/ogre/OgreObject.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
 
 namespace gz
 {

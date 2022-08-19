@@ -19,7 +19,7 @@
 
 #include <memory>
 
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/rendering/RenderTypes.hh"
 
 namespace gz
 {

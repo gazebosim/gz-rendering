@@ -18,8 +18,8 @@
 #define GZ_RENDERING_BASE_BASEGEOMETRY_HH_
 
 #include <string>
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/Scene.hh"
 
 namespace gz
 {

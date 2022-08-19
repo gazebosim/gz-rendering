@@ -15,7 +15,7 @@
  *
  */
 
-#include "ignition/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
 
 using namespace gz::rendering;
 

@@ -25,12 +25,12 @@
 #pragma warning(pop)
 #endif
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
-#include "ignition/rendering/ogre2/Ogre2Material.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/common/Console.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2DynamicRenderable.hh"
+#include "gz/rendering/ogre2/Ogre2Material.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
 
 /// \brief Private implementation
 class gz::rendering::Ogre2DynamicRenderablePrivate

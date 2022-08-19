@@ -18,7 +18,7 @@
 #define GZ_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
 
 #include <vector>
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/rendering/RenderTypes.hh"
 
 namespace gz = gz::rendering;
 

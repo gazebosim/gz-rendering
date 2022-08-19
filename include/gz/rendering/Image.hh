@@ -19,11 +19,11 @@
 
 #include <memory>
 
-#include <ignition/common/SuppressWarning.hh>
+#include <gz/common/SuppressWarning.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/PixelFormat.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/PixelFormat.hh"
+#include "gz/rendering/Export.hh"
 
 namespace gz
 {

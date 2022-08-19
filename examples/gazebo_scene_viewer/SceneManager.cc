@@ -17,9 +17,9 @@
 
 #include <gazebo/common/Events.hh>
 
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/Console.hh>
-#include <ignition/rendering.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/common/Console.hh>
+#include <gz/rendering.hh>
 
 #include "SceneManager.hh"
 #include "SceneManagerPrivate.hh"

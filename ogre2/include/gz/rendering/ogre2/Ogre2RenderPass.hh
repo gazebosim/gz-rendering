@@ -19,10 +19,10 @@
 
 #include <string>
 
-#include "ignition/rendering/base/BaseRenderPass.hh"
-#include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2Object.hh"
+#include "gz/rendering/base/BaseRenderPass.hh"
+#include "gz/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2Object.hh"
 
 namespace gz
 {

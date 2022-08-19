@@ -17,14 +17,14 @@
 #ifndef GZ_RENDERING_OGRE_OGRERENDERTARGET_HH_
 #define GZ_RENDERING_OGRE_OGRERENDERTARGET_HH_
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/base/BaseRenderTypes.hh"
-#include "ignition/rendering/base/BaseRenderTarget.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreObject.hh"
-#include "ignition/rendering/ogre/OgreRenderTargetMaterial.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/base/BaseRenderTarget.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreObject.hh"
+#include "gz/rendering/ogre/OgreRenderTargetMaterial.hh"
 
 namespace Ogre
 {

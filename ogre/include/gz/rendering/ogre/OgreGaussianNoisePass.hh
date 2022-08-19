@@ -19,12 +19,12 @@
 
 #include <memory>
 
-#include <ignition/common/SuppressWarning.hh>
+#include <gz/common/SuppressWarning.hh>
 
-#include "ignition/rendering/base/BaseGaussianNoisePass.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderPass.hh"
-#include "ignition/rendering/ogre/Export.hh"
+#include "gz/rendering/base/BaseGaussianNoisePass.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreRenderPass.hh"
+#include "gz/rendering/ogre/Export.hh"
 
 namespace gz
 {

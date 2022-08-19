@@ -17,9 +17,9 @@
 #ifndef GZ_RENDERING_BASE_BASEAXISVISUAL_HH_
 #define GZ_RENDERING_BASE_BASEAXISVISUAL_HH_
 
-#include "ignition/rendering/AxisVisual.hh"
-#include "ignition/rendering/ArrowVisual.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/AxisVisual.hh"
+#include "gz/rendering/ArrowVisual.hh"
+#include "gz/rendering/Scene.hh"
 
 namespace gz
 {

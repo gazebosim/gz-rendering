@@ -17,7 +17,7 @@
 #ifndef GZ_RENDERING_BASE_BASELIGHT_HH_
 #define GZ_RENDERING_BASE_BASELIGHT_HH_
 
-#include "ignition/rendering/Light.hh"
+#include "gz/rendering/Light.hh"
 
 namespace gz
 {

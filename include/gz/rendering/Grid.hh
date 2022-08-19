@@ -18,9 +18,9 @@
 #define GZ_RENDERING_GRID_HH_
 
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/Object.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/Object.hh"
 
 namespace gz
 {

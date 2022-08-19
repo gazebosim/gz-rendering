@@ -19,12 +19,12 @@
 
 #include <string>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/Object.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Image.hh"
+#include "gz/rendering/Object.hh"
 
 namespace gz
 {

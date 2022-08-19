@@ -19,11 +19,11 @@
 
 #include <map>
 #include <string>
-#include "ignition/rendering/Visual.hh"
-#include "ignition/rendering/Storage.hh"
+#include "gz/rendering/Visual.hh"
+#include "gz/rendering/Storage.hh"
 
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/base/BaseStorage.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/base/BaseStorage.hh"
 
 namespace gz
 {

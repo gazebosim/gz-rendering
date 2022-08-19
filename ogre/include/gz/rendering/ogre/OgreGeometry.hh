@@ -17,10 +17,10 @@
 #ifndef GZ_RENDERING_OGRE_OGREGEOMETRY_HH_
 #define GZ_RENDERING_OGRE_OGREGEOMETRY_HH_
 
-#include <ignition/common/SuppressWarning.hh>
+#include <gz/common/SuppressWarning.hh>
 
-#include "ignition/rendering/base/BaseGeometry.hh"
-#include "ignition/rendering/ogre/OgreObject.hh"
+#include "gz/rendering/base/BaseGeometry.hh"
+#include "gz/rendering/ogre/OgreObject.hh"
 
 namespace Ogre
 {

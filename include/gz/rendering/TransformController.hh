@@ -19,16 +19,16 @@
 
 #include <memory>
 
-#include <ignition/common/SuppressWarning.hh>
+#include <gz/common/SuppressWarning.hh>
 
-#include <ignition/math/Quaternion.hh>
-#include <ignition/math/Plane.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Quaternion.hh>
+#include <gz/math/Plane.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/GizmoVisual.hh"
-#include "ignition/rendering/TransformType.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/GizmoVisual.hh"
+#include "gz/rendering/TransformType.hh"
 
 namespace gz
 {

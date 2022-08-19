@@ -18,7 +18,7 @@
 #include <gazebo/common/Console.hh>
 #include <gazebo/transport/TransportIface.hh>
 
-#include <ignition/rendering.hh>
+#include <gz/rendering.hh>
 
 #include "CameraWindow.hh"
 #include "SceneManager.hh"

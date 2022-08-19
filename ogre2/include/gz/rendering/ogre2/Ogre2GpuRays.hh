@@ -21,17 +21,17 @@
 #include <string>
 #include <memory>
 
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/base/BaseGpuRays.hh"
-#include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Sensor.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/base/BaseGpuRays.hh"
+#include "gz/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Sensor.hh"
 
-#include "ignition/common/Event.hh"
-#include "ignition/common/Console.hh"
+#include "gz/common/Event.hh"
+#include "gz/common/Console.hh"
 
 namespace Ogre
 {

@@ -21,11 +21,11 @@
 #include <map>
 #include <string>
 
-#include <ignition/math/Color.hh>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include <gz/math/Color.hh>
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 
 namespace gz
 {

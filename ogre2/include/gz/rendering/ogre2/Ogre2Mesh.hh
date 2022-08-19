@@ -20,10 +20,10 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "ignition/rendering/base/BaseMesh.hh"
-#include "ignition/rendering/ogre2/Ogre2Geometry.hh"
-#include "ignition/rendering/ogre2/Ogre2Object.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/base/BaseMesh.hh"
+#include "gz/rendering/ogre2/Ogre2Geometry.hh"
+#include "gz/rendering/ogre2/Ogre2Object.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 
 namespace Ogre
 {

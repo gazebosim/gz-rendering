@@ -18,8 +18,8 @@
 #define GZ_RENDERING_EXAMPLES_ACTOR_ANIMATION_GLUTWINDOW_HH_
 
 #include <vector>
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/common/graphics/Types.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/common/graphics/Types.hh"
 
 namespace ir = gz::rendering;
 namespace ic = gz::common;

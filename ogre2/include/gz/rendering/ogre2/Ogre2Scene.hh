@@ -19,11 +19,11 @@
 
 #include <string>
 
-#include "ignition/rendering/Storage.hh"
-#include "ignition/rendering/base/BaseScene.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/Storage.hh"
+#include "gz/rendering/base/BaseScene.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 
-#include "ignition/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Export.hh"
 
 namespace Ogre
 {

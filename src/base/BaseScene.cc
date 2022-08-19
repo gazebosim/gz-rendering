@@ -17,28 +17,28 @@
 
 #include <sstream>
 
-#include <ignition/math/Helpers.hh>
+#include <gz/math/Helpers.hh>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/MeshManager.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/MeshManager.hh>
 
-#include "ignition/common/Time.hh"
+#include "gz/common/Time.hh"
 
-#include "ignition/rendering/ArrowVisual.hh"
-#include "ignition/rendering/AxisVisual.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/DepthCamera.hh"
-#include "ignition/rendering/GizmoVisual.hh"
-#include "ignition/rendering/GpuRays.hh"
-#include "ignition/rendering/Grid.hh"
-#include "ignition/rendering/RayQuery.hh"
-#include "ignition/rendering/RenderTarget.hh"
-#include "ignition/rendering/Text.hh"
-#include "ignition/rendering/ThermalCamera.hh"
-#include "ignition/rendering/Visual.hh"
-#include "ignition/rendering/base/BaseStorage.hh"
-#include "ignition/rendering/base/BaseScene.hh"
+#include "gz/rendering/ArrowVisual.hh"
+#include "gz/rendering/AxisVisual.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/DepthCamera.hh"
+#include "gz/rendering/GizmoVisual.hh"
+#include "gz/rendering/GpuRays.hh"
+#include "gz/rendering/Grid.hh"
+#include "gz/rendering/RayQuery.hh"
+#include "gz/rendering/RenderTarget.hh"
+#include "gz/rendering/Text.hh"
+#include "gz/rendering/ThermalCamera.hh"
+#include "gz/rendering/Visual.hh"
+#include "gz/rendering/base/BaseStorage.hh"
+#include "gz/rendering/base/BaseScene.hh"
 
 using namespace gz;
 using namespace rendering;

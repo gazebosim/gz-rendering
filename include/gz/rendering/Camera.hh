@@ -19,14 +19,14 @@
 
 #include <string>
 
-#include <ignition/common/Event.hh>
-#include <ignition/math/Matrix4.hh>
+#include <gz/common/Event.hh>
+#include <gz/math/Matrix4.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Image.hh"
-#include "ignition/rendering/PixelFormat.hh"
-#include "ignition/rendering/Sensor.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Image.hh"
+#include "gz/rendering/PixelFormat.hh"
+#include "gz/rendering/Sensor.hh"
+#include "gz/rendering/Scene.hh"
 
 
 namespace gz

@@ -17,10 +17,10 @@
 #ifndef GZ_RENDERING_OPTIX_OPTIXRENDERTARGET_HH_
 #define GZ_RENDERING_OPTIX_OPTIXRENDERTARGET_HH_
 
-#include "ignition/rendering/base/BaseRenderTarget.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
-#include "ignition/rendering/optix/OptixObject.hh"
+#include "gz/rendering/base/BaseRenderTarget.hh"
+#include "gz/rendering/optix/OptixIncludes.hh"
+#include "gz/rendering/optix/OptixRenderTypes.hh"
+#include "gz/rendering/optix/OptixObject.hh"
 
 namespace gz
 {

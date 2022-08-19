@@ -17,8 +17,8 @@
 #ifndef GZ_RENDERING_COMPOSITEVISUAL_HH_
 #define GZ_RENDERING_COMPOSITEVISUAL_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Visual.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Visual.hh"
 
 namespace gz
 {

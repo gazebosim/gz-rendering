@@ -14,9 +14,9 @@
  * limitations under the License.
  *
 */
-#include <ignition/common/Image.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/rendering.hh>
+#include <gz/common/Image.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/rendering.hh>
 
 #include "example_config.hh"
 

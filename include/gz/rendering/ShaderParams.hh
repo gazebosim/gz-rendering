@@ -22,8 +22,8 @@
 #include <string>
 #include <utility>
 
-#include "ignition/rendering/Export.hh"
-#include "ignition/rendering/ShaderParam.hh"
+#include "gz/rendering/Export.hh"
+#include "gz/rendering/ShaderParam.hh"
 
 namespace gz
 {

@@ -18,9 +18,9 @@
 #define GZ_RENDERING_GAUSSIANNOISEPASS_HH_
 
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
-#include "ignition/rendering/RenderPass.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
+#include "gz/rendering/RenderPass.hh"
 
 namespace gz
 {

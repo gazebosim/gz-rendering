@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
 
 using namespace gz;
 using namespace rendering;

@@ -27,12 +27,12 @@
 #include <memory>
 #include <string>
 
-#include "ignition/rendering/base/BaseDepthCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2Sensor.hh"
+#include "gz/rendering/base/BaseDepthCamera.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2Sensor.hh"
 
-#include "ignition/common/Event.hh"
-#include "ignition/common/Console.hh"
+#include "gz/common/Event.hh"
+#include "gz/common/Console.hh"
 
 namespace Ogre
 {

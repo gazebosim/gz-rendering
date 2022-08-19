@@ -17,9 +17,9 @@
 #ifndef GZ_RENDERING_RENDERPASS_HH_
 #define GZ_RENDERING_RENDERPASS_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Object.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Object.hh"
+#include "gz/rendering/Export.hh"
 
 namespace gz
 {

@@ -20,10 +20,10 @@
 #include <string>
 #include <vector>
 
-#include "ignition/rendering/RenderPass.hh"
-#include "ignition/rendering/RenderTarget.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/RenderPass.hh"
+#include "gz/rendering/RenderTarget.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
 
 namespace gz
 {

@@ -20,11 +20,11 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/ogre/Export.hh"
-#include "ignition/rendering/ogre/OgreConversions.hh"
-#include "ignition/rendering/ogre/OgreDynamicRenderable.hh"
+#include "gz/rendering/ogre/Export.hh"
+#include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreDynamicRenderable.hh"
 
 namespace gz
 {

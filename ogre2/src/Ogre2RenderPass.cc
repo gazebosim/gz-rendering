@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre2/Ogre2RenderPass.hh"
+#include "gz/rendering/ogre2/Ogre2RenderPass.hh"
 
 
 using namespace gz;

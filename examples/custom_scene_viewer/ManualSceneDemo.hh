@@ -18,7 +18,7 @@
 #define GZ_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_MANUALSCENEDEMO_HH_
 
 #include <string>
-#include <ignition/rendering.hh>
+#include <gz/rendering.hh>
 #include "TestTypes.hh"
 
 namespace gz

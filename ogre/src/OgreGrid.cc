@@ -15,11 +15,11 @@
  *
 */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre/OgreGrid.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreGrid.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
 
 class gz::rendering::OgreGridPrivate
 {

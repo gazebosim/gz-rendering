@@ -17,8 +17,8 @@
 #ifndef GZ_RENDERING_OPTIX_OPTIXAXISVISUAL_HH_
 #define GZ_RENDERING_OPTIX_OPTIXAXISVISUAL_HH_
 
-#include "ignition/rendering/base/BaseAxisVisual.hh"
-#include "ignition/rendering/optix/OptixVisual.hh"
+#include "gz/rendering/base/BaseAxisVisual.hh"
+#include "gz/rendering/optix/OptixVisual.hh"
 
 namespace gz
 {

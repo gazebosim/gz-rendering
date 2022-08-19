@@ -18,8 +18,8 @@
 #define GZ_RENDERING_PIXELFORMAT_HH_
 
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
 
 namespace gz
 {

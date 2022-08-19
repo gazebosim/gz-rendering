@@ -18,10 +18,10 @@
 
 #include <cmath>
 #include <sstream>
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/ogre/OgreDynamicLines.hh"
+#include "gz/common/Console.hh"
+#include "gz/rendering/ogre/OgreDynamicLines.hh"
 
 using namespace gz;
 using namespace rendering;

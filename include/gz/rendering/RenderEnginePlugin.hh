@@ -21,10 +21,10 @@
 #include <memory>
 #include <string>
 
-#include <ignition/common/SuppressWarning.hh>
+#include <gz/common/SuppressWarning.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
 
 namespace gz
 {

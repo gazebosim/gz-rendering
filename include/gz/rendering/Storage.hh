@@ -19,16 +19,16 @@
 
 #include <memory>
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/Node.hh"
-#include "ignition/rendering/Light.hh"
-#include "ignition/rendering/Sensor.hh"
-#include "ignition/rendering/Visual.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/Material.hh"
-#include "ignition/rendering/Mesh.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/Node.hh"
+#include "gz/rendering/Light.hh"
+#include "gz/rendering/Sensor.hh"
+#include "gz/rendering/Visual.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/Material.hh"
+#include "gz/rendering/Mesh.hh"
+#include "gz/rendering/Export.hh"
 
 // An X11 header file defines a macro that conflicts with our function name,
 // so undefine it here

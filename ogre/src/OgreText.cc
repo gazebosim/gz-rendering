@@ -20,12 +20,12 @@
   #include <windows.h>
 #endif
 
-#include <ignition/common/Util.hh>
-#include <ignition/common/Console.hh>
+#include <gz/common/Util.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreText.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreText.hh"
 
 #define POS_TEX_BINDING    0
 #define COLOUR_BINDING     1

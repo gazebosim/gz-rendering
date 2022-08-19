@@ -21,13 +21,13 @@
 #include <memory>
 #include <string>
 
-#include <ignition/math/AxisAlignedBox.hh>
-#include <ignition/math/Color.hh>
+#include <gz/math/AxisAlignedBox.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/base/BaseText.hh"
-#include "ignition/rendering/ogre/OgreGeometry.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/Export.hh"
+#include "gz/rendering/base/BaseText.hh"
+#include "gz/rendering/ogre/OgreGeometry.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/Export.hh"
 
 namespace gz
 {

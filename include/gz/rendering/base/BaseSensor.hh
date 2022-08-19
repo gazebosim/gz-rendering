@@ -17,7 +17,7 @@
 #ifndef GZ_RENDERING_BASE_BASESENSOR_HH_
 #define GZ_RENDERING_BASE_BASESENSOR_HH_
 
-#include "ignition/rendering/Sensor.hh"
+#include "gz/rendering/Sensor.hh"
 
 namespace gz
 {

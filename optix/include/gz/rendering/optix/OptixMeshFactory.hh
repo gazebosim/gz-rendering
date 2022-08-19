@@ -19,12 +19,12 @@
 
 #include <map>
 #include <string>
-#include <ignition/common/Mesh.hh>
+#include <gz/common/Mesh.hh>
 
-#include "ignition/rendering/MeshDescriptor.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
-#include "ignition/rendering/optix/OptixMesh.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
+#include "gz/rendering/MeshDescriptor.hh"
+#include "gz/rendering/optix/OptixRenderTypes.hh"
+#include "gz/rendering/optix/OptixMesh.hh"
+#include "gz/rendering/optix/OptixIncludes.hh"
 
 namespace gz
 {

@@ -17,8 +17,8 @@
 #ifndef GZ_RENDERING_OGRE2_OGRE2GEOMETRY_HH_
 #define GZ_RENDERING_OGRE2_OGRE2GEOMETRY_HH_
 
-#include "ignition/rendering/base/BaseGeometry.hh"
-#include "ignition/rendering/ogre2/Ogre2Object.hh"
+#include "gz/rendering/base/BaseGeometry.hh"
+#include "gz/rendering/ogre2/Ogre2Object.hh"
 
 namespace Ogre
 {

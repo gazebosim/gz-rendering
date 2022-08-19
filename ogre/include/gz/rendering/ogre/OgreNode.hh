@@ -17,11 +17,11 @@
 #ifndef GZ_RENDERING_OGRE_OGRENODE_HH_
 #define GZ_RENDERING_OGRE_OGRENODE_HH_
 
-#include <ignition/common/SuppressWarning.hh>
+#include <gz/common/SuppressWarning.hh>
 
-#include "ignition/rendering/base/BaseNode.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreObject.hh"
+#include "gz/rendering/base/BaseNode.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/OgreObject.hh"
 
 namespace Ogre
 {

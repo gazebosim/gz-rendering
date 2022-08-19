@@ -15,7 +15,7 @@
  *
  */
 
-#include "ignition/rendering/RenderEnginePlugin.hh"
+#include "gz/rendering/RenderEnginePlugin.hh"
 
 class gz::rendering::RenderEnginePluginPrivate
 {

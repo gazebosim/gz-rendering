@@ -19,10 +19,10 @@
 
 #include <string>
 
-#include <ignition/common/Event.hh>
+#include <gz/common/Event.hh>
 
-#include "ignition/rendering/base/BaseCamera.hh"
-#include "ignition/rendering/DepthCamera.hh"
+#include "gz/rendering/base/BaseCamera.hh"
+#include "gz/rendering/DepthCamera.hh"
 
 namespace gz
 {

@@ -15,14 +15,14 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre2/Ogre2DynamicRenderable.hh"
-#include "ignition/rendering/ogre2/Ogre2Marker.hh"
-#include "ignition/rendering/ogre2/Ogre2Material.hh"
-#include "ignition/rendering/ogre2/Ogre2Mesh.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
+#include "gz/rendering/ogre2/Ogre2DynamicRenderable.hh"
+#include "gz/rendering/ogre2/Ogre2Marker.hh"
+#include "gz/rendering/ogre2/Ogre2Material.hh"
+#include "gz/rendering/ogre2/Ogre2Mesh.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Visual.hh"
 
 class gz::rendering::Ogre2MarkerPrivate
 {

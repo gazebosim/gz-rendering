@@ -19,8 +19,8 @@
 
 #include <string>
 
-#include <ignition/common/Event.hh>
-#include "ignition/rendering/Camera.hh"
+#include <gz/common/Event.hh>
+#include "gz/rendering/Camera.hh"
 
 namespace gz
 {

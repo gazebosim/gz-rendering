@@ -18,7 +18,7 @@
 #define GZ_RENDERING_OPTIX_OPTIXPRIMITIVE_HH_
 
 #include <string>
-#include "ignition/rendering/optix/OptixGeometry.hh"
+#include "gz/rendering/optix/OptixGeometry.hh"
 
 namespace gz
 {

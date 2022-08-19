@@ -17,8 +17,8 @@
 #ifndef GZ_RENDERING_OGRE2_OGRE2GIZMOVISUAL_HH_
 #define GZ_RENDERING_OGRE2_OGRE2GIZMOVISUAL_HH_
 
-#include "ignition/rendering/base/BaseGizmoVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
+#include "gz/rendering/base/BaseGizmoVisual.hh"
+#include "gz/rendering/ogre2/Ogre2Visual.hh"
 
 namespace gz
 {

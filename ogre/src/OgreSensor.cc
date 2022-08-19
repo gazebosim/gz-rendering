@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre/OgreSensor.hh"
+#include "gz/rendering/ogre/OgreSensor.hh"
 
 using namespace gz;
 using namespace rendering;

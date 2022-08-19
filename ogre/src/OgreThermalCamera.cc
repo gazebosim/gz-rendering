@@ -25,11 +25,11 @@
 
 #include <limits>
 
-#include <ignition/math/Helpers.hh>
-#include "ignition/rendering/ShaderParams.hh"
-#include "ignition/rendering/ogre/OgreThermalCamera.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreVisual.hh"
+#include <gz/math/Helpers.hh>
+#include "gz/rendering/ShaderParams.hh"
+#include "gz/rendering/ogre/OgreThermalCamera.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreVisual.hh"
 
 namespace gz
 {

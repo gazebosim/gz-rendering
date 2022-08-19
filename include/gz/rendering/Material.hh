@@ -18,13 +18,13 @@
 #define GZ_RENDERING_MATERIAL_HH_
 
 #include <string>
-#include <ignition/math/Color.hh>
-#include <ignition/common/Material.hh>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Object.hh"
-#include "ignition/rendering/ShaderType.hh"
-#include "ignition/rendering/Export.hh"
+#include <gz/math/Color.hh>
+#include <gz/common/Material.hh>
+#include "gz/rendering/config.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Object.hh"
+#include "gz/rendering/ShaderType.hh"
+#include "gz/rendering/Export.hh"
 
 namespace gz
 {

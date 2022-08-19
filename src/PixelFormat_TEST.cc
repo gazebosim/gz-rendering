@@ -19,7 +19,7 @@
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/PixelFormat.hh"
+#include "gz/rendering/PixelFormat.hh"
 
 using namespace gz;
 using namespace rendering;

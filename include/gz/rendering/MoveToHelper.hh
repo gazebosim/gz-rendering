@@ -19,13 +19,13 @@
 
 #include <memory>
 
-#include <ignition/common/Animation.hh>
-#include <ignition/common/KeyFrame.hh>
+#include <gz/common/Animation.hh>
+#include <gz/common/KeyFrame.hh>
 
-#include <ignition/math/Box.hh>
-#include <ignition/math/Pose3.hh>
+#include <gz/math/Box.hh>
+#include <gz/math/Pose3.hh>
 
-#include "ignition/rendering/Camera.hh"
+#include "gz/rendering/Camera.hh"
 
 namespace gz
 {

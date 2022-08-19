@@ -18,10 +18,10 @@
 #define GZ_RENDERING_GEOMETRY_HH_
 
 #include <string>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Object.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Object.hh"
+#include "gz/rendering/Export.hh"
 
 namespace gz
 {

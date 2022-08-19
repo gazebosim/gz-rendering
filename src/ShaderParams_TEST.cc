@@ -17,7 +17,7 @@
 #include <gtest/gtest.h>
 
 
-#include "ignition/rendering/ShaderParams.hh"
+#include "gz/rendering/ShaderParams.hh"
 
 using namespace gz::rendering;
 

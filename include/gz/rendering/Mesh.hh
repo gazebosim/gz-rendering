@@ -19,10 +19,10 @@
 
 #include <map>
 #include <string>
-#include <ignition/math/Matrix4.hh>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/rendering/Object.hh"
+#include <gz/math/Matrix4.hh>
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Geometry.hh"
+#include "gz/rendering/Object.hh"
 
 namespace gz
 {

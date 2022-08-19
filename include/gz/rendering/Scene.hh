@@ -21,17 +21,17 @@
 #include <string>
 #include <limits>
 
-#include <ignition/common/Material.hh>
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/Time.hh>
+#include <gz/common/Material.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/Time.hh>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/MeshDescriptor.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Storage.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/MeshDescriptor.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Storage.hh"
+#include "gz/rendering/Export.hh"
 
 namespace gz
 {

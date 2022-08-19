@@ -20,10 +20,10 @@
 #include <memory>
 #include <string>
 
-#include <ignition/common/SingletonT.hh>
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/Export.hh"
+#include <gz/common/SingletonT.hh>
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/Export.hh"
 
 namespace gz
 {

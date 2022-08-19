@@ -17,8 +17,8 @@
 #ifndef GZ_RENDERING_OGRE_OGRESENSOR_HH_
 #define GZ_RENDERING_OGRE_OGRESENSOR_HH_
 
-#include "ignition/rendering/base/BaseSensor.hh"
-#include "ignition/rendering/ogre/OgreNode.hh"
+#include "gz/rendering/base/BaseSensor.hh"
+#include "gz/rendering/ogre/OgreNode.hh"
 
 namespace gz
 {

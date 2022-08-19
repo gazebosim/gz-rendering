@@ -22,12 +22,12 @@
 #include <string>
 #include <typeinfo>
 
-#include <ignition/common/SuppressWarning.hh>
+#include <gz/common/SuppressWarning.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
-#include "ignition/rendering/RenderPass.hh"
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
+#include "gz/rendering/RenderPass.hh"
+#include "gz/rendering/RenderTypes.hh"
 
 namespace gz
 {

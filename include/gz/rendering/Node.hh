@@ -18,13 +18,13 @@
 #define GZ_RENDERING_NODE_HH_
 
 #include <string>
-#include <ignition/math/Pose3.hh>
-#include <ignition/math/Quaternion.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Quaternion.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/Object.hh"
-#include "ignition/rendering/Export.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/Object.hh"
+#include "gz/rendering/Export.hh"
 
 namespace gz
 {

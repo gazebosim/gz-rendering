@@ -18,15 +18,15 @@
 #include <map>
 #include <mutex>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/SystemPaths.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/SystemPaths.hh>
 
-#include <ignition/plugin/Loader.hh>
+#include <gz/plugin/Loader.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderEngineManager.hh"
-#include "ignition/rendering/RenderEnginePlugin.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderEngineManager.hh"
+#include "gz/rendering/RenderEnginePlugin.hh"
 
 /// \brief Holds information about an engine
 struct EngineInfo

@@ -17,11 +17,11 @@
 #ifndef GZ_RENDERING_OGRE_OGREOBJECT_HH_
 #define GZ_RENDERING_OGRE_OGREOBJECT_HH_
 
-#include <ignition/common/SuppressWarning.hh>
+#include <gz/common/SuppressWarning.hh>
 
-#include "ignition/rendering/base/BaseObject.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/Export.hh"
+#include "gz/rendering/base/BaseObject.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/Export.hh"
 
 namespace gz
 {

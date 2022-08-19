@@ -17,10 +17,10 @@
 #ifndef GZ_RENDERING_OPTIX_OPTIXLIGHT_HH_
 #define GZ_RENDERING_OPTIX_OPTIXLIGHT_HH_
 
-#include "ignition/rendering/base/BaseLight.hh"
-#include "ignition/rendering/optix/OptixNode.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
-#include "ignition/rendering/optix/OptixLightTypes.hh"
+#include "gz/rendering/base/BaseLight.hh"
+#include "gz/rendering/optix/OptixNode.hh"
+#include "gz/rendering/optix/OptixIncludes.hh"
+#include "gz/rendering/optix/OptixLightTypes.hh"
 
 namespace gz
 {

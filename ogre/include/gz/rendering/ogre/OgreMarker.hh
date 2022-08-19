@@ -19,9 +19,9 @@
 #define GZ_RENDERING_OGRE_OGREMARKER_HH_
 
 #include <memory>
-#include "ignition/rendering/base/BaseMarker.hh"
-#include "ignition/rendering/ogre/OgreGeometry.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/base/BaseMarker.hh"
+#include "gz/rendering/ogre/OgreGeometry.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
 
 namespace gz
 {

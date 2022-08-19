@@ -17,9 +17,9 @@
 #ifndef GZ_RENDERING_OGRE2_OGRE2CAMERA_HH_
 #define GZ_RENDERING_OGRE2_OGRE2CAMERA_HH_
 
-#include "ignition/rendering/base/BaseCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Sensor.hh"
+#include "gz/rendering/base/BaseCamera.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Sensor.hh"
 
 namespace Ogre
 {

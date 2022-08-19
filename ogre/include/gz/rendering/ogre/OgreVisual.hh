@@ -17,9 +17,9 @@
 #ifndef GZ_RENDERING_OGRE_OGREVISUAL_HH_
 #define GZ_RENDERING_OGRE_OGREVISUAL_HH_
 
-#include "ignition/rendering/base/BaseVisual.hh"
-#include "ignition/rendering/ogre/OgreNode.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/base/BaseVisual.hh"
+#include "gz/rendering/ogre/OgreNode.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
 
 namespace gz
 {

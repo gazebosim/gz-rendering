@@ -17,8 +17,8 @@
 #ifndef GZ_RENDERING_ARROWVISUAL_HH_
 #define GZ_RENDERING_ARROWVISUAL_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/CompositeVisual.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/CompositeVisual.hh"
 
 namespace gz
 {

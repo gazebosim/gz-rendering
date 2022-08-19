@@ -18,7 +18,7 @@
 #define GZ_RENDERING_THERMALCAMERA_HH_
 
 #include <string>
-#include "ignition/rendering/Camera.hh"
+#include "gz/rendering/Camera.hh"
 
 namespace gz
 {

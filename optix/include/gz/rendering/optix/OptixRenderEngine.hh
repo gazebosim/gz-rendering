@@ -19,11 +19,11 @@
 
 #include <map>
 #include <string>
-#include <ignition/common/SingletonT.hh>
+#include <gz/common/SingletonT.hh>
 
-#include "ignition/rendering/RenderEnginePlugin.hh"
-#include "ignition/rendering/base/BaseRenderEngine.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
+#include "gz/rendering/RenderEnginePlugin.hh"
+#include "gz/rendering/base/BaseRenderEngine.hh"
+#include "gz/rendering/optix/OptixRenderTypes.hh"
 
 namespace gz
 {

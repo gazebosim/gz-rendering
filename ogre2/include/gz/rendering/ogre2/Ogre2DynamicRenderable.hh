@@ -21,10 +21,10 @@
 #include <string>
 #include <vector>
 
-#include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/Marker.hh"
+#include "gz/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/Marker.hh"
 
 namespace gz
 {

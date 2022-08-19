@@ -19,9 +19,9 @@
 
 #include <string>
 
-#include "ignition/rendering/base/BaseMaterial.hh"
-#include "ignition/rendering/ogre2/Ogre2Object.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/base/BaseMaterial.hh"
+#include "gz/rendering/ogre2/Ogre2Object.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
 
 namespace gz
 {

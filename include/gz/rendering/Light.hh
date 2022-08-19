@@ -17,9 +17,9 @@
 #ifndef GZ_RENDERING_LIGHT_HH_
 #define GZ_RENDERING_LIGHT_HH_
 
-#include "ignition/math/Color.hh"
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Node.hh"
+#include "gz/math/Color.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/Node.hh"
 
 namespace gz
 {

@@ -17,9 +17,9 @@
 #ifndef GZ_RENDERING_OPTIX_OPTIXGEOMETRY_HH_
 #define GZ_RENDERING_OPTIX_OPTIXGEOMETRY_HH_
 
-#include "ignition/rendering/base/BaseGeometry.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
-#include "ignition/rendering/optix/OptixObject.hh"
+#include "gz/rendering/base/BaseGeometry.hh"
+#include "gz/rendering/optix/OptixIncludes.hh"
+#include "gz/rendering/optix/OptixObject.hh"
 
 namespace gz
 {

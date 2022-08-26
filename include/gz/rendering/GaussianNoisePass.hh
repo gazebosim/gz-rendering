@@ -22,7 +22,7 @@
 #include "gz/rendering/Export.hh"
 #include "gz/rendering/RenderPass.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

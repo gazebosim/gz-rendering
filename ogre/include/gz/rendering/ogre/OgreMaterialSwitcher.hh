@@ -28,7 +28,7 @@
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/OgreRenderTypes.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

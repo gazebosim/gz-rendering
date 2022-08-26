@@ -36,7 +36,7 @@
 #undef DestroyAll
 #endif
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

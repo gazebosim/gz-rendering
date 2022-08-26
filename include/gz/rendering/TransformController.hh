@@ -30,7 +30,7 @@
 #include "gz/rendering/GizmoVisual.hh"
 #include "gz/rendering/TransformType.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

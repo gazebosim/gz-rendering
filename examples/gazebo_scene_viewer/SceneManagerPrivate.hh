@@ -30,7 +30,7 @@
 #include "gz/rendering/ShaderType.hh"
 #include "gazebo/transport/Node.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

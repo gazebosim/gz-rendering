@@ -23,7 +23,7 @@
 #include "gz/rendering/base/BaseObject.hh"
 #include "gz/rendering/base/BaseRenderTypes.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

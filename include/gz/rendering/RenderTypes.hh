@@ -37,7 +37,7 @@
 /// \brief Render visuals that are selectable mask.
 #define IGN_VISIBILITY_SELECTABLE      0x00000002
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

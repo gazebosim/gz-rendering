@@ -33,7 +33,7 @@
 #include "gz/rendering/Storage.hh"
 #include "gz/rendering/Export.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

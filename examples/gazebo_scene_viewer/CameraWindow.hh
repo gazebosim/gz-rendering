@@ -20,8 +20,6 @@
 #include <vector>
 #include "gz/rendering/RenderTypes.hh"
 
-namespace gz = gz::rendering;
-
 void GlutRun(std::vector<gz::CameraPtr> _cameras);
 
 void GlutDisplay();

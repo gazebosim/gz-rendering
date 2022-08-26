@@ -29,7 +29,7 @@ namespace Ogre
   class Entity;
 }
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

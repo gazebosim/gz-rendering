@@ -26,7 +26,7 @@
 #include "gz/rendering/Object.hh"
 #include "gz/rendering/Export.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

@@ -26,7 +26,7 @@
 #include "gz/rendering/ogre/OgreConversions.hh"
 #include "gz/rendering/ogre/OgreDynamicRenderable.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

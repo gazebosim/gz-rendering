@@ -21,7 +21,7 @@
 #include "gz/rendering/optix/OptixRenderTypes.hh"
 #include "gz/rendering/optix/Export.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

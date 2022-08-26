@@ -27,7 +27,7 @@
 
 #include "gz/rendering/Camera.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

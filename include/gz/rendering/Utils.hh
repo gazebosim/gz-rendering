@@ -27,7 +27,7 @@
 #include "gz/rendering/RayQuery.hh"
 
 
-namespace gz
+namespace ignition
 {
   /// \brief Rendering classes and function useful in robot applications.
   namespace rendering

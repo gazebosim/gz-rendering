@@ -20,7 +20,7 @@
 #include <string>
 #include "TestTypes.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

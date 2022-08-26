@@ -27,7 +27,7 @@
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/ViewController.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

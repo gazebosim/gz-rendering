@@ -22,7 +22,7 @@
 
 #include "gz/rendering/GaussianNoisePass.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

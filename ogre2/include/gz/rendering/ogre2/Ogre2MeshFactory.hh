@@ -31,7 +31,7 @@ namespace Ogre
   class Item;
 }
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

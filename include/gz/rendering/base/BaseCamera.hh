@@ -32,7 +32,7 @@
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/base/BaseRenderTarget.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

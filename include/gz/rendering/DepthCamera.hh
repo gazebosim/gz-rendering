@@ -22,7 +22,7 @@
 #include <gz/common/Event.hh>
 #include "gz/rendering/Camera.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

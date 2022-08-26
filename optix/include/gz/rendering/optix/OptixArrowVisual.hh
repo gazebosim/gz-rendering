@@ -20,7 +20,7 @@
 #include "gz/rendering/base/BaseArrowVisual.hh"
 #include "gz/rendering/optix/OptixVisual.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

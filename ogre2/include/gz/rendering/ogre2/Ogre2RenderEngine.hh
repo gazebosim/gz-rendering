@@ -40,7 +40,7 @@ namespace Ogre
   }
 }
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

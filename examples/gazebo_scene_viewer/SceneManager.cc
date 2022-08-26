@@ -166,17 +166,17 @@ void SceneManagerPrivate::Load()
 void SceneManagerPrivate::Init()
 {
   // listen for pre-render events
-  this->preRenderConn = sim::event::Events::ConnectPreRender(
+  this->preRenderConn = gazebo::event::Events::ConnectPreRender(
         std::bind(&SceneManagerPrivate::UpdateScenes, this));
 
   // setup transport communication node
-  this->transportNode = sim::transport::NodePtr(
-      new sim::transport::Node());
+  this->transportNode = gazebo::transport::NodePtr(
+      new gazebo::transport::Node());
   this->transportNode->Init();
 
   // create publisher for sending scene request
   this->requestPub =
-      this->transportNode->Advertise<sim::msgs::Request>("~/request");
+      this->transportNode->Advertise<gazebo::msgs::Request>("~/request");
 
   // listen for deletion requests
   this->requestSub = this->transportNode->Subscribe("~/request",
@@ -364,7 +364,7 @@ void SceneManagerPrivate::UpdateScenes()
 //////////////////////////////////////////////////
 void SceneManagerPrivate::SendSceneRequest()
 {
-  sim::msgs::Request *request = sim::msgs::CreateRequest("scene_info");
+  gazebo::msgs::Request *request = gazebo::msgs::CreateRequest("scene_info");
   this->sceneRequestId = request->id();
   this->requestPub->Publish(*request);
 }
@@ -871,33 +871,33 @@ void SubSceneManager::ClearMessages()
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessLight(const sim::msgs::Light &_lightMsg)
+void SubSceneManager::ProcessLight(const gazebo::msgs::Light &_lightMsg)
 {
   // TODO(anyone): get parent when protobuf message is updated
   this->ProcessLight(_lightMsg, this->activeScene->RootVisual());
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessLight(const sim::msgs::Light &_lightMsg,
+void SubSceneManager::ProcessLight(const gazebo::msgs::Light &_lightMsg,
     VisualPtr _parent)
 {
   // check if type specified
   if (_lightMsg.has_type())
   {
-    sim::msgs::Light::LightType type = _lightMsg.type();
+    gazebo::msgs::Light::LightType type = _lightMsg.type();
 
     // determine light type
     switch (_lightMsg.type())
     {
-      case sim::msgs::Light::POINT:
+      case gazebo::msgs::Light::POINT:
         this->ProcessPointLight(_lightMsg, _parent);
         return;
 
-      case sim::msgs::Light::SPOT:
+      case gazebo::msgs::Light::SPOT:
         this->ProcessSpotLight(_lightMsg, _parent);
         return;
 
-      case sim::msgs::Light::DIRECTIONAL:
+      case gazebo::msgs::Light::DIRECTIONAL:
         this->ProcessDirectionalLight(_lightMsg, _parent);
         return;
 
@@ -915,7 +915,7 @@ void SubSceneManager::ProcessLight(const sim::msgs::Light &_lightMsg,
 
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessDirectionalLight(
-    const sim::msgs::Light &_lightMsg, VisualPtr _parent)
+    const gazebo::msgs::Light &_lightMsg, VisualPtr _parent)
 {
   DirectionalLightPtr light = this->DirectionalLight(_lightMsg, _parent);
   if (light) this->ProcessDirectionalLightImpl(_lightMsg, light);
@@ -923,12 +923,12 @@ void SubSceneManager::ProcessDirectionalLight(
 
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessDirectionalLightImpl(
-    const sim::msgs::Light &_lightMsg, DirectionalLightPtr _light)
+    const gazebo::msgs::Light &_lightMsg, DirectionalLightPtr _light)
 {
   // set direction if available
   if (_lightMsg.has_direction())
   {
-    const sim::msgs::Vector3d &dirMsg = _lightMsg.direction();
+    const gazebo::msgs::Vector3d &dirMsg = _lightMsg.direction();
     _light->SetDirection(SubSceneManager::Convert(dirMsg));
   }
 
@@ -938,7 +938,7 @@ void SubSceneManager::ProcessDirectionalLightImpl(
 
 //////////////////////////////////////////////////
 DirectionalLightPtr SubSceneManager::DirectionalLight(
-    const sim::msgs::Light &_lightMsg, VisualPtr _parent)
+    const gazebo::msgs::Light &_lightMsg, VisualPtr _parent)
 {
   // find existing light with name
   std::string name = _lightMsg.name();
@@ -959,14 +959,14 @@ DirectionalLightPtr SubSceneManager::DirectionalLight(
 
 //////////////////////////////////////////////////
 DirectionalLightPtr SubSceneManager::CreateDirectionalLight(
-    const sim::msgs::Light &_lightMsg)
+    const gazebo::msgs::Light &_lightMsg)
 {
   std::string name = _lightMsg.name();
   return this->activeScene->CreateDirectionalLight(name);
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessPointLight(const sim::msgs::Light &_lightMsg,
+void SubSceneManager::ProcessPointLight(const gazebo::msgs::Light &_lightMsg,
     VisualPtr _parent)
 {
   PointLightPtr light = this->PointLight(_lightMsg, _parent);
@@ -975,7 +975,7 @@ void SubSceneManager::ProcessPointLight(const sim::msgs::Light &_lightMsg,
 
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessPointLightImpl(
-    const sim::msgs::Light &_lightMsg, PointLightPtr _light)
+    const gazebo::msgs::Light &_lightMsg, PointLightPtr _light)
 {
   // process general light information
   this->ProcessLightImpl(_lightMsg, _light);
@@ -983,7 +983,7 @@ void SubSceneManager::ProcessPointLightImpl(
 
 //////////////////////////////////////////////////
 PointLightPtr SubSceneManager::PointLight(
-    const sim::msgs::Light &_lightMsg, VisualPtr _parent)
+    const gazebo::msgs::Light &_lightMsg, VisualPtr _parent)
 {
   // find existing light with name
   std::string name = _lightMsg.name();
@@ -1003,14 +1003,14 @@ PointLightPtr SubSceneManager::PointLight(
 
 //////////////////////////////////////////////////
 PointLightPtr SubSceneManager::CreatePointLight(
-    const sim::msgs::Light &_lightMsg)
+    const gazebo::msgs::Light &_lightMsg)
 {
   std::string name = _lightMsg.name();
   return this->activeScene->CreatePointLight(name);
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessSpotLight(const sim::msgs::Light &_lightMsg,
+void SubSceneManager::ProcessSpotLight(const gazebo::msgs::Light &_lightMsg,
     VisualPtr _parent)
 {
   SpotLightPtr light = this->SpotLight(_lightMsg, _parent);
@@ -1019,12 +1019,12 @@ void SubSceneManager::ProcessSpotLight(const sim::msgs::Light &_lightMsg,
 
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessSpotLightImpl(
-    const sim::msgs::Light &_lightMsg, SpotLightPtr _light)
+    const gazebo::msgs::Light &_lightMsg, SpotLightPtr _light)
 {
   // set direction if available
   if (_lightMsg.has_direction())
   {
-    const sim::msgs::Vector3d &dirMsg = _lightMsg.direction();
+    const gazebo::msgs::Vector3d &dirMsg = _lightMsg.direction();
     _light->SetDirection(SubSceneManager::Convert(dirMsg));
   }
 
@@ -1054,7 +1054,7 @@ void SubSceneManager::ProcessSpotLightImpl(
 }
 
 //////////////////////////////////////////////////
-SpotLightPtr SubSceneManager::SpotLight(const sim::msgs::Light &_lightMsg,
+SpotLightPtr SubSceneManager::SpotLight(const gazebo::msgs::Light &_lightMsg,
     VisualPtr _parent)
 {
   // find existing light with name
@@ -1075,14 +1075,14 @@ SpotLightPtr SubSceneManager::SpotLight(const sim::msgs::Light &_lightMsg,
 
 //////////////////////////////////////////////////
 SpotLightPtr SubSceneManager::CreateSpotLight(
-    const sim::msgs::Light &_lightMsg)
+    const gazebo::msgs::Light &_lightMsg)
 {
   std::string name = _lightMsg.name();
   return this->activeScene->CreateSpotLight(name);
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessLightImpl(const sim::msgs::Light &_lightMsg,
+void SubSceneManager::ProcessLightImpl(const gazebo::msgs::Light &_lightMsg,
     LightPtr _light)
 {
   // set pose if available
@@ -1094,14 +1094,14 @@ void SubSceneManager::ProcessLightImpl(const sim::msgs::Light &_lightMsg,
   // set diffuse if available
   if (_lightMsg.has_diffuse())
   {
-    const sim::msgs::Color &colorMsg = _lightMsg.diffuse();
+    const gazebo::msgs::Color &colorMsg = _lightMsg.diffuse();
     _light->SetDiffuseColor(SubSceneManager::Convert(colorMsg));
   }
 
   // set specular if available
   if (_lightMsg.has_specular())
   {
-    const sim::msgs::Color &colorMsg = _lightMsg.specular();
+    const gazebo::msgs::Color &colorMsg = _lightMsg.specular();
     _light->SetSpecularColor(SubSceneManager::Convert(colorMsg));
   }
 
@@ -1142,14 +1142,14 @@ void SubSceneManager::ProcessLightImpl(const sim::msgs::Light &_lightMsg,
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessSensor(const sim::msgs::Sensor &_sensorMsg)
+void SubSceneManager::ProcessSensor(const gazebo::msgs::Sensor &_sensorMsg)
 {
   VisualPtr parent = this->Parent(_sensorMsg.parent());
   this->ProcessSensor(_sensorMsg, parent);
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessSensor(const sim::msgs::Sensor &_sensorMsg,
+void SubSceneManager::ProcessSensor(const gazebo::msgs::Sensor &_sensorMsg,
     VisualPtr _parent)
 {
   // TODO(anyone): process all types
@@ -1161,7 +1161,7 @@ void SubSceneManager::ProcessSensor(const sim::msgs::Sensor &_sensorMsg,
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessCamera(const sim::msgs::Sensor &_sensorMsg,
+void SubSceneManager::ProcessCamera(const gazebo::msgs::Sensor &_sensorMsg,
     VisualPtr _parent)
 {
   CameraPtr camera = this->Camera(_sensorMsg, _parent);
@@ -1170,7 +1170,7 @@ void SubSceneManager::ProcessCamera(const sim::msgs::Sensor &_sensorMsg,
 }
 
 //////////////////////////////////////////////////
-CameraPtr SubSceneManager::Camera(const sim::msgs::Sensor &_sensorMsg,
+CameraPtr SubSceneManager::Camera(const gazebo::msgs::Sensor &_sensorMsg,
     VisualPtr _parent)
 {
   // find existing camera with name
@@ -1189,7 +1189,7 @@ CameraPtr SubSceneManager::Camera(const sim::msgs::Sensor &_sensorMsg,
 }
 
 //////////////////////////////////////////////////
-CameraPtr SubSceneManager::CreateCamera(const sim::msgs::Sensor &_sensorMsg)
+CameraPtr SubSceneManager::CreateCamera(const gazebo::msgs::Sensor &_sensorMsg)
 {
   bool hasId = _sensorMsg.has_id();
   unsigned int id = _sensorMsg.id();
@@ -1201,14 +1201,14 @@ CameraPtr SubSceneManager::CreateCamera(const sim::msgs::Sensor &_sensorMsg)
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessModel(const sim::msgs::Model &_modelMsg)
+void SubSceneManager::ProcessModel(const gazebo::msgs::Model &_modelMsg)
 {
   VisualPtr parent = this->activeScene->RootVisual();
   this->ProcessModel(_modelMsg, parent);
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessModel(const sim::msgs::Model &_modelMsg,
+void SubSceneManager::ProcessModel(const gazebo::msgs::Model &_modelMsg,
     VisualPtr _parent)
 {
   VisualPtr model = this->Model(_modelMsg, _parent);
@@ -1228,14 +1228,14 @@ void SubSceneManager::ProcessModel(const sim::msgs::Model &_modelMsg,
   // process each sensor in joint
   for (int i = 0; i < _modelMsg.joint_size(); ++i)
   {
-    const sim::msgs::Joint &joint = _modelMsg.joint(i);
+    const gazebo::msgs::Joint &joint = _modelMsg.joint(i);
     this->ProcessJoint(joint, model);
   }
 
   // process each sensor in link
   for (int i = 0; i < _modelMsg.link_size(); ++i)
   {
-    const sim::msgs::Link &link = _modelMsg.link(i);
+    const gazebo::msgs::Link &link = _modelMsg.link(i);
     this->ProcessLink(link, model);
   }
 
@@ -1243,13 +1243,13 @@ void SubSceneManager::ProcessModel(const sim::msgs::Model &_modelMsg,
   // always skip first empty visual
   for (int i = 1; i < _modelMsg.visual_size(); ++i)
   {
-    const sim::msgs::Visual &visual = _modelMsg.visual(i);
+    const gazebo::msgs::Visual &visual = _modelMsg.visual(i);
     this->ProcessVisual(visual, model);
   }
 }
 
 //////////////////////////////////////////////////
-VisualPtr SubSceneManager::Model(const sim::msgs::Model &_modelMsg,
+VisualPtr SubSceneManager::Model(const gazebo::msgs::Model &_modelMsg,
     VisualPtr _parent)
 {
   bool hasId = _modelMsg.has_id();
@@ -1259,14 +1259,14 @@ VisualPtr SubSceneManager::Model(const sim::msgs::Model &_modelMsg,
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessJoint(const sim::msgs::Joint &_jointMsg)
+void SubSceneManager::ProcessJoint(const gazebo::msgs::Joint &_jointMsg)
 {
   VisualPtr parent = this->Parent(_jointMsg.parent());
   this->ProcessJoint(_jointMsg, parent);
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessJoint(const sim::msgs::Joint &_jointMsg,
+void SubSceneManager::ProcessJoint(const gazebo::msgs::Joint &_jointMsg,
     VisualPtr _parent)
 {
   VisualPtr joint = this->Joint(_jointMsg, _parent);
@@ -1280,13 +1280,13 @@ void SubSceneManager::ProcessJoint(const sim::msgs::Joint &_jointMsg,
   // process each sensor in joint
   for (int i = 0; i < _jointMsg.sensor_size(); ++i)
   {
-    const sim::msgs::Sensor &sensor = _jointMsg.sensor(i);
+    const gazebo::msgs::Sensor &sensor = _jointMsg.sensor(i);
     this->ProcessSensor(sensor, joint);
   }
 }
 
 //////////////////////////////////////////////////
-VisualPtr SubSceneManager::Joint(const sim::msgs::Joint &_jointMsg,
+VisualPtr SubSceneManager::Joint(const gazebo::msgs::Joint &_jointMsg,
     VisualPtr _parent)
 {
   bool hasId = _jointMsg.has_id();
@@ -1296,14 +1296,14 @@ VisualPtr SubSceneManager::Joint(const sim::msgs::Joint &_jointMsg,
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessVisual(const sim::msgs::Visual &_visualMsg)
+void SubSceneManager::ProcessVisual(const gazebo::msgs::Visual &_visualMsg)
 {
   VisualPtr parent = this->Parent(_visualMsg.parent_name());
   this->ProcessVisual(_visualMsg, parent);
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessVisual(const sim::msgs::Visual &_visualMsg,
+void SubSceneManager::ProcessVisual(const gazebo::msgs::Visual &_visualMsg,
     VisualPtr _parent)
 {
   VisualPtr visual = this->Visual(_visualMsg, _parent);
@@ -1333,14 +1333,14 @@ void SubSceneManager::ProcessVisual(const sim::msgs::Visual &_visualMsg,
   // set material if available
   if (_visualMsg.has_material())
   {
-    const sim::msgs::Material matMsg = _visualMsg.material();
+    const gazebo::msgs::Material matMsg = _visualMsg.material();
     MaterialPtr material = this->CreateMaterial(matMsg);
     visual->SetMaterial(material);
   }
 }
 
 //////////////////////////////////////////////////
-VisualPtr SubSceneManager::Visual(const sim::msgs::Visual &_visualMsg,
+VisualPtr SubSceneManager::Visual(const gazebo::msgs::Visual &_visualMsg,
     VisualPtr _parent)
 {
   bool hasId = _visualMsg.has_id();
@@ -1350,7 +1350,7 @@ VisualPtr SubSceneManager::Visual(const sim::msgs::Visual &_visualMsg,
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessLink(const sim::msgs::Link &_linkMsg,
+void SubSceneManager::ProcessLink(const gazebo::msgs::Link &_linkMsg,
     VisualPtr _parent)
 {
   VisualPtr link = this->Link(_linkMsg, _parent);
@@ -1365,20 +1365,20 @@ void SubSceneManager::ProcessLink(const sim::msgs::Link &_linkMsg,
   // always skip first empty visual
   for (int i = 1; i < _linkMsg.visual_size(); ++i)
   {
-    const sim::msgs::Visual &visual = _linkMsg.visual(i);
+    const gazebo::msgs::Visual &visual = _linkMsg.visual(i);
     this->ProcessVisual(visual, link);
   }
 
   // process each sensor in link
   for (int i = 0; i < _linkMsg.sensor_size(); ++i)
   {
-    const sim::msgs::Sensor &sensor = _linkMsg.sensor(i);
+    const gazebo::msgs::Sensor &sensor = _linkMsg.sensor(i);
     this->ProcessSensor(sensor, link);
   }
 }
 
 //////////////////////////////////////////////////
-VisualPtr SubSceneManager::Link(const sim::msgs::Link &_linkMsg,
+VisualPtr SubSceneManager::Link(const gazebo::msgs::Link &_linkMsg,
     VisualPtr _parent)
 {
   bool hasId = _linkMsg.has_id();
@@ -1415,7 +1415,7 @@ VisualPtr SubSceneManager::CreateVisual(bool _hasId, unsigned int _id,
 
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessGeometry(
-    const sim::msgs::Geometry &_geometryMsg, VisualPtr _parent)
+    const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent)
 {
   GeomType geomType = _geometryMsg.type();
   GeomFunc geomFunc = this->geomFunctions[geomType];
@@ -1426,30 +1426,30 @@ void SubSceneManager::ProcessGeometry(
   {
     ignerr << "Unsupported geometry type: " << geomType << std::endl;
     ignwarn << "Using empty geometry instead" << std::endl;
-    geomFunc = this->geomFunctions[sim::msgs::Geometry::EMPTY];
+    geomFunc = this->geomFunctions[gazebo::msgs::Geometry::EMPTY];
   }
 
   (this->*geomFunc)(_geometryMsg, _parent);
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessBox(const sim::msgs::Geometry &_geometryMsg,
+void SubSceneManager::ProcessBox(const gazebo::msgs::Geometry &_geometryMsg,
     VisualPtr _parent)
 {
   GeometryPtr box = this->activeScene->CreateBox();
-  const sim::msgs::BoxGeom &boxMsg = _geometryMsg.box();
-  const sim::msgs::Vector3d sizeMsg = boxMsg.size();
+  const gazebo::msgs::BoxGeom &boxMsg = _geometryMsg.box();
+  const gazebo::msgs::Vector3d sizeMsg = boxMsg.size();
   _parent->SetLocalScale(SubSceneManager::Convert(sizeMsg));
   _parent->AddGeometry(box);
 }
 
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessCone(
-    const sim::msgs::Geometry &/*_geometryMsg*/, VisualPtr _parent)
+    const gazebo::msgs::Geometry &/*_geometryMsg*/, VisualPtr _parent)
 {
   // TODO(anyone): needs protobuf msg
   GeometryPtr cone = this->activeScene->CreateCone();
-  // const sim::msgs::ConeGeom &coneMsg = _geometryMsg.cone();
+  // const gazebo::msgs::ConeGeom &coneMsg = _geometryMsg.cone();
   // double x = coneMsg.radius();
   // double y = coneMsg.radius();
   // double z = coneMsg.length();
@@ -1459,10 +1459,10 @@ void SubSceneManager::ProcessCone(
 
 //////////////////////////////////////////////////
 void SubSceneManager::ProcessCylinder(
-    const sim::msgs::Geometry &_geometryMsg, VisualPtr _parent)
+    const gazebo::msgs::Geometry &_geometryMsg, VisualPtr _parent)
 {
   GeometryPtr cylinder = this->activeScene->CreateCylinder();
-  const sim::msgs::CylinderGeom &cylinderMsg = _geometryMsg.cylinder();
+  const gazebo::msgs::CylinderGeom &cylinderMsg = _geometryMsg.cylinder();
   double x = 2 * cylinderMsg.radius();
   double y = 2 * cylinderMsg.radius();
   double z = cylinderMsg.length();
@@ -1471,16 +1471,16 @@ void SubSceneManager::ProcessCylinder(
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessEmpty(const sim::msgs::Geometry&, VisualPtr)
+void SubSceneManager::ProcessEmpty(const gazebo::msgs::Geometry&, VisualPtr)
 {
   // do nothing
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessMesh(const sim::msgs::Geometry &_geometryMsg,
+void SubSceneManager::ProcessMesh(const gazebo::msgs::Geometry &_geometryMsg,
     VisualPtr _parent)
 {
-  const sim::msgs::MeshGeom &meshMsg = _geometryMsg.mesh();
+  const gazebo::msgs::MeshGeom &meshMsg = _geometryMsg.mesh();
 
   // if the model contains model:// try to find the meshes in ~/.gazebo
   std::list<std::string> modelPaths;
@@ -1537,7 +1537,7 @@ void SubSceneManager::ProcessMesh(const sim::msgs::Geometry &_geometryMsg,
   // set scale if available
   if (meshMsg.has_scale())
   {
-    const sim::msgs::Vector3d scaleMsg = meshMsg.scale();
+    const gazebo::msgs::Vector3d scaleMsg = meshMsg.scale();
     _parent->SetLocalScale(SubSceneManager::Convert(scaleMsg));
   }
 
@@ -1546,30 +1546,30 @@ void SubSceneManager::ProcessMesh(const sim::msgs::Geometry &_geometryMsg,
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessPlane(const sim::msgs::Geometry &_geometryMsg,
+void SubSceneManager::ProcessPlane(const gazebo::msgs::Geometry &_geometryMsg,
     VisualPtr _parent)
 {
   // TODO(anyone): handle plane normal
   GeometryPtr plane = this->activeScene->CreatePlane();
-  const sim::msgs::PlaneGeom &planeMsg = _geometryMsg.plane();
-  const sim::msgs::Vector2d planeSize = planeMsg.size();
+  const gazebo::msgs::PlaneGeom &planeMsg = _geometryMsg.plane();
+  const gazebo::msgs::Vector2d planeSize = planeMsg.size();
   _parent->SetLocalScale(planeSize.x(), planeSize.y(), 1);
   _parent->AddGeometry(plane);
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessSphere(const sim::msgs::Geometry &_geometryMsg,
+void SubSceneManager::ProcessSphere(const gazebo::msgs::Geometry &_geometryMsg,
     VisualPtr _parent)
 {
   GeometryPtr sphere = this->activeScene->CreateSphere();
-  const sim::msgs::SphereGeom &sphereMsg = _geometryMsg.sphere();
+  const gazebo::msgs::SphereGeom &sphereMsg = _geometryMsg.sphere();
   _parent->SetLocalScale(2 * sphereMsg.radius());
   _parent->AddGeometry(sphere);
 }
 
 //////////////////////////////////////////////////
 MaterialPtr SubSceneManager::CreateMaterial(
-    const sim::msgs::Material &_materialMsg)
+    const gazebo::msgs::Material &_materialMsg)
 {
   MaterialPtr material = this->activeScene->CreateMaterial();
 
@@ -1580,7 +1580,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
   // set ambient if available
   if (_materialMsg.has_ambient())
   {
-    sim::msgs::Color msg = _materialMsg.ambient();
+    gazebo::msgs::Color msg = _materialMsg.ambient();
     math::Color ambient(msg.r(), msg.g(), msg.b(), msg.a());
     material->SetAmbient(ambient);
   }
@@ -1588,7 +1588,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
   // set diffuse if available
   if (_materialMsg.has_diffuse())
   {
-    sim::msgs::Color msg = _materialMsg.diffuse();
+    gazebo::msgs::Color msg = _materialMsg.diffuse();
     math::Color diffuse(msg.r(), msg.g(), msg.b(), msg.a());
     material->SetDiffuse(diffuse);
   }
@@ -1596,7 +1596,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
   // set specular if available
   if (_materialMsg.has_specular())
   {
-    sim::msgs::Color msg = _materialMsg.specular();
+    gazebo::msgs::Color msg = _materialMsg.specular();
     math::Color specular(msg.r(), msg.g(), msg.b(), msg.a());
     material->SetSpecular(specular);
   }
@@ -1604,7 +1604,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
   // set emissive if available
   if (_materialMsg.has_emissive())
   {
-    sim::msgs::Color msg = _materialMsg.emissive();
+    gazebo::msgs::Color msg = _materialMsg.emissive();
     math::Color emissive(msg.r(), msg.g(), msg.b(), msg.a());
     material->SetEmissive(emissive);
   }
@@ -1626,7 +1626,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
   // set shader-type if available
   if (_materialMsg.has_shader_type())
   {
-    sim::msgs::Material::ShaderType shader_type =
+    gazebo::msgs::Material::ShaderType shader_type =
         _materialMsg.shader_type();
     ShaderType type = SubSceneManager::Convert(shader_type);
     material->SetShaderType(type);
@@ -1638,7 +1638,7 @@ MaterialPtr SubSceneManager::CreateMaterial(
 }
 
 //////////////////////////////////////////////////
-void SubSceneManager::ProcessPose(const sim::msgs::Pose &_poseMsg)
+void SubSceneManager::ProcessPose(const gazebo::msgs::Pose &_poseMsg)
 {
   std::string name = _poseMsg.name();
   NodePtr node = this->activeScene->NodeByName(name);
@@ -1647,7 +1647,7 @@ void SubSceneManager::ProcessPose(const sim::msgs::Pose &_poseMsg)
 
 //////////////////////////////////////////////////
 void SubSceneManager::SetPose(NodePtr _node,
-    const sim::msgs::Pose &_poseMsg)
+    const gazebo::msgs::Pose &_poseMsg)
 {
   math::Pose3d pose = SubSceneManager::Convert(_poseMsg);
   _node->SetLocalPose(pose);
@@ -1655,7 +1655,7 @@ void SubSceneManager::SetPose(NodePtr _node,
 
 //////////////////////////////////////////////////
 void SubSceneManager::SetScale(VisualPtr _visual,
-    const sim::msgs::Vector3d &_scaleMsg)
+    const gazebo::msgs::Vector3d &_scaleMsg)
 {
   math::Vector3d scale = SubSceneManager::Convert(_scaleMsg);
   _visual->SetLocalScale(scale);
@@ -1696,7 +1696,7 @@ void SubSceneManager::ProcessRemoval(const std::string &_name)
 }
 
 //////////////////////////////////////////////////
-math::Color SubSceneManager::Convert(const sim::msgs::Color &_colorMsg)
+math::Color SubSceneManager::Convert(const gazebo::msgs::Color &_colorMsg)
 {
   math::Color color;
   color.R() = _colorMsg.r();
@@ -1707,21 +1707,21 @@ math::Color SubSceneManager::Convert(const sim::msgs::Color &_colorMsg)
 }
 
 //////////////////////////////////////////////////
-math::Pose3d SubSceneManager::Convert(const sim::msgs::Pose &_poseMsg)
+math::Pose3d SubSceneManager::Convert(const gazebo::msgs::Pose &_poseMsg)
 {
   math::Pose3d pose;
 
-  const sim::msgs::Vector3d &posMsg = _poseMsg.position();
+  const gazebo::msgs::Vector3d &posMsg = _poseMsg.position();
   pose.Pos() = SubSceneManager::Convert(posMsg);
 
-  const sim::msgs::Quaternion &rotMsg = _poseMsg.orientation();
+  const gazebo::msgs::Quaternion &rotMsg = _poseMsg.orientation();
   pose.Rot() = SubSceneManager::Convert(rotMsg);
 
   return pose;
 }
 
 //////////////////////////////////////////////////
-math::Vector3d SubSceneManager::Convert(const sim::msgs::Vector3d &_vecMsg)
+math::Vector3d SubSceneManager::Convert(const gazebo::msgs::Vector3d &_vecMsg)
 {
   math::Vector3d vec;
   vec.X(_vecMsg.x());
@@ -1732,7 +1732,7 @@ math::Vector3d SubSceneManager::Convert(const sim::msgs::Vector3d &_vecMsg)
 
 //////////////////////////////////////////////////
 math::Quaterniond SubSceneManager::Convert(
-    const sim::msgs::Quaternion &_quatMsg)
+    const gazebo::msgs::Quaternion &_quatMsg)
 {
   math::Quaterniond quat;
   quat.W(_quatMsg.w());
@@ -1743,20 +1743,20 @@ math::Quaterniond SubSceneManager::Convert(
 }
 
 //////////////////////////////////////////////////
-ShaderType SubSceneManager::Convert(sim::msgs::Material::ShaderType _type)
+ShaderType SubSceneManager::Convert(gazebo::msgs::Material::ShaderType _type)
 {
   switch (_type)
   {
-    case sim::msgs::Material::VERTEX:
+    case gazebo::msgs::Material::VERTEX:
       return ST_VERTEX;
 
-    case sim::msgs::Material::PIXEL:
+    case gazebo::msgs::Material::PIXEL:
       return ST_PIXEL;
 
-    case sim::msgs::Material::NORMAL_MAP_OBJECT_SPACE:
+    case gazebo::msgs::Material::NORMAL_MAP_OBJECT_SPACE:
       return ST_NORM_OBJ;
 
-    case sim::msgs::Material::NORMAL_MAP_TANGENT_SPACE:
+    case gazebo::msgs::Material::NORMAL_MAP_TANGENT_SPACE:
       return ST_NORM_TAN;
 
     default:
@@ -1767,26 +1767,26 @@ ShaderType SubSceneManager::Convert(sim::msgs::Material::ShaderType _type)
 //////////////////////////////////////////////////
 void SubSceneManager::CreateGeometryFunctionMap()
 {
-  this->geomFunctions[sim::msgs::Geometry::BOX] =
+  this->geomFunctions[gazebo::msgs::Geometry::BOX] =
       &SubSceneManager::ProcessBox;
 
   // TODO(anyone): enable when cone protobuf msg created
-  // this->geomFunctions[sim::msgs::Geometry::CONE] =
+  // this->geomFunctions[gazebo::msgs::Geometry::CONE] =
   //     &SubSceneManager::ProcessCone;
 
-  this->geomFunctions[sim::msgs::Geometry::CYLINDER] =
+  this->geomFunctions[gazebo::msgs::Geometry::CYLINDER] =
       &SubSceneManager::ProcessCylinder;
 
-  this->geomFunctions[sim::msgs::Geometry::EMPTY] =
+  this->geomFunctions[gazebo::msgs::Geometry::EMPTY] =
       &SubSceneManager::ProcessEmpty;
 
-  this->geomFunctions[sim::msgs::Geometry::MESH] =
+  this->geomFunctions[gazebo::msgs::Geometry::MESH] =
       &SubSceneManager::ProcessMesh;
 
-  this->geomFunctions[sim::msgs::Geometry::PLANE] =
+  this->geomFunctions[gazebo::msgs::Geometry::PLANE] =
       &SubSceneManager::ProcessPlane;
 
-  this->geomFunctions[sim::msgs::Geometry::SPHERE] =
+  this->geomFunctions[gazebo::msgs::Geometry::SPHERE] =
       &SubSceneManager::ProcessSphere;
 }
 
@@ -1812,7 +1812,7 @@ void CurrentSceneManager::OnPoseUpdate(::ConstPosesStampedPtr &_posesMsg)
   for (int i = 0; i < _posesMsg->pose_size(); ++i)
   {
     // replace into pose map
-    sim::msgs::Pose pose = _posesMsg->pose(i);
+    gazebo::msgs::Pose pose = _posesMsg->pose(i);
     std::string name = pose.name();
     this->poseMsgs[name] = pose;
   }
@@ -1945,7 +1945,7 @@ void NewSceneManager::ProcessScene()
   // process ambient if available
   if (this->sceneMsg.has_ambient())
   {
-    sim::msgs::Color colorMsg = this->sceneMsg.ambient();
+    gazebo::msgs::Color colorMsg = this->sceneMsg.ambient();
     math::Color color(colorMsg.r(), colorMsg.g(), colorMsg.b());
     this->activeScene->SetAmbientLight(color);
   }
@@ -1953,7 +1953,7 @@ void NewSceneManager::ProcessScene()
   // process background if available
   if (this->sceneMsg.has_background())
   {
-    sim::msgs::Color colorMsg = this->sceneMsg.background();
+    gazebo::msgs::Color colorMsg = this->sceneMsg.background();
     math::Color color(colorMsg.r(), colorMsg.g(), colorMsg.b());
     this->activeScene->SetBackgroundColor(color);
   }
@@ -1961,14 +1961,14 @@ void NewSceneManager::ProcessScene()
   // process each scene light
   for (int i = 0; i < this->sceneMsg.light_size(); ++i)
   {
-    sim::msgs::Light lightMsg = this->sceneMsg.light(i);
+    gazebo::msgs::Light lightMsg = this->sceneMsg.light(i);
     this->ProcessLight(lightMsg, this->activeScene->RootVisual());
   }
 
   // process each scene model
   for (int i = 0; i < this->sceneMsg.model_size(); ++i)
   {
-    sim::msgs::Model modelMsg = this->sceneMsg.model(i);
+    gazebo::msgs::Model modelMsg = this->sceneMsg.model(i);
     this->ProcessModel(modelMsg, this->activeScene->RootVisual());
   }
 }
@@ -2040,7 +2040,7 @@ void NewSceneManager::ProcessPoses()
 }
 
 //////////////////////////////////////////////////
-void NewSceneManager::ProcessPoses(const sim::msgs::PosesStamped &_posesMsg)
+void NewSceneManager::ProcessPoses(const gazebo::msgs::PosesStamped &_posesMsg)
 {
   // record pose timestamp
   int sec = _posesMsg.time().sec();
@@ -2050,7 +2050,7 @@ void NewSceneManager::ProcessPoses(const sim::msgs::PosesStamped &_posesMsg)
   // process each pose in list
   for (int i = 0; i < _posesMsg.pose_size(); ++i)
   {
-    sim::msgs::Pose poseMsg = _posesMsg.pose(i);
+    gazebo::msgs::Pose poseMsg = _posesMsg.pose(i);
     this->ProcessPose(poseMsg);
   }
 }

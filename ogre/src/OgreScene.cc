@@ -40,7 +40,7 @@
 #include "gz/rendering/ogre/OgreThermalCamera.hh"
 #include "gz/rendering/ogre/OgreVisual.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

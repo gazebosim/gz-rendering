@@ -23,7 +23,7 @@
 #include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/Scene.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

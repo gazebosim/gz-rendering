@@ -38,7 +38,7 @@
 #include "gz/rendering/ogre2/Ogre2Sensor.hh"
 
 
-namespace gz
+namespace ignition
 {
 namespace rendering
 {

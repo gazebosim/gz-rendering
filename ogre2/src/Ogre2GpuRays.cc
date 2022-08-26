@@ -33,7 +33,7 @@
 #include "gz/rendering/ogre2/Ogre2Sensor.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 
-namespace gz
+namespace ignition
 {
 namespace rendering
 {

@@ -29,7 +29,7 @@ namespace Ogre
   class Camera;
 }
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

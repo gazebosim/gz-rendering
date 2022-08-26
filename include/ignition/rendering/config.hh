@@ -45,14 +45,4 @@
 /* #undef HAVE_GAZEBO */
 /* #undef INCLUDE_RTSHADER */
 
-namespace gz
-{
-}
-
-namespace ignition
-{
-  using namespace gz;
-}
-
-
 #endif

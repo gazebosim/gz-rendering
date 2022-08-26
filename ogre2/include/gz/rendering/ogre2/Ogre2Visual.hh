@@ -21,7 +21,7 @@
 #include "gz/rendering/ogre2/Ogre2Node.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

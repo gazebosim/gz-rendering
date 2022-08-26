@@ -22,7 +22,7 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/base/BaseRenderTypes.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

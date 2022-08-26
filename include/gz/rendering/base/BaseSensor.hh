@@ -19,7 +19,7 @@
 
 #include "gz/rendering/Sensor.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

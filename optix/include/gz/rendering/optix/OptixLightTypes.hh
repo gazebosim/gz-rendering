@@ -20,7 +20,7 @@
 #include <optix_math.h>
 
 #ifndef __CUDA_ARCH__
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

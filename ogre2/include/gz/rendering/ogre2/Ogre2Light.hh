@@ -26,7 +26,7 @@ namespace Ogre
   class Light;
 }
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

@@ -28,9 +28,9 @@ using namespace rendering;
 
 void Connect()
 {
-  sim::common::Console::SetQuiet(false);
-  sim::transport::init();
-  sim::transport::run();
+  gazebo::common::Console::SetQuiet(false);
+  gazebo::transport::init();
+  gazebo::transport::run();
 
   SceneManager* manager = SceneManager::Instance();
   manager->Load();

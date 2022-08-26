@@ -28,7 +28,7 @@
 #include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/Utils.hh"
 
-namespace gz
+namespace ignition
 {
 namespace rendering
 {

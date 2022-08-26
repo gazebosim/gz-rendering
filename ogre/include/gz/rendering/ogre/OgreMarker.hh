@@ -23,7 +23,7 @@
 #include "gz/rendering/ogre/OgreGeometry.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

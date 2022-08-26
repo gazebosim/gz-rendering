@@ -22,7 +22,7 @@
 #include "gz/rendering/base/BaseCamera.hh"
 #include "gz/rendering/ThermalCamera.hh"
 
-namespace gz
+namespace ignition
 {
   namespace rendering
   {

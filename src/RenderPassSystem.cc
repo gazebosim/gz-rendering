@@ -38,9 +38,7 @@ RenderPassSystem::RenderPassSystem() :
 }
 
 //////////////////////////////////////////////////
-RenderPassSystem::~RenderPassSystem()
-{
-}
+RenderPassSystem::~RenderPassSystem() = default;
 
 //////////////////////////////////////////////////
 RenderPassPtr RenderPassSystem::CreateImpl(const std::string &_type)

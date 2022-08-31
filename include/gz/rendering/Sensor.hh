@@ -33,7 +33,7 @@ namespace gz
       public virtual Node
     {
       /// \brief Sensor
-      public: virtual ~Sensor() { }
+      public: virtual ~Sensor();
 
       /// \brief Set visibility mask
       /// \param[in] _mask Visibility mask

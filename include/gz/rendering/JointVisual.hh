@@ -70,7 +70,7 @@ namespace gz
       public virtual Visual
     {
       /// \brief Destructor
-      public: virtual ~JointVisual() {}
+      public: virtual ~JointVisual();
 
       /// \brief Create an axis and attach it to the joint visual.
       /// \param[in] _axis Axis vector.

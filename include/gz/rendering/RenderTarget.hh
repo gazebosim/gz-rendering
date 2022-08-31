@@ -38,7 +38,7 @@ namespace gz
       public virtual Object
     {
       /// \brief Destructor
-      public: virtual ~RenderTarget() { }
+      public: virtual ~RenderTarget();
 
       /// \brief Get render target width in pixels
       /// \return The render target width in pixels
@@ -104,7 +104,7 @@ namespace gz
       public virtual RenderTarget
     {
       /// \brief Destructor
-      public: virtual ~RenderTexture() { }
+      public: virtual ~RenderTexture();
 
       /// \brief Returns the OpenGL texture Id. A valid Id is returned only
       // if this is an OpenGL render texture
@@ -127,7 +127,7 @@ namespace gz
       public virtual RenderTarget
     {
       /// \brief Destructor
-      public: virtual ~RenderWindow() { }
+      public: virtual ~RenderWindow();
 
       /// \brief Get the window handle that the render window is attached to.
       /// \return Window handle

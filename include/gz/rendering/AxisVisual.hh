@@ -32,7 +32,7 @@ namespace gz
       public virtual CompositeVisual
     {
       /// \brief Destructor
-      public: virtual ~AxisVisual() { }
+      public: virtual ~AxisVisual();
 
       /// \brief set true to show the axis heads, false otherwise
       /// \param[in] _b true to show the axis heads, false otherwise

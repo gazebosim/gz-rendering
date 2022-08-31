@@ -49,7 +49,7 @@ namespace gz
       public virtual Object
     {
       /// \brief Destructor
-      public: virtual ~Material() { }
+      public: virtual ~Material();
 
       /// \brief Determine if lighting affects this material
       /// \return True if lighting affects this material

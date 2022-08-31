@@ -37,7 +37,7 @@ namespace gz
     class GZ_RENDERING_VISIBLE RenderEngine
     {
       /// \brief Destructor
-      public: virtual ~RenderEngine() { }
+      public: virtual ~RenderEngine();
 
       /// \brief Load any necessary resources to set up render-engine. This
       /// should called before any other function.

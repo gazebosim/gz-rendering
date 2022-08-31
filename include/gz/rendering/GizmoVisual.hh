@@ -35,7 +35,7 @@ namespace gz
       public virtual CompositeVisual
     {
       /// \brief Destructor
-      public: virtual ~GizmoVisual() { }
+      public: virtual ~GizmoVisual();
 
       /// \brief Set the transform mode of the gizmo. This controls the visual
       /// appearance of the gizmo. Only the visuals in the specified mode will

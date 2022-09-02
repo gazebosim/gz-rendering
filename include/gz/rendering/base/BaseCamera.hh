@@ -505,22 +505,16 @@ namespace gz
     template <class T>
     math::Matrix3d BaseCamera<T>::CameraIntrinsicMatrix() const
     {
+      // Extracting the intrinsic matrix :
+      // https://ogrecave.github.io/ogre/api/13/class_ogre_1_1_math.html
       const math::Matrix4d& projectionMat = this->ProjectionMatrix();
 
-      double right = this->ImageWidth();
-      double left = 0.0;
-      double top = this->ImageHeight();
-      double bottom = 0.0;
-
-      double inverseWidth = 1.0 / (right - left);
-      double inverseHeight = 1.0 / (top - bottom);
-
-      double fX = projectionMat(0, 0)/ (2*inverseWidth);
-      double fY = projectionMat(1, 1) / (2*inverseHeight);
-      double cX = -((projectionMat(0, 2) -
-          ((right + left) / (right - left))) * (right - left)) / 2;
-      double cY = this->ImageHeight() + ((projectionMat(1, 2) -
-          ((top + bottom) / (top - bottom))) * (top - bottom)) / 2;
+      const double width = static_cast<double>(this->ImageWidth());
+      const double height = static_cast<double>(this->ImageHeight());
+      double fX = (projectionMat(0, 0) * width) / 2.0;
+      double fY = (projectionMat(1, 1) * height) / 2.0;
+      double cX = (-1.0 * width * (projectionMat(0, 2) - 1.0) / 2.0;
+      double cY = height + (height * (projectionMat(1, 2) - 1)) / 2.0;
 
       return math::Matrix3d(fX, 0, cX,
                             0, fY, cY,

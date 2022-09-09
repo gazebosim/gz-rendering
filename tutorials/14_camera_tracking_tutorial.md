@@ -61,10 +61,10 @@ You'll see:
 
 There are two main functions in the `Camera` class that allow us to track and follow the object:
 
-[SetTrackTarget](https://gazebosim.org/api/rendering/4.0/classignition_1_1rendering_1_1Camera.html#a492d6ad21711d6050ccda1a96676f8fe): Set a node for camera to track. The camera will automatically change its orientation to face the target being tracked. If a null node is specified, tracking is disabled. In contrast to `SetFollowTarget` the camera does not change its position when tracking is enabled.
+[SetTrackTarget](https://gazebosim.org/api/rendering/7.0/classignition_1_1rendering_1_1Camera.html#a492d6ad21711d6050ccda1a96676f8fe): Set a node for camera to track. The camera will automatically change its orientation to face the target being tracked. If a null node is specified, tracking is disabled. In contrast to `SetFollowTarget` the camera does not change its position when tracking is enabled.
 
 \snippet examples/camera_tracking/GlutWindow.cc camera track
 
-[SetFollowTarget](https://gazebosim.org/api/rendering/4.0/classignition_1_1rendering_1_1Camera.html#ae5dac859964f1c47eba4d46d6d3ef9f9): Set a node for camera to follow. The camera will automatically update its position to keep itself at the specified offset distance from the target being followed. If a null node is specified, camera follow is disabled. In contrast to `SetTrackTarget`, the camera does not change its orientation when following is enabled.
+[SetFollowTarget](https://gazebosim.org/api/rendering/7.0/classignition_1_1rendering_1_1Camera.html#ae5dac859964f1c47eba4d46d6d3ef9f9): Set a node for camera to follow. The camera will automatically update its position to keep itself at the specified offset distance from the target being followed. If a null node is specified, camera follow is disabled. In contrast to `SetTrackTarget`, the camera does not change its orientation when following is enabled.
 
 \snippet examples/camera_tracking/GlutWindow.cc camera follow

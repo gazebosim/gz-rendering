@@ -24,7 +24,7 @@ Execute the example:
 You'll see:
 
 ```{.sh}
-[Msg] Loading plugin [ignition-rendering-ogre2]
+[Msg] Loading plugin [gz-rendering-ogre2]
 ===============================
    S  - Save image & its boxes
   ESC - Exit

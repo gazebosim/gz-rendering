@@ -200,7 +200,6 @@ void OgreWideAngleCamera::Destroy()
         this->dataPtr->compMat->getName());
     this->dataPtr->compMat.setNull();
   }
-
 }
 
 //////////////////////////////////////////////////

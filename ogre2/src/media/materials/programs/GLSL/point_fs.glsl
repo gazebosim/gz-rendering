@@ -17,10 +17,6 @@
 
 #version ogre_glsl_ver_330
 
-vulkan( layout( ogre_P0 ) uniform Params { )
-  uniform vec4 color;
-vulkan( }; )
-
 vulkan_layout( location = 0 )
 in block
 {

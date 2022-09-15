@@ -673,11 +673,11 @@ void Ogre2Material::SetEmissiveMap(const std::string &_name,
   this->dataPtr->emissiveMapData = _img;
   if (_img == nullptr)
   {
-    this->SetTextureMapImpl(this->metalnessMapName, Ogre::PBSM_EMISSIVE);
+    this->SetTextureMapImpl(this->emissiveMapName, Ogre::PBSM_EMISSIVE);
   }
   else
   {
-    this->SetTextureMapDataImpl(this->metalnessMapName,
+    this->SetTextureMapDataImpl(this->emissiveMapName,
                                 _img, Ogre::PBSM_EMISSIVE);
   }
 }

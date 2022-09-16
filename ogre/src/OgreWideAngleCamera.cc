@@ -193,6 +193,13 @@ void OgreWideAngleCamera::Destroy()
       this->dataPtr->ogreRenderTexture->getName());
     this->dataPtr->ogreRenderTexture = nullptr;
   }
+
+  if (!this->dataPtr->compMat.isNull())
+  {
+    Ogre::MaterialManager::getSingleton().remove(
+        this->dataPtr->compMat->getName());
+    this->dataPtr->compMat.setNull();
+  }
 }
 
 //////////////////////////////////////////////////

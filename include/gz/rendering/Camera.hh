@@ -332,6 +332,12 @@ namespace gz
       /// \param[out] _textureIdPtr the address of a void* pointer.
       public: virtual void RenderTextureMetalId(void *_textureIdPtr) const = 0;
 
+      /// \brief Right now this is Vulkan-only. This function needs to be
+      /// called after rendering, and before handling the texture pointer
+      /// (i.e. by calling RenderTextureMetalId()) so that external APIs
+      /// (e.g. Qt) can sample the texture.
+      public: virtual void PrepareForExternalSampling() = 0;
+
       /// \brief Add a render pass to the camera
       /// \param[in] _pass New render pass to add
       public: virtual void AddRenderPass(const RenderPassPtr &_pass) = 0;

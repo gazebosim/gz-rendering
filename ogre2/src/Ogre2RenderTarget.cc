@@ -560,6 +560,32 @@ void Ogre2RenderTarget::MetalIdImpl(void *_textureIdPtr) const
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderTarget::PrepareForExternalSampling()
+{
+  if (!this->dataPtr->ogreTexture[0])
+    return;
+
+  Ogre::Root *ogreRoot = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::RenderSystem *renderSystem = ogreRoot->getRenderSystem();
+  Ogre::BarrierSolver &solver = renderSystem->getBarrierSolver();
+  Ogre::ResourceTransitionArray resourceTransitions;
+
+  resourceTransitions.clear();
+  solver.resolveTransition(resourceTransitions, this->dataPtr->ogreTexture[1],
+                           Ogre::ResourceLayout::Texture,
+                           Ogre::ResourceAccess::Read, 1u << Ogre::PixelShader);
+  renderSystem->executeResourceTransition(resourceTransitions);
+
+  // If we queued all cameras and transitioned them in
+  // Ogre2Scene::FlushGpuCommandsOnly & Ogre2Scene::EndFrame we might
+  // achieve optimal performance; however that could be negligible
+  // and is not worth the extra code complexity.
+  //
+  // Just flush now to actually perform the resource transition.
+  renderSystem->flushCommands();
+}
+
+//////////////////////////////////////////////////
 uint8_t Ogre2RenderTarget::TargetFSAA() const
 {
   // check if target fsaa is supported

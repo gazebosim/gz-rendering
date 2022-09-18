@@ -127,6 +127,9 @@ namespace gz
           const override;
 
       // Documentation inherited.
+      public: virtual void PrepareForExternalSampling() override;
+
+      // Documentation inherited.
       public: void SetShadowsDirty() override;
 
       // Documentation inherited.

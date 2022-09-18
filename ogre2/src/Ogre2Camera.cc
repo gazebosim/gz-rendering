@@ -231,6 +231,14 @@ void Ogre2Camera::RenderTextureMetalId(void *_textureIdPtr) const
 }
 
 //////////////////////////////////////////////////
+void Ogre2Camera::PrepareForExternalSampling()
+{
+  if (!this->renderTexture)
+    return;
+  this->renderTexture->PrepareForExternalSampling();
+}
+
+//////////////////////////////////////////////////
 void Ogre2Camera::SetShadowsDirty()
 {
   this->SetShadowsNodeDefDirty();

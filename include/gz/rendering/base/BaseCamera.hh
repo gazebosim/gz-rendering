@@ -187,6 +187,9 @@ namespace gz
           const override;
 
       // Documentation inherited.
+      public: virtual void PrepareForExternalSampling() override;
+
+      // Documentation inherited.
       public: virtual void AddRenderPass(const RenderPassPtr &_pass) override;
 
       // Documentation inherited.
@@ -840,6 +843,14 @@ namespace gz
     void BaseCamera<T>::RenderTextureMetalId(void *) const
     {
       gzerr << "RenderTextureMetalId is not supported by current render"
+          << " engine" << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::PrepareForExternalSampling()
+    {
+      gzerr << "PrepareForExternalSampling is not supported by current render"
           << " engine" << std::endl;
     }
 

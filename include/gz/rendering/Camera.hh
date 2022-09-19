@@ -79,7 +79,9 @@ namespace gz
 
       /// \brief Set the image pixel format
       /// \param[in] _format New image pixel format
-      public: virtual void SetImageFormat(PixelFormat _format) = 0;
+      /// \param[in] _reinterpretable See RenderTarget::SetFormat
+      public: virtual void SetImageFormat(PixelFormat _format,
+                                          bool _reinterpretable = false) = 0;
 
       /// \brief Get the total image memory size in bytes
       /// \return The image memory size in bytes

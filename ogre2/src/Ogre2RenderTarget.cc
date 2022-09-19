@@ -518,13 +518,20 @@ void Ogre2RenderTarget::BuildTargetImpl()
   Ogre::TextureGpuManager *textureMgr =
       ogreRoot->getRenderSystem()->getTextureGpuManager();
 
+  uint32_t textureFlags = Ogre::TextureFlags::RenderToTexture;
+
+  if (this->reinterpretable)
+  {
+    textureFlags |= Ogre::TextureFlags::Reinterpretable;
+  }
+
   for (size_t i = 0u; i < 2u; ++i)
   {
     this->dataPtr->ogreTexture[i] =
         textureMgr->createTexture(
           this->name + std::to_string(i),
           Ogre::GpuPageOutStrategy::Discard,
-          Ogre::TextureFlags::RenderToTexture,
+          textureFlags,
           Ogre::TextureTypes::Type2D);
 
     this->dataPtr->ogreTexture[i]->setResolution(this->width, this->height);

@@ -62,7 +62,15 @@ namespace gz
 
       /// \brief Set the render target image format
       /// \param[in] _format New target format
-      public: virtual void SetFormat(PixelFormat _format) = 0;
+      /// \param[in] _reinterpretable whether the RenderTarget will be
+      /// reinterpreted to another format (e.g.
+      /// from RGBA8_UNORM to/from RGBA8_UNORM_SRGB)
+      public: virtual void SetFormat(PixelFormat _format,
+                                     bool _reinterpretable = false) = 0;
+
+      /// \brief See SetFormat()
+      /// \return True if format is reinterpretable
+      public: virtual bool Reinterpretable() const = 0;
 
       /// \brief Write rendered image to given Image. The RenderTarget will
       /// convert the underlying image to the specified format listed in the

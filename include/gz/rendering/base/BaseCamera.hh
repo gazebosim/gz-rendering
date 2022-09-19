@@ -61,7 +61,9 @@ namespace gz
 
       public: virtual unsigned int ImageMemorySize() const override;
 
-      public: virtual void SetImageFormat(PixelFormat _format) override;
+      public: virtual void SetImageFormat(PixelFormat _format,
+                                          bool _reinterpretable = false)
+          override;
 
       public: virtual math::Angle HFOV() const override;
 
@@ -335,9 +337,10 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseCamera<T>::SetImageFormat(PixelFormat _format)
+    void BaseCamera<T>::SetImageFormat(PixelFormat _format,
+                                       bool _reinterpretable)
     {
-      this->RenderTarget()->SetFormat(_format);
+      this->RenderTarget()->SetFormat(_format, _reinterpretable);
     }
 
     //////////////////////////////////////////////////

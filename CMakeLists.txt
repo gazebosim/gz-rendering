@@ -84,7 +84,7 @@ gz_find_package(GzOGRE VERSION 1.9.0
 # Display a warning for the users on this setup unless they provide
 # USE_UNOFFICIAL_OGRE_VERSIONS flag
 if (NOT USE_UNOFFICIAL_OGRE_VERSIONS)
-  if (${OGRE_VERSION} VERSION_GREATER_EQUAL 1.10.0)
+  if (OGRE_VERSION VERSION_GREATER_EQUAL 1.10.0)
     GZ_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
                       "The software might compile and even work but support from upstream"
                       "could be reduced to accepting patches for newer versions")

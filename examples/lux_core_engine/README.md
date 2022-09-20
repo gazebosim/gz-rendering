@@ -57,3 +57,4 @@ As an example:
 # Run the demo with the "RTPATHCPU" render engine
 ./simple_demo RTPATHCPU
 ~~~
+

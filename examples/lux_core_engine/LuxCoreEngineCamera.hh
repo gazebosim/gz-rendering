@@ -36,16 +36,20 @@ class LuxCoreEngineCamera : public BaseCamera<LuxCoreEngineSensor> {
 
   public: virtual ~LuxCoreEngineCamera();
 
-  public: virtual void Render();
+  // Documentation inherited.
+  public: virtual void Render() override;
 
+  // Documentation inherited. 
   public: virtual void Update();
 
   public: virtual void SetLocalPosition(double _x, double _y, double _z);
 
   public: virtual void SetLocalRotation(double _r, double _p, double _y);
 
+  // Documentation inherited. 
   public: virtual void SetHFOV(const math::Angle &_hfov);
 
+  // Documentation inherited. 
   protected: virtual RenderTargetPtr RenderTarget() const;
 
   protected: LuxCoreEngineRenderTargetPtr renderTarget;

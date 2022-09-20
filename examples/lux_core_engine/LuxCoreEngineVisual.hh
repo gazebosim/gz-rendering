@@ -27,7 +27,8 @@ namespace ignition {
 namespace rendering {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-class LuxCoreEngineVisual : public BaseVisual<LuxCoreEngineNode> {
+class LuxCoreEngineVisual : public BaseVisual<LuxCoreEngineNode>
+{
 
   // Documentation inherited.
   public: void SetLocalPosition(double _x, double _y, double _z);

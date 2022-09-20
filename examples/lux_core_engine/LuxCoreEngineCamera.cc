@@ -36,7 +36,7 @@ LuxCoreEngineCamera::~LuxCoreEngineCamera()
 //////////////////////////////////////////////////
 void LuxCoreEngineCamera::Render()
 {
-  if (!this->renderSessionLux)
+  if (!this->renderSessionLux) 
   {
     luxrays::Properties props;
 
@@ -84,8 +84,8 @@ void LuxCoreEngineCamera::Render()
     this->renderSessionLux = luxcore::RenderSession::Create(config);
     this->renderSessionLux->Start();
 
-    std::cout << scene->SceneLux()->ToProperties() << std::endl;
-    std::cout << props << std::endl;
+    gzmsg << scene->SceneLux()->ToProperties() << std::endl;
+    gzmsg << props << std::endl;
   }
 
   this->renderSessionLux->WaitNewFrame();
@@ -156,30 +156,9 @@ void LuxCoreEngineCamera::SetLocalPosition(double _x, double _y, double _z)
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineCamera::SetLocalRotation(double _r, double _p, double _y)
+void LuxCoreEngineCamera::SetLocalRotation(double /*_r*/, double /*_p*/, double /*_y*/)
 {
-  // this->localRotationR = _r;
-  // this->localRotationP = _p;
-  // this->localRotationY = _y;
-
-  // if (renderSessionLux && renderSessionLux->IsStarted())
-  // {
-
-  // }
-  // else
-  // {
-  //   float targetX = 0;
-  //   float targetY = 0;
-  //   float targetZ = 0;
-
-  //   scene->SceneLux()->Parse(
-  //       luxrays::Property("scene.camera.type")("perspective") <<
-  //       luxrays::Property("scene.camera.up")(0, 0, -1) <<
-  //       luxrays::Property("scene.camera.lookat.orig")(this->localPositionX,
-  //       this->localPositionY, this->localPositionZ) <<
-  //       luxrays::Property("scene.camera.lookat.target")(targetX, targetY,
-  //       targetZ));
-  // }
+  //TODO implement this function 
 }
 
 //////////////////////////////////////////////////

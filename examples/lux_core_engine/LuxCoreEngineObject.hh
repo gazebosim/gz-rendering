@@ -32,6 +32,8 @@ class LuxCoreEngineObject : public BaseObject {
   
   public: virtual ~LuxCoreEngineObject();
   
+  // Documentation inherited.
+
   public: virtual ScenePtr Scene() const;
   
   protected: LuxCoreEngineScenePtr scene;

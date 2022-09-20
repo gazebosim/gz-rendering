@@ -31,10 +31,10 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 class LuxCoreEngineLight : public BaseLight<LuxCoreEngineNode> {
 
   public: virtual ignition::math::Color DiffuseColor() const;
-
+  // Documentation inherited.
   public: virtual void SetDiffuseColor(double _r, double _g, double _b,
                                        double _a = 1.0);
-
+  // Documentation inherited.
   public: virtual void SetDiffuseColor(const ignition::math::Color &_color);
 
   public: virtual ignition::math::Color SpecularColor() const;

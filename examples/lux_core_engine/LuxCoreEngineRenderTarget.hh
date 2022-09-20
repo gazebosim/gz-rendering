@@ -33,6 +33,8 @@ class LuxCoreEngineRenderTarget
   
   public: virtual ~LuxCoreEngineRenderTarget();
   
+  // Documentation inherited.
+  
   public: virtual void Copy(Image &_image) const;
   
   public: void *HostDataBuffer();

@@ -26,7 +26,8 @@ namespace ignition {
 namespace rendering {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-class LuxCoreEngineMeshFactory {
+class LuxCoreEngineMeshFactory
+{
 
   public:LuxCoreEngineMeshFactory(LuxCoreEngineScenePtr _scene);
 

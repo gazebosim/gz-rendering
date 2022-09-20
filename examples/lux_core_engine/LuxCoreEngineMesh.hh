@@ -33,9 +33,9 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 class LuxCoreEngineMesh : public BaseMesh<LuxCoreEngineGeometry> {
 
   public: LuxCoreEngineMesh();
-
+  // Documentation inherited.
   public: bool HasParent() const;
-
+  // Documentation inherited.
   public: VisualPtr Parent() const;
   
   public: void SetMaterial(MaterialPtr _material, bool _unique = true);

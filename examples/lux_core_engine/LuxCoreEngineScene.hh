@@ -41,6 +41,8 @@ class LuxCoreEngineScene : public BaseScene {
   
   public: virtual ~LuxCoreEngineScene();
   
+  // Documentation inherited.
+
   public: virtual void Fini();
   
   public: virtual RenderEngine *Engine() const;

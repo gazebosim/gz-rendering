@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-void buildScene(ScenePtr _scene) {
+void buildScene(ScenePtr _scene)
+{
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(0.0, 0.0, 0.0);
   camera->SetLocalRotation(0.0, 0.0, 0.0);
@@ -138,7 +139,8 @@ void buildScene(ScenePtr _scene) {
 }
 
 //////////////////////////////////////////////////
-CameraPtr createCamera(const std::string &_engineName) {
+CameraPtr createCamera(const std::string &_engineName)
+{
   // create and populate scene
   RenderEngine *engine = rendering::engine(_engineName);
   if (!engine) {
@@ -168,15 +170,17 @@ int main(int _argc, char **_argv) {
 
   engineNames.push_back("LuxCoreEngine");
 
-  for (auto engineName : engineNames) {
-    try {
+  for (auto engineName : engineNames)
+  {
+    try
+    {
       CameraPtr camera = createCamera(engineName);
-      if (camera) {
+      if (camera)
+      {
         cameras.push_back(camera);
       }
     } catch (std::exception &ex) {
       std::cout << ex.what() << std::endl;
-      // std::cerr << "Error starting up: " << engineName << std::endl;
     }
   }
   run(cameras);

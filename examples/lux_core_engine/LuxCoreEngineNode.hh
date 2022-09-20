@@ -31,9 +31,9 @@ class LuxCoreEngineNode : public BaseNode<LuxCoreEngineObject> {
   protected: LuxCoreEngineNode();
 
   public: virtual ~LuxCoreEngineNode();
-  
+  // Documentation inherited.
   public: virtual bool HasParent() const override;
-  
+  // Documentation inherited.
   public: virtual NodePtr Parent() const override;
   
   public: virtual void PreRender() override;
@@ -67,8 +67,6 @@ class LuxCoreEngineNode : public BaseNode<LuxCoreEngineObject> {
   protected: math::Pose3d pose;
   
   protected: bool poseDirty;
-  
-  // protected: LuxCoreStorePtr children;
   
   protected: math::Vector3d scale = math::Vector3d::One;
   

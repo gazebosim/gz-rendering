@@ -20,7 +20,7 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-void LuxCoreEngineScene::LogHandler(const char *msg)
+void LuxCoreEngineScene::LogHandler(const char */*msg*/)
 {
 }
 
@@ -46,8 +46,6 @@ void LuxCoreEngineScene::Fini()
 //////////////////////////////////////////////////
 RenderEngine *LuxCoreEngineScene::Engine() const
 {
-  ignerr << "engine() was called 246" << std::endl;
-  // return LuxCoreEngineRenderEngine::Instance();
   return nullptr;
 }
 

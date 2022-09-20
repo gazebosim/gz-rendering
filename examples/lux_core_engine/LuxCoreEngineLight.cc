@@ -27,7 +27,7 @@ ignition::math::Color LuxCoreEngineLight::DiffuseColor() const
 
 //////////////////////////////////////////////////
 void LuxCoreEngineLight::SetDiffuseColor(double _r, double _g, double _b,
-                                         double _a)
+                                         double /*_a*/)
 {
   this->gainR = _r;
   this->gainG = _g;
@@ -37,7 +37,7 @@ void LuxCoreEngineLight::SetDiffuseColor(double _r, double _g, double _b,
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineLight::SetDiffuseColor(const ignition::math::Color &_color)
+void LuxCoreEngineLight::SetDiffuseColor(const ignition::math::Color &/*_color*/)
 {
 }
 
@@ -47,7 +47,7 @@ ignition::math::Color LuxCoreEngineLight::SpecularColor() const
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineLight::SetSpecularColor(const ignition::math::Color &_color)
+void LuxCoreEngineLight::SetSpecularColor(const ignition::math::Color &/*_color*/)
 {
 }
 

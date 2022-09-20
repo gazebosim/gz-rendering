@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,6 @@ bool isRotating = true;
 //////////////////////////////////////////////////
 //! [update camera]
 void updateCameras()
-
 {
   double angle = g_offset / 2 * M_PI;
   double x = sin(angle) * 12.0;
@@ -124,7 +123,8 @@ void displayCB() {
 void idleCB() { glutPostRedisplay(); }
 
 //////////////////////////////////////////////////
-void keyboardCB(unsigned char _key, int, int) {
+void keyboardCB(unsigned char _key, int, int)
+{
   if (_key == KEY_ESC || _key == 'q' || _key == 'Q') {
     exit(0);
   } else if (_key == KEY_TAB) {
@@ -133,7 +133,8 @@ void keyboardCB(unsigned char _key, int, int) {
 }
 
 //////////////////////////////////////////////////
-void initCamera(ir::CameraPtr _camera) {
+void initCamera(ir::CameraPtr _camera)
+{
   g_camera = _camera;
   imgw = g_camera->ImageWidth();
   imgh = g_camera->ImageHeight();
@@ -144,7 +145,8 @@ void initCamera(ir::CameraPtr _camera) {
 }
 
 //////////////////////////////////////////////////
-void initContext() {
+void initContext()
+{
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);
@@ -155,7 +157,8 @@ void initContext() {
 }
 
 //////////////////////////////////////////////////
-void printUsage() {
+void printUsage()
+{
   std::cout << "===============================" << std::endl;
   std::cout << "  TAB - Pause and bake scene   " << std::endl;
   std::cout << "  ESC - Exit                   " << std::endl;
@@ -163,8 +166,10 @@ void printUsage() {
 }
 
 //////////////////////////////////////////////////
-void run(std::vector<ir::CameraPtr> _cameras) {
-  if (_cameras.empty()) {
+void run(std::vector<ir::CameraPtr> _cameras)
+{
+  if (_cameras.empty())
+  {
     ignerr << "No cameras found. Scene will not be rendered" << std::endl;
     return;
   }

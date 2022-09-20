@@ -26,17 +26,18 @@ LuxCoreEngineCamera::LuxCoreEngineCamera()
   this->renderTarget =
       LuxCoreEngineRenderTargetPtr(new LuxCoreEngineRenderTarget);
   this->renderTarget->SetFormat(PF_R8G8B8);
-};
+}
 
 //////////////////////////////////////////////////
 LuxCoreEngineCamera::~LuxCoreEngineCamera()
 {
-};
+}
 
 //////////////////////////////////////////////////
 void LuxCoreEngineCamera::Render()
 {
-  if (!this->renderSessionLux) {
+  if (!this->renderSessionLux) 
+  {
     luxrays::Properties props;
 
     props.Set(luxrays::Property("renderengine.type")("RTPATHOCL"));
@@ -60,11 +61,6 @@ void LuxCoreEngineCamera::Render()
     props.Set(luxrays::Property("film.imagepipeline.1.value")("2.2"));
     props.Set(luxrays::Property("film.imagepipeline.1.table.size")("4096"));
 
-    // props.Set(
-    //     luxrays::Property("film.imagepipeline.2.type")
-    //         ("GAUSSIANFILTER_3x3"));
-    // props.Set(luxrays::Property("film.imagepipeline.2.weight")("0.15"));
-
     luxcore::RenderConfig *config =
         luxcore::RenderConfig::Create(props, scene->SceneLux());
 
@@ -84,14 +80,16 @@ void LuxCoreEngineCamera::Render()
 
   film.GetOutput(luxcore::Film::OUTPUT_RGB_IMAGEPIPELINE, luxcoreBuffer);
 
-  if (this->renderTarget->HostDataBuffer() == NULL) {
+  if (this->renderTarget->HostDataBuffer() == NULL)
+  {
     this->renderTarget->ResizeHostDataBuffer(this->ImageWidth() *
                                              this->ImageHeight() * 3);
   }
 
   unsigned char *buffer = (unsigned char *)this->renderTarget->HostDataBuffer();
   for (unsigned int x = 0; x < this->ImageHeight() * this->ImageWidth() * 3;
-       x++) {
+       x++)
+  {
     buffer[x] = luxcoreBuffer[x] * 255;
   }
 
@@ -111,7 +109,8 @@ void LuxCoreEngineCamera::SetLocalPosition(double _x, double _y, double _z)
   this->localPositionY = _y;
   this->localPositionZ = _z;
 
-  if (renderSessionLux && renderSessionLux->IsStarted()) {
+  if (renderSessionLux && renderSessionLux->IsStarted())
+  {
     renderSessionLux->BeginSceneEdit();
   }
 
@@ -119,7 +118,8 @@ void LuxCoreEngineCamera::SetLocalPosition(double _x, double _y, double _z)
   float targetY = 0;
   float targetZ = 0;
 
-  if (trackNode) {
+  if (trackNode)
+  {
     targetX = trackNode->LocalPosition()[0];
     targetY = trackNode->LocalPosition()[1];
     targetZ = trackNode->LocalPosition()[2];
@@ -132,7 +132,8 @@ void LuxCoreEngineCamera::SetLocalPosition(double _x, double _y, double _z)
       << luxrays::Property("scene.camera.lookat.target")(targetX, targetY,
                                                          targetZ));
 
-  if (renderSessionLux && renderSessionLux->IsStarted()) {
+  if (renderSessionLux && renderSessionLux->IsStarted())
+  {
     renderSessionLux->EndSceneEdit();
   }
 }
@@ -173,4 +174,4 @@ void LuxCoreEngineCamera::SetHFOV(const math::Angle &_hfov)
 RenderTargetPtr LuxCoreEngineCamera::RenderTarget() const
 {
   return this->renderTarget;
-};
+}

@@ -29,8 +29,9 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
 class LuxCoreEngineVisual : public BaseVisual<LuxCoreEngineNode> {
 
+  // Documentation inherited.
   public: void SetLocalPosition(double _x, double _y, double _z);
-  
+  // Documentation inherited.
   public: void SetLocalScale(double _x, double _y, double _z);
   
   public: void SetLocalRotation(double _r, double _p, double _y);

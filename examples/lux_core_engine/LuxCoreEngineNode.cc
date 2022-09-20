@@ -65,12 +65,12 @@ bool LuxCoreEngineNode::InheritScale() const
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineNode::SetInheritScale(bool _inherit)
+void LuxCoreEngineNode::SetInheritScale(bool /*_inherit*/)
 {
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineNode::SetLocalScaleImpl(const math::Vector3d &_scale)
+void LuxCoreEngineNode::SetLocalScaleImpl(const math::Vector3d &/*_scale*/)
 {
 }
 

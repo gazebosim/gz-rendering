@@ -30,6 +30,8 @@ class LuxCoreEngineSensor : public BaseSensor<LuxCoreEngineNode> {
 
   protected: LuxCoreEngineSensor();
   
+  // Documentation inherited.
+
   public: virtual ~LuxCoreEngineSensor();
 };
 

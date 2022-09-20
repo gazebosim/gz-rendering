@@ -24,10 +24,13 @@ using namespace rendering;
 std::vector<float> multiplyMatrix(float *a, float *b)
 {
   std::vector<float> result(16);
-  for (uint32_t x = 0; x < 4; x++) {
-    for (uint32_t y = 0; y < 4; y++) {
+  for (uint32_t x = 0; x < 4; x++)
+  {
+    for (uint32_t y = 0; y < 4; y++)
+    {
       float sum = 0;
-      for (uint32_t z = 0; z < 4; z++) {
+      for (uint32_t z = 0; z < 4; z++)
+      {
         sum += a[x * 4 + z] * b[z * 4 + y];
       }
       result[x * 4 + y] = sum;

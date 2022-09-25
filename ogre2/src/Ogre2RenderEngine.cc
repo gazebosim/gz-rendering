@@ -48,7 +48,7 @@
 #  endif
 // Needed headers to receive an external Vulkan device from Qt
 // and inject it into OgreNext
-#  include "OGRE/RenderSystems/Vulkan/OgreVulkanDevice.h"
+#  include "RenderSystems/Vulkan/OgreVulkanDevice.h"
 #  include "gz/rendering/RenderEngineVulkanExternalDeviceStructs.hh"
 #endif
 #include "Ogre2GzHlmsSphericalClipMinDistance.hh"

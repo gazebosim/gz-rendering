@@ -36,17 +36,34 @@ LuxCoreEngineCamera::~LuxCoreEngineCamera()
 //////////////////////////////////////////////////
 void LuxCoreEngineCamera::Render()
 {
-  if (!this->renderSessionLux) 
+  if (!this->renderSessionLux)
   {
     luxrays::Properties props;
 
-    props.Set(luxrays::Property("renderengine.type")("RTPATHOCL"));
+    std::string renderEngineType = "RTPATHOCL";
+    if (this->HasUserData("renderengine.type"))
+    {
+      std::string type =
+          std::get<std::string>(this->UserData("renderengine.type"));
+      if (!type.empty())
+        renderEngineType = type;
+    }
+    props.Set(luxrays::Property("renderengine.type")(renderEngineType));
     props.Set(luxrays::Property("rtpath.resolutionreduction.preview")("4"));
     props.Set(
         luxrays::Property("rtpath.resolutionreduction.preview.step")("8"));
     props.Set(luxrays::Property("rtpath.resolutionreduction")("4"));
 
-    props.Set(luxrays::Property("sampler.type")("TILEPATHSAMPLER"));
+    std::string samplerType;
+    if ((renderEngineType == "TILEPATHCPU")
+        || (renderEngineType == "TILEPATHOCL")
+        || (renderEngineType == "RTPATHOCL"))
+      samplerType = "TILEPATHSAMPLER";
+    else if (renderEngineType == "RTPATHCPU")
+      samplerType = "RTPATHCPUSAMPLER";
+    else
+      samplerType = "SOBOL";
+    props.Set(luxrays::Property("sampler.type")(samplerType));
     props.Set(luxrays::Property("accelerator.type")("BVH"));
     props.Set(luxrays::Property("accelerator.instances.enable")("0"));
 

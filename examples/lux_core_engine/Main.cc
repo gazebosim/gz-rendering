@@ -56,10 +56,10 @@ void buildScene(ScenePtr _scene)
   leftWall->SetLocalRotation(0, IGN_PI / 2, 0);
   leftWall->SetLocalPosition(0, 0, 2.5);
   leftWall->SetMaterial(red);
-  
+
   MaterialPtr green = _scene->CreateMaterial();
   green->SetDiffuse(0.0, 1.0, 0.0);
-  
+
   VisualPtr rightWall = _scene->CreateVisual();
   rightWall->AddGeometry(_scene->CreatePlane());
   rightWall->SetLocalScale(1, 5, 5);
@@ -69,7 +69,7 @@ void buildScene(ScenePtr _scene)
 
   MaterialPtr white = _scene->CreateMaterial();
   white->SetDiffuse(1.0, 1.0, 1.0);
-  
+
   VisualPtr backWall = _scene->CreateVisual();
   backWall->AddGeometry(_scene->CreatePlane());
   backWall->SetLocalScale(5, 1, 5);
@@ -156,8 +156,15 @@ CameraPtr createCamera(const std::string &_engineName)
 }
 
 //////////////////////////////////////////////////
-int main(int _argc, char **_argv) {
+int main(int _argc, char **_argv)
+{
   glutInit(&_argc, _argv);
+
+  std::string luxCoreEngineType;
+  if (_argc > 1)
+  {
+    luxCoreEngineType = _argv[1];
+  }
 
   common::Console::SetVerbosity(4);
   std::vector<std::string> engineNames;
@@ -175,6 +182,8 @@ int main(int _argc, char **_argv) {
     try
     {
       CameraPtr camera = createCamera(engineName);
+      if (!luxCoreEngineType.empty())
+        camera->SetUserData("renderengine.type", luxCoreEngineType);
       if (camera)
       {
         cameras.push_back(camera);

@@ -66,7 +66,7 @@ Display *g_glutDisplay;
 GLXDrawable g_glutDrawable;
 #endif
 
-double g_offset = 1;
+double g_offset = M_PI * 0.5;
 bool isRotating = true;
 
 //////////////////////////////////////////////////

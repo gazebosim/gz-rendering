@@ -1,0 +1,9 @@
+# Copyright 2022 DeepX, Inc. All rights reserved
+
+version: "3"
+
+services:
+  deepx-gz-rendering:
+    build: .
+    image: deepx-gz-rendering
+    container_name: deepx-gz-rendering

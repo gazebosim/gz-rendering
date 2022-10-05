@@ -1,5 +1,7 @@
 # docker-compose build --build-arg BASE_IMAGE=ghcr.io/deepx-inc/base_images --build-arg TAG=foxy
 # Adds DeepX Gazebo Rendering image.
+# 
+# TODO: Add comment about command to push to repo
 #
 # Arguments:
 # - BASE_IMAGE: Base image.
@@ -83,8 +85,9 @@ RUN apt -qq update && \
 
 WORKDIR "/root/gazebo"
 
-RUN git clone https://github.com/DeepX-inc/gz-rendering.git && \
-    mkdir gz-rendering/build && \
+COPY . gz-rendering/
+
+RUN mkdir -p gz-rendering/build && \
     cd gz-rendering/build && \
     cmake .. && \ 
     make install

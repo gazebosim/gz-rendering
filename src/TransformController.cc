@@ -29,7 +29,7 @@ class gz::rendering::TransformControllerPrivate
 {
   /// \brief Gizmo visual that provides translation, rotation, and scale
   /// tandles for transformation
-  public: GizmoVisualPtr gizmoVisual;
+  public: GizmoVisualPtr gizmoVisual{nullptr};
 
   /// \brief Node to be transformed
   public: NodePtr node;

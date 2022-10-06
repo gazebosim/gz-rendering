@@ -17,10 +17,8 @@ jobs:
         run: pwd
       - name: Print ls
         run: ls
-      - name: cd .. and pwd
-        run: cd ..; pwd
-      - name: Print ls
-        run: ls
+      - name: cd .. and pwd and ls
+        run: cd ..; pwd; ls
       # - name: Build the docker container
       #   run: docker-compose build --build-arg BASE_IMAGE=ghcr.io/deepx-inc/base_images --build-arg TAG=foxy
       # - name: Run Docker container and run unit testing insde

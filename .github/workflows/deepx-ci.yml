@@ -11,18 +11,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-        # with:
-        #   ref: ${{ github.ref }}
-      # - name: Print pwd
-      #   run: pwd
-      # - name: Print ls
-      #   run: ls
-      # - name: cd .. and pwd and ls
-      #   run: |
-      #     cd ..; \
-      #     pwd; \
-      #     ls
-
       - name: Login to Github Container Registry
         uses: docker/login-action@v1
         with:
@@ -31,5 +19,13 @@ jobs:
           password: ${{ github.token }}
       - name: Build the docker container
         run: docker-compose build --build-arg BASE_IMAGE=ghcr.io/deepx-inc/base_images --build-arg TAG=foxy
-      # - name: Run Docker container and run unit testing insde
-      #   run: docker run --name deepx-gz-rendering-container -w /root/gazebo/gz-rendering/build/ deepx-gz-rendering ctest
+      - name: Run Docker container and run unit testing insde
+        run: |
+          docker run --name deepx-gz-rendering-test-container \
+          -v $GITHUB_WORKSPACE:/root/gazebo \
+          --entrypoint bash \
+          -w /root/gazebo \
+          deepx-gz-rendering-container \
+          -c 'cd gz-rendering/build && ctest'
+        
+        # docker run --name deepx-gz-rendering-container -w /root/gazebo/gz-rendering/build/ deepx-gz-rendering ctest

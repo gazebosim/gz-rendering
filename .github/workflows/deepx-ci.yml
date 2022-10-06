@@ -29,6 +29,7 @@ jobs:
           registry: ghcr.io
           username: deepx-inc
           password: ${{ secrets.DETRABOT_PACKAGES_READ_TOKEN }}
+          ssh-key: ${{ secrets.DETRABOT_SECRET}}
       - name: Build the docker container
         run: docker-compose build --build-arg BASE_IMAGE=ghcr.io/deepx-inc/base_images --build-arg TAG=foxy
       # - name: Run Docker container and run unit testing insde

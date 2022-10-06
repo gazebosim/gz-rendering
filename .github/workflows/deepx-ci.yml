@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-20.04
     name: Build and test
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-        with:
-          ref: ign-rendering6
+      # - name: Checkout repo
+      #   uses: actions/checkout@v3
+      #   with:
+      #     ref: ign-rendering6
       - name: Print pwd
         run: pwd
       - name: Print ls

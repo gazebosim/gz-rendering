@@ -11,8 +11,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-        with:
-          ref: ign-rendering6
+        # with:
+        #   ref: ${{ github.ref }}
       - name: Print pwd
         run: pwd
       - name: Print ls

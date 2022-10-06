@@ -2,7 +2,7 @@ name: DeepX CI
 
 run-name: Build Docker container and perform unit testing
 
-on: push
+on: [push, workflow_dispatch]
 
 jobs:
   build-library:

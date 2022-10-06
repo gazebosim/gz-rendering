@@ -1,0 +1,19 @@
+name: DeepX CI
+
+run-name: Build Docker container and perform unit testing
+
+on: push
+
+jobs:
+  build-library:
+    runs-on: ubuntu-20.04
+    name: Build and test
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          ref: ign-rendering6
+      - name: Build the docker container
+        run: docker-compose build --build-arg BASE_IMAGE=ghcr.io/deepx-inc/base_images --build-arg TAG=foxy
+      - name: Run Docker container and run unit testing insde
+        run: docker run --name deepx-gz-rendering-container -w /root/gazebo/gz-rendering/build/ deepx-gz-rendering ctest

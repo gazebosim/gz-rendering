@@ -19,11 +19,11 @@
 
 #ifndef __APPLE__
 
-#  include <vector>
-#  include "gz/rendering/Export.hh"
-#  include "gz/rendering/config.hh"
+#include <vector>
+#include "gz/rendering/Export.hh"
+#include "gz/rendering/config.hh"
 
-#  include "vulkan/vulkan_core.h"
+#include "vulkan/vulkan_core.h"
 
 namespace gz
 {

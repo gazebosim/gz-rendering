@@ -48,6 +48,7 @@
 #include "gz/rendering/ogre2/Ogre2ThermalCamera.hh"
 #include "gz/rendering/ogre2/Ogre2SegmentationCamera.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
+#include "gz/rendering/ogre2/Ogre2WideAngleCamera.hh"
 #include "gz/rendering/ogre2/Ogre2WireBox.hh"
 
 #ifdef _MSC_VER
@@ -1025,6 +1026,15 @@ ThermalCameraPtr Ogre2Scene::CreateThermalCameraImpl(const unsigned int _id,
     const std::string &_name)
 {
   Ogre2ThermalCameraPtr camera(new Ogre2ThermalCamera);
+  bool result = this->InitObject(camera, _id, _name);
+  return (result) ? camera : nullptr;
+}
+
+//////////////////////////////////////////////////
+WideAngleCameraPtr Ogre2Scene::CreateWideAngleCameraImpl(const unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2WideAngleCameraPtr camera(new Ogre2WideAngleCamera);
   bool result = this->InitObject(camera, _id, _name);
   return (result) ? camera : nullptr;
 }

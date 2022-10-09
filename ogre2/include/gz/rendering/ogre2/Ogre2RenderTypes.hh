@@ -68,6 +68,7 @@ namespace gz
     class Ogre2SubMesh;
     class Ogre2ThermalCamera;
     class Ogre2Visual;
+    class Ogre2WideAngleCamera;
     class Ogre2WireBox;
 
     typedef BaseGeometryStore<Ogre2Geometry>      Ogre2GeometryStore;
@@ -120,6 +121,7 @@ namespace gz
     typedef shared_ptr<Ogre2SubMesh>              Ogre2SubMeshPtr;
     typedef shared_ptr<Ogre2ThermalCamera>        Ogre2ThermalCameraPtr;
     typedef shared_ptr<Ogre2Visual>               Ogre2VisualPtr;
+    typedef shared_ptr<Ogre2WideAngleCamera>      Ogre2WideAngleCameraPtr;
     typedef shared_ptr<Ogre2WireBox>              Ogre2WireBoxPtr;
 
     typedef shared_ptr<Ogre2GeometryStore>        Ogre2GeometryStorePtr;

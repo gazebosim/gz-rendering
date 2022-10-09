@@ -240,6 +240,11 @@ namespace gz
                      unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited
+      protected: virtual WideAngleCameraPtr CreateWideAngleCameraImpl(
+                     const unsigned int _id,
+                     const std::string &_name) override;
+
+      // Documentation inherited
       protected: virtual BoundingBoxCameraPtr CreateBoundingBoxCameraImpl(
                      unsigned int _id, const std::string &_name) override;
 

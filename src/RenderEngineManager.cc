@@ -384,6 +384,12 @@ void RenderEngineManager::SetPluginPaths(const std::list<std::string> &_paths)
 }
 
 //////////////////////////////////////////////////
+RenderEngineManager *RenderEngineManager::Instance()
+{
+  return SingletonT<RenderEngineManager>::Instance();
+}
+
+//////////////////////////////////////////////////
 // RenderEngineManagerPrivate
 //////////////////////////////////////////////////
 RenderEngine *RenderEngineManagerPrivate::Engine(EngineInfo _info,

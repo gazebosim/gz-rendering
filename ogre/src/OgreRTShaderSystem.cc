@@ -752,3 +752,9 @@ bool OgreRTShaderSystem::IsInitialized() const
 {
   return this->dataPtr->initialized;
 }
+
+//////////////////////////////////////////////////
+OgreRTShaderSystem *OgreRTShaderSystem::Instance()
+{
+  return SingletonT<OgreRTShaderSystem>::Instance();
+}

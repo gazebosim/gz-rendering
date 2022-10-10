@@ -835,6 +835,12 @@ Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
 }
 #endif
 
+//////////////////////////////////////////////////
+OgreRenderEngine *OgreRenderEngine::Instance()
+{
+  return SingletonT<OgreRenderEngine>::Instance();
+}
+
 // Register this plugin
 GZ_ADD_PLUGIN(gz::rendering::OgreRenderEnginePlugin,
                     gz::rendering::RenderEnginePlugin)

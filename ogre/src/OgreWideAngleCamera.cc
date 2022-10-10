@@ -321,7 +321,7 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
       Ogre::TextureManager::getSingleton().createManual(
       this->Name() + "_wideAngleCamera", "General", Ogre::TEX_TYPE_2D,
       this->ImageWidth(), this->ImageHeight(), 0,
-      Ogre::PF_R8G8B8, Ogre::TU_RENDERTARGET,
+      OgreConversions::Convert(this->ImageFormat()), Ogre::TU_RENDERTARGET,
       0, false, 0).get();
     Ogre::RenderTarget *rt =
         this->dataPtr->ogreRenderTexture->getBuffer()->getRenderTarget();
@@ -620,7 +620,7 @@ void OgreWideAngleCamera::PostRender()
   unsigned int height = this->ImageHeight();
   unsigned int len = width * height;
 
-  PixelFormat format = PF_R8G8B8;
+  PixelFormat format = this->ImageFormat();
   unsigned int channelCount = PixelUtil::ChannelCount(format);
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
 
@@ -641,7 +641,8 @@ void OgreWideAngleCamera::PostRender()
       height*width*channelCount*bytesPerChannel);
 
   this->dataPtr->newImageFrame(
-      this->dataPtr->wideAngleImage, width, height, channelCount, "PF_R8G8B8");
+      this->dataPtr->wideAngleImage, width, height, channelCount,
+      PixelUtil::Name(this->ImageFormat()));
 
   // Uncomment to debug wide angle cameraoutput
   // gzdbg << "wxh: " << width << " x " << height << std::endl;

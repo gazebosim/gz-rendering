@@ -142,6 +142,7 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
   EXPECT_EQ(1, g_counter);
 
   // Compare image pixels
+  EXPECT_EQ(PF_R8G8B8, camera->ImageFormat());
   unsigned int channelCount = PixelUtil::ChannelCount(camera->ImageFormat());
   unsigned int step = width * channelCount;
 

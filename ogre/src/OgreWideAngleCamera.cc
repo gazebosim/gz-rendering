@@ -62,7 +62,7 @@ class gz::rendering::OgreWideAngleCamera::Implementation
   public: Ogre::Viewport *envViewports[6];
 
   /// \brief Pixel format for cube map texture
-  public: Ogre::PixelFormat envCubeMapTextureFormat;
+  public: Ogre::PixelFormat envCubeMapTextureFormat = Ogre::PF_BYTE_RGB;
 
   /// \brief A single cube map texture
   public: Ogre::Texture *envCubeMapTexture = nullptr;
@@ -361,6 +361,9 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
       ogreFSAAWarn = true;
     }
   }
+
+  this->dataPtr->envCubeMapTextureFormat =
+      OgreConversions::Convert(this->ImageFormat());
 
   this->dataPtr->envCubeMapTexture =
       Ogre::TextureManager::getSingleton().createManual(

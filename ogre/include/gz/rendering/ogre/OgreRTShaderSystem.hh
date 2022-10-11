@@ -168,6 +168,11 @@ namespace gz
       /// \sa OgreScene::PreRender
       public: void Update();
 
+      /// \brief Get a pointer to the Ogre RT shader system
+      /// \todo(anyone) Remove inheritance from Singleton base class
+      /// \return a pointer to the Ogre RT shader system
+      public: static OgreRTShaderSystem *Instance();
+
       /// \brief Make the RTShader system a singleton.
       private: friend class common::SingletonT<OgreRTShaderSystem>;
 

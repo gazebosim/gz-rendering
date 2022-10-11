@@ -135,6 +135,11 @@ namespace gz
       /// \param[in] _paths The list of the plugin paths
       public: void SetPluginPaths(const std::list<std::string> &_paths);
 
+      /// \brief Get a pointer to the render engine manager
+      /// \todo(anyone) Remove inheritance from Singleton base class
+      /// \return a pointer to the render engine manager
+      public: static RenderEngineManager *Instance();
+
       GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       /// \brief private implementation details
       private: std::unique_ptr<RenderEngineManagerPrivate> dataPtr;

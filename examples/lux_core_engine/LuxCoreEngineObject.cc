@@ -32,5 +32,6 @@ LuxCoreEngineObject::~LuxCoreEngineObject()
 //////////////////////////////////////////////////
 ScenePtr LuxCoreEngineObject::Scene() const
 {
+  //TODO Implement this function
   return nullptr;
 }

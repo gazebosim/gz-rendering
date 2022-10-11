@@ -39,76 +39,91 @@ void LuxCoreEngineLight::SetDiffuseColor(double _r, double _g, double _b,
 //////////////////////////////////////////////////
 void LuxCoreEngineLight::SetDiffuseColor(const ignition::math::Color &/*_color*/)
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
 ignition::math::Color LuxCoreEngineLight::SpecularColor() const
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineLight::SetSpecularColor(const ignition::math::Color &/*_color*/)
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
 double LuxCoreEngineLight::AttenuationConstant() const
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineLight::SetAttenuationConstant(double _value)
+void LuxCoreEngineLight::SetAttenuationConstant(double /*_value*/)
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
 double LuxCoreEngineLight::AttenuationLinear() const
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineLight::SetAttenuationLinear(double _value)
+void LuxCoreEngineLight::SetAttenuationLinear(double /*_value*/)
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
 double LuxCoreEngineLight::AttenuationQuadratic() const
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineLight::SetAttenuationQuadratic(double _value)
+void LuxCoreEngineLight::SetAttenuationQuadratic(double /*_value*/)
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
 double LuxCoreEngineLight::AttenuationRange() const
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineLight::SetAttenuationRange(double _range)
+void LuxCoreEngineLight::SetAttenuationRange(double /*_range*/)
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
 bool LuxCoreEngineLight::CastShadows() const
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineLight::SetCastShadows(bool _castShadows)
+void LuxCoreEngineLight::SetCastShadows(bool /*_castShadows*/)
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
 double LuxCoreEngineLight::Intensity() const
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineLight::SetIntensity(double _intensity)
+void LuxCoreEngineLight::SetIntensity(double /*_intensity*/)
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
@@ -121,6 +136,7 @@ LuxCoreEngineDirectionalLight::LuxCoreEngineDirectionalLight(
 //////////////////////////////////////////////////
 math::Vector3d LuxCoreEngineDirectionalLight::Direction() const
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
@@ -135,8 +151,9 @@ void LuxCoreEngineDirectionalLight::SetDirection(double _x, double _y,
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineDirectionalLight::SetDirection(const math::Vector3d &_dir)
+void LuxCoreEngineDirectionalLight::SetDirection(const math::Vector3d &/*_dir*/)
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////

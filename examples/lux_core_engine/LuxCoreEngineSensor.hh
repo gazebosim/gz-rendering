@@ -28,10 +28,10 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
 class LuxCoreEngineSensor : public BaseSensor<LuxCoreEngineNode> {
 
+  // Documentation inherited
   protected: LuxCoreEngineSensor();
   
   // Documentation inherited.
-
   public: virtual ~LuxCoreEngineSensor();
 };
 

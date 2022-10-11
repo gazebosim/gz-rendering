@@ -46,24 +46,28 @@ void LuxCoreEngineScene::Fini()
 //////////////////////////////////////////////////
 RenderEngine *LuxCoreEngineScene::Engine() const
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
 VisualPtr LuxCoreEngineScene::RootVisual() const
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
 math::Color LuxCoreEngineScene::AmbientLight() const
 {
+  //TODO Implement this function
   return math::Color::Black;
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineScene::SetAmbientLight(const math::Color &_color)
+void LuxCoreEngineScene::SetAmbientLight(const math::Color &/*_color*/)
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////
@@ -96,9 +100,10 @@ LuxCoreEngineScene::CreatePointLightImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-SpotLightPtr LuxCoreEngineScene::CreateSpotLightImpl(unsigned int _id,
-                                                     const std::string &_name)
+SpotLightPtr LuxCoreEngineScene::CreateSpotLightImpl(unsigned int /*_id*/,
+                                                     const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
@@ -116,9 +121,10 @@ CameraPtr LuxCoreEngineScene::CreateCameraImpl(unsigned int _id,
 
 //////////////////////////////////////////////////
 DepthCameraPtr
-LuxCoreEngineScene::CreateDepthCameraImpl(unsigned int _id,
-                                          const std::string &_name)
+LuxCoreEngineScene::CreateDepthCameraImpl(unsigned int /*_id*/,
+                                          const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
@@ -133,17 +139,19 @@ VisualPtr LuxCoreEngineScene::CreateVisualImpl(unsigned int _id,
 
 //////////////////////////////////////////////////
 ArrowVisualPtr
-LuxCoreEngineScene::CreateArrowVisualImpl(unsigned int _id,
-                                          const std::string &_name)
+LuxCoreEngineScene::CreateArrowVisualImpl(unsigned int /*_id*/,
+                                          const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
 AxisVisualPtr
-LuxCoreEngineScene::CreateAxisVisualImpl(unsigned int _id,
-                                         const std::string &_name)
+LuxCoreEngineScene::CreateAxisVisualImpl(unsigned int /*_id*/,
+                                         const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
@@ -155,16 +163,18 @@ GeometryPtr LuxCoreEngineScene::CreateBoxImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-GeometryPtr LuxCoreEngineScene::CreateConeImpl(unsigned int _id,
-                                               const std::string &_name)
+GeometryPtr LuxCoreEngineScene::CreateConeImpl(unsigned int /*_id*/,
+                                               const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
-GeometryPtr LuxCoreEngineScene::CreateCylinderImpl(unsigned int _id,
-                                                   const std::string &_name)
-{
+GeometryPtr LuxCoreEngineScene::CreateCylinderImpl(unsigned int /*_id*/,
+                                                   const std::string &/*_name*/)
+{  
+  //TODO Implement this function
   return nullptr;
 }
 
@@ -176,9 +186,10 @@ GeometryPtr LuxCoreEngineScene::CreatePlaneImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-GeometryPtr LuxCoreEngineScene::CreateSphereImpl(unsigned int _id,
-                                                 const std::string &_name)
+GeometryPtr LuxCoreEngineScene::CreateSphereImpl(unsigned int /*_id*/,
+                                                 const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
@@ -226,47 +237,53 @@ MeshPtr LuxCoreEngineScene::CreateMeshImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-CapsulePtr LuxCoreEngineScene::CreateCapsuleImpl(unsigned int _id,
-                                                 const std::string &_name)
+CapsulePtr LuxCoreEngineScene::CreateCapsuleImpl(unsigned int /*_id*/,
+                                                 const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
-GridPtr LuxCoreEngineScene::CreateGridImpl(unsigned int _id,
-                                           const std::string &_name)
+GridPtr LuxCoreEngineScene::CreateGridImpl(unsigned int /*_id*/,
+                                           const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
-MarkerPtr LuxCoreEngineScene::CreateMarkerImpl(unsigned int _id,
-                                               const std::string &_name)
+MarkerPtr LuxCoreEngineScene::CreateMarkerImpl(unsigned int /*_id*/,
+                                               const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
 LidarVisualPtr
-LuxCoreEngineScene::CreateLidarVisualImpl(unsigned int _id,
-                                          const std::string &_name)
+LuxCoreEngineScene::CreateLidarVisualImpl(unsigned int /*_id*/,
+                                          const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
 HeightmapPtr
-LuxCoreEngineScene::CreateHeightmapImpl(unsigned int _id,
-                                        const std::string &_name,
-                                        const HeightmapDescriptor &_desc)
+LuxCoreEngineScene::CreateHeightmapImpl(unsigned int /*_id*/,
+                                        const std::string &/*_name*/,
+                                        const HeightmapDescriptor &/*_desc*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
-WireBoxPtr LuxCoreEngineScene::CreateWireBoxImpl(unsigned int _id,
-                                                 const std::string &_name)
+WireBoxPtr LuxCoreEngineScene::CreateWireBoxImpl(unsigned int /*_id*/,
+                                                 const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
@@ -285,47 +302,53 @@ MaterialPtr LuxCoreEngineScene::CreateMaterialImpl(unsigned int _id,
 
 //////////////////////////////////////////////////
 RenderTexturePtr
-LuxCoreEngineScene::CreateRenderTextureImpl(unsigned int _id,
-                                            const std::string &_name)
+LuxCoreEngineScene::CreateRenderTextureImpl(unsigned int /*_id*/,
+                                            const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
 RenderWindowPtr
-LuxCoreEngineScene::CreateRenderWindowImpl(unsigned int _id,
-                                           const std::string &_name)
+LuxCoreEngineScene::CreateRenderWindowImpl(unsigned int /*_id*/,
+                                           const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
-RayQueryPtr LuxCoreEngineScene::CreateRayQueryImpl(unsigned int _id,
-                                                   const std::string &_name)
+RayQueryPtr LuxCoreEngineScene::CreateRayQueryImpl(unsigned int /*_id*/,
+                                                   const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
-COMVisualPtr LuxCoreEngineScene::CreateCOMVisualImpl(unsigned int _id,
-                                                     const std::string &_name)
+COMVisualPtr LuxCoreEngineScene::CreateCOMVisualImpl(unsigned int /*_id*/,
+                                                     const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
 InertiaVisualPtr
-LuxCoreEngineScene::CreateInertiaVisualImpl(unsigned int _id,
-                                            const std::string &_name)
+LuxCoreEngineScene::CreateInertiaVisualImpl(unsigned int /*_id*/,
+                                            const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
 JointVisualPtr
-LuxCoreEngineScene::CreateJointVisualImpl(unsigned int _id,
-                                          const std::string &_name)
+LuxCoreEngineScene::CreateJointVisualImpl(unsigned int /*_id*/,
+                                          const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 
@@ -391,9 +414,10 @@ std::string LuxCoreEngineScene::Name()
 
 //////////////////////////////////////////////////
 ignition::rendering::LightVisualPtr
-LuxCoreEngineScene::CreateLightVisualImpl(unsigned int _id,
-                                          const std::string &_name)
+LuxCoreEngineScene::CreateLightVisualImpl(unsigned int /*_id*/,
+                                          const std::string &/*_name*/)
 {
+  //TODO Implement this function
   return nullptr;
 }
 

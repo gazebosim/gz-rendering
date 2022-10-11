@@ -84,8 +84,8 @@ void LuxCoreEngineCamera::Render()
     this->renderSessionLux = luxcore::RenderSession::Create(config);
     this->renderSessionLux->Start();
 
-    gzmsg << scene->SceneLux()->ToProperties() << std::endl;
-    gzmsg << props << std::endl;
+    ignmsg << scene->SceneLux()->ToProperties() << std::endl;
+    ignmsg << props << std::endl;
   }
 
   this->renderSessionLux->WaitNewFrame();

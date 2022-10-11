@@ -35,25 +35,41 @@ class LuxCoreEngineVisual : public BaseVisual<LuxCoreEngineNode>
   // Documentation inherited.
   public: void SetLocalScale(double _x, double _y, double _z);
   
+  /// @brief  Set the rotation of the geometries in local scale.
+  /// @param _r roll
+  /// @param _p pitch
+  /// @param _y yaw
   public: void SetLocalRotation(double _r, double _p, double _y);
+
+  // Documentation inherited
+  public: void SetMaterial(MaterialPtr _material, bool _unique = true) override;
   
-  public: void SetMaterial(MaterialPtr _material, bool _unique = true);
-  
+  /// @brief Get the geometries attached to this visual. 
+  /// @return pointer to the geometries attached to the visual.
   protected: GeometryStorePtr Geometries() const;
   
+  /// @brief Attach the geometry
+  /// @param _geometry pointer to geometry
+  /// @return true 
   protected: bool AttachGeometry(GeometryPtr _geometry);
-  
+  /// @brief Detach the geometry (TODO implement function)
+  /// @param _geometry pointer to geometry
+  /// @return true if detached, false if couldn't detach
   protected: bool DetachGeometry(GeometryPtr _geometry);
   
+  /// @brief Initiate the BAse Visual class and create storage
   protected: void Init();
   
+  /// @brief Create a new pointer to the geometries
   private: void CreateStorage();
   
+  /// @brief Create shared pointer from this
+  /// @return shared pointer pointing to the visual
   private: LuxCoreEngineVisualPtr SharedThis();
   
   protected: LuxCoreEngineGeometryStorePtr geometries;
   
-  private: friend class LuxCoreEngineScene;
+  private: friend class LuxCoreEngineScene; 
 };
 
 } // namespace IGNITION_RENDERING_VERSION_NAMESPACE

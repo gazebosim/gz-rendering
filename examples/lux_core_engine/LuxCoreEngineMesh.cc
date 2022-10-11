@@ -265,8 +265,9 @@ SubMeshStorePtr LuxCoreEngineMesh::SubMeshes() const
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineSubMesh::SetMaterialImpl(MaterialPtr _material)
+void LuxCoreEngineSubMesh::SetMaterialImpl(MaterialPtr /*_material*/)
 {
+  //TODO Implement this function
 }
 
 //////////////////////////////////////////////////

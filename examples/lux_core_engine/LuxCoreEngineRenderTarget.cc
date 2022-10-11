@@ -65,9 +65,11 @@ void LuxCoreEngineRenderTarget::ResizeHostDataBuffer(unsigned int size)
 //////////////////////////////////////////////////
 unsigned int LuxCoreEngineRenderTarget::MemorySize() const
 {
+  /// TODO Implement this function
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineRenderTarget::RebuildImpl()
 {
+  ///TODO Implement this functiom
 }

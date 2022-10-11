@@ -25,12 +25,18 @@
 namespace ignition {
 namespace rendering {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-
+/// @brief LuxCorEngineMeshFactory This class creates and returns a mesh using
+///        data from the scene. Using the mesh descriptor, the class sets mesh name and 
+///        its properties. 
 class LuxCoreEngineMeshFactory
 {
 
   public:LuxCoreEngineMeshFactory(LuxCoreEngineScenePtr _scene);
 
+  /// @brief Create Mesh
+  /// @param _desc Mesh descriptor
+  /// @param _name mesh name
+  /// @return 
   public: LuxCoreEngineMeshPtr Create(const MeshDescriptor &_desc,
                                       const std::string &_name);
 

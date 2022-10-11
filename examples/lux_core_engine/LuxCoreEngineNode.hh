@@ -35,31 +35,38 @@ class LuxCoreEngineNode : public BaseNode<LuxCoreEngineObject> {
   public: virtual bool HasParent() const override;
   // Documentation inherited.
   public: virtual NodePtr Parent() const override;
-  
+  // Documentation inherited.
   public: virtual void PreRender() override;
-  
+  // Documentation inherited.
   public: virtual math::Vector3d LocalPosition() const override;
-  
+  // Documentation inherited.
   public: virtual math::Vector3d LocalScale() const override;
-  
+  /// @brief Inherit Scale  
   public: virtual bool InheritScale() const override;
-  
+  /// @brief Set Inherit Scale 
+  /// @param _inherit 
   public: virtual void SetInheritScale(bool _inherit) override;
-  
+  /// @brief Set Local scale implementation 
   protected: virtual void SetLocalScaleImpl(const math::Vector3d &_scale) override;
-  
+  /// @brief Get Raw local pose 
   protected: virtual math::Pose3d RawLocalPose() const override;
-  
+  /// @brief Set Raw local Pose
+  /// @param _pose 
   protected: virtual void SetRawLocalPose(const math::Pose3d &_pose) override;
-  
+  // Documentation inherited.
   protected: virtual void SetParent(LuxCoreEngineNodePtr _parent);
-  
+  /// @brief Initialize Node
   protected: virtual void Init();
-  
+  /// @brief Get Child Nodes
+  /// @return pointer to child node
   protected: virtual NodeStorePtr Children() const override;
-  
+  /// @brief  @brief Attach Child Node
+  /// @param _child 
+  /// @return true if successful false otherwise
   protected: virtual bool AttachChild(NodePtr _child) override;
-  
+  /// @brief Dettach Child Node
+  /// @param _child 
+  /// @return true if successful false otherwise
   protected: virtual bool DetachChild(NodePtr _child) override;
   
   protected: LuxCoreEngineNodePtr parent;

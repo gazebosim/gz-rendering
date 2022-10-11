@@ -34,15 +34,20 @@ class LuxCoreEngineRenderTarget
   public: virtual ~LuxCoreEngineRenderTarget();
   
   // Documentation inherited.
-  
   public: virtual void Copy(Image &_image) const;
   
+  /// @brief Get host data buffer
+  /// @return hostDataBuffer
   public: void *HostDataBuffer();
   
+  /// @brief Allocate memory to host data buffer
+  /// @param size of host data buffer
   public: void ResizeHostDataBuffer(unsigned int size);
-  
+  /// @brief  Get Memory Size
+  /// @return memory size
   protected: unsigned int MemorySize() const;
   
+  /// @brief Rebuild Implementation
   protected: virtual void RebuildImpl();
   
   protected: void *hostDataBuffer;

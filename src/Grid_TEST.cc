@@ -90,6 +90,9 @@ void GridTest::Grid(const std::string &_renderEngine)
   gridMat = grid->Material();
   ASSERT_NE(nullptr, gridMat);
 
+  grid->SetVerticalCellCount(3u);
+  grid->PreRender();
+
   // Clean up
   engine->DestroyScene(scene);
   unloadEngine(engine->Name());

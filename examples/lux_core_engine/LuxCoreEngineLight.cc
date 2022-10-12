@@ -21,8 +21,10 @@ using namespace ignition;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-ignition::math::Color LuxCoreEngineLight::DiffuseColor() const
+math::Color LuxCoreEngineLight::DiffuseColor() const
 {
+  // todo(anyone) implement this function
+  return math::Color::White;
 }
 
 //////////////////////////////////////////////////
@@ -37,93 +39,100 @@ void LuxCoreEngineLight::SetDiffuseColor(double _r, double _g, double _b,
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineLight::SetDiffuseColor(const ignition::math::Color &/*_color*/)
+void LuxCoreEngineLight::SetDiffuseColor(const math::Color &/*_color*/)
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
-ignition::math::Color LuxCoreEngineLight::SpecularColor() const
+math::Color LuxCoreEngineLight::SpecularColor() const
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
+  return math::Color::White;
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineLight::SetSpecularColor(const ignition::math::Color &/*_color*/)
+void LuxCoreEngineLight::SetSpecularColor(const math::Color &/*_color*/)
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
 double LuxCoreEngineLight::AttenuationConstant() const
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
+  return 0.0;
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineLight::SetAttenuationConstant(double /*_value*/)
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
 double LuxCoreEngineLight::AttenuationLinear() const
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
+  return 0.0;
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineLight::SetAttenuationLinear(double /*_value*/)
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
 double LuxCoreEngineLight::AttenuationQuadratic() const
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
+  return 0.0;
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineLight::SetAttenuationQuadratic(double /*_value*/)
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
 double LuxCoreEngineLight::AttenuationRange() const
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
+  return 0.0;
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineLight::SetAttenuationRange(double /*_range*/)
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
 bool LuxCoreEngineLight::CastShadows() const
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
+  return false;
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineLight::SetCastShadows(bool /*_castShadows*/)
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
 double LuxCoreEngineLight::Intensity() const
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
+  return 0.0;
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineLight::SetIntensity(double /*_intensity*/)
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
@@ -136,7 +145,8 @@ LuxCoreEngineDirectionalLight::LuxCoreEngineDirectionalLight(
 //////////////////////////////////////////////////
 math::Vector3d LuxCoreEngineDirectionalLight::Direction() const
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
+  return math::Vector3d::Zero;
 }
 
 //////////////////////////////////////////////////
@@ -153,7 +163,7 @@ void LuxCoreEngineDirectionalLight::SetDirection(double _x, double _y,
 //////////////////////////////////////////////////
 void LuxCoreEngineDirectionalLight::SetDirection(const math::Vector3d &/*_dir*/)
 {
-  //TODO Implement this function
+  // todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////

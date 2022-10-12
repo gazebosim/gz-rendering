@@ -30,35 +30,56 @@ namespace rendering {
 
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-class LuxCoreEngineCamera : public BaseCamera<LuxCoreEngineSensor> {
-
+/// \brief LuxCore implementation of the camera class
+class LuxCoreEngineCamera : public BaseCamera<LuxCoreEngineSensor>
+{
+  /// \brief Constructor
   public: LuxCoreEngineCamera();
 
+  /// \brief Destructor
   public: virtual ~LuxCoreEngineCamera();
 
   // Documentation inherited.
   public: virtual void Render() override;
 
-  // Documentation inherited. 
-  public: virtual void Update();
+  // Documentation inherited.
+  public: virtual void Update() override;
 
-  public: virtual void SetLocalPosition(double _x, double _y, double _z);
+  // Documentation inherited.
+  public: virtual void SetLocalPosition(double _x, double _y, double _z) override;
 
-  public: virtual void SetLocalRotation(double _r, double _p, double _y);
+  // Documentation inherited.
+  public: virtual void SetLocalRotation(double _r, double _p, double _y) override;
 
-  // Documentation inherited. 
-  public: virtual void SetHFOV(const math::Angle &_hfov);
+  // Documentation inherited.
+  public: virtual void SetHFOV(const math::Angle &_hfov) override;
 
-  // Documentation inherited. 
-  protected: virtual RenderTargetPtr RenderTarget() const;
+  // Documentation inherited.
+  protected: virtual RenderTargetPtr RenderTarget() const override;
 
+  /// \brief Pointer to the render target
   protected: LuxCoreEngineRenderTargetPtr renderTarget;
 
-  protected: luxcore::RenderSession *renderSessionLux;
+  /// \brief Pointer to the lux core render senssion
+  protected: luxcore::RenderSession *renderSessionLux{nullptr};
 
-  protected: float localPositionX, localPositionY, localPositionZ;
+  /// \brief Position x in local frame
+  protected: float localPositionX{0.0f};
 
-  protected: float localRotationR, localRotationP, localRotationY;
+  /// \brief Position y in local frame
+  protected: float localPositionY{0.0f};
+
+  /// \brief Position z in local frame
+  protected: float localPositionZ{0.0f};
+
+  /// \brief Roll rotation in local frame
+  protected: float localRotationR{0.0f};
+
+  /// \brief Pitch rotation in local frame
+  protected: float localRotationP{0.0f};
+
+  /// \brief Yaw rotation in local frame
+  protected: float localRotationY{0.0f};
 };
 
 } // namespace IGNITION_RENDERING_VERSION_NAMESPACE

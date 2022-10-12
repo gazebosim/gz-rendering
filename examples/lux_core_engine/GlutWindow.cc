@@ -140,7 +140,6 @@ void initCamera(ir::CameraPtr _camera)
   imgh = g_camera->ImageHeight();
   ir::Image image = g_camera->CreateImage();
   g_image = std::make_shared<ir::Image>(image);
-  // Line 149 is segfaulting, and I cant find why
   g_camera->Capture(*g_image);
 }
 
@@ -150,7 +149,7 @@ void initContext()
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowPosition(0, 0);
   glutInitWindowSize(imgw, imgh);
-  glutCreateWindow("Simple Demo");
+  glutCreateWindow("LuxCore Demo");
   glutDisplayFunc(displayCB);
   glutIdleFunc(idleCB);
   glutKeyboardFunc(keyboardCB);

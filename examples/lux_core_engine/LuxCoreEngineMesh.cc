@@ -146,11 +146,15 @@ LuxCoreEngineMesh::LuxCoreEngineMesh()
 //////////////////////////////////////////////////
 bool LuxCoreEngineMesh::HasParent() const
 {
+  // \todo(anyone) implement this function
+  return false;
 }
 
 //////////////////////////////////////////////////
 VisualPtr LuxCoreEngineMesh::Parent() const
 {
+  // \todo(anyone) implement this function
+  return VisualPtr();
 }
 
 //////////////////////////////////////////////////
@@ -196,7 +200,7 @@ void LuxCoreEngineMesh::UpdateTransformation()
           SubMeshes()->GetByIndex(i)->Name(), offsetMatrix.data());
       memcpy(this->previousMatrix, result.data(), sizeof(float) * 16);
     }
-  } 
+  }
   else
   {
     std::vector<float> result =
@@ -267,7 +271,7 @@ SubMeshStorePtr LuxCoreEngineMesh::SubMeshes() const
 //////////////////////////////////////////////////
 void LuxCoreEngineSubMesh::SetMaterialImpl(MaterialPtr /*_material*/)
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////

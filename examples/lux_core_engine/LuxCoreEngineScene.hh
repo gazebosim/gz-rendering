@@ -33,224 +33,216 @@ namespace ignition {
 namespace rendering {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-class LuxCoreEngineScene : public BaseScene {
-
-  //Documentation Inherited
+/// \brief LuxCore implementation of the scene class
+class LuxCoreEngineScene : public BaseScene
+{
+  /// \brief Log message
+  /// \param[in] _msg Message to log
   public: static void LogHandler(const char *msg);
-  
-  /// @brief Constructor
-  /// @param _id scene id
-  /// @param _name scene name
+
+  /// \brief Constructor
+  /// \param[in] _id scene id
+  /// \param[in] _name scene name
   protected: LuxCoreEngineScene(unsigned int _id, const std::string &_name);
-  
+
+  /// \brief Destructor
   public: virtual ~LuxCoreEngineScene();
-  
-  //Documentation inherited.
-  public: virtual void Fini();
-  
-  //Documentation Inherited
+
+  // Documentation inherited.
+  public: virtual void Fini() override;
+
+  // Documentation Inherited
   public: virtual RenderEngine *Engine() const override;
-  
-  //Documentation Inherited
+
+  // Documentation Inherited
   public: virtual VisualPtr RootVisual() const override;
-  
-  /// @brief Get the scene ambient light color.
-  /// @return color black
-  public: virtual math::Color AmbientLight() const;
 
-  //Documentation Inherited
+  // Documentation Inherited
+  public: virtual math::Color AmbientLight() const override;
+
+  // Documentation Inherited
   public: virtual void SetAmbientLight(const math::Color &_color) override;
-  
-  /// @brief Creates directional light pointer, 
-  ///        parses light from scene and sets its properties
-  /// @param _id light id
-  /// @param _name light name
-  /// @return true is light object is initiated, false otherwise
-  protected: virtual DirectionalLightPtr
-      CreateDirectionalLightImpl(unsigned int _id, const std::string &_name);
-  
-  /// @brief Creates point light, parses it in the scene and sets its properties 
-  /// @param _id light id
-  /// @param _name light name
-  /// @return true if light is generated, false otherwise
-  protected: virtual PointLightPtr CreatePointLightImpl(unsigned int _id,
-                                               const std::string &_name);
-  
 
-  //Documentation Inherited
+  // Documentation Inherited
+  protected: virtual DirectionalLightPtr CreateDirectionalLightImpl(
+                 unsigned int _id, const std::string &_name) override;
+
+  // Documentation Inherited
+  protected: virtual PointLightPtr CreatePointLightImpl(unsigned int _id,
+                 const std::string &_name) override;
+
+  // Documentation Inherited
   protected: virtual SpotLightPtr CreateSpotLightImpl(unsigned int _id,
-                                                      const std::string &_name) override;
-  
-  /// @brief Creates camera, parses it in the scene and sets its properties 
-  /// @param _id camera id
-  /// @param _name camera name
-  /// @return true if camera is created, false otherwise
+                 const std::string &_name) override;
+
+  // Documentation Inherited
   protected: virtual CameraPtr CreateCameraImpl(unsigned int _id,
-                                                const std::string &_name);
-  
-  //Documentation inherited
-  protected: virtual DepthCameraPtr
-      CreateDepthCameraImpl(unsigned int _id, const std::string &_name) override;
-  /// @brief Creates visual, parses it in the scene and sets its properties 
-  /// @param _id camera id
-  /// @param _name camera name
-  /// @return true if camera is created, false otherwise
+                 const std::string &_name) override;
+
+  // Documentation inherited
+  protected: virtual DepthCameraPtr CreateDepthCameraImpl(unsigned int _id,
+                 const std::string &_name) override;
+
+  // Documentation Inherited
   protected: virtual VisualPtr CreateVisualImpl(unsigned int _id,
-                                                const std::string &_name);
-  //Documentation inherited
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual ArrowVisualPtr CreateArrowVisualImpl(unsigned int _id,
-                                                 const std::string &_name) override;
-  //Documentation inherited
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual AxisVisualPtr CreateAxisVisualImpl(unsigned int _id,
-                                               const std::string &_name) override;
-  /// @brief Creates box implementation scene
-  /// @param _id box id
-  /// @param _name box name
-  /// @return geometry pointer to box mesh implementation 
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual GeometryPtr CreateBoxImpl(unsigned int _id,
-                                               const std::string &_name);
-  //Documentation inherited
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual GeometryPtr CreateConeImpl(unsigned int _id,
-                                                const std::string &_name) override;
-  //Documentation inherited
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual GeometryPtr CreateCylinderImpl(unsigned int _id,
-                                                    const std::string &_name) override;
-  /// @brief Creates plane implementaion in the scene
-  /// @param _id plane id
-  /// @param _name plane name
-  /// @return geometry pointer to plane mesh implementation
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual GeometryPtr CreatePlaneImpl(unsigned int _id,
-                                                 const std::string &_name);
-  //Documentation inherited
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual GeometryPtr CreateSphereImpl(unsigned int _id,
-                                                  const std::string &_name) override;
-  //Documentation inherited
+                 const std::string &_name) override;
+
+  /// \brief create mesh descriptor and implement mesh in the scene
+  /// \param[in] _id mesh id
+  /// \param[in] _name mesh name
+  /// \param[in] _desc mesh descriptor
   protected: virtual MeshPtr CreateMeshImpl(unsigned int _id,
-                                            const std::string &_name,
-                                            const std::string &_meshName);
-  /// @brief create mesh descriptor and implement mesh in the scene
-  /// @param _id mesh id
-  /// @param _name mesh name
-  /// @param _desc mesh descriptor
-  /// @return geometry pointer to mesh implementation
+                 const std::string &_name,
+                 const std::string &_meshName);
+
+  // Documentation inherited
   protected: virtual MeshPtr CreateMeshImpl(unsigned int _id,
-                                            const std::string &_name,
-                                            const MeshDescriptor &_desc);
-  //Documentation inherited
+                 const std::string &_name,
+                 const MeshDescriptor &_desc) override;
+
+  // Documentation inherited
   protected: virtual CapsulePtr CreateCapsuleImpl(unsigned int _id,
-                                                  const std::string &_name) override;
-  //Documentation inherited
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual GridPtr CreateGridImpl(unsigned int _id,
-                                            const std::string &_name) override;
-  //Documentation inherited
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual MarkerPtr CreateMarkerImpl(unsigned int _id,
-                                                const std::string &_name) override;
-  //Documentation inherited
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual LidarVisualPtr CreateLidarVisualImpl(unsigned int _id,
-                                                 const std::string &_name) override;
-  //Documentation inherited
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual HeightmapPtr CreateHeightmapImpl(unsigned int _id,
-                                             const std::string &_name,
-                                             const HeightmapDescriptor &_desc) override;
-  //Documentation inherited
+                 const std::string &_name,
+                 const HeightmapDescriptor &_desc) override;
+
+  // Documentation inherited
   protected: virtual WireBoxPtr CreateWireBoxImpl(unsigned int _id,
-                                                  const std::string &_name) override;
-  /// @brief Generates material pointer, parses it in the scene and sets its property
-  /// @param _id material id
-  /// @param _name material name
-  /// @return true if material is created, false otherwise
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual MaterialPtr CreateMaterialImpl(unsigned int _id,
-                                                    const std::string &_name);
-  //Documentation inherited
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual RenderTexturePtr CreateRenderTextureImpl(unsigned int _id,
-                                                     const std::string &_name) override;
-  //Documentation inherited
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual RenderWindowPtr CreateRenderWindowImpl(unsigned int _id,
-                                                   const std::string &_name) override;
-  //Documentation inherited
+                 const std::string &_name) override;
+
+  // Documentation inherited
   protected: virtual RayQueryPtr CreateRayQueryImpl(unsigned int _id,
                                            const std::string &_name) override;
-  //Documentation inherited
+
+  // Documentation inherited
   protected: virtual COMVisualPtr CreateCOMVisualImpl(unsigned int _id,
                                              const std::string &_name) override;
-  //Documentation inherited
-  protected: virtual InertiaVisualPtr CreateInertiaVisualImpl(unsigned int _id,
-                                                     const std::string &_name) override;
-  //Documentation inherited
-  protected: virtual JointVisualPtr CreateJointVisualImpl(unsigned int _id,
-                                                 const std::string &_name)override;
-  /// @brief Get lights in the scene
-  /// @return pointer to lights
-  protected: virtual LightStorePtr Lights() const;
 
-  /// @brief Get sensors in the scene
-  /// @return pointer to sensors
-  protected: virtual SensorStorePtr Sensors() const;
-  
-  /// @brief Get visuals in the scene
-  /// @return pointer to visuals
-  protected: virtual VisualStorePtr Visuals() const;
-  
-  /// @brief Get Materials in the scene
-  /// @return pointer to materials
-  protected: virtual MaterialMapPtr Materials() const;
-  /// @brief Load implementation
-  /// @return true 
-  protected: virtual bool LoadImpl();
-  /// @brief Initialize log handler and create a sccene along with storage and mesh
-  /// @return true when successful
-  protected: virtual bool InitImpl();
-  
-  /// @brief Check if scene is initialized
-  /// @return true 
-  public: virtual bool IsInitialized();
-  
-  /// @brief Get id of the scene
-  /// @return id of the scene
-  public: virtual unsigned int Id();
-  
-  /// @brief Get name of the scene
-  /// @return name of the scene
-  public: virtual std::string Name();
-  
-  //Documentation inherited
-  public: ignition::rendering::LightVisualPtr
-      CreateLightVisualImpl(unsigned int _id, const std::string &_name);
-  /// @brief Create mesh factory
+  // Documentation inherited
+  protected: virtual InertiaVisualPtr CreateInertiaVisualImpl(unsigned int _id,
+                 const std::string &_name) override;
+
+  // Documentation inherited
+  protected: virtual JointVisualPtr CreateJointVisualImpl(unsigned int _id,
+                 const std::string &_name)override;
+
+  // Documentation inherited
+  protected: virtual LightStorePtr Lights() const override;
+
+  // Documentation inherited
+  protected: virtual SensorStorePtr Sensors() const override;
+
+  // Documentation inherited
+  protected: virtual VisualStorePtr Visuals() const override;
+
+  // Documentation inherited
+  protected: virtual MaterialMapPtr Materials() const override;
+
+  // Documentation inherited
+  protected: virtual bool LoadImpl() override;
+
+  // Documentation inherited
+  protected: virtual bool InitImpl() override;
+
+  // Documentation inherited
+  public: rendering::LightVisualPtr CreateLightVisualImpl(
+            unsigned int _id, const std::string &_name) override;
+
+  /// \brief Create mesh factory
   protected: void CreateMeshFactory();
-  /// @brief Create lights, sensors, visuals and material stores
+
+  /// \brief Create lights, sensors, visuals and material stores
   protected: void CreateStores();
-  
-  /// @brief Initialize object by assigning variables and loading it
-  /// @param _object object pointer 
-  /// @param _id  object id
-  /// @param _name object name
-  /// @return true when initialized
+
+  /// \brief Initialize object by assigning variables and loading it
+  /// \param[in] _object object pointer
+  /// \param[in] _id  object id
+  /// \param[in] _name object name
+  /// \return true when initialized
   protected: bool InitObject(LuxCoreEngineObjectPtr _object, unsigned int _id,
-                                                    const std::string &_name);
-  /// @brief Get scene from the shared pointer
-  /// @return return scene pointer
+                             const std::string &_name);
+
+  /// \brief Get scene from the shared pointer
+  /// \return return scene pointer
   private: LuxCoreEngineScenePtr SharedThis();
-  /// @brief Get LuxCore scene
-  /// @return lux scene
+
+  /// \brief Get LuxCore scene
+  /// \return lux scene
   public: luxcore::Scene *SceneLux();
-  
-  protected: luxcore::Scene *sceneLux;
-  
-  protected: unsigned int id_;
-  
-  protected: std::string name_;
-  
+
+  /// \brief Pointer to the LuxCore scene
+  protected: luxcore::Scene *sceneLux{nullptr};
+
+  /// \brief Pointer to the mesh factory
   protected: LuxCoreEngineMeshFactoryPtr meshFactory;
-  
+
+  /// \brief A list of materials used in the scene
   protected: LuxCoreEngineMaterialMapPtr materials;
-  
+
+  /// \brief A list of sensors in the scene
   protected: LuxCoreEngineSensorStorePtr sensors;
-  
+
+  /// \brief A list of visuals in the scene
   protected: LuxCoreEngineVisualStorePtr visuals;
-  
+
+  /// \brief A list of lights in the scene
   protected: LuxCoreEngineLightStorePtr lights;
-  
+
   private: friend class LuxCoreEngineRenderEngine;
 };
 

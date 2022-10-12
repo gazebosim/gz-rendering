@@ -30,63 +30,67 @@ namespace ignition {
 namespace rendering {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-class LuxCoreEngineMesh : public BaseMesh<LuxCoreEngineGeometry> {
-
+/// \brief LuxCore implementation of the mesh class
+class LuxCoreEngineMesh : public BaseMesh<LuxCoreEngineGeometry>
+{
+  /// \brief Constructor
   public: LuxCoreEngineMesh();
+
   // Documentation inherited.
   public: bool HasParent() const;
+
   // Documentation inherited.
   public: VisualPtr Parent() const;
-  /// @brief Set Material for the mesh
-  /// @param _material pointer to material 
-  /// @param _unique 
-  public: void SetMaterial(MaterialPtr _material, bool _unique = true);
-  /// @brief Set Position in Local frame
-  /// @param _x x coordinate
-  /// @param _y y coordinate
-  /// @param _z z coordinate
-  public: void SetLocalPosition(double _x, double _y, double _z);
-  /// @brief Set Local Scale
-  /// @param _x x cocrdinate
-  /// @param _y y coordinate
-  /// @param _z z cocordinate
-  public: void SetLocalScale(double _x, double _y, double _z);
-  /// @brief Set Local Rotation
-  /// @param _r roll
-  /// @param _p pitch
-  /// @param _y yaw
-  public: void SetLocalRotation(double _r, double _p, double _y);
-  /// @brief Set mesh name
-  /// @param name of the mesh
+
+  // Documentation inherited.
+  public: void SetMaterial(MaterialPtr _material, bool _unique = true) override;
+
+  // Documentation inherited.
+  public: void SetLocalPosition(double _x, double _y, double _z) override;
+
+  // Documentation inherited.
+  public: void SetLocalScale(double _x, double _y, double _z) override;
+
+  // Documentation inherited.
+  public: void SetLocalRotation(double _r, double _p, double _y) override;
+
+  /// \brief Set mesh name
+  /// \param[in] name of the mesh
   public: void SetName(std::string name);
-  /// @brief Add sub meshes
-  /// @param _child pointer of the sub mesh
+
+  /// \brief Add sub meshes
+  /// \param[in] _child pointer of the sub mesh
   public: void AddSubMesh(const LuxCoreEngineSubMeshPtr _child);
-  /// @brief Get Sub meshes
-  /// @return pointer to sub meshes
-  public: SubMeshStorePtr SubMeshes() const;
-  /// @brief Update mesh object Transformation
+
+  // Documentation inherited.
+  public: SubMeshStorePtr SubMeshes() const override;
+
+  /// \brief Update mesh object Transformation
   private: void UpdateTransformation();
-  
+
+  /// \brief A list of submeshes
   protected: LuxCoreEngineSubMeshStorePtr subMeshes;
-  
+
+  /// \brief Translation matrix
   private: float translationMatrix[16];
-  
+
+  /// \brief Rotation matrix
   private: float rotationMatrix[16];
-  
+
+  /// \brief Scale matrix
   private: float scaleMatrix[16];
-  
+
+  /// \brief Previous transformation matrix
   private: float previousMatrix[16];
 };
 
 class LuxCoreEngineSubMesh : public BaseSubMesh<LuxCoreEngineObject>
 {
-  /// @brief Set Material implementation
-  /// @param _material pointer to material
-  public: void SetMaterialImpl(MaterialPtr _material);
+  // Documentation inherited.
+  public: void SetMaterialImpl(MaterialPtr _material) override;
 
-  /// @brief Set sub mesh name
-  /// @param name name of the given sub mesh
+  /// \brief Set sub mesh name
+  /// \param[in] name name of the given sub mesh
   public: void SetName(std::string name);
 };
 

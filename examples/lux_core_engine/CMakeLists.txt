@@ -13,8 +13,8 @@ endif ()
 include_directories($ENV{LUXCORE_SDK_PATH}/include)
 find_library(LUXCORE_LIBRARY luxcore HINTS $ENV{LUXCORE_SDK_PATH}/lib/)
 
-add_library(LuxCoreEngine SHARED 
-  LuxCoreEngineObject.cc 
+add_library(LuxCoreEngine SHARED
+  LuxCoreEngineObject.cc
   LuxCoreEngineMaterial.cc
   LuxCoreEngineRenderTarget.cc
   LuxCoreEngineNode.cc
@@ -53,9 +53,9 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
-add_executable(simple_demo Main.cc GlutWindow.cc)
+add_executable(luxcore_demo Main.cc GlutWindow.cc)
 
-target_link_libraries(simple_demo
+target_link_libraries(luxcore_demo
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
@@ -66,4 +66,4 @@ add_custom_target(copy_resources
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/media ${CMAKE_CURRENT_BINARY_DIR}/media
 )
 
-add_dependencies(simple_demo copy_resources)
+add_dependencies(luxcore_demo copy_resources)

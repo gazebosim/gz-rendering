@@ -26,26 +26,47 @@ namespace ignition {
 namespace rendering {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-class LuxCoreEngineMaterial : public BaseMaterial<LuxCoreEngineObject> {
-
+/// \brief LuxCore implementation of the material class
+class LuxCoreEngineMaterial : public BaseMaterial<LuxCoreEngineObject>
+{
+  /// \brief Constructor
   protected: LuxCoreEngineMaterial();
 
+  /// \brief Destructor
   public: virtual ~LuxCoreEngineMaterial();
 
   public: void UpdateLuxSDL();
 
+  // Documentation inherited
   public: void SetDiffuse(const double _r, const double _g, const double _b,
-                          const double _a = 1.0);
+                          const double _a = 1.0) override;
 
+  // Documentation inherited
   public: void SetEmissive(const double _r, const double _g, const double _b,
-                           const double _a = 1.0);
+                           const double _a = 1.0) override;
 
-  public: void SetShaderType(enum ShaderType _type);
+  // Documentation inherited
+  public: void SetShaderType(enum ShaderType _type) override;
 
-  protected: float diffuseR, diffuseG, diffuseB;
+  /// \brief R compoment of the diffuse color
+  protected: float diffuseR{0.0f};
 
-  protected: float emissiveR, emissiveG, emissiveB;
+  /// \brief G compoment of the diffuse color
+  protected: float diffuseG{0.0f};
 
+  /// \brief B compoment of the diffuse color
+  protected: float diffuseB{0.0f};
+
+  /// \brief R compoment of the emissive color
+  protected: float emissiveR{0.0f};
+
+  /// \brief G compoment of the emissive color
+  protected: float emissiveG{0.0f};
+
+  /// \brief B compoment of the emissive color
+  protected: float emissiveB{0.0f};
+
+  /// \brief Type of material
   protected: std::string materialType;
 
   private: friend class LuxCoreEngineScene;

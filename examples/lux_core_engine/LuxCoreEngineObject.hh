@@ -26,17 +26,20 @@ namespace ignition {
 namespace rendering {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-class LuxCoreEngineObject : public BaseObject {
-
+/// \brief LuxCore implementation of the object class
+class LuxCoreEngineObject : public BaseObject
+{
+  /// \brief Constructor
   protected: LuxCoreEngineObject();
-  
+
+  /// \brief Destructor
   public: virtual ~LuxCoreEngineObject();
-  
+
   // Documentation inherited.
-  public: virtual ScenePtr Scene() const;
-  
+  public: virtual ScenePtr Scene() const override;
+
   protected: LuxCoreEngineScenePtr scene;
-  
+
   private: friend class LuxCoreEngineScene;
 };
 

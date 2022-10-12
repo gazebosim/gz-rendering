@@ -77,6 +77,7 @@ bool LuxCoreEngineVisual::AttachGeometry(GeometryPtr _geometry)
 //////////////////////////////////////////////////
 bool LuxCoreEngineVisual::DetachGeometry(GeometryPtr _geometry)
 {
+  return true;
 }
 
 //////////////////////////////////////////////////

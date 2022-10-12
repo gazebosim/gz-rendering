@@ -26,8 +26,10 @@ namespace ignition {
 namespace rendering {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-class LuxCoreEngineGeometry : public BaseGeometry<LuxCoreEngineObject> {
-
+/// \brief LuxCore implementation of the geometry class
+class LuxCoreEngineGeometry : public BaseGeometry<LuxCoreEngineObject>
+{
+  /// \brief Constructor
   public: LuxCoreEngineGeometry();
 
   // Documentation inherited.

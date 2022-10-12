@@ -32,6 +32,6 @@ LuxCoreEngineObject::~LuxCoreEngineObject()
 //////////////////////////////////////////////////
 ScenePtr LuxCoreEngineObject::Scene() const
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
   return nullptr;
 }

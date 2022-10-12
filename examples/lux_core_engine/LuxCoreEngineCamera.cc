@@ -36,7 +36,7 @@ LuxCoreEngineCamera::~LuxCoreEngineCamera()
 //////////////////////////////////////////////////
 void LuxCoreEngineCamera::Render()
 {
-  if (!this->renderSessionLux) 
+  if (!this->renderSessionLux)
   {
     luxrays::Properties props;
 
@@ -156,9 +156,10 @@ void LuxCoreEngineCamera::SetLocalPosition(double _x, double _y, double _z)
 }
 
 //////////////////////////////////////////////////
-void LuxCoreEngineCamera::SetLocalRotation(double /*_r*/, double /*_p*/, double /*_y*/)
+void LuxCoreEngineCamera::SetLocalRotation(double /*_r*/, double /*_p*/,
+    double /*_y*/)
 {
-  //TODO implement this function 
+  // \todo(anyone) implement this function
 }
 
 //////////////////////////////////////////////////

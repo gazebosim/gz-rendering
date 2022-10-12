@@ -47,35 +47,41 @@ inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
 class LuxCoreEngineRenderEngine
     : public virtual BaseRenderEngine,
-      public common::SingletonT<LuxCoreEngineRenderEngine> {
-
+      public common::SingletonT<LuxCoreEngineRenderEngine>
+{
+  // Documentation inhertied
   public: virtual bool IsEnabled() const override
   {
     return true;
   }
 
+  // Documentation inhertied
   public: virtual std::string Name() const override
   {
     return "LuxCoreEngineRenderEngine";
   }
 
+  // Documentation inhertied
   protected: virtual bool LoadImpl(
       const std::map<std::string, std::string> &/*_params*/) override
   {
     return true;
   }
 
+  // Documentation inhertied
   protected: virtual bool InitImpl() override
   {
     this->scenes = LuxCoreEngineSceneStorePtr(new LuxCoreEngineSceneStore);
     return true;
   }
 
+  // Documentation inhertied
   protected: virtual SceneStorePtr Scenes() const override
   {
     return this->scenes;
   }
-  
+
+  // Documentation inhertied
   protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                                               const std::string &_name) override
   {
@@ -86,16 +92,19 @@ class LuxCoreEngineRenderEngine
 
   private: friend class common::SingletonT<LuxCoreEngineRenderEngine>;
 
+  /// \brief A list of scenes
   private: LuxCoreEngineSceneStorePtr scenes;
 };
 
 class LuxCoreEnginePlugin : public RenderEnginePlugin {
 
+  // Documentation inhertied
   public: std::string Name() const override
   {
     return LuxCoreEngineRenderEngine::Instance()->Name();
   }
 
+  // Documentation inhertied
   public: RenderEngine *Engine() const override
   {
     return LuxCoreEngineRenderEngine::Instance();

@@ -32,21 +32,21 @@ LuxCoreEngineNode::~LuxCoreEngineNode()
 //////////////////////////////////////////////////
 bool LuxCoreEngineNode::HasParent() const
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
   return true;
 }
 
 //////////////////////////////////////////////////
 NodePtr LuxCoreEngineNode::Parent() const
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineNode::PreRender()
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
@@ -64,64 +64,64 @@ math::Vector3d LuxCoreEngineNode::LocalScale() const
 //////////////////////////////////////////////////
 bool LuxCoreEngineNode::InheritScale() const
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
   return true;
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineNode::SetInheritScale(bool /*_inherit*/)
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineNode::SetLocalScaleImpl(const math::Vector3d &/*_scale*/)
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
 math::Pose3d LuxCoreEngineNode::RawLocalPose() const
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
   return math::Pose3d::Zero;
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineNode::SetRawLocalPose(const math::Pose3d &/*_pose*/)
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineNode::SetParent(LuxCoreEngineNodePtr /*_parent*/)
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
 void LuxCoreEngineNode::Init()
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
 }
 
 //////////////////////////////////////////////////
 NodeStorePtr LuxCoreEngineNode::Children() const
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
   return nullptr;
 }
 
 //////////////////////////////////////////////////
 bool LuxCoreEngineNode::AttachChild(NodePtr /*_child*/)
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
   return true;
 }
 
 //////////////////////////////////////////////////
 bool LuxCoreEngineNode::DetachChild(NodePtr _child)
 {
-  //TODO Implement this function
+  // \todo(anyone) Implement this function
   return true;
 }

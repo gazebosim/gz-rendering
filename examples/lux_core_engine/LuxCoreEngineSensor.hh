@@ -26,12 +26,13 @@ namespace ignition {
 namespace rendering {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-class LuxCoreEngineSensor : public BaseSensor<LuxCoreEngineNode> {
-
-  // Documentation inherited
+/// \brief LuxCore implementation of the sensor class
+class LuxCoreEngineSensor : public BaseSensor<LuxCoreEngineNode>
+{
+  /// \brief Constructor
   protected: LuxCoreEngineSensor();
-  
-  // Documentation inherited.
+
+  /// \brief Destructor
   public: virtual ~LuxCoreEngineSensor();
 };
 

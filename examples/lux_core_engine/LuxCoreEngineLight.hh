@@ -28,77 +28,129 @@ namespace ignition {
 namespace rendering {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-class LuxCoreEngineLight : public BaseLight<LuxCoreEngineNode> {
+/// \brief LuxCore implementation of the light class
+class LuxCoreEngineLight : public BaseLight<LuxCoreEngineNode>
+{
+  // Documentation inherited.
+  public: virtual math::Color DiffuseColor() const override;
 
-  public: virtual ignition::math::Color DiffuseColor() const;
   // Documentation inherited.
   public: virtual void SetDiffuseColor(double _r, double _g, double _b,
                                        double _a = 1.0) override;
+
   // Documentation inherited.
-  public: virtual void SetDiffuseColor(const ignition::math::Color &_color) override;
+  public: virtual void SetDiffuseColor(const math::Color &_color) override;
+
   // Documentation inherited.
-  public: virtual ignition::math::Color SpecularColor() const override;
+  public: virtual math::Color SpecularColor() const override;
+
   // Documentation inherited.
-  public: virtual void SetSpecularColor(const ignition::math::Color &_color) override;
+  public: virtual void SetSpecularColor(const math::Color &_color) override;
+
   // Documentation inherited.
   public: virtual double AttenuationConstant() const override;
+
   // Documentation inherited.
   public: virtual void SetAttenuationConstant(double _value) override;
+
   // Documentation inherited.
   public: virtual double AttenuationLinear() const override;
+
   // Documentation inherited.
   public: virtual void SetAttenuationLinear(double _value) override;
+
   // Documentation inherited.
   public: virtual double AttenuationQuadratic() const override;
+
   // Documentation inherited.
   public: virtual void SetAttenuationQuadratic(double _value) override;
+
   // Documentation inherited.
   public: virtual double AttenuationRange() const override;
+
   // Documentation inherited.
   public: virtual void SetAttenuationRange(double _range) override;
+
   // Documentation inherited.
   public: virtual bool CastShadows() const override;
+
   // Documentation inherited.
   public: virtual void SetCastShadows(bool _castShadows) override;
-  /// @brief Get Light Intensity
+
+  // Documentation inherited.
   public: virtual double Intensity() const override;
-  /// @brief Set Light Intensity 
-  /// @param _intensity desired light intensity
+
+  // Documentation inherited.
   public: virtual void SetIntensity(double _intensity) override;
-  /// @brief Update Lux engine SDL 
+
+  /// \brief Update Lux engine SDL
   public: virtual void UpdateLuxSDL() = 0;
 
+  /// \brief Type of light
   protected: std::string lightType;
 
-  protected: float gainR, gainG, gainB;
+  /// \brief R color gain
+  protected: float gainR{0.0f};
+
+  /// \brief G color gain
+  protected: float gainG{0.0f};
+
+  /// \brief B color gain
+  protected: float gainB{0.0f};
 };
 
+/// \brief LuxCore implementation of the directional light class
 class LuxCoreEngineDirectionalLight
-    : public BaseDirectionalLight<LuxCoreEngineLight> 
+    : public BaseDirectionalLight<LuxCoreEngineLight>
 {
-
+  /// \brief Constructor
+  /// \param[in] _lightType Type of light
   public:LuxCoreEngineDirectionalLight(std::string lightType);
-  /// Documentation Inherited 
-  public: virtual math::Vector3d Direction() const override;
-  /// Documentation Inherited 
-  public: virtual void SetDirection(double _x, double _y, double _z) override;
-  /// Documentation Inherited 
-  public: virtual void SetDirection(const math::Vector3d &_dir) override;
-  /// @brief Update Lux engine SDL 
-  public: virtual void UpdateLuxSDL();
 
-  protected: float directionX, directionY, directionZ;
+  // Documentation Inherited
+  public: virtual math::Vector3d Direction() const override;
+
+  /// Documentation Inherited
+  public: virtual void SetDirection(double _x, double _y, double _z) override;
+
+  /// Documentation Inherited
+  public: virtual void SetDirection(const math::Vector3d &_dir) override;
+
+  // Documentation inherited.
+  public: virtual void UpdateLuxSDL() override;
+
+  /// \brief X direction of the light
+  protected: float directionX{0.0f};
+
+  /// \brief Y direction of the light
+  protected: float directionY{0.0f};
+
+  /// \brief Z direction of the light
+  protected: float directionZ{0.0f};
 };
 
-class LuxCoreEnginePointLight : public BasePointLight<LuxCoreEngineLight> {
-
+/// \brief LuxCore implementation of the point light class
+class LuxCoreEnginePointLight : public BasePointLight<LuxCoreEngineLight>
+{
+  /// \brief Constructor
+  /// \param[in] _lightType Type of light
   public: LuxCoreEnginePointLight(std::string lightType);
-  /// Documentation Inherited 
-  public: virtual void SetLocalPosition(double _x, double _y, double _z) override;
 
-  public: virtual void UpdateLuxSDL();
+  // Documentation Inherited
+  public: virtual void SetLocalPosition(double _x, double _y, double _z)
+              override;
 
-  protected: float localPositionX, localPositionY, localPositionZ;
+  // Documentation inherited.
+  public: virtual void UpdateLuxSDL() override;
+
+  /// \brief X position in local frame
+  protected: float localPositionX{0.0f};
+
+  /// \brief Y position in local frame
+  protected: float localPositionY{0.0f};
+
+  /// \brief Z position in local frame
+  protected: float localPositionZ{0.0f};
 };
 
 } // namespace IGNITION_RENDERING_VERSION_NAMESPACE

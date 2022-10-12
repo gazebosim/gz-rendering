@@ -26,32 +26,36 @@ namespace ignition {
 namespace rendering {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
+/// \brief LuxCore implementation of the render target class
 class LuxCoreEngineRenderTarget
-    : public virtual BaseRenderTarget<LuxCoreEngineObject> {
-
+    : public virtual BaseRenderTarget<LuxCoreEngineObject>
+{
+  /// \brief Constructor
   protected: LuxCoreEngineRenderTarget();
-  
+
+  /// \brief Destructor
   public: virtual ~LuxCoreEngineRenderTarget();
-  
+
   // Documentation inherited.
-  public: virtual void Copy(Image &_image) const;
-  
-  /// @brief Get host data buffer
-  /// @return hostDataBuffer
+  public: virtual void Copy(Image &_image) const override;
+
+  /// \brief Get host data buffer
+  /// \return hostDataBuffer
   public: void *HostDataBuffer();
-  
-  /// @brief Allocate memory to host data buffer
-  /// @param size of host data buffer
+
+  /// \brief Allocate memory to host data buffer
+  /// \param[in] size of host data buffer
   public: void ResizeHostDataBuffer(unsigned int size);
-  /// @brief  Get Memory Size
-  /// @return memory size
+
+  /// \brief Get Memory Size
+  /// \return memory size
   protected: unsigned int MemorySize() const;
-  
-  /// @brief Rebuild Implementation
-  protected: virtual void RebuildImpl();
-  
-  protected: void *hostDataBuffer;
-  
+
+  // Documentation inherited.
+  protected: virtual void RebuildImpl() override;
+
+  protected: void *hostDataBuffer{nullptr};
+
   private: friend class LuxCoreEngineCamera;
 };
 

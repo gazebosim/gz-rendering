@@ -26,57 +26,74 @@ namespace ignition {
 namespace rendering {
 inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
 
-class LuxCoreEngineNode : public BaseNode<LuxCoreEngineObject> {
-
+class LuxCoreEngineNode : public BaseNode<LuxCoreEngineObject>
+{
+  /// \brief Constructor
   protected: LuxCoreEngineNode();
 
+  /// \brief Destructor
   public: virtual ~LuxCoreEngineNode();
+
   // Documentation inherited.
   public: virtual bool HasParent() const override;
+
   // Documentation inherited.
   public: virtual NodePtr Parent() const override;
+
   // Documentation inherited.
   public: virtual void PreRender() override;
+
   // Documentation inherited.
   public: virtual math::Vector3d LocalPosition() const override;
+
   // Documentation inherited.
   public: virtual math::Vector3d LocalScale() const override;
-  /// @brief Inherit Scale  
+
+  // Documentation inherited
   public: virtual bool InheritScale() const override;
-  /// @brief Set Inherit Scale 
-  /// @param _inherit 
+
+  // Documentation inherited
   public: virtual void SetInheritScale(bool _inherit) override;
-  /// @brief Set Local scale implementation 
-  protected: virtual void SetLocalScaleImpl(const math::Vector3d &_scale) override;
-  /// @brief Get Raw local pose 
+
+  // Documentation inherited
+  protected: virtual void SetLocalScaleImpl(
+      const math::Vector3d &_scale) override;
+
+  // Documentation inherited
   protected: virtual math::Pose3d RawLocalPose() const override;
-  /// @brief Set Raw local Pose
-  /// @param _pose 
+
+  // Documentation inherited
   protected: virtual void SetRawLocalPose(const math::Pose3d &_pose) override;
-  // Documentation inherited.
+
+  /// \brief Set the parent node
+  /// \param[in] _parent Node to set as parent
   protected: virtual void SetParent(LuxCoreEngineNodePtr _parent);
-  /// @brief Initialize Node
+
+  /// \brief Initialize Node
   protected: virtual void Init();
-  /// @brief Get Child Nodes
-  /// @return pointer to child node
+
+  // Documentation inherited
   protected: virtual NodeStorePtr Children() const override;
-  /// @brief  @brief Attach Child Node
-  /// @param _child 
-  /// @return true if successful false otherwise
+
+  // Documentation inherited
   protected: virtual bool AttachChild(NodePtr _child) override;
-  /// @brief Dettach Child Node
-  /// @param _child 
-  /// @return true if successful false otherwise
+
+  // Documentation inherited
   protected: virtual bool DetachChild(NodePtr _child) override;
-  
+
+  /// \brief Parent node
   protected: LuxCoreEngineNodePtr parent;
-  
+
+  /// \brief Pose of node in local frame
   protected: math::Pose3d pose;
-  
-  protected: bool poseDirty;
-  
+
+  /// \brief True if pose is dirty, false otherwise
+  protected: bool poseDirty{false};
+
+  /// \brief Scale of the node
   protected: math::Vector3d scale = math::Vector3d::One;
-  
+
+  /// \brief True to inherite scale of parent
   protected: bool inheritScale = true;
 };
 

@@ -28,6 +28,8 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    class Ogre2ArrowVisual;
+    class Ogre2AxisVisual;
     class Ogre2Camera;
     class Ogre2DepthCamera;
     class Ogre2DirectionalLight;
@@ -66,6 +68,8 @@ namespace ignition
 
     typedef BaseMaterialMap<Ogre2Material>        Ogre2MaterialMap;
 
+    typedef shared_ptr<Ogre2ArrowVisual>          Ogre2ArrowVisualPtr;
+    typedef shared_ptr<Ogre2AxisVisual>           Ogre2AxisVisualPtr;
     typedef shared_ptr<Ogre2Camera>               Ogre2CameraPtr;
     typedef shared_ptr<Ogre2DepthCamera>          Ogre2DepthCameraPtr;
     typedef shared_ptr<Ogre2DirectionalLight>     Ogre2DirectionalLightPtr;

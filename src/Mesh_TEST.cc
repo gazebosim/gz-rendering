@@ -67,6 +67,8 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
 
   EXPECT_EQ(submesh, mesh->SubMeshByName(submesh->Name()));
 
+  EXPECT_FALSE(mesh->HasSkeleton());
+
   // test submesh API
   MaterialPtr mat = submesh->Material();
   ASSERT_TRUE(mat != nullptr);

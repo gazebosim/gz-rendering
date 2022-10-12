@@ -54,14 +54,22 @@ void ArrowVisualTest::ArrowVisual(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
 
   // create visual
-  ArrowVisualPtr axis = scene->CreateArrowVisual();
-  EXPECT_NE(nullptr, axis);
-  EXPECT_EQ(2u, axis->ChildCount());
+  ArrowVisualPtr arrow = scene->CreateArrowVisual();
+  EXPECT_NE(nullptr, arrow);
+  EXPECT_EQ(2u, arrow->ChildCount());
 
-  EXPECT_NE(nullptr, axis->Head());
-  EXPECT_NE(nullptr, axis->Shaft());
+  EXPECT_NE(nullptr, arrow->Head());
+  EXPECT_NE(nullptr, arrow->Shaft());
 
-  EXPECT_NE(axis->Head(), axis->Shaft());
+  EXPECT_NE(arrow->Head(), arrow->Shaft());
+
+  ArrowVisualPtr arrow_name = scene->CreateArrowVisual("arrow_name");
+  EXPECT_NE(nullptr, arrow_name);
+  EXPECT_EQ(2u, arrow_name->ChildCount());
+
+  ArrowVisualPtr arrow_id = scene->CreateArrowVisual(98);
+  EXPECT_NE(nullptr, arrow_id);
+  EXPECT_EQ(2u, arrow_id->ChildCount());
 
   // Clean up
   engine->DestroyScene(scene);

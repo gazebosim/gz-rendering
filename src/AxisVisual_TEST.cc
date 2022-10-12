@@ -57,6 +57,13 @@ void AxisVisualTest::AxisVisual(const std::string &_renderEngine)
   AxisVisualPtr axis = scene->CreateAxisVisual();
   EXPECT_NE(nullptr, axis);
 
+  // create visual
+  AxisVisualPtr axis_name = scene->CreateAxisVisual("axis_name");
+  EXPECT_NE(nullptr, axis_name);
+
+  AxisVisualPtr axis_id = scene->CreateAxisVisual(101);
+  EXPECT_NE(nullptr, axis_id);
+
   // Clean up
   engine->DestroyScene(scene);
   rendering::unloadEngine(engine->Name());

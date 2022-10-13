@@ -18,6 +18,8 @@
 #include <ignition/common/Console.hh>
 
 #include "ignition/rendering/RenderTypes.hh"
+#include "ignition/rendering/ogre2/Ogre2ArrowVisual.hh"
+#include "ignition/rendering/ogre2/Ogre2AxisVisual.hh"
 #include "ignition/rendering/ogre2/Ogre2Camera.hh"
 #include "ignition/rendering/ogre2/Ogre2Conversions.hh"
 #include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
@@ -278,19 +280,21 @@ VisualPtr Ogre2Scene::CreateVisualImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-ArrowVisualPtr Ogre2Scene::CreateArrowVisualImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+ArrowVisualPtr Ogre2Scene::CreateArrowVisualImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return ArrowVisualPtr();
+  Ogre2ArrowVisualPtr visual(new Ogre2ArrowVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////
-AxisVisualPtr Ogre2Scene::CreateAxisVisualImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+AxisVisualPtr Ogre2Scene::CreateAxisVisualImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return AxisVisualPtr();
+  Ogre2AxisVisualPtr visual(new Ogre2AxisVisual);
+  bool result = this->InitObject(visual, _id, _name);
+  return (result) ? visual : nullptr;
 }
 
 //////////////////////////////////////////////////

@@ -19,6 +19,9 @@
 #include <string>
 
 #include <ignition/common/Console.hh>
+#include <ignition/common/MeshManager.hh>
+#include <ignition/common/Skeleton.hh>
+#include <ignition/common/SkeletonAnimation.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 #include "ignition/rendering/Camera.hh"
@@ -35,6 +38,13 @@ class MeshTest : public testing::Test,
 {
   /// \brief Test mesh and submesh basic API
   public: void MeshSubMesh(const std::string &_renderEngine);
+
+  /// \brief Test mesh skeleton
+  public: void MeshSkeleton(const std::string &_renderEngine);
+
+  public: const std::string TEST_MEDIA_PATH =
+        common::joinPaths(std::string(PROJECT_SOURCE_PATH),
+        "test", "media", "skeleton");
 };
 
 /////////////////////////////////////////////////
@@ -67,6 +77,8 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
 
   EXPECT_EQ(submesh, mesh->SubMeshByName(submesh->Name()));
 
+  EXPECT_FALSE(mesh->HasSkeleton());
+
   // test submesh API
   MaterialPtr mat = submesh->Material();
   ASSERT_TRUE(mat != nullptr);
@@ -91,9 +103,99 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+void MeshTest::MeshSkeleton(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr root = scene->RootVisual();
+
+  // create a visual for the actor, attach mesh and get skeleton
+  // Skeleton will be animated by GlutWindow
+  VisualPtr actorVisual = scene->CreateVisual("actor");
+  actorVisual->SetLocalPosition(0, 0, 0);
+  actorVisual->SetLocalRotation(0, 0, 0);
+
+  MeshDescriptor descriptor;
+  descriptor.meshName = common::joinPaths(TEST_MEDIA_PATH, "walk.dae");
+  common::MeshManager *meshManager = common::MeshManager::Instance();
+  descriptor.mesh = meshManager->Load(descriptor.meshName);
+
+  MeshPtr mesh = scene->CreateMesh(descriptor);
+  actorVisual->AddGeometry(mesh);
+  root->AddChild(actorVisual);
+
+  common::SkeletonPtr skel;
+
+  if (mesh && descriptor.mesh->HasSkeleton())
+  {
+    skel = descriptor.mesh->MeshSkeleton();
+
+    if (!skel || skel->AnimationCount() == 0)
+    {
+      FAIL();
+    }
+  }
+  else
+  {
+    FAIL();
+  }
+
+  EXPECT_TRUE(mesh->HasSkeleton());
+
+  std::string bvhFile = common::joinPaths(TEST_MEDIA_PATH, "cmu-13_26.bvh");
+
+  double scale = 0.055;
+  skel->AddBvhAnimation(bvhFile, scale);
+
+  int g_animIdx = 1;
+  auto * skelAnim = skel->Animation(g_animIdx);
+  for (double i = 0; i < 10; i+=0.01)
+  {
+    std::map<std::string, ignition::math::Matrix4d> animFrames;
+    animFrames = skelAnim->PoseAt(i, true);
+
+    std::map<std::string, ignition::math::Matrix4d> skinFrames;
+
+    for (auto pair : animFrames)
+    {
+      std::string animName = pair.first;
+      auto animTf = pair.second;
+
+      std::string skinName = skel->NodeNameAnimToSkin(g_animIdx, animName);
+      ignition::math::Matrix4d skinTf =
+              skel->AlignTranslation(g_animIdx, animName)
+              * animTf * skel->AlignRotation(g_animIdx, animName);
+
+      skinFrames[skinName] = skinTf;
+    }
+
+    mesh->SetSkeletonLocalTransforms(skinFrames);
+  }
+
+  // Clean up
+  engine->DestroyScene(scene);
+  unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
 TEST_P(MeshTest, MeshSubMesh)
 {
   MeshSubMesh(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(MeshTest, MeshSkeleton)
+{
+  MeshSkeleton(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Mesh, MeshTest,

@@ -25,7 +25,5 @@ jobs:
           -v $GITHUB_WORKSPACE:/root/gazebo \
           --entrypoint bash \
           -w /root/gazebo \
-          deepx-gz-rendering-container \
+          deepx-gz-rendering \
           -c 'cd gz-rendering/build && ctest'
-        
-        # docker run --name deepx-gz-rendering-container -w /root/gazebo/gz-rendering/build/ deepx-gz-rendering ctest

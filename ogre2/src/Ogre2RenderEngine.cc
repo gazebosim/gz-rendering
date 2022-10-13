@@ -39,6 +39,7 @@
 #include "Ogre2GzHlmsUnlitPrivate.hh"
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_VULKAN
+#  include "vulkan/vulkan_core.h"
 // Deal with old vulkan headers causing build errors
 #  ifndef VK_NV_device_generated_commands
 #    define VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV 0x00020000

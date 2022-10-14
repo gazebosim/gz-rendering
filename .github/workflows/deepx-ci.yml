@@ -19,7 +19,7 @@ jobs:
           password: ${{ github.token }}
       - name: Build the docker container
         run: docker-compose build --build-arg BASE_IMAGE=ghcr.io/deepx-inc/base_images --build-arg TAG=foxy
-      - name: Run Docker container and run unit testing insde
+      - name: Run Docker container and run unit testing inside
         run: |
           docker run --name deepx-gz-rendering-test-container \
           -v $GITHUB_WORKSPACE:/root/gazebo \
@@ -27,4 +27,5 @@ jobs:
           --rm \
           -w /root/gazebo \
           deepx-gz-rendering \
-          -c 'cd /root/gazebo/gz-rendering/build && ctest'
+          -c 'cd /; pwd; ls; cd /root; pwd; ls; cd /root/gazebo; pwd; ls; cd /root/gazebo/gz-rendering; pwd; ls;'
+#          -c 'cd /root/gazebo/gz-rendering/build && ctest'

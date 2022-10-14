@@ -27,5 +27,4 @@ jobs:
           --rm \
           -w /root/gazebo \
           deepx-gz-rendering \
-          -c `pwd && ls`
-#          -c 'cd gz-rendering/build && ctest'
+         -c 'cd $GITHUB_WORKSPACE/gz-rendering/build && ctest'

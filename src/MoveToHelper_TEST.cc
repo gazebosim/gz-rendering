@@ -109,7 +109,7 @@ void MoveToHelperTest::MoveTo(const std::string &_renderEngine)
 
   ASSERT_NE(nullptr, camera);
 
-  rendering::NodePtr target = scene->NodeByName("center");
+  NodePtr target = scene->NodeByName("center");
 
   moveToHelper.MoveTo(camera, target, 0.5,
     std::bind(&MoveToHelperTest::OnMoveToComplete, this));
@@ -137,7 +137,7 @@ void MoveToHelperTest::MoveTo(const std::string &_renderEngine)
   EXPECT_EQ(math::Quaterniond(0.0, -0.785398, 1.5708), camera->LocalRotation());
 
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -148,7 +148,7 @@ TEST_P(MoveToHelperTest, MoveToHelper)
 
 INSTANTIATE_TEST_CASE_P(MoveToHelper, MoveToHelperTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

@@ -242,11 +242,11 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection()
           if (indexCount <= k+2)
             continue;
 
-          ignition::math::Vector3d vertexA =
+          math::Vector3d vertexA =
             submesh->Vertex(submesh->Index(k));
-          ignition::math::Vector3d vertexB =
+          math::Vector3d vertexB =
             submesh->Vertex(submesh->Index(k+1));
-          ignition::math::Vector3d vertexC =
+          math::Vector3d vertexC =
             submesh->Vertex(submesh->Index(k+2));
 
           Ogre::Vector3 worldVertexA =

@@ -165,7 +165,7 @@ void GpuRaysTest::Configure(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 
@@ -217,8 +217,8 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   VisualPtr root = scene->RootVisual();
 
   // Create first ray caster
-  ignition::math::Pose3d testPose(ignition::math::Vector3d(0, 0, 0.1),
-      ignition::math::Quaterniond::Identity);
+  math::Pose3d testPose(math::Vector3d(0, 0, 0.1),
+      math::Quaterniond::Identity);
 
   GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays_1");
   gpuRays->SetWorldPosition(testPose.Pos());
@@ -233,8 +233,8 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   root->AddChild(gpuRays);
 
   // Create a second ray caster rotated
-  ignition::math::Pose3d testPose2(ignition::math::Vector3d(0, 0, 0.1),
-      ignition::math::Quaterniond(IGN_PI/2.0, 0, 0));
+  math::Pose3d testPose2(math::Vector3d(0, 0, 0.1),
+      math::Quaterniond(IGN_PI/2.0, 0, 0));
 
   GpuRaysPtr gpuRays2 = scene->CreateGpuRays("gpu_rays_2");
   gpuRays2->SetWorldPosition(testPose2.Pos());
@@ -255,8 +255,8 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   // Create testing boxes
   // box in the center
-  ignition::math::Pose3d box01Pose(ignition::math::Vector3d(3, 0, 0.5),
-                                   ignition::math::Quaterniond::Identity);
+  math::Pose3d box01Pose(math::Vector3d(3, 0, 0.5),
+                                   math::Quaterniond::Identity);
   VisualPtr visualBox1 = scene->CreateVisual("UnitBox1");
   visualBox1->AddGeometry(scene->CreateBox());
   visualBox1->SetWorldPosition(box01Pose.Pos());
@@ -265,8 +265,8 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   root->AddChild(visualBox1);
 
   // box on the right of the first gpu rays caster
-  ignition::math::Pose3d box02Pose(ignition::math::Vector3d(0, -5, 0.5),
-                                   ignition::math::Quaterniond::Identity);
+  math::Pose3d box02Pose(math::Vector3d(0, -5, 0.5),
+                                   math::Quaterniond::Identity);
   VisualPtr visualBox2 = scene->CreateVisual("UnitBox2");
   visualBox2->AddGeometry(scene->CreateBox());
   visualBox2->SetWorldPosition(box02Pose.Pos());
@@ -275,9 +275,9 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   root->AddChild(visualBox2);
 
   // box on the left of the rays caster 1 but out of range
-  ignition::math::Pose3d box03Pose(
-      ignition::math::Vector3d(0, maxRange + 1, 0.5),
-      ignition::math::Quaterniond::Identity);
+  math::Pose3d box03Pose(
+      math::Vector3d(0, maxRange + 1, 0.5),
+      math::Quaterniond::Identity);
   VisualPtr visualBox3 = scene->CreateVisual("UnitBox3");
   visualBox3->AddGeometry(scene->CreateBox());
   visualBox3->SetWorldPosition(box03Pose.Pos());
@@ -306,7 +306,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   // rays caster 1 should see box01 and box02
   EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox1, LASER_TOL);
   EXPECT_NEAR(scan[0], expectedRangeAtMidPointBox2, LASER_TOL);
-  EXPECT_FLOAT_EQ(scan[last], ignition::math::INF_F);
+  EXPECT_FLOAT_EQ(scan[last], math::INF_F);
 
   // laser retro is currently only supported in ogre2
   if (_renderEngine == "ogre2")
@@ -334,10 +334,10 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   // Move all boxes out of range
   visualBox1->SetWorldPosition(
-      ignition::math::Vector3d(maxRange + 1, 0, 0));
+      math::Vector3d(maxRange + 1, 0, 0));
   visualBox1->SetWorldRotation(box01Pose.Rot());
   visualBox2->SetWorldPosition(
-      ignition::math::Vector3d(0, -(maxRange + 1), 0));
+      math::Vector3d(0, -(maxRange + 1), 0));
   visualBox2->SetWorldRotation(box02Pose.Rot());
 
   gpuRays->Update();
@@ -347,7 +347,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
   gpuRays2->Copy(scan2);
 
   for (int i = 0; i < gpuRays->RayCount(); ++i)
-    EXPECT_FLOAT_EQ(scan[i * 3], ignition::math::INF_F);
+    EXPECT_FLOAT_EQ(scan[i * 3], math::INF_F);
 
   for (int i = 0; i < gpuRays2->RayCount(); ++i)
     EXPECT_FLOAT_EQ(scan2[i * 3], maxRange);
@@ -362,7 +362,7 @@ void GpuRaysTest::RaysUnitBox(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -414,8 +414,8 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
   VisualPtr root = scene->RootVisual();
 
   // Create first ray caster
-  ignition::math::Pose3d testPose(ignition::math::Vector3d(0.25, 0, 0.5),
-      ignition::math::Quaterniond::Identity);
+  math::Pose3d testPose(math::Vector3d(0.25, 0, 0.5),
+      math::Quaterniond::Identity);
 
   GpuRaysPtr gpuRays = scene->CreateGpuRays("vertical_gpu_rays");
   gpuRays->SetWorldPosition(testPose.Pos());
@@ -432,8 +432,8 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 
   // Create testing boxes
   // box in front of ray sensor
-  ignition::math::Pose3d box01Pose(ignition::math::Vector3d(1, 0, 0.5),
-      ignition::math::Quaterniond::Identity);
+  math::Pose3d box01Pose(math::Vector3d(1, 0, 0.5),
+      math::Quaterniond::Identity);
   VisualPtr visualBox1 = scene->CreateVisual("VerticalTestBox1");
   visualBox1->AddGeometry(scene->CreateBox());
   visualBox1->SetWorldPosition(box01Pose.Pos());
@@ -485,9 +485,9 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 
   // Move box out of range
   visualBox1->SetWorldPosition(
-      ignition::math::Vector3d(maxRange + 1, 0, 0));
+      math::Vector3d(maxRange + 1, 0, 0));
   visualBox1->SetWorldRotation(
-      ignition::math::Quaterniond::Identity);
+      math::Quaterniond::Identity);
 
   // wait for a few more laser scans
   gpuRays->Update();
@@ -509,7 +509,7 @@ void GpuRaysTest::LaserVertical(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -1007,7 +1007,7 @@ TEST_P(GpuRaysTest, Visibility)
 
 INSTANTIATE_TEST_CASE_P(GpuRays, GpuRaysTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

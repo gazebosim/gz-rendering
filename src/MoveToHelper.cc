@@ -53,8 +53,8 @@ MoveToHelper::MoveToHelper() :
 MoveToHelper::~MoveToHelper() = default;
 
 ////////////////////////////////////////////////
-void MoveToHelper::MoveTo(const rendering::CameraPtr &_camera,
-    const ignition::math::Pose3d &_target,
+void MoveToHelper::MoveTo(const CameraPtr &_camera,
+    const math::Pose3d &_target,
     double _duration, std::function<void()> _onAnimationComplete)
 {
   this->dataPtr->camera = _camera;
@@ -81,8 +81,8 @@ void MoveToHelper::MoveTo(const rendering::CameraPtr &_camera,
 }
 
 ////////////////////////////////////////////////
-void MoveToHelper::MoveTo(const rendering::CameraPtr &_camera,
-    const rendering::NodePtr &_target,
+void MoveToHelper::MoveTo(const CameraPtr &_camera,
+    const NodePtr &_target,
     double _duration, std::function<void()> _onAnimationComplete)
 {
   this->dataPtr->camera = _camera;
@@ -125,7 +125,7 @@ void MoveToHelper::MoveTo(const rendering::CameraPtr &_camera,
 }
 
 ////////////////////////////////////////////////
-void MoveToHelper::LookDirection(const rendering::CameraPtr &_camera,
+void MoveToHelper::LookDirection(const CameraPtr &_camera,
     const math::Vector3d &_direction, const math::Vector3d &_lookAt,
     double _duration, std::function<void()> _onAnimationComplete)
 {
@@ -146,7 +146,7 @@ void MoveToHelper::LookDirection(const rendering::CameraPtr &_camera,
 
   // Calculate camera orientation
   math::Quaterniond endRot =
-    ignition::math::Matrix4d::LookAt(endPos, _lookAt).Rotation();
+    math::Matrix4d::LookAt(endPos, _lookAt).Rotation();
 
   // Move camera to that pose
   common::PoseKeyFrame *key = this->dataPtr->poseAnim->CreateKeyFrame(0);

@@ -98,7 +98,7 @@ TEST_P(GaussianNoisePassTest, GaussianNoise)
 
 INSTANTIATE_TEST_CASE_P(GaussianNoise, GaussianNoisePassTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

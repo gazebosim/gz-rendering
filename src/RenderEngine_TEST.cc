@@ -46,6 +46,11 @@ void RenderEngineTest::RenderEngine(const std::string &_renderEngine)
     return;
   }
 
+  EXPECT_EQ(_renderEngine, engine->Name());
+  EXPECT_TRUE(engine->IsEnabled());
+
+  engine->AddResourcePath("none");
+
   // Check there are no scenes
   EXPECT_EQ(0u, engine->SceneCount());
   EXPECT_FALSE(engine->HasSceneName("scene1"));
@@ -130,7 +135,7 @@ void RenderEngineTest::RenderEngine(const std::string &_renderEngine)
   EXPECT_EQ(engine->SceneCount(), 0u);
 
   // Clean up
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -141,7 +146,7 @@ TEST_P(RenderEngineTest, RenderEngine)
 
 INSTANTIATE_TEST_CASE_P(RenderEngine, RenderEngineTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

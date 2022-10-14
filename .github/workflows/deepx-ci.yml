@@ -17,10 +17,10 @@ jobs:
           registry: ghcr.io
           username: deepx-inc
           password: ${{ github.token }}
-      - name: Build the docker container
-        run: ｜
-          docker-compose build --build-arg BASE_IMAGE=ghcr.io/deepx-inc/base_images --build-arg TAG=foxy
-          docker commit deepx-gz-rendering deepx-gz-rendering-image
+      - name: Build the Docker container
+        run: docker-compose build --build-arg BASE_IMAGE=ghcr.io/deepx-inc/base_images --build-arg TAG=foxy
+      - name: Commit the Docker container
+        run: docker commit deepx-gz-rendering deepx-gz-rendering-image
       - name: Run Docker container and run unit testing inside
         run: |
           docker run --name deepx-gz-rendering-test-container \

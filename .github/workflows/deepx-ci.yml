@@ -26,8 +26,6 @@ jobs:
           --entrypoint bash \
           -w /root/gazebo deepx-gz-rendering
           docker commit deepx-gz-rendering-container deepx-gz-rendering-image
-      - name: Run Docker container and run unit testing inside
-        run: |
           docker run --name deepx-gz-rendering-test-container \
           -v $GITHUB_WORKSPACE:/root/gazebo \
           --entrypoint bash \

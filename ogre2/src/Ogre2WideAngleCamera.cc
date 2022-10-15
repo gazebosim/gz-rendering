@@ -445,9 +445,10 @@ math::Vector3d Ogre2WideAngleCamera::Project3d(const math::Vector3d &_pt) const
     Vector4 pos = viewProj * Vector4(basePos);
     pos.x /= pos.w;
     pos.y /= pos.w;
+    pos.z /= pos.w;
     // check if point is visible
     if (std::fabs(pos.x) <= 1 && std::fabs(pos.y) <= 1 &&
-        ((!isReverseDepth && pos.z > 0) || (isReverseDepth && pos.z < 1)))
+        ((!isReverseDepth && pos.z > 0) || (isReverseDepth && pos.z < 1.0)))
     {
       // determine dir vector to projected point from env camera
       // work in y up, z forward, x right clip space

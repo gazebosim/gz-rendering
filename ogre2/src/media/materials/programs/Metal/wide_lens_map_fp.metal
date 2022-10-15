@@ -54,22 +54,23 @@ fragment float4 main_metal
 (
   PS_INPUT inPs [[stage_in]],
   texturecube<float> envMap  [[texture(0)]],
-  sampler texSampler [[sampler(0)]]
+  sampler texSampler [[sampler(0)]],
+  constant Params &p [[buffer(PARAMETER_SLOT)]]
 )
 {
   float4 fragColor;
 
   float r = length(inPs.fragPos);
   // calculate angle from optical axis based on the mapping function specified
-  float param = r/(c1*f);
+  float param = r/(p.c1*p.f);
   float theta = 0.0;
-  if (fun.x > 0)
+  if (p.fun.x > 0)
     theta = asin(param);
-  else if (fun.y > 0)
+  else if (p.fun.y > 0)
     theta = atan(param);
-  else if (fun.z > 0)
+  else if (p.fun.z > 0)
     theta = param;
-  theta = (theta-c3)*c2;
+  theta = (theta-p.c3)*p.c2;
 
   // compute the direction vector that will be used to sample from the cubemap
   float3 tc = map(theta, inPs.fragPos, r);
@@ -79,8 +80,8 @@ fragment float4 main_metal
 
   // limit to visible fov
   //TODO: move to vertex shader
-  float param2 = cutOffAngle/c2+c3;
-  float cutRadius = c1*f*(fun.x*sin(param2)+fun.y*tan(param2)+fun.z*param2);
+  float param2 = p.cutOffAngle/p.c2+p.c3;
+  float cutRadius = p.c1*p.f*(p.fun.x*sin(param2)+p.fun.y*tan(param2)+p.fun.z*param2);
 
   // smooth edges
   // gl_FragColor.rgb *= 1.0-step(cutRadius,r);

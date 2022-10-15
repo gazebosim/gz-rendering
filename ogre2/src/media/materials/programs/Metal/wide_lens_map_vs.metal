@@ -26,8 +26,8 @@ struct VS_INPUT
 struct Params
 {
   // aspect ratio
-  uniform float ratio;
-  uniform float4x4 worldViewProj;
+  float ratio;
+  float4x4 worldViewProj;
 };
 
 struct PS_INPUT

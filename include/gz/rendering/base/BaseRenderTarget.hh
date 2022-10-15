@@ -56,7 +56,11 @@ namespace gz
 
       public: virtual PixelFormat Format() const override;
 
-      public: virtual void SetFormat(PixelFormat _format) override;
+      public: virtual void SetFormat(PixelFormat _format,
+                                     bool _reinterpretable = false) override;
+
+      // Documentation inherited
+      public: virtual bool Reinterpretable() const override;
 
       // Documentation inherited
       public: virtual math::Color BackgroundColor() const override;
@@ -80,6 +84,8 @@ namespace gz
       protected: virtual void RebuildImpl() = 0;
 
       protected: PixelFormat format = PF_UNKNOWN;
+
+      protected: bool reinterpretable = false;
 
       protected: bool targetDirty = true;
 
@@ -218,10 +224,19 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseRenderTarget<T>::SetFormat(PixelFormat _format)
+    void BaseRenderTarget<T>::SetFormat(PixelFormat _format,
+                                        bool _reinterpretable)
     {
       this->format = PixelUtil::Sanitize(_format);
+      this->reinterpretable = _reinterpretable;
       this->targetDirty = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseRenderTarget<T>::Reinterpretable() const
+    {
+      return this->reinterpretable;
     }
 
     //////////////////////////////////////////////////

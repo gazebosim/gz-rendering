@@ -139,6 +139,9 @@ namespace gz
       // Documentation inherited
       public: void MetalIdImpl(void *_textureIdPtr) const;
 
+      /// \brief See Camera::PrepareForExternalSampling
+      public: void PrepareForExternalSampling();
+
       /// \brief Destroy the render texture
       protected: void DestroyTargetImpl();
 

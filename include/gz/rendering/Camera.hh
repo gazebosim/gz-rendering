@@ -79,7 +79,9 @@ namespace gz
 
       /// \brief Set the image pixel format
       /// \param[in] _format New image pixel format
-      public: virtual void SetImageFormat(PixelFormat _format) = 0;
+      /// \param[in] _reinterpretable See RenderTarget::SetFormat
+      public: virtual void SetImageFormat(PixelFormat _format,
+                                          bool _reinterpretable = false) = 0;
 
       /// \brief Get the total image memory size in bytes
       /// \return The image memory size in bytes
@@ -331,6 +333,12 @@ namespace gz
       /// id<MTLTexture> using CFBridgingRelease.
       /// \param[out] _textureIdPtr the address of a void* pointer.
       public: virtual void RenderTextureMetalId(void *_textureIdPtr) const = 0;
+
+      /// \brief Right now this is Vulkan-only. This function needs to be
+      /// called after rendering, and before handling the texture pointer
+      /// (i.e. by calling RenderTextureMetalId()) so that external APIs
+      /// (e.g. Qt) can sample the texture.
+      public: virtual void PrepareForExternalSampling() = 0;
 
       /// \brief Add a render pass to the camera
       /// \param[in] _pass New render pass to add

@@ -518,13 +518,20 @@ void Ogre2RenderTarget::BuildTargetImpl()
   Ogre::TextureGpuManager *textureMgr =
       ogreRoot->getRenderSystem()->getTextureGpuManager();
 
+  uint32_t textureFlags = Ogre::TextureFlags::RenderToTexture;
+
+  if (this->reinterpretable)
+  {
+    textureFlags |= Ogre::TextureFlags::Reinterpretable;
+  }
+
   for (size_t i = 0u; i < 2u; ++i)
   {
     this->dataPtr->ogreTexture[i] =
         textureMgr->createTexture(
           this->name + std::to_string(i),
           Ogre::GpuPageOutStrategy::Discard,
-          Ogre::TextureFlags::RenderToTexture,
+          textureFlags,
           Ogre::TextureTypes::Type2D);
 
     this->dataPtr->ogreTexture[i]->setResolution(this->width, this->height);
@@ -557,6 +564,32 @@ void Ogre2RenderTarget::MetalIdImpl(void *_textureIdPtr) const
 
   this->dataPtr->ogreTexture[1]->
       getCustomAttribute("msFinalTextureBuffer", _textureIdPtr);
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTarget::PrepareForExternalSampling()
+{
+  if (!this->dataPtr->ogreTexture[0])
+    return;
+
+  Ogre::Root *ogreRoot = Ogre2RenderEngine::Instance()->OgreRoot();
+  Ogre::RenderSystem *renderSystem = ogreRoot->getRenderSystem();
+  Ogre::BarrierSolver &solver = renderSystem->getBarrierSolver();
+  Ogre::ResourceTransitionArray resourceTransitions;
+
+  resourceTransitions.clear();
+  solver.resolveTransition(resourceTransitions, this->dataPtr->ogreTexture[1],
+                           Ogre::ResourceLayout::Texture,
+                           Ogre::ResourceAccess::Read, 1u << Ogre::PixelShader);
+  renderSystem->executeResourceTransition(resourceTransitions);
+
+  // If we queued all cameras and transitioned them in
+  // Ogre2Scene::FlushGpuCommandsOnly & Ogre2Scene::EndFrame we might
+  // achieve optimal performance; however that could be negligible
+  // and is not worth the extra code complexity.
+  //
+  // Just flush now to actually perform the resource transition.
+  renderSystem->flushCommands();
 }
 
 //////////////////////////////////////////////////

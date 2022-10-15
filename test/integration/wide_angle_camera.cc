@@ -68,7 +68,7 @@ void OnNewWideAngleFrame(const unsigned char *_data,
 //////////////////////////////////////////////////
 TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
 {
-  CHECK_SUPPORTED_ENGINE("ogre");
+  CHECK_UNSUPPORTED_ENGINE("optix");
 
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
@@ -205,7 +205,7 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
 //////////////////////////////////////////////////
 TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Projection))
 {
-  CHECK_SUPPORTED_ENGINE("ogre");
+  CHECK_UNSUPPORTED_ENGINE("optix");
 
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);

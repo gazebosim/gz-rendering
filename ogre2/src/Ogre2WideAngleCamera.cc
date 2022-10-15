@@ -419,10 +419,18 @@ math::Vector3d Ogre2WideAngleCamera::Project3d(const math::Vector3d &_pt) const
     Quaternion(Radian(3.1415927f), Vector3(0, 1, 0))   // -Z
   };
 
+  this->dataPtr->ogreCamera->setAspectRatio(1.0f);
+  this->dataPtr->ogreCamera->setFOVy(Ogre::Degree(90));
+  const Quaternion oldCameraOrientation(
+    this->dataPtr->ogreCamera->getOrientation());
+
+  const bool isReverseDepth =
+    Root::getSingleton().getRenderSystem()->isReverseDepth();
+
   // project world point to camera clip space.
-  const Matrix4 viewProj = this->dataPtr->ogreCamera->getProjectionMatrix() *
-                           this->dataPtr->ogreCamera->getViewMatrix();
-  const Vector4 basePos = viewProj * Vector4(Ogre2Conversions::Convert(_pt));
+  const Matrix4 projMatrix = this->dataPtr->ogreCamera->getProjectionMatrix();
+  // const Vector4 basePos = viewProj * Vector4(Ogre2Conversions::Convert(_pt));
+  const Vector3 basePos = Ogre2Conversions::Convert(_pt);
 
   // project onto cubemap face then onto
   gz::math::Vector3d screenPos;
@@ -430,12 +438,16 @@ math::Vector3d Ogre2WideAngleCamera::Project3d(const math::Vector3d &_pt) const
   for (unsigned int i = 0u; i < kWideAngleNumCubemapFaces; ++i)
   {
     // project world point to camera clip space for each face.
-    Vector4 pos =
-      Vector4(kCubemapRotations[i].Inverse() * basePos.xyz(), basePos.w);
+    this->dataPtr->ogreCamera->setOrientation(oldCameraOrientation *
+                                              kCubemapRotations[i]);
+    const Matrix4 viewProj =
+      projMatrix * this->dataPtr->ogreCamera->getViewMatrix();
+    Vector4 pos = viewProj * Vector4(basePos);
     pos.x /= pos.w;
     pos.y /= pos.w;
     // check if point is visible
-    if (std::fabs(pos.x) <= 1 && std::fabs(pos.y) <= 1 && pos.z > 0)
+    if (std::fabs(pos.x) <= 1 && std::fabs(pos.y) <= 1 &&
+        ((!isReverseDepth && pos.z > 0) || (isReverseDepth && pos.z < 1)))
     {
       // determine dir vector to projected point from env camera
       // work in y up, z forward, x right clip space
@@ -506,9 +518,14 @@ math::Vector3d Ogre2WideAngleCamera::Project3d(const math::Vector3d &_pt) const
 
       // r will be > 1.0 if point is not visible (outside of image)
       screenPos.Z() = r;
+
+      this->dataPtr->ogreCamera->setOrientation(oldCameraOrientation);
+
       return screenPos;
     }
   }
+
+  this->dataPtr->ogreCamera->setOrientation(oldCameraOrientation);
 
   return screenPos;
 }

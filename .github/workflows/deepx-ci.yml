@@ -11,14 +11,17 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+
       - name: Login to Github Container Registry
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: deepx-inc
           password: ${{ github.token }}
+
       - name: Build the Docker container
-        run: docker-compose build --build-arg BASE_IMAGE=ghcr.io/deepx-inc/base_images --build-arg TAG=foxy
+        run: docker build --build-arg BASE_IMAGE=ghcr.io/deepx-inc/base_images --build-arg TAG=foxy .
+
       - name: Commit the Docker container
         run: |
           docker run --name deepx-gz-rendering-container \
@@ -26,7 +29,10 @@ jobs:
           --entrypoint bash \
           -w /root/gazebo deepx-gz-rendering
           docker commit deepx-gz-rendering-container deepx-gz-rendering-image
-          docker run --name deepx-gz-rendering-test-container \
+
+      - name: Run tests
+        run: |
+          docker run --name deepx-gz-rendering-image \
           -v $GITHUB_WORKSPACE:/root/gazebo \
           --entrypoint bash \
           -w /root/gazebo \

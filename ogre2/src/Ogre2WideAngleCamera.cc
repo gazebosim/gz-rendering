@@ -129,8 +129,8 @@ using namespace gz;
 using namespace rendering;
 
 // Arbitrary values
-static const uint32_t kWideAngleCameraCubemapPassId = 1276660u;
-static const uint32_t kWideAngleCameraQuadPassId = 1276661u;
+static constexpr uint32_t kWideAngleCameraCubemapPassId = 1276660u;
+static constexpr uint32_t kWideAngleCameraQuadPassId = 1276661u;
 
 //////////////////////////////////////////////////
 Ogre2WideAngleCamera::Ogre2WideAngleCamera() :

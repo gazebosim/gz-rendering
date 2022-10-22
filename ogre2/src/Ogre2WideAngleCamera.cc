@@ -35,7 +35,6 @@
 #include <OgreDepthBuffer.h>
 #include <OgreImage2.h>
 #include <OgrePass.h>
-#include <OgreRoot.h>
 #include <OgreSceneManager.h>
 #include <OgreTechnique.h>
 #include <OgreTextureBox.h>
@@ -424,9 +423,6 @@ math::Vector3d Ogre2WideAngleCamera::Project3d(const math::Vector3d &_pt) const
   const Quaternion oldCameraOrientation(
     this->dataPtr->ogreCamera->getOrientation());
 
-  const bool isReverseDepth =
-    Root::getSingleton().getRenderSystem()->isReverseDepth();
-
   // project world point to camera clip space.
   const Matrix4 projMatrix = this->dataPtr->ogreCamera->getProjectionMatrix();
   // const Vector4 basePos = viewProj * Vector4(Ogre2Conversions::Convert(_pt));
@@ -447,8 +443,7 @@ math::Vector3d Ogre2WideAngleCamera::Project3d(const math::Vector3d &_pt) const
     pos.y /= pos.w;
     pos.z /= pos.w;
     // check if point is visible
-    if (std::fabs(pos.x) <= 1 && std::fabs(pos.y) <= 1 &&
-        ((!isReverseDepth && pos.z > 0) || (isReverseDepth && pos.z < 1.0)))
+    if (std::fabs(pos.x) <= 1 && std::fabs(pos.y) <= 1 && std::fabs(pos.z) <= 1)
     {
       // determine dir vector to projected point from env camera
       // work in y up, z forward, x right clip space

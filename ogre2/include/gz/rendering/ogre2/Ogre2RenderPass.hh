@@ -24,6 +24,11 @@
 #include "gz/rendering/ogre2/Export.hh"
 #include "gz/rendering/ogre2/Ogre2Object.hh"
 
+namespace Ogre
+{
+  class CompositorWorkspace;
+}
+
 namespace gz
 {
   namespace rendering
@@ -64,6 +69,16 @@ namespace gz
       /// \brief Get the ogre compositor node definition name for this
       /// render pass
       public: std::string OgreCompositorNodeDefinitionName() const;
+
+      /// \brief Notifies Ogre2RenderPass that a new workspace has been created
+      /// \param[in] _workspace workspace that was created
+      public: virtual void WorkspaceAdded(
+            Ogre::CompositorWorkspace *_workspace);
+
+      /// \brief Notifies Ogre2RenderPass that a workspace will be destroyed
+      /// \param[in] _workspace workspace about to be destroyed
+      public: virtual void WorkspaceRemoved(
+            Ogre::CompositorWorkspace *_workspace);
 
       /// \brief Create the render pass using ogre compositor
       public: virtual void CreateRenderPass();

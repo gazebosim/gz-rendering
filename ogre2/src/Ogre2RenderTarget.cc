@@ -308,6 +308,13 @@ void Ogre2RenderTarget::BuildCompositor()
   this->dataPtr->rtListener = new Ogre2RenderTargetCompositorListener(this);
   this->ogreCompositorWorkspace->addListener(this->dataPtr->rtListener);
   this->ogreCompositorWorkspace->addListener(engine->TerraWorkspaceListener());
+
+  for (RenderPassPtr &pass : this->renderPasses)
+  {
+    Ogre2RenderPass *ogre2RenderPass =
+      dynamic_cast<Ogre2RenderPass *>(pass.get());
+    ogre2RenderPass->WorkspaceAdded(this->ogreCompositorWorkspace);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -315,6 +322,13 @@ void Ogre2RenderTarget::DestroyCompositor()
 {
   if (!this->ogreCompositorWorkspace)
     return;
+
+  for (RenderPassPtr &renderPass : this->renderPasses)
+  {
+    Ogre2RenderPass *ogre2RenderPass =
+      dynamic_cast<Ogre2RenderPass *>(renderPass.get());
+    ogre2RenderPass->WorkspaceRemoved(this->ogreCompositorWorkspace);
+  }
 
   // Restore the original order so that this->ogreTexture[1] is the one with
   // FSAA (which we need for BuildCompositor to connect correctly)

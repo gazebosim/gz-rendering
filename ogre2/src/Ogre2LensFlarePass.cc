@@ -174,8 +174,12 @@ void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
     Vector4(Ogre2Conversions::Convert(this->owner.dataPtr->lightWorldPos));
 
   // normalize x and y, keep z for visibility test
-  Vector3 lightPos(pos.xyz() / pos.w);
-  lightPos.z = lightPos.z * 0.5f + 1.0f;  // Keep in range [0; 1]
+  Vector3 lightPos;
+  lightPos.x = pos.x / pos.w;
+  lightPos.y = pos.y / pos.w;
+  // Make lightPos.z > 0 mean we're in front of near plane
+  // since pos.z is in range [-|pos.w|; |pos.w|]
+  lightPos.z = pos.z + std::abs(pos.w);
 
   double lensFlareScale = 1.0;
 

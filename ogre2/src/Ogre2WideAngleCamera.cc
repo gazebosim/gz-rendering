@@ -261,9 +261,9 @@ void Ogre2WideAngleCamera::SetupMSAA(Ogre::CompositorManager2 *_ogreCompMgr,
   auto &textureDefs = nodeDef->getLocalTextureDefinitionsNonConst();
 
   GZ_ASSERT(textureDefs.size() == 1u,
-            "WideAngleCamera.compositor out of sync?");
+            "wide_angle_camera.compositor out of sync?");
   GZ_ASSERT(textureDefs[0].getName() == "tmpMsaa",
-            "WideAngleCamera.compositor out of sync?");
+            "wide_angle_camera.compositor out of sync?");
 
   textureDefs[0].fsaa = std::to_string(_msaa);
 }
@@ -280,9 +280,9 @@ void Ogre2WideAngleCamera::RetrieveCubePassSceneDefs(
     Ogre::CompositorTargetDef *target0 = nodeDef->getTargetPass(i);
     Ogre::CompositorPassDefVec &passes = target0->getCompositorPassesNonConst();
     GZ_ASSERT(passes.size() >= 1u,
-              "WideAngleCamera.compositor is out of sync?");
+              "wide_angle_camera.compositor is out of sync?");
     GZ_ASSERT(passes[0]->getType() == Ogre::PASS_SCENE,
-              "WideAngleCamera.compositor is out of sync?");
+              "wide_angle_camera.compositor is out of sync?");
     GZ_ASSERT(dynamic_cast<Ogre::CompositorPassSceneDef *>(passes[0]),
               "Memory corruption?");
 
@@ -660,9 +660,9 @@ void Ogre2WideAngleCameraWorkspaceListenerPrivate::passPreExecute(
   }
   else if (identifier == kWideAngleCameraQuadPassId)
   {
-    GZ_ASSERT(
-      dynamic_cast<Ogre::CompositorPassQuad *>(_pass),
-      "Impossible! Corrupted memory? WideAngleCamera.compositor out of sync?");
+    GZ_ASSERT(dynamic_cast<Ogre::CompositorPassQuad *>(_pass),
+              "Impossible! Corrupted memory? wide_angle_camera.compositor out "
+              "of sync?");
     Ogre::CompositorPassQuad *passQuad =
       static_cast<Ogre::CompositorPassQuad *>(_pass);
 

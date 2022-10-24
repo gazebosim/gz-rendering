@@ -47,6 +47,9 @@ namespace gz
       // Documentation inherited
       public: virtual bool IsEnabled() const override;
 
+      // Documentation inherited
+      public: void PreRender(const CameraPtr &_camera) override;
+
       /// \brief Flag to indicate if render pass is enabled or not
       protected: bool enabled = true;
     };
@@ -77,6 +80,13 @@ namespace gz
     bool BaseRenderPass<T>::IsEnabled() const
     {
       return this->enabled;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderPass<T>::PreRender(const CameraPtr &/*_camera*/)
+    {
+      T::PreRender();
     }
     }
   }

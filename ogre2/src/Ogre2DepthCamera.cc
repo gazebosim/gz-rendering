@@ -1009,9 +1009,12 @@ void Ogre2DepthCamera::PreRender()
       &this->dataPtr->ogreDepthTexture,
       false);
 
-  for (auto &pass : this->dataPtr->renderPasses)
-    pass->PreRender();
-
+  {
+    CameraPtr camera =
+        std::dynamic_pointer_cast<Camera>(this->shared_from_this());
+    for (auto &pass : this->dataPtr->renderPasses)
+      pass->PreRender(camera);
+  }
 
   // add the particle noise listener again if worksapce is recreated due to
   // dirty render pass

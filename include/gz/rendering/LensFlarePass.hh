@@ -32,6 +32,10 @@ namespace gz
     class GZ_RENDERING_VISIBLE LensFlarePass
       : public virtual RenderPass
     {
+      /// \brief Initializes the Lens Flare Pass with given scene
+      /// \param[in] _scene Pointer to scene
+      public: virtual void Init(ScenePtr _scene) = 0;
+
       /// \brief Set the light that generates lens flare
       /// \param[in] _light Pointer to light
       public: virtual void SetLight(LightPtr _light) = 0;

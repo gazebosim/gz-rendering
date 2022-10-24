@@ -60,6 +60,12 @@ namespace gz
                 const math::Vector2d &_coord) override;
 
       // Documentation inherited
+      public: void SetPreferGpu(bool _preferGpu) override;
+
+      // Documentation inherited
+      public: bool UsesGpu() const override;
+
+      // Documentation inherited
       public: virtual RayQueryResult ClosestPoint(
             bool _forceSceneUpdate = true) override;
 
@@ -139,6 +145,19 @@ namespace gz
 
       this->origin = start;
       this->direction = dir;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRayQuery<T>::SetPreferGpu(bool /*_preferGpu*/)
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseRayQuery<T>::UsesGpu() const
+    {
+      return false;
     }
 
     //////////////////////////////////////////////////

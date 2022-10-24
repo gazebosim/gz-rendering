@@ -18,9 +18,12 @@
 
 #include <gz/common/Util.hh>
 
+#include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/RenderPassSystem.hh"
+#include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2Light.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
 
 #ifdef _MSC_VER
 #  pragma warning(push, 0)
@@ -79,6 +82,19 @@ class gz::rendering::Ogre2LensFlarePass::Implementation
   /// \brief Color of lens flare.
   public: math::Vector3d color = math::Vector3d(1.0, 1.0, 1.0);
 
+  /// \brief Scale of lens flare.
+  public: double scale = 1.0;
+
+  /// \brief Number of steps to take in each
+  /// direction when checking for occlusion.
+  public: double occlusionSteps = 10.0;
+
+  /// \brief Current Camera rendering
+  public: CameraPtr currentCamera;
+
+  /// \brief RayQuery to perform occlusion tests
+  public: RayQueryPtr rayQuery;
+
   /// \brief See Ogre2LensFlarePassWorkspaceListenerPrivate
   public: Ogre2LensFlarePassWorkspaceListenerPrivate workspaceListener;
 
@@ -108,7 +124,15 @@ Ogre2LensFlarePass::~Ogre2LensFlarePass()
 }
 
 //////////////////////////////////////////////////
-void Ogre2LensFlarePass::PreRender()
+void Ogre2LensFlarePass::Init(ScenePtr _scene)
+{
+  this->scene = std::dynamic_pointer_cast<Ogre2Scene>(_scene);
+  this->dataPtr->rayQuery = _scene->CreateRayQuery();
+  this->dataPtr->rayQuery->SetPreferGpu(false);
+}
+
+//////////////////////////////////////////////////
+void Ogre2LensFlarePass::PreRender(const CameraPtr &_camera)
 {
   if (!this->enabled || this->light == nullptr)
     return;
@@ -127,6 +151,8 @@ void Ogre2LensFlarePass::PreRender()
   }
   else
     this->dataPtr->lightWorldPos = this->light->WorldPose().Pos();
+
+  this->dataPtr->currentCamera = _camera;
 }
 
 //////////////////////////////////////////////////
@@ -135,14 +161,68 @@ void Ogre2LensFlarePass::WorkspaceAdded(Ogre::CompositorWorkspace *_workspace)
   _workspace->addListener(&this->dataPtr->workspaceListener);
 }
 
-// Documentation inherited
+//////////////////////////////////////////////////
 void Ogre2LensFlarePass::WorkspaceRemoved(Ogre::CompositorWorkspace *_workspace)
 {
   _workspace->removeListener(&this->dataPtr->workspaceListener);
 }
 
 //////////////////////////////////////////////////
+double Ogre2LensFlarePass::OcclusionScale(const math::Vector3d &_imgPos)
+{
+  this->dataPtr->rayQuery->SetFromCamera(
+    this->dataPtr->currentCamera, math::Vector2d(_imgPos.X(), _imgPos.Y()));
 
+  const math::Vector3d lightWorldPos = this->dataPtr->lightWorldPos;
+
+  {
+    // check center point
+    // if occluded than set scale to 0
+    RayQueryResult result = this->dataPtr->rayQuery->ClosestPoint(false);
+    bool intersect = result.distance >= 0.0;
+    if (intersect &&
+        (result.point.SquaredLength() < lightWorldPos.SquaredLength()))
+    {
+      return 0;
+    }
+  }
+
+  unsigned int rays = 0;
+  unsigned int occluded = 0u;
+  // work in normalized device coordinates
+  // lens flare's halfSize is just an approximated value
+  const double halfSize = 0.05 * this->dataPtr->scale;
+  const double steps = this->dataPtr->occlusionSteps;
+  const double stepSize = halfSize * 2 / steps;
+  const double cx = _imgPos.X();
+  const double cy = _imgPos.Y();
+  const double startx = cx - halfSize;
+  const double starty = cy - halfSize;
+  const double endx = cx + halfSize;
+  const double endy = cy + halfSize;
+  // do sparse ray cast occlusion check
+  for (double i = starty; i < endy; i += stepSize)
+  {
+    for (double j = startx; j < endx; j += stepSize)
+    {
+      this->dataPtr->rayQuery->SetFromCamera(this->dataPtr->currentCamera,
+                                             math::Vector2d(j, i));
+      RayQueryResult result = this->dataPtr->rayQuery->ClosestPoint(false);
+      bool intersect = result.distance >= 0.0;
+      if (intersect &&
+          (result.point.SquaredLength() < lightWorldPos.SquaredLength()))
+      {
+        occluded++;
+      }
+
+      rays++;
+    }
+  }
+  double s = static_cast<double>(rays - occluded) / static_cast<double>(rays);
+  return s;
+}
+
+//////////////////////////////////////////////////
 void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
   Ogre::CompositorPass *_pass)
 {
@@ -160,13 +240,10 @@ void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
 
   CompositorPassQuad *passQuad = static_cast<CompositorPassQuad *>(_pass);
 
-  Pass *pass = passQuad->getPass();
-
-  GpuProgramParametersSharedPtr psParams = pass->getFragmentProgramParameters();
-
   const Ogre::Camera *camera = passQuad->getCamera();
 
-  // project 3d world space to clip space
+  Pass *pass = passQuad->getPass();
+
   const Matrix4 viewProj =
     camera->getProjectionMatrix() * camera->getViewMatrix();
   const Vector4 pos =
@@ -181,7 +258,11 @@ void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
   // since pos.z is in range [-|pos.w|; |pos.w|]
   lightPos.z = pos.z + std::abs(pos.w);
 
+  this->owner.OcclusionScale(Ogre2Conversions::Convert(lightPos));
+
   double lensFlareScale = 1.0;
+
+  GpuProgramParametersSharedPtr psParams = pass->getFragmentProgramParameters();
 
   psParams->setNamedConstant("vpAspectRatio", camera->getAspectRatio());
   psParams->setNamedConstant("lightPos", lightPos);

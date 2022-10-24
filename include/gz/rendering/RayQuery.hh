@@ -88,6 +88,22 @@ namespace gz
       public: virtual void SetFromCamera(const CameraPtr &_camera,
                 const math::Vector2d &_coord) = 0;
 
+      /// \brief If possible & supported (and user called SetFromCamera())
+      /// will use the GPU to perform the ray query.
+      /// Triangle-level accurate.
+      /// \remark It's not guaranteed the GPU will be used. See UsesGpu()
+      /// \remark Using the GPU is not necessarily faster.
+      /// \param[in] _preferGpu True to use the GPU if available & possible.
+      /// False to never use the GPU.
+      public: virtual void SetPreferGpu(bool _preferGpu) = 0;
+
+      /// \brief Returns true if the GPU will be used for the next
+      /// ClosestPoint() call.
+      /// \remark The thread ID is important. Calling this value from
+      /// different threads may result in different return values.
+      /// \return True if next ClosestPoint() call will use the GPU.
+      public: virtual bool UsesGpu() const = 0;
+
       /// \brief Compute intersections
       /// \param[in] _forceSceneUpdate Performance optimization hint
       /// When true Ogre2 will update all derived transforms to their

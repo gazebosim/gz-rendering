@@ -21,9 +21,11 @@
 
 #include <gz/utils/ImplPtr.hh>
 
+#include "gz/math/Vector3.hh"
+
 #include "gz/rendering/base/BaseLensFlarePass.hh"
-#include "gz/rendering/ogre2/Ogre2RenderPass.hh"
 #include "gz/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Ogre2RenderPass.hh"
 
 namespace gz
 {
@@ -45,16 +47,24 @@ namespace gz
       public: ~Ogre2LensFlarePass() override;
 
       // Documentation inherited
-      public: void PreRender() override;
+      public: void Init(ScenePtr _scene) override;
+
+      // Documentation inherited
+      public: void PreRender(const CameraPtr &_camera) override;
 
       // Documentation inherited
       public: void WorkspaceAdded(
             Ogre::CompositorWorkspace *_workspace) override;
 
-      /// \brief Notifies Ogre2RenderPass that a workspace will be destroyed
-      /// \param[in] _workspace workspace about to be destroyed
+      // Documentation inherited
       public: void WorkspaceRemoved(
             Ogre::CompositorWorkspace *_workspace) override;
+
+      /// \brief Check to see if the lens flare is occluded and return a scaling
+      /// factor that is proportional to the lens flare's visibility
+      /// \remark Ogre2LensFlarePass::PreRender must have been called first.
+      /// \param[in] _imgPos light pos in clip space
+      private: double OcclusionScale(const math::Vector3d &_imgPos);
 
       /// \cond warning
       /// \brief Private data pointer

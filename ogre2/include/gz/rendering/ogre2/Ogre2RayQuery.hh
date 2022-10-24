@@ -49,6 +49,12 @@ namespace gz
                 const math::Vector2d &_coord);
 
       // Documentation inherited
+      public: void SetPreferGpu(bool _preferGpu) override;
+
+      // Documentation inherited
+      public: bool UsesGpu() const override;
+
+      // Documentation inherited
       public: virtual RayQueryResult ClosestPoint(
             bool _forceSceneUpdate = true);
 

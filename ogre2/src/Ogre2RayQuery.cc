@@ -56,6 +56,9 @@ class gz::rendering::Ogre2RayQueryPrivate
 
   /// \brief thread that ray query is created in
   public: std::thread::id threadId;
+
+  //// \brief See RayQuery::SetPreferGpu
+  public: bool preferGpu;
 };
 
 using namespace gz;
@@ -126,17 +129,33 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
 }
 
 //////////////////////////////////////////////////
+void Ogre2RayQuery::SetPreferGpu(bool _preferGpu)
+{
+  this->dataPtr->preferGpu = _preferGpu;
+}
+
+//////////////////////////////////////////////////
+bool Ogre2RayQuery::UsesGpu() const
+{
+#ifdef __APPLE__
+  return false;
+#endif
+
+  if (!this->dataPtr->preferGpu ||         //
+      !this->dataPtr->camera ||            //
+      !this->dataPtr->camera->Parent() ||  //
+      std::this_thread::get_id() != this->dataPtr->threadId)
+  {
+    return false;
+  }
+
+  return true;
+}
+
+//////////////////////////////////////////////////
 RayQueryResult Ogre2RayQuery::ClosestPoint(bool _forceSceneUpdate)
 {
-  RayQueryResult result;
-
-
-#ifdef __APPLE__
-  return this->ClosestPointByIntersection(_forceSceneUpdate);
-#else
-  if (!this->dataPtr->camera ||
-      !this->dataPtr->camera->Parent() ||
-      std::this_thread::get_id() != this->dataPtr->threadId)
+  if (!this->UsesGpu())
   {
     // use legacy method for backward compatibility if no camera is set or
     // camera is not attached in the scene tree or
@@ -153,7 +172,6 @@ RayQueryResult Ogre2RayQuery::ClosestPoint(bool _forceSceneUpdate)
 
     return this->ClosestPointBySelectionBuffer();
   }
-#endif
 }
 
 //////////////////////////////////////////////////

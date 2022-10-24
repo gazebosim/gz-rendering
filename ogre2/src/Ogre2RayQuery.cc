@@ -222,8 +222,10 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
     ogreScene->OgreSceneManager()->updateSceneGraph();
   }
 
-  Ogre::Ray mouseRay(Ogre2Conversions::Convert(this->origin),
-      Ogre2Conversions::Convert(this->direction));
+  const Ogre::Vector3 rayOrigin = Ogre2Conversions::Convert(this->origin);
+  const Ogre::Vector3 rayDir = Ogre2Conversions::Convert(this->direction);
+
+  Ogre::Ray mouseRay(rayOrigin, rayDir);
 
   if (!this->dataPtr->rayQuery)
   {
@@ -236,7 +238,7 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
   // Perform the scene query
   Ogre::RaySceneQueryResult &ogreResult = this->dataPtr->rayQuery->execute();
 
-  double distance = -1.0;
+  double distance = std::numeric_limits<double>::max();
 
   // Iterate over all the results.
   for (auto iter = ogreResult.begin(); iter != ogreResult.end(); ++iter)
@@ -269,6 +271,21 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
 
       Ogre::Matrix4 transform = ogreItem->_getParentNodeFullTransform();
 
+      const bool bIsAffine = transform.isAffine();
+
+      if (bIsAffine)
+      {
+        Ogre::Matrix4 invTransform = transform.inverse();
+        Ogre::Matrix3 invTransform3x3;
+        invTransform.extract3x3Matrix(invTransform3x3);
+        mouseRay = Ogre::Ray(invTransform * rayOrigin,
+                             (invTransform3x3 * rayDir).normalisedCopy());
+      }
+      else
+      {
+        mouseRay = Ogre::Ray(rayOrigin, rayDir);
+      }
+
       // test for hitting individual triangles on the mesh
       for (unsigned int j = 0; j < mesh->SubMeshCount(); ++j)
       {
@@ -277,11 +294,21 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
         if (!submesh || submesh->VertexCount() < 3u)
           continue;
         unsigned int indexCount = submesh->IndexCount();
+
+        const gz::math::Vector3d *RESTRICT_ALIAS vertices =
+          submesh->VertexPtr();
+        const unsigned int *RESTRICT_ALIAS indices = submesh->IndexPtr();
+
+        std::pair<bool, Ogre::Real> bestHit = {
+          false, std::numeric_limits<Ogre::Real>::max()
+        };
+
         for (unsigned int k = 0; k < indexCount; k += 3)
         {
           if (indexCount <= k+2)
             continue;
 
+#ifdef SLOW_METHOD
           gz::math::Vector3d vertexA =
             submesh->Vertex(submesh->Index(k));
           gz::math::Vector3d vertexB =
@@ -295,6 +322,25 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
               transform * Ogre2Conversions::Convert(vertexB);
           Ogre::Vector3 worldVertexC =
               transform * Ogre2Conversions::Convert(vertexC);
+#else
+          Ogre::Vector3 worldVertexA, worldVertexB, worldVertexC;
+
+          if (bIsAffine)
+          {
+            worldVertexA = Ogre2Conversions::Convert(vertices[indices[k]]);
+            worldVertexB = Ogre2Conversions::Convert(vertices[indices[k + 1]]);
+            worldVertexC = Ogre2Conversions::Convert(vertices[indices[k + 2]]);
+          }
+          else
+          {
+            worldVertexA =
+              transform * Ogre2Conversions::Convert(vertices[indices[k]]);
+            worldVertexB =
+              transform * Ogre2Conversions::Convert(vertices[indices[k + 1]]);
+            worldVertexC =
+              transform * Ogre2Conversions::Convert(vertices[indices[k + 2]]);
+          }
+#endif
 
           // check for a hit against this triangle
           std::pair<bool, Ogre::Real> hit = Ogre::Math::intersects(mouseRay,
@@ -302,16 +348,28 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
               true, false);
 
           // if it was a hit check if its the closest
-          if (hit.first &&
-              (distance < 0.0f || hit.second < distance))
+          if (hit.first && hit.second < bestHit.second)
           {
-            // this is the closest so far, save it off
-            distance = hit.second;
-            result.distance = distance;
-            result.point =
-                Ogre2Conversions::Convert(mouseRay.getPoint(distance));
-            result.objectId = Ogre::any_cast<unsigned int>(userAny);
+            bestHit = hit;
           }
+        }
+
+        if (bestHit.first && distance > bestHit.second)
+        {
+          // this is the closest so far, save it off
+          distance = bestHit.second;
+          result.distance = distance;
+          if (bIsAffine)
+          {
+            result.point = Ogre2Conversions::Convert(
+              transform * mouseRay.getPoint(distance));
+          }
+          else
+          {
+            result.point =
+              Ogre2Conversions::Convert(mouseRay.getPoint(distance));
+          }
+          result.objectId = Ogre::any_cast<unsigned int>(userAny);
         }
       }
     }

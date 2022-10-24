@@ -219,7 +219,7 @@ double Ogre2LensFlarePass::OcclusionScale(const math::Vector3d &_imgPos)
     }
   }
   double s = static_cast<double>(rays - occluded) / static_cast<double>(rays);
-  return s;
+  return s * this->dataPtr->scale;
 }
 
 //////////////////////////////////////////////////
@@ -258,9 +258,12 @@ void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
   // since pos.z is in range [-|pos.w|; |pos.w|]
   lightPos.z = pos.z + std::abs(pos.w);
 
-  this->owner.OcclusionScale(Ogre2Conversions::Convert(lightPos));
-
   double lensFlareScale = 1.0;
+  if (lightPos.z >= 0.0)
+  {
+    lensFlareScale =
+      this->owner.OcclusionScale(Ogre2Conversions::Convert(lightPos));
+  }
 
   GpuProgramParametersSharedPtr psParams = pass->getFragmentProgramParameters();
 

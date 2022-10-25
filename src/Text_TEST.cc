@@ -111,7 +111,7 @@ void TextTest::Text(const std::string &_renderEngine)
 
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -122,7 +122,7 @@ TEST_P(TextTest, Text)
 
 INSTANTIATE_TEST_CASE_P(Text, TextTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

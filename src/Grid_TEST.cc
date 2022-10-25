@@ -70,6 +70,8 @@ void GridTest::Grid(const std::string &_renderEngine)
   grid->SetVerticalCellCount(2u);
   EXPECT_EQ(2u, grid->VerticalCellCount());
 
+  grid->PreRender();
+
   // create material
   MaterialPtr mat = scene->CreateMaterial();
   mat->SetAmbient(0.6, 0.7, 0.8);
@@ -83,9 +85,17 @@ void GridTest::Grid(const std::string &_renderEngine)
   EXPECT_EQ(math::Color(0.3f, 0.8f, 0.2f), gridMat->Diffuse());
   EXPECT_EQ(math::Color(0.4f, 0.9f, 1.0f), gridMat->Specular());
 
+  MaterialPtr matNull = nullptr;
+  grid->SetMaterial(matNull, false);
+  gridMat = grid->Material();
+  ASSERT_NE(nullptr, gridMat);
+
+  grid->SetVerticalCellCount(3u);
+  grid->PreRender();
+
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -96,7 +106,7 @@ TEST_P(GridTest, Grid)
 
 INSTANTIATE_TEST_CASE_P(Grid, GridTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

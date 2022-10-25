@@ -35,8 +35,11 @@ using namespace rendering;
 class AxisVisualTest : public testing::Test,
                        public testing::WithParamInterface<const char *>
 {
-  /// \brief Test adding removing children
+  /// \brief Test basic API
   public: void AxisVisual(const std::string &_renderEngine);
+
+  /// \brief Test gizmo material
+  public: void Material(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -46,7 +49,7 @@ void AxisVisualTest::AxisVisual(const std::string &_renderEngine)
   if (!engine)
   {
     igndbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
+           << "' is not supported" << std::endl;
     return;
   }
 
@@ -86,6 +89,13 @@ void AxisVisualTest::AxisVisual(const std::string &_renderEngine)
     child = std::dynamic_pointer_cast<Visual>(childNode);
     EXPECT_EQ(1u, child->GeometryCount());
   }
+
+  // create visual
+  AxisVisualPtr axis_name = scene->CreateAxisVisual("axis_name");
+  EXPECT_NE(nullptr, axis_name);
+
+  AxisVisualPtr axis_id = scene->CreateAxisVisual(101);
+  EXPECT_NE(nullptr, axis_id);
 
   // Clean up
   engine->DestroyScene(scene);

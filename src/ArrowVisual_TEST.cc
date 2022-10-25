@@ -34,8 +34,11 @@ using namespace rendering;
 class ArrowVisualTest : public testing::Test,
                         public testing::WithParamInterface<const char *>
 {
-  /// \brief Test adding removing children
+  /// \brief Test basic API
   public: void ArrowVisual(const std::string &_renderEngine);
+
+  /// \brief Test gizmo material
+  public: void Material(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -45,7 +48,7 @@ void ArrowVisualTest::ArrowVisual(const std::string &_renderEngine)
   if (!engine)
   {
     igndbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
+           << "' is not supported" << std::endl;
     return;
   }
 

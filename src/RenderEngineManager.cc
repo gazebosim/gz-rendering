@@ -474,7 +474,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   }
 
   auto engineNames = pluginLoader.PluginsImplementing<
-      ignition::rendering::RenderEnginePlugin>();
+      rendering::RenderEnginePlugin>();
 
   if (engineNames.empty())
   {
@@ -514,7 +514,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   }
 
   auto renderPlugin =
-      plugin->QueryInterface<ignition::rendering::RenderEnginePlugin>();
+      plugin->QueryInterface<rendering::RenderEnginePlugin>();
 
   if (!renderPlugin)
   {

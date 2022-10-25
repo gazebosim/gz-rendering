@@ -138,9 +138,47 @@ void MarkerTest::Marker(const std::string &_renderEngine)
   marker->SetSize(3.0);
   EXPECT_DOUBLE_EQ(3.0, marker->Size());
 
+  marker->PreRender();
+
+  // create material
+  MaterialPtr mat = scene->CreateMaterial();
+  mat->SetAmbient(0.6, 0.7, 0.8);
+  mat->SetDiffuse(0.3, 0.8, 0.2);
+  mat->SetSpecular(0.4, 0.9, 1.0);
+
+  MaterialPtr markerMat;
+  marker->SetType(MarkerType::MT_NONE);
+  marker->SetMaterial(mat);
+  markerMat = marker->Material();
+  ASSERT_NE(nullptr, markerMat);
+
+  marker->SetType(static_cast<MarkerType>(11));
+  marker->SetMaterial(mat);
+  markerMat = marker->Material();
+  ASSERT_NE(nullptr, markerMat);
+
+  marker->SetType(MarkerType::MT_BOX);
+  marker->SetMaterial(mat);
+  markerMat = marker->Material();
+  ASSERT_NE(nullptr, markerMat);
+
+  marker->SetType(MarkerType::MT_POINTS);
+  marker->SetMaterial(mat);
+  markerMat = marker->Material();
+  ASSERT_NE(nullptr, markerMat);
+
+  EXPECT_EQ(math::Color(0.6f, 0.7f, 0.8f), markerMat->Ambient());
+  EXPECT_EQ(math::Color(0.3f, 0.8f, 0.2f), markerMat->Diffuse());
+  EXPECT_EQ(math::Color(0.4f, 0.9f, 1.0f), markerMat->Specular());
+
+
+  MaterialPtr matNull;
+  marker->SetMaterial(matNull, false);
+  ASSERT_NE(nullptr, markerMat);
+
   // Clean up
   engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
+  unloadEngine(engine->Name());
 }
 
 /////////////////////////////////////////////////
@@ -204,7 +242,7 @@ TEST_P(MarkerTest, Material)
 
 INSTANTIATE_TEST_CASE_P(Marker, MarkerTest,
     RENDER_ENGINE_VALUES,
-    ignition::rendering::PrintToStringParam());
+    PrintToStringParam());
 
 int main(int argc, char **argv)
 {

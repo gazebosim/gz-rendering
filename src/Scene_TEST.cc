@@ -45,6 +45,10 @@ class SceneTest : public testing::Test,
 
   /// \brief Test creating and destroying materials
   public: void Materials(const std::string &_renderEngine);
+
+  public: const std::string TEST_MEDIA_PATH =
+        common::joinPaths(std::string(PROJECT_SOURCE_PATH),
+        "test", "media", "skeleton");
 };
 
 /////////////////////////////////////////////////
@@ -72,7 +76,7 @@ void SceneTest::Scene(const std::string &_renderEngine)
 
   // TODO(anyone) gradient background color and render window only supported
   // by ogre
-  if (_renderEngine == "ogre")
+  if (_renderEngine == "ogre2")
   {
     EXPECT_FALSE(scene->IsGradientBackgroundColor());
 
@@ -441,7 +445,76 @@ void SceneTest::DestroyNodes(const std::string &_renderEngine)
   EXPECT_FALSE(scene->HasVisual(childB));
   EXPECT_FALSE(scene->HasVisual(childAA));
 
+  auto gizmoVisual = scene->CreateGizmoVisual();
+  auto planeVisual = scene->CreatePlane();
+  auto meshVisual = scene->CreateMesh(
+    common::joinPaths(TEST_MEDIA_PATH, "walk.dae"));
+
+  scene->DestroyVisuals();
+
+  auto materialVisual = scene->CreateMaterial();
+  scene->DestroyMaterial(materialVisual);
+  scene->DestroyMaterial(MaterialPtr());
+
+  auto depthCameraSensor = scene->CreateDepthCamera();
+  scene->DestroySensors();
+  depthCameraSensor = scene->CreateDepthCamera("camera_depth");
+  scene->DestroySensorByName("camera_depth");
+  depthCameraSensor = scene->CreateDepthCamera("camera_depth");
+  EXPECT_FALSE(scene->HasSensor(ConstSensorPtr()));
+  EXPECT_FALSE(scene->HasSensorId(8));
+  EXPECT_FALSE(scene->HasSensorName("invalid"));
+  EXPECT_TRUE(scene->HasSensorName("camera_depth"));
+
+  auto dCSensor = scene->SensorByName("camera_depth");
+  EXPECT_TRUE(scene->HasSensor(dCSensor));
+  EXPECT_TRUE(scene->HasSensorName("camera_depth"));
+  scene->DestroySensor(dCSensor, false);
+
+  depthCameraSensor = scene->CreateDepthCamera(76);
+  dCSensor = scene->SensorById(76);
+  EXPECT_TRUE(scene->HasSensor(dCSensor));
+  EXPECT_TRUE(scene->HasSensorId(76));
+  scene->DestroySensor(dCSensor, true);
+
+  depthCameraSensor = scene->CreateDepthCamera(76);
+  scene->DestroySensorById(76);
+
+  depthCameraSensor = scene->CreateDepthCamera();
+  scene->DestroySensorByIndex(0);
+
+  // lights
+  auto spotLight = scene->CreateSpotLight();
+  auto pointLight = scene->CreatePointLight("point_light");
+  auto directionalLight = scene->CreateDirectionalLight(
+    99, "directional_light");
+
+  auto directionalLight2 = scene->LightById(99);
+  EXPECT_EQ(directionalLight, directionalLight2);
+
+  auto pointLight2 = scene->LightByName("point_light");
+  EXPECT_EQ(pointLight, pointLight2);
+
+  scene->DestroyLightByIndex(0);
+  scene->DestroyLight(pointLight, true);
+  scene->DestroyLights();
+
+  spotLight = scene->CreateSpotLight();
+  scene->DestroyNodeByIndex(0);
+
+  spotLight = scene->CreateSpotLight("light_node");
+  scene->DestroyNodeByName("light_node");
+
+  spotLight = scene->CreateSpotLight(56);
+  scene->DestroyNodeById(56);
+
   EXPECT_EQ(0u, scene->VisualCount());
+  EXPECT_EQ(0u, scene->SensorCount());
+  EXPECT_EQ(0u, scene->LightCount());
+
+  EXPECT_DOUBLE_EQ(0.0, scene->SimTime().Double());
+  scene->SetSimTime(common::Time(3.55));
+  EXPECT_DOUBLE_EQ(3.55, scene->SimTime().Double());
 
   // Clean up
   engine->DestroyScene(scene);

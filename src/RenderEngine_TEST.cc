@@ -48,6 +48,7 @@ void RenderEngineTest::RenderEngine(const std::string &_renderEngine)
 
   EXPECT_EQ(_renderEngine, engine->Name());
   EXPECT_TRUE(engine->IsEnabled());
+  EXPECT_TRUE(engine->IsLoaded());
 
   engine->AddResourcePath("none");
 

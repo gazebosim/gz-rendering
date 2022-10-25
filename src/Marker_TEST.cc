@@ -115,6 +115,8 @@ void MarkerTest::Marker(const std::string &_renderEngine)
   // exercise point api
   EXPECT_NO_THROW(marker->AddPoint(math::Vector3d(0, 1, 2),
       math::Color::White));
+  EXPECT_NO_THROW(marker->AddPoint(-2, -1, 0, math::Color::White));
+
   EXPECT_NO_THROW(marker->SetPoint(0, math::Vector3d(3, 1, 2)));
   EXPECT_NO_THROW(marker->ClearPoints());
 

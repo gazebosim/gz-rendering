@@ -35,7 +35,8 @@ class RenderEngineManagerTest : public testing::Test,
 };
 
 /////////////////////////////////////////////////
-void RenderEngineManagerTest::RenderEngineManager(const std::string &_renderEngine)
+void RenderEngineManagerTest::RenderEngineManager(
+  const std::string &_renderEngine)
 {
   // Tested missing APIs
   EXPECT_FALSE(RenderEngineManager::Instance()->HasEngine("invalid"));

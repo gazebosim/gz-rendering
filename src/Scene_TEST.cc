@@ -445,14 +445,18 @@ void SceneTest::DestroyNodes(const std::string &_renderEngine)
   EXPECT_FALSE(scene->HasVisual(childB));
   EXPECT_FALSE(scene->HasVisual(childAA));
 
-  auto gizmoVisual = scene->CreateGizmoVisual();
+  auto gizmoVisual = scene->CreateGizmoVisual("gizmo_visual");
   auto planeVisual = scene->CreatePlane();
   auto meshVisual = scene->CreateMesh(
     common::joinPaths(TEST_MEDIA_PATH, "walk.dae"));
 
+  common::MeshPtr mesh(new common::Mesh());
+  meshVisual = scene->CreateMesh(mesh.get());
+
   scene->DestroyVisuals();
 
-  auto materialVisual = scene->CreateMaterial();
+  common::Material mat(math::Color(1.0f, 0.5f, 0.2f, 1.0f));
+  auto materialVisual = scene->CreateMaterial(mat);
   scene->DestroyMaterial(materialVisual);
   scene->DestroyMaterial(MaterialPtr());
 
@@ -486,11 +490,12 @@ void SceneTest::DestroyNodes(const std::string &_renderEngine)
   // lights
   auto spotLight = scene->CreateSpotLight();
   auto pointLight = scene->CreatePointLight("point_light");
-  auto directionalLight = scene->CreateDirectionalLight(
-    99, "directional_light");
+  auto directionalLight = scene->CreateDirectionalLight(99);
 
   auto directionalLight2 = scene->LightById(99);
   EXPECT_EQ(directionalLight, directionalLight2);
+
+  auto directionalLight3 = scene->CreateDirectionalLight("directional_light");
 
   auto pointLight2 = scene->LightByName("point_light");
   EXPECT_EQ(pointLight, pointLight2);

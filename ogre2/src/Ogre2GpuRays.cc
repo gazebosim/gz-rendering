@@ -226,13 +226,13 @@ void Ogre2LaserRetroMaterialSwitcher::preRenderTargetUpdate(
         {
           try
           {
-            retroValue = std::get<double>(tempLaserRetro);
+            retroValue = static_cast<float>(std::get<double>(tempLaserRetro));
           }
           catch(...)
           {
             try
             {
-              retroValue = std::get<int>(tempLaserRetro);
+              retroValue = static_cast<float>(std::get<int>(tempLaserRetro));
             }
             catch(std::bad_variant_access &e)
             {
@@ -486,19 +486,19 @@ math::Vector2d Ogre2GpuRays::SampleCubemap(const math::Vector3d &_v,
   math::Vector2d uv;
   if (vAbs.Z() >= vAbs.X() && vAbs.Z() >= vAbs.Y())
   {
-    _faceIndex = _v.Z() < 0.0 ? 5.0 : 4.0;
+    _faceIndex = _v.Z() < 0.0 ? 5 : 4;
     ma = 0.5 / vAbs.Z();
     uv = math::Vector2d(_v.Z() < 0.0 ? -_v.X() : _v.X(), -_v.Y());
   }
   else if (vAbs.Y() >= vAbs.X())
   {
-    _faceIndex = _v.Y() < 0.0 ? 3.0 : 2.0;
+    _faceIndex = _v.Y() < 0.0 ? 3 : 2;
     ma = 0.5 / vAbs.Y();
     uv = math::Vector2d(_v.X(), _v.Y() < 0.0 ? -_v.Z() : _v.Z());
   }
   else
   {
-    _faceIndex = _v.X() < 0.0 ? 1.0 : 0.0;
+    _faceIndex = _v.X() < 0.0 ? 1 : 0;
     ma = 0.5 / vAbs.X();
     uv = math::Vector2d(_v.X() < 0.0 ? _v.Z() : -_v.Z(), -_v.Y());
   }
@@ -564,7 +564,7 @@ void Ogre2GpuRays::CreateSampleTexture()
       // v
       *pDest++ = uv.Y();
       // face
-      *pDest++ = faceIdx;
+      *pDest++ = static_cast<float>(faceIdx);
 
        h += hStep;
     }

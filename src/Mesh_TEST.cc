@@ -189,7 +189,7 @@ void MeshTest::MeshSkeleton(const std::string &_renderEngine)
   }
 
   auto skeletonLocalTransforms = mesh->SkeletonLocalTransforms();
-  EXPECT_EQ(31, skeletonLocalTransforms.size());
+  EXPECT_EQ(31u, skeletonLocalTransforms.size());
 
   // Clean up
   engine->DestroyScene(scene);

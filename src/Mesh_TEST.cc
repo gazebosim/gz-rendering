@@ -82,7 +82,7 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
   std::map<std::string, ignition::math::Matrix4d> skinFrames;
   mesh->SetSkeletonLocalTransforms(skinFrames);
   auto skeletonLocalTransforms = mesh->SkeletonLocalTransforms();
-  EXPECT_EQ(0, skeletonLocalTransforms.size());
+  EXPECT_EQ(0u, skeletonLocalTransforms.size());
 
   // test submesh API
   MaterialPtr mat = submesh->Material();

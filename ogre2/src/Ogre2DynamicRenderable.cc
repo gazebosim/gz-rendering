@@ -17,11 +17,12 @@
 
 // Note this include is placed in the src file because
 // otherwise ogre produces compile errors
-#ifdef _MSC_VER
-#pragma warning(push, 0)
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 5033)
 #endif
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 #pragma warning(pop)
 #endif
 

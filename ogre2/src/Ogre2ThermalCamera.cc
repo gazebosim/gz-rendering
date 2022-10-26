@@ -194,13 +194,13 @@ void Ogre2ThermalCameraMaterialSwitcher::preRenderTargetUpdate(
         {
           try
           {
-            temp = std::get<double>(tempAny);
+            temp = static_cast<float>(std::get<double>(tempAny));
           }
           catch(...)
           {
             try
             {
-              temp = std::get<int>(tempAny);
+              temp = static_cast<float>(std::get<int>(tempAny));
             }
             catch(std::bad_variant_access &e)
             {

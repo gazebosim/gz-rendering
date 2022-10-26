@@ -30,7 +30,7 @@
 using namespace ignition;
 using namespace rendering;
 
-class ignition::rendering::Ogre2SelectionBufferPrivate
+struct ignition::rendering::Ogre2SelectionBufferPrivate
 {
   /// \brief This is a material listener and a RenderTargetListener.
   /// The material switcher is applied to only the selection camera
@@ -237,7 +237,7 @@ Ogre::Item *Ogre2SelectionBuffer::OnSelectionClick(const int _x, const int _y)
       this->dataPtr->camera->getDerivedOrientation());
   Ogre::Viewport* renderViewport =
       this->dataPtr->renderTexture->getViewport(0);
-  renderViewport->setDimensions(0, 0, width, height);
+  renderViewport->setDimensions(0, 0, Ogre::Real(width), Ogre::Real(height));
 
   // update render texture
   this->Update();

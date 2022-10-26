@@ -18,7 +18,9 @@
 // leave this out of OgreIncludes as it conflicts with other files requiring
 // gl.h
 #ifdef _MSC_VER
-#pragma warning(push, 0)
+#pragma warning(push)
+#pragma warning(disable: 4005)  // Macro redefinition
+#pragma warning(disable: 5033)  // 'register' is no longer supported
 #endif
 #include <OgreGL3PlusFBORenderTexture.h>
 #ifdef _MSC_VER
@@ -380,7 +382,7 @@ void Ogre2RenderTarget::UpdateShadowNode()
   // directional lights
   unsigned int atlasId = 0u;
   unsigned int texSize = 2048u;
-  unsigned int halfTexSize = texSize * 0.5;
+  unsigned int halfTexSize = static_cast<unsigned int>(texSize * 0.5);
   for (unsigned int i = 0; i < dirLightCount; ++i)
   {
     shadowParam.technique = Ogre::SHADOWMAP_PSSM;
@@ -589,12 +591,18 @@ void Ogre2RenderTarget::CreateShadowNodeWithSettings(
     for (size_t j = 0; j < numSplits; ++j)
     {
       Ogre::Vector2 uvOffset(
-          shadowParam.atlasStart[j].x, shadowParam.atlasStart[j].y);
+          static_cast<Ogre::Real>(shadowParam.atlasStart[j].x),
+          static_cast<Ogre::Real>(shadowParam.atlasStart[j].y));
       Ogre::Vector2 uvLength(
-          shadowParam.resolution[j].x, shadowParam.resolution[j].y);
+          static_cast<Ogre::Real>(shadowParam.resolution[j].x),
+          static_cast<Ogre::Real>(shadowParam.resolution[j].y));
 
-      uvOffset /= Ogre::Vector2(texResolution.x, texResolution.y);
-      uvLength /= Ogre::Vector2(texResolution.x, texResolution.y);
+      Ogre::Vector2 resolution(
+          static_cast<Ogre::Real>(texResolution.x),
+          static_cast<Ogre::Real>(texResolution.y));
+
+      uvOffset /= resolution;
+      uvLength /= resolution;
 
       const Ogre::String texName =
           "atlas" + Ogre::StringConverter::toString(shadowParam.atlasId);

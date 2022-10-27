@@ -42,7 +42,7 @@ using namespace rendering;
 
 void Connect()
 {
-  gz::common::Console::SetVerbosity(4);
+  common::Console::SetVerbosity(4);
   gazebo::transport::init();
   gazebo::transport::run();
 

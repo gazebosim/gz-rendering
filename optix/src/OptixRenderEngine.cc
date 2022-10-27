@@ -154,5 +154,5 @@ OptixRenderEngine *OptixRenderEngine::Instance()
 }
 
 // Register this plugin
-GZ_ADD_PLUGIN(gz::rendering::OptixRenderEnginePlugin,
-                    gz::rendering::RenderEnginePlugin)
+GZ_ADD_PLUGIN(OptixRenderEnginePlugin,
+              rendering::RenderEnginePlugin)

@@ -28,7 +28,7 @@ using namespace rendering;
 OgreMaterialSwitcher::OgreMaterialSwitcher()
   : lastTechnique(nullptr)
 {
-  this->currentColor = gz::math::Color(0.0f, 0.0f, 0.1f);
+  this->currentColor = math::Color(0.0f, 0.0f, 0.1f);
 }
 
 /////////////////////////////////////////////////
@@ -157,7 +157,7 @@ void OgreMaterialSwitcher::postRenderTargetUpdate(
 
 /////////////////////////////////////////////////
 std::string OgreMaterialSwitcher::EntityName(
-    const gz::math::Color &_color) const
+    const math::Color &_color) const
 {
   auto iter = this->colorDict.find(_color.AsRGBA());
 
@@ -178,7 +178,7 @@ void OgreMaterialSwitcher::NextColor()
 /////////////////////////////////////////////////
 void OgreMaterialSwitcher::Reset()
 {
-  this->currentColor = gz::math::Color(0.0, 0.0, 0.0);
+  this->currentColor = math::Color(0.0, 0.0, 0.0);
   this->lastTechnique = nullptr;
   this->lastEntity.clear();
   this->colorDict.clear();

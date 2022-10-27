@@ -92,7 +92,7 @@ bool OgreMesh::HasSkeleton() const
 std::map<std::string, math::Matrix4d>
         OgreMesh::SkeletonLocalTransforms() const
 {
-  std::map<std::string, gz::math::Matrix4d> mapTfs;
+  std::map<std::string, math::Matrix4d> mapTfs;
   if (this->ogreEntity->hasSkeleton())
   {
     Ogre::SkeletonInstance *skel = this->ogreEntity->getSkeleton();
@@ -102,10 +102,10 @@ std::map<std::string, math::Matrix4d>
       Ogre::Quaternion quat(bone->getOrientation());
       Ogre::Vector3 p(bone->getPosition());
 
-      gz::math::Quaterniond tfQuat(quat.w, quat.x, quat.y, quat.z);
-      gz::math::Vector3d tfTrans(p.x, p.y, p.z);
+      math::Quaterniond tfQuat(quat.w, quat.x, quat.y, quat.z);
+      math::Vector3d tfTrans(p.x, p.y, p.z);
 
-      gz::math::Matrix4d tf(tfQuat);
+      math::Matrix4d tf(tfQuat);
       tf.SetTranslation(tfTrans);
 
       mapTfs[bone->getName()] = tf;

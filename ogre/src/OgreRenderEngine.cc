@@ -334,7 +334,7 @@ void OgreRenderEngine::CreateLogger()
 {
   // create log file path
   std::string logPath;
-  gz::common::env(GZ_HOMEDIR, logPath);
+  common::env(GZ_HOMEDIR, logPath);
   logPath = common::joinPaths(logPath, ".gz", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre.log");
@@ -842,5 +842,5 @@ OgreRenderEngine *OgreRenderEngine::Instance()
 }
 
 // Register this plugin
-GZ_ADD_PLUGIN(gz::rendering::OgreRenderEnginePlugin,
-                    gz::rendering::RenderEnginePlugin)
+GZ_ADD_PLUGIN(OgreRenderEnginePlugin,
+              rendering::RenderEnginePlugin)

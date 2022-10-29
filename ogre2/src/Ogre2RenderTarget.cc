@@ -932,6 +932,30 @@ Ogre2RenderTexture::~Ogre2RenderTexture()
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderTexture::AddRenderPass(const RenderPassPtr &_pass)
+{
+  if (this->ogreCompositorWorkspace)
+  {
+    Ogre2RenderPass *ogre2RenderPass =
+      dynamic_cast<Ogre2RenderPass *>(_pass.get());
+    ogre2RenderPass->WorkspaceAdded(this->ogreCompositorWorkspace);
+  }
+  BaseRenderTexture::AddRenderPass(_pass);
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTexture::RemoveRenderPass(const RenderPassPtr &_pass)
+{
+  if (this->ogreCompositorWorkspace)
+  {
+    Ogre2RenderPass *ogre2RenderPass =
+      dynamic_cast<Ogre2RenderPass *>(_pass.get());
+    ogre2RenderPass->WorkspaceRemoved(this->ogreCompositorWorkspace);
+  }
+  BaseRenderTexture::RemoveRenderPass(_pass);
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderTexture::Destroy()
 {
   this->DestroyTarget();

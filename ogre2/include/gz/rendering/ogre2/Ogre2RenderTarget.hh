@@ -253,6 +253,12 @@ namespace gz
       /// \brief Destructor
       public: virtual ~Ogre2RenderTexture();
 
+      // Documentation inherited
+      public: void AddRenderPass(const RenderPassPtr &_pass) override;
+
+      // Documentation inherited
+      public: void RemoveRenderPass(const RenderPassPtr &_pass) override;
+
       // Documentation inherited.
       public: virtual void Destroy() override;
 

@@ -53,6 +53,24 @@ namespace gz
       public: void PreRender(const CameraPtr &_camera) override;
 
       // Documentation inherited
+      public: void SetScale(double _scale) override;
+
+      // Documentation inherited
+      public: double Scale() const override;
+
+      // Documentation inherited
+      public: void SetColor(const math::Vector3d &_color) override;
+
+      // Documentation inherited
+      public: const math::Vector3d &Color() const override;
+
+      // Documentation inherited
+      public: void SetOcclusionSteps(double _occlusionSteps) override;
+
+      // Documentation inherited
+      public: double OcclusionSteps() const override;
+
+      // Documentation inherited
       public: void WorkspaceAdded(
             Ogre::CompositorWorkspace *_workspace) override;
 

@@ -156,6 +156,42 @@ void Ogre2LensFlarePass::PreRender(const CameraPtr &_camera)
 }
 
 //////////////////////////////////////////////////
+void Ogre2LensFlarePass::SetScale(const double _scale)
+{
+  this->dataPtr->scale = _scale;
+}
+
+//////////////////////////////////////////////////
+double Ogre2LensFlarePass::Scale() const
+{
+  return this->dataPtr->scale;
+}
+
+//////////////////////////////////////////////////
+void Ogre2LensFlarePass::SetColor(const math::Vector3d &_color)
+{
+  this->dataPtr->color = _color;
+}
+
+//////////////////////////////////////////////////
+const math::Vector3d &Ogre2LensFlarePass::Color() const
+{
+  return this->dataPtr->color;
+}
+
+//////////////////////////////////////////////////
+void Ogre2LensFlarePass::SetOcclusionSteps(const double _occlusionSteps)
+{
+  this->dataPtr->occlusionSteps = _occlusionSteps;
+}
+
+//////////////////////////////////////////////////
+double Ogre2LensFlarePass::OcclusionSteps() const
+{
+  return this->dataPtr->occlusionSteps;
+}
+
+//////////////////////////////////////////////////
 void Ogre2LensFlarePass::WorkspaceAdded(Ogre::CompositorWorkspace *_workspace)
 {
   _workspace->addListener(&this->dataPtr->workspaceListener);

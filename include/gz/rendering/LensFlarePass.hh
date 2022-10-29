@@ -22,6 +22,8 @@
 #include "gz/rendering/Export.hh"
 #include "gz/rendering/RenderPass.hh"
 
+#include "gz/math/Vector3.hh"
+
 namespace gz
 {
   namespace rendering
@@ -39,6 +41,32 @@ namespace gz
       /// \brief Set the light that generates lens flare
       /// \param[in] _light Pointer to light
       public: virtual void SetLight(LightPtr _light) = 0;
+
+      /// \brief Set the scale of lens flare.
+      /// \param[in] _scale Scale of lens flare
+      public: virtual void SetScale(double _scale) = 0;
+
+      /// \brief Returns the scale set in SetScale()
+      /// \return Scale of lens flare
+      public: virtual double Scale() const = 0;
+
+      /// \brief Set the color of lens flare.
+      /// \param[in] _color Color of lens flare
+      public: virtual void SetColor(const math::Vector3d &_color) = 0;
+
+      /// \brief Returns the color set in SetColor()
+      /// \return Color of lens flare
+      public: virtual const math::Vector3d &Color() const = 0;
+
+      /// \brief Set the number of steps to take in each direction when
+      /// checking for occlusions.
+      /// \param[in] _occlusionSteps number of steps to take in each direction
+      /// when checking for occlusion.
+      public: virtual void SetOcclusionSteps(double _occlusionSteps) = 0;
+
+      /// \brief Returns the number of steps set in SetOcclusionSteps()
+      /// \return Number of occlusion steps
+      public: virtual double OcclusionSteps() const = 0;
     };
     }
   }

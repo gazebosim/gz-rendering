@@ -38,6 +38,7 @@
 #include <OgreMesh2.h>
 #include <OgreRay.h>
 #include <OgreSceneManager.h>
+#include <Threading/OgreUniformScalableTask.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif
@@ -209,39 +210,70 @@ RayQueryResult Ogre2RayQuery::ClosestPointBySelectionBuffer()
 }
 
 //////////////////////////////////////////////////
-RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
+
+/// \brief This class performs a Triangle-level raycast over the broadphase
+/// results returned by OgreNext spreading the work as evenly as possible
+/// across multiple threads
+///
+/// On multicore machines this can lead to considerable speed ups, specially
+/// if the scene has a lot of triangles.
+class GZ_RENDERING_OGRE2_HIDDEN ThreadedTriRay final
+  : public Ogre::UniformScalableTask
 {
-  RayQueryResult result;
-  Ogre2ScenePtr ogreScene =
-      std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
-  if (!ogreScene)
-    return result;
+  /// \brief Stores the result Ogre2RayQueryPrivate::rayQuery->execute
+  /// that we will iterate for triangle intersection matches.
+  private: Ogre::RaySceneQueryResult ogreResult;
 
-  if (_forceSceneUpdate)
+  /// \brief Raycast's origin
+  private: const Ogre::Vector3 rayOrigin;
+
+  /// \brief Raycast's direction
+  private: const Ogre::Vector3 rayDir;
+
+  /// \brief Stores the results of our triangle intersections.
+  /// One entry per thread.
+  public: std::vector<RayQueryResult> collectedResults;
+
+  /// \brief Constructor
+  /// \param[in, out] _ogreResult Ray Query done by Ogre that we will iterate
+  /// We take ownership of its internal pointer, thus it becomes empty
+  /// afterwards
+  /// \param[in] _rayOrigin Raycast's origin
+  /// \param[in] _rayDir Raycast's direction
+  /// \param[in] _numThreads Number of worker threads
+  public: ThreadedTriRay(Ogre::RaySceneQueryResult &_ogreResult,
+                         const Ogre::Vector3 &_rayOrigin,
+                         const Ogre::Vector3 &_rayDir,
+                         size_t _numThreads) :
+      rayOrigin(_rayOrigin),
+      rayDir(_rayDir)
   {
-    ogreScene->OgreSceneManager()->updateSceneGraph();
+    this->ogreResult.swap(_ogreResult);
+    this->collectedResults.resize(_numThreads);
   }
 
-  const Ogre::Vector3 rayOrigin = Ogre2Conversions::Convert(this->origin);
-  const Ogre::Vector3 rayDir = Ogre2Conversions::Convert(this->direction);
+  // Documentation inherited
+  public: void execute(size_t threadId, size_t numThreads) override;
 
-  Ogre::Ray mouseRay(rayOrigin, rayDir);
+  /// \brief To be run after parallel execution is done. It will iterate
+  /// through the results of every thread and return the closest match
+  /// \return The closest match (it may be empty)
+  public: RayQueryResult CollapseCollectedResults();
+};
 
-  if (!this->dataPtr->rayQuery)
-  {
-    this->dataPtr->rayQuery =
-        ogreScene->OgreSceneManager()->createRayQuery(mouseRay);
-  }
-  this->dataPtr->rayQuery->setSortByDistance(true);
-  this->dataPtr->rayQuery->setRay(mouseRay);
-
-  // Perform the scene query
-  Ogre::RaySceneQueryResult &ogreResult = this->dataPtr->rayQuery->execute();
+//////////////////////////////////////////////////
+void ThreadedTriRay::execute(size_t _threadId, size_t _numThreads)
+{
+  const unsigned int numThreads = static_cast<unsigned int>(_numThreads);
+  const unsigned int threadId = static_cast<unsigned int>(_threadId);
 
   double distance = std::numeric_limits<double>::max();
 
+  RayQueryResult result;
+
   // Iterate over all the results.
-  for (auto iter = ogreResult.begin(); iter != ogreResult.end(); ++iter)
+  for (auto iter = this->ogreResult.begin(); iter != this->ogreResult.end();
+       ++iter)
   {
     if (iter->distance <= 0.0)
       continue;
@@ -273,17 +305,18 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
 
       const bool bIsAffine = transform.isAffine();
 
+      Ogre::Ray mouseRay;
       if (bIsAffine)
       {
         Ogre::Matrix4 invTransform = transform.inverse();
         Ogre::Matrix3 invTransform3x3;
         invTransform.extract3x3Matrix(invTransform3x3);
-        mouseRay = Ogre::Ray(invTransform * rayOrigin,
-                             (invTransform3x3 * rayDir).normalisedCopy());
+        mouseRay = Ogre::Ray(invTransform * this->rayOrigin,
+                             (invTransform3x3 * this->rayDir).normalisedCopy());
       }
       else
       {
-        mouseRay = Ogre::Ray(rayOrigin, rayDir);
+        mouseRay = Ogre::Ray(this->rayOrigin, this->rayDir);
       }
 
       // test for hitting individual triangles on the mesh
@@ -293,7 +326,7 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
         auto submesh = s.lock();
         if (!submesh || submesh->VertexCount() < 3u)
           continue;
-        unsigned int indexCount = submesh->IndexCount();
+        const unsigned int indexCount = submesh->IndexCount();
 
         const gz::math::Vector3d *RESTRICT_ALIAS vertices =
           submesh->VertexPtr();
@@ -303,7 +336,18 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
           false, std::numeric_limits<Ogre::Real>::max()
         };
 
-        for (unsigned int k = 0; k < indexCount; k += 3)
+        // Round up to next multiple of numThreads and divide by it
+        unsigned int indexCountPerThread =
+          (indexCount + (numThreads - 1u)) / numThreads;
+        // indexCountPerThread must be multiple of 3
+        indexCountPerThread = ((indexCountPerThread + 2u) / 3u) * 3u;
+
+        unsigned int indexStart =
+          std::min(indexCountPerThread * threadId, indexCount);
+        unsigned int indexEnd =
+          std::min(indexCountPerThread * (threadId + 1u), indexCount);
+
+        for (unsigned int k = indexStart; k < indexEnd; k += 3)
         {
           if (indexCount <= k+2)
             continue;
@@ -374,6 +418,64 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
       }
     }
   }
+
+  collectedResults[_threadId] = result;
+}
+
+//////////////////////////////////////////////////
+RayQueryResult ThreadedTriRay::CollapseCollectedResults()
+{
+  RayQueryResult result;
+  for (const RayQueryResult &entry : this->collectedResults)
+  {
+    if (entry)
+    {
+      if (!result || entry.distance < result.distance)
+      {
+        result = entry;
+      }
+    }
+  }
+  return result;
+}
+
+//////////////////////////////////////////////////
+RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
+{
+  RayQueryResult result;
+  Ogre2ScenePtr ogreScene =
+      std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
+  if (!ogreScene)
+    return result;
+
+  Ogre::SceneManager *ogreSceneManager=ogreScene->OgreSceneManager();
+
+  if (_forceSceneUpdate)
+  {
+    ogreSceneManager->updateSceneGraph();
+  }
+
+  const Ogre::Vector3 rayOrigin = Ogre2Conversions::Convert(this->origin);
+  const Ogre::Vector3 rayDir = Ogre2Conversions::Convert(this->direction);
+
+  Ogre::Ray mouseRay(rayOrigin, rayDir);
+
+  if (!this->dataPtr->rayQuery)
+  {
+    this->dataPtr->rayQuery =
+        ogreSceneManager->createRayQuery(mouseRay);
+  }
+  this->dataPtr->rayQuery->setSortByDistance(true);
+  this->dataPtr->rayQuery->setRay(mouseRay);
+
+  // Perform the scene query
+  Ogre::RaySceneQueryResult &ogreResult = this->dataPtr->rayQuery->execute();
+
+  ThreadedTriRay rayTask(ogreResult, rayOrigin, rayDir,
+                         ogreSceneManager->getNumWorkerThreads());
+  ogreSceneManager->executeUserScalableTask(&rayTask, true);
+
+  result = rayTask.CollapseCollectedResults();
 
   return result;
 }

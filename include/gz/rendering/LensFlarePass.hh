@@ -61,7 +61,7 @@ namespace gz
       /// \brief Set the number of steps to take in each direction when
       /// checking for occlusions.
       /// \param[in] _occlusionSteps number of steps to take in each direction
-      /// when checking for occlusion.
+      /// when checking for occlusion. A value of 0.0 disables occlusion.
       public: virtual void SetOcclusionSteps(double _occlusionSteps) = 0;
 
       /// \brief Returns the number of steps set in SetOcclusionSteps()

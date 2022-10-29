@@ -19,13 +19,12 @@
 
 #include "CommonRenderingTest.hh"
 
-#include <gz/common/Image.hh>
-
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/DepthCamera.hh"
 #include "gz/rendering/DistortionPass.hh"
 #include "gz/rendering/GaussianNoisePass.hh"
 #include "gz/rendering/Image.hh"
+#include "gz/rendering/LensFlarePass.hh"
 #include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/Scene.hh"
@@ -54,6 +53,7 @@ class RenderPassTest: public CommonRenderingTest
 {
 };
 
+#if 0
 /////////////////////////////////////////////////
 TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(GaussianNoise))
 {
@@ -476,6 +476,305 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Distortion))
   // of the image are distorted.
   EXPECT_GT(colorSum, colorSum2);
   EXPECT_GT(colorSum, colorSum3);
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+#endif
+
+/////////////////////////////////////////////////
+TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_RENDERPASS_SUPPORTED();
+
+  // get the render pass system
+  RenderPassSystemPtr rpSystem = this->engine->RenderPassSystem();
+  // add resources in build dir
+  engine->AddResourcePath(
+    common::joinPaths(std::string(PROJECT_BUILD_PATH), "src"));
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  scene->SetAmbientLight(0.3, 0.3, 0.3);
+
+  VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  // create  camera
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_NE(nullptr, camera);
+  camera->SetImageWidth(100);
+  camera->SetImageHeight(100);
+  camera->SetLocalPosition(5.0, 3.0, 0.7);
+  root->AddChild(camera);
+
+  // create directional light
+  DirectionalLightPtr light = scene->CreateDirectionalLight();
+  light->SetDirection(-0.9, -0.3, -0.2);
+  light->SetDiffuseColor(0.5, 0.5, 0.5);
+  light->SetSpecularColor(0.5, 0.5, 0.5);
+  root->AddChild(light);
+
+  // create green material
+  MaterialPtr green = scene->CreateMaterial();
+  green->SetDiffuse(0.0, 0.7, 0.0);
+  green->SetSpecular(0.5, 0.5, 0.5);
+
+  // create box
+  VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  box->SetLocalPosition(9.0, 3.0, 0.7);
+  box->SetMaterial(green);
+  root->AddChild(box);
+
+  //
+  // TEST 0: No LensFlare (never added) vs LensFlare
+  //
+
+  // capture original image with box (no lens flare)
+  Image refImage = camera->CreateImage();
+  camera->Capture(refImage);
+
+  // add Lens Flare render pass to camera
+
+  // add lens flare pass
+  RenderPassPtr pass = rpSystem->Create<LensFlarePass>();
+  LensFlarePassPtr lensFlarePass =
+    std::dynamic_pointer_cast<LensFlarePass>(pass);
+  lensFlarePass->Init(scene);
+  lensFlarePass->SetLight(light);
+  camera->AddRenderPass(lensFlarePass);
+
+  // capture image lens flare
+  Image imageLensFlared = camera->CreateImage();
+  camera->Capture(imageLensFlared);
+
+  {
+    // Compare image pixels
+    unsigned char *refData = refImage.Data<unsigned char>();
+    unsigned char *dataLensFlared = imageLensFlared.Data<unsigned char>();
+    unsigned int height = camera->ImageHeight();
+    unsigned int width = camera->ImageWidth();
+    unsigned int channelCount = PixelUtil::ChannelCount(camera->ImageFormat());
+    unsigned int step = width * channelCount;
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      for (unsigned int j = 0; j < step; j += channelCount)
+      {
+        unsigned int idx = i * step + j;
+        for (unsigned int k = 0; k < channelCount; ++k)
+        {
+          // We expect every single pixel to be brighter than reference
+          EXPECT_GT(dataLensFlared[idx + k], refData[idx + k]);
+        }
+      }
+    }
+  }
+
+  //
+  // TEST 1: No LensFlare (never added) vs No LensFlare (disabled)
+  //
+
+  // Disable image lens flare and try again. It should be equal to ref
+  lensFlarePass->SetEnabled(false);
+  camera->Capture(imageLensFlared);
+
+  {
+    // Compare image pixels
+    unsigned char *refData = refImage.Data<unsigned char>();
+    unsigned char *dataLensFlared = imageLensFlared.Data<unsigned char>();
+    unsigned int height = camera->ImageHeight();
+    unsigned int width = camera->ImageWidth();
+    unsigned int channelCount = PixelUtil::ChannelCount(camera->ImageFormat());
+    unsigned int step = width * channelCount;
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      for (unsigned int j = 0; j < step; j += channelCount)
+      {
+        unsigned int idx = i * step + j;
+        for (unsigned int k = 0; k < channelCount; ++k)
+        {
+          // We expect every single pixel to be equal to reference
+          // due to the effect being disabled (despite being added)
+          EXPECT_EQ(dataLensFlared[idx + k], refData[idx + k]);
+        }
+      }
+    }
+  }
+
+  //
+  // TEST 2: No LensFlare (light from behind, disabled) vs
+  //         No LensFlare (light from behind, enabled)
+  // We need a new reference.
+  //
+  light->SetDirection(0.9, 0.3, -0.2);  // BEHIND CAMERA
+
+  lensFlarePass->SetEnabled(false);
+  camera->Capture(refImage);
+
+  lensFlarePass->SetEnabled(true);
+  camera->Capture(imageLensFlared);
+
+  {
+    // Compare image pixels
+    unsigned char *refData = refImage.Data<unsigned char>();
+    unsigned char *dataLensFlared = imageLensFlared.Data<unsigned char>();
+    unsigned int height = camera->ImageHeight();
+    unsigned int width = camera->ImageWidth();
+    unsigned int channelCount = PixelUtil::ChannelCount(camera->ImageFormat());
+    unsigned int step = width * channelCount;
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      for (unsigned int j = 0; j < step; j += channelCount)
+      {
+        unsigned int idx = i * step + j;
+        for (unsigned int k = 0; k < channelCount; ++k)
+        {
+          // We expect every single pixel to be equal to reference
+          // due to lens flare coming from behind us
+          EXPECT_EQ(dataLensFlared[idx + k], refData[idx + k]);
+        }
+      }
+    }
+  }
+
+  //
+  // TEST 3: No LensFlare (disabled) vs
+  //         No LensFlare (enabled, but 100% occluded)
+  // We need a new reference.
+  //
+  light->SetDirection(-0.9, -0.1, -0.1);  // FULL OCCLUSION
+
+  lensFlarePass->SetEnabled(false);
+  camera->Capture(refImage);
+
+  lensFlarePass->SetEnabled(true);
+  camera->Capture(imageLensFlared);
+
+  {
+    // Compare image pixels
+    unsigned char *refData = refImage.Data<unsigned char>();
+    unsigned char *dataLensFlared = imageLensFlared.Data<unsigned char>();
+    unsigned int height = camera->ImageHeight();
+    unsigned int width = camera->ImageWidth();
+    unsigned int channelCount = PixelUtil::ChannelCount(camera->ImageFormat());
+    unsigned int step = width * channelCount;
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      for (unsigned int j = 0; j < step; j += channelCount)
+      {
+        unsigned int idx = i * step + j;
+        for (unsigned int k = 0; k < channelCount; ++k)
+        {
+          // We expect every single pixel to be equal to reference
+          // due to lens flare being 100% occluded
+          EXPECT_EQ(dataLensFlared[idx + k], refData[idx + k]);
+        }
+      }
+    }
+  }
+
+  //
+  // TEST 4: No LensFlare (disabled) vs
+  //         LensFlare (occluded; but occlusion disabled)
+  // Reference MUST be the same as previous test.
+  //
+  const double oldOcclusionSteps = lensFlarePass->OcclusionSteps();
+  lensFlarePass->SetEnabled(true);
+  lensFlarePass->SetOcclusionSteps(0.0);
+  camera->Capture(imageLensFlared);
+  // Restore setting
+  lensFlarePass->SetOcclusionSteps(oldOcclusionSteps);
+
+  {
+    // Compare image pixels
+    unsigned char *refData = refImage.Data<unsigned char>();
+    unsigned char *dataLensFlared = imageLensFlared.Data<unsigned char>();
+    unsigned int height = camera->ImageHeight();
+    unsigned int width = camera->ImageWidth();
+    unsigned int channelCount = PixelUtil::ChannelCount(camera->ImageFormat());
+    unsigned int step = width * channelCount;
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      for (unsigned int j = 0; j < step; j += channelCount)
+      {
+        unsigned int idx = i * step + j;
+        for (unsigned int k = 0; k < channelCount; ++k)
+        {
+          // We expect every single pixel to be brighter to reference
+          // due to lens flare being occluded BUT occlusion is disabled
+          EXPECT_GT(dataLensFlared[idx + k], refData[idx + k]);
+        }
+      }
+    }
+  }
+
+  //
+  // TEST 5: No LensFlare (disabled) vs
+  //         LensFlare (partially occluded) vs
+  //         LensFlare (partially occluded, occlusion disabled)
+  // We need a new reference.
+  //
+  light->SetDirection(-0.9, -0.1, -0.13);  // PARTIAL OCCLUSSION
+
+  lensFlarePass->SetEnabled(false);
+  camera->Capture(refImage);
+
+  lensFlarePass->SetEnabled(true);
+  camera->Capture(imageLensFlared);
+
+  Image imageLensNoOcclusion = camera->CreateImage();
+  lensFlarePass->SetOcclusionSteps(0.0);
+  camera->Capture(imageLensNoOcclusion);
+  // Restore setting
+  lensFlarePass->SetOcclusionSteps(oldOcclusionSteps);
+
+  {
+    int uncomparablePixelCount = 0;
+
+    // Compare image pixels
+    unsigned char *refData = refImage.Data<unsigned char>();
+    unsigned char *dataLensFlarePartialOcclusion =
+      imageLensFlared.Data<unsigned char>();
+    unsigned char *dataLensFlareNoOcclusion =
+      imageLensNoOcclusion.Data<unsigned char>();
+    unsigned int height = camera->ImageHeight();
+    unsigned int width = camera->ImageWidth();
+    unsigned int channelCount = PixelUtil::ChannelCount(camera->ImageFormat());
+    unsigned int step = width * channelCount;
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      for (unsigned int j = 0; j < step; j += channelCount)
+      {
+        unsigned int idx = i * step + j;
+        for (unsigned int k = 0; k < channelCount; ++k)
+        {
+          // We expect every single pixel to be brighter to reference
+          // due to lens flare, despite being partially occluded
+          EXPECT_GT(dataLensFlarePartialOcclusion[idx + k], refData[idx + k]);
+          EXPECT_GT(dataLensFlareNoOcclusion[idx + k], refData[idx + k]);
+
+          if (dataLensFlareNoOcclusion[idx + k] == 255u &&
+              dataLensFlarePartialOcclusion[idx + k] == 255u)
+          {
+            // Nothing to do here. They are as bright as possible.
+            // We can't compare them.
+            ++uncomparablePixelCount;
+          }
+          else
+          {
+            EXPECT_GT(dataLensFlareNoOcclusion[idx + k],
+                      dataLensFlarePartialOcclusion[idx + k]);
+          }
+        }
+      }
+    }
+
+    // If a significant number of pixels between Partial & No occlusion are
+    // incomparable, then this test is meaningless and needs tweaking.
+    EXPECT_LE(uncomparablePixelCount, 1);
+  }
 
   // Clean up
   engine->DestroyScene(scene);

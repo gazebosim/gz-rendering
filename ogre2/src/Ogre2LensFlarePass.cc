@@ -206,6 +206,11 @@ void Ogre2LensFlarePass::WorkspaceRemoved(Ogre::CompositorWorkspace *_workspace)
 //////////////////////////////////////////////////
 double Ogre2LensFlarePass::OcclusionScale(const math::Vector3d &_imgPos)
 {
+  if (this->dataPtr->occlusionSteps == 0.0)
+  {
+    return this->dataPtr->scale;
+  }
+
   this->dataPtr->rayQuery->SetFromCamera(
     this->dataPtr->currentCamera, math::Vector2d(_imgPos.X(), _imgPos.Y()));
 

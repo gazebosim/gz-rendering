@@ -306,6 +306,7 @@ void ThreadedTriRay::execute(size_t _threadId, size_t _numThreads)
       const bool bIsAffine = transform.isAffine();
 
       Ogre::Ray mouseRay;
+#ifndef SLOW_METHOD
       if (bIsAffine)
       {
         Ogre::Matrix4 invTransform = transform.inverse();
@@ -315,6 +316,7 @@ void ThreadedTriRay::execute(size_t _threadId, size_t _numThreads)
                              (invTransform3x3 * this->rayDir).normalisedCopy());
       }
       else
+#endif
       {
         mouseRay = Ogre::Ray(this->rayOrigin, this->rayDir);
       }
@@ -466,9 +468,14 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
   // Perform the scene query
   Ogre::RaySceneQueryResult &ogreResult = this->dataPtr->rayQuery->execute();
 
+#ifndef SINGLE_THREADED
   ThreadedTriRay rayTask(ogreResult, rayOrigin, rayDir,
                          ogreSceneManager->getNumWorkerThreads());
   ogreSceneManager->executeUserScalableTask(&rayTask, true);
+#else
+  ThreadedTriRay rayTask(ogreResult, rayOrigin, rayDir, 1u);
+  rayTask.execute(0u, 1u);
+#endif
 
   result = rayTask.CollapseCollectedResults();
 

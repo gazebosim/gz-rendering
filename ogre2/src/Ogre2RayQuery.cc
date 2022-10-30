@@ -296,7 +296,7 @@ void ThreadedTriRay::execute(size_t _threadId, size_t _numThreads)
         meshName = meshName.substr(0, idx);
 
       const common::Mesh *mesh =
-           common::MeshManager::Instance()->MeshByName(meshName);
+        common::MeshManager::Instance()->MeshByName(meshName);
 
       if (!mesh)
         continue;
@@ -349,23 +349,20 @@ void ThreadedTriRay::execute(size_t _threadId, size_t _numThreads)
 
         for (unsigned int k = indexStart; k < indexEnd; k += 3)
         {
-          if (indexCount <= k+2)
+          if (indexCount <= k + 2)
             continue;
 
 #ifdef SLOW_METHOD
-          gz::math::Vector3d vertexA =
-            submesh->Vertex(submesh->Index(k));
-          gz::math::Vector3d vertexB =
-            submesh->Vertex(submesh->Index(k+1));
-          gz::math::Vector3d vertexC =
-            submesh->Vertex(submesh->Index(k+2));
+          gz::math::Vector3d vertexA = submesh->Vertex(submesh->Index(k));
+          gz::math::Vector3d vertexB = submesh->Vertex(submesh->Index(k + 1));
+          gz::math::Vector3d vertexC = submesh->Vertex(submesh->Index(k + 2));
 
           Ogre::Vector3 worldVertexA =
-              transform * Ogre2Conversions::Convert(vertexA);
+            transform * Ogre2Conversions::Convert(vertexA);
           Ogre::Vector3 worldVertexB =
-              transform * Ogre2Conversions::Convert(vertexB);
+            transform * Ogre2Conversions::Convert(vertexB);
           Ogre::Vector3 worldVertexC =
-              transform * Ogre2Conversions::Convert(vertexC);
+            transform * Ogre2Conversions::Convert(vertexC);
 #else
           Ogre::Vector3 worldVertexA, worldVertexB, worldVertexC;
 
@@ -387,9 +384,8 @@ void ThreadedTriRay::execute(size_t _threadId, size_t _numThreads)
 #endif
 
           // check for a hit against this triangle
-          std::pair<bool, Ogre::Real> hit = Ogre::Math::intersects(mouseRay,
-              worldVertexA, worldVertexB, worldVertexC,
-              true, false);
+          std::pair<bool, Ogre::Real> hit = Ogre::Math::intersects(
+            mouseRay, worldVertexA, worldVertexB, worldVertexC, true, false);
 
           // if it was a hit check if its the closest
           if (hit.first && hit.second < bestHit.second)
@@ -448,7 +444,7 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
   if (!ogreScene)
     return result;
 
-  Ogre::SceneManager *ogreSceneManager=ogreScene->OgreSceneManager();
+  Ogre::SceneManager *ogreSceneManager = ogreScene->OgreSceneManager();
 
   if (_forceSceneUpdate)
   {
@@ -462,8 +458,7 @@ RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
 
   if (!this->dataPtr->rayQuery)
   {
-    this->dataPtr->rayQuery =
-        ogreSceneManager->createRayQuery(mouseRay);
+    this->dataPtr->rayQuery = ogreSceneManager->createRayQuery(mouseRay);
   }
   this->dataPtr->rayQuery->setSortByDistance(true);
   this->dataPtr->rayQuery->setRay(mouseRay);

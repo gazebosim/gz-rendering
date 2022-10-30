@@ -206,7 +206,7 @@ void Ogre2LensFlarePass::WorkspaceRemoved(Ogre::CompositorWorkspace *_workspace)
 //////////////////////////////////////////////////
 double Ogre2LensFlarePass::OcclusionScale(const math::Vector3d &_imgPos)
 {
-  if (this->dataPtr->occlusionSteps == 0.0)
+  if (std::abs(this->dataPtr->occlusionSteps) <= 1e-7)
   {
     return this->dataPtr->scale;
   }

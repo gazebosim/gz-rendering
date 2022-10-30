@@ -149,7 +149,7 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseRayQuery<T>::SetPreferGpu(bool /*_preferGpu*/)
+    void BaseRayQuery<T>::SetPreferGpu(bool /*_preferGpu*/)  // NOLINT
     {
     }
 

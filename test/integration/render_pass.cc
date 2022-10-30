@@ -53,7 +53,6 @@ class RenderPassTest: public CommonRenderingTest
 {
 };
 
-#if 0
 /////////////////////////////////////////////////
 TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(GaussianNoise))
 {
@@ -480,7 +479,6 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Distortion))
   // Clean up
   engine->DestroyScene(scene);
 }
-#endif
 
 /////////////////////////////////////////////////
 TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
@@ -774,6 +772,58 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
     // If a significant number of pixels between Partial & No occlusion are
     // incomparable, then this test is meaningless and needs tweaking.
     EXPECT_LE(uncomparablePixelCount, 1);
+  }
+
+  //
+  // TEST 6: LensFlare (no occlusion), ensure coordinate convention is correct
+  // The lens flare must come from top left corner.
+  //
+  // This test ensures there are no discrepancies between API backends
+  // (e.g. different engines, OpenGL vs Vulkan vs Metal, etc)
+  //
+  // There is no reference.
+  //
+  light->SetDirection(-1.0, -0.25, -0.25);
+  lensFlarePass->SetEnabled(true);
+  box->SetVisible(false);
+  camera->Capture(imageLensFlared);
+  box->SetVisible(true);
+
+  {
+    int brightness[2][2] = { { 0, 0 }, { 0, 0 } };
+
+    // Accumulate brightness in each quadrant
+    unsigned char *dataLensFlared = imageLensFlared.Data<unsigned char>();
+    unsigned int height = camera->ImageHeight();
+    unsigned int width = camera->ImageWidth();
+    unsigned int channelCount = PixelUtil::ChannelCount(camera->ImageFormat());
+    unsigned int step = width * channelCount;
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      for (unsigned int j = 0; j < step; j += channelCount)
+      {
+        unsigned int idx = i * step + j;
+        for (unsigned int k = 0; k < channelCount; ++k)
+        {
+          // We expect every single pixel to be brighter to reference
+          // due to lens flare being occluded BUT occlusion is disabled
+          brightness[(j * 2u) / step][(i * 2u) / height] +=
+            dataLensFlared[idx + k];
+        }
+      }
+    }
+
+    // We expent quadrant 0, 0 to be much brigther than all of the others
+    // due to visibly housing the source of the lens flare (the sun)
+    EXPECT_GT(brightness[0][0], brightness[0][1]);
+    EXPECT_GT(brightness[0][0], brightness[1][0]);
+    EXPECT_GT(brightness[0][0], brightness[1][1]);
+
+    // Because the lens flare is in diagonal from top left going towards
+    // bottom right, we expect quadrant 1, 1 to be brigther than the rest
+    // except 0, 0.
+    EXPECT_GT(brightness[1][1], brightness[0][1]);
+    EXPECT_GT(brightness[1][1], brightness[1][0]);
   }
 
   // Clean up

@@ -15,49 +15,44 @@
  *
  */
 
-#version ogre_glsl_ver_330
+#include <metal_stdlib>
+using namespace metal;
 
-vulkan( layout( ogre_P0 ) uniform Params { )
+struct Params
+{
   // Viewport's aspect ratio
-  uniform float vpAspectRatio;
+  float vpAspectRatio;
 
   // light pos in clip space
-  uniform vec3 lightPos;
+  float3 lightPos;
 
   // lens flare scale
-  uniform float scale;
+  float scale;
 
   // lens flare color
-  uniform vec3 color;
-vulkan( }; )
+  float3 color;
+};
 
-vulkan_layout( ogre_t0 ) uniform texture2D srcTex;
-vulkan( layout( ogre_s0 ) uniform sampler texSampler );
-
-vulkan_layout( location = 0 )
-in block
+struct PS_INPUT
 {
-  vec2 uv0;
-} inPs;
+  float2 uv0;
+};
 
-vulkan_layout( location = 0 )
-out vec4 fragColor;
-
-vec3 lensflare(vec2 uv,vec2 pos)
+inline float3 lensflare(float2 uv,float2 pos, constant Params &p)
 {
-  vec2 main = uv-pos;
+  float2 main = uv-pos;
 
-  vec2 uvd = uv*length(uv);
+  float2 uvd = uv*length(uv);
 
   float dist = length(main); dist = pow(dist,.1);
 
-  float f0 = 1.0/(length(uv-pos)*16.0/scale+1.0);
+  float f0 = 1.0/(length(uv-pos)*16.0/p.scale+1.0);
 
   float f2 = max(1.0/(1.0+32.0*pow(length(uvd+0.8*pos),2.0)),.0)*00.25;
   float f22 = max(1.0/(1.0+32.0*pow(length(uvd+0.85*pos),2.0)),.0)*00.23;
   float f23 = max(1.0/(1.0+32.0*pow(length(uvd+0.9*pos),2.0)),.0)*00.21;
 
-  vec2 uvx = mix(uv,uvd,-0.5);
+  float2 uvx = mix(uv,uvd,-0.5);
 
   float f4 = max(0.01-pow(length(uvx+0.4*pos),2.4),.0)*6.0;
   float f42 = max(0.01-pow(length(uvx+0.45*pos),2.4),.0)*5.0;
@@ -75,41 +70,51 @@ vec3 lensflare(vec2 uv,vec2 pos)
   float f62 = max(0.01-pow(length(uvx-0.325*pos),1.6),.0)*3.0;
   float f63 = max(0.01-pow(length(uvx-0.35*pos),1.6),.0)*5.0;
 
-  vec3 c = vec3(.0);
+  float3 c = float3(.0);
 
   c.r+=f2+f4+f5+f6; c.g+=f22+f42+f52+f62; c.b+=f23+f43+f53+f63;
-  c *= min(scale, 0.2)/0.2;
-  c+=vec3(f0);
+  c *= min(p.scale, 0.2)/0.2;
+  c+=float3(f0);
 
   return c;
 }
 
-void main()
+fragment float4 main_metal
+(
+  PS_INPUT inPs [[stage_in]],
+  texture2d<float> srcTex  [[texture(0)]],
+  sampler texSampler [[sampler(0)]],
+  constant Params &p [[buffer(PARAMETER_SLOT)]]
+)
 {
-  if (lightPos.z < 0.0)
+  float4 fragColor;
+
+  if (p.lightPos.z < 0.0)
   {
     // light is behind the view
-    fragColor = texture(vkSampler2D(srcTex, texSampler), inPs.uv0.xy);
+    fragColor = srcTex.sample(texSampler, inPs.uv0.xy);
   }
   else
   {
-    vec3 pos = lightPos;
+    float3 pos = p.lightPos;
 
     // flip y
     pos.y *= -1.0;
 
-    vec2 uv = inPs.uv0.xy - 0.5;
-    // scale lightPos to be same range as uv
+    float2 uv = inPs.uv0.xy - 0.5;
+    // scale p.lightPos to be same range as uv
     pos *= 0.5;
     // fix aspect ratio
-    uv.x *= vpAspectRatio;
-    pos.x *= vpAspectRatio;
+    uv.x *= p.vpAspectRatio;
+    pos.x *= p.vpAspectRatio;
 
     // compute lens flare
-    vec3 finalColor = color * lensflare(uv, pos.xy);
+    float3 finalColor = p.color * lensflare(uv, pos.xy, p);
 
     // apply lens flare
-    fragColor = texture(vkSampler2D(srcTex, texSampler), inPs.uv0.xy) +
-                vec4(finalColor, 1.0);
+    fragColor = srcTex.sample(texSampler, inPs.uv0.xy) +
+                float4(finalColor, 1.0);
   }
+
+  return fragColor;
 }

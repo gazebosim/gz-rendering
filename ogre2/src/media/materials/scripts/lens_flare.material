@@ -13,10 +13,16 @@ fragment_program LensFlareFS_VK glslvk
   source lens_flare_fs.glsl
 }
 
+fragment_program LensFlareFS_Metal glslvk
+{
+  source lens_flare_fs.metal
+  shader_reflection_pair_hint Ogre/Compositor/Quad_vs
+}
+
 fragment_program LensFlareFS unified
 {
   delegate LensFlareFS_GLSL
-  // delegate LensFlareFS_Metal
+  delegate LensFlareFS_Metal
   delegate LensFlareFS_VK
 
   default_params

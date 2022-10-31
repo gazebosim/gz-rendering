@@ -72,6 +72,13 @@ TEST_F(AxisVisualTest, AxisVisual)
     EXPECT_EQ(1u, child->GeometryCount());
   }
 
+  // create visual
+  AxisVisualPtr axis_name = scene->CreateAxisVisual("axis_name");
+  EXPECT_NE(nullptr, axis_name);
+
+  AxisVisualPtr axis_id = scene->CreateAxisVisual(101);
+  EXPECT_NE(nullptr, axis_id);
+
   // Clean up
   engine->DestroyScene(scene);
 }

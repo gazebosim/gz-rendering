@@ -164,9 +164,9 @@ void Ogre2DepthGaussianNoisePass::PreRender()
   if (!this->enabled)
     return;
 
-  Ogre::Vector3 offsets(gz::math::Rand::DblUniform(0.0, 1.0),
-                        gz::math::Rand::DblUniform(0.0, 1.0),
-                        gz::math::Rand::DblUniform(0.0, 1.0));
+  Ogre::Vector3 offsets(math::Rand::DblUniform(0.0, 1.0),
+                        math::Rand::DblUniform(0.0, 1.0),
+                        math::Rand::DblUniform(0.0, 1.0));
 
   Ogre::Pass *pass = this->gaussianNoiseMat->getTechnique(0)->getPass(0);
   Ogre::GpuProgramParametersSharedPtr psParams =
@@ -1153,7 +1153,7 @@ const float *Ogre2DepthCamera::DepthData() const
 }
 
 //////////////////////////////////////////////////
-gz::common::ConnectionPtr Ogre2DepthCamera::ConnectNewDepthFrame(
+common::ConnectionPtr Ogre2DepthCamera::ConnectNewDepthFrame(
     std::function<void(const float *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {
@@ -1161,7 +1161,7 @@ gz::common::ConnectionPtr Ogre2DepthCamera::ConnectNewDepthFrame(
 }
 
 //////////////////////////////////////////////////
-gz::common::ConnectionPtr Ogre2DepthCamera::ConnectNewRgbPointCloud(
+common::ConnectionPtr Ogre2DepthCamera::ConnectNewRgbPointCloud(
     std::function<void(const float *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {

@@ -287,14 +287,14 @@ MaterialPtr Ogre2Marker::Material() const
 
 //////////////////////////////////////////////////
 void Ogre2Marker::SetPoint(unsigned int _index,
-    const gz::math::Vector3d &_value)
+    const math::Vector3d &_value)
 {
   this->dataPtr->dynamicRenderable->SetPoint(_index, _value);
 }
 
 //////////////////////////////////////////////////
-void Ogre2Marker::AddPoint(const gz::math::Vector3d &_pt,
-    const gz::math::Color &_color)
+void Ogre2Marker::AddPoint(const math::Vector3d &_pt,
+    const math::Color &_color)
 {
   this->dataPtr->dynamicRenderable->AddPoint(_pt, _color);
 }

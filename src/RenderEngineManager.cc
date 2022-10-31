@@ -538,7 +538,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   }
 
   auto engineNames = pluginLoader.PluginsImplementing<
-      gz::rendering::RenderEnginePlugin>();
+      rendering::RenderEnginePlugin>();
 
   if (engineNames.empty())
   {
@@ -578,7 +578,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   }
 
   auto renderPlugin =
-      plugin->QueryInterface<gz::rendering::RenderEnginePlugin>();
+      plugin->QueryInterface<rendering::RenderEnginePlugin>();
 
   if (!renderPlugin)
   {

@@ -257,7 +257,7 @@ void OgreMovableText::SetTextString(const std::string &_text)
 }
 
 //////////////////////////////////////////////////
-void OgreMovableText::SetColor(const gz::math::Color &_color)
+void OgreMovableText::SetColor(const math::Color &_color)
 {
   if (this->color != _color)
   {
@@ -323,13 +323,13 @@ void OgreMovableText::SetShowOnTop(const bool _onTop)
 }
 
 //////////////////////////////////////////////////
-gz::math::AxisAlignedBox OgreMovableText::AABB() const
+math::AxisAlignedBox OgreMovableText::AABB() const
 {
-  return gz::math::AxisAlignedBox(
-      gz::math::Vector3d(this->aabb->getMinimum().x,
+  return math::AxisAlignedBox(
+      math::Vector3d(this->aabb->getMinimum().x,
                     this->aabb->getMinimum().y,
                     this->aabb->getMinimum().z),
-      gz::math::Vector3d(this->aabb->getMaximum().x,
+      math::Vector3d(this->aabb->getMaximum().x,
                     this->aabb->getMaximum().y,
                     this->aabb->getMaximum().z));
 }
@@ -489,7 +489,7 @@ void OgreMovableText::SetupGeometry()
   pVert = static_cast<float*>(ptbuf->lock(Ogre::HardwareBuffer::HBL_DISCARD));
 
   // Derive space width from a capital A
-  if (gz::math::equal(this->spaceWidth, 0.0f))
+  if (math::equal(this->spaceWidth, 0.0f))
   {
     this->spaceWidth = this->font->getGlyphAspectRatio('A') *
         this->charHeight * 2.0;
@@ -983,7 +983,7 @@ void OgreText::SetTextString(const std::string &_text)
 }
 
 //////////////////////////////////////////////////
-void OgreText::SetColor(const gz::math::Color &_color)
+void OgreText::SetColor(const math::Color &_color)
 {
   BaseText::SetColor(_color);
   this->dataPtr->ogreObj->SetColor(_color);
@@ -1026,7 +1026,7 @@ void OgreText::SetShowOnTop(const bool _onTop)
 }
 
 //////////////////////////////////////////////////
-gz::math::AxisAlignedBox OgreText::AABB() const
+math::AxisAlignedBox OgreText::AABB() const
 {
   return this->dataPtr->ogreObj->AABB();
 }

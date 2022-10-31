@@ -2,7 +2,19 @@
 
 ### Gazebo Rendering 7.X
 
-### Gazebo Rendering 7.0.0 (202X-XX-XX)
+### Gazebo Rendering 7.1.0 (2022-10-31)
+
+1. Initialize wide angle camera pixel format
+    * [Pull request #735](https://github.com/gazebosim/gz-rendering/pull/735)
+
+1. Fix use of singletons
+    * [Pull request #734](https://github.com/gazebosim/gz-rendering/pull/734)
+
+1. All changes merged forward from ign-rendering6
+    * [Pull request #750](https://github.com/gazebosim/gz-rendering/pull/750)
+    * [Pull request #743](https://github.com/gazebosim/gz-rendering/pull/743)
+
+### Gazebo Rendering 7.0.0 (2022-09-22)
 
 1. Fix build in case no suitable OGRE is found
     * [Pull request #726](https://github.com/gazebosim/ign-rendering/pull/726)

@@ -1,0 +1,106 @@
+abstract target cubemap_target
+{
+  pass render_scene
+  {
+    load
+    {
+      all           clear
+      clear_colour  0 0 0 1
+    }
+    store
+    {
+      depth         dont_care
+      stencil       dont_care
+    }
+
+    overlays			off
+    camera_cubemap_reorient true
+
+    shadows PbsMaterialsShadowNode recalculate
+
+    profiling_id "Cubemap WideAngleCamera pass"
+
+    // kWideAngleCameraCubemapPassId
+    identifier 1276660
+  }
+}
+
+compositor_node WideAngleCameraCubemapPass
+{
+  in 0 cubeTexture
+
+  target cubeTexture  +X : cubemap_target { }
+  target cubeTexture  -X : cubemap_target { }
+  target cubeTexture  +Y : cubemap_target { }
+  target cubeTexture  -Y : cubemap_target { }
+  target cubeTexture  +Z : cubemap_target { }
+  target cubeTexture  -Z : cubemap_target { }
+}
+
+compositor_node WideAngleCameraCubemapPassMsaa
+{
+  in 0 cubeTexture
+
+  texture tmpMsaa target_width target_height target_format msaa 4 explicit_resolve
+
+  rtv mixedCubemapRtv
+  {
+    // Specify we want to render to tmpMsaa at slot[0]
+    // but we want to resolve to tmpCubemap
+    colour	0 tmpMsaa resolve cubeTexture
+  }
+
+  target mixedCubemapRtv  +X : cubemap_target { }
+  target mixedCubemapRtv  -X : cubemap_target { }
+  target mixedCubemapRtv  +Y : cubemap_target { }
+  target mixedCubemapRtv  -Y : cubemap_target { }
+  target mixedCubemapRtv  +Z : cubemap_target { }
+  target mixedCubemapRtv  -Z : cubemap_target { }
+}
+
+compositor_node WideAngleCameraFinalPass
+{
+  in 0 cubeTexture
+  in 1 finalOutput
+
+  target finalOutput
+  {
+    pass render_quad
+    {
+      load
+      {
+        all dont_care
+      }
+      store
+      {
+        depth   dont_care
+        stencil dont_care
+      }
+
+      // kWideAngleCameraQuadPassId
+      identifier 1276661
+
+      profiling_id "Map Cubemap to Wide Lens"
+
+      material WideLensMap
+
+      input 0 cubeTexture
+    }
+  }
+}
+
+workspace WideAngleCameraWorkspace
+{
+  connect_external 0 WideAngleCameraCubemapPass 0
+
+  connect_external 0 WideAngleCameraFinalPass 0
+  connect_external 1 WideAngleCameraFinalPass 1
+}
+
+workspace WideAngleCameraWorkspaceMsaa
+{
+  connect_external 0 WideAngleCameraCubemapPassMsaa 0
+
+  connect_external 0 WideAngleCameraFinalPass 0
+  connect_external 1 WideAngleCameraFinalPass 1
+}

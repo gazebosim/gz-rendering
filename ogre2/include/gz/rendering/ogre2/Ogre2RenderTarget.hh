@@ -120,6 +120,12 @@ namespace gz
       /// \return Value in range [1; 256). 1 means no antialiasing.
       protected: uint8_t TargetFSAA() const;
 
+      /// \brief Returns the FSAA to use based on supported specs by HW
+      /// and value specified in _fsaa
+      /// \param[in] _fsaa Value in range [1; 256). 1 means no antialiasing.
+      /// \return Value in range [1; 256). 1 means no antialiasing.
+      public: static uint8_t TargetFSAA(uint8_t _fsaa);
+
       /// \brief Get a pointer to the ogre render target containing
       /// the results of the render (implemented separately
       /// to avoid breaking ABI of the pure virtual function)

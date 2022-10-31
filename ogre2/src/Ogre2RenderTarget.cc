@@ -595,11 +595,17 @@ void Ogre2RenderTarget::PrepareForExternalSampling()
 //////////////////////////////////////////////////
 uint8_t Ogre2RenderTarget::TargetFSAA() const
 {
+  return Ogre2RenderTarget::TargetFSAA(
+    static_cast<uint8_t>(this->antiAliasing));
+}
+
+//////////////////////////////////////////////////
+uint8_t Ogre2RenderTarget::TargetFSAA(uint8_t _fsaa)
+{
   // check if target fsaa is supported
   std::vector<unsigned int> fsaaLevels =
       Ogre2RenderEngine::Instance()->FSAALevels();
-  unsigned int targetFSAA = this->antiAliasing;
-  auto const it = std::find(fsaaLevels.begin(), fsaaLevels.end(), targetFSAA);
+  auto const it = std::find(fsaaLevels.begin(), fsaaLevels.end(), _fsaa);
 
   if (it == fsaaLevels.end())
   {
@@ -615,18 +621,18 @@ uint8_t Ogre2RenderTarget::TargetFSAA() const
       }
       os << "]";
 
-      gzwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
+      gzwarn << "Anti-aliasing level of '" << _fsaa << "' "
               << "is not supported; valid FSAA levels are: " << os.str()
               << ". Setting to 1" << std::endl;
       ogre2FSAAWarn = true;
     }
-    targetFSAA = 0u;
+    _fsaa = 0u;
   }
 
-  if (targetFSAA == 0u)
-    targetFSAA = 1u;
+  if (_fsaa == 0u)
+    _fsaa = 1u;
 
-  return static_cast<uint8_t>(targetFSAA);
+  return _fsaa;
 }
 
 //////////////////////////////////////////////////

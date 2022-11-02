@@ -2,7 +2,181 @@
 
 ### Gazebo Rendering 7.X
 
-### Gazebo Rendering 7.0.0 (202X-XX-XX)
+### Gazebo Rendering 7.1.0 (2022-10-31)
+
+1. Initialize wide angle camera pixel format
+    * [Pull request #735](https://github.com/gazebosim/gz-rendering/pull/735)
+
+1. Fix use of singletons
+    * [Pull request #734](https://github.com/gazebosim/gz-rendering/pull/734)
+
+1. All changes merged forward from ign-rendering6
+    * [Pull request #750](https://github.com/gazebosim/gz-rendering/pull/750)
+    * [Pull request #743](https://github.com/gazebosim/gz-rendering/pull/743)
+
+### Gazebo Rendering 7.0.0 (2022-09-22)
+
+1. Fix build in case no suitable OGRE is found
+    * [Pull request #726](https://github.com/gazebosim/ign-rendering/pull/726)
+
+1. Fix destroying wide angle camera
+    * [Pull request #718](https://github.com/gazebosim/ign-rendering/pull/718)
+
+1. Remove unused point cloud color uniform variable
+    * [Pull request #721](https://github.com/gazebosim/ign-rendering/pull/721)
+
+1. Camera ShaderSelection: avoid seg-fault
+    * [Pull request #720](https://github.com/gazebosim/ign-rendering/pull/720)
+
+1. Fix setting emissive map
+    * [Pull request #723](https://github.com/gazebosim/ign-rendering/pull/723)
+
+1. Tutorial updates
+    * [Pull request #717](https://github.com/gazebosim/ign-rendering/pull/717)
+    * [Pull request #716](https://github.com/gazebosim/ign-rendering/pull/716)
+    * [Pull request #715](https://github.com/gazebosim/ign-rendering/pull/715)
+    * [Pull request #722](https://github.com/gazebosim/ign-rendering/pull/722)
+    * [Pull request #724](https://github.com/gazebosim/ign-rendering/pull/724)
+    * [Pull request #725](https://github.com/gazebosim/ign-rendering/pull/725)
+    * [Pull request #714](https://github.com/gazebosim/ign-rendering/pull/714)
+    * [Pull request #713](https://github.com/gazebosim/ign-rendering/pull/713)
+
+1. ign -> gz
+    * [Pull request #679](https://github.com/gazebosim/ign-rendering/pull/679)
+    * [Pull request #672](https://github.com/gazebosim/ign-rendering/pull/672)
+    * [Pull request #669](https://github.com/gazebosim/ign-rendering/pull/669)
+    * [Pull request #657](https://github.com/gazebosim/ign-rendering/pull/657)
+    * [Pull request #656](https://github.com/gazebosim/ign-rendering/pull/656)
+    * [Pull request #645](https://github.com/gazebosim/ign-rendering/pull/645)
+    * [Pull request #643](https://github.com/gazebosim/ign-rendering/pull/643)
+    * [Pull request #652](https://github.com/gazebosim/ign-rendering/pull/652)
+    * [Pull request #639](https://github.com/gazebosim/ign-rendering/pull/639)
+    * [Pull request #629](https://github.com/gazebosim/ign-rendering/pull/629)
+    * [Pull request #631](https://github.com/gazebosim/ign-rendering/pull/631)
+    * [Pull request #618](https://github.com/gazebosim/ign-rendering/pull/618)
+    * [Pull request #677](https://github.com/gazebosim/ign-rendering/pull/677)
+
+1. Provide a Virtual Method Anchor for Classes in Headers
+    * [Pull request #708](https://github.com/gazebosim/ign-rendering/pull/708)
+
+1. Add regression test for multiple engine reloads
+    * [Pull request #704](https://github.com/gazebosim/ign-rendering/pull/704)
+
+1. Fix INTEGRATION_camera/shader_selection on macOS
+    * [Pull request #703](https://github.com/gazebosim/ign-rendering/pull/703)
+
+1. Hotfix typo in ogre2 include statement
+    * [Pull request #709](https://github.com/gazebosim/ign-rendering/pull/709)
+
+1. Destroy GpuRay camera on exit
+    * [Pull request #698](https://github.com/gazebosim/ign-rendering/pull/698)
+
+1. Support for textures as binary blobs
+    * [Pull request #642](https://github.com/gazebosim/ign-rendering/pull/642)
+
+1. Port gz-rendering to Ogre 2.3
+    * [Pull request #553](https://github.com/gazebosim/ign-rendering/pull/553)
+
+1. Add coverage ignore file
+    * [Pull request #689](https://github.com/gazebosim/ign-rendering/pull/689)
+
+1. Ensure one texture per selection buffer per camera.
+    * [Pull request #665](https://github.com/gazebosim/ign-rendering/pull/665)
+
+1. Update GoogleTest to latest version
+    * [Pull request #658](https://github.com/gazebosim/ign-rendering/pull/658)
+
+1. Use pose multiplication instead of subtraction
+    * [Pull request #644](https://github.com/gazebosim/ign-rendering/pull/644)
+
+1. Suppress a new Jammy warnings
+    * [Pull request #632](https://github.com/gazebosim/ign-rendering/pull/632)
+
+1. Dependency bumps in garden : ign-rendering7
+    * [Pull request #610](https://github.com/gazebosim/ign-rendering/pull/610)
+    * [Pull request #608](https://github.com/gazebosim/ign-rendering/pull/608)
+    * [Pull request #525](https://github.com/gazebosim/ign-rendering/pull/525)
+
+1. hello_world_plugin: fix find version variables
+    * [Pull request #607](https://github.com/gazebosim/ign-rendering/pull/607)
+
+1. Replace deprecated common::SubMesh::MaterialIndex() with GetMaterialIndex()
+    * [Pull request #606](https://github.com/gazebosim/ign-rendering/pull/606)
+
+1. Separate cache files for each heightmap LOD (ogre 1.x)
+    * [Pull request #595](https://github.com/gazebosim/ign-rendering/pull/595)
+
+1. Default cameraPassCountPerGpuFlush to 6
+    * [Pull request #601](https://github.com/gazebosim/ign-rendering/pull/601)
+
+1. Don't crash if directly set low level materials are used in sensors
+    * [Pull request #593](https://github.com/gazebosim/ign-rendering/pull/593)
+
+1. Remove Bionic from future releases (Garden+)
+    * [Pull request #583](https://github.com/gazebosim/ign-rendering/pull/583)
+
+1. Require geospatial component
+    * [Pull request #539](https://github.com/gazebosim/ign-rendering/pull/539)
+
+1. Respect vertex shader from low level materials in sensor passes (#544)
+    * [Pull request #578](https://github.com/gazebosim/ign-rendering/pull/578)
+
+1. Expose GraphicsAPI
+    * [Pull request #565](https://github.com/gazebosim/ign-rendering/pull/565)
+
+1. Fixed segfault caused by OgreRTShaderSystem
+    * [Pull request #563](https://github.com/gazebosim/ign-rendering/pull/563)
+
+1. Change to use SuppressWarning from ign-utils
+    * [Pull request #559](https://github.com/gazebosim/ign-rendering/pull/559)
+
+1. [Metal] add metal shaders to waves example
+    * [Pull request #555](https://github.com/gazebosim/ign-rendering/pull/555)
+
+1. [Metal] update custom_shaders_uniforms example
+    * [Pull request #554](https://github.com/gazebosim/ign-rendering/pull/554)
+
+1. Implement Hlms custom pieces swap for Objects & Terrain
+    * [Pull request #545](https://github.com/gazebosim/ign-rendering/pull/545)
+
+1. [Metal] Fix per-point colors in point clouds to match #494
+    * [Pull request #550](https://github.com/gazebosim/ign-rendering/pull/550)
+
+1. [Metal] Fix sky background in RGBD camera to match #515
+    * [Pull request #549](https://github.com/gazebosim/ign-rendering/pull/#549)
+
+1. Update migration guide
+    * [Pull request #538](https://github.com/gazebosim/ign-rendering/pull/538)
+
+1. Rename Ogre2IgnHlmsCustomizations to Ogre2IgnHlmsSphericalClipMinDistance
+    * [Pull request #534](https://github.com/gazebosim/ign-rendering/pull/534)
+
+1. Fix color of last / extra marker points
+    * [Pull request #519](https://github.com/gazebosim/ign-rendering/pull/519)
+
+1. Per-point colors in point clouds
+    * [Pull request #494](https://github.com/gazebosim/ign-rendering/pull/494)
+
+1. [ogre1.x] Add support for wide angle camera
+    * [Pull request #490](https://github.com/gazebosim/ign-rendering/pull/490)
+
+1. Fix Ogre2 assertions during ray queries
+    * [Pull request #415](https://github.com/gazebosim/ign-rendering/pull/415)
+
+1. Use ignition-utils1
+    * [Pull request #492](https://github.com/gazebosim/ign-rendering/pull/492)
+
+1. Fix windows warnings
+    * [Pull request #489](https://github.com/gazebosim/ign-rendering/pull/489)
+
+1. Enable ray query for depth, segmentation and thermal cameras
+    * [Pull request #483](https://github.com/gazebosim/ign-rendering/pull/483)
+
+1. Add a method to render targets and cameras to retrieve a Metal texture
+    * [Pull request #478](https://github.com/gazebosim/ign-rendering/pull/478)
+
+1. add 64 bit int support to user data
+    * [Pull request #479](https://github.com/gazebosim/ign-rendering/pull/479)
 
 ### Gazebo Rendering 6.X
 

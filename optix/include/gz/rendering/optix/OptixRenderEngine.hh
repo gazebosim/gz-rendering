@@ -65,6 +65,11 @@ namespace gz
 
       public: std::string PtxFile(const std::string& _fileBase) const;
 
+      /// \brief Get a pointer to the render engine
+      /// \todo(anyone) Remove inheritance from Singleton base class
+      /// \return a pointer to the render engine
+      public: static OptixRenderEngine *Instance();
+
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name);
 

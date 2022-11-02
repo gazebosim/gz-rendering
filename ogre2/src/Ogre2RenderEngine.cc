@@ -402,7 +402,7 @@ void Ogre2RenderEngine::CreateLogger()
 {
   // create log file path
   std::string logPath;
-  gz::common::env(GZ_HOMEDIR, logPath);
+  common::env(GZ_HOMEDIR, logPath);
   logPath = common::joinPaths(logPath, ".gz", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre2.log");
@@ -415,7 +415,6 @@ void Ogre2RenderEngine::CreateLogger()
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::CreateContext()
 {
-#if !defined(__APPLE__) && !defined(_WIN32)
   if (this->Headless())
   {
     // Nothing to do
@@ -501,7 +500,6 @@ void Ogre2RenderEngine::CreateContext()
     // select X11 context
     glXMakeCurrent(x11Display, this->dummyWindowId, x11Context);
   }
-#endif
 #endif
 }
 
@@ -1184,6 +1182,12 @@ Ogre::CompositorWorkspaceListener *Ogre2RenderEngine::TerraWorkspaceListener()
   return this->dataPtr->terraWorkspaceListener.get();
 }
 
+//////////////////////////////////////////////////
+Ogre2RenderEngine *Ogre2RenderEngine::Instance()
+{
+  return SingletonT<Ogre2RenderEngine>::Instance();
+}
+
 // Register this plugin
-GZ_ADD_PLUGIN(gz::rendering::Ogre2RenderEnginePlugin,
-                    gz::rendering::RenderEnginePlugin)
+GZ_ADD_PLUGIN(rendering::Ogre2RenderEnginePlugin,
+              rendering::RenderEnginePlugin)

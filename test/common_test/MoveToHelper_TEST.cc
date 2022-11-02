@@ -97,7 +97,7 @@ TEST_F(MoveToHelperTest, MoveTo)
 
   ASSERT_NE(nullptr, camera);
 
-  rendering::NodePtr target = scene->NodeByName("center");
+  NodePtr target = scene->NodeByName("center");
 
   moveToHelper.MoveTo(camera, target, 0.5,
     std::bind(&MoveToHelperTest::OnMoveToComplete, this));

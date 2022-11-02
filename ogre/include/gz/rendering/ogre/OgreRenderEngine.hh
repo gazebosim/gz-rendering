@@ -113,6 +113,11 @@ namespace gz
       /// \return a list of FSAA levels
       public: std::vector<unsigned int> FSAALevels() const;
 
+      /// \brief Get a pointer to the render engine
+      /// \todo(anyone) Remove inheritance from Singleton base class
+      /// \return a pointer to the render engine
+      public: static OgreRenderEngine *Instance();
+
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name) override;
 

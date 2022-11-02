@@ -451,8 +451,8 @@ math::Planed TransformController::CreatePlaneForTransform(
   }
   else
   {
-    gz::math::Vector3d projNorm(0, 0, 0);
-    gz::math::Vector3d planeNormOther(0, 0, 0);
+    math::Vector3d projNorm(0, 0, 0);
+    math::Vector3d planeNormOther(0, 0, 0);
 
     if (_axis.X() > 0 && _axis.Y() > 0)
     {
@@ -591,24 +591,24 @@ void TransformController::Scale(const math::Vector3d &_scale, bool _snap)
 }
 
 /////////////////////////////////////////////////
-gz::math::Vector3d TransformController::SnapPoint(
-    const gz::math::Vector3d &_point,
+math::Vector3d TransformController::SnapPoint(
+    const math::Vector3d &_point,
     double _interval, double _sensitivity)
 {
   if (_interval < 0)
   {
     gzerr << "Interval distance must be greater than or equal to 0"
         << std::endl;
-    return gz::math::Vector3d::Zero;
+    return math::Vector3d::Zero;
   }
 
   if (_sensitivity < 0 || _sensitivity > 1.0)
   {
     gzerr << "Sensitivity must be between 0 and 1" << std::endl;
-    return gz::math::Vector3d::Zero;
+    return math::Vector3d::Zero;
   }
 
-  gz::math::Vector3d point = _point;
+  math::Vector3d point = _point;
   double snap = _interval * _sensitivity;
 
   double remainder = fmod(point.X(), _interval);

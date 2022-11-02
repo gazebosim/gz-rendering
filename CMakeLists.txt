@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 #============================================================================
 # Initialize the project
 #============================================================================
-project(gz-rendering7 VERSION 7.0.0)
+project(gz-rendering7 VERSION 7.1.0)
 
 #============================================================================
 # Find gz-cmake
@@ -18,7 +18,7 @@ set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-gz_configure_project(VERSION_SUFFIX pre1)
+gz_configure_project(VERSION_SUFFIX)
 
 #============================================================================
 # Set project-specific options
@@ -84,7 +84,7 @@ gz_find_package(GzOGRE VERSION 1.9.0
 # Display a warning for the users on this setup unless they provide
 # USE_UNOFFICIAL_OGRE_VERSIONS flag
 if (NOT USE_UNOFFICIAL_OGRE_VERSIONS)
-  if (${OGRE_VERSION} VERSION_GREATER_EQUAL 1.10.0)
+  if (OGRE_VERSION VERSION_GREATER_EQUAL 1.10.0)
     GZ_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
                       "The software might compile and even work but support from upstream"
                       "could be reduced to accepting patches for newer versions")

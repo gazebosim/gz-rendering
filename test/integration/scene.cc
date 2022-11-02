@@ -169,19 +169,19 @@ TEST_F(SceneTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(VisualAt))
   camera->Update();
 
   // test get sphere object
-  gz::math::Vector2i spherePosition(220, 307);
+  math::Vector2i spherePosition(220, 307);
   VisualPtr sphere_visual = scene->VisualAt(camera, spherePosition);
   ASSERT_NE(nullptr, sphere_visual);
   EXPECT_EQ("sphere", sphere_visual->Name());
 
   // test get box object
-  gz::math::Vector2i boxPosition(452, 338);
+  math::Vector2i boxPosition(452, 338);
   VisualPtr box_visual = scene->VisualAt(camera, boxPosition);
   ASSERT_NE(nullptr, box_visual);
   EXPECT_EQ("box", box_visual->Name());
 
   // test get no object
-  gz::math::Vector2i emptyPosition(300, 150);
+  math::Vector2i emptyPosition(300, 150);
   VisualPtr empty_visual = scene->VisualAt(camera, emptyPosition);
   ASSERT_EQ(nullptr, empty_visual);
 

@@ -224,6 +224,11 @@ namespace gz
       public: Ogre::CompositorWorkspaceListener
           *TerraWorkspaceListener() const;
 
+      /// \brief Get a pointer to the render engine
+      /// \todo(anyone) Remove inheritance from Singleton base class
+      /// \return a pointer to the render engine
+      public: static Ogre2RenderEngine *Instance();
+
       /// \brief Pointer to the ogre's overlay system
       private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;
 

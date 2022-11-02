@@ -158,8 +158,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   VisualPtr root = scene->RootVisual();
 
   // Create first ray caster
-  gz::math::Pose3d testPose(gz::math::Vector3d(0, 0, 0.1),
-      gz::math::Quaterniond::Identity);
+  math::Pose3d testPose(math::Vector3d(0, 0, 0.1),
+      math::Quaterniond::Identity);
 
   GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays_1");
   gpuRays->SetWorldPosition(testPose.Pos());
@@ -174,8 +174,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   root->AddChild(gpuRays);
 
   // Create a second ray caster rotated
-  gz::math::Pose3d testPose2(gz::math::Vector3d(0, 0, 0.1),
-      gz::math::Quaterniond(GZ_PI/2.0, 0, 0));
+  math::Pose3d testPose2(math::Vector3d(0, 0, 0.1),
+      math::Quaterniond(GZ_PI/2.0, 0, 0));
 
   GpuRaysPtr gpuRays2 = scene->CreateGpuRays("gpu_rays_2");
   gpuRays2->SetWorldPosition(testPose2.Pos());
@@ -196,8 +196,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 
   // Create testing boxes
   // box in the center
-  gz::math::Pose3d box01Pose(gz::math::Vector3d(3, 0, 0.5),
-                                   gz::math::Quaterniond::Identity);
+  math::Pose3d box01Pose(math::Vector3d(3, 0, 0.5),
+                                   math::Quaterniond::Identity);
   VisualPtr visualBox1 = scene->CreateVisual("UnitBox1");
   visualBox1->AddGeometry(scene->CreateBox());
   visualBox1->SetWorldPosition(box01Pose.Pos());
@@ -206,8 +206,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   root->AddChild(visualBox1);
 
   // box on the right of the first gpu rays caster
-  gz::math::Pose3d box02Pose(gz::math::Vector3d(0, -5, 0.5),
-                                   gz::math::Quaterniond::Identity);
+  math::Pose3d box02Pose(math::Vector3d(0, -5, 0.5),
+                                   math::Quaterniond::Identity);
   VisualPtr visualBox2 = scene->CreateVisual("UnitBox2");
   visualBox2->AddGeometry(scene->CreateBox());
   visualBox2->SetWorldPosition(box02Pose.Pos());
@@ -216,9 +216,9 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   root->AddChild(visualBox2);
 
   // box on the left of the rays caster 1 but out of range
-  gz::math::Pose3d box03Pose(
-      gz::math::Vector3d(0, maxRange + 1, 0.5),
-      gz::math::Quaterniond::Identity);
+  math::Pose3d box03Pose(
+      math::Vector3d(0, maxRange + 1, 0.5),
+      math::Quaterniond::Identity);
   VisualPtr visualBox3 = scene->CreateVisual("UnitBox3");
   visualBox3->AddGeometry(scene->CreateBox());
   visualBox3->SetWorldPosition(box03Pose.Pos());
@@ -247,7 +247,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   // rays caster 1 should see box01 and box02
   EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox1, LASER_TOL);
   EXPECT_NEAR(scan[0], expectedRangeAtMidPointBox2, LASER_TOL);
-  EXPECT_FLOAT_EQ(scan[last], gz::math::INF_F);
+  EXPECT_FLOAT_EQ(scan[last], math::INF_F);
 
   // laser retro is currently only supported in ogre2
   if (this->engineToTest == "ogre2")
@@ -275,10 +275,10 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 
   // Move all boxes out of range
   visualBox1->SetWorldPosition(
-      gz::math::Vector3d(maxRange + 1, 0, 0));
+      math::Vector3d(maxRange + 1, 0, 0));
   visualBox1->SetWorldRotation(box01Pose.Rot());
   visualBox2->SetWorldPosition(
-      gz::math::Vector3d(0, -(maxRange + 1), 0));
+      math::Vector3d(0, -(maxRange + 1), 0));
   visualBox2->SetWorldRotation(box02Pose.Rot());
 
   gpuRays->Update();
@@ -288,7 +288,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   gpuRays2->Copy(scan2);
 
   for (int i = 0; i < gpuRays->RayCount(); ++i)
-    EXPECT_FLOAT_EQ(scan[i * 3], gz::math::INF_F);
+    EXPECT_FLOAT_EQ(scan[i * 3], math::INF_F);
 
   for (int i = 0; i < gpuRays2->RayCount(); ++i)
     EXPECT_FLOAT_EQ(scan2[i * 3], maxRange);
@@ -333,8 +333,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
   VisualPtr root = scene->RootVisual();
 
   // Create first ray caster
-  gz::math::Pose3d testPose(gz::math::Vector3d(0.25, 0, 0.5),
-      gz::math::Quaterniond::Identity);
+  math::Pose3d testPose(math::Vector3d(0.25, 0, 0.5),
+      math::Quaterniond::Identity);
 
   GpuRaysPtr gpuRays = scene->CreateGpuRays("vertical_gpu_rays");
   gpuRays->SetWorldPosition(testPose.Pos());
@@ -351,8 +351,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 
   // Create testing boxes
   // box in front of ray sensor
-  gz::math::Pose3d box01Pose(gz::math::Vector3d(1, 0, 0.5),
-      gz::math::Quaterniond::Identity);
+  math::Pose3d box01Pose(math::Vector3d(1, 0, 0.5),
+      math::Quaterniond::Identity);
   VisualPtr visualBox1 = scene->CreateVisual("VerticalTestBox1");
   visualBox1->AddGeometry(scene->CreateBox());
   visualBox1->SetWorldPosition(box01Pose.Pos());
@@ -404,9 +404,9 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 
   // Move box out of range
   visualBox1->SetWorldPosition(
-      gz::math::Vector3d(maxRange + 1, 0, 0));
+      math::Vector3d(maxRange + 1, 0, 0));
   visualBox1->SetWorldRotation(
-      gz::math::Quaterniond::Identity);
+      math::Quaterniond::Identity);
 
   // wait for a few more laser scans
   gpuRays->Update();

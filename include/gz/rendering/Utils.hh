@@ -97,7 +97,6 @@ namespace gz
     gz::math::AxisAlignedBox transformAxisAlignedBox(
         const gz::math::AxisAlignedBox &_box,
         const gz::math::Pose3d &_pose);
-    }
 
     /// \brief Get the camera's intrinsic matrix.
     /// This matrix is different than the matrix returned from
@@ -111,6 +110,7 @@ namespace gz
     gz::math::Matrix3d projectionToCameraIntrinsic(
         gz::math::Matrix4d _projectionMatrix,
         double _width, double _height);
+    }
   }
 }
 #endif

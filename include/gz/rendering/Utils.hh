@@ -98,9 +98,10 @@ namespace gz
         const gz::math::AxisAlignedBox &_box,
         const gz::math::Pose3d &_pose);
 
-    /// \brief Get the camera's intrinsic matrix.
-    /// This matrix is different than the matrix returned from
-    /// ProjectionMatrix() which is used by OpenGL internally.
+    /// \brief Convert a given camera projection matrix
+    /// to an intrinsics matrix. Intrinsics matrix is different
+    /// from the matrix returned by Camera::ProjectionMatrix(),
+    /// which is used by OpenGL internally.
     /// The matrix returned contains the camera calibrated values.
     /// \param[in] _projectionMatrix Camera's projection matrix.
     /// \param[in] _width Camera's image width.

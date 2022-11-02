@@ -103,7 +103,10 @@ namespace gz
     /// This matrix is different than the matrix returned from
     /// ProjectionMatrix() which is used by OpenGL internally.
     /// The matrix returned contains the camera calibrated values.
-    /// \return intrinsic matrix
+    /// \param[in] _projectionMatrix Camera's projection matrix.
+    /// \param[in] _width Camera's image width.
+    /// \param[in] _width Camera's image height.
+    /// \return Camera's intrinsic matrix.
     GZ_RENDERING_VISIBLE
     gz::math::Matrix3d projectionToCameraIntrinsic(
         gz::math::Matrix4d _projectionMatrix,

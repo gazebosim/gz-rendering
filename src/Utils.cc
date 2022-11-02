@@ -165,7 +165,7 @@ float screenScalingFactor()
 
 /////////////////////////////////////////////////
 gz::math::Matrix3d projectionToCameraIntrinsic(
-    gz::math::Matrix4d _projectionMatrix,
+    const gz::math::Matrix4d &_projectionMatrix,
     double _width, double _height)
 {
   // Extracting the intrinsic matrix :

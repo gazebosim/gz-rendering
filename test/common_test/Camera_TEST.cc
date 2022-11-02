@@ -19,8 +19,6 @@
 
 #include "CommonRenderingTest.hh"
 
-#include <gz/utils/ExtraTestMacros.hh>
-
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/GaussianNoisePass.hh"
 #include "gz/rendering/RenderPassSystem.hh"

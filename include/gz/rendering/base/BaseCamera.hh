@@ -111,9 +111,6 @@ namespace gz
                   &_mousePos) override;
 
       // Documentation inherited.
-      public: virtual math::Matrix3d CameraIntrinsicMatrix() const override;
-
-      // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
       // Documentation inherited.
@@ -505,26 +502,6 @@ namespace gz
       gzerr << "Render window not supported for render engine: " <<
           this->Scene()->Engine()->Name() << std::endl;
       return RenderWindowPtr();
-    }
-
-    //////////////////////////////////////////////////
-    template <class T>
-    math::Matrix3d BaseCamera<T>::CameraIntrinsicMatrix() const
-    {
-      // Extracting the intrinsic matrix :
-      // https://ogrecave.github.io/ogre/api/13/class_ogre_1_1_math.html
-      const math::Matrix4d& projectionMat = this->ProjectionMatrix();
-
-      const double width = static_cast<double>(this->ImageWidth());
-      const double height = static_cast<double>(this->ImageHeight());
-      double fX = (projectionMat(0, 0) * width) / 2.0;
-      double fY = (projectionMat(1, 1) * height) / 2.0;
-      double cX = (-1.0 * width * (projectionMat(0, 2) - 1.0)) / 2.0;
-      double cY = height + (height * (projectionMat(1, 2) - 1)) / 2.0;
-
-      return math::Matrix3d(fX, 0, cX,
-                            0, fY, cY,
-                            0, 0, 1);
     }
 
     //////////////////////////////////////////////////

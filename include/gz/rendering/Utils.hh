@@ -97,6 +97,20 @@ namespace gz
     gz::math::AxisAlignedBox transformAxisAlignedBox(
         const gz::math::AxisAlignedBox &_box,
         const gz::math::Pose3d &_pose);
+
+    /// \brief Convert a given camera projection matrix
+    /// to an intrinsics matrix. Intrinsics matrix is different
+    /// from the matrix returned by Camera::ProjectionMatrix(),
+    /// which is used by OpenGL internally.
+    /// The matrix returned contains the camera calibrated values.
+    /// \param[in] _projectionMatrix Camera's projection matrix.
+    /// \param[in] _width Camera's image width.
+    /// \param[in] _height Camera's image height.
+    /// \return Camera's intrinsic matrix.
+    GZ_RENDERING_VISIBLE
+    gz::math::Matrix3d projectionToCameraIntrinsic(
+        const gz::math::Matrix4d &_projectionMatrix,
+        double _width, double _height);
     }
   }
 }

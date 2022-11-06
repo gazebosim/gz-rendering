@@ -99,6 +99,9 @@ class gz::rendering::Ogre2RenderTargetPrivate
   /// actual window
   ///
   public: Ogre::TextureGpu *ogreTexture[2] = {nullptr, nullptr};
+
+  /// \brief A chain of render passes applied to the render target
+  protected: std::vector<RenderPassPtr> renderPasses;
 };
 
 using namespace gz;

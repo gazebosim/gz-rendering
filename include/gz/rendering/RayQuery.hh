@@ -88,6 +88,20 @@ namespace gz
       public: virtual void SetFromCamera(const CameraPtr &_camera,
                 const math::Vector2d &_coord) = 0;
 
+      /// \brief Create the ray query from WideAngleCamera
+      /// \param[in] _camera Camera to construct ray
+      /// \param[in] _faceIdx In range [0; 6)
+      ///   * 0 = +X
+      ///   * 1 = -X
+      ///   * 2 = +Y
+      ///   * 3 = -Y
+      ///   * 4 = +Z
+      ///   * 5 = -Z
+      /// \param[in] _coord normalized device coords [-1, +1]
+      public: virtual void SetFromCamera(const WideAngleCameraPtr &_camera,
+                                         uint32_t _faceIdx,
+                                         const math::Vector2d &_coord) = 0;
+
       /// \brief If possible & supported (and user called SetFromCamera())
       /// will use the GPU to perform the ray query.
       /// Triangle-level accurate.

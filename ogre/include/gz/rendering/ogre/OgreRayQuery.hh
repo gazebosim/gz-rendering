@@ -50,6 +50,11 @@ namespace gz
                 const math::Vector2d &_coord);
 
       // Documentation inherited
+      public: void SetFromCamera(const WideAngleCameraPtr &_camera,
+                                 uint32_t _faceIdx,
+                                 const math::Vector2d &_coord) override;
+
+      // Documentation inherited
       public: virtual RayQueryResult ClosestPoint(
             bool _forceSceneUpdate = true);
 

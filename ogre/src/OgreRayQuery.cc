@@ -71,6 +71,15 @@ void OgreRayQuery::SetFromCamera(const CameraPtr &_camera,
 }
 
 //////////////////////////////////////////////////
+void OgreRayQuery::SetFromCamera(const WideAngleCameraPtr & /*_camera*/,
+                                 uint32_t /*_faceIdx*/,
+                                 const math::Vector2d & /*_coord*/)
+{
+  gzerr << "Not Implemented" << std::endl;
+  throw;
+}
+
+//////////////////////////////////////////////////
 RayQueryResult OgreRayQuery::ClosestPoint(bool /*_forceSceneUpdate*/) // NOLINT
 {
   RayQueryResult result;

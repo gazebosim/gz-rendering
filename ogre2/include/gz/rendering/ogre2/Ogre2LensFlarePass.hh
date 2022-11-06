@@ -53,6 +53,9 @@ namespace gz
       public: void PreRender(const CameraPtr &_camera) override;
 
       // Documentation inherited
+      public: void PostRender() override;
+
+      // Documentation inherited
       public: void SetScale(double _scale) override;
 
       // Documentation inherited
@@ -82,7 +85,11 @@ namespace gz
       /// factor that is proportional to the lens flare's visibility
       /// \remark Ogre2LensFlarePass::PreRender must have been called first.
       /// \param[in] _imgPos light pos in clip space
-      private: double OcclusionScale(const math::Vector3d &_imgPos);
+      /// \param[in] _faceIdx Face idx in range [0; 6)
+      /// See RayQuery::SetFromCamera for what each value means
+      /// This value is ignored if the camera is not WideAngleCamera
+      private: double OcclusionScale(const math::Vector3d &_imgPos,
+                                     uint32_t _faceIdx);
 
       /// \cond warning
       /// \brief Private data pointer

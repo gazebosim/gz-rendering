@@ -29,6 +29,7 @@
 #include "gz/rendering/ogre2/Ogre2SegmentationCamera.hh"
 #include "gz/rendering/ogre2/Ogre2SelectionBuffer.hh"
 #include "gz/rendering/ogre2/Ogre2ThermalCamera.hh"
+#include "gz/rendering/ogre2/Ogre2WideAngleCamera.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -127,6 +128,48 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
       screenPos.X() * _camera->ImageWidth());
   this->dataPtr->imgPos.Y() = static_cast<int>(
       screenPos.Y() * _camera->ImageHeight());
+}
+
+//////////////////////////////////////////////////
+void Ogre2RayQuery::SetFromCamera(const WideAngleCameraPtr &_camera,
+                                  uint32_t _faceIdx,
+                                  const math::Vector2d &_coord)
+{
+  // convert to nomalized screen pos for ogre
+  math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
+
+  Ogre2WideAngleCameraPtr camera =
+    std::dynamic_pointer_cast<Ogre2WideAngleCamera>(_camera);
+  this->dataPtr->camera.reset();
+
+  Ogre::Ray ray = camera->CameraToViewportRay(screenPos, _faceIdx);
+
+  auto originMath = Ogre2Conversions::Convert(ray.getOrigin());
+  if (originMath.IsFinite())
+  {
+    this->origin = originMath;
+  }
+  else
+  {
+    gzwarn << "Attempted to set non-finite origin from camera ["
+           << camera->Name() << "]" << std::endl;
+  }
+
+  auto directionMath = Ogre2Conversions::Convert(ray.getDirection());
+  if (directionMath.IsFinite())
+  {
+    this->direction = directionMath;
+  }
+  else
+  {
+    gzwarn << "Attempted to set non-finite direction from camera ["
+           << camera->Name() << "]" << std::endl;
+  }
+
+  this->dataPtr->imgPos.X() =
+    static_cast<int>(screenPos.X() * _camera->ImageWidth());
+  this->dataPtr->imgPos.Y() =
+    static_cast<int>(screenPos.Y() * _camera->ImageHeight());
 }
 
 //////////////////////////////////////////////////

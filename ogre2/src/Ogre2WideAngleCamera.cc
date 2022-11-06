@@ -233,6 +233,39 @@ void Ogre2WideAngleCamera::Destroy()
 }
 
 //////////////////////////////////////////////////
+void Ogre2WideAngleCamera::AddRenderPass(const RenderPassPtr &_pass)
+{
+  BaseWideAngleCamera::AddRenderPass(_pass);
+  this->dataPtr->renderPasses.push_back(_pass);
+  this->DestroyFacesWorkspaces();
+  if (this->dataPtr->ogreRenderTexture)
+  {
+    const uint8_t msaa =
+      Ogre2RenderTarget::TargetFSAA(static_cast<uint8_t>(this->antiAliasing));
+    this->CreateFacesWorkspaces(msaa);
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2WideAngleCamera::RemoveRenderPass(const RenderPassPtr &_pass)
+{
+  auto it = std::find(this->dataPtr->renderPasses.begin(),
+                      this->dataPtr->renderPasses.end(), _pass);
+  if (it != this->dataPtr->renderPasses.end())
+  {
+    (*it)->Destroy();
+    this->dataPtr->renderPasses.erase(it);
+  }
+  this->DestroyFacesWorkspaces();
+  if (this->dataPtr->ogreRenderTexture)
+  {
+    const uint8_t msaa =
+      Ogre2RenderTarget::TargetFSAA(static_cast<uint8_t>(this->antiAliasing));
+    this->CreateFacesWorkspaces(msaa);
+  }
+}
+
+//////////////////////////////////////////////////
 uint32_t Ogre2WideAngleCamera::EnvTextureSize() const
 {
   return this->dataPtr->envTextureSize;
@@ -367,6 +400,43 @@ void Ogre2WideAngleCamera::CreateWorkspaceDefinition(bool _withMsaa)
 }
 
 //////////////////////////////////////////////////
+void Ogre2WideAngleCamera::CreateFacesWorkspaces(bool _withMsaa)
+{
+  this->CreateWorkspaceDefinition(_withMsaa);
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+  Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
+
+  this->RetrieveCubePassSceneDefs(ogreCompMgr, _withMsaa);
+
+  const Ogre::CompositorChannelVec channels = {
+    this->dataPtr->ogreTmpTextures[0], this->dataPtr->ogreTmpTextures[1],
+    this->dataPtr->envCubeMapTexture
+  };
+
+  for (uint32_t i = 0u; i < 6u; ++i)
+  {
+    GZ_ASSERT(!this->dataPtr->ogreCompositorWorkspace[i], "Must be nullptr!");
+
+    this->dataPtr->ogreCompositorWorkspace[i] = ogreCompMgr->addWorkspace(
+      ogreSceneManager, channels, this->dataPtr->ogreCamera,
+      this->WorkspaceDefinitionName(i), false);
+    this->dataPtr->ogreCompositorWorkspace[i]->addListener(
+      &this->dataPtr->workspaceListener);
+
+    for (RenderPassPtr &pass : this->dataPtr->renderPasses)
+    {
+      Ogre2RenderPass *ogre2RenderPass =
+        dynamic_cast<Ogre2RenderPass *>(pass.get());
+      ogre2RenderPass->WorkspaceAdded(
+        this->dataPtr->ogreCompositorWorkspace[i]);
+    }
+  }
+}
+
+//////////////////////////////////////////////////
 void Ogre2WideAngleCamera::DestroyFacesWorkspaces()
 {
   using namespace Ogre;
@@ -473,31 +543,7 @@ void Ogre2WideAngleCamera::CreateWideAngleTexture()
     SetupMSAA(ogreCompMgr, msaa);
   }
 
-  this->CreateWorkspaceDefinition(msaa > 1u);
-
-  this->RetrieveCubePassSceneDefs(ogreCompMgr, msaa > 1u);
-
-  const Ogre::CompositorChannelVec channels = {
-    this->dataPtr->ogreTmpTextures[0], this->dataPtr->ogreTmpTextures[1],
-    this->dataPtr->envCubeMapTexture
-  };
-
-  for (uint32_t i = 0u; i < 6u; ++i)
-  {
-    this->dataPtr->ogreCompositorWorkspace[i] = ogreCompMgr->addWorkspace(
-      ogreSceneManager, channels, this->dataPtr->ogreCamera,
-      this->WorkspaceDefinitionName(i), false);
-    this->dataPtr->ogreCompositorWorkspace[i]->addListener(
-      &this->dataPtr->workspaceListener);
-
-    for (RenderPassPtr &pass : this->dataPtr->renderPasses)
-    {
-      Ogre2RenderPass *ogre2RenderPass =
-        dynamic_cast<Ogre2RenderPass *>(pass.get());
-      ogre2RenderPass->WorkspaceAdded(
-        this->dataPtr->ogreCompositorWorkspace[i]);
-    }
-  }
+  this->CreateFacesWorkspaces(msaa > 1u);
 
   const Ogre::CompositorChannelVec channelsFinalPass = {
     this->dataPtr->envCubeMapTexture, this->dataPtr->ogreRenderTexture

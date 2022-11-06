@@ -55,6 +55,12 @@ namespace gz
       // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
+      public: void AddRenderPass(const RenderPassPtr &_pass) override;
+
+      // Documentation inherited
+      public: void RemoveRenderPass(const RenderPassPtr &_pass) override;
+
       /// \brief Gets the environment texture size
       /// \return Texture size
       public: uint32_t EnvTextureSize() const;
@@ -102,6 +108,10 @@ namespace gz
       /// \brief Creates the workspace definition, including effects.
       /// \param[in] _withMsaa Whether the camera is using MSAA
       protected: void CreateWorkspaceDefinition(bool _withMsaa);
+
+      /// \brief Creates the workspaces & their definitions.
+      /// \param[in] _withMsaa Whether the version we're retrieving is the MSAA
+      protected: void CreateFacesWorkspaces(bool _withMsaa);
 
       /// \brief Destroys the workspaces & their definitions.
       protected: void DestroyFacesWorkspaces();

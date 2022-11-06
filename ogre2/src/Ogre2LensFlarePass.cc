@@ -24,6 +24,7 @@
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2Light.hh"
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2WideAngleCamera.hh"
 
 #ifdef _MSC_VER
 #  pragma warning(push, 0)
@@ -92,6 +93,9 @@ class gz::rendering::Ogre2LensFlarePass::Implementation
   /// \brief Current Camera rendering
   public: CameraPtr currentCamera;
 
+  /// \brief Current Face index being rendered. In range [0; 6)
+  public: uint32_t currentFaceIdx = 1u;
+
   /// \brief RayQuery to perform occlusion tests
   public: RayQueryPtr rayQuery;
 
@@ -153,6 +157,23 @@ void Ogre2LensFlarePass::PreRender(const CameraPtr &_camera)
     this->dataPtr->lightWorldPos = this->light->WorldPose().Pos();
 
   this->dataPtr->currentCamera = _camera;
+  this->dataPtr->currentFaceIdx = 0u;
+}
+
+//////////////////////////////////////////////////
+void Ogre2LensFlarePass::PostRender()
+{
+  if (!this->enabled || this->light == nullptr)
+    return;
+
+  Ogre2WideAngleCameraPtr wideAngleCamera =
+    std::dynamic_pointer_cast<Ogre2WideAngleCamera>(
+      this->dataPtr->currentCamera);
+  // WideAngleCamera is supposed to rendered 6 times. Nothin more, nothing less.
+  // Normal cameras are supposed to be rendered 1 time.
+  GZ_ASSERT((!wideAngleCamera && this->dataPtr->currentFaceIdx == 1u) ||
+              (wideAngleCamera && this->dataPtr->currentFaceIdx == 6u),
+            "The lens flare pass was done more times than expected");
 }
 
 //////////////////////////////////////////////////
@@ -204,15 +225,27 @@ void Ogre2LensFlarePass::WorkspaceRemoved(Ogre::CompositorWorkspace *_workspace)
 }
 
 //////////////////////////////////////////////////
-double Ogre2LensFlarePass::OcclusionScale(const math::Vector3d &_imgPos)
+double Ogre2LensFlarePass::OcclusionScale(const math::Vector3d &_imgPos,
+                                          uint32_t _faceIdx)
 {
   if (std::abs(this->dataPtr->occlusionSteps) <= 1e-7)
   {
     return this->dataPtr->scale;
   }
 
-  this->dataPtr->rayQuery->SetFromCamera(
-    this->dataPtr->currentCamera, math::Vector2d(_imgPos.X(), _imgPos.Y()));
+  Ogre2WideAngleCameraPtr wideAngleCamera =
+    std::dynamic_pointer_cast<Ogre2WideAngleCamera>(
+      this->dataPtr->currentCamera);
+  if (wideAngleCamera)
+  {
+    this->dataPtr->rayQuery->SetFromCamera(
+      wideAngleCamera, _faceIdx, math::Vector2d(_imgPos.X(), _imgPos.Y()));
+  }
+  else
+  {
+    this->dataPtr->rayQuery->SetFromCamera(
+      this->dataPtr->currentCamera, math::Vector2d(_imgPos.X(), _imgPos.Y()));
+  }
 
   const math::Vector3d lightWorldPos = this->dataPtr->lightWorldPos;
 
@@ -246,8 +279,16 @@ double Ogre2LensFlarePass::OcclusionScale(const math::Vector3d &_imgPos)
   {
     for (double j = startx; j < endx; j += stepSize)
     {
-      this->dataPtr->rayQuery->SetFromCamera(this->dataPtr->currentCamera,
-                                             math::Vector2d(j, i));
+      if (wideAngleCamera)
+      {
+        this->dataPtr->rayQuery->SetFromCamera(wideAngleCamera, _faceIdx,
+                                               math::Vector2d(j, i));
+      }
+      else
+      {
+        this->dataPtr->rayQuery->SetFromCamera(this->dataPtr->currentCamera,
+                                               math::Vector2d(j, i));
+      }
       RayQueryResult result = this->dataPtr->rayQuery->ClosestPoint(false);
       bool intersect = result.distance >= 0.0;
       if (intersect &&
@@ -270,7 +311,8 @@ void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
   if (!this->owner.enabled)
     return;
 
-  const uint32_t identifier = _pass->getDefinition()->mIdentifier;
+  const Ogre::CompositorPassDef *passDef = _pass->getDefinition();
+  const uint32_t identifier = passDef->mIdentifier;
   if (identifier != kLensFlareNodePassQuadId)
     return;
 
@@ -302,9 +344,11 @@ void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
   double lensFlareScale = 1.0;
   if (lightPos.z >= 0.0)
   {
-    lensFlareScale =
-      this->owner.OcclusionScale(Ogre2Conversions::Convert(lightPos));
+    lensFlareScale = this->owner.OcclusionScale(
+      Ogre2Conversions::Convert(lightPos), this->owner.dataPtr->currentFaceIdx);
   }
+
+  ++this->owner.dataPtr->currentFaceIdx;
 
   GpuProgramParametersSharedPtr psParams = pass->getFragmentProgramParameters();
 

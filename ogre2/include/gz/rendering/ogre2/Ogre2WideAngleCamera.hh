@@ -70,16 +70,41 @@ namespace gz
       public: math::Vector3d Project3d(const math::Vector3d &_pt) const
           override;
 
+      /// \brief It's the same as calling ogreCamera->getCameraToViewportRay
+      /// but for the specific _faceIdx.
+      /// \param _screenPos Screen space position
+      /// \param _faceIdx Face index in range [0; 6).
+      /// See RayQuery::SetFromCamera for what each value means
+      /// \return Ogre Ray pointing towards screenPos from the given face idx
+      public: Ogre::Ray CameraToViewportRay(const math::Vector2d &_screenPos,
+                                            uint32_t _faceIdx);
+
       // Documentation inherited.
       public: virtual void PreRender() override;
 
       /// \brief Implementation of the render call
       public: virtual void Render() override;
 
+      // Documentation inherited.
+      public: void Copy(Image &_image) const override;
+
       // Documentation inherited
       public: common::ConnectionPtr ConnectNewWideAngleFrame(
           std::function<void(const unsigned char *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
+
+
+      /// \brief Returns the workspace name. It's unique for each camera.
+      /// \param[in] _faceIdx Face index in range [0; 6)
+      /// \return Workspace definition's name
+      protected: std::string WorkspaceDefinitionName(uint32_t _faceIdx) const;
+
+      /// \brief Creates the workspace definition, including effects.
+      /// \param[in] _withMsaa Whether the camera is using MSAA
+      protected: void CreateWorkspaceDefinition(bool _withMsaa);
+
+      /// \brief Destroys the workspaces & their definitions.
+      protected: void DestroyFacesWorkspaces();
 
       /// \brief Set the camera's render target
       protected: void CreateWideAngleTexture() override;

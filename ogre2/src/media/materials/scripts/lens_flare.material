@@ -50,7 +50,7 @@ material LensFlare
       texture_unit RT
       {
         tex_address_mode  border
-        filtering         point
+        filtering         none
       }
     }
   }

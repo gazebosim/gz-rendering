@@ -20,6 +20,7 @@
 #include "gz/rendering/CameraLens.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2RenderPass.hh"
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 
 #include "gz/common/Util.hh"
@@ -68,6 +69,19 @@ class GZ_RENDERING_OGRE2_HIDDEN Ogre2WideAngleCameraWorkspaceListenerPrivate :
   /// \param[in] _pass Ogre pass which is about to execute
   public: virtual void passPreExecute(Ogre::CompositorPass *_pass) override;
 };
+
+// Matches CompositorPass::CubemapRotations from OgreCompositorPass.cpp
+const Ogre::Quaternion kCubemapRotations[6] = {
+  Ogre::Quaternion(Ogre::Radian(-1.570796f), Ogre::Vector3(0, 1, 0)),  // +X
+  Ogre::Quaternion(Ogre::Radian(1.570796f), Ogre::Vector3(0, 1, 0)),   // -X
+  Ogre::Quaternion(Ogre::Radian(1.570796f), Ogre::Vector3(1, 0, 0)),   // +Y
+  Ogre::Quaternion(Ogre::Radian(-1.570796f), Ogre::Vector3(1, 0, 0)),  // -Y
+  Ogre::Quaternion(1, 0, 0, 0),                            // +Z
+  Ogre::Quaternion(Ogre::Radian(3.1415927f), Ogre::Vector3(0, 1, 0))   // -Z
+};
+
+static const char *kWideAngleCameraSuffixes[6] = { "PX", "NX", "PY",
+                                                   "NY", "PZ", "NZ" };
 }
 }
 }
@@ -85,15 +99,21 @@ class gz::rendering::Ogre2WideAngleCamera::Implementation
   /// \brief A single cube map texture
   public: Ogre::TextureGpu *envCubeMapTexture = nullptr;
 
+  /// \brief Temp 2D textures that will be later saved to envCubeMapTexture
+  /// We use two for ping pong effects.
+  public: Ogre::TextureGpu *ogreTmpTextures[2]{};
+
   /// \brief Output texture
   public: Ogre::TextureGpu *ogreRenderTexture = nullptr;
 
-  /// \brief Compositor workspace. Does all the work
-  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace = nullptr;
+  /// \brief Compositor workspace. Does all the work. One for each face
+  public: Ogre::CompositorWorkspace *ogreCompositorWorkspace[6];
+
+  /// \brief Compositor workspace. Converts the cubemap into a "fish eye"
+  public: Ogre::CompositorWorkspace *ogreCompositorFinalPass = nullptr;
 
   /// \brief Main pass definition (used for visibility mask manipuluation).
-  public: Ogre::CompositorPassSceneDef
-  *cubePassSceneDef[kWideAngleNumCubemapFaces]{};
+  public: Ogre::CompositorPassSceneDef *cubePassSceneDef = nullptr;
 
   /// \brief Pointer to material, used for second rendering pass
   public: Ogre::MaterialPtr compMat;
@@ -108,6 +128,9 @@ class gz::rendering::Ogre2WideAngleCamera::Implementation
 
   /// \brief Dummy texture
   public: Ogre2RenderTexturePtr wideAngleTexture;
+
+  /// \brief A chain of render passes applied to the render target
+  public: std::vector<RenderPassPtr> renderPasses;
 
   /// \brief Event used to signal camera data
   public: gz::common::EventT<void(const unsigned char *,
@@ -135,6 +158,10 @@ static constexpr uint32_t kWideAngleCameraQuadPassId = 1276661u;
 Ogre2WideAngleCamera::Ogre2WideAngleCamera() :
   dataPtr(utils::MakeUniqueImpl<Implementation>(*this))
 {
+  for (unsigned int i = 0; i < 6; ++i)
+  {
+    this->dataPtr->ogreCompositorWorkspace[i] = nullptr;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -184,11 +211,13 @@ void Ogre2WideAngleCamera::Destroy()
     this->dataPtr->ogreRenderTexture, this->dataPtr->envCubeMapTexture
   };
 
-  if (this->dataPtr->ogreCompositorWorkspace)
+  if (this->dataPtr->ogreCompositorFinalPass)
   {
-    ogreCompMgr->removeWorkspace(this->dataPtr->ogreCompositorWorkspace);
-    this->dataPtr->ogreCompositorWorkspace = nullptr;
+    ogreCompMgr->removeWorkspace(this->dataPtr->ogreCompositorFinalPass);
+    this->dataPtr->ogreCompositorFinalPass = nullptr;
   }
+
+  this->DestroyFacesWorkspaces();
 
   if (this->dataPtr->envCubeMapTexture)
   {
@@ -275,20 +304,97 @@ void Ogre2WideAngleCamera::RetrieveCubePassSceneDefs(
   Ogre::CompositorNodeDef *nodeDef = _ogreCompMgr->getNodeDefinitionNonConst(
     _withMsaa ? "WideAngleCameraCubemapPassMsaa"
               : "WideAngleCameraCubemapPass");
-  for (uint32_t i = 0u; i < kWideAngleNumCubemapFaces; ++i)
-  {
-    Ogre::CompositorTargetDef *target0 = nodeDef->getTargetPass(i);
-    Ogre::CompositorPassDefVec &passes = target0->getCompositorPassesNonConst();
-    GZ_ASSERT(passes.size() >= 1u,
-              "wide_angle_camera.compositor is out of sync?");
-    GZ_ASSERT(passes[0]->getType() == Ogre::PASS_SCENE,
-              "wide_angle_camera.compositor is out of sync?");
-    GZ_ASSERT(dynamic_cast<Ogre::CompositorPassSceneDef *>(passes[0]),
-              "Memory corruption?");
 
-    this->dataPtr->cubePassSceneDef[i] =
-      static_cast<Ogre::CompositorPassSceneDef *>(passes[0]);
+  Ogre::CompositorTargetDef *target0 = nodeDef->getTargetPass(0);
+  Ogre::CompositorPassDefVec &passes = target0->getCompositorPassesNonConst();
+  GZ_ASSERT(passes.size() >= 1u,
+            "wide_angle_camera.compositor is out of sync?");
+  GZ_ASSERT(passes[0]->getType() == Ogre::PASS_SCENE,
+            "wide_angle_camera.compositor is out of sync?");
+  GZ_ASSERT(dynamic_cast<Ogre::CompositorPassSceneDef *>(passes[0]),
+            "Memory corruption?");
+
+  this->dataPtr->cubePassSceneDef =
+    static_cast<Ogre::CompositorPassSceneDef *>(passes[0]);
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2WideAngleCamera::WorkspaceDefinitionName(
+  uint32_t _faceIdx) const
+{
+  const std::string wsDefName =
+    "WideAngleCamera/" + this->Name() + kWideAngleCameraSuffixes[_faceIdx];
+  return wsDefName;
+}
+
+//////////////////////////////////////////////////
+void Ogre2WideAngleCamera::CreateWorkspaceDefinition(bool _withMsaa)
+{
+  using namespace Ogre;
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  const IdString cubemapPassNodeName =
+    _withMsaa ? "WideAngleCameraCubemapPassMsaa" : "WideAngleCameraCubemapPass";
+
+  for (uint32_t faceIdx = 0u; faceIdx < 6u; ++faceIdx)
+  {
+    const std::string wsDefName = WorkspaceDefinitionName(faceIdx);
+    CompositorWorkspaceDef *workDef =
+      ogreCompMgr->addWorkspaceDefinition(wsDefName);
+
+    workDef->connectExternal(0, cubemapPassNodeName, 0);
+    workDef->connectExternal(1, cubemapPassNodeName, 1);
+
+    IdString prevNode = cubemapPassNodeName;
+    for (RenderPassPtr &pass : this->dataPtr->renderPasses)
+    {
+      Ogre2RenderPass *ogre2RenderPass =
+        dynamic_cast<Ogre2RenderPass *>(pass.get());
+
+      ogre2RenderPass->CreateRenderPass();
+      IdString currNode = ogre2RenderPass->OgreCompositorNodeDefinitionName();
+      workDef->connect(prevNode, currNode);
+      prevNode = currNode;
+    }
+
+    const IdString copyPass = std::string("WideAngleCameraCubemapCopy") +
+                              kWideAngleCameraSuffixes[faceIdx];
+    workDef->connect(prevNode, copyPass);
+    workDef->connectExternal(2, copyPass, 2);
   }
+}
+
+//////////////////////////////////////////////////
+void Ogre2WideAngleCamera::DestroyFacesWorkspaces()
+{
+  using namespace Ogre;
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  for (uint32_t i = 0u; i < 6u; ++i)
+  {
+    if (this->dataPtr->ogreCompositorWorkspace[i])
+    {
+      const IdString workspaceName =
+        this->dataPtr->ogreCompositorWorkspace[i]->getDefinition()->getName();
+
+      for (RenderPassPtr &pass : this->dataPtr->renderPasses)
+      {
+        Ogre2RenderPass *ogre2RenderPass =
+          dynamic_cast<Ogre2RenderPass *>(pass.get());
+        ogre2RenderPass->WorkspaceRemoved(
+          this->dataPtr->ogreCompositorWorkspace[i]);
+      }
+      ogreCompMgr->removeWorkspace(this->dataPtr->ogreCompositorWorkspace[i]);
+      this->dataPtr->ogreCompositorWorkspace[i] = nullptr;
+
+      ogreCompMgr->removeWorkspaceDefinition(workspaceName);
+    }
+  }
+  this->dataPtr->cubePassSceneDef = nullptr;
 }
 
 //////////////////////////////////////////////////
@@ -305,25 +411,23 @@ void Ogre2WideAngleCamera::CreateWideAngleTexture()
   Ogre::TextureGpuManager *textureMgr =
     ogreRoot->getRenderSystem()->getTextureGpuManager();
 
-  if (!this->dataPtr->ogreRenderTexture)
-  {
-    this->dataPtr->ogreRenderTexture =
-      textureMgr->createTexture(this->Name() + "_wideAngleCamera",    //
-                                Ogre::GpuPageOutStrategy::Discard,    //
-                                Ogre::TextureFlags::RenderToTexture,  //
-                                Ogre::TextureTypes::Type2D,           //
-                                Ogre::BLANKSTRING,                    //
-                                0u);
+  GZ_ASSERT(!this->dataPtr->ogreRenderTexture, "Should be nullptr");
 
-    this->dataPtr->ogreRenderTexture->setResolution(this->ImageWidth(),
-                                                    this->ImageHeight());
-    this->dataPtr->ogreRenderTexture->setPixelFormat(
-      Ogre::PFG_RGBA8_UNORM_SRGB);
-    this->dataPtr->ogreRenderTexture->_setDepthBufferDefaults(
-      Ogre::DepthBuffer::POOL_NO_DEPTH, false, Ogre::PFG_UNKNOWN);
-    this->dataPtr->ogreRenderTexture->scheduleTransitionTo(
-      Ogre::GpuResidency::Resident);
-  }
+  this->dataPtr->ogreRenderTexture =
+    textureMgr->createTexture(this->Name() + "_wideAngleCamera",    //
+                              Ogre::GpuPageOutStrategy::Discard,    //
+                              Ogre::TextureFlags::RenderToTexture,  //
+                              Ogre::TextureTypes::Type2D,           //
+                              Ogre::BLANKSTRING,                    //
+                              0u);
+
+  this->dataPtr->ogreRenderTexture->setResolution(this->ImageWidth(),
+                                                  this->ImageHeight());
+  this->dataPtr->ogreRenderTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+  this->dataPtr->ogreRenderTexture->_setDepthBufferDefaults(
+    Ogre::DepthBuffer::POOL_NO_DEPTH, false, Ogre::PFG_UNKNOWN);
+  this->dataPtr->ogreRenderTexture->scheduleTransitionTo(
+    Ogre::GpuResidency::Resident);
 
   this->dataPtr->envCubeMapTexture =
     textureMgr->createTexture(this->Name() + "_cube_wideAngleCamera",  //
@@ -340,6 +444,23 @@ void Ogre2WideAngleCamera::CreateWideAngleTexture()
   this->dataPtr->envCubeMapTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
 
+  for (uint32_t i = 0u; i < 2u; ++i)
+  {
+    this->dataPtr->ogreTmpTextures[i] = textureMgr->createTexture(
+      this->Name() + "_tmpTexture2d/" + std::to_string(i),  //
+      Ogre::GpuPageOutStrategy::Discard,                    //
+      Ogre::TextureFlags::RenderToTexture,                  //
+      Ogre::TextureTypes::Type2D,                           //
+      Ogre::BLANKSTRING,                                    //
+      0u);
+    this->dataPtr->ogreTmpTextures[i]->setResolution(
+      this->dataPtr->envTextureSize, this->dataPtr->envTextureSize);
+    this->dataPtr->ogreTmpTextures[i]->setPixelFormat(
+      this->dataPtr->envCubeMapTexture->getPixelFormat());
+    this->dataPtr->ogreTmpTextures[i]->scheduleTransitionTo(
+      Ogre::GpuResidency::Resident);
+  }
+
   // Create compositor workspace
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
@@ -352,16 +473,40 @@ void Ogre2WideAngleCamera::CreateWideAngleTexture()
     SetupMSAA(ogreCompMgr, msaa);
   }
 
+  this->CreateWorkspaceDefinition(msaa > 1u);
+
   this->RetrieveCubePassSceneDefs(ogreCompMgr, msaa > 1u);
 
   const Ogre::CompositorChannelVec channels = {
+    this->dataPtr->ogreTmpTextures[0], this->dataPtr->ogreTmpTextures[1],
+    this->dataPtr->envCubeMapTexture
+  };
+
+  for (uint32_t i = 0u; i < 6u; ++i)
+  {
+    this->dataPtr->ogreCompositorWorkspace[i] = ogreCompMgr->addWorkspace(
+      ogreSceneManager, channels, this->dataPtr->ogreCamera,
+      this->WorkspaceDefinitionName(i), false);
+    this->dataPtr->ogreCompositorWorkspace[i]->addListener(
+      &this->dataPtr->workspaceListener);
+
+    for (RenderPassPtr &pass : this->dataPtr->renderPasses)
+    {
+      Ogre2RenderPass *ogre2RenderPass =
+        dynamic_cast<Ogre2RenderPass *>(pass.get());
+      ogre2RenderPass->WorkspaceAdded(
+        this->dataPtr->ogreCompositorWorkspace[i]);
+    }
+  }
+
+  const Ogre::CompositorChannelVec channelsFinalPass = {
     this->dataPtr->envCubeMapTexture, this->dataPtr->ogreRenderTexture
   };
 
-  this->dataPtr->ogreCompositorWorkspace = ogreCompMgr->addWorkspace(
-    ogreSceneManager, channels, this->dataPtr->ogreCamera,
-    "WideAngleCameraWorkspace", false);
-  this->dataPtr->ogreCompositorWorkspace->addListener(
+  this->dataPtr->ogreCompositorFinalPass = ogreCompMgr->addWorkspace(
+    ogreSceneManager, channelsFinalPass, this->dataPtr->ogreCamera,
+    "WideAngleCameraFinalPass", false);
+  this->dataPtr->ogreCompositorFinalPass->addListener(
     &this->dataPtr->workspaceListener);
 }
 
@@ -374,28 +519,51 @@ void Ogre2WideAngleCamera::Render()
     ogreRoot->getRenderSystem()->startGpuDebuggerFrameCapture(nullptr);
   }
   const uint32_t currVisibilityMask = this->VisibilityMask();
-  for (uint32_t i = 0u; i < kWideAngleNumCubemapFaces; ++i)
-  {
-    this->dataPtr->cubePassSceneDef[i]->mVisibilityMask = currVisibilityMask;
-  }
+  this->dataPtr->cubePassSceneDef->mVisibilityMask = currVisibilityMask;
 
   this->scene->StartRendering(this->dataPtr->ogreCamera);
 
   Ogre::vector<Ogre::TextureGpu *>::type swappedTargets;
 
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(true);
+  const Ogre::Quaternion oldCameraOrientation(
+    this->dataPtr->ogreCamera->getOrientation());
 
-  this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
-  this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);
-  this->dataPtr->ogreCompositorWorkspace->_update();
-  this->dataPtr->ogreCompositorWorkspace->_endUpdate(false);
+  for (size_t i = 0u; i < 6u; ++i)
+  {
+    this->dataPtr->ogreCompositorWorkspace[i]->setEnabled(true);
 
-  swappedTargets.clear();
-  this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
+    this->dataPtr->ogreCamera->setOrientation(oldCameraOrientation *
+                                              kCubemapRotations[i]);
 
-  this->dataPtr->ogreCompositorWorkspace->setEnabled(false);
+    this->dataPtr->ogreCompositorWorkspace[i]->_validateFinalTarget();
+    this->dataPtr->ogreCompositorWorkspace[i]->_beginUpdate(false);
+    this->dataPtr->ogreCompositorWorkspace[i]->_update();
+    this->dataPtr->ogreCompositorWorkspace[i]->_endUpdate(false);
+
+    swappedTargets.clear();
+    this->dataPtr->ogreCompositorWorkspace[i]->_swapFinalTarget(swappedTargets);
+
+    this->dataPtr->ogreCompositorWorkspace[i]->setEnabled(false);
+  }
+
+  this->dataPtr->ogreCamera->setOrientation(oldCameraOrientation);
+
+  {
+    this->dataPtr->ogreCompositorFinalPass->setEnabled(true);
+
+    this->dataPtr->ogreCompositorFinalPass->_validateFinalTarget();
+    this->dataPtr->ogreCompositorFinalPass->_beginUpdate(false);
+    this->dataPtr->ogreCompositorFinalPass->_update();
+    this->dataPtr->ogreCompositorFinalPass->_endUpdate(false);
+
+    swappedTargets.clear();
+    this->dataPtr->ogreCompositorFinalPass->_swapFinalTarget(swappedTargets);
+
+    this->dataPtr->ogreCompositorFinalPass->setEnabled(false);
+  }
 
   this->scene->FlushGpuCommandsAndStartNewFrame(6u, false);
+
   {
     auto engine = Ogre2RenderEngine::Instance();
     auto ogreRoot = engine->OgreRoot();
@@ -404,19 +572,50 @@ void Ogre2WideAngleCamera::Render()
 }
 
 //////////////////////////////////////////////////
+void Ogre2WideAngleCamera::Copy(Image &_image) const
+{
+  if (_image.Width() != this->ImageWidth() ||
+      _image.Height() != this->ImageHeight())
+  {
+    gzerr << "Invalid image dimensions" << std::endl;
+    return;
+  }
+
+  Ogre::PixelFormatGpu dstOgrePf = Ogre2Conversions::Convert(_image.Format());
+  Ogre::TextureGpu *texture = this->dataPtr->ogreRenderTexture;
+
+  if (Ogre::PixelFormatGpuUtils::isSRgb(dstOgrePf) !=
+      Ogre::PixelFormatGpuUtils::isSRgb(texture->getPixelFormat()))
+  {
+    // Formats are identical except for sRGB-ness.
+    // Force a raw copy by making them match (no conversion!).
+    // We can't change the TextureGpu format now, so we change dstOgrePf
+    if (Ogre::PixelFormatGpuUtils::isSRgb(texture->getPixelFormat()))
+      dstOgrePf = Ogre::PixelFormatGpuUtils::getEquivalentSRGB(dstOgrePf);
+    else
+      dstOgrePf = Ogre::PixelFormatGpuUtils::getEquivalentLinear(dstOgrePf);
+  }
+
+  Ogre::TextureBox dstBox(
+    texture->getInternalWidth(), texture->getInternalHeight(),
+    texture->getDepth(), texture->getNumSlices(),
+    static_cast<uint32_t>(
+      Ogre::PixelFormatGpuUtils::getBytesPerPixel(dstOgrePf)),
+    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
+      texture->getInternalWidth(), 1u, 1u, 1u, dstOgrePf, 1u)),
+    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
+      texture->getInternalWidth(), texture->getInternalHeight(), 1u, 1u,
+      dstOgrePf, 1u)));
+  dstBox.data = _image.Data();
+
+  Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u), dstBox,
+                                     dstOgrePf);
+}
+
+//////////////////////////////////////////////////
 math::Vector3d Ogre2WideAngleCamera::Project3d(const math::Vector3d &_pt) const
 {
   using namespace Ogre;
-
-  // Matches CompositorPass::CubemapRotations from OgreCompositorPass.cpp
-  const Quaternion kCubemapRotations[6] = {
-    Quaternion(Radian(-1.570796f), Vector3(0, 1, 0)),  // +X
-    Quaternion(Radian(1.570796f), Vector3(0, 1, 0)),   // -X
-    Quaternion(Radian(1.570796f), Vector3(1, 0, 0)),   // +Y
-    Quaternion(Radian(-1.570796f), Vector3(1, 0, 0)),  // -Y
-    Quaternion(1, 0, 0, 0),                            // +Z
-    Quaternion(Radian(3.1415927f), Vector3(0, 1, 0))   // -Z
-  };
 
   this->dataPtr->ogreCamera->setAspectRatio(1.0f);
   this->dataPtr->ogreCamera->setFOVy(Ogre::Degree(90));
@@ -524,6 +723,27 @@ math::Vector3d Ogre2WideAngleCamera::Project3d(const math::Vector3d &_pt) const
   this->dataPtr->ogreCamera->setOrientation(oldCameraOrientation);
 
   return screenPos;
+}
+
+//////////////////////////////////////////////////
+Ogre::Ray Ogre2WideAngleCamera::CameraToViewportRay(
+  const math::Vector2d &_screenPos, uint32_t _faceIdx)
+{
+  this->dataPtr->ogreCamera->setAspectRatio(1.0f);
+  this->dataPtr->ogreCamera->setFOVy(Ogre::Degree(90));
+  const Ogre::Quaternion oldCameraOrientation(
+    this->dataPtr->ogreCamera->getOrientation());
+
+  this->dataPtr->ogreCamera->setOrientation(oldCameraOrientation *
+                                            kCubemapRotations[_faceIdx]);
+
+  Ogre::Ray ray = this->dataPtr->ogreCamera->getCameraToViewportRay(
+    static_cast<Ogre::Real>(_screenPos.X()),
+    static_cast<Ogre::Real>(_screenPos.Y()));
+
+  this->dataPtr->ogreCamera->setOrientation(oldCameraOrientation);
+
+  return ray;
 }
 
 //////////////////////////////////////////////////

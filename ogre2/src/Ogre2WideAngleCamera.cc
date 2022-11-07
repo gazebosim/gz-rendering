@@ -194,7 +194,21 @@ void Ogre2WideAngleCamera::PreRender()
 {
   BaseCamera::PreRender();
   if (!this->dataPtr->ogreRenderTexture)
+  {
     this->CreateWideAngleTexture();
+  }
+  else if (!this->dataPtr->ogreCompositorWorkspace[0])
+  {
+    // If render passes were added/destroyed, ogreCompositorWorkspace
+    // will become nullptr and must be recreated.
+    const uint8_t msaa =
+      Ogre2RenderTarget::TargetFSAA(static_cast<uint8_t>(this->antiAliasing));
+    this->CreateFacesWorkspaces(msaa > 1u);
+  }
+  else
+  {
+    this->UpdateRenderPasses();
+  }
 }
 
 //////////////////////////////////////////////////
@@ -238,12 +252,6 @@ void Ogre2WideAngleCamera::AddRenderPass(const RenderPassPtr &_pass)
   BaseWideAngleCamera::AddRenderPass(_pass);
   this->dataPtr->renderPasses.push_back(_pass);
   this->DestroyFacesWorkspaces();
-  if (this->dataPtr->ogreRenderTexture)
-  {
-    const uint8_t msaa =
-      Ogre2RenderTarget::TargetFSAA(static_cast<uint8_t>(this->antiAliasing));
-    this->CreateFacesWorkspaces(msaa);
-  }
 }
 
 //////////////////////////////////////////////////
@@ -257,12 +265,6 @@ void Ogre2WideAngleCamera::RemoveRenderPass(const RenderPassPtr &_pass)
     this->dataPtr->renderPasses.erase(it);
   }
   this->DestroyFacesWorkspaces();
-  if (this->dataPtr->ogreRenderTexture)
-  {
-    const uint8_t msaa =
-      Ogre2RenderTarget::TargetFSAA(static_cast<uint8_t>(this->antiAliasing));
-    this->CreateFacesWorkspaces(msaa);
-  }
 }
 
 //////////////////////////////////////////////////
@@ -386,10 +388,13 @@ void Ogre2WideAngleCamera::CreateWorkspaceDefinition(bool _withMsaa)
       Ogre2RenderPass *ogre2RenderPass =
         dynamic_cast<Ogre2RenderPass *>(pass.get());
 
-      ogre2RenderPass->CreateRenderPass();
-      IdString currNode = ogre2RenderPass->OgreCompositorNodeDefinitionName();
-      workDef->connect(prevNode, currNode);
-      prevNode = currNode;
+      if (ogre2RenderPass->IsEnabled())
+      {
+        ogre2RenderPass->CreateRenderPass();
+        IdString currNode = ogre2RenderPass->OgreCompositorNodeDefinitionName();
+        workDef->connect(prevNode, currNode);
+        prevNode = currNode;
+      }
     }
 
     const IdString copyPass = std::string("WideAngleCameraCubemapCopy") +
@@ -465,6 +470,91 @@ void Ogre2WideAngleCamera::DestroyFacesWorkspaces()
     }
   }
   this->dataPtr->cubePassSceneDef = nullptr;
+}
+
+//////////////////////////////////////////////////
+void Ogre2WideAngleCamera::UpdateRenderPasses()
+{
+  using namespace Ogre;
+  bool updateConnection = false;
+
+  // set node instance to render pass and update enabled state
+  for (const auto &pass : this->dataPtr->renderPasses)
+  {
+    Ogre2RenderPass *ogre2RenderPass =
+      dynamic_cast<Ogre2RenderPass *>(pass.get());
+
+    const IdString currNode =
+      ogre2RenderPass->OgreCompositorNodeDefinitionName();
+
+    for (size_t i = 0u; i < 6u; ++i)
+    {
+      Ogre::CompositorNode *node =
+        this->dataPtr->ogreCompositorWorkspace[i]->findNodeNoThrow(currNode);
+
+      // RemoveRenderPass destroys the workspace; which means we can't reach
+      // here where we update an already existing workspace; but rather
+      // have ended up in CreateFacesWorkspaces()
+      GZ_ASSERT(node,
+                "This can't be possible. "
+                "RemoveRenderPass() should've destroyed the workspace.");
+
+      if (node->getEnabled() != ogre2RenderPass->IsEnabled())
+      {
+        node->setEnabled(ogre2RenderPass->IsEnabled());
+        updateConnection = true;
+      }
+    }
+  }
+
+  if (!updateConnection)
+    return;
+
+  const uint8_t msaa =
+    Ogre2RenderTarget::TargetFSAA(static_cast<uint8_t>(this->antiAliasing));
+  const bool withMsaa = msaa > 1u;
+
+  const IdString cubemapPassNodeName =
+    withMsaa ? "WideAngleCameraCubemapPassMsaa" : "WideAngleCameraCubemapPass";
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  for (uint32_t faceIdx = 0u; faceIdx < 6u; ++faceIdx)
+  {
+    const std::string wsDefName = WorkspaceDefinitionName(faceIdx);
+    CompositorWorkspaceDef *workDef =
+      ogreCompMgr->getWorkspaceDefinitionNoThrow(wsDefName);
+
+    workDef->clearAllInterNodeConnections();
+
+    workDef->connectExternal(0, cubemapPassNodeName, 0);
+    workDef->connectExternal(1, cubemapPassNodeName, 1);
+
+    IdString prevNode = cubemapPassNodeName;
+    for (RenderPassPtr &pass : this->dataPtr->renderPasses)
+    {
+      Ogre2RenderPass *ogre2RenderPass =
+        dynamic_cast<Ogre2RenderPass *>(pass.get());
+
+      if (ogre2RenderPass->IsEnabled())
+      {
+        ogre2RenderPass->CreateRenderPass();
+        IdString currNode = ogre2RenderPass->OgreCompositorNodeDefinitionName();
+        workDef->connect(prevNode, currNode);
+        prevNode = currNode;
+      }
+    }
+
+    const IdString copyPass = std::string("WideAngleCameraCubemapCopy") +
+                              kWideAngleCameraSuffixes[faceIdx];
+    workDef->connect(prevNode, copyPass);
+    workDef->connectExternal(2, copyPass, 2);
+  }
+
+  for (size_t i = 0u; i < 6u; ++i)
+    this->dataPtr->ogreCompositorWorkspace[i]->reconnectAllNodes();
 }
 
 //////////////////////////////////////////////////
@@ -580,6 +670,7 @@ void Ogre2WideAngleCamera::Render()
 
     this->dataPtr->ogreCamera->setOrientation(oldCameraOrientation *
                                               kCubemapRotations[i]);
+    this->scene->UpdateAllHeightmaps(this->dataPtr->ogreCamera);
 
     this->dataPtr->ogreCompositorWorkspace[i]->_validateFinalTarget();
     this->dataPtr->ogreCompositorWorkspace[i]->_beginUpdate(false);

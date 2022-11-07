@@ -116,6 +116,10 @@ namespace gz
       /// \brief Destroys the workspaces & their definitions.
       protected: void DestroyFacesWorkspaces();
 
+      /// \brief Checks if workspace nodes need to be updated since
+      /// render passes can be toggled at any point.
+      protected: void UpdateRenderPasses();
+
       /// \brief Set the camera's render target
       protected: void CreateWideAngleTexture() override;
 

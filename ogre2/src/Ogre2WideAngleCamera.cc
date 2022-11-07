@@ -649,11 +649,6 @@ void Ogre2WideAngleCamera::CreateWideAngleTexture()
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::Render()
 {
-  {
-    auto engine = Ogre2RenderEngine::Instance();
-    auto ogreRoot = engine->OgreRoot();
-    ogreRoot->getRenderSystem()->startGpuDebuggerFrameCapture(nullptr);
-  }
   const uint32_t currVisibilityMask = this->VisibilityMask();
   this->dataPtr->cubePassSceneDef->mVisibilityMask = currVisibilityMask;
 
@@ -700,12 +695,6 @@ void Ogre2WideAngleCamera::Render()
   }
 
   this->scene->FlushGpuCommandsAndStartNewFrame(6u, false);
-
-  {
-    auto engine = Ogre2RenderEngine::Instance();
-    auto ogreRoot = engine->OgreRoot();
-    ogreRoot->getRenderSystem()->endGpuDebuggerFrameCapture(nullptr);
-  }
 }
 
 //////////////////////////////////////////////////

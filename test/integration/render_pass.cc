@@ -499,13 +499,13 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
 
   // create  camera
   CameraPtr camera = scene->CreateWideAngleCamera();
-  if (_wideAngleCamera)
+  if (!_wideAngleCamera)
   {
-    camera = scene->CreateWideAngleCamera();
+    camera = scene->CreateCamera();
   }
   else
   {
-    camera = scene->CreateCamera();
+    camera = scene->CreateWideAngleCamera();
   }
   ASSERT_NE(nullptr, camera);
   camera->SetImageWidth(100);
@@ -575,15 +575,6 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
       }
     }
   }
-
-  common::Image comImage;
-  comImage.SetFromData(refImage.Data<unsigned char>(), refImage.Width(),
-                       refImage.Height(), common::Image::RGB_INT8);
-  comImage.SavePNG("/home/matias/T/Original.png");
-  comImage.SetFromData(imageLensFlared.Data<unsigned char>(),
-                       imageLensFlared.Width(), imageLensFlared.Height(),
-                       common::Image::RGB_INT8);
-  comImage.SavePNG("/home/matias/T/T0.png");
 
   //
   // TEST 1: No LensFlare (never added) vs No LensFlare (disabled)
@@ -785,8 +776,28 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
 
     // If a significant number of pixels between Partial & No occlusion are
     // incomparable, then this test is meaningless and needs tweaking.
-    EXPECT_LE(uncomparablePixelCount, 1);
+    if (!_wideAngleCamera)
+    {
+      EXPECT_LE(uncomparablePixelCount, 1);
+    }
+    else
+    {
+      EXPECT_LE(uncomparablePixelCount, 35);
+    }
   }
+
+  common::Image comImage;
+  comImage.SetFromData(refImage.Data<unsigned char>(), refImage.Width(),
+                       refImage.Height(), common::Image::RGB_INT8);
+  comImage.SavePNG("/home/matias/T/Original.png");
+  comImage.SetFromData(imageLensFlared.Data<unsigned char>(),
+                       imageLensFlared.Width(), imageLensFlared.Height(),
+                       common::Image::RGB_INT8);
+  comImage.SavePNG("/home/matias/T/imageLensFlared.png");
+  comImage.SetFromData(imageLensNoOcclusion.Data<unsigned char>(),
+                       imageLensNoOcclusion.Width(),
+                       imageLensNoOcclusion.Height(), common::Image::RGB_INT8);
+  comImage.SavePNG("/home/matias/T/imageLensNoOcclusion.png");
 
   //
   // TEST 6: LensFlare (no occlusion), ensure coordinate convention is correct

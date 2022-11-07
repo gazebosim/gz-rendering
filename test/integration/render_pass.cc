@@ -28,6 +28,7 @@
 #include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/Scene.hh"
+#include "gz/rendering/WideAngleCamera.hh"
 
 #include <gz/utils/ExtraTestMacros.hh>
 
@@ -480,19 +481,16 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Distortion))
   engine->DestroyScene(scene);
 }
 
-/////////////////////////////////////////////////
-TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
+static void TestLensFlare(gz::rendering::RenderEngine *_engine,
+                          bool _wideAngleCamera)
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
-  CHECK_RENDERPASS_SUPPORTED();
-
   // get the render pass system
-  RenderPassSystemPtr rpSystem = this->engine->RenderPassSystem();
+  RenderPassSystemPtr rpSystem = _engine->RenderPassSystem();
   // add resources in build dir
-  engine->AddResourcePath(
+  _engine->AddResourcePath(
     common::joinPaths(std::string(PROJECT_BUILD_PATH), "src"));
 
-  ScenePtr scene = engine->CreateScene("scene");
+  ScenePtr scene = _engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(0.3, 0.3, 0.3);
 
@@ -500,7 +498,15 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
   ASSERT_NE(nullptr, root);
 
   // create  camera
-  CameraPtr camera = scene->CreateCamera();
+  CameraPtr camera = scene->CreateWideAngleCamera();
+  if (_wideAngleCamera)
+  {
+    camera = scene->CreateWideAngleCamera();
+  }
+  else
+  {
+    camera = scene->CreateCamera();
+  }
   ASSERT_NE(nullptr, camera);
   camera->SetImageWidth(100);
   camera->SetImageHeight(100);
@@ -570,6 +576,15 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
     }
   }
 
+  common::Image comImage;
+  comImage.SetFromData(refImage.Data<unsigned char>(), refImage.Width(),
+                       refImage.Height(), common::Image::RGB_INT8);
+  comImage.SavePNG("/home/matias/T/Original.png");
+  comImage.SetFromData(imageLensFlared.Data<unsigned char>(),
+                       imageLensFlared.Width(), imageLensFlared.Height(),
+                       common::Image::RGB_INT8);
+  comImage.SavePNG("/home/matias/T/T0.png");
+
   //
   // TEST 1: No LensFlare (never added) vs No LensFlare (disabled)
   //
@@ -577,7 +592,6 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
   // Disable image lens flare and try again. It should be equal to ref
   lensFlarePass->SetEnabled(false);
   camera->Capture(imageLensFlared);
-
   {
     // Compare image pixels
     unsigned char *refData = refImage.Data<unsigned char>();
@@ -827,5 +841,23 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
   }
 
   // Clean up
-  engine->DestroyScene(scene);
+  _engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_RENDERPASS_SUPPORTED();
+
+  TestLensFlare(this->engine, false);
+}
+
+/////////////////////////////////////////////////
+TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlareWideAnglePass))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_RENDERPASS_SUPPORTED();
+
+  TestLensFlare(this->engine, true);
 }

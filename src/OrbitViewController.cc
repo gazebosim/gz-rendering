@@ -28,14 +28,6 @@ class ignition::rendering::OrbitViewControllerPrivate
 
   /// \brief Target point for camera movements
   public: math::Vector3d target;
-
-  /// \brief Keep yaw within limits
-  /// \return Normalized yaw
-  public: double NormalizeYaw(double _yaw);
-
-  /// \brief Keep pitch within limits
-  /// \return Normalized pitch
-  public: double NormalizePitch(double _pitch);
 };
 
 using namespace ignition;
@@ -177,27 +169,4 @@ void OrbitViewController::Orbit(const math::Vector2d &_value)
   // translate camera back
   this->dataPtr->camera->SetWorldPosition(
       this->dataPtr->camera->WorldPosition() + this->dataPtr->target);
-}
-
-//////////////////////////////////////////////////
-double OrbitViewControllerPrivate::NormalizeYaw(double _yaw)
-{
-  _yaw = fmod(_yaw, IGN_PI*2);
-  if (_yaw < 0.0f)
-  {
-    _yaw = IGN_PI * 2 + _yaw;
-  }
-
-  return _yaw;
-}
-
-//////////////////////////////////////////////////
-double OrbitViewControllerPrivate::NormalizePitch(double _pitch)
-{
-  if (_pitch < PITCH_LIMIT_LOW)
-    _pitch = PITCH_LIMIT_LOW;
-  else if (_pitch > PITCH_LIMIT_HIGH)
-    _pitch = PITCH_LIMIT_HIGH;
-
-  return _pitch;
 }

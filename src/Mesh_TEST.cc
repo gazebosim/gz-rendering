@@ -79,6 +79,11 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
 
   EXPECT_FALSE(mesh->HasSkeleton());
 
+  std::map<std::string, ignition::math::Matrix4d> skinFrames;
+  mesh->SetSkeletonLocalTransforms(skinFrames);
+  auto skeletonLocalTransforms = mesh->SkeletonLocalTransforms();
+  EXPECT_EQ(0u, skeletonLocalTransforms.size());
+
   // test submesh API
   MaterialPtr mat = submesh->Material();
   ASSERT_TRUE(mat != nullptr);
@@ -89,6 +94,8 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
 
   EXPECT_EQ(matClone, submesh->Material());
   EXPECT_NE(mat, submesh->Material());
+
+  submesh->SetMaterial(MaterialPtr(), false);
 
   submesh->SetMaterial("Default/White", false);
   EXPECT_EQ("Default/White", submesh->Material()->Name());
@@ -180,6 +187,9 @@ void MeshTest::MeshSkeleton(const std::string &_renderEngine)
 
     mesh->SetSkeletonLocalTransforms(skinFrames);
   }
+
+  auto skeletonLocalTransforms = mesh->SkeletonLocalTransforms();
+  EXPECT_EQ(31u, skeletonLocalTransforms.size());
 
   // Clean up
   engine->DestroyScene(scene);

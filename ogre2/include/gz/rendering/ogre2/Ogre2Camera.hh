@@ -94,9 +94,6 @@ namespace gz
       public: virtual RenderWindowPtr CreateRenderWindow() override;
 
       // Documentation inherited.
-      public: virtual math::Matrix3d CameraIntrinsicMatrix() const override;
-
-      // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
       // Documentation inherited.

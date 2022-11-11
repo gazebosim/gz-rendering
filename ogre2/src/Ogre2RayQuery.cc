@@ -130,10 +130,6 @@ RayQueryResult Ogre2RayQuery::ClosestPoint(bool _forceSceneUpdate)
 {
   RayQueryResult result;
 
-
-#ifdef __APPLE__
-  return this->ClosestPointByIntersection(_forceSceneUpdate);
-#else
   if (!this->dataPtr->camera ||
       !this->dataPtr->camera->Parent() ||
       std::this_thread::get_id() != this->dataPtr->threadId)
@@ -153,7 +149,6 @@ RayQueryResult Ogre2RayQuery::ClosestPoint(bool _forceSceneUpdate)
 
     return this->ClosestPointBySelectionBuffer();
   }
-#endif
 }
 
 //////////////////////////////////////////////////

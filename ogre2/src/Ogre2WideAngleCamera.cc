@@ -373,7 +373,7 @@ void Ogre2WideAngleCamera::CreateWorkspaceDefinition(bool _withMsaa)
   const IdString cubemapPassNodeName =
     _withMsaa ? "WideAngleCameraCubemapPassMsaa" : "WideAngleCameraCubemapPass";
 
-  for (uint32_t faceIdx = 0u; faceIdx < 6u; ++faceIdx)
+  for (uint32_t faceIdx = 0u; faceIdx < kWideAngleNumCubemapFaces; ++faceIdx)
   {
     const std::string wsDefName = WorkspaceDefinitionName(faceIdx);
     CompositorWorkspaceDef *workDef =
@@ -421,7 +421,7 @@ void Ogre2WideAngleCamera::CreateFacesWorkspaces(bool _withMsaa)
     this->dataPtr->envCubeMapTexture
   };
 
-  for (uint32_t i = 0u; i < 6u; ++i)
+  for (uint32_t i = 0u; i < kWideAngleNumCubemapFaces; ++i)
   {
     GZ_ASSERT(!this->dataPtr->ogreCompositorWorkspace[i], "Must be nullptr!");
 
@@ -449,7 +449,7 @@ void Ogre2WideAngleCamera::DestroyFacesWorkspaces()
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  for (uint32_t i = 0u; i < 6u; ++i)
+  for (uint32_t i = 0u; i < kWideAngleNumCubemapFaces; ++i)
   {
     if (this->dataPtr->ogreCompositorWorkspace[i])
     {
@@ -487,7 +487,7 @@ void Ogre2WideAngleCamera::UpdateRenderPasses()
     const IdString currNode =
       ogre2RenderPass->OgreCompositorNodeDefinitionName();
 
-    for (size_t i = 0u; i < 6u; ++i)
+    for (size_t i = 0u; i < kWideAngleNumCubemapFaces; ++i)
     {
       Ogre::CompositorNode *node =
         this->dataPtr->ogreCompositorWorkspace[i]->findNodeNoThrow(currNode);
@@ -521,7 +521,7 @@ void Ogre2WideAngleCamera::UpdateRenderPasses()
   auto ogreRoot = engine->OgreRoot();
   CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  for (uint32_t faceIdx = 0u; faceIdx < 6u; ++faceIdx)
+  for (uint32_t faceIdx = 0u; faceIdx < kWideAngleNumCubemapFaces; ++faceIdx)
   {
     const std::string wsDefName = WorkspaceDefinitionName(faceIdx);
     CompositorWorkspaceDef *workDef =
@@ -553,7 +553,7 @@ void Ogre2WideAngleCamera::UpdateRenderPasses()
     workDef->connectExternal(2, copyPass, 2);
   }
 
-  for (size_t i = 0u; i < 6u; ++i)
+  for (size_t i = 0u; i < kWideAngleNumCubemapFaces; ++i)
     this->dataPtr->ogreCompositorWorkspace[i]->reconnectAllNodes();
 }
 
@@ -659,7 +659,7 @@ void Ogre2WideAngleCamera::Render()
   const Ogre::Quaternion oldCameraOrientation(
     this->dataPtr->ogreCamera->getOrientation());
 
-  for (size_t i = 0u; i < 6u; ++i)
+  for (size_t i = 0u; i < kWideAngleNumCubemapFaces; ++i)
   {
     this->dataPtr->ogreCompositorWorkspace[i]->setEnabled(true);
 
@@ -694,7 +694,8 @@ void Ogre2WideAngleCamera::Render()
     this->dataPtr->ogreCompositorFinalPass->setEnabled(false);
   }
 
-  this->scene->FlushGpuCommandsAndStartNewFrame(6u, false);
+  this->scene->FlushGpuCommandsAndStartNewFrame(kWideAngleNumCubemapFaces,
+                                                false);
 }
 
 //////////////////////////////////////////////////

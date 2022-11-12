@@ -838,7 +838,7 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
       }
     }
 
-    // We expent quadrant 0, 0 to be much brigther than all of the others
+    // We expect quadrant 0, 0 to be much brigther than all of the others
     // due to visibly housing the source of the lens flare (the sun)
     EXPECT_GT(brightness[0][0], brightness[0][1]);
     EXPECT_GT(brightness[0][0], brightness[1][0]);

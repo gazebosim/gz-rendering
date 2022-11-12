@@ -44,6 +44,18 @@
   #pragma warning(pop)
 #endif
 
+// Define this macro to force single threaded version (in case
+// you suspect there's a bug caused by multithreading) or
+// want to benchmark.
+// #define SINGLE_THREADED
+
+// Define this macro to use the old code. Only use this code if for some
+// odd reason you suspect there is a regression (particularly with skeletally
+// animated objects) or you want to benchmark.
+// The new version should produce identical results (without accounting random
+// floating point precision issues).
+// #define SLOW_METHOD
+
 /// \brief Private data class for Ogre2RayQuery
 class gz::rendering::Ogre2RayQueryPrivate
 {
@@ -181,10 +193,6 @@ void Ogre2RayQuery::SetPreferGpu(bool _preferGpu)
 //////////////////////////////////////////////////
 bool Ogre2RayQuery::UsesGpu() const
 {
-#ifdef __APPLE__
-  return false;
-#endif
-
   if (!this->dataPtr->preferGpu ||         //
       !this->dataPtr->camera ||            //
       !this->dataPtr->camera->Parent() ||  //

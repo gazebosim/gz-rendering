@@ -53,12 +53,12 @@ TEST_F(LensFlarePassTest, LensFlare)
   lensFlarePass->SetScale(scale);
   EXPECT_DOUBLE_EQ(scale, lensFlarePass->Scale());
 
-  // std dev
+  // occlusion steps
   const double occlusionSteps = 24.5;
   lensFlarePass->SetOcclusionSteps(occlusionSteps);
   EXPECT_DOUBLE_EQ(occlusionSteps, lensFlarePass->OcclusionSteps());
 
-  // bias
+  // color
   const math::Vector3d color = math::Vector3d(0.7, 0.4, 0.12);
   lensFlarePass->SetColor(color);
   EXPECT_EQ(color, lensFlarePass->Color());

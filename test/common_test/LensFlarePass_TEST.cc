@@ -45,7 +45,7 @@ TEST_F(LensFlarePassTest, LensFlare)
 
   // verify initial values
   EXPECT_DOUBLE_EQ(1.0, lensFlarePass->Scale());
-  EXPECT_DOUBLE_EQ(10.0, lensFlarePass->OcclusionSteps());
+  EXPECT_EQ(10u, lensFlarePass->OcclusionSteps());
   EXPECT_EQ(math::Vector3d(1.0, 1.0, 1.0), lensFlarePass->Color());
 
   // scale
@@ -54,7 +54,7 @@ TEST_F(LensFlarePassTest, LensFlare)
   EXPECT_DOUBLE_EQ(scale, lensFlarePass->Scale());
 
   // occlusion steps
-  const double occlusionSteps = 24.5;
+  const uint32_t occlusionSteps = 25u;
   lensFlarePass->SetOcclusionSteps(occlusionSteps);
   EXPECT_DOUBLE_EQ(occlusionSteps, lensFlarePass->OcclusionSteps());
 

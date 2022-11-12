@@ -201,15 +201,15 @@ const math::Vector3d &Ogre2LensFlarePass::Color() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2LensFlarePass::SetOcclusionSteps(const double _occlusionSteps)
+void Ogre2LensFlarePass::SetOcclusionSteps(const uint32_t _occlusionSteps)
 {
-  this->dataPtr->occlusionSteps = _occlusionSteps;
+  this->dataPtr->occlusionSteps = static_cast<double>(_occlusionSteps);
 }
 
 //////////////////////////////////////////////////
-double Ogre2LensFlarePass::OcclusionSteps() const
+uint32_t Ogre2LensFlarePass::OcclusionSteps() const
 {
-  return this->dataPtr->occlusionSteps;
+  return static_cast<uint32_t>(this->dataPtr->occlusionSteps);
 }
 
 //////////////////////////////////////////////////

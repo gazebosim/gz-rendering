@@ -61,12 +61,12 @@ namespace gz
       /// \brief Set the number of steps to take in each direction when
       /// checking for occlusions.
       /// \param[in] _occlusionSteps number of steps to take in each direction
-      /// when checking for occlusion. A value of 0.0 disables occlusion.
-      public: virtual void SetOcclusionSteps(double _occlusionSteps) = 0;
+      /// when checking for occlusion. A value of 0 disables occlusion.
+      public: virtual void SetOcclusionSteps(uint32_t _occlusionSteps) = 0;
 
       /// \brief Returns the number of steps set in SetOcclusionSteps()
       /// \return Number of occlusion steps
-      public: virtual double OcclusionSteps() const = 0;
+      public: virtual uint32_t OcclusionSteps() const = 0;
     };
     }
   }

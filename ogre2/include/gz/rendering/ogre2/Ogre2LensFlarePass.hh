@@ -68,10 +68,10 @@ namespace gz
       public: const math::Vector3d &Color() const override;
 
       // Documentation inherited
-      public: void SetOcclusionSteps(double _occlusionSteps) override;
+      public: void SetOcclusionSteps(uint32_t _occlusionSteps) override;
 
       // Documentation inherited
-      public: double OcclusionSteps() const override;
+      public: uint32_t OcclusionSteps() const override;
 
       // Documentation inherited
       public: void WorkspaceAdded(

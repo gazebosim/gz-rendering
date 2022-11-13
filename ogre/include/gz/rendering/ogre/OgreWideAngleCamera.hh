@@ -114,6 +114,9 @@ namespace gz
       /// \brief Implementation of the render call
       public: virtual void Render() override;
 
+      // Documentation inherited.
+      public: void Copy(Image &_image) const override;
+
       // Documentation inherited
       public: common::ConnectionPtr ConnectNewWideAngleFrame(
           std::function<void(const unsigned char *, unsigned int, unsigned int,

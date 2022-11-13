@@ -465,7 +465,7 @@ void OgreWideAngleCamera::UpdateRenderPassChain()
   {
     OgreRenderPass *ogreRenderPass =
         dynamic_cast<OgreRenderPass *>(pass.get());
-    ogreRenderPass->SetCamera(this->dataPtr->ogreCamera);
+    ogreRenderPass->SetCameras(this->dataPtr->envCameras);
     ogreRenderPass->CreateRenderPass();
   }
   this->dataPtr->renderPassDirty = false;
@@ -486,6 +486,27 @@ void OgreWideAngleCamera::Render()
       this->dataPtr->ogreRenderTexture->getBuffer()->getRenderTarget();
   rt->setAutoUpdated(false);
   rt->update(false);
+}
+
+//////////////////////////////////////////////////
+void OgreWideAngleCamera::Copy(Image &_image) const
+{
+  const unsigned int width = this->ImageWidth();
+  const unsigned int height = this->ImageHeight();
+
+  if (_image.Width() != width || _image.Height() != height)
+  {
+    gzerr << "Invalid image dimensions" << std::endl;
+    return;
+  }
+
+  void *data = _image.Data();
+  Ogre::PixelFormat imageFormat = OgreConversions::Convert(_image.Format());
+  Ogre::PixelBox ogrePixelBox(width, height, 1, imageFormat, data);
+
+  Ogre::RenderTarget *rt =
+    this->dataPtr->ogreRenderTexture->getBuffer()->getRenderTarget();
+  rt->copyContentsToMemory(ogrePixelBox);
 }
 
 //////////////////////////////////////////////////

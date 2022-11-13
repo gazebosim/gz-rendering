@@ -153,9 +153,9 @@ void OgreDistortionPass::CreateRenderPass()
     return;
   }
 
-  float viewportWidth = static_cast<float>(this->ogreCamera->
+  float viewportWidth = static_cast<float>(this->ogreCamera[0]->
       getViewport()->getActualWidth());
-  float viewportHeight = static_cast<float>(this->ogreCamera->
+  float viewportHeight = static_cast<float>(this->ogreCamera[0]->
       getViewport()->getActualHeight());
 
   // seems to work best with a square distortion map texture
@@ -163,9 +163,9 @@ void OgreDistortionPass::CreateRenderPass()
       viewportWidth ? viewportHeight : viewportWidth);
   // calculate focal length from largest fov
   const double fov = viewportHeight > viewportWidth ?
-      this->ogreCamera->getFOVy().valueRadians() :
-      (this->ogreCamera->getFOVy().valueRadians() *
-      this->ogreCamera->getAspectRatio());
+      this->ogreCamera[0]->getFOVy().valueRadians() :
+      (this->ogreCamera[0]->getFOVy().valueRadians() *
+      this->ogreCamera[0]->getAspectRatio());
   const double focalLength = texSize / (2 * tan(fov / 2));
   this->dataPtr->distortionTexWidth = texSize;
   this->dataPtr->distortionTexHeight = texSize;
@@ -279,10 +279,10 @@ void OgreDistortionPass::CreateRenderPass()
         "Distortion");
   this->dataPtr->distortionMaterial =
     this->dataPtr->distortionMaterial->clone(
-        this->ogreCamera->getName() + "_Distortion");
+        this->ogreCamera[0]->getName() + "_Distortion");
 
   // create the distortion map texture for the distortion instance
-  std::string texName = this->ogreCamera->getName() + "_distortionTex";
+  std::string texName = this->ogreCamera[0]->getName() + "_distortionTex";
   this->dataPtr->distortionTexture =
       Ogre::TextureManager::getSingleton().createManual(
           texName,
@@ -413,7 +413,7 @@ void OgreDistortionPass::CreateRenderPass()
   // create compositor instance
   this->dataPtr->distortionInstance =
     Ogre::CompositorManager::getSingleton().addCompositor(
-        this->ogreCamera->getViewport(), "RenderPass/Distortion");
+        this->ogreCamera[0]->getViewport(), "RenderPass/Distortion");
   this->dataPtr->distortionInstance->getTechnique()->getOutputTargetPass()->
       getPass(0)->setMaterial(this->dataPtr->distortionMaterial);
 
@@ -439,7 +439,7 @@ void OgreDistortionPass::Destroy()
           this->dataPtr->distortionCompositorListener.get());
     }
     Ogre::CompositorManager::getSingleton().removeCompositor(
-        this->ogreCamera->getViewport(), "RenderPass/Distortion");
+        this->ogreCamera[0]->getViewport(), "RenderPass/Distortion");
 
     this->dataPtr->distortionInstance = nullptr;
     this->dataPtr->distortionCompositorListener.reset();
@@ -500,18 +500,18 @@ void OgreDistortionPass::CalculateAndApplyDistortionScale()
   // Scale up image if cropping enabled and valid
   if (this->dataPtr->distortionCrop && this->k1 < 0)
   {
-    float viewportWidth = static_cast<float>(this->ogreCamera->getViewport()->
-        getActualWidth());
-    float viewportHeight = static_cast<float>(this->ogreCamera->getViewport()->
-        getActualHeight());
+    float viewportWidth =
+      static_cast<float>(this->ogreCamera[0]->getViewport()->getActualWidth());
+    float viewportHeight =
+      static_cast<float>(this->ogreCamera[0]->getViewport()->getActualHeight());
 
     unsigned int texSize = static_cast<unsigned int>(viewportHeight >
         viewportWidth ? viewportHeight : viewportWidth);
 
     const double fov = viewportHeight > viewportWidth ?
-        this->ogreCamera->getFOVy().valueRadians() :
-        (this->ogreCamera->getFOVy().valueRadians() *
-        this->ogreCamera->getAspectRatio());
+        this->ogreCamera[0]->getFOVy().valueRadians() :
+        (this->ogreCamera[0]->getFOVy().valueRadians() *
+        this->ogreCamera[0]->getAspectRatio());
 
     const double focalLength = texSize / (2 * tan(fov / 2));
 

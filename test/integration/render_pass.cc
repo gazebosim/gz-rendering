@@ -776,14 +776,32 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
 
     // If a significant number of pixels between Partial & No occlusion are
     // incomparable, then this test is meaningless and needs tweaking.
+    //
+    // The threshold value is arbitrary and chosen empirically
+    // If this value is exceded consider just raising it.
     if (!_wideAngleCamera)
     {
-      EXPECT_LE(uncomparablePixelCount, 5);
+      EXPECT_LE(uncomparablePixelCount, 1);
     }
     else
     {
-      EXPECT_LE(uncomparablePixelCount, 40);
+      if (_engine->Name() == "ogre")
+      {
+        EXPECT_LE(uncomparablePixelCount, 51);
+      }
+      else
+      {
+        EXPECT_LE(uncomparablePixelCount, 40);
+      }
     }
+
+    // Same test as before, but this time as a percentage of total pixels.
+    //
+    // While the threshold is again arbitrary; if this value is exceded,
+    // rather than raising the threshold, we should consider the test
+    // flawed and change it (i.e. the reference is too bright)
+    EXPECT_LE(uncomparablePixelCount,
+              (camera->ImageWidth() * camera->ImageHeight() * 1u) / 100u);
   }
 
   //
@@ -845,7 +863,7 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
 /////////////////////////////////////////////////
 TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_UNSUPPORTED_ENGINE("optix");
   CHECK_RENDERPASS_SUPPORTED();
 
   TestLensFlare(this->engine, false);
@@ -854,7 +872,7 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
 /////////////////////////////////////////////////
 TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlareWideAnglePass))
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_UNSUPPORTED_ENGINE("optix");
   CHECK_RENDERPASS_SUPPORTED();
 
   TestLensFlare(this->engine, true);

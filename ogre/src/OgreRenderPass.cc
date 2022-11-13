@@ -33,10 +33,19 @@ OgreRenderPass::~OgreRenderPass()
 //////////////////////////////////////////////////
 void OgreRenderPass::SetCamera(Ogre::Camera *_camera)
 {
-  if (this->ogreCamera != _camera)
+  if (this->ogreCamera[0] != _camera)
   {
-    this->ogreCamera = _camera;
+    this->ogreCamera[0] = _camera;
   }
+}
+
+
+//////////////////////////////////////////////////
+void OgreRenderPass::SetCameras(
+  Ogre::Camera *_cameras[kMaxOgreRenderPassCameras])
+{
+  for (size_t i = 0u; i < kMaxOgreRenderPassCameras; ++i)
+    this->ogreCamera[i] = _cameras[i];
 }
 
 //////////////////////////////////////////////////

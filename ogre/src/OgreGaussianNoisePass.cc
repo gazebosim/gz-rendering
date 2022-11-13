@@ -105,57 +105,73 @@ OgreGaussianNoisePass::~OgreGaussianNoisePass()
 //////////////////////////////////////////////////
 void OgreGaussianNoisePass::PreRender()
 {
-  if (!this->gaussianNoiseInstance)
+  if (!this->gaussianNoiseInstance[0])
     return;
-  if (this->enabled != this->gaussianNoiseInstance->getEnabled())
-    this->gaussianNoiseInstance->setEnabled(this->enabled);
+
+  for (size_t i = 0u; i < kMaxOgreRenderPassCameras; ++i)
+  {
+    if (this->gaussianNoiseInstance[i] &&
+        this->enabled != this->gaussianNoiseInstance[i]->getEnabled())
+    {
+      this->gaussianNoiseInstance[i]->setEnabled(this->enabled);
+    }
+  }
 }
 
 //////////////////////////////////////////////////
 void OgreGaussianNoisePass::CreateRenderPass()
 {
-  if (!this->ogreCamera)
+  if (!this->ogreCamera[0])
   {
     gzerr << "No camera set for applying Gaussian Noise Pass" << std::endl;
     return;
   }
 
-  if (this->gaussianNoiseInstance || this->gaussianNoiseCompositorListener)
+  if (this->gaussianNoiseInstance[0] || this->gaussianNoiseCompositorListener)
   {
     gzerr << "Gaussian Noise pass already created. " << std::endl;
     return;
   }
 
-  // create compositor instance
-  this->gaussianNoiseInstance =
-      Ogre::CompositorManager::getSingleton().addCompositor(
-      this->ogreCamera->getViewport(), "RenderPass/GaussianNoise");
-  this->gaussianNoiseInstance->setEnabled(this->enabled);
+  this->gaussianNoiseCompositorListener.reset(
+    new GaussianNoiseCompositorListener(this->mean, this->stdDev));
+  for (size_t i = 0u; i < kMaxOgreRenderPassCameras; ++i)
+  {
+    if (this->ogreCamera[i])
+    {
+      // create compositor instance
+      this->gaussianNoiseInstance[i] =
+        Ogre::CompositorManager::getSingleton().addCompositor(
+          this->ogreCamera[i]->getViewport(), "RenderPass/GaussianNoise");
+      this->gaussianNoiseInstance[i]->setEnabled(this->enabled);
 
-  // add listener that injects random noise over time
-  this->gaussianNoiseCompositorListener.reset(new
-        GaussianNoiseCompositorListener(this->mean, this->stdDev));
-  this->gaussianNoiseInstance->addListener(
-    this->gaussianNoiseCompositorListener.get());
+      // add listener that injects random noise over time
+      this->gaussianNoiseInstance[i]->addListener(
+        this->gaussianNoiseCompositorListener.get());
+    }
+  }
 }
 
 //////////////////////////////////////////////////
 void OgreGaussianNoisePass::Destroy()
 {
-  if (this->gaussianNoiseInstance)
+  for (size_t i = 0u; i < kMaxOgreRenderPassCameras; ++i)
   {
-    this->gaussianNoiseInstance->setEnabled(false);
-    if (this->gaussianNoiseCompositorListener)
+    if (this->gaussianNoiseInstance[i])
     {
-      this->gaussianNoiseInstance->removeListener(
+      this->gaussianNoiseInstance[i]->setEnabled(false);
+      if (this->gaussianNoiseCompositorListener)
+      {
+        this->gaussianNoiseInstance[i]->removeListener(
           this->gaussianNoiseCompositorListener.get());
-    }
-    Ogre::CompositorManager::getSingleton().removeCompositor(
-        this->ogreCamera->getViewport(), "RenderPass/GaussianNoise");
+      }
+      Ogre::CompositorManager::getSingleton().removeCompositor(
+        this->ogreCamera[i]->getViewport(), "RenderPass/GaussianNoise");
 
-    this->gaussianNoiseInstance = nullptr;
-    this->gaussianNoiseCompositorListener.reset();
+      this->gaussianNoiseInstance[i] = nullptr;
+    }
   }
+  this->gaussianNoiseCompositorListener.reset();
 }
 
 GZ_RENDERING_REGISTER_RENDER_PASS(OgreGaussianNoisePass, GaussianNoisePass)

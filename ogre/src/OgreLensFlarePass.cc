@@ -101,7 +101,8 @@ class gz::rendering::OgreLensFlarePass::Implementation
   public: OgreLensFlareCompositorListenerPrivate compositorListener;
 
   /// \brief Lens Flare compositor.
-  public: Ogre::CompositorInstance *lensFlareInstance = nullptr;
+  public: Ogre::CompositorInstance *
+    lensFlareInstance[kMaxOgreRenderPassCameras] = {};
 
   public: explicit Implementation(gz::rendering::OgreLensFlarePass &_owner) :
     compositorListener(_owner)
@@ -134,51 +135,65 @@ void OgreLensFlarePass::Init(ScenePtr _scene)
 //////////////////////////////////////////////////
 void OgreLensFlarePass::Destroy()
 {
-  if (this->dataPtr->lensFlareInstance)
+  for (size_t i = 0u; i < kMaxOgreRenderPassCameras; ++i)
   {
-    this->dataPtr->lensFlareInstance->setEnabled(false);
-    this->dataPtr->lensFlareInstance->removeListener(
-      &this->dataPtr->compositorListener);
-    Ogre::CompositorManager::getSingleton().removeCompositor(
-      this->ogreCamera->getViewport(), "RenderPass/LensFlare");
+    if (this->dataPtr->lensFlareInstance[i])
+    {
+      this->dataPtr->lensFlareInstance[i]->setEnabled(false);
+      this->dataPtr->lensFlareInstance[i]->removeListener(
+        &this->dataPtr->compositorListener);
+      Ogre::CompositorManager::getSingleton().removeCompositor(
+        this->ogreCamera[i]->getViewport(), "RenderPass/LensFlare");
 
-    this->dataPtr->lensFlareInstance = nullptr;
+      this->dataPtr->lensFlareInstance[i] = nullptr;
+    }
   }
 }
 
 //////////////////////////////////////////////////
 void OgreLensFlarePass::CreateRenderPass()
 {
-  if (!this->ogreCamera)
+  if (!this->ogreCamera[0])
   {
     gzerr << "No camera set for applying Lens Flare Pass" << std::endl;
     return;
   }
 
-  if (this->dataPtr->lensFlareInstance)
+  if (this->dataPtr->lensFlareInstance[0])
   {
     gzwarn << "Lens Flare pass already created. " << std::endl;
     return;
   }
 
-  // create compositor instance
-  this->dataPtr->lensFlareInstance =
-    Ogre::CompositorManager::getSingleton().addCompositor(
-      this->ogreCamera->getViewport(), "RenderPass/LensFlare");
-  this->dataPtr->lensFlareInstance->setEnabled(this->enabled);
-
-  this->dataPtr->lensFlareInstance->addListener(
-    &this->dataPtr->compositorListener);
+  for (size_t i = 0u; i < kMaxOgreRenderPassCameras; ++i)
+  {
+    if (this->ogreCamera[i])
+    {
+      // create compositor instance
+      this->dataPtr->lensFlareInstance[i] =
+        Ogre::CompositorManager::getSingleton().addCompositor(
+          this->ogreCamera[i]->getViewport(), "RenderPass/LensFlare");
+      this->dataPtr->lensFlareInstance[i]->setEnabled(this->enabled);
+      this->dataPtr->lensFlareInstance[i]->addListener(
+        &this->dataPtr->compositorListener);
+    }
+  }
 }
 
 //////////////////////////////////////////////////
 void OgreLensFlarePass::PreRender(const CameraPtr &_camera)
 {
-  if (!this->dataPtr->lensFlareInstance)
+  if (!this->dataPtr->lensFlareInstance[0])
     return;
 
-  if (this->enabled != this->dataPtr->lensFlareInstance->getEnabled())
-    this->dataPtr->lensFlareInstance->setEnabled(this->enabled);
+  for (size_t i = 0u; i < kMaxOgreRenderPassCameras; ++i)
+  {
+    if (this->dataPtr->lensFlareInstance[i] &&
+        this->enabled != this->dataPtr->lensFlareInstance[i]->getEnabled())
+    {
+      this->dataPtr->lensFlareInstance[i]->setEnabled(this->enabled);
+    }
+  }
 
   if (!this->enabled || this->light == nullptr)
     return;

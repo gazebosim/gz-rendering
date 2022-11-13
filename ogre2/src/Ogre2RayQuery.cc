@@ -72,7 +72,7 @@ class gz::rendering::Ogre2RayQueryPrivate
   public: std::thread::id threadId;
 
   //// \brief See RayQuery::SetPreferGpu
-  public: bool preferGpu;
+  public: bool preferGpu = true;
 };
 
 using namespace gz;

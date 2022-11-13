@@ -786,19 +786,6 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
     }
   }
 
-  common::Image comImage;
-  comImage.SetFromData(refImage.Data<unsigned char>(), refImage.Width(),
-                       refImage.Height(), common::Image::RGB_INT8);
-  comImage.SavePNG("/home/matias/T/Original.png");
-  comImage.SetFromData(imageLensFlared.Data<unsigned char>(),
-                       imageLensFlared.Width(), imageLensFlared.Height(),
-                       common::Image::RGB_INT8);
-  comImage.SavePNG("/home/matias/T/imageLensFlared.png");
-  comImage.SetFromData(imageLensNoOcclusion.Data<unsigned char>(),
-                       imageLensNoOcclusion.Width(),
-                       imageLensNoOcclusion.Height(), common::Image::RGB_INT8);
-  comImage.SavePNG("/home/matias/T/imageLensNoOcclusion.png");
-
   //
   // TEST 6: LensFlare (no occlusion), ensure coordinate convention is correct
   // The lens flare must come from top left corner.

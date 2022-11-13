@@ -265,6 +265,7 @@ void Ogre2WideAngleCamera::RemoveRenderPass(const RenderPassPtr &_pass)
     this->dataPtr->renderPasses.erase(it);
   }
   this->DestroyFacesWorkspaces();
+  BaseWideAngleCamera::RemoveRenderPass(_pass);
 }
 
 //////////////////////////////////////////////////

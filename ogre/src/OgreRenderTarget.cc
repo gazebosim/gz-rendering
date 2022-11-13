@@ -314,6 +314,7 @@ OgreRenderTexture::~OgreRenderTexture()
 //////////////////////////////////////////////////
 void OgreRenderTexture::Destroy()
 {
+  this->RemoveAllRenderPasses();
   this->DestroyTarget();
 }
 
@@ -460,6 +461,7 @@ Ogre::RenderTarget *OgreRenderWindow::RenderTarget() const
 //////////////////////////////////////////////////
 void OgreRenderWindow::Destroy()
 {
+  this->RemoveAllRenderPasses();
   // if (this->ogreRenderWindow)
   //  this->ogreRenderWindow->destroy();
 }

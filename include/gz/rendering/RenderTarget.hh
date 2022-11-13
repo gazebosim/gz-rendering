@@ -99,6 +99,9 @@ namespace gz
       /// \param[in] _pass render pass to remove
       public: virtual void RemoveRenderPass(const RenderPassPtr &_pass) = 0;
 
+      /// \brief Remove all render passes from the render target
+      public: virtual void RemoveAllRenderPasses() = 0;
+
       /// \brief Get the number of render passes applied to the render target
       /// \return Number of render passes applied
       public: virtual unsigned int RenderPassCount() const = 0;

@@ -71,6 +71,9 @@ namespace gz
       // Documentation inherited
       public: void RemoveRenderPass(const RenderPassPtr &_pass) override;
 
+      // Documentation inherited
+      public: void RemoveAllRenderPasses() override;
+
       /// \brief Update render pass chain if changes were made
       protected: void UpdateRenderPassChain();
 

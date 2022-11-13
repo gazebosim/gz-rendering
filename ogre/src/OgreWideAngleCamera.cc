@@ -160,6 +160,8 @@ void OgreWideAngleCamera::PreRender()
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::Destroy()
 {
+  this->RemoveAllRenderPasses();
+
   if (this->dataPtr->imageBuffer)
   {
     delete [] this->dataPtr->imageBuffer;
@@ -238,6 +240,17 @@ void OgreWideAngleCamera::RemoveRenderPass(const RenderPassPtr &_pass)
     this->dataPtr->renderPasses.erase(it);
     this->dataPtr->renderPassDirty = true;
   }
+}
+
+//////////////////////////////////////////////////
+void OgreWideAngleCamera::RemoveAllRenderPasses()
+{
+  for (auto pass : this->dataPtr->renderPasses)
+  {
+    pass->Destroy();
+  }
+  this->dataPtr->renderPasses.clear();
+  this->dataPtr->renderPassDirty = true;
 }
 
 //////////////////////////////////////////////////

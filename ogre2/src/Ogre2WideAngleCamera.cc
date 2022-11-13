@@ -271,6 +271,14 @@ void Ogre2WideAngleCamera::RemoveRenderPass(const RenderPassPtr &_pass)
 }
 
 //////////////////////////////////////////////////
+void Ogre2WideAngleCamera::RemoveAllRenderPasses()
+{
+  BaseWideAngleCamera::RemoveAllRenderPasses();
+  this->dataPtr->renderPasses.clear();
+  this->DestroyFacesWorkspaces();
+}
+
+//////////////////////////////////////////////////
 uint32_t Ogre2WideAngleCamera::EnvTextureSize() const
 {
   return this->dataPtr->envTextureSize;

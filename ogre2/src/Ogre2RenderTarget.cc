@@ -959,8 +959,29 @@ void Ogre2RenderTexture::RemoveRenderPass(const RenderPassPtr &_pass)
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderTexture::RemoveAllRenderPasses()
+{
+  if (!this->renderPasses.empty())
+  {
+    for (RenderPassPtr &renderPass : this->renderPasses)
+    {
+      Ogre2RenderPass *ogre2RenderPass =
+        dynamic_cast<Ogre2RenderPass *>(renderPass.get());
+      if (this->ogreCompositorWorkspace)
+      {
+        ogre2RenderPass->WorkspaceRemoved(this->ogreCompositorWorkspace);
+      }
+      ogre2RenderPass->Destroy();
+    }
+    this->renderPasses.clear();
+    this->renderPassDirty = true;
+  }
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderTexture::Destroy()
 {
+  this->RemoveAllRenderPasses();
   this->DestroyTarget();
 }
 
@@ -1040,6 +1061,7 @@ Ogre::TextureGpu *Ogre2RenderWindow::RenderTarget() const
 //////////////////////////////////////////////////
 void Ogre2RenderWindow::Destroy()
 {
+  this->RemoveAllRenderPasses();
   // TODO(anyone)
 }
 

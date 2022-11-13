@@ -86,7 +86,8 @@ namespace gz
     template <class T>
     void BaseRenderPass<T>::PreRender(const CameraPtr &/*_camera*/)
     {
-      T::PreRender();
+      T *thisT = this;
+      thisT->PreRender();  // NOT the same as doing T::PreRender
     }
     }
   }

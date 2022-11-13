@@ -164,7 +164,7 @@ namespace gz
     template <class T>
     void BaseRenderTarget<T>::PreRender(const CameraPtr &_camera)
     {
-      PreRender();
+      this->PreRender();
       for (auto &pass : this->renderPasses)
         pass->PreRender(_camera);
     }

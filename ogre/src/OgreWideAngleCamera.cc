@@ -34,10 +34,12 @@
 
 #include "gz/rendering/CameraLens.hh"
 
-#include "gz/rendering/ogre/OgreConversions.hh"
-#include "gz/rendering/ogre/OgreRenderEngine.hh"
-#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
 #include "gz/rendering/ogre/OgreWideAngleCamera.hh"
+
+#include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
+#include "gz/rendering/ogre/OgreRenderEngine.hh"
+#include "gz/rendering/ogre/OgreRenderPass.hh"
 
 /// \brief Private data for the WideAngleCamera class
 class gz::rendering::OgreWideAngleCamera::Implementation
@@ -81,6 +83,12 @@ class gz::rendering::OgreWideAngleCamera::Implementation
 
   /// \brief Dummy texture
   public: OgreRenderTexturePtr wideAngleTexture;
+
+  /// \brief A chain of render passes applied to the render target
+  public: std::vector<RenderPassPtr> renderPasses;
+
+  /// \brief Flag to indicate if render pass need to be rebuilt
+  public: bool renderPassDirty = false;
 
   /// \brief The image buffer
   public: unsigned char *imageBuffer = nullptr;
@@ -139,6 +147,8 @@ void OgreWideAngleCamera::PreRender()
   BaseCamera::PreRender();
   if (!this->dataPtr->ogreRenderTexture)
     this->CreateWideAngleTexture();
+
+  this->UpdateRenderPassChain();
 }
 
 //////////////////////////////////////////////////
@@ -199,6 +209,28 @@ void OgreWideAngleCamera::Destroy()
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->compMat->getName());
     this->dataPtr->compMat.setNull();
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreWideAngleCamera::AddRenderPass(const RenderPassPtr &_pass)
+{
+  // Do NOT pass it to super class.
+  this->dataPtr->renderPasses.push_back(_pass);
+  this->dataPtr->renderPassDirty = true;
+}
+
+//////////////////////////////////////////////////
+void OgreWideAngleCamera::RemoveRenderPass(const RenderPassPtr &_pass)
+{
+  // Do NOT pass it to super class.
+  auto it = std::find(this->dataPtr->renderPasses.begin(),
+                      this->dataPtr->renderPasses.end(), _pass);
+  if (it != this->dataPtr->renderPasses.end())
+  {
+    (*it)->Destroy();
+    this->dataPtr->renderPasses.erase(it);
+    this->dataPtr->renderPassDirty = true;
   }
 }
 
@@ -415,6 +447,22 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
     pass->createTextureUnitState();
   this->dataPtr->cubeMapCompInstance->addListener(this);
   this->dataPtr->cubeMapCompInstance->setEnabled(true);
+}
+
+//////////////////////////////////////////////////
+void OgreWideAngleCamera::UpdateRenderPassChain()
+{
+  if (!this->dataPtr->renderPassDirty)
+    return;
+
+  for (auto pass : this->dataPtr->renderPasses)
+  {
+    OgreRenderPass *ogreRenderPass =
+        dynamic_cast<OgreRenderPass *>(pass.get());
+    ogreRenderPass->SetCamera(this->dataPtr->ogreCamera);
+    ogreRenderPass->CreateRenderPass();
+  }
+  this->dataPtr->renderPassDirty = false;
 }
 
 //////////////////////////////////////////////////

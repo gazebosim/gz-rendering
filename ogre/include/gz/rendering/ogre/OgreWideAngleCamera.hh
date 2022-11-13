@@ -65,6 +65,15 @@ namespace gz
       // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
+      public: void AddRenderPass(const RenderPassPtr &_pass) override;
+
+      // Documentation inherited
+      public: void RemoveRenderPass(const RenderPassPtr &_pass) override;
+
+      /// \brief Update render pass chain if changes were made
+      protected: void UpdateRenderPassChain();
+
       /// \brief Gets the environment texture size
       /// \return Texture size
       public: unsigned int EnvTextureSize() const;

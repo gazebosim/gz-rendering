@@ -354,9 +354,23 @@ void OgreLensFlareCompositorListenerPrivate::notifyMaterialRender(
   Ogre::GpuProgramParametersSharedPtr params =
     pass->getFragmentProgramParameters();
 
-  const Ogre::Camera *camera =
-    dynamic_cast<OgreCamera *>(this->owner.dataPtr->currentCamera.get())
-      ->Camera();
+  const Ogre::Camera *camera;
+
+  {
+    OgreWideAngleCamera *wideAngleCamera = dynamic_cast<OgreWideAngleCamera *>(
+      this->owner.dataPtr->currentCamera.get());
+    if (wideAngleCamera)
+    {
+      camera =
+        wideAngleCamera->OgreEnvCameras()[this->owner.dataPtr->currentFaceIdx];
+    }
+    else
+    {
+      camera =
+        dynamic_cast<OgreCamera *>(this->owner.dataPtr->currentCamera.get())
+          ->Camera();
+    }
+  }
 
   const Matrix4 viewProj =
     camera->getProjectionMatrix() * camera->getViewMatrix();

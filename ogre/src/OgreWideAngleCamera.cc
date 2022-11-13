@@ -149,6 +149,12 @@ void OgreWideAngleCamera::PreRender()
     this->CreateWideAngleTexture();
 
   this->UpdateRenderPassChain();
+
+  for (auto pass : this->dataPtr->renderPasses)
+  {
+    pass->PreRender(
+      std::dynamic_pointer_cast<Camera>(this->shared_from_this()));
+  }
 }
 
 //////////////////////////////////////////////////
@@ -666,6 +672,11 @@ void OgreWideAngleCamera::PostRender()
 {
   if (this->dataPtr->newImageFrame.ConnectionCount() <= 0u)
     return;
+
+  for (auto pass : this->dataPtr->renderPasses)
+  {
+    pass->PostRender();
+  }
 
   unsigned int width = this->ImageWidth();
   unsigned int height = this->ImageHeight();

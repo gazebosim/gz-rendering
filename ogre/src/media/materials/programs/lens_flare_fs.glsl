@@ -75,7 +75,7 @@ void main()
   if (lightPos.z < 0.0)
   {
     // light is behind the view
-    gl_FragColor = texture(srcTex, gl_TexCoord[0].xy);
+    gl_FragColor = texture2D(srcTex, gl_TexCoord[0].xy);
   }
   else
   {
@@ -95,7 +95,7 @@ void main()
     vec3 finalColor = color * lensflare(uv, pos.xy);
 
     // apply lens flare
-    gl_FragColor = texture(srcTex, gl_TexCoord[0].xy) +
-                vec4(finalColor, 1.0);
+    gl_FragColor = texture2D(srcTex, gl_TexCoord[0].xy) +
+                   vec4(finalColor, 1.0);
   }
 }

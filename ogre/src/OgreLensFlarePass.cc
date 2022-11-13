@@ -164,7 +164,7 @@ void OgreLensFlarePass::CreateRenderPass()
   // create compositor instance
   this->dataPtr->lensFlareInstance =
     Ogre::CompositorManager::getSingleton().addCompositor(
-      this->ogreCamera->getViewport(), "RenderPass/GaussianNoise");
+      this->ogreCamera->getViewport(), "RenderPass/LensFlare");
   this->dataPtr->lensFlareInstance->setEnabled(this->enabled);
 
   this->dataPtr->lensFlareInstance->addListener(

@@ -2,6 +2,14 @@
 
 ### Gazebo Rendering 7.X
 
+### Gazebo Rendering 7.2.0 (2022-11-14)
+
+1. Enable gpu ray query on macOS.
+    * [Pull request #758](https://github.com/gazebosim/gz-rendering/pull/758)
+
+1. Calculate camera intrinsics : Refactor https://github.com/gazebosim/gz-rendering/pull/700
+    * [Pull request #755](https://github.com/gazebosim/gz-rendering/pull/755)
+
 ### Gazebo Rendering 7.1.0 (2022-10-31)
 
 1. Initialize wide angle camera pixel format

@@ -56,7 +56,7 @@ namespace gz
 
       // Documentation inherited
       public: virtual RayQueryResult ClosestPoint(
-            bool _forceSceneUpdate = true);
+            bool _forceSceneUpdate = true) override;
 
       /// \brief Get the mesh information for the given mesh.
       /// \param[in] _mesh Mesh to get info about.

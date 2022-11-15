@@ -1014,7 +1014,7 @@ void GpuRaysTest::Heightmap(const std::string &_renderEngine)
   // Test GPU rays heightmap detection
   const double hMinAngle = -IGN_PI / 8.0;
   const double hMaxAngle = IGN_PI / 8.0;
-  const double minRange = 1;
+  const double minRange = 1.0;
   const double maxRange = 100.0;
   const int hRayCount = 20;
   const int vRayCount = 1;
@@ -1040,7 +1040,7 @@ void GpuRaysTest::Heightmap(const std::string &_renderEngine)
 
   // Create ray caster oriented to look down at the heightmap
   math::Pose3d testPose(math::Vector3d(0, 0, 20),
-      math::Quaterniond(math::Vector3d(0, 1.570796, 0)));
+      math::Quaterniond(math::Vector3d(0, IGN_PI / 2, 0)));
 
   GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays_1");
   gpuRays->SetWorldPosition(testPose.Pos());

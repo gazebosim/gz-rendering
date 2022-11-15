@@ -778,11 +778,11 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
     // incomparable, then this test is meaningless and needs tweaking.
     if (!_wideAngleCamera)
     {
-      EXPECT_LE(uncomparablePixelCount, 1);
+      EXPECT_LE(uncomparablePixelCount, 5);
     }
     else
     {
-      EXPECT_LE(uncomparablePixelCount, 35);
+      EXPECT_LE(uncomparablePixelCount, 40);
     }
   }
 

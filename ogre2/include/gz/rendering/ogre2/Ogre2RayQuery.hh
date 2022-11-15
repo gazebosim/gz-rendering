@@ -61,7 +61,7 @@ namespace gz
 
       // Documentation inherited
       public: virtual RayQueryResult ClosestPoint(
-            bool _forceSceneUpdate = true);
+            bool _forceSceneUpdate = true) override;
 
       /// \brief Get closest point by selection buffer.
       /// This is executed on the GPU.

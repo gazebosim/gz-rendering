@@ -43,11 +43,11 @@ namespace gz
       protected: OgreRayQuery();
 
       /// \brief Destructor
-      public: virtual ~OgreRayQuery();
+      public: virtual ~OgreRayQuery() override;
 
       // Documentation inherited
       public: virtual void SetFromCamera(const CameraPtr &_camera,
-                const math::Vector2d &_coord);
+                                         const math::Vector2d &_coord) override;
 
       // Documentation inherited
       public: void SetFromCamera(const WideAngleCameraPtr &_camera,

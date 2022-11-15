@@ -43,11 +43,14 @@ Ogre2Grid::Ogre2Grid()
 //////////////////////////////////////////////////
 Ogre2Grid::~Ogre2Grid()
 {
+  BaseGrid::Destroy();
 }
 
 //////////////////////////////////////////////////
 void Ogre2Grid::PreRender()
 {
+  BaseGrid::PreRender();
+
   if (this->gridDirty)
   {
     this->Create();

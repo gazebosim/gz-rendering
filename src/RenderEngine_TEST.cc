@@ -46,6 +46,12 @@ void RenderEngineTest::RenderEngine(const std::string &_renderEngine)
     return;
   }
 
+  EXPECT_EQ(_renderEngine, engine->Name());
+  EXPECT_TRUE(engine->IsEnabled());
+  EXPECT_TRUE(engine->IsLoaded());
+
+  engine->AddResourcePath("none");
+
   // Check there are no scenes
   EXPECT_EQ(0u, engine->SceneCount());
   EXPECT_FALSE(engine->HasSceneName("scene1"));

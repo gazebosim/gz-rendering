@@ -53,6 +53,12 @@ void MeshDescriptorTest::Descriptor(const std::string &_renderEngine)
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_TRUE(scene != nullptr);
 
+  MeshDescriptor failDescriptor;
+  failDescriptor.Load();
+
+  MeshDescriptor failDescriptor2("non_existing_mesh");
+  failDescriptor2.Load();
+
   // empty constructor
   MeshDescriptor emptyDescriptor;
   EXPECT_TRUE(emptyDescriptor.meshName.empty());

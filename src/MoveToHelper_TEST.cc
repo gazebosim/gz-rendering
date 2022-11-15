@@ -17,6 +17,7 @@
 #include <gtest/gtest.h>
 
 #include <chrono>
+#include <cmath>
 
 #include <gz/rendering/MoveToHelper.hh>
 #include <gz/common/Console.hh>
@@ -111,6 +112,11 @@ void MoveToHelperTest::MoveTo(const std::string &_renderEngine)
 
   NodePtr target = scene->NodeByName("center");
 
+  moveToHelper.SetInitCameraPose(math::Pose3d());
+
+  // This call should return, there is no camera
+  moveToHelper.AddTime(0.1);
+
   moveToHelper.MoveTo(camera, target, 0.5,
     std::bind(&MoveToHelperTest::OnMoveToComplete, this));
   EXPECT_FALSE(moveToHelper.Idle());
@@ -135,6 +141,22 @@ void MoveToHelperTest::MoveTo(const std::string &_renderEngine)
   EXPECT_TRUE(moveToHelper.Idle());
   EXPECT_EQ(math::Vector3d(0.0, -1, 0.0), camera->LocalPosition());
   EXPECT_EQ(math::Quaterniond(0.0, -0.785398, 1.5708), camera->LocalRotation());
+
+  moveToHelper.LookDirection(camera,
+      math::Vector3d::Zero, lookAt,
+      0.5, std::bind(&MoveToHelperTest::OnMoveToComplete, this));
+  EXPECT_FALSE(moveToHelper.Idle());
+  checkIsCompleted(0.5);
+  EXPECT_TRUE(moveToHelper.Idle());
+  EXPECT_EQ(math::Vector3d(0.0, 0, 0.0), camera->LocalPosition());
+  EXPECT_EQ(math::Quaterniond(0.0, 0, 0), camera->LocalRotation());
+
+  moveToHelper.MoveTo(camera, math::Pose3d(INFINITY, 0.0, 0.0, 0, 0, 0), 0.5,
+    std::bind(&MoveToHelperTest::OnMoveToComplete, this));
+  EXPECT_FALSE(moveToHelper.Idle());
+  checkIsCompleted(0.5);
+  EXPECT_EQ(math::Vector3d(0.0, 0, 0.0), camera->LocalPosition());
+  EXPECT_TRUE(moveToHelper.Idle());
 
   engine->DestroyScene(scene);
   unloadEngine(engine->Name());

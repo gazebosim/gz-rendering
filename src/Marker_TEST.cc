@@ -81,6 +81,15 @@ void MarkerTest::Marker(const std::string &_renderEngine)
   marker->SetType(MarkerType::MT_NONE);
   EXPECT_EQ(MarkerType::MT_NONE, marker->Type());
 
+  marker->SetType(MarkerType::MT_BOX);
+  EXPECT_EQ(MarkerType::MT_BOX, marker->Type());
+
+  marker->SetType(MarkerType::MT_SPHERE);
+  EXPECT_EQ(MarkerType::MT_SPHERE, marker->Type());
+
+  marker->SetType(static_cast<MarkerType>(11));
+  EXPECT_EQ(static_cast<MarkerType>(11), marker->Type());
+
   marker->SetType(MarkerType::MT_POINTS);
   EXPECT_EQ(MarkerType::MT_POINTS, marker->Type());
 
@@ -99,11 +108,55 @@ void MarkerTest::Marker(const std::string &_renderEngine)
   marker->SetType(MarkerType::MT_TRIANGLE_FAN);
   EXPECT_EQ(MarkerType::MT_TRIANGLE_FAN, marker->Type());
 
+  // Repeat again
+  marker->SetType(MarkerType::MT_TRIANGLE_FAN);
+  EXPECT_EQ(MarkerType::MT_TRIANGLE_FAN, marker->Type());
+
   // exercise point api
   EXPECT_NO_THROW(marker->AddPoint(math::Vector3d(0, 1, 2),
       math::Color::White));
+  EXPECT_NO_THROW(marker->AddPoint(-2, -1, 0, math::Color::White));
+
   EXPECT_NO_THROW(marker->SetPoint(0, math::Vector3d(3, 1, 2)));
   EXPECT_NO_THROW(marker->ClearPoints());
+
+  marker->PreRender();
+
+  // create material
+  MaterialPtr mat = scene->CreateMaterial();
+  mat->SetAmbient(0.6, 0.7, 0.8);
+  mat->SetDiffuse(0.3, 0.8, 0.2);
+  mat->SetSpecular(0.4, 0.9, 1.0);
+
+  MaterialPtr markerMat;
+  marker->SetType(MarkerType::MT_NONE);
+  marker->SetMaterial(mat);
+  markerMat = marker->Material();
+  ASSERT_NE(nullptr, markerMat);
+
+  marker->SetType(static_cast<MarkerType>(11));
+  marker->SetMaterial(mat);
+  markerMat = marker->Material();
+  ASSERT_NE(nullptr, markerMat);
+
+  marker->SetType(MarkerType::MT_BOX);
+  marker->SetMaterial(mat);
+  markerMat = marker->Material();
+  ASSERT_NE(nullptr, markerMat);
+
+  marker->SetType(MarkerType::MT_POINTS);
+  marker->SetMaterial(mat);
+  markerMat = marker->Material();
+  ASSERT_NE(nullptr, markerMat);
+
+  EXPECT_EQ(math::Color(0.6f, 0.7f, 0.8f), markerMat->Ambient());
+  EXPECT_EQ(math::Color(0.3f, 0.8f, 0.2f), markerMat->Diffuse());
+  EXPECT_EQ(math::Color(0.4f, 0.9f, 1.0f), markerMat->Specular());
+
+
+  MaterialPtr matNull;
+  marker->SetMaterial(matNull, false);
+  ASSERT_NE(nullptr, markerMat);
 
   // Clean up
   engine->DestroyScene(scene);

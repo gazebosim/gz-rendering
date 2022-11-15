@@ -29,6 +29,8 @@ using namespace rendering;
 void Connect()
 {
   common::Console::SetVerbosity(4);
+  gazebo::transport::init();
+  gazebo::transport::run();
 
   SceneManager* manager = SceneManager::Instance();
   manager->Load();

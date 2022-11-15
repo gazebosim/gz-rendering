@@ -683,9 +683,9 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
   //         LensFlare (occluded; but occlusion disabled)
   // Reference MUST be the same as previous test.
   //
-  const double oldOcclusionSteps = lensFlarePass->OcclusionSteps();
+  const uint32_t oldOcclusionSteps = lensFlarePass->OcclusionSteps();
   lensFlarePass->SetEnabled(true);
-  lensFlarePass->SetOcclusionSteps(0.0);
+  lensFlarePass->SetOcclusionSteps(0u);
   camera->Capture(imageLensFlared);
   // Restore setting
   lensFlarePass->SetOcclusionSteps(oldOcclusionSteps);
@@ -728,7 +728,7 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
   camera->Capture(imageLensFlared);
 
   Image imageLensNoOcclusion = camera->CreateImage();
-  lensFlarePass->SetOcclusionSteps(0.0);
+  lensFlarePass->SetOcclusionSteps(0u);
   camera->Capture(imageLensNoOcclusion);
   // Restore setting
   lensFlarePass->SetOcclusionSteps(oldOcclusionSteps);

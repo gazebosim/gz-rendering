@@ -28,11 +28,7 @@ using namespace rendering;
 
 void Connect()
 {
-  gazebo::common::Console::SetQuiet(false);
-  gazebo::transport::init();
-  gazebo::transport::run();
-
-  SceneManager* manager = SceneManager::Instance();
+  SceneManager *manager = SceneManager::Instance();
   manager->Load();
   manager->Init();
 }

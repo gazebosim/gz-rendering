@@ -13,7 +13,7 @@ fragment_program LensFlareFS_VK glslvk
   source lens_flare_fs.glsl
 }
 
-fragment_program LensFlareFS_Metal glslvk
+fragment_program LensFlareFS_Metal metal
 {
   source lens_flare_fs.metal
   shader_reflection_pair_hint Ogre/Compositor/Quad_vs

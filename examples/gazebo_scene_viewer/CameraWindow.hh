@@ -20,7 +20,7 @@
 #include <vector>
 #include "gz/rendering/RenderTypes.hh"
 
-void GlutRun(std::vector<gz::CameraPtr> _cameras);
+void GlutRun(std::vector<gz::rendering::CameraPtr> _cameras);
 
 void GlutDisplay();
 
@@ -30,7 +30,7 @@ void GlutKeyboard(unsigned char _key, int _x, int _y);
 
 void GlutReshape(int _width, int _height);
 
-void GlutInitCamera(gz::CameraPtr _camera);
+void GlutInitCamera(gz::rendering::CameraPtr _camera);
 
 void GlutInitContext();
 

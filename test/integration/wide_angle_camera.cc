@@ -142,8 +142,9 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
   EXPECT_EQ(1, g_counter);
 
   // Compare image pixels
-  unsigned int channelCount = PixelUtil::ChannelCount(camera->ImageFormat());
-  unsigned int step = width * channelCount;
+  const unsigned int channelCount =
+    PixelUtil::ChannelCount(camera->ImageFormat());
+  const unsigned int step = width * channelCount;
 
   // verify both cameras can see the blue box in the middle
   unsigned int mid = static_cast<unsigned int>(
@@ -197,6 +198,141 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
   // The wide angle camera should have more blue pixels than regular camera
   // because the box is larger in the image due to distortion
   EXPECT_GT(bSum, rRegularSum);
+
+  if (engineToTest == "ogre")
+  {
+    // ogre engine for some reason does not properly apply materia colors
+    // which is needed for the following test passes.
+    return;
+  }
+
+  // Now coordinate convention test:
+  //  Make sure it's not upside down, mirrored, etc.
+
+  scene->SetBackgroundColor(0.0, 0.0, 0.0);
+
+  // create red material
+  MaterialPtr red = scene->CreateMaterial();
+  red->SetAmbient(0.3, 0.0, 0.0);
+  red->SetDiffuse(0.8, 0.0, 0.0);
+  red->SetSpecular(0.5, 0.5, 0.5);
+
+  // create box visual in a corner
+  VisualPtr boxUpperLeft = scene->CreateVisual();
+  boxUpperLeft->AddGeometry(scene->CreateBox());
+  boxUpperLeft->SetOrigin(0.0, 0.0, 0.0);
+  boxUpperLeft->SetLocalPosition(2, 4, 4);
+  boxUpperLeft->SetLocalScale(1, 1, 1);
+  boxUpperLeft->SetMaterial(red);
+  root->AddChild(boxUpperLeft);
+
+  // create green material
+  MaterialPtr green = scene->CreateMaterial();
+  green->SetAmbient(0.0, 0.3, 0.0);
+  green->SetDiffuse(0.0, 0.8, 0.0);
+  green->SetSpecular(0.5, 0.5, 0.5);
+
+  // create box visual in a corner
+  VisualPtr boxBottomRight = scene->CreateVisual();
+  boxBottomRight->AddGeometry(scene->CreateBox());
+  boxBottomRight->SetOrigin(0.0, 0.0, 0.0);
+  boxBottomRight->SetLocalPosition(2, -4, -4);
+  boxBottomRight->SetLocalScale(1, 1, 1);
+  boxBottomRight->SetMaterial(green);
+  root->AddChild(boxBottomRight);
+
+  cameraRegular->Capture(imageRegular);
+  camera->Update();
+  EXPECT_EQ(2, g_counter);
+
+  unsigned int rSumQ[2][2] = { { 0u, 0u }, { 0u, 0u } };
+  unsigned int gSumQ[2][2] = { { 0u, 0u }, { 0u, 0u } };
+  unsigned int bSumQ[2][2] = { { 0u, 0u }, { 0u, 0u } };
+  unsigned int rRegularSumQ[2][2] = { { 0u, 0u }, { 0u, 0u } };
+  unsigned int gRegularSumQ[2][2] = { { 0u, 0u }, { 0u, 0u } };
+  unsigned int bRegularSumQ[2][2] = { { 0u, 0u }, { 0u, 0u } };
+
+  for (unsigned int i = 0; i < height; ++i)
+  {
+    for (unsigned int j = 0; j < step; j += channelCount)
+    {
+      unsigned int idx = i * step + j;
+      rSumQ[(j * 2u) / step][(i * 2u) / height] += g_buffer[idx];
+      gSumQ[(j * 2u) / step][(i * 2u) / height] += g_buffer[idx + 1];
+      bSumQ[(j * 2u) / step][(i * 2u) / height] += g_buffer[idx + 2];
+
+      rRegularSumQ[(j * 2u) / step][(i * 2u) / height] += dataRegular[idx];
+      gRegularSumQ[(j * 2u) / step][(i * 2u) / height] += dataRegular[idx + 1];
+      bRegularSumQ[(j * 2u) / step][(i * 2u) / height] += dataRegular[idx + 2];
+    }
+  }
+
+  // Normal Camera:
+  //  Top left should have:
+  //    - a lot of red
+  //    - a bit of blue
+  EXPECT_GT(rRegularSumQ[0][0], 0u);
+  EXPECT_EQ(gRegularSumQ[0][0], 0u);
+  EXPECT_GT(bRegularSumQ[0][0], 0u);
+  EXPECT_GT(rRegularSumQ[0][0], bRegularSumQ[0][0]);
+
+  // Wide Angle Camera:
+  //  Top left should have:
+  //    - a bit of red
+  //    - a lot of blue
+  EXPECT_GT(rSumQ[0][0], 0u);
+  EXPECT_EQ(gSumQ[0][0], 0u);
+  EXPECT_GT(bSumQ[0][0], 0u);
+  EXPECT_LT(rSumQ[0][0], bSumQ[0][0]);
+
+  EXPECT_GT(rRegularSumQ[0][0], rSumQ[0][0]);
+  EXPECT_EQ(gRegularSumQ[0][0], gSumQ[0][0]);
+  EXPECT_LT(bRegularSumQ[0][0], bSumQ[0][0]);
+
+  // Normal Camera:
+  //  Bottom right should have:
+  //    - a lot of green
+  //    - a bit of blue
+  EXPECT_EQ(rRegularSumQ[1][1], 0u);
+  EXPECT_GT(gRegularSumQ[1][1], 0u);
+  EXPECT_GT(bRegularSumQ[1][1], 0u);
+  EXPECT_GT(gRegularSumQ[1][1], bRegularSumQ[1][1]);
+
+  // Wide Angle Camera:
+  //  Bottom right should have:
+  //    - a bit of green
+  //    - a lot of blue
+  EXPECT_EQ(rSumQ[1][1], 0u);
+  EXPECT_GT(gSumQ[1][1], 0u);
+  EXPECT_GT(bSumQ[1][1], 0u);
+  EXPECT_LT(gSumQ[1][1], bSumQ[1][1]);
+
+  EXPECT_EQ(rRegularSumQ[1][1], rSumQ[1][1]);
+  EXPECT_GT(gRegularSumQ[1][1], gSumQ[1][1]);
+  EXPECT_LT(bRegularSumQ[1][1], bSumQ[1][1]);
+
+  // Normal Camera & Wide Angle Camera:
+  //  Top right & Bottom left should have:
+  //    - Only blue
+  EXPECT_EQ(rRegularSumQ[1][0], 0u);
+  EXPECT_EQ(gRegularSumQ[1][0], 0u);
+  EXPECT_GT(bRegularSumQ[1][0], 0u);
+
+  EXPECT_EQ(rSumQ[1][0], 0u);
+  EXPECT_EQ(gSumQ[1][0], 0u);
+  EXPECT_GT(bSumQ[1][0], 0u);
+
+  // Wide Angle Camera must have more blue than Normal Camera
+  EXPECT_LT(bRegularSumQ[1][0], bSumQ[1][0]);
+
+  // Top right & Bottom left should be equal
+  EXPECT_EQ(rRegularSumQ[1][0], rRegularSumQ[0][1]);
+  EXPECT_EQ(gRegularSumQ[1][0], gRegularSumQ[0][1]);
+  EXPECT_EQ(bRegularSumQ[1][0], bRegularSumQ[0][1]);
+
+  EXPECT_EQ(rSumQ[1][0], rSumQ[0][1]);
+  EXPECT_EQ(gSumQ[1][0], gSumQ[0][1]);
+  EXPECT_EQ(bSumQ[1][0], bSumQ[0][1]);
 
   // Clean up
   engine->DestroyScene(scene);

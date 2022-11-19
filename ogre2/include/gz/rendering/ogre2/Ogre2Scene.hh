@@ -84,6 +84,9 @@ namespace gz
       // Documentation inherited.
       public: virtual void SetAmbientLight(const math::Color &_color) override;
 
+      // Documentation inherited.
+      public: void SetBackgroundColor(const math::Color &_color) override;
+
       // Documentation inherited
       public: virtual void PreRender() override;
 

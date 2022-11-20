@@ -41,7 +41,7 @@ class HeightmapTest : public CommonRenderingTest
 // ogre1 not supported on Windows
 TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 {
-  CHECK_SUPPORTED_ENGINE("ogre");
+  CHECK_UNSUPPORTED_ENGINE("optix");
 
   auto scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);

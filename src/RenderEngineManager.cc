@@ -23,7 +23,7 @@
 
 #include <gz/plugin/Loader.hh>
 
-#include "gz/rendering/config.hh"
+#include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/RenderEngineManager.hh"
 #include "gz/rendering/RenderEnginePlugin.hh"
@@ -496,7 +496,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
 
   // Add default install folder.
   systemPaths.AddPluginPaths(std::string(GZ_RENDERING_PLUGIN_PATH));
-  systemPaths.AddPluginPaths({GZ_RENDERING_ENGINE_INSTALL_DIR});
+  systemPaths.AddPluginPaths(gz::rendering::getEngineInstallDir());
 
   // Add any preset plugin paths.
   for (const auto &path : this->pluginPaths)

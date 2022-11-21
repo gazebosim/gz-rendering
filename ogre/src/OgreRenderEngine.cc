@@ -36,6 +36,7 @@
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Util.hh>
 
+#include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/RenderEngineManager.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/OgreRenderEngine.hh"
@@ -582,7 +583,7 @@ void OgreRenderEngine::CreateResources()
   }
 
   std::string resourcePath = (env) ? std::string(env) :
-      GZ_RENDERING_RESOURCE_PATH;
+      gz::rendering::getResourcePath();
   // install path
   std::string mediaPath = common::joinPaths(resourcePath, "ogre", "media");
   paths.push_back(mediaPath);

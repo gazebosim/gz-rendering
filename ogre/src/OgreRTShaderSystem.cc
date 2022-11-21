@@ -28,7 +28,7 @@
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Util.hh>
 
-#include "gz/rendering/config.hh"
+#include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/ogre/OgreRenderEngine.hh"
 #include "gz/rendering/ogre/OgreScene.hh"
 #include "gz/rendering/ogre/OgreMaterial.hh"
@@ -501,7 +501,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
   }
 
   std::string resourcePath = (env) ? std::string(env) :
-      GZ_RENDERING_RESOURCE_PATH;
+      gz::rendering::getResourcePath();
 
   // path to look for ogre media files
   std::vector<std::string> paths;

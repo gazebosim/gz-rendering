@@ -20,17 +20,17 @@
   #include <windows.h>
 #endif
 
-#include <ignition/common/Util.hh>
-#include <ignition/common/Console.hh>
+#include <gz/common/Util.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreText.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreText.hh"
 
 #define POS_TEX_BINDING    0
 #define COLOUR_BINDING     1
 
-class ignition::rendering::OgreMovableText
+class gz::rendering::OgreMovableText
   : public Ogre::MovableObject, public Ogre::Renderable
 {
   /// \brief Constructor
@@ -50,7 +50,7 @@ class ignition::rendering::OgreMovableText
 
   /// \brief Set the text color.
   /// \param[in] _color Text color.
-  public: void SetColor(const ignition::math::Color &_color);
+  public: void SetColor(const gz::math::Color &_color);
 
   /// \brief Set the height of the character in meters.
   /// \param[in] _height Height of the characters.
@@ -77,7 +77,7 @@ class ignition::rendering::OgreMovableText
 
   /// \brief Get the axis aligned bounding box of the text.
   /// \return The axis aligned bounding box.
-  public: ignition::math::AxisAlignedBox AABB() const;
+  public: gz::math::AxisAlignedBox AABB() const;
 
   /// \brief Setup the geometry based on input text string.
   public: void SetupGeometry();
@@ -187,7 +187,7 @@ class ignition::rendering::OgreMovableText
   private: std::string text;
 
   /// \brief Text color
-  private: ignition::math::Color color;
+  private: gz::math::Color color;
 
   /// \brief Character height in meters
   private: float charHeight = 0.0;
@@ -210,7 +210,7 @@ class ignition::rendering::OgreMovableText
 };
 
 /// \brief Private data for the OgreText class.
-class ignition::rendering::OgreTextPrivate
+class gz::rendering::OgreTextPrivate
 {
   /// \brief Text materal
   public: OgreMaterialPtr material;
@@ -219,7 +219,7 @@ class ignition::rendering::OgreTextPrivate
   public: std::unique_ptr<OgreMovableText> ogreObj;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,39 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXTEXTUREFACTORY_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXTEXTUREFACTORY_HH_
 
-#include <string>
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
-#include "ignition/rendering/optix/Export.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixTextureFactory
-    {
-      public: explicit OptixTextureFactory(OptixScenePtr _scene);
-
-      public: virtual ~OptixTextureFactory();
-
-      public: optix::TextureSampler Create(const std::string &_filename);
-
-      public: optix::TextureSampler Create();
-
-      protected: optix::Buffer CreateBuffer(const std::string &_filename);
-
-      protected: optix::Buffer CreateBuffer();
-
-      protected: optix::TextureSampler CreateSampler(optix::Buffer _buffer);
-
-      protected: OptixScenePtr scene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixTextureFactory.hh>
+#include <ignition/rendering/config.hh>

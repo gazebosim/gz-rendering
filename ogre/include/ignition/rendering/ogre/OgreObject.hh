@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,37 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGREOBJECT_HH_
-#define IGNITION_RENDERING_OGRE_OGREOBJECT_HH_
 
-#include <ignition/common/SuppressWarning.hh>
-
-#include "ignition/rendering/base/BaseObject.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/Export.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreObject :
-      public BaseObject
-    {
-      protected: OgreObject();
-
-      public: virtual ~OgreObject();
-
-      public: virtual ScenePtr Scene() const;
-
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
-      protected: OgreScenePtr scene;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
-
-      private: friend class OgreScene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/ogre/OgreObject.hh>
+#include <ignition/rendering/config.hh>

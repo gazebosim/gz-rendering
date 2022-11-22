@@ -27,8 +27,8 @@
 #endif
 
 #include <string>
-#include <ignition/common/SingletonT.hh>
-#include "ignition/rendering/RenderTypes.hh"
+#include <gz/common/SingletonT.hh>
+#include "gz/rendering/RenderTypes.hh"
 
 namespace ignition
 {

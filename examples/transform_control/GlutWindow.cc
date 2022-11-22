@@ -31,13 +31,13 @@
 
 #include <mutex>
 
-#include <ignition/common/Console.hh>
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/Image.hh>
-#include <ignition/rendering/RayQuery.hh>
-#include <ignition/rendering/Scene.hh>
-#include <ignition/rendering/OrbitViewController.hh>
-#include <ignition/rendering/TransformController.hh>
+#include <gz/common/Console.hh>
+#include <gz/rendering/Camera.hh>
+#include <gz/rendering/Image.hh>
+#include <gz/rendering/RayQuery.hh>
+#include <gz/rendering/Scene.hh>
+#include <gz/rendering/OrbitViewController.hh>
+#include <gz/rendering/TransformController.hh>
 
 #include "GlutWindow.hh"
 
@@ -168,14 +168,14 @@ void handleTransform()
       if (g_mouse.state == GLUT_DOWN)
       {
         // get the visual at mouse position
-        ignition::math::Vector2i mousePos(g_mouse.x, g_mouse.y);
+        gz::math::Vector2i mousePos(g_mouse.x, g_mouse.y);
         ir::VisualPtr visual = rayCamera->VisualAt(mousePos);
         if (visual)
         {
           // check if the visual is an axis in the gizmo visual
-          ignition::math::Vector3d axis =
+          gz::math::Vector3d axis =
               g_transformControl.AxisById(visual->Id());
-          if (axis != ignition::math::Vector3d::Zero)
+          if (axis != gz::math::Vector3d::Zero)
           {
             // start the transform process
             g_transformControl.SetActiveAxis(axis);
@@ -207,23 +207,23 @@ void handleTransform()
       double ny = 1.0 - 2.0 * g_mouse.y / imageHeight;
       double nxEnd = 2.0 * g_mouse.motionX / imageWidth - 1.0;
       double nyEnd = 1.0 - 2.0 * g_mouse.motionY / imageHeight;
-      ignition::math::Vector2d start(nx, ny);
-      ignition::math::Vector2d end(nxEnd, nyEnd);
+      gz::math::Vector2d start(nx, ny);
+      gz::math::Vector2d end(nxEnd, nyEnd);
 
       // get the currect active axis
-      ignition::math::Vector3d axis = g_transformControl.ActiveAxis();
+      gz::math::Vector3d axis = g_transformControl.ActiveAxis();
 
       // compute 3d transformation from 2d mouse movement
       if (g_transformControl.Mode() == ir::TransformMode::TM_TRANSLATION)
       {
-        ignition::math::Vector3d distance =
+        gz::math::Vector3d distance =
             g_transformControl.TranslationFrom2d(axis, start, end);
         g_transformControl.Translate(distance);
         g_mouse.motionDirty = false;
       }
       else if (g_transformControl.Mode() == ir::TransformMode::TM_ROTATION)
       {
-        ignition::math::Quaterniond rotation =
+        gz::math::Quaterniond rotation =
             g_transformControl.RotationFrom2d(axis, start, end);
         g_transformControl.Rotate(rotation);
         g_mouse.motionDirty = false;
@@ -231,7 +231,7 @@ void handleTransform()
       else if (g_transformControl.Mode() == ir::TransformMode::TM_SCALE)
       {
         // note: scaling is limited to local space
-        ignition::math::Vector3d scale =
+        gz::math::Vector3d scale =
             g_transformControl.ScaleFrom2d(axis, start, end);
         g_transformControl.Scale(scale);
         g_mouse.motionDirty = false;
@@ -263,7 +263,7 @@ void handleMouse()
         2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
     double ny = 1.0 -
         2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
-    g_rayQuery->SetFromCamera(rayCamera, ignition::math::Vector2d(nx, ny));
+    g_rayQuery->SetFromCamera(rayCamera, gz::math::Vector2d(nx, ny));
     g_target  = g_rayQuery->ClosestPoint();
     if (!g_target)
     {
@@ -293,7 +293,7 @@ void handleMouse()
   if (g_mouse.motionDirty)
   {
     g_mouse.motionDirty = false;
-    auto drag = ignition::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
+    auto drag = gz::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
 
     // left mouse button pan
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)

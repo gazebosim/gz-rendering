@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,40 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXGRID_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXGRID_HH_
 
-#include <string>
-#include <vector>
-#include "ignition/rendering/base/BaseGrid.hh"
-#include "ignition/rendering/optix/OptixPrimitive.hh"
-#include "ignition/rendering/optix/OptixObject.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    /// TODO Not implemented yet!
-    /// \brief Optix implementation of a grid geometry
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixGrid
-      : public BaseGrid<OptixPrimitive>
-    {
-      /// \brief Constructor
-      protected: OptixGrid();
-
-      /// \brief Destructor
-      public: virtual ~OptixGrid();
-
-      // Documentation inherited.
-      public: virtual void PreRender();
-
-      /// \brief Grids can only be created by scene
-      private: friend class OptixScene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixGrid.hh>
+#include <ignition/rendering/config.hh>

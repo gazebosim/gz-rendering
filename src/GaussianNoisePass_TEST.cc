@@ -18,15 +18,15 @@
 #include <gtest/gtest.h>
 #include <cmath>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
-#include "ignition/rendering/GaussianNoisePass.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/RenderPassSystem.hh"
+#include "gz/rendering/GaussianNoisePass.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/RenderPassSystem.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class GaussianNoisePassTest : public testing::Test,

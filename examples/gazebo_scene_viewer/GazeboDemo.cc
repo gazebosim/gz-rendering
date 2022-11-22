@@ -18,12 +18,12 @@
 #include <gazebo/common/Console.hh>
 #include <gazebo/transport/TransportIface.hh>
 
-#include <ignition/rendering.hh>
+#include <gz/rendering.hh>
 
 #include "CameraWindow.hh"
 #include "SceneManager.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 void Connect()
@@ -32,7 +32,7 @@ void Connect()
   gazebo::transport::init();
   gazebo::transport::run();
 
-  SceneManager* manager = SceneManager::Instance();
+  SceneManager *manager = SceneManager::Instance();
   manager->Load();
   manager->Init();
 }

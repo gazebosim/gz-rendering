@@ -31,10 +31,10 @@
 
 #include <gazebo/common/Console.hh>
 
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/Image.hh>
-#include <ignition/rendering/Scene.hh>
-#include <ignition/rendering.hh>
+#include <gz/rendering/Camera.hh>
+#include <gz/rendering/Image.hh>
+#include <gz/rendering/Scene.hh>
+#include <gz/rendering.hh>
 
 #include "SceneManager.hh"
 
@@ -45,11 +45,11 @@
 unsigned int imgw = 0;
 unsigned int imgh = 0;
 
-std::vector<gz::CameraPtr> g_cameras;
-gz::CameraPtr g_camera;
-gz::CameraPtr g_currCamera;
+std::vector<gz::rendering::CameraPtr> g_cameras;
+gz::rendering::CameraPtr g_camera;
+gz::rendering::CameraPtr g_currCamera;
 unsigned int g_cameraIndex = 0;
-gz::ImagePtr g_image;
+gz::rendering::ImagePtr g_image;
 
 bool g_initContext = false;
 
@@ -65,7 +65,7 @@ bool g_initContext = false;
 double g_offset = 0.0;
 
 //////////////////////////////////////////////////
-void GlutRun(std::vector<gz::CameraPtr> _cameras)
+void GlutRun(std::vector<gz::rendering::CameraPtr> _cameras)
 {
 #if not (__APPLE__ || _WIN32)
   g_context = glXGetCurrentContext();
@@ -124,8 +124,8 @@ void GlutIdle()
   }
 #endif
 
-  ignition::rendering::SceneManager* manager =
-      ignition::rendering::SceneManager::Instance();
+  gz::rendering::SceneManager* manager =
+      gz::rendering::SceneManager::Instance();
 
   manager->UpdateScenes();
 
@@ -155,13 +155,13 @@ void GlutReshape(int, int)
 }
 
 //////////////////////////////////////////////////
-void GlutInitCamera(gz::CameraPtr _camera)
+void GlutInitCamera(gz::rendering::CameraPtr _camera)
 {
   g_camera = _camera;
   imgw = g_camera->ImageWidth();
   imgh = g_camera->ImageHeight();
-  gz::Image image = g_camera->CreateImage();
-  g_image = std::make_shared<gz::Image>(image);
+  gz::rendering::Image image = g_camera->CreateImage();
+  g_image = std::make_shared<gz::rendering::Image>(image);
   g_camera->Capture(*g_image);
 }
 

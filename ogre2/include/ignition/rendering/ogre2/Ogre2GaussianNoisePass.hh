@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,43 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2GAUSSIANNOISEPASS_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2GAUSSIANNOISEPASS_HH_
 
-#include "ignition/rendering/base/BaseGaussianNoisePass.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderPass.hh"
-#include "ignition/rendering/ogre2/Export.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    /* \class Ogre2GaussianNoisePass Ogre2GaussianNoisePass.hh \
-     * ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh
-     */
-    /// \brief Ogre2 Implementation of a Gaussian noise render pass.
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2GaussianNoisePass :
-      public BaseGaussianNoisePass<Ogre2RenderPass>
-    {
-      /// \brief Constructor
-      public: Ogre2GaussianNoisePass();
-
-      /// \brief Destructor
-      public: virtual ~Ogre2GaussianNoisePass();
-
-      // Documentation inherited
-      public: void PreRender() override;
-
-      // Documentation inherited
-      public: void CreateRenderPass() override;
-
-      /// brief Pointer to the Gaussian noise ogre material
-      private: Ogre::Material *gaussianNoiseMat = nullptr;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/ogre2/Ogre2GaussianNoisePass.hh>
+#include <ignition/rendering/config.hh>

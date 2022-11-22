@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_BASE_BASERENDERTYPES_HH_
-#define IGNITION_RENDERING_BASE_BASERENDERTYPES_HH_
 
-#include <memory>
-
-#include "ignition/rendering/RenderTypes.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class BaseNodeCompositeStore;
-    typedef shared_ptr<BaseNodeCompositeStore>   BaseNodeCompositeStorePtr;
-
-    class BaseObject;
-    typedef std::shared_ptr<BaseObject> BaseObjectPtr;
-
-    template <class T> class BaseSceneStore;
-    template <class T> class BaseNodeStore;
-    template <class T> class BaseLightStore;
-    template <class T> class BaseSensorStore;
-    template <class T> class BaseVisualStore;
-    template <class T> class BaseGeometryStore;
-    template <class T> class BaseSubMeshStore;
-    template <class T> class BaseMaterialMap;
-    }
-  }
-}
-#endif
+#include <gz/rendering/base/BaseRenderTypes.hh>
+#include <ignition/rendering/config.hh>

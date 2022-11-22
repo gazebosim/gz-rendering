@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,85 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_RAYQUERY_HH_
-#define IGNITION_RENDERING_RAYQUERY_HH_
 
-#include <ignition/common/SuppressWarning.hh>
-#include <ignition/math/Vector3.hh>
-
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/Visual.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    /// \brief A class that stores ray query intersection results.
-    class IGNITION_RENDERING_VISIBLE RayQueryResult
-    {
-      /// \brief Intersection distance
-      public: double distance = -1;
-
-      /// \brief Intersection point in 3d space
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
-      public: math::Vector3d point;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
-
-      /// \brief Intersected object id
-      public: unsigned int objectId = 0;
-
-      /// \brief Returns false if result is not valid
-      public: operator bool() const
-              {
-                return distance > 0;
-              }
-
-      /// \brief Returns false if result is not valid
-      public: operator bool()
-              {
-                return distance > 0;
-              }
-    };
-
-    /// \class RayQuery RayQuery.hh ignition/rendering/RayQuery.hh
-    /// \brief A Ray Query class used for computing ray object intersections
-    class IGNITION_RENDERING_VISIBLE RayQuery
-        : public virtual Object
-    {
-      /// \brief Destructor
-      public: virtual ~RayQuery() { }
-
-      /// \brief Set ray origin
-      /// \param[in] _origin Ray origin
-      public: virtual void SetOrigin(const math::Vector3d &_origin) = 0;
-
-      /// \brief Get ray origin
-      /// \return Ray origin
-      public: virtual math::Vector3d Origin() const = 0;
-
-      /// \brief Set ray direction
-      /// \param[in] _dir Ray origin
-      public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
-
-      /// \brief Get ray direction
-      /// \return Ray direction.
-      public: virtual math::Vector3d Direction() const = 0;
-
-      /// \brief Create the ray query from camera
-      /// \param[in] _camera Camera to construct ray
-      /// \param[in] _coord normalized device coords [-1, +1]
-      public: virtual void SetFromCamera(const CameraPtr &_camera,
-                const math::Vector2d &_coord) = 0;
-
-      /// \brief Compute intersections
-      /// \return A vector of intersection results
-      public: virtual RayQueryResult ClosestPoint() = 0;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/RayQuery.hh>
+#include <ignition/rendering/config.hh>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,77 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXRENDERENGINE_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXRENDERENGINE_HH_
 
-#include <map>
-#include <string>
-#include <ignition/common/SingletonT.hh>
-
-#include "ignition/rendering/RenderEnginePlugin.hh"
-#include "ignition/rendering/base/BaseRenderEngine.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    /// \brief Plugin for loading optix render engine
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderEnginePlugin :
-      public RenderEnginePlugin
-    {
-      /// \brief Constructor
-      public: OptixRenderEnginePlugin();
-
-      /// \brief Destructor
-      public: ~OptixRenderEnginePlugin() = default;
-
-      /// \brief Get the name of the render engine loaded by this plugin.
-      /// \return Name of render engine
-      public: std::string Name() const;
-
-      /// \brief Get a pointer to the render engine loaded by this plugin.
-      /// \return Render engine instance
-      public: RenderEngine *Engine() const;
-    };
-
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixRenderEngine :
-      public virtual BaseRenderEngine,
-      public common::SingletonT<OptixRenderEngine>
-    {
-      /// \brief Constructor
-      private: OptixRenderEngine();
-
-      public: virtual ~OptixRenderEngine();
-
-      public: virtual bool Fini();
-
-      public: virtual std::string Name() const;
-
-      public: std::string PtxFile(const std::string& _fileBase) const;
-
-      protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
-                  const std::string &_name);
-
-      protected: virtual SceneStorePtr Scenes() const;
-
-      // Documentation Inherited
-      protected: virtual bool LoadImpl(
-          const std::map<std::string, std::string> &_params) override;
-
-      protected: virtual bool InitImpl();
-
-      private: OptixSceneStorePtr scenes;
-
-      private: static const std::string PTX_PREFIX;
-
-      private: static const std::string PTX_SUFFIX;
-
-      private: friend class SingletonT<OptixRenderEngine>;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixRenderEngine.hh>
+#include <ignition/rendering/config.hh>

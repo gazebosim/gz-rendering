@@ -15,13 +15,13 @@
  *
 */
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2MaterialSwitcher.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/common/Console.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2MaterialSwitcher.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/RenderTypes.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 

@@ -14,15 +14,13 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
-#define IGNITION_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
+#ifndef GZ_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
+#define GZ_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
 
 #include <vector>
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/rendering/RenderTypes.hh"
 
-namespace gz = ignition::rendering;
-
-void GlutRun(std::vector<gz::CameraPtr> _cameras);
+void GlutRun(std::vector<gz::rendering::CameraPtr> _cameras);
 
 void GlutDisplay();
 
@@ -32,7 +30,7 @@ void GlutKeyboard(unsigned char _key, int _x, int _y);
 
 void GlutReshape(int _width, int _height);
 
-void GlutInitCamera(gz::CameraPtr _camera);
+void GlutInitCamera(gz::rendering::CameraPtr _camera);
 
 void GlutInitContext();
 

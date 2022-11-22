@@ -16,11 +16,11 @@
  */
 
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/RenderPassSystem.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreGaussianNoisePass.hh"
+#include "gz/rendering/RenderPassSystem.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreGaussianNoisePass.hh"
 
 namespace ignition
 {
@@ -55,9 +55,9 @@ namespace ignition
         // Sample three values within the range [0,1.0] and set them for use in
         // the fragment shader, which will interpret them as offsets from (0,0)
         // to use when computing pseudo-random values.
-        Ogre::Vector3 offsets(ignition::math::Rand::DblUniform(0.0, 1.0),
-                              ignition::math::Rand::DblUniform(0.0, 1.0),
-                              ignition::math::Rand::DblUniform(0.0, 1.0));
+        Ogre::Vector3 offsets(gz::math::Rand::DblUniform(0.0, 1.0),
+                              gz::math::Rand::DblUniform(0.0, 1.0),
+                              gz::math::Rand::DblUniform(0.0, 1.0));
         // These calls are setting parameters that are declared in two places:
         // 1. media/materials/scripts/gaussian_noise.material, in
         //    fragment_program GaussianNoiseFS
@@ -89,7 +89,7 @@ namespace ignition
   }
 }
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

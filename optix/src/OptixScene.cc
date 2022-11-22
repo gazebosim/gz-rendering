@@ -13,27 +13,27 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/optix/OptixArrowVisual.hh"
-#include "ignition/rendering/optix/OptixAxisVisual.hh"
-#include "ignition/rendering/optix/OptixBox.hh"
-#include "ignition/rendering/optix/OptixCamera.hh"
-#include "ignition/rendering/optix/OptixCone.hh"
-#include "ignition/rendering/optix/OptixCylinder.hh"
-#include "ignition/rendering/optix/OptixGeometry.hh"
-#include "ignition/rendering/optix/OptixGrid.hh"
-#include "ignition/rendering/optix/OptixLightManager.hh"
-#include "ignition/rendering/optix/OptixMeshFactory.hh"
-#include "ignition/rendering/optix/OptixRayTypes.hh"
-#include "ignition/rendering/optix/OptixRenderEngine.hh"
-#include "ignition/rendering/optix/OptixRenderTarget.hh"
-#include "ignition/rendering/optix/OptixScene.hh"
-#include "ignition/rendering/optix/OptixSphere.hh"
-#include "ignition/rendering/optix/OptixStorage.hh"
-#include "ignition/rendering/optix/OptixVisual.hh"
+#include "gz/rendering/optix/OptixArrowVisual.hh"
+#include "gz/rendering/optix/OptixAxisVisual.hh"
+#include "gz/rendering/optix/OptixBox.hh"
+#include "gz/rendering/optix/OptixCamera.hh"
+#include "gz/rendering/optix/OptixCone.hh"
+#include "gz/rendering/optix/OptixCylinder.hh"
+#include "gz/rendering/optix/OptixGeometry.hh"
+#include "gz/rendering/optix/OptixGrid.hh"
+#include "gz/rendering/optix/OptixLightManager.hh"
+#include "gz/rendering/optix/OptixMeshFactory.hh"
+#include "gz/rendering/optix/OptixRayTypes.hh"
+#include "gz/rendering/optix/OptixRenderEngine.hh"
+#include "gz/rendering/optix/OptixRenderTarget.hh"
+#include "gz/rendering/optix/OptixScene.hh"
+#include "gz/rendering/optix/OptixSphere.hh"
+#include "gz/rendering/optix/OptixStorage.hh"
+#include "gz/rendering/optix/OptixVisual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

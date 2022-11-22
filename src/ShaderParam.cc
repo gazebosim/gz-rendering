@@ -15,12 +15,12 @@
  *
  */
 
-#include "ignition/rendering/ShaderParam.hh"
+#include "gz/rendering/ShaderParam.hh"
 
-using namespace ignition::rendering;
+using namespace gz::rendering;
 
 
-class ignition::rendering::ShaderParamPrivate
+class gz::rendering::ShaderParamPrivate
 {
   /// \brief Type of parameter held
   public: ShaderParam::ParamType type = ShaderParam::PARAM_NONE;

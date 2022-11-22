@@ -17,14 +17,14 @@
 
 #include <gazebo/common/Events.hh>
 
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/Console.hh>
-#include <ignition/rendering.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/common/Console.hh>
+#include <gz/rendering.hh>
 
 #include "SceneManager.hh"
 #include "SceneManagerPrivate.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -945,7 +945,7 @@ DirectionalLightPtr SubSceneManager::DirectionalLight(
   LightPtr light = this->activeScene->LightByName(name);
 
   DirectionalLightPtr dirLight =
-      std::dynamic_pointer_cast<DirectionalLight>(light);
+      std::dynamic_pointer_cast<gz::rendering::DirectionalLight>(light);
 
   // check if not found
   if (!dirLight)
@@ -989,7 +989,7 @@ PointLightPtr SubSceneManager::PointLight(
   std::string name = _lightMsg.name();
   LightPtr light = this->activeScene->LightByName(name);
   PointLightPtr pointLight =
-      std::dynamic_pointer_cast<PointLight>(light);
+      std::dynamic_pointer_cast<gz::rendering::PointLight>(light);
 
   // check if not found
   if (!pointLight)
@@ -1061,7 +1061,7 @@ SpotLightPtr SubSceneManager::SpotLight(const gazebo::msgs::Light &_lightMsg,
   std::string name = _lightMsg.name();
   LightPtr light = this->activeScene->LightByName(name);
   SpotLightPtr spotLight =
-      std::dynamic_pointer_cast<SpotLight>(light);
+      std::dynamic_pointer_cast<gz::rendering::SpotLight>(light);
 
   // check if not found
   if (!spotLight)
@@ -1176,7 +1176,7 @@ CameraPtr SubSceneManager::Camera(const gazebo::msgs::Sensor &_sensorMsg,
   // find existing camera with name
   std::string name = _sensorMsg.name();
   SensorPtr sensor = this->activeScene->SensorByName(name);
-  CameraPtr camera = std::dynamic_pointer_cast<Camera>(sensor);
+  CameraPtr camera = std::dynamic_pointer_cast<gz::rendering::Camera>(sensor);
 
   // check if not found
   if (!camera)

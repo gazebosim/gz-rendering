@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,96 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2INCLUDES_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2INCLUDES_HH_
 
-#if defined(__clang__)
-  // This prevents some deprecation #warning messages on OSX 10.9
-  #pragma clang diagnostic ignored "-W#warnings"
-#elif defined(__GNUC__) || defined(__GNUG__)
-  #pragma GCC system_header
-#elif defined(_MSC_VER)
-  // This disables warning messages for OGRE
-  #pragma warning(push)
-  #pragma warning(disable: 4275)
-  #pragma warning(disable: 4005)
-  #pragma warning(disable: 5033)
-#endif
-
-#include <Ogre.h>
-#include <OgreBillboard.h>
-#include <OgreImageCodec.h>
-#include <OgreMovableObject.h>
-#include <OgreRenderable.h>
-#include <OgreRenderWindow.h>
-#include <OgrePlugin.h>
-#include <OgreDataStream.h>
-#include <OgreLogManager.h>
-#include <OgreWindowEventUtilities.h>
-#include <OgreSceneQuery.h>
-#include <OgreRoot.h>
-#include <OgreItem.h>
-#include <OgreSceneManager.h>
-#include <OgreSceneNode.h>
-#include <OgreVector3.h>
-#include <OgreManualObject.h>
-#include <OgreMaterialManager.h>
-#include <OgreMatrix4.h>
-#include <OgreColourValue.h>
-#include <OgreQuaternion.h>
-#include <OgreMesh2.h>
-#include <OgreSubMesh2.h>
-#include <OgreMeshManager2.h>
-#include <OgreHardwareBufferManager.h>
-#include <OgreCamera.h>
-#include <OgreNode.h>
-#include <OgreSimpleRenderable.h>
-#include <OgreFrameListener.h>
-#include <OgreTexture.h>
-#include <OgreRectangle2D.h>
-#include <OgreRenderObjectListener.h>
-#include <OgreTechnique.h>
-#include <OgrePass.h>
-#include <OgreOldSkeletonManager.h>
-#include <OgreTextureUnitState.h>
-#include <OgreGpuProgramManager.h>
-#include <OgreHighLevelGpuProgramManager.h>
-#include <OgreHardwarePixelBuffer.h>
-#include <OgreShadowCameraSetupPSSM.h>
-#include <OgreDepthBuffer.h>
-
-#include <OgreHlmsManager.h>
-#include <OgreHlmsTextureManager.h>
-#include <Hlms/Unlit/OgreHlmsUnlit.h>
-#include <Hlms/Pbs/OgreHlmsPbs.h>
-
-#include <Compositor/OgreCompositorManager2.h>
-#include <Compositor/OgreCompositorNode.h>
-#include <Compositor/OgreCompositorNodeDef.h>
-#include <Compositor/OgreCompositorShadowNode.h>
-#include <Compositor/OgreCompositorWorkspace.h>
-#include <Compositor/Pass/PassClear/OgreCompositorPassClearDef.h>
-#include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
-#include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
-
-#include <Overlay/OgreOverlayPrerequisites.h>
-#include <Overlay/OgreOverlayManager.h>
-#include <Overlay/OgreOverlayElement.h>
-#include <Overlay/OgreOverlayContainer.h>
-#include <Overlay/OgreFontManager.h>
-#include <Overlay/OgreOverlaySystem.h>
-
-// TODO(anyone): enable when ogre 2.1 fully supports paging
-// and terrain components
-// #include <Paging/OgrePageManager.h>
-// #include <Paging/OgrePagedWorld.h>
-// #include <Terrain/OgreTerrainPaging.h>
-// #include <Terrain/OgreTerrainMaterialGeneratorA.h>
-// #include <Terrain/OgreTerrain.h>
-// #include <Terrain/OgreTerrainGroup.h>
-
-#if defined(_MSC_VER)
-#pragma warning(pop)
-#endif
-
-#endif  // IGNITION_RENDERING_OGRE2_OGRE2INCLUDES_HH_
+#include <gz/rendering/ogre2/Ogre2Includes.hh>
+#include <ignition/rendering/config.hh>

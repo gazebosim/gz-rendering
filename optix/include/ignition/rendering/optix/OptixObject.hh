@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXOBJECT_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXOBJECT_HH_
 
-#include "ignition/rendering/base/BaseObject.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
-#include "ignition/rendering/optix/Export.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixObject :
-      public BaseObject
-    {
-      protected: OptixObject();
-
-      public: virtual ~OptixObject();
-
-      public: virtual ScenePtr Scene() const;
-
-      protected: OptixScenePtr scene;
-
-      private: friend class OptixScene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixObject.hh>
+#include <ignition/rendering/config.hh>

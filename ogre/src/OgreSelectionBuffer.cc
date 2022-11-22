@@ -16,18 +16,18 @@
 */
 
 #include <memory>
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreMaterialSwitcher.hh"
-#include "ignition/rendering/ogre/OgreSelectionBuffer.hh"
+#include "gz/common/Console.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreMaterialSwitcher.hh"
+#include "gz/rendering/ogre/OgreSelectionBuffer.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
-class ignition::rendering::OgreSelectionBufferPrivate
+class gz::rendering::OgreSelectionBufferPrivate
 {
   /// \brief This is a material listener and a RenderTargetListener.
   /// The material switcher is applied to only the selection camera

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,59 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGREGAUSSIANNOISEPASS_HH_
-#define IGNITION_RENDERING_OGRE_OGREGAUSSIANNOISEPASS_HH_
 
-#include <memory>
-
-#include <ignition/common/SuppressWarning.hh>
-
-#include "ignition/rendering/base/BaseGaussianNoisePass.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderPass.hh"
-#include "ignition/rendering/ogre/Export.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    // Forward declaration
-    class GaussianNoiseCompositorListener;
-
-    /* \class OgreGaussianNoisePass OgreGaussianNoisePass.hh \
-     * ignition/rendering/ogre/OgreGaussianNoisePass.hh
-     */
-    /// \brief Ogre implementation of the GaussianNoisePass class
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreGaussianNoisePass :
-      public BaseGaussianNoisePass<OgreRenderPass>
-    {
-      /// \brief Constructor
-      public: OgreGaussianNoisePass();
-
-      /// \brief Destructor
-      public: virtual ~OgreGaussianNoisePass();
-
-      // Documentation inherited
-      public: void PreRender() override;
-
-      // Documentation inherited
-      public: void Destroy() override;
-
-      // Documentation inherited
-      public: void CreateRenderPass() override;
-
-      /// \brief Gaussian noise compositor.
-      public: Ogre::CompositorInstance *gaussianNoiseInstance = nullptr;
-
-      /// \brief Gaussian noise compositor listener
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
-      public: std::shared_ptr<GaussianNoiseCompositorListener>
-          gaussianNoiseCompositorListener;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/ogre/OgreGaussianNoisePass.hh>
+#include <ignition/rendering/config.hh>

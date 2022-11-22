@@ -15,13 +15,13 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/OrbitViewController.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/Visual.hh"
+#include "gz/rendering/OrbitViewController.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/Visual.hh"
 
-class ignition::rendering::OrbitViewControllerPrivate
+class gz::rendering::OrbitViewControllerPrivate
 {
   /// \brief Pointer to camera
   public: CameraPtr camera;
@@ -30,7 +30,7 @@ class ignition::rendering::OrbitViewControllerPrivate
   public: math::Vector3d target;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 static const float PITCH_LIMIT_LOW = -static_cast<float>(IGN_PI)*0.5f + 0.001f;

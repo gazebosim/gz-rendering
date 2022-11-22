@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/optix/OptixMeshFactory.hh"
+#include "gz/rendering/optix/OptixMeshFactory.hh"
 
 #include <sstream>
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/SubMesh.hh>
-#include "ignition/rendering/optix/OptixMesh.hh"
-#include "ignition/rendering/optix/OptixStorage.hh"
+#include <gz/common/Mesh.hh>
+#include <gz/common/SubMesh.hh>
+#include "gz/rendering/optix/OptixMesh.hh"
+#include "gz/rendering/optix/OptixStorage.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

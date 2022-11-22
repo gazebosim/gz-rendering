@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,55 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2GEOMETRY_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2GEOMETRY_HH_
 
-#include "ignition/rendering/base/BaseGeometry.hh"
-#include "ignition/rendering/ogre2/Ogre2Object.hh"
-
-namespace Ogre
-{
-  class MovableObject;
-}
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    /// \brief Ogre2.x implementation of the geometry class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2Geometry :
-      public BaseGeometry<Ogre2Object>
-    {
-      /// \brief Constructor
-      protected: Ogre2Geometry();
-
-      /// \brief Destructor
-      public: virtual ~Ogre2Geometry();
-
-      // Documentation inherited.
-      public: virtual bool HasParent() const override;
-
-      // Documentation inherited.
-      public: virtual VisualPtr Parent() const override;
-
-      /// \brief Get the ogre object representing this geometry
-      /// \return Pointer to an ogre movable object
-      public: virtual Ogre::MovableObject *OgreObject() const = 0;
-
-      /// \brief Set the parent of this ogre geometry
-      /// \param[in] _parent Parent visual
-      protected: virtual void SetParent(Ogre2VisualPtr _parent);
-
-      /// \brief Parent visual
-      protected: Ogre2VisualPtr parent;
-
-      /// \brief Make ogre2 visual our friend so it can it can access function
-      /// for setting the parent of this geometry
-      private: friend class Ogre2Visual;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/ogre2/Ogre2Geometry.hh>
+#include <ignition/rendering/config.hh>

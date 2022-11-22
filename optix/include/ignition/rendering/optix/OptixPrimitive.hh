@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,62 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXPRIMITIVE_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXPRIMITIVE_HH_
 
-#include <string>
-#include "ignition/rendering/optix/OptixGeometry.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixPrimitive :
-      public OptixGeometry
-    {
-      protected: OptixPrimitive();
-
-      public: virtual ~OptixPrimitive();
-
-      public: virtual MaterialPtr Material() const;
-
-      public: virtual void SetMaterial(MaterialPtr _material,
-                  bool _unique = true);
-
-      public: virtual optix::GeometryGroup OptixGeometryGroup() const;
-
-      public: virtual optix::Acceleration OptixAccel() const;
-
-      public: virtual optix::GeometryInstance OptixGeometryInstance() const;
-
-      public: virtual optix::Geometry OptixGeometry() const;
-
-      public: virtual void PreRender();
-
-      protected: virtual void SetMaterialImpl(OptixMaterialPtr _material);
-
-      protected: virtual void Init();
-
-      protected: static optix::Geometry CreateOptixGeometry(
-                     OptixScenePtr _scene, const std::string &_ptxFile);
-
-      protected: MaterialPtr material;
-
-      protected: optix::GeometryGroup optixGeomGroup;
-
-      protected: optix::Acceleration optixAccel;
-
-      protected: optix::GeometryInstance optixGeomInstance;
-
-      protected: optix::Geometry optixGeometry;
-
-      protected: static const std::string PTX_INTERSECT_FUNC;
-
-      protected: static const std::string PTX_BOUNDS_FUNC;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixPrimitive.hh>
+#include <ignition/rendering/config.hh>

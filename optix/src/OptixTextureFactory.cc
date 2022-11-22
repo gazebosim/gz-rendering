@@ -15,13 +15,13 @@
  */
 
 #include <FreeImage.h>
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/optix/OptixTextureFactory.hh"
-#include "ignition/rendering/optix/OptixScene.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/optix/OptixTextureFactory.hh"
+#include "gz/rendering/optix/OptixScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 // TODO: clone texture sampler, reuse texture buffers

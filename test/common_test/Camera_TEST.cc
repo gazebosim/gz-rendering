@@ -365,6 +365,15 @@ TEST_F(CameraTest, IntrinsicMatrix)
   EXPECT_DOUBLE_EQ(cameraIntrinsics(0, 2), 500);
   EXPECT_DOUBLE_EQ(cameraIntrinsics(1, 2), 500);
 
+
+  const double newAspectRatio = 1.7;
+  camera->SetAspectRatio(newAspectRatio);
+  EXPECT_DOUBLE_EQ(camera->AspectRatio(), newAspectRatio);
+  camera->SetAspectRatio(0.0);
+  EXPECT_DOUBLE_EQ(camera->AspectRatio(), (double)width / (double)height);
+  camera->SetAspectRatio(-1.0);
+  EXPECT_DOUBLE_EQ(camera->AspectRatio(), (double)width / (double)height);
+
   // Clean up
   engine->DestroyScene(scene);
 }

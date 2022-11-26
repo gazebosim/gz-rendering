@@ -658,7 +658,8 @@ namespace gz
       // See https://github.com/gazebosim/gz-rendering/issues/763
       if (this->aspect <= 0.0)
       {
-        return (double)this->ImageWidth() / (double)this->ImageHeight();
+        return static_cast<double>(this->ImageWidth()) /
+               static_cast<double>(this->ImageHeight());
       }
       return this->aspect;
     }

@@ -317,10 +317,11 @@ TEST_F(CameraTest, IntrinsicMatrix)
   camera->SetImageWidth(width);
   camera->SetHFOV(hfov);
 
-  double error = 1e-1;
+  double error = 1e-2;
   EXPECT_EQ(camera->ImageHeight(), height);
   EXPECT_EQ(camera->ImageWidth(), width);
-  EXPECT_NEAR(camera->HFOV().Radian(), hfov, error);
+  EXPECT_DOUBLE_EQ(camera->HFOV().Radian(), hfov);
+  EXPECT_DOUBLE_EQ(camera->AspectRatio(), (double)width / (double)height);
 
   // Verify focal length and optical center from intrinsics
   auto cameraIntrinsics = projectionToCameraIntrinsic(
@@ -350,7 +351,8 @@ TEST_F(CameraTest, IntrinsicMatrix)
 
   EXPECT_EQ(camera->ImageHeight(), height);
   EXPECT_EQ(camera->ImageWidth(), width);
-  EXPECT_NEAR(camera->HFOV().Radian(), hfov, error);
+  EXPECT_DOUBLE_EQ(camera->HFOV().Radian(), hfov);
+  EXPECT_DOUBLE_EQ(camera->AspectRatio(), (double)width / (double)height);
 
   // Verify if intrinsics have changed
   cameraIntrinsics = projectionToCameraIntrinsic(

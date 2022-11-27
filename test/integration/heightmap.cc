@@ -287,15 +287,15 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
         }
         else
         {
+          EXPECT_FALSE(std::isnan(depthData[idx + 0]));
+          EXPECT_FALSE(std::isnan(depthData[idx + 1]));
+          EXPECT_FALSE(std::isnan(depthData[idx + 2]));
           EXPECT_FALSE(depthData[idx + 0] ==
                        std::numeric_limits<float>::infinity());
           EXPECT_FALSE(depthData[idx + 1] ==
                        std::numeric_limits<float>::infinity());
           EXPECT_FALSE(depthData[idx + 2] ==
                        std::numeric_limits<float>::infinity());
-          EXPECT_FALSE(std::isnan(depthData[idx + 0]));
-          EXPECT_FALSE(std::isnan(depthData[idx + 1]));
-          EXPECT_FALSE(std::isnan(depthData[idx + 2]));
         }
       }
     }
@@ -305,8 +305,7 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
     EXPECT_LE(numErrors, width * height * 15 / 10000);
     // Expect less than an accumulated deviation of 25 per channel (RGB)
     EXPECT_LE(accumError, 25 * 3);
-
-    // Very few "large" errors.
+    // Expect very few "large" errors.
     EXPECT_LE(numLargeErrors, width * height * 5 / 10000);
   }
 

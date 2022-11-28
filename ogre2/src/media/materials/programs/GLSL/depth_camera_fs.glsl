@@ -45,11 +45,21 @@ uniform float rnd;
 
 float packFloat(vec4 color)
 {
-  int rgba = (int(color.x * 255.0) << 24) +
-             (int(color.y * 255.0) << 16) +
-             (int(color.z * 255.0) << 8) +
-             int(color.w * 255.0);
+  int rgba = (int(round(color.x * 255.0)) << 24) +
+             (int(round(color.y * 255.0)) << 16) +
+             (int(round(color.z * 255.0)) << 8) +
+             int(round(color.w * 255.0));
   return intBitsToFloat(rgba);
+}
+
+float toSRGB( float x )
+{
+  return (x < 0.0031308 ? x * 12.92 : 1.055 * pow( x, 0.41666 ) - 0.055 );
+}
+
+vec4 toSRGB( vec4 x )
+{
+  return vec4( toSRGB( x.x ), toSRGB( x.y ), toSRGB( x.z ), x.w );
 }
 
 
@@ -180,9 +190,8 @@ void main()
     }
   }
 
-  // gamma correct - using same method as:
-  // https://bitbucket.org/sinbad/ogre/src/v2-1/Samples/Media/Hlms/Pbs/GLSL/PixelShader_ps.glsl#lines-513
-  color = sqrt(color);
+  // gamma correct
+  color = toSRGB(color);
 
   float rgba = packFloat(color);
   fragColor = vec4(point, rgba);

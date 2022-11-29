@@ -1,5 +1,10 @@
 ## Ignition Rendering
 
+### Ignition Rendering 3.7.0 (2022-11-29)
+
+1. Migrate ignition to gazebo headers.
+    * [Pull request #705](https://github.com/gazebosim/gz-rendering/pull/705)
+
 ### Ignition Rendering 3.6.1 (2022-11-08)
 
 1. Improved coverage: MeshDescriptor, Mesh, MoveToHelper, OrbitViewController, PixelFormat and ShadersParams

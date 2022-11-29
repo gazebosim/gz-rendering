@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 #============================================================================
 # Initialize the project
 #============================================================================
-project(ignition-rendering3 VERSION 3.6.1)
+project(ignition-rendering3 VERSION 3.7.0)
 
 #============================================================================
 # Find ignition-cmake
@@ -16,7 +16,7 @@ find_package(ignition-cmake2 2.14.0 REQUIRED)
 #============================================================================
 ign_configure_project(
   REPLACE_IGNITION_INCLUDE_PATH gz/rendering
-  VERSION_SUFFIX
+  VERSION_SUFFIX pre1
 )
 
 #============================================================================

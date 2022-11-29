@@ -966,10 +966,6 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::Render()
 {
-  auto engine = Ogre2RenderEngine::Instance();
-  auto ogreRoot = engine->OgreRoot();
-  ogreRoot->getRenderSystem()->startGpuDebuggerFrameCapture(0);
-
   // Our shaders rely on clamped values so enable it for this sensor
   //
   // TODO(anyone): Matias N. Goldberg (dark_sylinc) insists this is a hack
@@ -993,8 +989,6 @@ void Ogre2DepthCamera::Render()
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 
   this->ogreCamera->_setNeedsDepthClamp(bOldDepthClamp);
-
-  ogreRoot->getRenderSystem()->endGpuDebuggerFrameCapture(0);
 }
 
 //////////////////////////////////////////////////

@@ -1205,7 +1205,7 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
   {
     auto data = _img->RGBAData();
 
-    texture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+    texture->setPixelFormat(Ogre::PFG_RGBA8_UNORM);
     texture->setTextureType(Ogre::TextureTypes::Type2D);
     texture->setNumMipmaps(1u);
     texture->setResolution(_img->Width(), _img->Height());

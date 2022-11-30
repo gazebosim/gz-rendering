@@ -493,7 +493,8 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
     math::Vector3d max = _desc.mesh->Max();
     math::Vector3d min = _desc.mesh->Min();
 
-    if (_desc.mesh->HasSkeleton())
+    if (_desc.mesh->HasSkeleton() &&
+        _desc.mesh->MeshSkeleton()->AnimationCount() != 0)
     {
       min = math::Vector3d(-1, -1, -1);
       max = math::Vector3d(1, 1, 1);

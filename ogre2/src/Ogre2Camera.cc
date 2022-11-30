@@ -74,31 +74,27 @@ void Ogre2Camera::Destroy()
 //////////////////////////////////////////////////
 math::Angle Ogre2Camera::HFOV() const
 {
-  double vfov = this->ogreCamera->getFOVy().valueRadians();
-  double hFOV = 2.0 * atan(tan(vfov / 2.0) * this->AspectRatio());
-  return math::Angle(hFOV);
+  return BaseCamera::HFOV();
 }
 
 //////////////////////////////////////////////////
 void Ogre2Camera::SetHFOV(const math::Angle &_angle)
 {
   BaseCamera::SetHFOV(_angle);
-  double angle = _angle.Radian();
-  double vfov = 2.0 * atan(tan(angle / 2.0) / this->AspectRatio());
-  this->ogreCamera->setFOVy(Ogre::Radian(vfov));
+  this->SyncOgreCameraAspectRatio();
 }
 
 //////////////////////////////////////////////////
 double Ogre2Camera::AspectRatio() const
 {
-  return this->ogreCamera->getAspectRatio();
+  return BaseCamera::AspectRatio();
 }
 
 //////////////////////////////////////////////////
 void Ogre2Camera::SetAspectRatio(const double _ratio)
 {
   BaseCamera::SetAspectRatio(_ratio);
-  return this->ogreCamera->setAspectRatio(_ratio);
+  this->SyncOgreCameraAspectRatio();
 }
 
 //////////////////////////////////////////////////
@@ -166,6 +162,16 @@ void Ogre2Camera::Init()
 }
 
 //////////////////////////////////////////////////
+void Ogre2Camera::SyncOgreCameraAspectRatio()
+{
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
+  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
+  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
+}
+
+//////////////////////////////////////////////////
 void Ogre2Camera::CreateCamera()
 {
   // create ogre camera object
@@ -182,7 +188,6 @@ void Ogre2Camera::CreateCamera()
   this->ogreCamera->setFixedYawAxis(false);
 
   // TODO(anyone): provide api access
-  this->ogreCamera->setAutoAspectRatio(true);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);
 }

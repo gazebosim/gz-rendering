@@ -394,7 +394,6 @@ void Ogre2BoundingBoxCamera::CreateCamera()
   this->dataPtr->ogreCamera->roll(Ogre::Degree(-90));
   this->dataPtr->ogreCamera->setFixedYawAxis(false);
 
-  this->dataPtr->ogreCamera->setAutoAspectRatio(true);
   this->dataPtr->ogreCamera->setRenderingDistance(100);
   this->dataPtr->ogreCamera->setProjectionType(
       Ogre::ProjectionType::PT_PERSPECTIVE);
@@ -472,10 +471,11 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
   // Camera Parameters
   this->dataPtr->ogreCamera->setNearClipDistance(this->NearClipPlane());
   this->dataPtr->ogreCamera->setFarClipDistance(this->FarClipPlane());
-  this->dataPtr->ogreCamera->setAspectRatio(this->AspectRatio());
-  double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) /
-    this->AspectRatio());
-  this->dataPtr->ogreCamera->setFOVy(Ogre::Radian(vfov));
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
+  this->dataPtr->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
+  this->dataPtr->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
 
   // render texture
   auto engine = Ogre2RenderEngine::Instance();

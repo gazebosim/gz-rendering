@@ -94,16 +94,23 @@ namespace gz
       public: virtual void SetHFOV(const math::Angle &_hfov) = 0;
 
       /// \brief Get the camera's aspect ratio
-      /// \return The camera's aspect ratio
+      /// \remarks If SetAspectRatio() gets called with an input <= 0
+      /// this function returns the Aspect Ratio autocalculated based
+      /// on the camera's dimensions.
+      /// \return The camera's aspect ratio. This value is always in range
+      /// (0; inf) unless the dimensions are invalid (e.g. 0 width or height,
+      /// NaN resolution, etc)
       public: virtual double AspectRatio() const = 0;
 
       /// \brief Set the camera's aspect ratio. This value determines the
       /// cameras vertical field-of-view. It is often the \code image_height /
       /// image_width \endcode but this is not necessarily true.
+      ///
+      /// Setting a value <= 0.0 indicates the aspect ratio will be
+      /// automatically calculated based on width & height.
+      ///
       /// \return The camera's aspect ratio
       public: virtual void SetAspectRatio(const double _ratio) = 0;
-
-      // TODO(anyone): add auto-aspect ratio
 
       /// \brief Get the level of anti-aliasing used during rendering
       /// \return The level of anti-aliasing used during rendering

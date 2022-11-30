@@ -385,7 +385,6 @@ void OgreThermalCamera::CreateCamera()
   this->ogreCamera->setFixedYawAxis(false);
 
   // TODO(anyone): provide api access
-  this->ogreCamera->setAutoAspectRatio(true);
   this->ogreCamera->setRenderingDistance(0);
   this->ogreCamera->setPolygonMode(Ogre::PM_SOLID);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
@@ -418,12 +417,11 @@ void OgreThermalCamera::CreateThermalTexture()
     vp->setOverlaysEnabled(false);
   }
 
-  double ratio = static_cast<double>(this->ImageWidth()) /
-                 static_cast<double>(this->ImageHeight());
-
-  double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / ratio);
-  this->ogreCamera->setAspectRatio(ratio);
-  this->ogreCamera->setFOVy(Ogre::Radian(vfov));
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
+  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
+  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
 
   // near and far plane are passed to heat source frag shaders through
   // material switcher. They are used to normalize depth values which are then

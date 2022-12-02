@@ -41,6 +41,18 @@ void Ogre2RenderPass::Destroy()
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderPass::WorkspaceAdded(Ogre::CompositorWorkspace *)
+{
+  // To be overriden by derived render pass classes
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderPass::WorkspaceRemoved(Ogre::CompositorWorkspace *)
+{
+  // To be overriden by derived render pass classes
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderPass::CreateRenderPass()
 {
   // To be overriden by derived render pass classes

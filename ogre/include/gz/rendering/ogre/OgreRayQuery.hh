@@ -43,15 +43,20 @@ namespace gz
       protected: OgreRayQuery();
 
       /// \brief Destructor
-      public: virtual ~OgreRayQuery();
+      public: virtual ~OgreRayQuery() override;
 
       // Documentation inherited
       public: virtual void SetFromCamera(const CameraPtr &_camera,
-                const math::Vector2d &_coord);
+                                         const math::Vector2d &_coord) override;
+
+      // Documentation inherited
+      public: void SetFromCamera(const WideAngleCameraPtr &_camera,
+                                 uint32_t _faceIdx,
+                                 const math::Vector2d &_coord) override;
 
       // Documentation inherited
       public: virtual RayQueryResult ClosestPoint(
-            bool _forceSceneUpdate = true);
+            bool _forceSceneUpdate = true) override;
 
       /// \brief Get the mesh information for the given mesh.
       /// \param[in] _mesh Mesh to get info about.

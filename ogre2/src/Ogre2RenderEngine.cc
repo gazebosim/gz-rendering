@@ -44,9 +44,7 @@
 #  ifndef VK_NV_device_generated_commands
 #    define VK_ACCESS_COMMAND_PREPROCESS_READ_BIT_NV 0x00020000
 #  endif
-#  ifndef VK_NV_ray_tracing
-#    define VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR 0x00200000
-#  endif
+#  define VK_ACCESS_ACCELERATION_STRUCTURE_READ_BIT_KHR 0x00200000
 // Needed headers to receive an external Vulkan device from Qt
 // and inject it into OgreNext
 #  include "RenderSystems/Vulkan/OgreVulkanDevice.h"

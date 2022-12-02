@@ -47,7 +47,7 @@ vertex PS_INPUT main_metal
   outVs.gl_Position = p.worldViewProj * input.position;
 
   // get normalized fragment coordinate (3D to 2D window space transformation)
-  outVs.fragPos = outVs.gl_Position.xy/outVs.gl_Position.w*float2(-1.0,-1.0/p.ratio);
+  outVs.fragPos = outVs.gl_Position.xy/outVs.gl_Position.w*float2(-1.0,1.0/p.ratio);
 
   return outVs;
 }

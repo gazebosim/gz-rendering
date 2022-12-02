@@ -44,6 +44,12 @@ namespace gz
       /// \brief Get whether or not the render pass is enabled
       /// \return True if the render pass is enabled, false otherwise.
       public: virtual bool IsEnabled() const = 0;
+
+      /// \brief See Object::PreRender. This function will call
+      /// Object::PreRender but with the added bonus that it has access
+      /// to the camera that is about to render
+      /// \param[in] _camera Camera that is about to render
+      public: virtual void PreRender(const CameraPtr &_camera) = 0;
     };
     }
   }

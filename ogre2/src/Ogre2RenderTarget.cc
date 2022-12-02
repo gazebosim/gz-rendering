@@ -99,6 +99,9 @@ class gz::rendering::Ogre2RenderTargetPrivate
   /// actual window
   ///
   public: Ogre::TextureGpu *ogreTexture[2] = {nullptr, nullptr};
+
+  /// \brief A chain of render passes applied to the render target
+  protected: std::vector<RenderPassPtr> renderPasses;
 };
 
 using namespace gz;
@@ -308,6 +311,13 @@ void Ogre2RenderTarget::BuildCompositor()
   this->dataPtr->rtListener = new Ogre2RenderTargetCompositorListener(this);
   this->ogreCompositorWorkspace->addListener(this->dataPtr->rtListener);
   this->ogreCompositorWorkspace->addListener(engine->TerraWorkspaceListener());
+
+  for (RenderPassPtr &pass : this->renderPasses)
+  {
+    Ogre2RenderPass *ogre2RenderPass =
+      dynamic_cast<Ogre2RenderPass *>(pass.get());
+    ogre2RenderPass->WorkspaceAdded(this->ogreCompositorWorkspace);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -315,6 +325,13 @@ void Ogre2RenderTarget::DestroyCompositor()
 {
   if (!this->ogreCompositorWorkspace)
     return;
+
+  for (RenderPassPtr &renderPass : this->renderPasses)
+  {
+    Ogre2RenderPass *ogre2RenderPass =
+      dynamic_cast<Ogre2RenderPass *>(renderPass.get());
+    ogre2RenderPass->WorkspaceRemoved(this->ogreCompositorWorkspace);
+  }
 
   // Restore the original order so that this->ogreTexture[1] is the one with
   // FSAA (which we need for BuildCompositor to connect correctly)
@@ -915,6 +932,30 @@ Ogre2RenderTexture::Ogre2RenderTexture()
 //////////////////////////////////////////////////
 Ogre2RenderTexture::~Ogre2RenderTexture()
 {
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTexture::AddRenderPass(const RenderPassPtr &_pass)
+{
+  if (this->ogreCompositorWorkspace)
+  {
+    Ogre2RenderPass *ogre2RenderPass =
+      dynamic_cast<Ogre2RenderPass *>(_pass.get());
+    ogre2RenderPass->WorkspaceAdded(this->ogreCompositorWorkspace);
+  }
+  BaseRenderTexture::AddRenderPass(_pass);
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderTexture::RemoveRenderPass(const RenderPassPtr &_pass)
+{
+  if (this->ogreCompositorWorkspace)
+  {
+    Ogre2RenderPass *ogre2RenderPass =
+      dynamic_cast<Ogre2RenderPass *>(_pass.get());
+    ogre2RenderPass->WorkspaceRemoved(this->ogreCompositorWorkspace);
+  }
+  BaseRenderTexture::RemoveRenderPass(_pass);
 }
 
 //////////////////////////////////////////////////

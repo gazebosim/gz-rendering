@@ -175,6 +175,22 @@ void Ogre2Scene::SetAmbientLight(const math::Color &_color)
 
 
 //////////////////////////////////////////////////
+void Ogre2Scene::SetBackgroundColor(const math::Color &_color)
+{
+  BaseScene::SetBackgroundColor(_color);
+
+  unsigned int count = this->SensorCount();
+
+  for (unsigned int i = 0; i < count; ++i)
+  {
+    SensorPtr sensor = this->SensorByIndex(i);
+    Ogre2CameraPtr camera = std::dynamic_pointer_cast<Ogre2Camera>(sensor);
+    if (camera)
+      camera->SetBackgroundColor(_color);
+  }
+}
+
+//////////////////////////////////////////////////
 void Ogre2Scene::PreRender()
 {
   GZ_ASSERT((this->LegacyAutoGpuFlush() ||

@@ -346,7 +346,11 @@ namespace gz
     {
       T::PreRender();
 
-      this->RenderTarget()->PreRender();
+      {
+        CameraPtr camera =
+          std::dynamic_pointer_cast<Camera>(this->shared_from_this());
+        this->RenderTarget()->PreRender(camera);
+      }
 
       // camera following
       if (this->followNode)

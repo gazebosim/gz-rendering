@@ -63,6 +63,7 @@ namespace gz
     class Heightmap;
     class Image;
     class InertiaVisual;
+    class LensFlarePass;
     class Light;
     class LightVisual;
     class JointVisual;
@@ -174,6 +175,10 @@ namespace gz
     /// \typedef InertiaVisualPtr
     /// \def Shared pointer to InertiaVisual
     typedef shared_ptr<InertiaVisual> InertiaVisualPtr;
+
+    /// \typedef LensFlarePassPtr
+    /// \brief Shared pointer to LensFlarePass
+    typedef shared_ptr<LensFlarePass> LensFlarePassPtr;
 
     /// \typedef LightPtr
     /// \brief Shared pointer to Light

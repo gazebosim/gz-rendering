@@ -42,15 +42,26 @@ namespace gz
       protected: Ogre2RayQuery();
 
       /// \brief Destructor
-      public: virtual ~Ogre2RayQuery();
+      public: virtual ~Ogre2RayQuery() override;
 
       // Documentation inherited
       public: virtual void SetFromCamera(const CameraPtr &_camera,
-                const math::Vector2d &_coord);
+                const math::Vector2d &_coord) override;
+
+      // Documentation inherited
+      public: void SetFromCamera( const WideAngleCameraPtr &_camera,
+                                  uint32_t _faceIdx,
+                                  const math::Vector2d &_coord) override;
+
+      // Documentation inherited
+      public: void SetPreferGpu(bool _preferGpu) override;
+
+      // Documentation inherited
+      public: bool UsesGpu() const override;
 
       // Documentation inherited
       public: virtual RayQueryResult ClosestPoint(
-            bool _forceSceneUpdate = true);
+            bool _forceSceneUpdate = true) override;
 
       /// \brief Get closest point by selection buffer.
       /// This is executed on the GPU.

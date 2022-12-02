@@ -13,6 +13,7 @@ set(tests
   Grid_TEST
   Heightmap_TEST 
   InertiaVisual_TEST
+  LensFlarePass_TEST
   LidarVisual_TEST
   Light_TEST
   LightVisual_TEST

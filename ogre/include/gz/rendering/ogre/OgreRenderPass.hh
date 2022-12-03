@@ -50,7 +50,7 @@ namespace gz
 
       /// \brief Set all ogre cameras that the render pass applies to
       /// at once.
-      /// \param[in] _camera Pointer to the ogre cameras.
+      /// \param[in] _cameras Pointer to the ogre cameras.
       public: virtual void SetCameras(
             Ogre::Camera *_cameras[kMaxOgreRenderPassCameras]);
 

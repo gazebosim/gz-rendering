@@ -364,7 +364,7 @@ void OgreLensFlareCompositorListenerPrivate::notifyMaterialRender(
   // 2. media/materials/scripts/lens_flare_fs.glsl
   Ogre::Technique *technique = _mat->getTechnique(0);
   GZ_ASSERT(technique, "Null OGRE material technique");
-  Ogre::Pass *pass = technique->getPass((unsigned short)_passId);
+  Ogre::Pass *pass = technique->getPass(static_cast<uint16_t>(_passId));
   GZ_ASSERT(pass, "Null OGRE material pass");
   Ogre::GpuProgramParametersSharedPtr params =
     pass->getFragmentProgramParameters();

@@ -131,7 +131,7 @@ void OgreDistortionPass::PreRender()
 //////////////////////////////////////////////////
 void OgreDistortionPass::CreateRenderPass()
 {
-  if (!this->ogreCamera)
+  if (!this->ogreCamera[0])
   {
     gzerr << "No camera set for applying Distortion Pass" << std::endl;
     return;

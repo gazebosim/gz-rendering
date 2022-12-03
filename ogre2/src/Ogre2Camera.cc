@@ -215,7 +215,7 @@ void Ogre2Camera::DestroyRenderTexture()
 {
   if (this->renderTexture)
   {
-    dynamic_cast<Ogre2RenderTexture *>(this->renderTexture.get())->Destroy();
+    dynamic_cast<Ogre2RenderTarget *>(this->renderTexture.get())->Destroy();
     this->renderTexture.reset();
   }
 }

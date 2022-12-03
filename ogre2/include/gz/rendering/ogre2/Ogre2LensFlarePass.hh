@@ -32,9 +32,6 @@ namespace gz
   namespace rendering
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
-    //
-    // forward declaration
-    class Ogre2LensFlarePassPrivate;
 
     /// \brief Ogre2 Implementation of a Lens Flare render pass.
     class GZ_RENDERING_OGRE2_VISIBLE Ogre2LensFlarePass :

@@ -781,7 +781,7 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
     // If this value is exceded consider just raising it.
     if (!_wideAngleCamera)
     {
-      EXPECT_LE(uncomparablePixelCount, 1);
+      EXPECT_LE(uncomparablePixelCount, 2);
     }
     else
     {

@@ -867,7 +867,11 @@ namespace gz
     template <class T>
     void BaseCamera<T>::RemoveAllRenderPasses()
     {
-      this->RenderTarget()->RemoveAllRenderPasses();
+      RenderTargetPtr renderTarget = this->RenderTarget();
+      if (renderTarget)
+      {
+        renderTarget->RemoveAllRenderPasses();
+      }
     }
 
     //////////////////////////////////////////////////

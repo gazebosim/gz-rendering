@@ -226,6 +226,8 @@ void Ogre2WideAngleCamera::PreRender()
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::Destroy()
 {
+  this->RemoveAllRenderPasses();
+
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::TextureGpuManager *textureMgr =

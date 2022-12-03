@@ -403,6 +403,8 @@ void Ogre2BoundingBoxCamera::CreateCamera()
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::Destroy()
 {
+  this->RemoveAllRenderPasses();
+
   if (this->dataPtr->buffer)
   {
     delete [] this->dataPtr->buffer;

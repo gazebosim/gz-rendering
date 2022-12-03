@@ -102,6 +102,8 @@ void Ogre2SegmentationCamera::Init()
 /////////////////////////////////////////////////
 void Ogre2SegmentationCamera::Destroy()
 {
+  this->RemoveAllRenderPasses();
+
   if (this->dataPtr->buffer)
   {
     delete [] this->dataPtr->buffer;

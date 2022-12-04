@@ -77,6 +77,10 @@ namespace ignition
       /// \brief Create a texture which will hold the depth data
       public: virtual void CreateDepthTexture() override;
 
+      /// \brief Destroy render texture created by CreateDepthTexture()
+      /// Note: It's not virtual.
+      protected: void DestroyDepthTexture();
+
       /// \brief Render the camera
       public: virtual void PostRender() override;
 
@@ -148,6 +152,10 @@ namespace ignition
 
       /// \brief Create point cloud texture. This stores xyz rgb data
       private: void CreatePointCloudTexture();
+
+      /// \brief Destroy render texture created by CreatePointCloudTexture()
+      /// Note: It's not virtual.
+      protected: void DestroyPointCloudTexture();
 
       /// \brief Communicates that a frams was rendered
       protected: bool newData = false;

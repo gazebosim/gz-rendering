@@ -104,9 +104,6 @@ class ignition::rendering::OgreThermalCameraPrivate
   /// \brief Dummy texture
   public: OgreRenderTexturePtr thermalTexture;
 
-  /// \brief Point cloud texture
-  public: OgreRenderTexturePtr colorTexture;
-
   /// \brief Lens distortion compositor
   public: Ogre::CompositorInstance *thermalInstance = nullptr;
 
@@ -297,6 +294,16 @@ void OgreThermalCamera::Destroy()
   if (!this->ogreCamera || !this->scene->IsInitialized())
     return;
 
+  if (this->dataPtr->thermalInstance)
+  {
+    // Do not leave a reference to this->dataPtr->thermalMaterial
+    Ogre::MaterialPtr nullMaterial;
+    this->dataPtr->thermalInstance->getTechnique()
+      ->getOutputTargetPass()
+      ->getPass(0)
+      ->setMaterial(nullMaterial);
+  }
+
   // remove thermal textures
   if (this->dataPtr->ogreThermalTexture)
   {
@@ -311,6 +318,17 @@ void OgreThermalCamera::Destroy()
         this->dataPtr->ogreHeatSourceTexture->getName());
     this->dataPtr->ogreHeatSourceTexture = nullptr;
   }
+
+  if (!this->dataPtr->thermalMaterial.isNull())
+  {
+    Ogre::MaterialManager::getSingleton().remove(
+      this->dataPtr->thermalMaterial->getHandle());
+    this->dataPtr->thermalMaterial.setNull();
+  }
+
+  this->dataPtr->thermalMaterialSwitcher.reset();
+
+  this->DestroyRenderTexture();
 
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
@@ -482,11 +500,23 @@ void OgreThermalCamera::CreateThermalTexture()
 /////////////////////////////////////////////////
 void OgreThermalCamera::CreateRenderTexture()
 {
+  this->DestroyRenderTexture();
   RenderTexturePtr base = this->scene->CreateRenderTexture();
   this->dataPtr->thermalTexture =
       std::dynamic_pointer_cast<OgreRenderTexture>(base);
   this->dataPtr->thermalTexture->SetWidth(1);
   this->dataPtr->thermalTexture->SetHeight(1);
+}
+
+//////////////////////////////////////////////////
+void OgreThermalCamera::DestroyRenderTexture()
+{
+  if (this->dataPtr->thermalTexture)
+  {
+    dynamic_cast<OgreRenderTexture *>(this->dataPtr->thermalTexture.get())
+      ->Destroy();
+    this->dataPtr->thermalTexture.reset();
+  }
 }
 
 //////////////////////////////////////////////////

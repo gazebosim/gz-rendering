@@ -59,8 +59,8 @@ class Ogre2RenderTargetCompositorListener :
       Ogre::Viewport *vp = scenePass->getCamera()->getLastViewport();
       if (vp == nullptr) return;
       // make sure we do not alter the reserved visibility flags
-      uint32_t f = this->ogreRenderTarget->VisibilityMask() |
-          ~Ogre::VisibilityFlags::RESERVED_VISIBILITY_FLAGS;
+      uint32_t f = this->ogreRenderTarget->VisibilityMask() &
+                   Ogre::VisibilityFlags::RESERVED_VISIBILITY_FLAGS;
       // apply the new visibility mask
       uint32_t flags = f & vp->getVisibilityMask();
       vp->_setVisibilityMask(flags, vp->getLightVisibilityMask());

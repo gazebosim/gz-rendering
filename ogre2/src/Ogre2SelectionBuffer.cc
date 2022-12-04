@@ -347,7 +347,7 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
         colorTargetDef->addPass(Ogre::PASS_SCENE));
     passScene->setAllLoadActions(Ogre::LoadAction::Clear);
     passScene->setAllClearColours(Ogre::ColourValue::Black);
-    passScene->mVisibilityMask = IGN_VISIBILITY_SELECTABLE;
+    passScene->setVisibilityMask(IGN_VISIBILITY_SELECTABLE);
   }
 
   Ogre::CompositorTargetDef *targetDef = nodeDef->addTargetPass("rt");

@@ -5,6 +5,7 @@ set(tests
   camera
   depth_camera
   gpu_rays
+  heightmap
   lidar_visual
   render_pass
   scene

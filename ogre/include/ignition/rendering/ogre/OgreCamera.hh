@@ -137,6 +137,10 @@ namespace ignition
 
       protected: virtual void CreateRenderTexture();
 
+      /// \brief Destroy render texture created by CreateRenderTexture()
+      /// Note: It's not virtual.
+      protected: void DestroyRenderTexture();
+
       protected: Ogre::Camera *ogreCamera = nullptr;
 
       protected: OgreSelectionBuffer *selectionBuffer = nullptr;

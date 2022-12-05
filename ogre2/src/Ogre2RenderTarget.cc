@@ -117,11 +117,11 @@ Ogre2RenderTarget::Ogre2RenderTarget()
 //////////////////////////////////////////////////
 Ogre2RenderTarget::~Ogre2RenderTarget()
 {
-  if (this->dataPtr->rtListener)
-  {
-    delete this->dataPtr->rtListener;
-    this->dataPtr->rtListener = nullptr;
-  }
+  IGN_ASSERT(this->dataPtr->rtListener == nullptr &&
+               this->dataPtr->ogreTexture[0] == nullptr &&
+               this->dataPtr->ogreTexture[1] == nullptr &&
+               this->ogreCompositorWorkspace == nullptr,
+             "Ogre2RenderTarget::Destroy not called!");
 }
 
 //////////////////////////////////////////////////

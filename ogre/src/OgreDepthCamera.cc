@@ -113,6 +113,9 @@ void OgreDepthCamera::Destroy()
   if (!this->ogreCamera || !this->scene->IsInitialized())
     return;
 
+  this->DestroyPointCloudTexture();
+  this->DestroyDepthTexture();
+
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
@@ -223,6 +226,24 @@ void OgreDepthCamera::CreatePointCloudTexture()
   this->dataPtr->pcdTexture->PreRender();
 }
 
+//////////////////////////////////////////////////
+void OgreDepthCamera::DestroyPointCloudTexture()
+{
+  if (this->dataPtr->pcdTexture)
+  {
+    dynamic_cast<OgreRenderTexture *>(this->dataPtr->pcdTexture.get())
+      ->Destroy();
+    this->dataPtr->pcdTexture.reset();
+  }
+
+  if (this->dataPtr->colorTexture)
+  {
+    dynamic_cast<OgreRenderTexture *>(this->dataPtr->colorTexture.get())
+      ->Destroy();
+    this->dataPtr->colorTexture.reset();
+  }
+}
+
 /////////////////////////////////////////////////
 void OgreDepthCamera::CreateDepthTexture()
 {
@@ -251,6 +272,16 @@ void OgreDepthCamera::CreateDepthTexture()
   double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / ratio);
   this->ogreCamera->setAspectRatio(ratio);
   this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(vfov)));
+}
+
+//////////////////////////////////////////////////
+void OgreDepthCamera::DestroyDepthTexture()
+{
+  if (this->depthTexture)
+  {
+    dynamic_cast<OgreRenderTexture *>(this->depthTexture.get())->Destroy();
+    this->depthTexture.reset();
+  }
 }
 
 //////////////////////////////////////////////////

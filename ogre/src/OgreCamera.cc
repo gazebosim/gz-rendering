@@ -44,11 +44,7 @@ void OgreCamera::Destroy()
   if (!this->ogreCamera)
     return;
 
-  if (this->renderTexture)
-  {
-    this->renderTexture->Destroy();
-    this->renderTexture = nullptr;
-  }
+  this->DestroyRenderTexture();
 
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
@@ -188,6 +184,7 @@ void OgreCamera::CreateCamera()
 //////////////////////////////////////////////////
 void OgreCamera::CreateRenderTexture()
 {
+  this->DestroyRenderTexture();
   RenderTexturePtr base = this->scene->CreateRenderTexture();
   this->renderTexture = std::dynamic_pointer_cast<OgreRenderTexture>(base);
   this->renderTexture->SetCamera(this->ogreCamera);
@@ -195,6 +192,16 @@ void OgreCamera::CreateRenderTexture()
   this->renderTexture->SetWidth(this->ImageWidth());
   this->renderTexture->SetHeight(this->ImageHeight());
   this->renderTexture->SetBackgroundColor(this->scene->BackgroundColor());
+}
+
+//////////////////////////////////////////////////
+void OgreCamera::DestroyRenderTexture()
+{
+  if (this->renderTexture)
+  {
+    dynamic_cast<OgreRenderTarget *>(this->renderTexture.get())->Destroy();
+    this->renderTexture.reset();
+  }
 }
 
 //////////////////////////////////////////////////

@@ -224,7 +224,7 @@ ScenePtr BaseRenderEngine::CreateScene(unsigned int _id,
 
   if (this->HasSceneName(_name))
   {
-    gzerr << "Scene already exists with id: " << _id << std::endl;
+    gzerr << "Scene already exists with name: " << _name << std::endl;
     return nullptr;
   }
 

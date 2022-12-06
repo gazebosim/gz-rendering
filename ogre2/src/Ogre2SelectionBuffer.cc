@@ -512,9 +512,6 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
             // so we can uncomment the line below to return heightmap object
             // _item = std::dynamic_pointer_cast<Ogre2Heightmap>(
             //     heightmap->OgreObject());
-        std::cerr << "entity name " << entName << ", p: " << point
-               << " " << collection.empty() <<  std::endl;
-
             _point = point;
             return true;
           }

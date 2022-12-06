@@ -152,6 +152,10 @@ namespace gz
       /// TODO(anyone) to be implemented
       protected: virtual void SetSelectionBuffer();
 
+      /// \brief Synchronizes every setting that depends on AspectRatio
+      /// with Ogre's camera
+      protected: void SyncOgreCameraAspectRatio();
+
       /// \brief Create internal camera object
       private: void CreateCamera();
 

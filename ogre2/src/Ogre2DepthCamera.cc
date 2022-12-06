@@ -389,7 +389,6 @@ void Ogre2DepthCamera::CreateCamera()
   this->ogreCamera->setFixedYawAxis(false);
 
   // TODO(anyone): provide api access
-  this->ogreCamera->setAutoAspectRatio(true);
   this->ogreCamera->setRenderingDistance(100);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);
@@ -409,9 +408,12 @@ void Ogre2DepthCamera::CreateRenderTexture()
 void Ogre2DepthCamera::CreateDepthTexture()
 {
   // set aspect ratio and fov
-  double vfov;
-  vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / this->AspectRatio());
-  this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(vfov)));
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov =
+    this->LimitFOV(2.0 * atan(tan(angle / 2.0) / aspectRatio));
+  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
+  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
 
   // Load depth material
   // The DepthCamera material is defined in script (depth_camera.material).

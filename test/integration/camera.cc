@@ -727,3 +727,90 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ShaderSelection))
   }
 }
 
+/////////////////////////////////////////////////
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(AspectRatioTest))
+{
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr root = scene->RootVisual();
+
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_NE(nullptr, camera);
+  camera->SetImageWidth(160);
+  camera->SetImageHeight(90);
+  root->AddChild(camera);
+
+  // create visual to be tracked
+  VisualPtr visual = scene->CreateVisual();
+  visual->AddGeometry(scene->CreateBox());
+  visual->SetWorldPosition(0.0, 0.0, 0.0);
+  // rotate visual to test tracking in local and world frames
+  visual->SetWorldRotation(0.0, 0.0, 3.14);
+  root->AddChild(visual);
+
+  // set camera initial pose
+  math::Vector3d initPos(-2, 0.0, 5.0);
+  math::Quaterniond initRot = math::Quaterniond::Identity;
+  camera->SetWorldPosition(initPos);
+  EXPECT_EQ(initPos, camera->WorldPosition());
+  EXPECT_EQ(initRot, camera->WorldRotation());
+
+  // track visual
+  camera->SetTrackTarget(visual);
+  EXPECT_EQ(visual, camera->TrackTarget());
+
+  const double explicitAspectRatio = 160.0 / 90.0;
+  const double differentAspectRatio = 1.3;
+
+  Image autoAspectRatioImage = camera->CreateImage();
+  Image explicitAspectRatioImage = camera->CreateImage();
+  Image differentAspectRatioImage = camera->CreateImage();
+
+  // render a frame using auto Aspect Ratio
+  EXPECT_DOUBLE_EQ(camera->AspectRatio(), explicitAspectRatio);
+  camera->Capture(autoAspectRatioImage);
+  EXPECT_DOUBLE_EQ(camera->AspectRatio(), explicitAspectRatio);
+
+  // render a frame using explicit Aspect Ratio
+  camera->SetAspectRatio(explicitAspectRatio);
+  EXPECT_DOUBLE_EQ(camera->AspectRatio(), explicitAspectRatio);
+  camera->Capture(explicitAspectRatioImage);
+  EXPECT_DOUBLE_EQ(camera->AspectRatio(), explicitAspectRatio);
+
+  // render a frame using a different Aspect Ratio
+  camera->SetAspectRatio(differentAspectRatio);
+  EXPECT_DOUBLE_EQ(camera->AspectRatio(), differentAspectRatio);
+  camera->Capture(differentAspectRatioImage);
+  EXPECT_DOUBLE_EQ(camera->AspectRatio(), differentAspectRatio);
+
+  unsigned char *dataAuto = autoAspectRatioImage.Data<unsigned char>();
+  unsigned char *dataExplicit = explicitAspectRatioImage.Data<unsigned char>();
+  unsigned char *dataDiffer = differentAspectRatioImage.Data<unsigned char>();
+
+  bool isDifferent = false;
+
+  unsigned int height = camera->ImageHeight();
+  unsigned int width = camera->ImageWidth();
+  unsigned int bpp = PixelUtil::BytesPerPixel(camera->ImageFormat());
+  unsigned int step = width * bpp;
+
+  for (unsigned int i = 0; i < height; ++i)
+  {
+    for (unsigned int j = 0; j < step; ++j)
+    {
+      unsigned int idx = i * step + j;
+
+      EXPECT_EQ(dataAuto[idx], dataExplicit[idx]);
+      EXPECT_EQ(dataAuto[idx], dataExplicit[idx]);
+
+      if (dataAuto[idx] != dataDiffer[idx])
+        isDifferent = true;
+    }
+  }
+
+  EXPECT_TRUE(isDifferent);
+
+  // Clean up
+  engine->DestroyScene(scene);
+}

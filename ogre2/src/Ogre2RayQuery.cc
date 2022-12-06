@@ -183,7 +183,7 @@ RayQueryResult Ogre2RayQuery::ClosestPointBySelectionBuffer()
     else
     {
       // \todo(anyone) Change ExecuteQuery to return Ogre::MovableObject
-      // so heightmaps can be included in the result
+      // in gz-rendering8 so heightmaps can be included in the result
     }
     if (!std::isinf(distance))
     {

@@ -45,7 +45,7 @@ TEST_F(UtilTest, GZ_UTILS_TEST_ENABLED_ONLY_ON_LINUX(ClickToScene))
   ASSERT_NE(nullptr, scene);
 
   CameraPtr camera(scene->CreateCamera());
-  EXPECT_NE(nullptr, camera);
+  ASSERT_NE(nullptr, camera);
 
   camera->SetLocalPosition(0.0, 0.0, 15);
   camera->SetLocalRotation(0.0, GZ_PI / 2, 0.0);
@@ -170,7 +170,6 @@ TEST_F(UtilTest, GZ_UTILS_TEST_ENABLED_ONLY_ON_LINUX(ClickToSceneHeightmap))
 
   CameraPtr camera(scene->CreateCamera());
   EXPECT_TRUE(camera != nullptr);
-
 
   math::Pose3d cameraPose(math::Vector3d(0.0, 0.0, 20.0),
       math::Quaterniond(0.0, GZ_PI / 2.0, 0.0));

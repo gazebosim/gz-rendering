@@ -509,7 +509,8 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
           if (entName == heightmap->Name())
           {
             // \todo(anyone) change return type to MovableObject instead of item
-            // so we can uncomment the line below to return heightmap object
+            // in gz-rendering8 so we can uncomment the line below to return a
+            //  heightmap object
             // _item = std::dynamic_pointer_cast<Ogre2Heightmap>(
             //     heightmap->OgreObject());
             _point = point;

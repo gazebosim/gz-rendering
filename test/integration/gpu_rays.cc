@@ -835,24 +835,20 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   GTEST_SKIP() << "Unsupported on apple, see issue #35.";
 #endif
 
-    // \todo(anyone) test fails on github action (Bionic) but pass on other
-    // builds. Need to investigate further.
-    // Github action sets the MESA_GL_VERSION_OVERRIDE variable
-    // so check for this variable and disable test if it is set.
-
-  if (engine->Name() == "ogre2")
-  {
+  // \todo(anyone) test fails on github action but pass on other
+  // builds. Need to investigate further.
+  // Github action sets the MESA_GL_VERSION_OVERRIDE variable
+  // so check for this variable and disable test if it is set.
 #ifdef __linux__
-    std::string value;
-    bool result = common::env("MESA_GL_VERSION_OVERRIDE", value, true);
-    if (result && value == "3.3")
-    {
-      gzdbg << "Test is run on machine with software rendering or mesa driver "
-             << "Skipping test. " << std::endl;
-      return;
-    }
-#endif
+  std::string value;
+  bool result = common::env("MESA_GL_VERSION_OVERRIDE", value, true);
+  if (result && value == "3.3")
+  {
+    gzdbg << "Test is run on machine with software rendering or mesa driver "
+           << "Skipping test. " << std::endl;
+    return;
   }
+#endif
 
   // Test GPU rays heightmap detection
   const double hMinAngle = -GZ_PI / 8.0;

@@ -58,6 +58,8 @@ void Ogre2Camera::Destroy()
   if (!this->ogreCamera || !this->Scene()->IsInitialized())
     return;
 
+  this->DestroyRenderTexture();
+
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
@@ -195,6 +197,7 @@ void Ogre2Camera::CreateCamera()
 //////////////////////////////////////////////////
 void Ogre2Camera::CreateRenderTexture()
 {
+  this->DestroyRenderTexture();
   RenderTexturePtr base = this->scene->CreateRenderTexture();
   this->renderTexture = std::dynamic_pointer_cast<Ogre2RenderTexture>(base);
   this->renderTexture->SetCamera(this->ogreCamera);
@@ -205,6 +208,16 @@ void Ogre2Camera::CreateRenderTexture()
   this->renderTexture->SetVisibilityMask(this->visibilityMask);
 }
 
+
+//////////////////////////////////////////////////
+void Ogre2Camera::DestroyRenderTexture()
+{
+  if (this->renderTexture)
+  {
+    dynamic_cast<Ogre2RenderTarget *>(this->renderTexture.get())->Destroy();
+    this->renderTexture.reset();
+  }
+}
 //////////////////////////////////////////////////
 unsigned int Ogre2Camera::RenderTextureGLId() const
 {

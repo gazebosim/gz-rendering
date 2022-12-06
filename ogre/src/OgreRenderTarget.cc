@@ -61,7 +61,8 @@ OgreRenderTarget::OgreRenderTarget()
 //////////////////////////////////////////////////
 OgreRenderTarget::~OgreRenderTarget()
 {
-  GZ_ASSERT(this->ogreViewport == nullptr, "Destroy() not called!");
+  GZ_ASSERT(this->ogreViewport == nullptr,
+            "OgreRenderTarget::Destroy not called!");
 }
 
 //////////////////////////////////////////////////
@@ -306,6 +307,8 @@ OgreRenderTexture::OgreRenderTexture()
 //////////////////////////////////////////////////
 OgreRenderTexture::~OgreRenderTexture()
 {
+  GZ_ASSERT(this->ogreTexture == nullptr,
+            "OgreRenderTexture::Destroy not called!");
 }
 
 //////////////////////////////////////////////////
@@ -377,7 +380,7 @@ void OgreRenderTexture::BuildTarget()
     if (ogreFSAAWarn)
     {
       gzwarn << "Anti-aliasing level of '" << this->antiAliasing << "' "
-              << "is not supported. Setting to 0" << std::endl;
+             << "is not supported. Setting to 0" << std::endl;
       ogreFSAAWarn = true;
     }
   }

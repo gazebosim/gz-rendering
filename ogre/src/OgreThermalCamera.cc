@@ -291,12 +291,6 @@ void OgreThermalCamera::Destroy()
     this->dataPtr->thermalImage = nullptr;
   }
 
-  if (this->dataPtr->thermalTexture)
-  {
-    this->dataPtr->thermalTexture->Destroy();
-    this->dataPtr->thermalTexture = nullptr;
-  }
-
   if (!this->ogreCamera || !this->scene->IsInitialized())
     return;
 
@@ -331,6 +325,10 @@ void OgreThermalCamera::Destroy()
       this->dataPtr->thermalMaterial->getHandle());
     this->dataPtr->thermalMaterial.setNull();
   }
+
+  this->dataPtr->thermalMaterialSwitcher.reset();
+
+  this->DestroyRenderTexture();
 
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
@@ -500,11 +498,23 @@ void OgreThermalCamera::CreateThermalTexture()
 /////////////////////////////////////////////////
 void OgreThermalCamera::CreateRenderTexture()
 {
+  this->DestroyRenderTexture();
   RenderTexturePtr base = this->scene->CreateRenderTexture();
   this->dataPtr->thermalTexture =
       std::dynamic_pointer_cast<OgreRenderTexture>(base);
   this->dataPtr->thermalTexture->SetWidth(1);
   this->dataPtr->thermalTexture->SetHeight(1);
+}
+
+//////////////////////////////////////////////////
+void OgreThermalCamera::DestroyRenderTexture()
+{
+  if (this->dataPtr->thermalTexture)
+  {
+    dynamic_cast<OgreRenderTexture *>(this->dataPtr->thermalTexture.get())
+      ->Destroy();
+    this->dataPtr->thermalTexture.reset();
+  }
 }
 
 //////////////////////////////////////////////////

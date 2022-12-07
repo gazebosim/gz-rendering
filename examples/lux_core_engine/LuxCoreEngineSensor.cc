@@ -16,7 +16,7 @@
  */
 #include "LuxCoreEngineSensor.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

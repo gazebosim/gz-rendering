@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINEMESHFACTORY_HH_
-#define IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINEMESHFACTORY_HH_
+#ifndef GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINEMESHFACTORY_HH_
+#define GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINEMESHFACTORY_HH_
 
 #include <luxcore/luxcore.h>
 
 #include "LuxCoreEngineMesh.hh"
 #include "LuxCoreEngineRenderTypes.hh"
 
-namespace ignition {
+namespace gz {
 namespace rendering {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 /// \brief LuxCore implementation of the mesh factory class
 class LuxCoreEngineMeshFactory
@@ -44,8 +44,8 @@ class LuxCoreEngineMeshFactory
   protected: LuxCoreEngineScenePtr scene;
 };
 
-} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace GZ_RENDERING_VERSION_NAMESPACE
 } // namespace rendering
-} // namespace ignition
+} // namespace gz
 
 #endif

@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINERENDERTYPES_HH_
-#define IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINERENDERTYPES_HH_
+#ifndef GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINERENDERTYPES_HH_
+#define GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINERENDERTYPES_HH_
 
-#include "ignition/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/base/BaseRenderTypes.hh"
 
-namespace ignition {
+namespace gz {
 namespace rendering {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 class LuxCoreEngineCamera;
 class LuxCoreEngineScene;
@@ -74,7 +74,7 @@ typedef shared_ptr<LuxCoreEngineVisualStore> LuxCoreEngineVisualStorePtr;
 typedef BaseGeometryStore<LuxCoreEngineGeometry> LuxCoreEngineGeometryStore;
 typedef shared_ptr<LuxCoreEngineGeometryStore> LuxCoreEngineGeometryStorePtr;
 
-} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace GZ_RENDERING_VERSION_NAMESPACE
 } // namespace rendering
-} // namespace ignition
+} // namespace gz
 #endif

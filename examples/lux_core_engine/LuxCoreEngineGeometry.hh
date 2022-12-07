@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINEGEOMETRY_HH_
-#define IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINEGEOMETRY_HH_
+#ifndef GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINEGEOMETRY_HH_
+#define GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINEGEOMETRY_HH_
 
-#include "ignition/rendering/base/BaseGeometry.hh"
+#include "gz/rendering/base/BaseGeometry.hh"
 
 #include "LuxCoreEngineObject.hh"
 #include "LuxCoreEngineRenderTypes.hh"
 
-namespace ignition {
+namespace gz {
 namespace rendering {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 /// \brief LuxCore implementation of the geometry class
 class LuxCoreEngineGeometry : public BaseGeometry<LuxCoreEngineObject>
@@ -42,8 +42,8 @@ class LuxCoreEngineGeometry : public BaseGeometry<LuxCoreEngineObject>
   public: virtual void SetLocalRotation(double _r, double _p, double _y) = 0;
 };
 
-} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace GZ_RENDERING_VERSION_NAMESPACE
 } // namespace rendering
-} // namespace ignition
+} // namespace gz
 
 #endif

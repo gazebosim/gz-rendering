@@ -41,7 +41,7 @@ namespace gz
       public virtual Camera
     {
       /// \brief Destructor
-      public: virtual ~ThermalCamera() { }
+      public: virtual ~ThermalCamera();
 
       /// \brief Set the ambient temperature of the environment
       /// \param[in] _ambient Ambient temperature in kelvin

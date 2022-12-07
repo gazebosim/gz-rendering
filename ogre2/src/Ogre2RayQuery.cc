@@ -381,7 +381,7 @@ void ThreadedTriRay::execute(size_t _threadId, size_t _numThreads)
           continue;
         const unsigned int indexCount = submesh->IndexCount();
 
-        const gz::math::Vector3d *RESTRICT_ALIAS vertices =
+        const math::Vector3d *RESTRICT_ALIAS vertices =
           submesh->VertexPtr();
         const unsigned int *RESTRICT_ALIAS indices = submesh->IndexPtr();
 
@@ -406,9 +406,9 @@ void ThreadedTriRay::execute(size_t _threadId, size_t _numThreads)
             continue;
 
 #ifdef SLOW_METHOD
-          gz::math::Vector3d vertexA = submesh->Vertex(submesh->Index(k));
-          gz::math::Vector3d vertexB = submesh->Vertex(submesh->Index(k + 1));
-          gz::math::Vector3d vertexC = submesh->Vertex(submesh->Index(k + 2));
+          math::Vector3d vertexA = submesh->Vertex(submesh->Index(k));
+          math::Vector3d vertexB = submesh->Vertex(submesh->Index(k + 1));
+          math::Vector3d vertexC = submesh->Vertex(submesh->Index(k + 2));
 
           Ogre::Vector3 worldVertexA =
             transform * Ogre2Conversions::Convert(vertexA);

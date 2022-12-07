@@ -15,5 +15,5 @@
  *
  */
 
-#include <gz/rendering/ogre2/Ogre2BoundinBoxCamera.hh>
+#include <gz/rendering/ogre2/Ogre2BoundingBoxCamera.hh>
 #include <ignition/rendering/config.hh>

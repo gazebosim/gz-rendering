@@ -164,9 +164,9 @@ void Ogre2DepthGaussianNoisePass::PreRender()
   if (!this->enabled)
     return;
 
-  Ogre::Vector3 offsets(gz::math::Rand::DblUniform(0.0, 1.0),
-                        gz::math::Rand::DblUniform(0.0, 1.0),
-                        gz::math::Rand::DblUniform(0.0, 1.0));
+  Ogre::Vector3 offsets(math::Rand::DblUniform(0.0, 1.0),
+                        math::Rand::DblUniform(0.0, 1.0),
+                        math::Rand::DblUniform(0.0, 1.0));
 
   Ogre::Pass *pass = this->gaussianNoiseMat->getTechnique(0)->getPass(0);
   Ogre::GpuProgramParametersSharedPtr psParams =
@@ -389,7 +389,6 @@ void Ogre2DepthCamera::CreateCamera()
   this->ogreCamera->setFixedYawAxis(false);
 
   // TODO(anyone): provide api access
-  this->ogreCamera->setAutoAspectRatio(true);
   this->ogreCamera->setRenderingDistance(100);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);
@@ -409,9 +408,12 @@ void Ogre2DepthCamera::CreateRenderTexture()
 void Ogre2DepthCamera::CreateDepthTexture()
 {
   // set aspect ratio and fov
-  double vfov;
-  vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / this->AspectRatio());
-  this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(vfov)));
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov =
+    this->LimitFOV(2.0 * atan(tan(angle / 2.0) / aspectRatio));
+  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
+  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
 
   // Load depth material
   // The DepthCamera material is defined in script (depth_camera.material).
@@ -1156,7 +1158,7 @@ const float *Ogre2DepthCamera::DepthData() const
 }
 
 //////////////////////////////////////////////////
-gz::common::ConnectionPtr Ogre2DepthCamera::ConnectNewDepthFrame(
+common::ConnectionPtr Ogre2DepthCamera::ConnectNewDepthFrame(
     std::function<void(const float *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {
@@ -1164,7 +1166,7 @@ gz::common::ConnectionPtr Ogre2DepthCamera::ConnectNewDepthFrame(
 }
 
 //////////////////////////////////////////////////
-gz::common::ConnectionPtr Ogre2DepthCamera::ConnectNewRgbPointCloud(
+common::ConnectionPtr Ogre2DepthCamera::ConnectNewRgbPointCloud(
     std::function<void(const float *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {

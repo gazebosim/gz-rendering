@@ -59,7 +59,7 @@ namespace gz
       public virtual Visual
     {
       /// \brief Destructor
-      public: virtual ~ParticleEmitter() {}
+      public: virtual ~ParticleEmitter();
 
       /// \brief \brief Get the emitter type.
       /// \return Emitter type.

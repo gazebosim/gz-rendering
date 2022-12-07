@@ -187,7 +187,6 @@ void Ogre2SegmentationCamera::CreateCamera()
   this->ogreCamera->roll(Ogre::Degree(-90));
   this->ogreCamera->setFixedYawAxis(false);
 
-  this->ogreCamera->setAutoAspectRatio(true);
   this->ogreCamera->setRenderingDistance(100);
   this->ogreCamera->setProjectionType(Ogre::ProjectionType::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);
@@ -199,10 +198,11 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
   // Camera Parameters
   this->ogreCamera->setNearClipDistance(this->NearClipPlane());
   this->ogreCamera->setFarClipDistance(this->FarClipPlane());
-  this->ogreCamera->setAspectRatio(this->AspectRatio());
-  double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) /
-    this->AspectRatio());
-  this->ogreCamera->setFOVy(Ogre::Radian(vfov));
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
+  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
+  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
 
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();

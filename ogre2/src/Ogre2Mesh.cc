@@ -102,7 +102,7 @@ bool Ogre2Mesh::HasSkeleton() const
 //////////////////////////////////////////////////
 std::map<std::string, math::Matrix4d> Ogre2Mesh::SkeletonLocalTransforms() const
 {
-  std::map<std::string, gz::math::Matrix4d> mapTfs;
+  std::map<std::string, math::Matrix4d> mapTfs;
   if (this->ogreItem->hasSkeleton())
   {
     auto skel = this->ogreItem->getSkeletonInstance();

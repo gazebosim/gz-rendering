@@ -39,9 +39,6 @@ class gz::rendering::OgreDepthCameraPrivate
   /// \brief Point cloud xyz data buffer
   public: float *pcdBuffer = nullptr;
 
-  /// \brief Point cloud view port
-  public: Ogre::Viewport *pcdViewport = nullptr;
-
   /// \brief Point cloud material
   public: MaterialPtr pcdMaterial = nullptr;
 
@@ -110,8 +107,23 @@ void OgreDepthCamera::Destroy()
     this->dataPtr->colorBuffer = nullptr;
   }
 
+  if (this->dataPtr->pcdTexture)
+  {
+    this->dataPtr->pcdTexture->Destroy();
+    this->dataPtr->pcdTexture.reset();
+  }
+
+  if (this->dataPtr->colorTexture)
+  {
+    this->dataPtr->colorTexture->Destroy();
+    this->dataPtr->colorTexture.reset();
+  }
+
   if (!this->ogreCamera || !this->scene->IsInitialized())
     return;
+
+  this->DestroyPointCloudTexture();
+  this->DestroyDepthTexture();
 
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
@@ -166,7 +178,6 @@ void OgreDepthCamera::CreateCamera()
   this->ogreCamera->setFixedYawAxis(false);
 
   // TODO(anyone): provide api access
-  this->ogreCamera->setAutoAspectRatio(true);
   this->ogreCamera->setRenderingDistance(0);
   this->ogreCamera->setPolygonMode(Ogre::PM_SOLID);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
@@ -237,6 +248,24 @@ void OgreDepthCamera::CreatePointCloudTexture()
   this->dataPtr->pcdTexture->PreRender();
 }
 
+//////////////////////////////////////////////////
+void OgreDepthCamera::DestroyPointCloudTexture()
+{
+  if (this->dataPtr->pcdTexture)
+  {
+    dynamic_cast<OgreRenderTexture *>(this->dataPtr->pcdTexture.get())
+      ->Destroy();
+    this->dataPtr->pcdTexture.reset();
+  }
+
+  if (this->dataPtr->colorTexture)
+  {
+    dynamic_cast<OgreRenderTexture *>(this->dataPtr->colorTexture.get())
+      ->Destroy();
+    this->dataPtr->colorTexture.reset();
+  }
+}
+
 /////////////////////////////////////////////////
 void OgreDepthCamera::CreateDepthTexture()
 {
@@ -259,12 +288,22 @@ void OgreDepthCamera::CreateDepthTexture()
     this->depthTexture->SetHeight(1);
   }
 
-  double ratio = static_cast<double>(this->ImageWidth()) /
-                 static_cast<double>(this->ImageHeight());
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov =
+    this->LimitFOV(2.0 * atan(tan(angle / 2.0) / aspectRatio));
+  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
+  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
+}
 
-  double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / ratio);
-  this->ogreCamera->setAspectRatio(ratio);
-  this->ogreCamera->setFOVy(Ogre::Radian(this->LimitFOV(vfov)));
+//////////////////////////////////////////////////
+void OgreDepthCamera::DestroyDepthTexture()
+{
+  if (this->depthTexture)
+  {
+    dynamic_cast<OgreRenderTexture *>(this->depthTexture.get())->Destroy();
+    this->depthTexture.reset();
+  }
 }
 
 //////////////////////////////////////////////////
@@ -542,7 +581,7 @@ const float *OgreDepthCamera::DepthData() const
 }
 
 //////////////////////////////////////////////////
-gz::common::ConnectionPtr OgreDepthCamera::ConnectNewDepthFrame(
+common::ConnectionPtr OgreDepthCamera::ConnectNewDepthFrame(
     std::function<void(const float *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {
@@ -550,7 +589,7 @@ gz::common::ConnectionPtr OgreDepthCamera::ConnectNewDepthFrame(
 }
 
 //////////////////////////////////////////////////
-gz::common::ConnectionPtr OgreDepthCamera::ConnectNewRgbPointCloud(
+common::ConnectionPtr OgreDepthCamera::ConnectNewRgbPointCloud(
     std::function<void(const float *, unsigned int, unsigned int,
       unsigned int, const std::string &)>  _subscriber)
 {

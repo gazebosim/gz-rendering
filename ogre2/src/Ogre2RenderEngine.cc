@@ -482,7 +482,7 @@ void Ogre2RenderEngine::CreateLogger()
 {
   // create log file path
   std::string logPath;
-  gz::common::env(GZ_HOMEDIR, logPath);
+  common::env(GZ_HOMEDIR, logPath);
   logPath = common::joinPaths(logPath, ".gz", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre2.log");
@@ -1293,6 +1293,12 @@ Ogre::CompositorWorkspaceListener *Ogre2RenderEngine::TerraWorkspaceListener()
   return this->dataPtr->terraWorkspaceListener.get();
 }
 
+//////////////////////////////////////////////////
+Ogre2RenderEngine *Ogre2RenderEngine::Instance()
+{
+  return SingletonT<Ogre2RenderEngine>::Instance();
+}
+
 // Register this plugin
-GZ_ADD_PLUGIN(gz::rendering::Ogre2RenderEnginePlugin,
-                    gz::rendering::RenderEnginePlugin)
+GZ_ADD_PLUGIN(rendering::Ogre2RenderEnginePlugin,
+              rendering::RenderEnginePlugin)

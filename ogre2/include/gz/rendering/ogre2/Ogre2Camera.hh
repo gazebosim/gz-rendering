@@ -93,6 +93,10 @@ namespace gz
       // Documentation inherited.
       public: virtual RenderWindowPtr CreateRenderWindow() override;
 
+      /// \brief Destroy render texture created by CreateRenderTexture()
+      /// Note: It's not virtual.
+      protected: void DestroyRenderTexture();
+
       // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
@@ -154,6 +158,10 @@ namespace gz
       /// \brief Create and set selection buffer object
       /// TODO(anyone) to be implemented
       protected: virtual void SetSelectionBuffer();
+
+      /// \brief Synchronizes every setting that depends on AspectRatio
+      /// with Ogre's camera
+      protected: void SyncOgreCameraAspectRatio();
 
       /// \brief Create internal camera object
       private: void CreateCamera();

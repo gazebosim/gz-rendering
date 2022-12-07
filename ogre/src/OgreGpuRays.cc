@@ -16,7 +16,6 @@
 */
 
 #include <gz/common/Mesh.hh>
-#include <gz/common/MeshManager.hh>
 #include <gz/common/SubMesh.hh>
 
 #include <gz/math/Color.hh>
@@ -201,6 +200,12 @@ void OgreGpuRays::Destroy()
   {
     this->scene->OgreSceneManager()->destroyCamera(this->dataPtr->orthoCam);
     this->dataPtr->orthoCam = nullptr;
+  }
+
+  if (this->dataPtr->undistMesh)
+  {
+    delete this->dataPtr->undistMesh;
+    this->dataPtr->undistMesh = nullptr;
   }
 
   this->dataPtr->visual.reset();
@@ -716,7 +721,7 @@ void OgreGpuRays::CreateOrthoCam()
   }
 
   Ogre::SceneNode *rootSceneNode = std::dynamic_pointer_cast<
-      gz::rendering::OgreNode>(this->scene->RootVisual())->Node();
+      OgreNode>(this->scene->RootVisual())->Node();
   this->dataPtr->pitchNodeOrtho = rootSceneNode->createChildSceneNode();
   this->dataPtr->pitchNodeOrtho->attachObject(this->dataPtr->orthoCam);
 
@@ -886,8 +891,6 @@ void OgreGpuRays::CreateMesh()
   mesh->AddSubMesh(*submesh);
 
   this->dataPtr->undistMesh = mesh;
-
-  common::MeshManager::Instance()->AddMesh(this->dataPtr->undistMesh);
 }
 
 /////////////////////////////////////////////////
@@ -899,7 +902,7 @@ void OgreGpuRays::CreateCanvas()
       this->Name() + "second_pass_canvas");
 
   Ogre::SceneNode *visualSceneNode =  std::dynamic_pointer_cast<
-    gz::rendering::OgreNode>(this->dataPtr->visual)->Node();
+    OgreNode>(this->dataPtr->visual)->Node();
 
   Ogre::Node *visualParent = visualSceneNode->getParent();
   if (visualParent != nullptr)
@@ -908,7 +911,7 @@ void OgreGpuRays::CreateCanvas()
   }
   this->dataPtr->pitchNodeOrtho->addChild(visualSceneNode);
 
-  // Convert mesh from common::Mesh to rendering::mesh and add it to
+  // Convert mesh from common::Mesh to mesh and add it to
   // the canvas visual
   MeshPtr renderingMesh = this->scene->CreateMesh(
       this->dataPtr->undistMesh);
@@ -919,7 +922,7 @@ void OgreGpuRays::CreateCanvas()
 
   MaterialPtr canvasMaterial =
     this->scene->CreateMaterial(this->Name() + "_green");
-  canvasMaterial->SetAmbient(gz::math::Color(0, 1, 0, 1));
+  canvasMaterial->SetAmbient(math::Color(0, 1, 0, 1));
   this->dataPtr->visual->SetMaterial(canvasMaterial);
 
   this->dataPtr->visual->SetVisible(true);
@@ -981,7 +984,7 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
 }
 
 //////////////////////////////////////////////////
-gz::common::ConnectionPtr OgreGpuRays::ConnectNewGpuRaysFrame(
+common::ConnectionPtr OgreGpuRays::ConnectNewGpuRaysFrame(
     std::function<void(const float *_frame, unsigned int _width,
     unsigned int _height, unsigned int _channels,
     const std::string &/*_format*/)> _subscriber)

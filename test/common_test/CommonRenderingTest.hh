@@ -41,11 +41,39 @@ static std::tuple<std::string, std::string, std::string> GetTestParams()
 
   if (gz::utils::env(kEngineToTestEnv, engine))
   {
-    gz::utils::env(kEngineBackend, backend);
-    gz::utils::env(kEngineHeadless, headless);
-  }
+    gzdbg << "Read GZ_ENGINE_TO_TEST=" << engine << std::endl;
+    if (gz::utils::env(kEngineBackend, backend))
+    {
+      gzdbg << "Read GZ_ENGINE_BACKEND=" << backend << std::endl;
+    }
 
+    if (gz::utils::env(kEngineHeadless, headless))
+    {
+      gzdbg << "Read GZ_ENGINE_HEADLESS=" << headless << std::endl;
+    }
+  }
   return {engine, backend, headless};
+}
+
+static std::map<std::string, std::string>
+GetEngineParams(const std::string &_engine, const std::string &_backend, const std::string &_headless)
+{
+  std::map<std::string, std::string> engineParams;
+  if (_engine == "ogre2" && _backend == "vulkan")
+  {
+    gzdbg << "Using OGRE2-VULKAN backend to test" << std::endl;
+    engineParams["vulkan"] = "1";
+  }
+  else if (_engine == "ogre2" && _backend == "metal")
+  {
+    gzdbg << "Using OGRE2-METAL backend to test" << std::endl;
+    engineParams["metal"] = "1";
+  }
+  if (!_headless.empty())
+  {
+    engineParams["headless"] = "1";
+  }
+  return engineParams;
 }
 
 /// \brief Common test fixture for all rendering tests
@@ -59,38 +87,22 @@ class CommonRenderingTest: public testing::Test
     gz::common::Console::SetVerbosity(4);
 
     auto [envEngine, envBackend, envHeadless] = GetTestParams();
+
     if (envEngine.empty())
     {
       GTEST_SKIP() << kEngineToTestEnv << " environment not set";
     }
 
-    std::map<std::string, std::string> engineParams;
-
-    if (envEngine == "ogre2" && envBackend == "vulkan")
-    {
-      gzdbg << "Using OGRE2-VULKAN backend to test" << std::endl;
-      engineParams["vulkan"] = "1";
-    } 
-    else if (envEngine == "ogre2" && envBackend == "metal")
-    {
-      gzdbg << "Using OGRE2-METAL backend to test" << std::endl;
-      engineParams["metal"] = "1";
-    }
-
-    if (!envHeadless.empty())
-    {
-      engineParams["headless"] = "1";
-    }
-
+    auto engineParams = GetEngineParams(envEngine, envBackend, envHeadless);
     this->engineToTest = envEngine;
     engine = gz::rendering::engine(this->engineToTest, engineParams);
     if (!engine)
     {
-      GTEST_FAIL() << "Engine '" << this->engineToTest << "' could not be loaded" << std::endl;
+      GTEST_SKIP() << "Engine '" << this->engineToTest << "' could not be loaded" << std::endl;
     }
   }
 
-  /// \brief Tear down the test case 
+  /// \brief Tear down the test case
   public: void TearDown() override
   {
     if(engine)
@@ -99,17 +111,17 @@ class CommonRenderingTest: public testing::Test
     }
   }
 
-  /// \brief String name of the engine to test 
+  /// \brief String name of the engine to test
   public: std::string engineToTest;
 
-  /// \brief Pointer to the rendering engine to test 
+  /// \brief Pointer to the rendering engine to test
   public: gz::rendering::RenderEngine *engine = nullptr;
 };
 
 
 /// \brief Check that the current engine being tested is supported.
 /// If the engine is not in the set of passed arguments, the test is skipped
-/// Example: 
+/// Example:
 /// Skip test if engine is not ogre or ogre2
 /// CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
 #define CHECK_SUPPORTED_ENGINE(...) \
@@ -118,7 +130,7 @@ if(std::unordered_set<std::string>({__VA_ARGS__}).count(this->engineToTest) == 0
 
 /// \brief Check that the current engine being tested is unsupported
 /// If the engine is in the set of passed arguments, the test is skipped
-/// Example: 
+/// Example:
 /// Skip test if engine is ogre2
 /// CHECK_UNSUPPORTED_ENGINE("ogre");
 #define CHECK_UNSUPPORTED_ENGINE(...) \

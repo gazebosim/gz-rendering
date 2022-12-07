@@ -19,6 +19,7 @@
 #define GZ_RENDERING_CAPSULE_HH_
 
 #include "gz/rendering/config.hh"
+#include "gz/rendering/Export.hh"
 #include "gz/rendering/Geometry.hh"
 #include "gz/rendering/Object.hh"
 
@@ -33,7 +34,7 @@ namespace gz
       public virtual Geometry
     {
       /// \brief Destructor
-      public: virtual ~Capsule() { }
+      public: virtual ~Capsule();
 
       /// \brief Set the radius of the capsule
       public: virtual void SetRadius(double _radius) = 0;

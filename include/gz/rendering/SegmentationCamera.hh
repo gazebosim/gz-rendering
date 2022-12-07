@@ -52,7 +52,7 @@ namespace gz
       public virtual Camera
     {
       /// \brief Destructor
-      public: virtual ~SegmentationCamera() { }
+      public: virtual ~SegmentationCamera();
 
       /// \brief Create a texture which will hold the segmentation data
       public: virtual void CreateSegmentationTexture() = 0;

@@ -231,14 +231,14 @@ Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(const int _x, const int _y)
 
   size_t posInStream = 0;
 
-  gz::math::Color::BGRA color(0);
+  math::Color::BGRA color(0);
   if (!this->dataPtr->buffer)
   {
     gzerr << "Selection buffer is null.\n";
     return nullptr;
   }
   memcpy(static_cast<void *>(&color), this->dataPtr->buffer + posInStream, 4);
-  gz::math::Color cv;
+  math::Color cv;
   cv.SetFromARGB(color);
   cv.A(1.0);
   const std::string &entName =

@@ -57,7 +57,7 @@ BaseScene::BaseScene(unsigned int _id, const std::string &_name) :
   name(_name),
   loaded(false),
   initialized(false),
-  nextObjectId(gz::math::MAX_UI16),
+  nextObjectId(math::MAX_UI16),
   nodes(nullptr)
 {
 }
@@ -137,7 +137,7 @@ void BaseScene::SetTime(const std::chrono::steady_clock::duration &_time)
 
 //////////////////////////////////////////////////
 VisualPtr BaseScene::VisualAt(const CameraPtr &_camera,
-                              const gz::math::Vector2i &_mousePos)
+                              const math::Vector2i &_mousePos)
 {
   VisualPtr visual;
   RayQueryPtr rayQuery = this->CreateRayQuery();
@@ -1424,7 +1424,7 @@ void BaseScene::Clear()
     this->DestroyNode(root);
   }
   this->DestroyMaterials();
-  this->nextObjectId = gz::math::MAX_UI16;
+  this->nextObjectId = math::MAX_UI16;
 }
 
 //////////////////////////////////////////////////

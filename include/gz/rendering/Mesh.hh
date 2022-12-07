@@ -38,7 +38,7 @@ namespace gz
       public virtual Geometry
     {
       /// \brief Destructor
-      public: virtual ~Mesh() { }
+      public: virtual ~Mesh();
 
       /// \brief Check whether the mesh has skeleton
       /// \return True if the mesh has skeleton
@@ -136,7 +136,7 @@ namespace gz
       public virtual Object
     {
       /// \brief Destructor
-      public: virtual ~SubMesh() { }
+      public: virtual ~SubMesh();
 
       /// \brief Get the currently assigned material
       /// \return The currently assigned material

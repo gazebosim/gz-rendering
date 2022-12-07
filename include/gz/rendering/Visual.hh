@@ -34,7 +34,7 @@ namespace gz
       public virtual Node
     {
       /// \brief Destructor
-      public: virtual ~Visual() { }
+      public: virtual ~Visual();
 
       /// \brief Get the number of geometries attached to this visual
       /// \return The number of geometries attached to this visual

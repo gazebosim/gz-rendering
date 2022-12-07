@@ -52,7 +52,7 @@ namespace gz
       public virtual Object
     {
       /// \brief Destructor
-      public: virtual ~Node() { }
+      public: virtual ~Node();
 
       /// \brief Determine if this Node is attached to another Node.
       /// \return True if this Node has a parent Node

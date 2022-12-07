@@ -21,10 +21,12 @@
 
 #include <gz/common/Image.hh>
 #include <gz/common/Filesystem.hh>
+#include <gz/common/geospatial/ImageHeightmap.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
 #include "gz/rendering/GpuRays.hh"
 #include "gz/rendering/ParticleEmitter.hh"
+#include "gz/rendering/Heightmap.hh"
 #include "gz/rendering/Scene.hh"
 
 #define LASER_TOL 2e-4
@@ -52,6 +54,10 @@ void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
 /////////////////////////////////////////////////
 class GpuRaysTest: public CommonRenderingTest
 {
+  /// \brief Path to test media files.
+  public: const std::string TEST_MEDIA_PATH{
+        common::joinPaths(std::string(PROJECT_SOURCE_PATH),
+        "test", "media")};
 };
 
 /////////////////////////////////////////////////
@@ -158,8 +164,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   VisualPtr root = scene->RootVisual();
 
   // Create first ray caster
-  gz::math::Pose3d testPose(gz::math::Vector3d(0, 0, 0.1),
-      gz::math::Quaterniond::Identity);
+  math::Pose3d testPose(math::Vector3d(0, 0, 0.1),
+      math::Quaterniond::Identity);
 
   GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays_1");
   gpuRays->SetWorldPosition(testPose.Pos());
@@ -174,8 +180,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   root->AddChild(gpuRays);
 
   // Create a second ray caster rotated
-  gz::math::Pose3d testPose2(gz::math::Vector3d(0, 0, 0.1),
-      gz::math::Quaterniond(GZ_PI/2.0, 0, 0));
+  math::Pose3d testPose2(math::Vector3d(0, 0, 0.1),
+      math::Quaterniond(GZ_PI/2.0, 0, 0));
 
   GpuRaysPtr gpuRays2 = scene->CreateGpuRays("gpu_rays_2");
   gpuRays2->SetWorldPosition(testPose2.Pos());
@@ -196,8 +202,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 
   // Create testing boxes
   // box in the center
-  gz::math::Pose3d box01Pose(gz::math::Vector3d(3, 0, 0.5),
-                                   gz::math::Quaterniond::Identity);
+  math::Pose3d box01Pose(math::Vector3d(3, 0, 0.5),
+                                   math::Quaterniond::Identity);
   VisualPtr visualBox1 = scene->CreateVisual("UnitBox1");
   visualBox1->AddGeometry(scene->CreateBox());
   visualBox1->SetWorldPosition(box01Pose.Pos());
@@ -206,8 +212,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   root->AddChild(visualBox1);
 
   // box on the right of the first gpu rays caster
-  gz::math::Pose3d box02Pose(gz::math::Vector3d(0, -5, 0.5),
-                                   gz::math::Quaterniond::Identity);
+  math::Pose3d box02Pose(math::Vector3d(0, -5, 0.5),
+                                   math::Quaterniond::Identity);
   VisualPtr visualBox2 = scene->CreateVisual("UnitBox2");
   visualBox2->AddGeometry(scene->CreateBox());
   visualBox2->SetWorldPosition(box02Pose.Pos());
@@ -216,9 +222,9 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   root->AddChild(visualBox2);
 
   // box on the left of the rays caster 1 but out of range
-  gz::math::Pose3d box03Pose(
-      gz::math::Vector3d(0, maxRange + 1, 0.5),
-      gz::math::Quaterniond::Identity);
+  math::Pose3d box03Pose(
+      math::Vector3d(0, maxRange + 1, 0.5),
+      math::Quaterniond::Identity);
   VisualPtr visualBox3 = scene->CreateVisual("UnitBox3");
   visualBox3->AddGeometry(scene->CreateBox());
   visualBox3->SetWorldPosition(box03Pose.Pos());
@@ -247,7 +253,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   // rays caster 1 should see box01 and box02
   EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox1, LASER_TOL);
   EXPECT_NEAR(scan[0], expectedRangeAtMidPointBox2, LASER_TOL);
-  EXPECT_FLOAT_EQ(scan[last], gz::math::INF_F);
+  EXPECT_FLOAT_EQ(scan[last], math::INF_F);
 
   // laser retro is currently only supported in ogre2
   if (this->engineToTest == "ogre2")
@@ -275,10 +281,10 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 
   // Move all boxes out of range
   visualBox1->SetWorldPosition(
-      gz::math::Vector3d(maxRange + 1, 0, 0));
+      math::Vector3d(maxRange + 1, 0, 0));
   visualBox1->SetWorldRotation(box01Pose.Rot());
   visualBox2->SetWorldPosition(
-      gz::math::Vector3d(0, -(maxRange + 1), 0));
+      math::Vector3d(0, -(maxRange + 1), 0));
   visualBox2->SetWorldRotation(box02Pose.Rot());
 
   gpuRays->Update();
@@ -288,7 +294,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   gpuRays2->Copy(scan2);
 
   for (int i = 0; i < gpuRays->RayCount(); ++i)
-    EXPECT_FLOAT_EQ(scan[i * 3], gz::math::INF_F);
+    EXPECT_FLOAT_EQ(scan[i * 3], math::INF_F);
 
   for (int i = 0; i < gpuRays2->RayCount(); ++i)
     EXPECT_FLOAT_EQ(scan2[i * 3], maxRange);
@@ -333,8 +339,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
   VisualPtr root = scene->RootVisual();
 
   // Create first ray caster
-  gz::math::Pose3d testPose(gz::math::Vector3d(0.25, 0, 0.5),
-      gz::math::Quaterniond::Identity);
+  math::Pose3d testPose(math::Vector3d(0.25, 0, 0.5),
+      math::Quaterniond::Identity);
 
   GpuRaysPtr gpuRays = scene->CreateGpuRays("vertical_gpu_rays");
   gpuRays->SetWorldPosition(testPose.Pos());
@@ -351,8 +357,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 
   // Create testing boxes
   // box in front of ray sensor
-  gz::math::Pose3d box01Pose(gz::math::Vector3d(1, 0, 0.5),
-      gz::math::Quaterniond::Identity);
+  math::Pose3d box01Pose(math::Vector3d(1, 0, 0.5),
+      math::Quaterniond::Identity);
   VisualPtr visualBox1 = scene->CreateVisual("VerticalTestBox1");
   visualBox1->AddGeometry(scene->CreateBox());
   visualBox1->SetWorldPosition(box01Pose.Pos());
@@ -404,9 +410,9 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 
   // Move box out of range
   visualBox1->SetWorldPosition(
-      gz::math::Vector3d(maxRange + 1, 0, 0));
+      math::Vector3d(maxRange + 1, 0, 0));
   visualBox1->SetWorldRotation(
-      gz::math::Quaterniond::Identity);
+      math::Quaterniond::Identity);
 
   // wait for a few more laser scans
   gpuRays->Update();
@@ -816,6 +822,164 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
 
   delete [] scan;
   scan = nullptr;
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
+{
+  CHECK_UNSUPPORTED_ENGINE("optix");
+#ifdef __APPLE__
+  GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+#endif
+
+  // \todo(anyone) test fails on github action but pass on other
+  // builds. Need to investigate further.
+  // Github action sets the MESA_GL_VERSION_OVERRIDE variable
+  // so check for this variable and disable test if it is set.
+#ifdef __linux__
+  std::string value;
+  bool result = common::env("MESA_GL_VERSION_OVERRIDE", value, true);
+  if (result && value == "3.3")
+  {
+    gzdbg << "Test is run on machine with software rendering or mesa driver "
+           << "Skipping test. " << std::endl;
+    return;
+  }
+#endif
+
+  // Test GPU rays heightmap detection
+  const double hMinAngle = -GZ_PI / 8.0;
+  const double hMaxAngle = GZ_PI / 8.0;
+  const double minRange = 1.0;
+  const double maxRange = 100.0;
+  const int hRayCount = 20;
+  const int vRayCount = 1;
+
+  // create and populate scene
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_TRUE(scene != nullptr);
+
+  VisualPtr root = scene->RootVisual();
+
+  // Create ray caster oriented to look down at the heightmap
+  math::Pose3d testPose(math::Vector3d(0, 0, 20),
+      math::Quaterniond(math::Vector3d(0, GZ_PI / 2, 0)));
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays_1");
+  gpuRays->SetWorldPosition(testPose.Pos());
+  gpuRays->SetWorldRotation(testPose.Rot());
+  gpuRays->SetNearClipPlane(minRange);
+  gpuRays->SetFarClipPlane(maxRange);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+  // set visibility mask
+  // note this is not the same as GZ_VISIBILITY_MASK
+  // which is 0x0FFFFFFF
+  gpuRays->SetVisibilityMask(0xFFFFFFFF);
+
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  // create heightmap
+
+  // Heightmap data
+  auto heightImage = common::joinPaths(TEST_MEDIA_PATH, "heightmap_bowl.png");
+  math::Vector3d size{100, 100, 10};
+  math::Vector3d position{0, 0, 0};
+  auto textureImage = common::joinPaths(TEST_MEDIA_PATH, "materials",
+      "textures", "texture.png");
+  auto normalImage = common::joinPaths(TEST_MEDIA_PATH, "materials",
+      "textures", "flat_normal.png");
+
+  auto data = std::make_shared<common::ImageHeightmap>();
+  data->Load(heightImage);
+
+  EXPECT_EQ(heightImage, data->Filename());
+
+  HeightmapDescriptor desc;
+  desc.SetData(data);
+  desc.SetSize(size);
+  desc.SetPosition(position);
+  desc.SetUseTerrainPaging(true);
+  desc.SetSampling(4u);
+
+  HeightmapTexture textureA;
+  textureA.SetSize(0.5);
+  textureA.SetDiffuse(textureImage);
+  textureA.SetNormal(normalImage);
+  desc.AddTexture(textureA);
+
+  HeightmapBlend blendA;
+  blendA.SetMinHeight(2.0);
+  blendA.SetFadeDistance(5.0);
+  desc.AddBlend(blendA);
+
+  HeightmapTexture textureB;
+  textureB.SetSize(0.5);
+  textureB.SetDiffuse(textureImage);
+  textureB.SetNormal(normalImage);
+  desc.AddTexture(textureB);
+
+  HeightmapBlend blendB;
+  blendB.SetMinHeight(4.0);
+  blendB.SetFadeDistance(5.0);
+  desc.AddBlend(blendB);
+
+  HeightmapTexture textureC;
+  textureC.SetSize(0.5);
+  textureC.SetDiffuse(textureImage);
+  textureC.SetNormal(normalImage);
+  desc.AddTexture(textureC);
+
+  auto heightmap = scene->CreateHeightmap(desc);
+  ASSERT_NE(nullptr, heightmap);
+
+  // Add to a visual
+  auto vis = scene->CreateVisual();
+  vis->AddGeometry(heightmap);
+  EXPECT_EQ(1u, vis->GeometryCount());
+  EXPECT_TRUE(vis->HasGeometry(heightmap));
+  EXPECT_EQ(heightmap, vis->GeometryByIndex(0));
+  scene->RootVisual()->AddChild(vis);
+
+  // Verify rays caster range readings
+  // listen to new gpu rays frames
+  unsigned int channels = gpuRays->Channels();
+  float *scan = new float[hRayCount * vRayCount * channels];
+  common::ConnectionPtr c =
+    gpuRays->ConnectNewGpuRaysFrame(
+        std::bind(&::OnNewGpuRaysFrame, scan,
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
+
+  gpuRays->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+
+  for (unsigned int i = 0; i < hRayCount * channels; i += channels)
+  {
+    // range readings should not be inf and far lower than the max range
+    // it should be between ~15m and 20m
+    double range = scan[i];
+    EXPECT_LT(14.9, range);
+    EXPECT_GT(20.0, range);
+  }
+
+  c.reset();
+
+  delete [] scan;
+  scan = nullptr;
+
+  // \todo(iche033) Implement Ogre2Heightmap::Destroy function in gz-rendering8
+  // this should not be needed once Ogre2Heightmap::Destroy is implemented.
+  if (engine->Name() == "ogre2")
+  {
+    vis->Destroy();
+    heightmap.reset();
+  }
 
   // Clean up
   engine->DestroyScene(scene);

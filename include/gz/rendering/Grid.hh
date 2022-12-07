@@ -35,7 +35,7 @@ namespace gz
       public virtual Geometry
     {
       /// \brief Destructor
-      public: virtual ~Grid() { }
+      public: virtual ~Grid();
 
       /// \brief Set the number of cells on a planar grid
       /// \param[in] _count The number of cells

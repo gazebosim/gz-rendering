@@ -42,7 +42,7 @@ namespace gz
           unsigned int, unsigned int, const std::string&)> NewFrameListener;
 
       /// \brief Destructor
-      public: virtual ~GpuRays() { }
+      public: virtual ~GpuRays();
 
       /// \brief All things needed to get back z buffer for gpu rays data.
       /// \return Array of gpu rays data.

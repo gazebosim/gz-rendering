@@ -16,7 +16,7 @@
  */
 #include "LuxCoreEngineScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -393,7 +393,7 @@ bool LuxCoreEngineScene::InitImpl()
 }
 
 //////////////////////////////////////////////////
-ignition::rendering::LightVisualPtr
+gz::rendering::LightVisualPtr
 LuxCoreEngineScene::CreateLightVisualImpl(unsigned int /*_id*/,
                                           const std::string &/*_name*/)
 {

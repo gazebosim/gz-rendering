@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINEMATERIAL_HH_
-#define IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINEMATERIAL_HH_
+#ifndef GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINEMATERIAL_HH_
+#define GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINEMATERIAL_HH_
 
-#include "ignition/rendering/base/BaseMaterial.hh"
+#include "gz/rendering/base/BaseMaterial.hh"
 
 #include "LuxCoreEngineObject.hh"
 #include "LuxCoreEngineRenderTypes.hh"
 
-namespace ignition {
+namespace gz {
 namespace rendering {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 /// \brief LuxCore implementation of the material class
 class LuxCoreEngineMaterial : public BaseMaterial<LuxCoreEngineObject>
@@ -72,8 +72,8 @@ class LuxCoreEngineMaterial : public BaseMaterial<LuxCoreEngineObject>
   private: friend class LuxCoreEngineScene;
 };
 
-} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace GZ_RENDERING_VERSION_NAMESPACE
 } // namespace rendering
-} // namespace ignition
+} // namespace gz
 
 #endif

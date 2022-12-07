@@ -6,9 +6,9 @@ https://wiki.luxcorerender.org/LuxCore_SDL_Reference_Manual_v2.6
 
 ## How to build and run the example
 Download the LuxCoreSDK using the following link (make sure to download the SDK and not the standalone): https://luxcorerender.org/download/
-1. Build and install ign-rendering:
+1. Build and install gz-rendering:
     ```
-    cd ign-rendering
+    cd gz-rendering
     mkdir build
     cd build
     cmake ..
@@ -27,9 +27,9 @@ Download the LuxCoreSDK using the following link (make sure to download the SDK 
 3. Run the example:
 
     ~~~
-    export IGN_RENDERING_PLUGIN_PATH=$PWD
+    export GZ_RENDERING_PLUGIN_PATH=$PWD
     # Run the demo with the "RTPATHOCL" render engine
-    ./simple_demo RTPATHOCL
+    ./luxcore_demo RTPATHOCL
     ~~~
 
     Hit `TAB` any time to pause and bake the scene

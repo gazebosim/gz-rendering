@@ -14,17 +14,17 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINESENSOR_HH_
-#define IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINESENSOR_HH_
+#ifndef GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINESENSOR_HH_
+#define GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINESENSOR_HH_
 
-#include "ignition/rendering/base/BaseSensor.hh"
+#include "gz/rendering/base/BaseSensor.hh"
 
 #include "LuxCoreEngineNode.hh"
 #include "LuxCoreEngineRenderTypes.hh"
 
-namespace ignition {
+namespace gz {
 namespace rendering {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 /// \brief LuxCore implementation of the sensor class
 class LuxCoreEngineSensor : public BaseSensor<LuxCoreEngineNode>
@@ -36,8 +36,8 @@ class LuxCoreEngineSensor : public BaseSensor<LuxCoreEngineNode>
   public: virtual ~LuxCoreEngineSensor();
 };
 
-} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace GZ_RENDERING_VERSION_NAMESPACE
 } // namespace rendering
-} // namespace ignition
+} // namespace gz
 
 #endif

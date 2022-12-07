@@ -17,7 +17,7 @@
 #include "LuxCoreEngineCamera.hh"
 #include "LuxCoreEngineScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -84,8 +84,8 @@ void LuxCoreEngineCamera::Render()
     this->renderSessionLux = luxcore::RenderSession::Create(config);
     this->renderSessionLux->Start();
 
-    ignmsg << scene->SceneLux()->ToProperties() << std::endl;
-    ignmsg << props << std::endl;
+    gzmsg << scene->SceneLux()->ToProperties() << std::endl;
+    gzmsg << props << std::endl;
   }
 
   this->renderSessionLux->WaitNewFrame();

@@ -14,11 +14,11 @@
  * limitations under the License.
  *
  */
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "LuxCoreEngineRenderTarget.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -36,13 +36,13 @@ void LuxCoreEngineRenderTarget::Copy(Image &_image) const
 {
   if (_image.Width() != this->width || _image.Height() != this->height)
   {
-    ignerr << "Invalid image dimensions" << std::endl;
+    gzerr << "Invalid image dimensions" << std::endl;
     return;
   }
 
   if (this->hostDataBuffer == NULL)
   {
-    ignerr << "Host buffer is NULL" << std::endl;
+    gzerr << "Host buffer is NULL" << std::endl;
     return;
   }
 

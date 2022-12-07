@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINESCENE_HH_
-#define IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINESCENE_HH_
+#ifndef GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINESCENE_HH_
+#define GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINESCENE_HH_
 
 #include <luxcore/luxcore.h>
 
-#include "ignition/rendering/base/BaseScene.hh"
+#include "gz/rendering/base/BaseScene.hh"
 
 #include "LuxCoreEngineCamera.hh"
 #include "LuxCoreEngineLight.hh"
@@ -29,9 +29,9 @@
 #include "LuxCoreEngineRenderTypes.hh"
 #include "LuxCoreEngineVisual.hh"
 
-namespace ignition {
+namespace gz {
 namespace rendering {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 /// \brief LuxCore implementation of the scene class
 class LuxCoreEngineScene : public BaseScene
@@ -246,8 +246,8 @@ class LuxCoreEngineScene : public BaseScene
   private: friend class LuxCoreEngineRenderEngine;
 };
 
-} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace GZ_RENDERING_VERSION_NAMESPACE
 } // namespace rendering
-} // namespace ignition
+} // namespace gz
 
 #endif

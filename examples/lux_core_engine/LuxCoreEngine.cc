@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-#include <ignition/common/SingletonT.hh>
-#include <ignition/plugin/Register.hh>
+#include <gz/common/SingletonT.hh>
+#include <gz/plugin/Register.hh>
 
 #include <luxcore/luxcore.h>
 
-#include "ignition/rendering/RenderEnginePlugin.hh"
-#include "ignition/rendering/base/BaseRenderEngine.hh"
-#include "ignition/rendering/base/BaseScene.hh"
+#include "gz/rendering/RenderEnginePlugin.hh"
+#include "gz/rendering/base/BaseRenderEngine.hh"
+#include "gz/rendering/base/BaseScene.hh"
 
 #include "LuxCoreEngineCamera.hh"
 #include "LuxCoreEngineGeometry.hh"
@@ -36,14 +36,14 @@
 #include "LuxCoreEngineSensor.hh"
 #include "LuxCoreEngineVisual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
-namespace ignition {
+namespace gz {
 
 namespace rendering {
 
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 class LuxCoreEngineRenderEngine
     : public virtual BaseRenderEngine,
@@ -111,11 +111,11 @@ class LuxCoreEnginePlugin : public RenderEnginePlugin {
   }
 };
 
-} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace GZ_RENDERING_VERSION_NAMESPACE
 
 } // namespace rendering
 
-} // namespace ignition
+} // namespace gz
 
-IGNITION_ADD_PLUGIN(ignition::rendering::LuxCoreEnginePlugin,
-                    ignition::rendering::RenderEnginePlugin)
+GZ_ADD_PLUGIN(gz::rendering::LuxCoreEnginePlugin,
+              gz::rendering::RenderEnginePlugin)

@@ -14,21 +14,21 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINEMESH_HH_
-#define IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINEMESH_HH_
+#ifndef GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINEMESH_HH_
+#define GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINEMESH_HH_
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include <luxcore/luxcore.h>
 
-#include "ignition/rendering/base/BaseMesh.hh"
+#include "gz/rendering/base/BaseMesh.hh"
 
 #include "LuxCoreEngineGeometry.hh"
 #include "LuxCoreEngineRenderTypes.hh"
 
-namespace ignition {
+namespace gz {
 namespace rendering {
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 /// \brief LuxCore implementation of the mesh class
 class LuxCoreEngineMesh : public BaseMesh<LuxCoreEngineGeometry>
@@ -94,8 +94,8 @@ class LuxCoreEngineSubMesh : public BaseSubMesh<LuxCoreEngineObject>
   public: void SetName(std::string name);
 };
 
-} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace GZ_RENDERING_VERSION_NAMESPACE
 } // namespace rendering
-} // namespace ignition
+} // namespace gz
 
 #endif

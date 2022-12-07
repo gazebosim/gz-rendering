@@ -33,7 +33,7 @@ namespace gz
       public virtual Node
     {
       /// \brief Destructor
-      public: virtual ~Light() { }
+      public: virtual ~Light();
 
       /// \brief Get the diffuse color
       /// \return The diffuse color
@@ -122,7 +122,7 @@ namespace gz
       public virtual Light
     {
       /// \brief Destructor
-      public: virtual ~DirectionalLight() { }
+      public: virtual ~DirectionalLight();
 
       /// \brief Get the direction of the light
       /// \return The direction of the light
@@ -145,7 +145,7 @@ namespace gz
       public virtual Light
     {
       /// \brief Destructor
-      public: virtual ~PointLight() { }
+      public: virtual ~PointLight();
     };
 
     /// \class SpotLight Light.hh gz/rendering/Light.hh
@@ -154,7 +154,7 @@ namespace gz
       public virtual Light
     {
       /// \brief Destructor
-      public: virtual ~SpotLight() { }
+      public: virtual ~SpotLight();
 
       /// \brief Get direction of the light
       /// \return The direction of the light

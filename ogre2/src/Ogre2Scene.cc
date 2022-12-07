@@ -326,6 +326,21 @@ void Ogre2Scene::StartRendering(Ogre::Camera *_camera)
                "Started rendering without first calling Scene::PreRender. "
                "See Scene::SetCameraPassCountPerGpuFlush for details");
   }
+
+#if OGRE_VERSION_MAJOR != 2 || OGRE_VERSION_MINOR != 1
+  // OgreNext 2.2+ has a feature where all textures are asynchronously loaded
+  // by default; and a blank texture will be shown until it's ready.
+  //
+  // This is great for low latency interactions & most games; but terrible
+  // if we want all our simulated frames to be perfect & deterministic
+  // results
+  //
+  // We don't want placeholder textures to be used; thus wait until all
+  // textures being loaded are done.
+  Ogre::RenderSystem *renderSys =
+    this->ogreSceneManager->getDestinationRenderSystem();
+  renderSys->getTextureGpuManager()->waitForStreamingCompletion();
+#endif
 }
 
 //////////////////////////////////////////////////

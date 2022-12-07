@@ -22,11 +22,7 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-GaussianNoisePass::GaussianNoisePass()
-{
-}
+GaussianNoisePass::GaussianNoisePass() = default;
 
 //////////////////////////////////////////////////
-GaussianNoisePass::~GaussianNoisePass()
-{
-}
+GaussianNoisePass::~GaussianNoisePass() = default;

@@ -33,7 +33,7 @@ namespace gz
       public virtual Visual
     {
       /// \brief Destructor
-      public: virtual ~CompositeVisual() { }
+      public: virtual ~CompositeVisual();
     };
     }
   }

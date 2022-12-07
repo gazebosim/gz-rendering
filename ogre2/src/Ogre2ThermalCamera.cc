@@ -811,7 +811,6 @@ void Ogre2ThermalCamera::CreateCamera()
   this->ogreCamera->setFixedYawAxis(false);
 
   // TODO(anyone): provide api access
-  this->ogreCamera->setAutoAspectRatio(true);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);
 }
@@ -830,9 +829,11 @@ void Ogre2ThermalCamera::CreateRenderTexture()
 void Ogre2ThermalCamera::CreateThermalTexture()
 {
   // set aspect ratio and fov
-  double vfov;
-  vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / this->AspectRatio());
-  this->ogreCamera->setFOVy(Ogre::Radian(vfov));
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
+  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
+  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
 
   // Load thermal material
   // The ThermalCamera material is defined in script (thermal_camera.material).

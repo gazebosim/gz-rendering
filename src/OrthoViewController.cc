@@ -67,9 +67,7 @@ OrthoViewController::OrthoViewController(const CameraPtr &_camera)
 }
 
 //////////////////////////////////////////////////
-OrthoViewController::~OrthoViewController()
-{
-}
+OrthoViewController::~OrthoViewController() = default;
 
 //////////////////////////////////////////////////
 void OrthoViewController::SetCamera(const CameraPtr &_camera)

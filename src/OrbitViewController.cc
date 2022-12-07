@@ -60,9 +60,7 @@ OrbitViewController::OrbitViewController(const CameraPtr &_camera)
 }
 
 //////////////////////////////////////////////////
-OrbitViewController::~OrbitViewController()
-{
-}
+OrbitViewController::~OrbitViewController() = default;
 
 //////////////////////////////////////////////////
 void OrbitViewController::SetCamera(const CameraPtr &_camera)
@@ -151,7 +149,7 @@ void OrbitViewController::Pan(const math::Vector2d &_value)
   double vfov = 2.0f * atan(tan(hfov / 2.0f) /
         this->dataPtr->camera->AspectRatio());
 
-  gz::math::Vector3d translation;
+  math::Vector3d translation;
 
   double factor = 2.0;
 

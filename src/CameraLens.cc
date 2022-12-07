@@ -156,9 +156,7 @@ CameraLens::CameraLens(const CameraLens &_other)
 }
 
 //////////////////////////////////////////////////
-CameraLens::~CameraLens()
-{
-}
+CameraLens::~CameraLens() = default;
 
 //////////////////////////////////////////////////
 CameraLens &CameraLens::operator=(const CameraLens &_other)

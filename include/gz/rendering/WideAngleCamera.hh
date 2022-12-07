@@ -38,7 +38,7 @@ namespace gz
       public virtual Camera
     {
       /// \brief Destructor
-      public: virtual ~WideAngleCamera() { }
+      public: virtual ~WideAngleCamera();
 
       /// \brief Set the camera lens to use for this wide angle camera
       /// \param[in] _lens Camera lens to set

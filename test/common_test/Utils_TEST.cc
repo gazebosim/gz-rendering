@@ -51,7 +51,7 @@ TEST_F(UtilTest, GZ_UTILS_TEST_ENABLED_ONLY_ON_LINUX(ClickToScene))
 
   const int halfWidth  = static_cast<int>(width / 2);
   const int halfHeight = static_cast<int>(height / 2);
-  gz::math::Vector2i centerClick(halfWidth, halfHeight);
+  math::Vector2i centerClick(halfWidth, halfHeight);
 
   RayQueryPtr rayQuery = scene->CreateRayQuery();
   EXPECT_TRUE(rayQuery != nullptr);

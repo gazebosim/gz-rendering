@@ -27,8 +27,7 @@ namespace mock
 {
   /// \brief The render engine class which implements a render engine.
   class HelloWorldRenderEngine :
-    public virtual gz::rendering::BaseRenderEngine,
-    public gz::common::SingletonT<HelloWorldRenderEngine>
+    public virtual gz::rendering::BaseRenderEngine
   {
     // Documentation Inherited.
     public: virtual bool IsEnabled() const override
@@ -40,6 +39,13 @@ namespace mock
     public: virtual std::string Name() const override
     {
       return "HelloWorldPlugin";
+    }
+
+    /// \brief Get a pointer to the render engine
+    /// \return a pointer to the render engine
+    public: static HelloWorldRenderEngine *Instance()
+    {
+      return gz::common::SingletonT<HelloWorldRenderEngine>::Instance();
     }
 
     // Documentation Inherited.

@@ -80,9 +80,7 @@ HeightmapTexture::HeightmapTexture() :
 }
 
 /////////////////////////////////////////////////
-HeightmapTexture::~HeightmapTexture()
-{
-}
+HeightmapTexture::~HeightmapTexture() = default;
 
 //////////////////////////////////////////////////
 HeightmapTexture::HeightmapTexture(const HeightmapTexture &_texture)
@@ -154,9 +152,7 @@ HeightmapBlend::HeightmapBlend() :
 
 
 /////////////////////////////////////////////////
-HeightmapBlend::~HeightmapBlend()
-{
-}
+HeightmapBlend::~HeightmapBlend() = default;
 
 //////////////////////////////////////////////////
 HeightmapBlend::HeightmapBlend(const HeightmapBlend &_blend)

@@ -491,7 +491,7 @@ namespace gz
       this->SetImageWidth(1);
       this->SetImageHeight(1);
       this->SetImageFormat(PF_R8G8B8);
-      this->SetAspectRatio(1.33333);
+      this->SetAspectRatio(0.0);
       this->SetAntiAliasing(0u);
       this->SetHFOV(fov);
       this->SetNearClipPlane(0.01);
@@ -663,6 +663,14 @@ namespace gz
     template <class T>
     double BaseCamera<T>::AspectRatio() const
     {
+      // Invalid AR values fallback to auto aspect ratio to maintain
+      // ABI compatibility.
+      // See https://github.com/gazebosim/gz-rendering/issues/763
+      if (this->aspect <= 0.0)
+      {
+        return static_cast<double>(this->ImageWidth()) /
+               static_cast<double>(this->ImageHeight());
+      }
       return this->aspect;
     }
 

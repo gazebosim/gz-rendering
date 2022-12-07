@@ -45,7 +45,7 @@ using namespace rendering;
 /////////////////////////////////////////////////
 Ogre2MaterialSwitcher::Ogre2MaterialSwitcher(Ogre2ScenePtr _scene)
 {
-  this->currentColor = gz::math::Color(0.0, 0.0, 0.1);
+  this->currentColor = math::Color(0.0, 0.0, 0.1);
   this->scene = _scene;
 }
 
@@ -239,7 +239,7 @@ void Ogre2MaterialSwitcher::cameraPostRenderScene(
 
 /////////////////////////////////////////////////
 std::string Ogre2MaterialSwitcher::EntityName(
-    const gz::math::Color &_color) const
+    const math::Color &_color) const
 {
   auto iter = this->colorDict.find(_color.AsRGBA());
 
@@ -260,7 +260,7 @@ void Ogre2MaterialSwitcher::NextColor()
 /////////////////////////////////////////////////
 void Ogre2MaterialSwitcher::Reset()
 {
-  this->currentColor = gz::math::Color(
+  this->currentColor = math::Color(
       0.0, 0.0, 0.0);
   this->colorDict.clear();
 }

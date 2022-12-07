@@ -32,7 +32,7 @@ namespace gz
       public virtual CompositeVisual
     {
       /// \brief Destructor
-      public: virtual ~ArrowVisual() { }
+      public: virtual ~ArrowVisual();
 
       /// \brief Get arrow-head visual
       /// \return The arrow-head visual

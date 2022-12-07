@@ -168,7 +168,7 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_MAC(DepthGaussianNoise))
   double aspectRatio_ = imgWidth/imgHeight;
 
   double unitBoxSize = 1.0;
-  gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
+  math::Vector3d boxPosition(1.8, 0.0, 0.0);
 
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
@@ -178,16 +178,16 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_MAC(DepthGaussianNoise))
 
   // Create an scene with a box in it
   scene->SetAmbientLight(1.0, 1.0, 1.0);
-  gz::rendering::VisualPtr root = scene->RootVisual();
+  VisualPtr root = scene->RootVisual();
 
   // create blue material
-  gz::rendering::MaterialPtr blue = scene->CreateMaterial();
+  MaterialPtr blue = scene->CreateMaterial();
   blue->SetAmbient(0.0, 0.0, 1.0);
   blue->SetDiffuse(0.0, 0.0, 1.0);
   blue->SetSpecular(0.0, 0.0, 1.0);
 
   // create box visual
-  gz::rendering::VisualPtr box = scene->CreateVisual();
+  VisualPtr box = scene->CreateVisual();
   box->AddGeometry(scene->CreateBox());
   box->SetOrigin(0.0, 0.0, 0.0);
   box->SetLocalPosition(boxPosition);
@@ -203,8 +203,8 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_MAC(DepthGaussianNoise))
     auto depthCamera = scene->CreateDepthCamera("DepthCamera");
     ASSERT_NE(depthCamera, nullptr);
 
-    gz::math::Pose3d testPose(gz::math::Vector3d(0, 0, 0),
-        gz::math::Quaterniond::Identity);
+    math::Pose3d testPose(math::Vector3d(0, 0, 0),
+        math::Quaterniond::Identity);
     depthCamera->SetLocalPose(testPose);
 
     // Configure depth camera
@@ -243,7 +243,7 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_MAC(DepthGaussianNoise))
     unsigned int pointCloudChannelCount = 4u;
     float *pointCloudData = new float[
         imgHeight * imgWidth * pointCloudChannelCount];
-    gz::common::ConnectionPtr connection =
+    common::ConnectionPtr connection =
       depthCamera->ConnectNewRgbPointCloud(
           std::bind(&::OnNewRgbPointCloud, pointCloudData,
             std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
@@ -269,7 +269,7 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_MAC(DepthGaussianNoise))
         * (depthCamera->ImageWidth() * pointCloudChannelCount)
         - pointCloudChannelCount;
 
-    float maxVal = gz::math::INF_D;
+    float maxVal = math::INF_D;
 
     // values should be well within 4-sigma
     float noiseTol = 4.0*noiseStdDev;

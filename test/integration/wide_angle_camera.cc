@@ -51,7 +51,7 @@ int g_counter = 0;
 void OnNewWideAngleFrame(const unsigned char *_data,
                     unsigned int _width, unsigned int _height,
                     unsigned int _channels,
-                    const std::string &/*_format*/)
+                    const std::string &_format)
 {
   g_mutex.lock();
   auto bufferSize = _width * _height * _channels;
@@ -60,6 +60,9 @@ void OnNewWideAngleFrame(const unsigned char *_data,
     g_buffer = new unsigned char[bufferSize];
 
   memcpy(g_buffer, _data, bufferSize);
+
+
+  EXPECT_EQ("R8G8B8", _format);
 
   g_counter++;
   g_mutex.unlock();
@@ -142,6 +145,7 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
   EXPECT_EQ(1, g_counter);
 
   // Compare image pixels
+  EXPECT_EQ(PF_R8G8B8, camera->ImageFormat());
   const unsigned int channelCount =
     PixelUtil::ChannelCount(camera->ImageFormat());
   const unsigned int step = width * channelCount;

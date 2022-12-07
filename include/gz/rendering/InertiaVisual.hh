@@ -36,7 +36,7 @@ namespace gz
       public virtual Visual
     {
       /// \brief Destructor
-      public: virtual ~InertiaVisual() {}
+      public: virtual ~InertiaVisual();
 
       /// \brief Set the inertial component of the visual
       /// \param[in] _inertial Inertial component of the visual

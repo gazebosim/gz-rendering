@@ -384,6 +384,12 @@ void RenderEngineManager::SetPluginPaths(const std::list<std::string> &_paths)
 }
 
 //////////////////////////////////////////////////
+RenderEngineManager *RenderEngineManager::Instance()
+{
+  return SingletonT<RenderEngineManager>::Instance();
+}
+
+//////////////////////////////////////////////////
 // RenderEngineManagerPrivate
 //////////////////////////////////////////////////
 RenderEngine *RenderEngineManagerPrivate::Engine(EngineInfo _info,
@@ -532,7 +538,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   }
 
   auto engineNames = pluginLoader.PluginsImplementing<
-      gz::rendering::RenderEnginePlugin>();
+      rendering::RenderEnginePlugin>();
 
   if (engineNames.empty())
   {
@@ -572,7 +578,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   }
 
   auto renderPlugin =
-      plugin->QueryInterface<gz::rendering::RenderEnginePlugin>();
+      plugin->QueryInterface<rendering::RenderEnginePlugin>();
 
   if (!renderPlugin)
   {

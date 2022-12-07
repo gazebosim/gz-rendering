@@ -61,6 +61,8 @@ TEST_F(MeshTest, MeshSubMesh)
 
   EXPECT_EQ(submesh, mesh->SubMeshByName(submesh->Name()));
 
+  EXPECT_FALSE(mesh->HasSkeleton());
+
   // test submesh API
   MaterialPtr mat = submesh->Material();
   ASSERT_NE(nullptr, mat);
@@ -78,6 +80,81 @@ TEST_F(MeshTest, MeshSubMesh)
   // unique material
   submesh->SetMaterial(matClone, true);
   EXPECT_NE(matClone, submesh->Material());
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(MeshTest, MeshSkeleton)
+{
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr root = scene->RootVisual();
+
+  // create a visual for the actor, attach mesh and get skeleton
+  // Skeleton will be animated by GlutWindow
+  VisualPtr actorVisual = scene->CreateVisual("actor");
+  actorVisual->SetLocalPosition(0, 0, 0);
+  actorVisual->SetLocalRotation(0, 0, 0);
+
+  MeshDescriptor descriptor;
+  descriptor.meshName = common::joinPaths(TEST_MEDIA_PATH, "walk.dae");
+  common::MeshManager *meshManager = common::MeshManager::Instance();
+  descriptor.mesh = meshManager->Load(descriptor.meshName);
+
+  MeshPtr mesh = scene->CreateMesh(descriptor);
+  actorVisual->AddGeometry(mesh);
+  root->AddChild(actorVisual);
+
+  common::SkeletonPtr skel;
+
+  if (mesh && descriptor.mesh->HasSkeleton())
+  {
+    skel = descriptor.mesh->MeshSkeleton();
+
+    if (!skel || skel->AnimationCount() == 0)
+    {
+      FAIL();
+    }
+  }
+  else
+  {
+    FAIL();
+  }
+
+  EXPECT_TRUE(mesh->HasSkeleton());
+
+  std::string bvhFile = common::joinPaths(TEST_MEDIA_PATH, "cmu-13_26.bvh");
+
+  double scale = 0.055;
+  skel->AddBvhAnimation(bvhFile, scale);
+
+  int g_animIdx = 1;
+  auto * skelAnim = skel->Animation(g_animIdx);
+  for (double i = 0; i < 10; i+=0.01)
+  {
+    std::map<std::string, math::Matrix4d> animFrames;
+    animFrames = skelAnim->PoseAt(i, true);
+
+    std::map<std::string, math::Matrix4d> skinFrames;
+
+    for (auto pair : animFrames)
+    {
+      std::string animName = pair.first;
+      auto animTf = pair.second;
+
+      std::string skinName = skel->NodeNameAnimToSkin(g_animIdx, animName);
+      math::Matrix4d skinTf =
+              skel->AlignTranslation(g_animIdx, animName)
+              * animTf * skel->AlignRotation(g_animIdx, animName);
+
+      skinFrames[skinName] = skinTf;
+    }
+
+    mesh->SetSkeletonLocalTransforms(skinFrames);
+  }
 
   // Clean up
   engine->DestroyScene(scene);
@@ -110,7 +187,7 @@ TEST_F(MeshTest, MeshSkeletonAnimation)
   EXPECT_FALSE(mesh->SkeletonLocalTransforms().empty());
 
   auto skel = descriptor.mesh->MeshSkeleton();
-  ASSERT_EQ(1u, skel->AnimationCount());
+  ASSERT_EQ(2u, skel->AnimationCount());
 
   std::string animName = skel->Animation(0u)->Name();
   EXPECT_FALSE(mesh->SkeletonAnimationEnabled(animName));

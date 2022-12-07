@@ -57,7 +57,7 @@ namespace gz
       typedef std::shared_ptr<const T> ConstTPtr;
 
       /// \brief Destructor
-      public: virtual ~Map() { }
+      public: virtual ~Map() = default;
 
       /// \brief Get the number of elements in this map
       /// \return The number of elements in this map
@@ -122,7 +122,7 @@ namespace gz
       typedef std::shared_ptr<const T> ConstTPtr;
 
       /// \brief Destructor
-      public: virtual ~Store() { }
+      public: virtual ~Store() = default;
 
       /// \brief Get number of elements in this store
       /// \return The number of elements in this store
@@ -244,7 +244,7 @@ namespace gz
       typedef std::shared_ptr<const TStore> ConstTStorePtr;
 
       /// \brief Destructor
-      public: virtual ~CompositeStore() { }
+      public: virtual ~CompositeStore() = default;
 
       /// \brief Get number of Stores
       /// \return The number of Stores
@@ -291,7 +291,7 @@ namespace gz
     class GZ_RENDERING_VISIBLE StoreWrapper :
       public Store<T>
     {
-      public: virtual ~StoreWrapper() { }
+      public: virtual ~StoreWrapper() = default;
     };
 
 // armhf failed to build with this code. It can not be removed for the rest

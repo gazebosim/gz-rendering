@@ -58,6 +58,8 @@ void Ogre2Camera::Destroy()
   if (!this->ogreCamera || !this->Scene()->IsInitialized())
     return;
 
+  this->DestroyRenderTexture();
+
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
@@ -74,31 +76,27 @@ void Ogre2Camera::Destroy()
 //////////////////////////////////////////////////
 math::Angle Ogre2Camera::HFOV() const
 {
-  double vfov = this->ogreCamera->getFOVy().valueRadians();
-  double hFOV = 2.0 * atan(tan(vfov / 2.0) * this->AspectRatio());
-  return math::Angle(hFOV);
+  return BaseCamera::HFOV();
 }
 
 //////////////////////////////////////////////////
 void Ogre2Camera::SetHFOV(const math::Angle &_angle)
 {
   BaseCamera::SetHFOV(_angle);
-  double angle = _angle.Radian();
-  double vfov = 2.0 * atan(tan(angle / 2.0) / this->AspectRatio());
-  this->ogreCamera->setFOVy(Ogre::Radian(vfov));
+  this->SyncOgreCameraAspectRatio();
 }
 
 //////////////////////////////////////////////////
 double Ogre2Camera::AspectRatio() const
 {
-  return this->ogreCamera->getAspectRatio();
+  return BaseCamera::AspectRatio();
 }
 
 //////////////////////////////////////////////////
 void Ogre2Camera::SetAspectRatio(const double _ratio)
 {
   BaseCamera::SetAspectRatio(_ratio);
-  return this->ogreCamera->setAspectRatio(_ratio);
+  this->SyncOgreCameraAspectRatio();
 }
 
 //////////////////////////////////////////////////
@@ -166,6 +164,16 @@ void Ogre2Camera::Init()
 }
 
 //////////////////////////////////////////////////
+void Ogre2Camera::SyncOgreCameraAspectRatio()
+{
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
+  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
+  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
+}
+
+//////////////////////////////////////////////////
 void Ogre2Camera::CreateCamera()
 {
   // create ogre camera object
@@ -182,7 +190,6 @@ void Ogre2Camera::CreateCamera()
   this->ogreCamera->setFixedYawAxis(false);
 
   // TODO(anyone): provide api access
-  this->ogreCamera->setAutoAspectRatio(true);
   this->ogreCamera->setProjectionType(Ogre::PT_PERSPECTIVE);
   this->ogreCamera->setCustomProjectionMatrix(false);
 }
@@ -190,6 +197,7 @@ void Ogre2Camera::CreateCamera()
 //////////////////////////////////////////////////
 void Ogre2Camera::CreateRenderTexture()
 {
+  this->DestroyRenderTexture();
   RenderTexturePtr base = this->scene->CreateRenderTexture();
   this->renderTexture = std::dynamic_pointer_cast<Ogre2RenderTexture>(base);
   this->renderTexture->SetCamera(this->ogreCamera);
@@ -200,6 +208,15 @@ void Ogre2Camera::CreateRenderTexture()
   this->renderTexture->SetVisibilityMask(this->visibilityMask);
 }
 
+//////////////////////////////////////////////////
+void Ogre2Camera::DestroyRenderTexture()
+{
+  if (this->renderTexture)
+  {
+    dynamic_cast<Ogre2RenderTarget *>(this->renderTexture.get())->Destroy();
+    this->renderTexture.reset();
+  }
+}
 //////////////////////////////////////////////////
 unsigned int Ogre2Camera::RenderTextureGLId() const
 {
@@ -271,7 +288,7 @@ Ogre2SelectionBuffer *Ogre2Camera::SelectionBuffer() const
 }
 
 //////////////////////////////////////////////////
-VisualPtr Ogre2Camera::VisualAt(const gz::math::Vector2i &_mousePos)
+VisualPtr Ogre2Camera::VisualAt(const math::Vector2i &_mousePos)
 {
   VisualPtr result;
 
@@ -291,7 +308,7 @@ VisualPtr Ogre2Camera::VisualAt(const gz::math::Vector2i &_mousePos)
   }
 
   float ratio = screenScalingFactor();
-  gz::math::Vector2i mousePos(
+  math::Vector2i mousePos(
       static_cast<int>(std::rint(ratio * _mousePos.X())),
       static_cast<int>(std::rint(ratio * _mousePos.Y())));
   Ogre::Item *ogreItem = this->selectionBuffer->OnSelectionClick(

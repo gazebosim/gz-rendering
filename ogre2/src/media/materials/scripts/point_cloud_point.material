@@ -68,11 +68,6 @@ fragment_program PointCloudFS unified
   delegate PointCloudFS_GLSL
   delegate PointCloudFS_Metal
   delegate PointCloudFS_VK
-
-  default_params
-  {
-    param_named color float4 1.0 1.0 1.0 1.0
-  }
 }
 
 material PointCloudPoint

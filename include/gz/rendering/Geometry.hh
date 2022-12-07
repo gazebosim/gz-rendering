@@ -36,7 +36,7 @@ namespace gz
       public virtual Object
     {
       /// \brief Destructor
-      public: virtual ~Geometry() { }
+      public: virtual ~Geometry();
 
       /// \brief Determine if this Geometry is attached to a Visual
       /// \return True if this Geometry has a parent Visual

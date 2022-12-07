@@ -35,7 +35,7 @@ namespace gz
       : public virtual Object
     {
       /// \brief Destructor
-      public: virtual ~RenderPass() { }
+      public: virtual ~RenderPass();
 
       /// \brief Set to enable or disable the render pass
       /// \param[in] _enabled True to enable the render pass, false to disable.

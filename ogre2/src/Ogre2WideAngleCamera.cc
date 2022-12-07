@@ -221,10 +221,6 @@ void Ogre2WideAngleCamera::Destroy()
 
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
-  const Ogre::CompositorChannelVec channels = {
-    this->dataPtr->ogreRenderTexture, this->dataPtr->envCubeMapTexture
-  };
-
   if (this->dataPtr->ogreCompositorFinalPass)
   {
     ogreCompMgr->removeWorkspace(this->dataPtr->ogreCompositorFinalPass);
@@ -243,6 +239,12 @@ void Ogre2WideAngleCamera::Destroy()
   {
     textureMgr->destroyTexture(this->dataPtr->ogreRenderTexture);
     this->dataPtr->ogreRenderTexture = nullptr;
+  }
+
+  if (this->dataPtr->wideAngleTexture)
+  {
+    this->dataPtr->wideAngleTexture->Destroy();
+    this->dataPtr->wideAngleTexture.reset();
   }
 }
 
@@ -908,8 +910,11 @@ void Ogre2WideAngleCamera::PostRender()
     }
   }
 
+  PixelFormat format = this->ImageFormat();
+  unsigned int channelCount = PixelUtil::ChannelCount(format);
   this->dataPtr->newImageFrame(reinterpret_cast<uint8_t *>(box.data), width,
-                               height, 3u, "PF_R8G8B");
+                               height, channelCount,
+                               PixelUtil::Name(this->ImageFormat()));
 
   // Uncomment to debug wide angle cameraoutput
   // gzdbg << "wxh: " << width << " x " << height << std::endl;

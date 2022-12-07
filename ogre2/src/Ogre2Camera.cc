@@ -208,7 +208,6 @@ void Ogre2Camera::CreateRenderTexture()
   this->renderTexture->SetVisibilityMask(this->visibilityMask);
 }
 
-
 //////////////////////////////////////////////////
 void Ogre2Camera::DestroyRenderTexture()
 {

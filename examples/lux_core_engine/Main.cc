@@ -27,12 +27,12 @@
 #include <iostream>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/rendering.hh>
+#include <gz/common/Console.hh>
+#include <gz/rendering.hh>
 
 #include "GlutWindow.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -44,7 +44,7 @@ void buildScene(ScenePtr _scene)
   camera->SetImageWidth(400);
   camera->SetImageHeight(300);
   camera->SetAspectRatio(1.333);
-  camera->SetHFOV(IGN_PI / 2);
+  camera->SetHFOV(GZ_PI / 2);
 
   // Cornell Box Scene
   MaterialPtr red = _scene->CreateMaterial();
@@ -53,7 +53,7 @@ void buildScene(ScenePtr _scene)
   VisualPtr leftWall = _scene->CreateVisual();
   leftWall->AddGeometry(_scene->CreatePlane());
   leftWall->SetLocalScale(1, 5, 5);
-  leftWall->SetLocalRotation(0, IGN_PI / 2, 0);
+  leftWall->SetLocalRotation(0, GZ_PI / 2, 0);
   leftWall->SetLocalPosition(0, 0, 2.5);
   leftWall->SetMaterial(red);
 
@@ -63,7 +63,7 @@ void buildScene(ScenePtr _scene)
   VisualPtr rightWall = _scene->CreateVisual();
   rightWall->AddGeometry(_scene->CreatePlane());
   rightWall->SetLocalScale(1, 5, 5);
-  rightWall->SetLocalRotation(0, IGN_PI / 2, 0);
+  rightWall->SetLocalRotation(0, GZ_PI / 2, 0);
   rightWall->SetLocalPosition(0, 0, -2.5);
   rightWall->SetMaterial(green);
 
@@ -73,7 +73,7 @@ void buildScene(ScenePtr _scene)
   VisualPtr backWall = _scene->CreateVisual();
   backWall->AddGeometry(_scene->CreatePlane());
   backWall->SetLocalScale(5, 1, 5);
-  backWall->SetLocalRotation(IGN_PI / 2, 0, 0);
+  backWall->SetLocalRotation(GZ_PI / 2, 0, 0);
   backWall->SetLocalPosition(0, 0, -2.5);
   backWall->SetMaterial(white);
 
@@ -111,14 +111,14 @@ void buildScene(ScenePtr _scene)
   VisualPtr box1 = _scene->CreateVisual();
   box1->AddGeometry(_scene->CreateBox());
   box1->SetLocalPosition(0, -0.85, -1.25);
-  box1->SetLocalRotation(0, 0, -IGN_PI / 4);
+  box1->SetLocalRotation(0, 0, -GZ_PI / 4);
   box1->SetLocalScale(1.5, 1.5, 1.5);
   box1->SetMaterial(boxMaterial1);
 
   VisualPtr box2 = _scene->CreateVisual();
   box2->AddGeometry(_scene->CreateBox());
   box2->SetLocalPosition(0.5, 0.5, -0.5);
-  box2->SetLocalRotation(0, 0, -IGN_PI / 10);
+  box2->SetLocalRotation(0, 0, -GZ_PI / 10);
   box2->SetLocalScale(1.5, 1.5, 3.0);
   box2->SetMaterial(boxMaterial2);
 
@@ -133,7 +133,7 @@ void buildScene(ScenePtr _scene)
   descriptor.mesh = meshManager->Load(descriptor.meshName);
   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
   mesh->AddGeometry(meshGeom);
-  mesh->SetLocalRotation(IGN_PI / 2, 0, -IGN_PI / 4);
+  mesh->SetLocalRotation(GZ_PI / 2, 0, -GZ_PI / 4);
   mesh->SetLocalPosition(-0.25, -1.25, 1.25);
   mesh->SetMaterial(matte);
 }
@@ -170,7 +170,7 @@ int main(int _argc, char **_argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  std::cout << "Hint: Make sure to set IGN_RENDERING_PLUGIN_PATH to the " <<
+  std::cout << "Hint: Make sure to set GZ_RENDERING_PLUGIN_PATH to the " <<
                "directory containing \'libLuxCoreEngine.so\'" << std::endl;
 
   std::cout << "It may take a while to initialize LuxCore" << std::endl;

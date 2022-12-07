@@ -14,21 +14,21 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINECAMERA_HH_
-#define IGNITION_RENDERING_LUXCOREENGINE_LUXCOREENGINECAMERA_HH_
+#ifndef GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINECAMERA_HH_
+#define GZ_RENDERING_LUXCOREENGINE_LUXCOREENGINECAMERA_HH_
 
 #include <luxcore/luxcore.h>
 
-#include "ignition/rendering/base/BaseCamera.hh"
+#include "gz/rendering/base/BaseCamera.hh"
 
 #include "LuxCoreEngineRenderTarget.hh"
 #include "LuxCoreEngineRenderTypes.hh"
 #include "LuxCoreEngineSensor.hh"
 
-namespace ignition {
+namespace gz {
 namespace rendering {
 
-inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 /// \brief LuxCore implementation of the camera class
 class LuxCoreEngineCamera : public BaseCamera<LuxCoreEngineSensor>
@@ -82,8 +82,8 @@ class LuxCoreEngineCamera : public BaseCamera<LuxCoreEngineSensor>
   protected: float localRotationY{0.0f};
 };
 
-} // namespace IGNITION_RENDERING_VERSION_NAMESPACE
+} // namespace GZ_RENDERING_VERSION_NAMESPACE
 } // namespace rendering
-} // namespace ignition
+} // namespace gz
 
 #endif

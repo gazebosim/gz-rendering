@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-set(IGN_PLUGIN_VER 1)
-set(IGN_COMMON_VER 4)
+set(GZ_PLUGIN_VER 2)
+set(GZ_COMMON_VER 5)
 
-find_package(ignition-rendering6 REQUIRED)
-find_package(ignition-plugin1 REQUIRED COMPONENTS all)
+find_package(gz-rendering7 REQUIRED)
+find_package(gz-plugin2 REQUIRED COMPONENTS all)
 
 if (NOT DEFINED ENV{LUXCORE_SDK_PATH})
   message(FATAL_ERROR "Must define LUXCORE_SDK_PATH")
@@ -30,11 +30,11 @@ add_library(LuxCoreEngine SHARED
 
 target_link_libraries(LuxCoreEngine
   PUBLIC
-    ${ignition-common${IGN_COMMON_VER}_LIBRARIES}
-    ${IGNITION-RENDERING_LIBRARIES}
+    ${gz-common${GZ_COMMON_VER}_LIBRARIES}
+    ${GZ-RENDERING_LIBRARIES}
     ${LUXCORE_LIBRARY}
   PRIVATE
-    ignition-plugin${IGN_PLUGIN_VER}::register
+    gz-plugin${GZ_PLUGIN_VER}::register
 )
 
 find_package(GLUT REQUIRED)
@@ -59,7 +59,7 @@ target_link_libraries(luxcore_demo
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  ${IGNITION-RENDERING_LIBRARIES}
+  ${GZ-RENDERING_LIBRARIES}
 )
 
 add_custom_target(copy_resources

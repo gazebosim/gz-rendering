@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-#include <ignition/common/Image.hh>
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/SubMesh.hh>
+#include <gz/common/Image.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/SubMesh.hh>
 
 #include "LuxCoreEngineMeshFactory.hh"
 #include "LuxCoreEngineScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -212,7 +212,7 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
 
       mesh->AddSubMesh(submesh);
 
-      ignition::common::Image image(
+      gz::common::Image image(
           _desc.mesh->MaterialByIndex(submeshCommon->MaterialIndex())->
               TextureImage());
 

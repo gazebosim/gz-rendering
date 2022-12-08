@@ -21,6 +21,7 @@
 #include "gz/common/Console.hh"
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Heightmap.hh"
 #include "gz/rendering/ogre2/Ogre2MaterialSwitcher.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
@@ -497,7 +498,29 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
     auto collection = this->dataPtr->sceneMgr->findMovableObjects(
         Ogre::ItemFactory::FACTORY_TYPE_NAME, entName);
     if (collection.empty())
+    {
+      // try heightmaps
+      auto heightmaps = this->dataPtr->scene->Heightmaps();
+      for (auto h : heightmaps)
+      {
+        auto heightmap = h.lock();
+        if (heightmap)
+        {
+          if (entName == heightmap->Name())
+          {
+            // \todo(anyone) change return type to MovableObject instead of item
+            // in gz-rendering8 so we can uncomment the line below to return a
+            //  heightmap object
+            // _item = std::dynamic_pointer_cast<Ogre2Heightmap>(
+            //     heightmap->OgreObject());
+            _point = point;
+            return true;
+          }
+        }
+      }
       return false;
+
+    }
     else
     {
       _item = dynamic_cast<Ogre::Item *>(collection[0]);

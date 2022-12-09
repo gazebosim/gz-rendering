@@ -72,6 +72,16 @@ if (OpenGL_FOUND)
 endif()
 
 #--------------------------------------
+# Find Vulkan
+# ogre2 needs vulkan headers, e.g. vulkan/vulkan_core.h
+if (NOT APPLE)
+  gz_find_package(Vulkan
+    REQUIRED_BY ogre2
+    PRIVATE_FOR ogre2
+    PKGCONFIG vulkan)
+endif()
+
+#--------------------------------------
 # Find OGRE
 list(APPEND gz_ogre_components "RTShaderSystem" "Terrain" "Overlay" "Paging")
 

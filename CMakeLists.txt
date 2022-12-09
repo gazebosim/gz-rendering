@@ -72,16 +72,6 @@ if (OpenGL_FOUND)
 endif()
 
 #--------------------------------------
-# Find Vulkan
-# ogre2 needs vulkan headers, e.g. vulkan/vulkan_core.h
-if (NOT APPLE)
-  gz_find_package(Vulkan
-    REQUIRED_BY ogre2
-    PRIVATE_FOR ogre2
-    PKGCONFIG vulkan)
-endif()
-
-#--------------------------------------
 # Find OGRE
 list(APPEND gz_ogre_components "RTShaderSystem" "Terrain" "Overlay" "Paging")
 
@@ -130,6 +120,22 @@ endif()
 
 if (OGRE2_FOUND)
   set(HAVE_OGRE2 TRUE)
+endif()
+
+#--------------------------------------
+# Find Vulkan
+# ogre2 needs vulkan headers, e.g. vulkan/vulkan_core.h
+if (NOT APPLE)
+  find_path(vulkan_INCLUDE_DIRS vulkan/vulkan_core.h)
+  if(NOT vulkan_INCLUDE_DIRS)
+    message(STATUS "Looking for vulkan header (vulkan/vulkan_core.h) - not found")
+    gz_build_warning("Skipping component [ogre2]: Missing vulkan headers.\n")
+    # Create a variable to indicate that we need to skip the component
+    set(INTERNAL_SKIP_ogre2 true)
+    set(HAVE_OGRE2 FALSE)
+  else()
+    message(STATUS "Looking for vulkan header (vulkan/vulkan_core.h) - found")
+  endif()
 endif()
 
 # Plugin install dirs

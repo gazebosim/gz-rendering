@@ -376,6 +376,12 @@ Ogre::Camera *Ogre2Camera::OgreCamera() const
 //////////////////////////////////////////////////
 void Ogre2Camera::SetVisibilityMask(uint32_t _mask)
 {
+  if (_mask & ~Ogre::VisibilityFlags::RESERVED_VISIBILITY_FLAGS)
+  {
+    ignerr << "Ogre2Camera::SetVisibilityMask: Mask bits " << std::hex
+           << ~Ogre::VisibilityFlags::RESERVED_VISIBILITY_FLAGS << std::dec
+           << " are set but will be ignored by ogre2 backend." << std::endl;
+  }
   BaseSensor::SetVisibilityMask(_mask);
   if (this->renderTexture)
     this->renderTexture->SetVisibilityMask(_mask);

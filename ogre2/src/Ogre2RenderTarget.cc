@@ -99,9 +99,6 @@ class gz::rendering::Ogre2RenderTargetPrivate
   /// actual window
   ///
   public: Ogre::TextureGpu *ogreTexture[2] = {nullptr, nullptr};
-
-  /// \brief A chain of render passes applied to the render target
-  protected: std::vector<RenderPassPtr> renderPasses;
 };
 
 using namespace gz;
@@ -123,7 +120,8 @@ Ogre2RenderTarget::~Ogre2RenderTarget()
   GZ_ASSERT(this->dataPtr->rtListener == nullptr &&
             this->dataPtr->ogreTexture[0] == nullptr &&
             this->dataPtr->ogreTexture[1] == nullptr &&
-            this->ogreCompositorWorkspace == nullptr,
+            this->ogreCompositorWorkspace == nullptr &&
+            this->renderPasses.empty(),
             "Ogre2RenderTarget::Destroy not called!");
 }
 

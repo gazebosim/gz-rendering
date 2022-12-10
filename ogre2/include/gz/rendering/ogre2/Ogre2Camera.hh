@@ -155,6 +155,10 @@ namespace gz
       /// \brief Create a render texture for the camera for offscreen rendering
       protected: virtual void CreateRenderTexture();
 
+      /// \brief Destroy render texture created by CreateRenderTexture()
+      /// Note: It's not virtual.
+      protected: void DestroyRenderTexture();
+
       /// \brief Create and set selection buffer object
       /// TODO(anyone) to be implemented
       protected: virtual void SetSelectionBuffer();

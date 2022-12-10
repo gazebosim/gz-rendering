@@ -356,6 +356,7 @@ void OgreRenderTexture::DestroyTarget()
 
   this->ogreViewport = nullptr;
   this->ogreTexture = nullptr;
+  this->ogreViewport = nullptr;
 }
 
 //////////////////////////////////////////////////

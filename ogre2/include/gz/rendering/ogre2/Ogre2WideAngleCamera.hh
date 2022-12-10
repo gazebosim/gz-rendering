@@ -49,6 +49,10 @@ namespace gz
       /// \brief Create a texture
       public: virtual void CreateRenderTexture();
 
+      /// \brief Destroy render texture created by CreateRenderTexture()
+      /// Note: It's not virtual.
+      protected: void DestroyRenderTexture();
+
       /// \brief Render the camera
       public: virtual void PostRender() override;
 

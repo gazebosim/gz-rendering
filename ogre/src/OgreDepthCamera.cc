@@ -307,6 +307,16 @@ void OgreDepthCamera::DestroyDepthTexture()
 }
 
 //////////////////////////////////////////////////
+void OgreDepthCamera::DestroyDepthTexture()
+{
+  if (this->depthTexture)
+  {
+    dynamic_cast<OgreRenderTexture *>(this->depthTexture.get())->Destroy();
+    this->depthTexture.reset();
+  }
+}
+
+//////////////////////////////////////////////////
 void OgreDepthCamera::PreRender()
 {
   if (!this->depthTexture)

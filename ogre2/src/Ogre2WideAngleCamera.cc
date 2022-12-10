@@ -182,11 +182,23 @@ void Ogre2WideAngleCamera::Init()
 /////////////////////////////////////////////////
 void Ogre2WideAngleCamera::CreateRenderTexture()
 {
+  this->DestroyRenderTexture();
   RenderTexturePtr base = this->scene->CreateRenderTexture();
   this->dataPtr->wideAngleTexture =
     std::dynamic_pointer_cast<Ogre2RenderTexture>(base);
   this->dataPtr->wideAngleTexture->SetWidth(1);
   this->dataPtr->wideAngleTexture->SetHeight(1);
+}
+
+//////////////////////////////////////////////////
+void Ogre2WideAngleCamera::DestroyRenderTexture()
+{
+  if (this->dataPtr->wideAngleTexture)
+  {
+    dynamic_cast<Ogre2RenderTexture *>(this->dataPtr->wideAngleTexture.get())
+      ->Destroy();
+    this->dataPtr->wideAngleTexture.reset();
+  }
 }
 
 //////////////////////////////////////////////////
@@ -241,11 +253,7 @@ void Ogre2WideAngleCamera::Destroy()
     this->dataPtr->ogreRenderTexture = nullptr;
   }
 
-  if (this->dataPtr->wideAngleTexture)
-  {
-    this->dataPtr->wideAngleTexture->Destroy();
-    this->dataPtr->wideAngleTexture.reset();
-  }
+  this->DestroyRenderTexture();
 }
 
 //////////////////////////////////////////////////

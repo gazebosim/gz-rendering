@@ -124,17 +124,28 @@ endif()
 
 #--------------------------------------
 # Find Vulkan
-# ogre2 needs vulkan headers, e.g. vulkan/vulkan_core.h
-if (NOT APPLE)
-  find_path(vulkan_INCLUDE_DIRS vulkan/vulkan_core.h)
-  if(NOT vulkan_INCLUDE_DIRS)
-    message(STATUS "Looking for vulkan header (vulkan/vulkan_core.h) - not found")
-    gz_build_warning("Skipping component [ogre2]: Missing vulkan headers.\n")
-    # Create a variable to indicate that we need to skip the component
-    set(INTERNAL_SKIP_ogre2 true)
-    set(HAVE_OGRE2 FALSE)
+# ogre-next 2.3 is built with vulkan support on Jammy
+# Make sure we have vulkan headers, e.g. vulkan/vulkan_core.h
+if (UNIX AND NOT APPLE)
+  # check if ogre-next vulkan headers are installed
+  find_path(ogre_vulkan_INCLUDE "RenderSystems/Vulkan/OgreVulkanDevice.h"
+    HINTS ${OGRE2_INCLUDE_DIRS})
+
+  # if not installed, ogre-next is likely built on platform without vulkan
+  # support, e.g. Focal
+  if (NOT ogre_vulkan_INCLUDE)
+    message(STATUS "Skipping vulkan support for component [ogre2]")
   else()
-    message(STATUS "Looking for vulkan header (vulkan/vulkan_core.h) - found")
+    find_path(vulkan_INCLUDE vulkan/vulkan_core.h)
+    if(NOT vulkan_INCLUDE)
+      message(STATUS "Looking for vulkan header (vulkan/vulkan_core.h) - not found")
+      gz_build_warning("Skipping component [ogre2]: Missing vulkan headers.\n")
+      # Create a variable to indicate that we need to skip the component
+      set(INTERNAL_SKIP_ogre2 true)
+      set(HAVE_OGRE2 FALSE)
+    else()
+      message(STATUS "Looking for vulkan header (vulkan/vulkan_core.h) - found")
+    endif()
   endif()
 endif()
 

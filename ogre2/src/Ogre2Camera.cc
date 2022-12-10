@@ -209,25 +209,16 @@ void Ogre2Camera::CreateRenderTexture()
   this->renderTexture->SetVisibilityMask(this->visibilityMask);
 }
 
+//////////////////////////////////////////////////
+void Ogre2Camera::DestroyRenderTexture()
+{
+  if (this->renderTexture)
+  {
+    dynamic_cast<Ogre2RenderTarget *>(this->renderTexture.get())->Destroy();
+    this->renderTexture.reset();
+  }
+}
 
-//////////////////////////////////////////////////
-void Ogre2Camera::DestroyRenderTexture()
-{
-  if (this->renderTexture)
-  {
-    dynamic_cast<Ogre2RenderTarget *>(this->renderTexture.get())->Destroy();
-    this->renderTexture.reset();
-  }
-}
-//////////////////////////////////////////////////
-void Ogre2Camera::DestroyRenderTexture()
-{
-  if (this->renderTexture)
-  {
-    dynamic_cast<Ogre2RenderTarget *>(this->renderTexture.get())->Destroy();
-    this->renderTexture.reset();
-  }
-}
 //////////////////////////////////////////////////
 unsigned int Ogre2Camera::RenderTextureGLId() const
 {

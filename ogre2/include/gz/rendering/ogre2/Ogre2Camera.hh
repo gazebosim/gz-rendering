@@ -93,10 +93,6 @@ namespace gz
       // Documentation inherited.
       public: virtual RenderWindowPtr CreateRenderWindow() override;
 
-      /// \brief Destroy render texture created by CreateRenderTexture()
-      /// Note: It's not virtual.
-      protected: void DestroyRenderTexture();
-
       // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 

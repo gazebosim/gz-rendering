@@ -748,8 +748,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
         Ogre::CompositorPassSceneDef *passScene =
             static_cast<Ogre::CompositorPassSceneDef *>(
             colorTargetDef->addPass(Ogre::PASS_SCENE));
-        passScene->setVisibilityMask(
-          GZ_VISIBILITY_ALL & Ogre::VisibilityFlags::RESERVED_VISIBILITY_FLAGS);
+        passScene->setVisibilityMask(GZ_VISIBILITY_ALL);
         // todo(anyone) PbsMaterialsShadowNode is hardcoded.
         // Although this may be just fine
         passScene->mShadowNode = this->dataPtr->kShadowNodeName;

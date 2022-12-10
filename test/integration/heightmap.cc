@@ -36,15 +36,27 @@
 unsigned int g_pointCloudCounter = 0;
 
 /////////////////////////////////////////////////
-void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
-                        unsigned int _width, unsigned int _height,
-                        unsigned int _channels, const std::string & /*_format*/)
+static void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
+                               unsigned int _width, unsigned int _height,
+                               unsigned int _channels,
+                               const std::string & /*_format*/)
 {
   float f;
   int size = _width * _height * _channels;
   memcpy(_scanDest, _scan, size * sizeof(f));
   g_pointCloudCounter++;
 }
+
+static void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
+                              unsigned int _width, unsigned int _height,
+                              unsigned int _channels,
+                              const std::string & /*_format*/)
+{
+  float f;
+  int size = _width * _height * _channels;
+  memcpy(_scanDest, _scan, size * sizeof(f));
+}
+
 using namespace gz;
 using namespace rendering;
 
@@ -153,24 +165,6 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   camera->SetLocalPosition(-0.802621, 5.84365, 9.67877);
   camera->SetLocalRotation(0.0, 0.588, -1.125);
 
-  const double hMinAngle = 0.0;
-  const double hMaxAngle = 0.0;
-  const double minRange = 0.05;
-  const double maxRange = 40.0;
-  const int hRayCount = 1;
-  const int vRayCount = 1;
-
-  GpuRaysPtr gpuRays = scene->CreateGpuRays();
-  gpuRays->SetImageWidth(camera->ImageWidth());
-  gpuRays->SetImageHeight(camera->ImageHeight());
-  gpuRays->SetLocalPosition(camera->LocalPosition());
-  gpuRays->SetLocalRotation(camera->LocalRotation());
-  gpuRays->SetAngleMin(hMinAngle);
-  gpuRays->SetAngleMax(hMaxAngle);
-  gpuRays->SetRayCount(hRayCount);
-  gpuRays->SetVerticalRayCount(vRayCount);
-  root->AddChild(gpuRays);
-
   DepthCameraPtr depthCamera = scene->CreateDepthCamera();
   depthCamera->SetImageWidth(camera->ImageWidth());
   depthCamera->SetImageHeight(camera->ImageHeight());
@@ -194,8 +188,6 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   // capture original image with box (no noise)
   Image normalCamImage = camera->CreateImage();
   camera->Capture(normalCamImage);
-
-  // gpuRays->Update();
 
   g_pointCloudCounter = 0u;
   depthCamera->Update();
@@ -311,6 +303,134 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 
   // cleanup
   connection.reset();
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(HeightmapGpuRays))
+{
+  // Test GPU rays heightmap detection
+  const double hMinAngle = -GZ_PI / 8.0;
+  const double hMaxAngle = GZ_PI / 8.0;
+  const double minRange = 1.0;
+  const double maxRange = 100.0;
+  const int hRayCount = 20;
+  const int vRayCount = 1;
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_TRUE(scene != nullptr);
+
+  VisualPtr root = scene->RootVisual();
+
+  // Create ray caster oriented to look down at the heightmap
+  math::Pose3d testPose(math::Vector3d(0, 0, 20),
+                        math::Quaterniond(math::Vector3d(0, GZ_PI / 2, 0)));
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays_1");
+  gpuRays->SetWorldPosition(testPose.Pos());
+  gpuRays->SetWorldRotation(testPose.Rot());
+  gpuRays->SetNearClipPlane(minRange);
+  gpuRays->SetFarClipPlane(maxRange);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+  // set visibility mask
+  // note this is not the same as GZ_VISIBILITY_MASK
+  // which is 0x0FFFFFFF
+  gpuRays->SetVisibilityMask(0xFFFFFFFF);
+
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  // create heightmap
+
+  // Heightmap data
+  auto heightImage = common::joinPaths(TEST_MEDIA_PATH, "heightmap_bowl.png");
+  math::Vector3d size{ 100, 100, 10 };
+  math::Vector3d position{ 0, 0, 0 };
+  auto textureImage =
+    common::joinPaths(TEST_MEDIA_PATH, "materials", "textures", "texture.png");
+  auto normalImage = common::joinPaths(TEST_MEDIA_PATH, "materials", "textures",
+                                       "flat_normal.png");
+
+  auto data = std::make_shared<common::ImageHeightmap>();
+  data->Load(heightImage);
+
+  EXPECT_EQ(heightImage, data->Filename());
+
+  HeightmapDescriptor desc;
+  desc.SetData(data);
+  desc.SetSize(size);
+  desc.SetPosition(position);
+  desc.SetUseTerrainPaging(true);
+  desc.SetSampling(4u);
+
+  HeightmapTexture textureA;
+  textureA.SetSize(0.5);
+  textureA.SetDiffuse(textureImage);
+  textureA.SetNormal(normalImage);
+  desc.AddTexture(textureA);
+
+  HeightmapBlend blendA;
+  blendA.SetMinHeight(2.0);
+  blendA.SetFadeDistance(5.0);
+  desc.AddBlend(blendA);
+
+  HeightmapTexture textureB;
+  textureB.SetSize(0.5);
+  textureB.SetDiffuse(textureImage);
+  textureB.SetNormal(normalImage);
+  desc.AddTexture(textureB);
+
+  HeightmapBlend blendB;
+  blendB.SetMinHeight(4.0);
+  blendB.SetFadeDistance(5.0);
+  desc.AddBlend(blendB);
+
+  HeightmapTexture textureC;
+  textureC.SetSize(0.5);
+  textureC.SetDiffuse(textureImage);
+  textureC.SetNormal(normalImage);
+  desc.AddTexture(textureC);
+
+  auto heightmap = scene->CreateHeightmap(desc);
+  ASSERT_NE(nullptr, heightmap);
+
+  // Add to a visual
+  auto vis = scene->CreateVisual();
+  vis->AddGeometry(heightmap);
+  EXPECT_EQ(1u, vis->GeometryCount());
+  EXPECT_TRUE(vis->HasGeometry(heightmap));
+  EXPECT_EQ(heightmap, vis->GeometryByIndex(0));
+  scene->RootVisual()->AddChild(vis);
+
+  // Verify rays caster range readings
+  // listen to new gpu rays frames
+  unsigned int channels = gpuRays->Channels();
+  float *scan = new float[hRayCount * vRayCount * channels];
+  common::ConnectionPtr connection = gpuRays->ConnectNewGpuRaysFrame(std::bind(
+    &::OnNewGpuRaysFrame, scan, std::placeholders::_1, std::placeholders::_2,
+    std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
+
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+  gpuRays->Update();
+
+  for (unsigned int i = 0; i < hRayCount * channels; i += channels)
+  {
+    // range readings should not be inf and far lower than the max range
+    // it should be between ~15m and 20m
+    double range = scan[i];
+    EXPECT_LT(14.9, range);
+    EXPECT_GT(20.0, range);
+  }
+
+  // cleanup
+  connection.reset();
+
+  delete[] scan;
+  scan = nullptr;
 
   // Clean up
   engine->DestroyScene(scene);

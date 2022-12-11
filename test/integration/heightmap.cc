@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 
 #include "CommonRenderingTest.hh"
+#include "base64.cc"
 
 #include <gz/common/Image.hh>
 #include <gz/common/geospatial/ImageHeightmap.hh>
@@ -60,6 +61,65 @@ static void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
 using namespace gz;
 using namespace rendering;
 
+// #define DUMP_MODE
+
+#ifdef DUMP_MODE
+static void DumpReferenceLogToFile(const char *_base64Data)
+{
+  std::vector<uint8_t> data = Base64Decode(_base64Data);
+
+  uint32_t *headerPtr = reinterpret_cast<uint32_t *>(data.data());
+
+  const uint32_t width = headerPtr[0];
+  const uint32_t height = headerPtr[1];
+  // const PixelFormat format = static_cast<PixelFormat>(headerPtr[2]);
+  common::Image comImage;
+  comImage.SetFromData(data.data() + 3 * sizeof(uint32_t), width, height,
+                       common::Image::RGB_INT8);
+  comImage.SavePNG("/tmp/Original.png");
+}
+
+static void DumpDepthLogToFile(const char *_base64Data)
+{
+  std::vector<uint8_t> data = Base64Decode(_base64Data);
+
+  uint32_t *headerPtr = reinterpret_cast<uint32_t *>(data.data());
+
+  const uint32_t width = headerPtr[0];
+  const uint32_t height = headerPtr[1];
+  // const PixelFormat format = static_cast<PixelFormat>(headerPtr[2]);
+
+  const float *depthData =
+    reinterpret_cast<const float *>(data.data() + 3 * sizeof(uint32_t));
+  std::vector<uint8_t> colourData;
+  colourData.reserve(width * height * 3u);
+
+  for (uint32_t y = 0u; y < height; ++y)
+  {
+    for (uint32_t x = 0u; x < width; ++x)
+    {
+      const size_t depthIdx = (y * width + x) * 4u;
+
+      const uint32_t *depthrgba =
+        reinterpret_cast<const uint32_t *>(&depthData[depthIdx + 3u]);
+
+      const uint8_t depthr = *depthrgba >> 24 & 0xFF;
+      const uint8_t depthg = *depthrgba >> 16 & 0xFF;
+      const uint8_t depthb = *depthrgba >> 8 & 0xFF;
+
+      colourData.push_back(depthr);
+      colourData.push_back(depthg);
+      colourData.push_back(depthb);
+    }
+  }
+
+  common::Image comImage;
+  comImage.SetFromData(colourData.data(), width, height,
+                       common::Image::RGB_INT8);
+  comImage.SavePNG("/tmp/DepthRgbData.png");
+}
+#endif
+
 /////////////////////////////////////////////////
 class HeightmapTest : public CommonRenderingTest
 {
@@ -74,6 +134,19 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 {
   // This test is too strict for ogre
   CHECK_UNSUPPORTED_ENGINE("ogre");
+
+#ifdef DUMP_MODE
+  // clang-format off
+  const char *colourDataBase64 = "";
+  // clang-format on
+  DumpReferenceLogToFile(colourDataBase64);
+
+  // clang-format off
+  const char *depthDataBase64 = "";
+  // clang-format on
+  DumpDepthLogToFile(depthDataBase64);
+  return;
+#endif
 
   // add resources in build dir
   engine->AddResourcePath(
@@ -298,6 +371,36 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
     EXPECT_LE(accumError, 25 * 3);
     // Expect very few "large" errors.
     EXPECT_LE(numLargeErrors, width * height * 5 / 10000);
+
+    if (this->HasFailure())
+    {
+      std::string base64Encoded;
+
+      {
+        // Output reference
+        base64Encoded.clear();
+        const uint32_t header[3] = { width, height, normalCamImage.Format() };
+
+        Base64Encode(header, sizeof(header), base64Encoded);
+        Base64Encode(normalData, width * height * normalChannelCount,
+                     base64Encoded);
+        std::cout << "Reference Camera Output:" << std::endl;
+        std::cout << base64Encoded << std::endl;
+      }
+
+      {
+        // Output value
+        base64Encoded.clear();
+        const uint32_t header[3] = { width, height, PF_FLOAT32_RGBA };
+
+        std::cout << "Depth Camera Output:" << std::endl;
+        Base64Encode(header, sizeof(header), base64Encoded);
+        Base64Encode(pointCloudData, width * height * sizeof(float) * 4u,
+                     base64Encoded);
+
+        std::cout << base64Encoded << std::endl;
+      }
+    }
   }
 
   // cleanup

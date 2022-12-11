@@ -34,7 +34,7 @@
 #include <gz/utils/ExtraTestMacros.hh>
 
 #define DOUBLE_TOL 1e-6
-unsigned int g_pointCloudCounter = 0;
+static unsigned int g_pointCloudCounter = 0;
 
 /////////////////////////////////////////////////
 static void OnNewRgbPointCloud(float *_scanDest, const float *_scan,

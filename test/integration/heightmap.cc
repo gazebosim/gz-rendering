@@ -379,7 +379,9 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
       {
         // Output reference
         base64Encoded.clear();
-        const uint32_t header[3] = { width, height, normalCamImage.Format() };
+        const uint32_t header[3] = {
+          width, height, static_cast<uint32_t>(normalCamImage.Format())
+        };
 
         Base64Encode(header, sizeof(header), base64Encoded);
         Base64Encode(normalData, width * height * normalChannelCount,
@@ -391,7 +393,8 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
       {
         // Output value
         base64Encoded.clear();
-        const uint32_t header[3] = { width, height, PF_FLOAT32_RGBA };
+        const uint32_t header[3] = { width, height,
+                                     static_cast<uint32_t>(PF_FLOAT32_RGBA) };
 
         std::cout << "Depth Camera Output:" << std::endl;
         Base64Encode(header, sizeof(header), base64Encoded);

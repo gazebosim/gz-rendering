@@ -2,6 +2,8 @@
 //  base64 encoding and decoding with C++.
 //  Version: 1.01.00
 //
+//  Copyright (C) 2004-2017 René Nyffenegger
+//
 
 #pragma once
 

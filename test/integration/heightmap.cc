@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 
 #include "CommonRenderingTest.hh"
-#include "base64.cc"
+#include "base64.inl"
 
 #include <gz/common/Image.hh>
 #include <gz/common/geospatial/ImageHeightmap.hh>

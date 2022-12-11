@@ -33,7 +33,7 @@ René Nyffenegger rene.nyffenegger@adp-gmbh.ch
 
 #include <iostream>
 
-static const std::string kBase64Chars =
+static const std::string kBase64Chars =  // NOLINT
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   "abcdefghijklmnopqrstuvwxyz"
   "0123456789+/";

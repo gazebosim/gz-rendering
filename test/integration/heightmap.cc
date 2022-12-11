@@ -72,6 +72,9 @@ public:
 /////////////////////////////////////////////////
 TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 {
+  // This test is too strict for ogre
+  CHECK_UNSUPPORTED_ENGINE("ogre");
+
   // add resources in build dir
   engine->AddResourcePath(
     common::joinPaths(std::string(PROJECT_BUILD_PATH), "src"));
@@ -311,6 +314,10 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 /////////////////////////////////////////////////
 TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(HeightmapGpuRays))
 {
+  // ogre fails with lidar.
+  // See https://github.com/gazebosim/gz-rendering/issues/35
+  CHECK_UNSUPPORTED_ENGINE("ogre");
+
   // Test GPU rays heightmap detection
   const double hMinAngle = -GZ_PI / 8.0;
   const double hMaxAngle = GZ_PI / 8.0;

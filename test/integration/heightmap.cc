@@ -270,12 +270,10 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
           EXPECT_FALSE(std::isnan(depthData[idx + 0]));
           EXPECT_FALSE(std::isnan(depthData[idx + 1]));
           EXPECT_FALSE(std::isnan(depthData[idx + 2]));
-          EXPECT_TRUE(depthData[idx + 0] ==
-                      std::numeric_limits<float>::infinity());
-          EXPECT_TRUE(depthData[idx + 1] ==
-                      std::numeric_limits<float>::infinity());
-          EXPECT_TRUE(depthData[idx + 2] ==
-                      std::numeric_limits<float>::infinity());
+
+          EXPECT_TRUE(std::isinf(depthData[idx + 0]));
+          EXPECT_TRUE(std::isinf(depthData[idx + 1]));
+          EXPECT_TRUE(std::isinf(depthData[idx + 2]));
 
           // The sky should only be visible in the top part of the picture
           EXPECT_TRUE(i < height / 4);
@@ -285,12 +283,10 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
           EXPECT_FALSE(std::isnan(depthData[idx + 0]));
           EXPECT_FALSE(std::isnan(depthData[idx + 1]));
           EXPECT_FALSE(std::isnan(depthData[idx + 2]));
-          EXPECT_FALSE(depthData[idx + 0] ==
-                       std::numeric_limits<float>::infinity());
-          EXPECT_FALSE(depthData[idx + 1] ==
-                       std::numeric_limits<float>::infinity());
-          EXPECT_FALSE(depthData[idx + 2] ==
-                       std::numeric_limits<float>::infinity());
+
+          EXPECT_FALSE(std::isinf(depthData[idx + 0]));
+          EXPECT_FALSE(std::isinf(depthData[idx + 1]));
+          EXPECT_FALSE(std::isinf(depthData[idx + 2]));
         }
       }
     }

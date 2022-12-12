@@ -407,29 +407,23 @@ void Ogre2GpuRays::Destroy()
 
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
-  if (this->dataPtr->cubeUVTexture)
-  {
-    ogreRoot->getRenderSystem()->getTextureGpuManager()->destroyTexture(
-      this->dataPtr->cubeUVTexture);
-    this->dataPtr->cubeUVTexture = nullptr;
-  }
 
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
 
   // remove 1st pass textures, material, compositors
   for (auto i : this->dataPtr->cubeFaceIdx)
   {
-    if (this->dataPtr->firstPassTextures[i])
-    {
-      ogreRoot->getRenderSystem()->getTextureGpuManager()->destroyTexture(
-         this->dataPtr->firstPassTextures[i]);
-      this->dataPtr->firstPassTextures[i] = nullptr;
-    }
     if (this->dataPtr->ogreCompositorWorkspace1st[i])
     {
       ogreCompMgr->removeWorkspace(
           this->dataPtr->ogreCompositorWorkspace1st[i]);
       this->dataPtr->ogreCompositorWorkspace1st[i] = nullptr;
+    }
+    if (this->dataPtr->firstPassTextures[i])
+    {
+      ogreRoot->getRenderSystem()->getTextureGpuManager()->destroyTexture(
+         this->dataPtr->firstPassTextures[i]);
+      this->dataPtr->firstPassTextures[i] = nullptr;
     }
   }
   if (this->dataPtr->matFirstPass)
@@ -471,6 +465,13 @@ void Ogre2GpuRays::Destroy()
     ogreCompMgr->removeNodeDefinition(
         this->dataPtr->ogreCompositorNodeDef2nd);
     this->dataPtr->ogreCompositorWorkspaceDef2nd.clear();
+  }
+
+  auto textureGpuManager = ogreRoot->getRenderSystem()->getTextureGpuManager();
+  if (this->dataPtr->cubeUVTexture)
+  {
+    textureGpuManager->destroyTexture(this->dataPtr->cubeUVTexture);
+    this->dataPtr->cubeUVTexture = nullptr;
   }
 
   if (this->scene)

@@ -961,11 +961,9 @@ void Ogre2GpuRays::Setup1stPass()
           colorTargetDef->addPass(Ogre::PASS_SCENE));
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue(0, 0, 0));
-      // set visibility mask and '&' it with IGN_VISIBILITY_ALL (0x0FFFFFFF)
-      // to make sure the fist 4 bits are 0 otherwise lidar will not be able
-      // to detect heightmaps
-      passScene->mVisibilityMask = (this->VisibilityMask() & IGN_VISIBILITY_ALL)
-          & ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
+      passScene->setVisibilityMask(
+        this->VisibilityMask() &
+        ~Ogre2ParticleEmitter::kParticleVisibilityFlags);
     }
 
     Ogre::CompositorTargetDef *particleTargetDef =

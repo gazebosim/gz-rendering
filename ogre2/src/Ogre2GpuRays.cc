@@ -1195,12 +1195,8 @@ void Ogre2GpuRays::UpdateRenderTarget1stPass()
   Ogre::vector<Ogre::TextureGpu *>::type swappedTargets;
   swappedTargets.reserve(2u);
 
-  // set visibility mask and '&' it with GZ_VISIBILITY_ALL (0x0FFFFFFF)
-  // to make sure the fist 4 bits are 0 otherwise lidar will not be able
-  // to detect heightmaps
-  this->dataPtr->mainPassSceneDef->mVisibilityMask =
-      (this->VisibilityMask() & GZ_VISIBILITY_ALL)
-      & ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
+  this->dataPtr->mainPassSceneDef->setVisibilityMask(
+    this->VisibilityMask() & ~Ogre2ParticleEmitter::kParticleVisibilityFlags);
 
   // update the compositors
   for (auto i : this->dataPtr->cubeFaceIdx)

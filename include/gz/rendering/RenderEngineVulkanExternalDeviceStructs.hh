@@ -24,7 +24,7 @@
 #include "gz/rendering/Export.hh"
 #include "gz/rendering/config.hh"
 
-#ifdef HAVE_VULKAN
+#ifdef GZ_RENDERING_HAVE_VULKAN
 
 #include "vulkan/vulkan_core.h"
 

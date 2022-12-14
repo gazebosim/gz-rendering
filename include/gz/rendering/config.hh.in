@@ -41,6 +41,6 @@
 #cmakedefine HAVE_OPTIX 1
 #cmakedefine HAVE_GAZEBO 1
 #cmakedefine INCLUDE_RTSHADER 1
-#cmakedefine HAVE_VULKAN 1
+#cmakedefine GZ_RENDERING_HAVE_VULKAN 1
 
 #endif

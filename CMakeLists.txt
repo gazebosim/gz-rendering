@@ -98,7 +98,7 @@ if (OGRE_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
   endif()
 
-  set(HAVE_OGRE TRUE)
+  set(GZ_RENDERING_HAVE_OGRE TRUE)
 endif()
 
 #--------------------------------------
@@ -119,7 +119,7 @@ if ("${OGRE2-PlanarReflections}" STREQUAL "OGRE2-PlanarReflections-NOTFOUND")
 endif()
 
 if (OGRE2_FOUND)
-  set(HAVE_OGRE2 TRUE)
+  set(GZ_RENDERING_HAVE_OGRE2 TRUE)
 endif()
 
 #--------------------------------------
@@ -142,7 +142,7 @@ if (UNIX AND NOT APPLE)
       gz_build_warning("Skipping component [ogre2]: Missing vulkan headers.\n")
       # Create a variable to indicate that we need to skip the component
       set(INTERNAL_SKIP_ogre2 true)
-      set(HAVE_OGRE2 FALSE)
+      set(GZ_RENDERING_HAVE_OGRE2 FALSE)
     else()
       message(STATUS "Looking for vulkan header (vulkan/vulkan_core.h) - found")
       set(GZ_RENDERING_HAVE_VULKAN TRUE)
@@ -169,7 +169,7 @@ if(NOT MSVC)
       PRIVATE_FOR optix)
 
   if (OptiX_FOUND AND CUDA_FOUND)
-    set(HAVE_OPTIX TRUE)
+    set(GZ_RENDERING_HAVE_OPTIX TRUE)
   endif()
 endif()
 
@@ -186,15 +186,15 @@ set(GZ_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/${GZ_DATA_INSTALL_DIR})
 #============================================================================
 # Configure the build
 #============================================================================
-if (HAVE_OGRE)
+if (GZ_RENDERING_HAVE_OGRE)
   list(APPEND RENDERING_COMPONENTS ogre)
 endif()
 
-if (HAVE_OPTIX)
+if (GZ_RENDERING_HAVE_OPTIX)
   list(APPEND RENDERING_COMPONENTS optix)
 endif()
 
-if (HAVE_OGRE2)
+if (GZ_RENDERING_HAVE_OGRE2)
   list(APPEND RENDERING_COMPONENTS ogre2)
 endif()
 
@@ -204,7 +204,7 @@ configure_file("${PROJECT_SOURCE_DIR}/cppcheck.suppress.in"
 gz_configure_build(QUIT_IF_BUILD_ERRORS
     COMPONENTS ${RENDERING_COMPONENTS})
 
-if (HAVE_OGRE2)
+if (GZ_RENDERING_HAVE_OGRE2)
   # Must be done after gz_configure_build or else Terra
   # won't see GZ_ADD_fPIC_TO_LIBRARIES
   add_subdirectory(ogre2/src/terrain/Terra)

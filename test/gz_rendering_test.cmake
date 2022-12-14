@@ -136,14 +136,14 @@ macro(gz_rendering_test)
     )
   endif()
 
-  if (HAVE_OGRE)
+  if (GZ_RENDERING_HAVE_OGRE)
     gz_configure_rendering_test(
       TARGET ${TEST_NAME}
       RENDER_ENGINE "ogre"
     )
   endif()
 
-  if (HAVE_OGRE2)
+  if (GZ_RENDERING_HAVE_OGRE2)
     if (APPLE)
       gz_configure_rendering_test(
         TARGET ${TEST_NAME}
@@ -165,7 +165,7 @@ macro(gz_rendering_test)
       # endif()
     endif()
   endif()
-  if (HAVE_OPTIX)
+  if (GZ_RENDERING_HAVE_OPTIX)
     gz_configure_rendering_test(
       TARGET ${TEST_NAME}
       RENDER_ENGINE "optix"

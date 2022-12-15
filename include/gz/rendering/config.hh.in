@@ -36,11 +36,20 @@
 
 #define GZ_RENDERING_ENGINE_INSTALL_DIR "${GZ_RENDERING_ENGINE_INSTALL_DIR}"
 
-#cmakedefine HAVE_OGRE 1
-#cmakedefine HAVE_OGRE2 1
-#cmakedefine HAVE_OPTIX 1
-#cmakedefine HAVE_GAZEBO 1
-#cmakedefine INCLUDE_RTSHADER 1
+#cmakedefine GZ_RENDERING_HAVE_OGRE 1
+#cmakedefine GZ_RENDERING_HAVE_OGRE2 1
+#cmakedefine GZ_RENDERING_HAVE_OPTIX 1
 #cmakedefine GZ_RENDERING_HAVE_VULKAN 1
+
+// \todo(anyone) remove on tock
+#ifndef HAVE_OGRE
+#define HAVE_OGRE GZ_RENDERING_HAVE_OGRE
+#endif
+#ifndef HAVE_OGRE2
+#define HAVE_OGRE2 GZ_RENDERING_HAVE_OGRE2
+#endif
+#ifndef HAVE_OPTIX
+#define HAVE_OPTIX GZ_RENDERING_HAVE_OPTIX
+#endif
 
 #endif

@@ -28,19 +28,19 @@
 using namespace gz;
 using namespace rendering;
 
-#if HAVE_OGRE
+#if GZ_RENDERING_HAVE_OGRE
 static bool kHaveOgre = true;
 #else
 static bool kHaveOgre = false;
 #endif
 
-#if HAVE_OGRE2
+#if GZ_RENDERING_HAVE_OGRE2
 static bool kHaveOgre2 = true;
 #else
 static bool kHaveOgre2 = false;
 #endif
 
-#if HAVE_OPTIX
+#if GZ_RENDERING_HAVE_OPTIX
 static bool kHaveOptix = true;
 #else
 static bool kHaveOptix = false;

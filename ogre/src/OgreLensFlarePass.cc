@@ -229,7 +229,10 @@ void OgreLensFlarePass::PostRender()
   // WideAngleCamera is supposed to rendered 6 times. Nothin more, nothing less.
   // Normal cameras are supposed to be rendered 1 time.
   GZ_ASSERT((!wideAngleCamera && this->dataPtr->currentFaceIdx == 1u) ||
-              (wideAngleCamera && this->dataPtr->currentFaceIdx == 6u),
+              (wideAngleCamera && this->WideAngleCameraAfterStitching() &&
+               this->dataPtr->currentFaceIdx == 1u) ||
+              (wideAngleCamera && !this->WideAngleCameraAfterStitching() &&
+               this->dataPtr->currentFaceIdx == 6u),
             "The lens flare pass was done more times than expected");
 }
 

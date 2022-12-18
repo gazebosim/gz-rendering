@@ -50,8 +50,19 @@ namespace gz
       // Documentation inherited
       public: void PreRender(const CameraPtr &_camera) override;
 
+      // Documentation inherited
+      public: void SetWideAngleCameraAfterStitching(bool _afterStitching)
+          override;
+
+      // Documentation inherited
+      public: bool WideAngleCameraAfterStitching() const  override;
+
       /// \brief Flag to indicate if render pass is enabled or not
       protected: bool enabled = true;
+
+      /// \brief Flag tracking the current value of
+      /// SetWideAngleCameraAfterStitching()
+      protected: bool afterStitching = false;
     };
 
     //////////////////////////////////////////////////
@@ -88,6 +99,21 @@ namespace gz
     {
       T *thisT = this;
       thisT->PreRender();  // NOT the same as doing T::PreRender
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderPass<T>::SetWideAngleCameraAfterStitching(
+          bool _afterStitching)
+    {
+      this->afterStitching = _afterStitching;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseRenderPass<T>::WideAngleCameraAfterStitching() const
+    {
+      return this->afterStitching;
     }
     }
   }

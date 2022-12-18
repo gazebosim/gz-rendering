@@ -120,6 +120,7 @@ Ogre2LensFlarePass::Ogre2LensFlarePass() :
   dataPtr(utils::MakeUniqueImpl<Implementation>(*this))
 {
   this->ogreCompositorNodeDefName = "LensFlareNode";
+  this->afterStitching = true;
 }
 
 //////////////////////////////////////////////////
@@ -172,7 +173,10 @@ void Ogre2LensFlarePass::PostRender()
   // WideAngleCamera is supposed to rendered 6 times. Nothin more, nothing less.
   // Normal cameras are supposed to be rendered 1 time.
   GZ_ASSERT((!wideAngleCamera && this->dataPtr->currentFaceIdx == 1u) ||
-              (wideAngleCamera && this->dataPtr->currentFaceIdx == 6u),
+              (wideAngleCamera && this->WideAngleCameraAfterStitching() &&
+               this->dataPtr->currentFaceIdx == 1u) ||
+              (wideAngleCamera && !this->WideAngleCameraAfterStitching() &&
+               this->dataPtr->currentFaceIdx == 6u),
             "The lens flare pass was done more times than expected");
 }
 
@@ -323,7 +327,20 @@ void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
 
   CompositorPassQuad *passQuad = static_cast<CompositorPassQuad *>(_pass);
 
-  const Ogre::Camera *camera = passQuad->getCamera();
+  Ogre::Camera *camera = passQuad->getCamera();
+
+  Ogre2WideAngleCameraPtr wideAngleCamera =
+    std::dynamic_pointer_cast<Ogre2WideAngleCamera>(
+      this->owner.dataPtr->currentCamera);
+
+  const Ogre::Radian oldFov(camera->getFOVy());
+  const Ogre::Real oldAr(camera->getAspectRatio());
+
+  if (this->owner.WideAngleCameraAfterStitching() && wideAngleCamera)
+  {
+    camera->setFOVy(Ogre::Degree(90));
+    camera->setAspectRatio(Ogre::Real(1.0f));
+  }
 
   Pass *pass = passQuad->getPass();
 
@@ -344,8 +361,14 @@ void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
   double lensFlareScale = 1.0;
   if (lightPos.z >= 0.0)
   {
+    uint32_t currentFaceIdx = this->owner.dataPtr->currentFaceIdx;
+    if (this->owner.WideAngleCameraAfterStitching())
+    {
+      currentFaceIdx = 4u;
+    }
+
     lensFlareScale = this->owner.OcclusionScale(
-      Ogre2Conversions::Convert(lightPos), this->owner.dataPtr->currentFaceIdx);
+      Ogre2Conversions::Convert(lightPos), currentFaceIdx);
   }
 
   ++this->owner.dataPtr->currentFaceIdx;
@@ -357,6 +380,12 @@ void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
   psParams->setNamedConstant("scale", static_cast<Real>(lensFlareScale));
   psParams->setNamedConstant(
     "color", Ogre2Conversions::Convert(this->owner.dataPtr->color));
+
+  if (this->owner.WideAngleCameraAfterStitching() && wideAngleCamera)
+  {
+    camera->setFOVy(oldFov);
+    camera->setAspectRatio(oldAr);
+  }
 }
 
 GZ_RENDERING_REGISTER_RENDER_PASS(Ogre2LensFlarePass, LensFlarePass)

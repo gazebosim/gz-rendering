@@ -76,6 +76,9 @@ namespace gz
           override;
 
       // Documentation inherited
+      public: void RemoveAllRenderPasses() override;
+
+      // Documentation inherited
       public: virtual unsigned int RenderPassCount() const override;
 
       // Documentation inherited
@@ -274,6 +277,21 @@ namespace gz
       {
         (*it)->Destroy();
         this->renderPasses.erase(it);
+        this->renderPassDirty = true;
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseRenderTarget<T>::RemoveAllRenderPasses()
+    {
+      if (!this->renderPasses.empty())
+      {
+        for (RenderPassPtr &renderPass : this->renderPasses)
+        {
+          renderPass->Destroy();
+        }
+        this->renderPasses.clear();
         this->renderPassDirty = true;
       }
     }

@@ -723,6 +723,8 @@ void Ogre2ThermalCamera::Init()
 //////////////////////////////////////////////////
 void Ogre2ThermalCamera::Destroy()
 {
+  this->RemoveAllRenderPasses();
+
   if (this->dataPtr->thermalImage)
   {
     delete [] this->dataPtr->thermalImage;

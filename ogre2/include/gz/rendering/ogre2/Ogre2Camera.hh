@@ -93,10 +93,6 @@ namespace gz
       // Documentation inherited.
       public: virtual RenderWindowPtr CreateRenderWindow() override;
 
-      /// \brief Destroy render texture created by CreateRenderTexture()
-      /// Note: It's not virtual.
-      protected: void DestroyRenderTexture();
-
       // Documentation inherited.
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
@@ -154,6 +150,10 @@ namespace gz
 
       /// \brief Create a render texture for the camera for offscreen rendering
       protected: virtual void CreateRenderTexture();
+
+      /// \brief Destroy render texture created by CreateRenderTexture()
+      /// Note: It's not virtual.
+      protected: void DestroyRenderTexture();
 
       /// \brief Create and set selection buffer object
       /// TODO(anyone) to be implemented

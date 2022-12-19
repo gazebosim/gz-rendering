@@ -34,10 +34,12 @@
 
 #include "gz/rendering/CameraLens.hh"
 
-#include "gz/rendering/ogre/OgreConversions.hh"
-#include "gz/rendering/ogre/OgreRenderEngine.hh"
-#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
 #include "gz/rendering/ogre/OgreWideAngleCamera.hh"
+
+#include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
+#include "gz/rendering/ogre/OgreRenderEngine.hh"
+#include "gz/rendering/ogre/OgreRenderPass.hh"
 
 /// \brief Private data for the WideAngleCamera class
 class gz::rendering::OgreWideAngleCamera::Implementation
@@ -81,6 +83,15 @@ class gz::rendering::OgreWideAngleCamera::Implementation
 
   /// \brief Dummy texture
   public: OgreRenderTexturePtr wideAngleTexture;
+
+  /// \brief A chain of render passes applied to the render target
+  public: std::vector<RenderPassPtr> renderPasses;
+
+  /// \brief A chain of render passes applied to final stitched render target
+  public: std::vector<RenderPassPtr> finalStitchRenderPasses;
+
+  /// \brief Flag to indicate if render pass need to be rebuilt
+  public: bool renderPassDirty = false;
 
   /// \brief The image buffer
   public: unsigned char *imageBuffer = nullptr;
@@ -126,6 +137,7 @@ void OgreWideAngleCamera::Init()
 /////////////////////////////////////////////////
 void OgreWideAngleCamera::CreateRenderTexture()
 {
+  this->DestroyRenderTexture();
   RenderTexturePtr base = this->scene->CreateRenderTexture();
   this->dataPtr->wideAngleTexture =
       std::dynamic_pointer_cast<OgreRenderTexture>(base);
@@ -134,16 +146,42 @@ void OgreWideAngleCamera::CreateRenderTexture()
 }
 
 //////////////////////////////////////////////////
+void OgreWideAngleCamera::DestroyRenderTexture()
+{
+  if (this->dataPtr->wideAngleTexture)
+  {
+    dynamic_cast<OgreRenderTexture *>(this->dataPtr->wideAngleTexture.get())
+      ->Destroy();
+    this->dataPtr->wideAngleTexture.reset();
+  }
+}
+
+//////////////////////////////////////////////////
 void OgreWideAngleCamera::PreRender()
 {
   BaseCamera::PreRender();
   if (!this->dataPtr->ogreRenderTexture)
     this->CreateWideAngleTexture();
+
+  this->UpdateRenderPassChain();
+
+  for (auto pass : this->dataPtr->renderPasses)
+  {
+    pass->PreRender(
+      std::dynamic_pointer_cast<Camera>(this->shared_from_this()));
+  }
+  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  {
+    pass->PreRender(
+      std::dynamic_pointer_cast<Camera>(this->shared_from_this()));
+  }
 }
 
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::Destroy()
 {
+  this->RemoveAllRenderPasses();
+
   if (this->dataPtr->imageBuffer)
   {
     delete [] this->dataPtr->imageBuffer;
@@ -200,6 +238,72 @@ void OgreWideAngleCamera::Destroy()
         this->dataPtr->compMat->getName());
     this->dataPtr->compMat.setNull();
   }
+
+  this->DestroyRenderTexture();
+}
+
+//////////////////////////////////////////////////
+void OgreWideAngleCamera::AddRenderPass(const RenderPassPtr &_pass)
+{
+  // Do NOT pass it to super class.
+  if (_pass->WideAngleCameraAfterStitching())
+  {
+    this->dataPtr->finalStitchRenderPasses.push_back(_pass);
+  }
+  else
+  {
+    this->dataPtr->renderPasses.push_back(_pass);
+  }
+  this->dataPtr->renderPassDirty = true;
+}
+
+//////////////////////////////////////////////////
+void OgreWideAngleCamera::RemoveRenderPass(const RenderPassPtr &_pass)
+{
+  // Do NOT pass it to super class.
+  auto it = std::find(this->dataPtr->renderPasses.begin(),
+                      this->dataPtr->renderPasses.end(), _pass);
+  if (it != this->dataPtr->renderPasses.end())
+  {
+    (*it)->Destroy();
+    this->dataPtr->renderPasses.erase(it);
+    this->dataPtr->renderPassDirty = true;
+  }
+  else
+  {
+    it = std::find(this->dataPtr->finalStitchRenderPasses.begin(),
+                   this->dataPtr->finalStitchRenderPasses.end(), _pass);
+    if (it != this->dataPtr->finalStitchRenderPasses.end())
+    {
+      (*it)->Destroy();
+      this->dataPtr->finalStitchRenderPasses.erase(it);
+      this->dataPtr->renderPassDirty = true;
+    }
+    else
+    {
+      gzwarn << "OgreWideAngleCamera::RemoveRenderPass pass not found. This "
+                "is fine if you called this function twice. But it may not be "
+                "fine if you changed the value "
+                "RenderPass::WideAngleCameraAfterStitching (see docs)"
+             << std::endl;
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreWideAngleCamera::RemoveAllRenderPasses()
+{
+  for (auto pass : this->dataPtr->renderPasses)
+  {
+    pass->Destroy();
+  }
+  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  {
+    pass->Destroy();
+  }
+  this->dataPtr->renderPasses.clear();
+  this->dataPtr->finalStitchRenderPasses.clear();
+  this->dataPtr->renderPassDirty = true;
 }
 
 //////////////////////////////////////////////////
@@ -418,6 +522,29 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
 }
 
 //////////////////////////////////////////////////
+void OgreWideAngleCamera::UpdateRenderPassChain()
+{
+  if (!this->dataPtr->renderPassDirty)
+    return;
+
+  for (auto pass : this->dataPtr->renderPasses)
+  {
+    OgreRenderPass *ogreRenderPass =
+        dynamic_cast<OgreRenderPass *>(pass.get());
+    ogreRenderPass->SetCameras(this->dataPtr->envCameras);
+    ogreRenderPass->CreateRenderPass();
+  }
+  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  {
+    OgreRenderPass *ogreRenderPass =
+        dynamic_cast<OgreRenderPass *>(pass.get());
+    ogreRenderPass->SetCamera(this->dataPtr->ogreCamera);
+    ogreRenderPass->CreateRenderPass();
+  }
+  this->dataPtr->renderPassDirty = false;
+}
+
+//////////////////////////////////////////////////
 void OgreWideAngleCamera::Render()
 {
   for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
@@ -432,6 +559,27 @@ void OgreWideAngleCamera::Render()
       this->dataPtr->ogreRenderTexture->getBuffer()->getRenderTarget();
   rt->setAutoUpdated(false);
   rt->update(false);
+}
+
+//////////////////////////////////////////////////
+void OgreWideAngleCamera::Copy(Image &_image) const
+{
+  const unsigned int width = this->ImageWidth();
+  const unsigned int height = this->ImageHeight();
+
+  if (_image.Width() != width || _image.Height() != height)
+  {
+    gzerr << "Invalid image dimensions" << std::endl;
+    return;
+  }
+
+  void *data = _image.Data();
+  Ogre::PixelFormat imageFormat = OgreConversions::Convert(_image.Format());
+  Ogre::PixelBox ogrePixelBox(width, height, 1, imageFormat, data);
+
+  Ogre::RenderTarget *rt =
+    this->dataPtr->ogreRenderTexture->getBuffer()->getRenderTarget();
+  rt->copyContentsToMemory(ogrePixelBox);
 }
 
 //////////////////////////////////////////////////
@@ -618,6 +766,15 @@ void OgreWideAngleCamera::PostRender()
 {
   if (this->dataPtr->newImageFrame.ConnectionCount() <= 0u)
     return;
+
+  for (auto pass : this->dataPtr->renderPasses)
+  {
+    pass->PostRender();
+  }
+  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  {
+    pass->PostRender();
+  }
 
   unsigned int width = this->ImageWidth();
   unsigned int height = this->ImageHeight();

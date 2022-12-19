@@ -58,6 +58,7 @@ void Ogre2Camera::Destroy()
   if (!this->ogreCamera || !this->Scene()->IsInitialized())
     return;
 
+  this->RemoveAllRenderPasses();
   this->DestroyRenderTexture();
 
   Ogre::SceneManager *ogreSceneManager;
@@ -217,6 +218,7 @@ void Ogre2Camera::DestroyRenderTexture()
     this->renderTexture.reset();
   }
 }
+
 //////////////////////////////////////////////////
 unsigned int Ogre2Camera::RenderTextureGLId() const
 {

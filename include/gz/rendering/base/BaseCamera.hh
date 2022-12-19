@@ -196,6 +196,9 @@ namespace gz
           override;
 
       // Documentation inherited.
+      public: void RemoveAllRenderPasses() override;
+
+      // Documentation inherited.
       public: virtual unsigned int RenderPassCount() const override;
 
       // Documentation inherited.
@@ -858,6 +861,17 @@ namespace gz
     void BaseCamera<T>::RemoveRenderPass(const RenderPassPtr &_pass)
     {
       this->RenderTarget()->RemoveRenderPass(_pass);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::RemoveAllRenderPasses()
+    {
+      RenderTargetPtr renderTarget = this->RenderTarget();
+      if (renderTarget)
+      {
+        renderTarget->RemoveAllRenderPasses();
+      }
     }
 
     //////////////////////////////////////////////////

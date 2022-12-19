@@ -27,6 +27,7 @@
 #include "gz/rendering/ogre/OgreRayQuery.hh"
 #include "gz/rendering/ogre/OgreScene.hh"
 #include "gz/rendering/ogre/OgreThermalCamera.hh"
+#include "gz/rendering/ogre/OgreWideAngleCamera.hh"
 
 class gz::rendering::OgreRayQueryPrivate
 {
@@ -71,12 +72,45 @@ void OgreRayQuery::SetFromCamera(const CameraPtr &_camera,
 }
 
 //////////////////////////////////////////////////
-void OgreRayQuery::SetFromCamera(const WideAngleCameraPtr & /*_camera*/,
-                                 uint32_t /*_faceIdx*/,
-                                 const math::Vector2d & /*_coord*/)
+void OgreRayQuery::SetFromCamera(const WideAngleCameraPtr &_camera,
+                                 uint32_t _faceIdx,
+                                 const math::Vector2d &_coord)
 {
-  gzerr << "Not Implemented" << std::endl;
-  throw;
+  // convert to nomalized screen pos for ogre
+  math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
+
+  OgreWideAngleCameraPtr camera =
+    std::dynamic_pointer_cast<OgreWideAngleCamera>(_camera);
+
+  std::vector<Ogre::Camera *> envCameras = camera->OgreEnvCameras();
+
+  Ogre::Ray ray = envCameras[_faceIdx]->getCameraToViewportRay(
+    (Ogre::Real)screenPos.X(), (Ogre::Real)screenPos.Y());
+
+  auto originMath = OgreConversions::Convert(ray.getOrigin());
+  if (originMath.IsFinite())
+  {
+    this->origin = originMath;
+  }
+  else
+  {
+    gzwarn << "Attempted to set non-finite origin from camera ["
+           << camera->Name() << "]" << std::endl;
+  }
+
+  auto directionMath = OgreConversions::Convert(ray.getDirection());
+  if (directionMath.IsFinite())
+  {
+    this->direction = directionMath;
+  }
+  else
+  {
+    gzwarn << "Attempted to set non-finite direction from camera ["
+           << camera->Name() << "]" << std::endl;
+  }
+
+  this->origin = OgreConversions::Convert(ray.getOrigin());
+  this->direction = OgreConversions::Convert(ray.getDirection());
 }
 
 //////////////////////////////////////////////////

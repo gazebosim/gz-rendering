@@ -14,25 +14,21 @@
  * limitations under the License.
  *
  */
-#include "gz/rendering/ogre2/Ogre2LensFlarePass.hh"
+#include "gz/rendering/ogre/OgreLensFlarePass.hh"
 
 #include <gz/common/Util.hh>
 
 #include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/RenderPassSystem.hh"
-#include "gz/rendering/ogre2/Ogre2Camera.hh"
-#include "gz/rendering/ogre2/Ogre2Conversions.hh"
-#include "gz/rendering/ogre2/Ogre2Light.hh"
-#include "gz/rendering/ogre2/Ogre2Scene.hh"
-#include "gz/rendering/ogre2/Ogre2WideAngleCamera.hh"
+#include "gz/rendering/ogre/OgreCamera.hh"
+#include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreLight.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreWideAngleCamera.hh"
 
 #ifdef _MSC_VER
 #  pragma warning(push, 0)
 #endif
-#include <Compositor/OgreCompositorWorkspace.h>
-#include <Compositor/OgreCompositorWorkspaceListener.h>
-#include <Compositor/Pass/OgreCompositorPass.h>
-#include <Compositor/Pass/PassQuad/OgreCompositorPassQuad.h>
 #include <OgreCamera.h>
 #include <OgreGpuProgram.h>
 #include <OgrePass.h>
@@ -50,30 +46,32 @@ namespace rendering
 inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 /// \brief Helper class for setting up Camera and Materials when rendering
 /// via Ogre2LensFlarePass.
-class GZ_RENDERING_OGRE2_HIDDEN Ogre2LensFlarePassWorkspaceListenerPrivate
-    final : public Ogre::CompositorWorkspaceListener
+class GZ_RENDERING_OGRE_HIDDEN OgreLensFlareCompositorListenerPrivate
+    final : public Ogre::CompositorInstance::Listener
 {
-  public: gz::rendering::Ogre2LensFlarePass &owner;
+  public: gz::rendering::OgreLensFlarePass &owner;
 
   /// \brief constructor
-  /// \param[in] _scene the scene manager responsible for rendering
-  public: explicit Ogre2LensFlarePassWorkspaceListenerPrivate(
-        gz::rendering::Ogre2LensFlarePass &_owner) :
+  /// \param[in] _owner our creator for direct access to variables
+  public: explicit OgreLensFlareCompositorListenerPrivate(
+        gz::rendering::OgreLensFlarePass &_owner) :
     owner(_owner)
   {
   }
 
-  /// \brief Called when each pass is about to be executed.
-  /// \param[in] _pass Ogre pass which is about to execute
-  public: void passPreExecute(Ogre::CompositorPass *_pass) override;
+  /// \brief Callback that OGRE will invoke for us on each render call
+  /// \param[in] _passID OGRE material pass ID.
+  /// \param[in] _mat Pointer to OGRE material.
+  public: void notifyMaterialRender(unsigned int _passId,
+                                    Ogre::MaterialPtr &_mat) override;
 };
 }
 }
 }
 // clang-format on
 
-/// \brief Private data for the Ogre2LensFlarePass class
-class gz::rendering::Ogre2LensFlarePass::Implementation
+/// \brief Private data for the OgreLensFlarePass class
+class gz::rendering::OgreLensFlarePass::Implementation
 {
   // clang-format off
 
@@ -99,11 +97,15 @@ class gz::rendering::Ogre2LensFlarePass::Implementation
   /// \brief RayQuery to perform occlusion tests
   public: RayQueryPtr rayQuery;
 
-  /// \brief See Ogre2LensFlarePassWorkspaceListenerPrivate
-  public: Ogre2LensFlarePassWorkspaceListenerPrivate workspaceListener;
+  /// \brief See OgreLensFlarePassPrivate
+  public: OgreLensFlareCompositorListenerPrivate compositorListener;
 
-  public: explicit Implementation(gz::rendering::Ogre2LensFlarePass &_owner) :
-    workspaceListener(_owner)
+  /// \brief Lens Flare compositor.
+  public: Ogre::CompositorInstance *
+    lensFlareInstance[kMaxOgreRenderPassCameras] = {};
+
+  public: explicit Implementation(gz::rendering::OgreLensFlarePass &_owner) :
+    compositorListener(_owner)
   {
   }
   // clang-format on
@@ -112,33 +114,88 @@ class gz::rendering::Ogre2LensFlarePass::Implementation
 using namespace gz;
 using namespace rendering;
 
-// Arbitrary values, but they must be in sync with the Compositor script file
-static constexpr uint32_t kLensFlareNodePassQuadId = 98744413u;
-
 //////////////////////////////////////////////////
-Ogre2LensFlarePass::Ogre2LensFlarePass() :
+OgreLensFlarePass::OgreLensFlarePass() :
   dataPtr(utils::MakeUniqueImpl<Implementation>(*this))
 {
-  this->ogreCompositorNodeDefName = "LensFlareNode";
   this->afterStitching = true;
 }
 
 //////////////////////////////////////////////////
-Ogre2LensFlarePass::~Ogre2LensFlarePass()
+OgreLensFlarePass::~OgreLensFlarePass()
 {
 }
 
 //////////////////////////////////////////////////
-void Ogre2LensFlarePass::Init(ScenePtr _scene)
+void OgreLensFlarePass::Init(ScenePtr _scene)
 {
-  this->scene = std::dynamic_pointer_cast<Ogre2Scene>(_scene);
+  this->scene = std::dynamic_pointer_cast<OgreScene>(_scene);
   this->dataPtr->rayQuery = _scene->CreateRayQuery();
-  this->dataPtr->rayQuery->SetPreferGpu(false);
 }
 
 //////////////////////////////////////////////////
-void Ogre2LensFlarePass::PreRender(const CameraPtr &_camera)
+void OgreLensFlarePass::Destroy()
 {
+  for (size_t i = 0u; i < kMaxOgreRenderPassCameras; ++i)
+  {
+    if (this->dataPtr->lensFlareInstance[i])
+    {
+      this->dataPtr->lensFlareInstance[i]->setEnabled(false);
+      this->dataPtr->lensFlareInstance[i]->removeListener(
+        &this->dataPtr->compositorListener);
+      Ogre::CompositorManager::getSingleton().removeCompositor(
+        this->ogreCamera[i]->getViewport(), "RenderPass/LensFlare");
+
+      this->dataPtr->lensFlareInstance[i] = nullptr;
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreLensFlarePass::CreateRenderPass()
+{
+  if (!this->ogreCamera[0])
+  {
+    gzerr << "No camera set for applying Lens Flare Pass" << std::endl;
+    return;
+  }
+
+  if (this->dataPtr->lensFlareInstance[0])
+  {
+    gzwarn << "Lens Flare pass already created. " << std::endl;
+    return;
+  }
+
+  for (size_t i = 0u; i < kMaxOgreRenderPassCameras; ++i)
+  {
+    if (this->ogreCamera[i])
+    {
+      // create compositor instance
+      this->dataPtr->lensFlareInstance[i] =
+        Ogre::CompositorManager::getSingleton().addCompositor(
+          this->ogreCamera[i]->getViewport(), "RenderPass/LensFlare");
+      this->dataPtr->lensFlareInstance[i]->setEnabled(this->enabled);
+      this->dataPtr->lensFlareInstance[i]->addListener(
+        &this->dataPtr->compositorListener);
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void OgreLensFlarePass::PreRender(const CameraPtr &_camera)
+{
+  if (!this->dataPtr->lensFlareInstance[0])
+    return;
+
+  for (size_t i = 0u; i < kMaxOgreRenderPassCameras; ++i)
+  {
+    if (this->dataPtr->lensFlareInstance[i] &&
+        this->enabled != this->dataPtr->lensFlareInstance[i]->getEnabled())
+    {
+      this->dataPtr->lensFlareInstance[i]->setEnabled(this->enabled);
+    }
+  }
+
   if (!this->enabled || this->light == nullptr)
     return;
 
@@ -162,13 +219,13 @@ void Ogre2LensFlarePass::PreRender(const CameraPtr &_camera)
 }
 
 //////////////////////////////////////////////////
-void Ogre2LensFlarePass::PostRender()
+void OgreLensFlarePass::PostRender()
 {
   if (!this->enabled || this->light == nullptr)
     return;
 
-  Ogre2WideAngleCameraPtr wideAngleCamera =
-    std::dynamic_pointer_cast<Ogre2WideAngleCamera>(
+  OgreWideAngleCameraPtr wideAngleCamera =
+    std::dynamic_pointer_cast<OgreWideAngleCamera>(
       this->dataPtr->currentCamera);
   // WideAngleCamera is supposed to rendered 6 times. Nothin more, nothing less.
   // Normal cameras are supposed to be rendered 1 time.
@@ -181,64 +238,52 @@ void Ogre2LensFlarePass::PostRender()
 }
 
 //////////////////////////////////////////////////
-void Ogre2LensFlarePass::SetScale(const double _scale)
+void OgreLensFlarePass::SetScale(const double _scale)
 {
   this->dataPtr->scale = _scale;
 }
 
 //////////////////////////////////////////////////
-double Ogre2LensFlarePass::Scale() const
+double OgreLensFlarePass::Scale() const
 {
   return this->dataPtr->scale;
 }
 
 //////////////////////////////////////////////////
-void Ogre2LensFlarePass::SetColor(const math::Vector3d &_color)
+void OgreLensFlarePass::SetColor(const math::Vector3d &_color)
 {
   this->dataPtr->color = _color;
 }
 
 //////////////////////////////////////////////////
-const math::Vector3d &Ogre2LensFlarePass::Color() const
+const math::Vector3d &OgreLensFlarePass::Color() const
 {
   return this->dataPtr->color;
 }
 
 //////////////////////////////////////////////////
-void Ogre2LensFlarePass::SetOcclusionSteps(const uint32_t _occlusionSteps)
+void OgreLensFlarePass::SetOcclusionSteps(const uint32_t _occlusionSteps)
 {
   this->dataPtr->occlusionSteps = static_cast<double>(_occlusionSteps);
 }
 
 //////////////////////////////////////////////////
-uint32_t Ogre2LensFlarePass::OcclusionSteps() const
+uint32_t OgreLensFlarePass::OcclusionSteps() const
 {
   return static_cast<uint32_t>(this->dataPtr->occlusionSteps);
 }
 
 //////////////////////////////////////////////////
-void Ogre2LensFlarePass::WorkspaceAdded(Ogre::CompositorWorkspace *_workspace)
-{
-  _workspace->addListener(&this->dataPtr->workspaceListener);
-}
-
-//////////////////////////////////////////////////
-void Ogre2LensFlarePass::WorkspaceRemoved(Ogre::CompositorWorkspace *_workspace)
-{
-  _workspace->removeListener(&this->dataPtr->workspaceListener);
-}
-
-//////////////////////////////////////////////////
-double Ogre2LensFlarePass::OcclusionScale(const math::Vector3d &_imgPos,
-                                          uint32_t _faceIdx)
+double OgreLensFlarePass::OcclusionScale(const math::Vector3d &_imgPos,
+                                         uint32_t _faceIdx)
 {
   if (std::abs(this->dataPtr->occlusionSteps) <= 1e-7)
   {
     return this->dataPtr->scale;
   }
 
-  Ogre2WideAngleCameraPtr wideAngleCamera =
-    std::dynamic_pointer_cast<Ogre2WideAngleCamera>(
+  OgreWideAngleCameraPtr wideAngleCamera =
+    std::dynamic_pointer_cast<OgreWideAngleCamera>(
       this->dataPtr->currentCamera);
   if (wideAngleCamera)
   {
@@ -309,46 +354,53 @@ double Ogre2LensFlarePass::OcclusionScale(const math::Vector3d &_imgPos,
 }
 
 //////////////////////////////////////////////////
-void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
-  Ogre::CompositorPass *_pass)
+void OgreLensFlareCompositorListenerPrivate::notifyMaterialRender(
+  unsigned int _passId, Ogre::MaterialPtr &_mat)
 {
   if (!this->owner.enabled)
     return;
 
-  const Ogre::CompositorPassDef *passDef = _pass->getDefinition();
-  const uint32_t identifier = passDef->mIdentifier;
-  if (identifier != kLensFlareNodePassQuadId)
-    return;
-
   using namespace Ogre;
 
-  GZ_ASSERT(dynamic_cast<CompositorPassQuad *>(_pass),
-            "Impossible! Corrupted memory? lens_flare.compositor out of sync?");
+  // These calls are setting parameters that are declared in two places:
+  // 1. media/materials/scripts/lens_flare.material, in
+  //    fragment_program LensFlareFS
+  // 2. media/materials/scripts/lens_flare_fs.glsl
+  Ogre::Technique *technique = _mat->getTechnique(0);
+  GZ_ASSERT(technique, "Null OGRE material technique");
+  Ogre::Pass *pass = technique->getPass(static_cast<uint16_t>(_passId));
+  GZ_ASSERT(pass, "Null OGRE material pass");
+  Ogre::GpuProgramParametersSharedPtr params =
+    pass->getFragmentProgramParameters();
 
-  CompositorPassQuad *passQuad = static_cast<CompositorPassQuad *>(_pass);
+  const Ogre::Camera *camera;
 
-  Ogre::Camera *camera = passQuad->getCamera();
-
-  Ogre2WideAngleCameraPtr wideAngleCamera =
-    std::dynamic_pointer_cast<Ogre2WideAngleCamera>(
-      this->owner.dataPtr->currentCamera);
-
-  const Ogre::Radian oldFov(camera->getFOVy());
-  const Ogre::Real oldAr(camera->getAspectRatio());
-
-  if (this->owner.WideAngleCameraAfterStitching() && wideAngleCamera)
+  uint32_t currentFaceIdx = this->owner.dataPtr->currentFaceIdx;
+  if (this->owner.WideAngleCameraAfterStitching())
   {
-    camera->setFOVy(Ogre::Degree(90));
-    camera->setAspectRatio(Ogre::Real(1.0f));
+    currentFaceIdx = 4u;
   }
 
-  Pass *pass = passQuad->getPass();
+  {
+    OgreWideAngleCamera *wideAngleCamera = dynamic_cast<OgreWideAngleCamera *>(
+      this->owner.dataPtr->currentCamera.get());
+    if (wideAngleCamera)
+    {
+      camera = wideAngleCamera->OgreEnvCameras()[currentFaceIdx];
+    }
+    else
+    {
+      camera =
+        dynamic_cast<OgreCamera *>(this->owner.dataPtr->currentCamera.get())
+          ->Camera();
+    }
+  }
 
   const Matrix4 viewProj =
     camera->getProjectionMatrix() * camera->getViewMatrix();
   const Vector4 pos =
     viewProj *
-    Vector4(Ogre2Conversions::Convert(this->owner.dataPtr->lightWorldPos));
+    Vector4(OgreConversions::Convert(this->owner.dataPtr->lightWorldPos));
 
   // normalize x and y, keep z for visibility test
   Vector3 lightPos;
@@ -361,14 +413,8 @@ void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
   double lensFlareScale = 1.0;
   if (lightPos.z >= 0.0)
   {
-    uint32_t currentFaceIdx = this->owner.dataPtr->currentFaceIdx;
-    if (this->owner.WideAngleCameraAfterStitching())
-    {
-      currentFaceIdx = 4u;
-    }
-
     lensFlareScale = this->owner.OcclusionScale(
-      Ogre2Conversions::Convert(lightPos), currentFaceIdx);
+      OgreConversions::Convert(lightPos), currentFaceIdx);
   }
 
   ++this->owner.dataPtr->currentFaceIdx;
@@ -379,13 +425,7 @@ void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
   psParams->setNamedConstant("lightPos", lightPos);
   psParams->setNamedConstant("scale", static_cast<Real>(lensFlareScale));
   psParams->setNamedConstant(
-    "color", Ogre2Conversions::Convert(this->owner.dataPtr->color));
-
-  if (this->owner.WideAngleCameraAfterStitching() && wideAngleCamera)
-  {
-    camera->setFOVy(oldFov);
-    camera->setAspectRatio(oldAr);
-  }
+    "color", OgreConversions::Convert(this->owner.dataPtr->color));
 }
 
-GZ_RENDERING_REGISTER_RENDER_PASS(Ogre2LensFlarePass, LensFlarePass)
+GZ_RENDERING_REGISTER_RENDER_PASS(OgreLensFlarePass, LensFlarePass)

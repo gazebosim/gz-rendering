@@ -89,6 +89,10 @@ static const char *kWideAngleCameraSuffixes[6] = { "PX", "NX", "PY",
 
 static const uint32_t kWideAngleNumCubemapFaces = 6u;
 
+static const uint32_t kStichTmpTexture = 0u;
+static const uint32_t kStichFinalTexture = 1u;
+static const uint32_t kNumStichTextures = 2u;
+
 /// \brief Private data for the WideAngleCamera class
 class gz::rendering::Ogre2WideAngleCamera::Implementation
 {
@@ -103,8 +107,11 @@ class gz::rendering::Ogre2WideAngleCamera::Implementation
   /// We use two for ping pong effects.
   public: Ogre::TextureGpu *ogreTmpTextures[2]{};
 
-  /// \brief Output texture
-  public: Ogre::TextureGpu *ogreRenderTexture = nullptr;
+  /// \brief Output texture with the the toutput for stitches
+  /// [kStichTmpTexture] = Temp 2D texture for ping poing effects
+  /// [kStichFinalTexture] = Output texture with the final output
+  public: Ogre::TextureGpu *ogreStitchTexture[kNumStichTextures] =
+  { nullptr, nullptr };
 
   /// \brief Compositor workspace. Does all the work. One for each face
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace[6];
@@ -131,6 +138,9 @@ class gz::rendering::Ogre2WideAngleCamera::Implementation
 
   /// \brief A chain of render passes applied to the render target
   public: std::vector<RenderPassPtr> renderPasses;
+
+  /// \brief A chain of render passes applied to final stitched render target
+  public: std::vector<RenderPassPtr> finalStitchRenderPasses;
 
   /// \brief Event used to signal camera data
   public: gz::common::EventT<void(const unsigned char *,
@@ -182,6 +192,7 @@ void Ogre2WideAngleCamera::Init()
 /////////////////////////////////////////////////
 void Ogre2WideAngleCamera::CreateRenderTexture()
 {
+  this->DestroyRenderTexture();
   RenderTexturePtr base = this->scene->CreateRenderTexture();
   this->dataPtr->wideAngleTexture =
     std::dynamic_pointer_cast<Ogre2RenderTexture>(base);
@@ -190,44 +201,88 @@ void Ogre2WideAngleCamera::CreateRenderTexture()
 }
 
 //////////////////////////////////////////////////
-void Ogre2WideAngleCamera::PreRender()
+void Ogre2WideAngleCamera::DestroyRenderTexture()
 {
-  BaseCamera::PreRender();
-  if (!this->dataPtr->ogreRenderTexture)
+  if (this->dataPtr->wideAngleTexture)
   {
-    this->CreateWideAngleTexture();
-  }
-  else if (!this->dataPtr->ogreCompositorWorkspace[0])
-  {
-    // If render passes were added/destroyed, ogreCompositorWorkspace
-    // will become nullptr and must be recreated.
-    const uint8_t msaa =
-      Ogre2RenderTarget::TargetFSAA(static_cast<uint8_t>(this->antiAliasing));
-    this->CreateFacesWorkspaces(msaa > 1u);
-  }
-  else
-  {
-    this->UpdateRenderPasses();
+    dynamic_cast<Ogre2RenderTexture *>(this->dataPtr->wideAngleTexture.get())
+      ->Destroy();
+    this->dataPtr->wideAngleTexture.reset();
   }
 }
 
 //////////////////////////////////////////////////
+void Ogre2WideAngleCamera::PreRender()
+{
+  BaseCamera::PreRender();
+
+  {
+    auto thisAsCameraPtr =
+      std::dynamic_pointer_cast<Camera>(this->shared_from_this());
+
+    for (RenderPassPtr &pass : this->dataPtr->renderPasses)
+    {
+      pass->PreRender(thisAsCameraPtr);
+    }
+    for (RenderPassPtr &pass : this->dataPtr->finalStitchRenderPasses)
+    {
+      pass->PreRender(thisAsCameraPtr);
+    }
+  }
+
+  if (!this->dataPtr->ogreStitchTexture[kStichFinalTexture])
+  {
+    this->CreateWideAngleTexture();
+  }
+  else
+  {
+    if (!this->dataPtr->ogreCompositorWorkspace[0])
+    {
+      // If render passes were added/destroyed, ogreCompositorWorkspace
+      // will become nullptr and must be recreated.
+      const uint8_t msaa =
+        Ogre2RenderTarget::TargetFSAA(static_cast<uint8_t>(this->antiAliasing));
+      this->CreateFacesWorkspaces(msaa > 1u);
+    }
+
+    if (!this->dataPtr->ogreCompositorFinalPass)
+    {
+      // If render passes were added/destroyed, ogreCompositorWorkspace
+      // will become nullptr and must be recreated.
+      this->CreateStitchWorkspace();
+    }
+  }
+
+  this->UpdateRenderPasses();
+}
+
+//////////////////////////////////////////////////
 void Ogre2WideAngleCamera::Destroy()
+{
+  this->RemoveAllRenderPasses();
+  this->DestroyTextures();
+  this->DestroyRenderTexture();
+}
+
+//////////////////////////////////////////////////
+void Ogre2WideAngleCamera::DestroyTextures()
 {
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::TextureGpuManager *textureMgr =
     ogreRoot->getRenderSystem()->getTextureGpuManager();
 
-  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
-
-  if (this->dataPtr->ogreCompositorFinalPass)
-  {
-    ogreCompMgr->removeWorkspace(this->dataPtr->ogreCompositorFinalPass);
-    this->dataPtr->ogreCompositorFinalPass = nullptr;
-  }
-
+  this->DestroyStitchWorkspace();
   this->DestroyFacesWorkspaces();
+
+  for (uint32_t i = 0u; i < 2u; ++i)
+  {
+    if (this->dataPtr->ogreTmpTextures[i])
+    {
+      textureMgr->destroyTexture(this->dataPtr->ogreTmpTextures[i]);
+      this->dataPtr->ogreTmpTextures[i] = nullptr;
+    }
+  }
 
   if (this->dataPtr->envCubeMapTexture)
   {
@@ -235,39 +290,89 @@ void Ogre2WideAngleCamera::Destroy()
     this->dataPtr->envCubeMapTexture = nullptr;
   }
 
-  if (this->dataPtr->ogreRenderTexture)
+  for (uint32_t i = 0; i < kNumStichTextures; ++i)
   {
-    textureMgr->destroyTexture(this->dataPtr->ogreRenderTexture);
-    this->dataPtr->ogreRenderTexture = nullptr;
-  }
-
-  if (this->dataPtr->wideAngleTexture)
-  {
-    this->dataPtr->wideAngleTexture->Destroy();
-    this->dataPtr->wideAngleTexture.reset();
+    if (this->dataPtr->ogreStitchTexture[i])
+    {
+      textureMgr->destroyTexture(this->dataPtr->ogreStitchTexture[i]);
+      this->dataPtr->ogreStitchTexture[i] = nullptr;
+    }
   }
 }
 
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::AddRenderPass(const RenderPassPtr &_pass)
 {
-  BaseWideAngleCamera::AddRenderPass(_pass);
-  this->dataPtr->renderPasses.push_back(_pass);
-  this->DestroyFacesWorkspaces();
+  // Do NOT pass it to super class.
+  if (_pass->WideAngleCameraAfterStitching())
+  {
+    this->dataPtr->finalStitchRenderPasses.push_back(_pass);
+    this->DestroyStitchWorkspace();
+
+    if (this->HasTempStitchTexture() != this->NeedsTempStitchTexture())
+    {
+      this->DestroyTextures();
+    }
+  }
+  else
+  {
+    this->dataPtr->renderPasses.push_back(_pass);
+    this->DestroyFacesWorkspaces();
+  }
 }
 
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::RemoveRenderPass(const RenderPassPtr &_pass)
 {
+  // Do NOT pass it to super class.
   auto it = std::find(this->dataPtr->renderPasses.begin(),
                       this->dataPtr->renderPasses.end(), _pass);
   if (it != this->dataPtr->renderPasses.end())
   {
     (*it)->Destroy();
     this->dataPtr->renderPasses.erase(it);
+    this->DestroyFacesWorkspaces();
   }
+  else
+  {
+    it = std::find(this->dataPtr->finalStitchRenderPasses.begin(),
+                   this->dataPtr->finalStitchRenderPasses.end(), _pass);
+    if (it != this->dataPtr->finalStitchRenderPasses.end())
+    {
+      (*it)->Destroy();
+      this->dataPtr->finalStitchRenderPasses.erase(it);
+      this->DestroyStitchWorkspace();
+
+      if (this->HasTempStitchTexture() != this->NeedsTempStitchTexture())
+      {
+        this->DestroyTextures();
+      }
+    }
+    else
+    {
+      gzwarn << "Ogre2WideAngleCamera::RemoveRenderPass pass not found. This "
+                "is fine if you called this function twice. But it may not be "
+                "fine if you changed the value "
+                "RenderPass::WideAngleCameraAfterStitching (see docs)"
+             << std::endl;
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2WideAngleCamera::RemoveAllRenderPasses()
+{
+  for (RenderPassPtr &pass : this->dataPtr->renderPasses)
+  {
+    pass->Destroy();
+  }
+  for (RenderPassPtr &pass : this->dataPtr->finalStitchRenderPasses)
+  {
+    pass->Destroy();
+  }
+  this->dataPtr->renderPasses.clear();
+  this->dataPtr->finalStitchRenderPasses.clear();
   this->DestroyFacesWorkspaces();
-  BaseWideAngleCamera::RemoveRenderPass(_pass);
 }
 
 //////////////////////////////////////////////////
@@ -315,6 +420,146 @@ void Ogre2WideAngleCamera::CreateCamera()
   const Ogre::Real farPlane = static_cast<Ogre::Real>(this->FarClipPlane());
   this->dataPtr->ogreCamera->setNearClipDistance(nearPlane);
   this->dataPtr->ogreCamera->setFarClipDistance(farPlane);
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2WideAngleCamera::WorkspaceFinalPassDefinitionName() const
+{
+  const std::string wsDefName = "WideAngleCamera/" + this->Name() + "/Final";
+  return wsDefName;
+}
+
+//////////////////////////////////////////////////
+void Ogre2WideAngleCamera::CreateStitchWorkspaceDefinition()
+{
+  using namespace Ogre;
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  const std::string wsDefName = this->WorkspaceFinalPassDefinitionName();
+
+  CompositorWorkspaceDef *workDef =
+    ogreCompMgr->addWorkspaceDefinition(wsDefName);
+
+  const IdString stitchPassNodeName = "WideAngleCameraFinalPass";
+
+  const uint32_t tempStitchTextureChannel = this->TempStitchTextureChannel();
+
+  workDef->connectExternal(0, stitchPassNodeName, tempStitchTextureChannel);
+  workDef->connectExternal(1, stitchPassNodeName, !tempStitchTextureChannel);
+  workDef->connectExternal(2, stitchPassNodeName, 2);
+
+  IdString prevNode = stitchPassNodeName;
+  for (RenderPassPtr &pass : this->dataPtr->finalStitchRenderPasses)
+  {
+    GZ_ASSERT(pass->WideAngleCameraAfterStitching(),
+              "Cannot change the setting of WideAngleCameraAfterStitching "
+              "after adding it to Camera");
+
+    Ogre2RenderPass *ogre2RenderPass =
+      dynamic_cast<Ogre2RenderPass *>(pass.get());
+
+    if (ogre2RenderPass->IsEnabled())
+    {
+      ogre2RenderPass->CreateRenderPass();
+      IdString currNode = ogre2RenderPass->OgreCompositorNodeDefinitionName();
+      workDef->connect(prevNode, currNode);
+      prevNode = currNode;
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2WideAngleCamera::CreateStitchWorkspace()
+{
+  this->CreateStitchWorkspaceDefinition();
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+  Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
+
+  Ogre::CompositorChannelVec channelsFinalPass = {
+    nullptr, nullptr, this->dataPtr->envCubeMapTexture
+  };
+
+  if (!this->NeedsTempStitchTexture())
+  {
+    // Set both to kStichFinalTexture to keep OgreNext happy about
+    // all channels having been connected
+    channelsFinalPass[0] = this->dataPtr->ogreStitchTexture[kStichFinalTexture];
+    channelsFinalPass[1] = this->dataPtr->ogreStitchTexture[kStichFinalTexture];
+  }
+  else
+  {
+    channelsFinalPass[0] = this->dataPtr->ogreStitchTexture[kStichTmpTexture];
+    channelsFinalPass[1] = this->dataPtr->ogreStitchTexture[kStichFinalTexture];
+  }
+
+  this->dataPtr->ogreCompositorFinalPass = ogreCompMgr->addWorkspace(
+    ogreSceneManager, channelsFinalPass, this->dataPtr->ogreCamera,
+    this->WorkspaceFinalPassDefinitionName(), false);
+  this->dataPtr->ogreCompositorFinalPass->addListener(
+    &this->dataPtr->workspaceListener);
+  for (RenderPassPtr &pass : this->dataPtr->finalStitchRenderPasses)
+  {
+    Ogre2RenderPass *ogre2RenderPass =
+      dynamic_cast<Ogre2RenderPass *>(pass.get());
+    ogre2RenderPass->WorkspaceAdded(this->dataPtr->ogreCompositorFinalPass);
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2WideAngleCamera::DestroyStitchWorkspace()
+{
+  if (this->dataPtr->ogreCompositorFinalPass)
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    auto ogreRoot = engine->OgreRoot();
+    Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+    const Ogre::IdString workspaceName =
+      this->dataPtr->ogreCompositorFinalPass->getDefinition()->getName();
+
+    for (RenderPassPtr &pass : this->dataPtr->finalStitchRenderPasses)
+    {
+      Ogre2RenderPass *ogre2RenderPass =
+        dynamic_cast<Ogre2RenderPass *>(pass.get());
+      ogre2RenderPass->WorkspaceRemoved(this->dataPtr->ogreCompositorFinalPass);
+    }
+
+    ogreCompMgr->removeWorkspace(this->dataPtr->ogreCompositorFinalPass);
+    this->dataPtr->ogreCompositorFinalPass = nullptr;
+
+    ogreCompMgr->removeWorkspaceDefinition(workspaceName);
+  }
+}
+
+//////////////////////////////////////////////////
+bool Ogre2WideAngleCamera::HasTempStitchTexture() const
+{
+  return this->dataPtr->ogreStitchTexture[kStichTmpTexture];
+}
+
+//////////////////////////////////////////////////
+bool Ogre2WideAngleCamera::NeedsTempStitchTexture() const
+{
+  return !this->dataPtr->finalStitchRenderPasses.empty();
+}
+
+//////////////////////////////////////////////////
+uint32_t Ogre2WideAngleCamera::TempStitchTextureChannel() const
+{
+  uint32_t enabledPasses = 0u;
+  for (const auto &pass : this->dataPtr->finalStitchRenderPasses)
+  {
+    if (pass->IsEnabled())
+    {
+      ++enabledPasses;
+    }
+  }
+  return enabledPasses & 0x1u ? 1u : 0u;
 }
 
 //////////////////////////////////////////////////
@@ -378,7 +623,7 @@ void Ogre2WideAngleCamera::CreateWorkspaceDefinition(bool _withMsaa)
 
   for (uint32_t faceIdx = 0u; faceIdx < kWideAngleNumCubemapFaces; ++faceIdx)
   {
-    const std::string wsDefName = WorkspaceDefinitionName(faceIdx);
+    const std::string wsDefName = this->WorkspaceDefinitionName(faceIdx);
     CompositorWorkspaceDef *workDef =
       ogreCompMgr->addWorkspaceDefinition(wsDefName);
 
@@ -388,6 +633,10 @@ void Ogre2WideAngleCamera::CreateWorkspaceDefinition(bool _withMsaa)
     IdString prevNode = cubemapPassNodeName;
     for (RenderPassPtr &pass : this->dataPtr->renderPasses)
     {
+      GZ_ASSERT(!pass->WideAngleCameraAfterStitching(),
+                "Cannot change the setting of WideAngleCameraAfterStitching "
+                "after adding it to Camera");
+
       Ogre2RenderPass *ogre2RenderPass =
         dynamic_cast<Ogre2RenderPass *>(pass.get());
 
@@ -490,6 +739,10 @@ void Ogre2WideAngleCamera::UpdateRenderPasses()
     const IdString currNode =
       ogre2RenderPass->OgreCompositorNodeDefinitionName();
 
+    GZ_ASSERT(!pass->WideAngleCameraAfterStitching(),
+              "Cannot change the setting of WideAngleCameraAfterStitching "
+              "after adding it to Camera");
+
     for (size_t i = 0u; i < kWideAngleNumCubemapFaces; ++i)
     {
       Ogre::CompositorNode *node =
@@ -498,6 +751,9 @@ void Ogre2WideAngleCamera::UpdateRenderPasses()
       // RemoveRenderPass destroys the workspace; which means we can't reach
       // here where we update an already existing workspace; but rather
       // have ended up in CreateFacesWorkspaces()
+      //
+      // Note: We assume ogre2RenderPass->OgreCompositorNodeDefinitionName
+      // returns the same name (given the same ogre2RenderPass ptr)
       GZ_ASSERT(node,
                 "This can't be possible. "
                 "RemoveRenderPass() should've destroyed the workspace.");
@@ -507,6 +763,37 @@ void Ogre2WideAngleCamera::UpdateRenderPasses()
         node->setEnabled(ogre2RenderPass->IsEnabled());
         updateConnection = true;
       }
+    }
+  }
+
+  for (const auto &pass : this->dataPtr->finalStitchRenderPasses)
+  {
+    Ogre2RenderPass *ogre2RenderPass =
+      dynamic_cast<Ogre2RenderPass *>(pass.get());
+
+    const IdString currNode =
+      ogre2RenderPass->OgreCompositorNodeDefinitionName();
+
+    GZ_ASSERT(pass->WideAngleCameraAfterStitching(),
+              "Cannot change the setting of WideAngleCameraAfterStitching "
+              "after adding it to Camera");
+    Ogre::CompositorNode *node =
+      this->dataPtr->ogreCompositorFinalPass->findNodeNoThrow(currNode);
+
+    // RemoveRenderPass destroys the workspace; which means we can't reach
+    // here where we update an already existing workspace; but rather
+    // have ended up in CreateFacesWorkspaces()
+    //
+    // Note: We assume ogre2RenderPass->OgreCompositorNodeDefinitionName
+    // returns the same name (given the same ogre2RenderPass ptr)
+    GZ_ASSERT(node,
+              "This can't be possible. "
+              "RemoveRenderPass() should've destroyed the workspace.");
+
+    if (node->getEnabled() != ogre2RenderPass->IsEnabled())
+    {
+      node->setEnabled(ogre2RenderPass->IsEnabled());
+      updateConnection = true;
     }
   }
 
@@ -526,11 +813,12 @@ void Ogre2WideAngleCamera::UpdateRenderPasses()
 
   for (uint32_t faceIdx = 0u; faceIdx < kWideAngleNumCubemapFaces; ++faceIdx)
   {
-    const std::string wsDefName = WorkspaceDefinitionName(faceIdx);
+    const std::string wsDefName = this->WorkspaceDefinitionName(faceIdx);
     CompositorWorkspaceDef *workDef =
       ogreCompMgr->getWorkspaceDefinitionNoThrow(wsDefName);
 
     workDef->clearAllInterNodeConnections();
+    workDef->clearOutputConnections();
 
     workDef->connectExternal(0, cubemapPassNodeName, 0);
     workDef->connectExternal(1, cubemapPassNodeName, 1);
@@ -538,6 +826,10 @@ void Ogre2WideAngleCamera::UpdateRenderPasses()
     IdString prevNode = cubemapPassNodeName;
     for (RenderPassPtr &pass : this->dataPtr->renderPasses)
     {
+      GZ_ASSERT(!pass->WideAngleCameraAfterStitching(),
+                "Cannot change the setting of WideAngleCameraAfterStitching "
+                "after adding it to Camera");
+
       Ogre2RenderPass *ogre2RenderPass =
         dynamic_cast<Ogre2RenderPass *>(pass.get());
 
@@ -556,8 +848,48 @@ void Ogre2WideAngleCamera::UpdateRenderPasses()
     workDef->connectExternal(2, copyPass, 2);
   }
 
+  {
+    const std::string wsDefName = this->WorkspaceFinalPassDefinitionName();
+    CompositorWorkspaceDef *workDef =
+      ogreCompMgr->getWorkspaceDefinitionNoThrow(wsDefName);
+
+    workDef->clearAllInterNodeConnections();
+    workDef->clearOutputConnections();
+
+    const IdString stitchPassNodeName = "WideAngleCameraFinalPass";
+
+    const uint32_t tempStitchTextureChannel = this->TempStitchTextureChannel();
+
+    workDef->connectExternal(0, stitchPassNodeName, tempStitchTextureChannel);
+    workDef->connectExternal(1, stitchPassNodeName, !tempStitchTextureChannel);
+    workDef->connectExternal(2, stitchPassNodeName, 2);
+
+    IdString prevNode = stitchPassNodeName;
+    for (RenderPassPtr &pass : this->dataPtr->finalStitchRenderPasses)
+    {
+      GZ_ASSERT(pass->WideAngleCameraAfterStitching(),
+                "Cannot change the setting of WideAngleCameraAfterStitching "
+                "after adding it to Camera");
+
+      Ogre2RenderPass *ogre2RenderPass =
+        dynamic_cast<Ogre2RenderPass *>(pass.get());
+
+      if (ogre2RenderPass->IsEnabled())
+      {
+        ogre2RenderPass->CreateRenderPass();
+        IdString currNode = ogre2RenderPass->OgreCompositorNodeDefinitionName();
+        workDef->connect(prevNode, currNode);
+        prevNode = currNode;
+      }
+    }
+  }
+
   for (size_t i = 0u; i < kWideAngleNumCubemapFaces; ++i)
+  {
     this->dataPtr->ogreCompositorWorkspace[i]->reconnectAllNodes();
+  }
+
+  this->dataPtr->ogreCompositorFinalPass->reconnectAllNodes();
 }
 
 //////////////////////////////////////////////////
@@ -574,23 +906,28 @@ void Ogre2WideAngleCamera::CreateWideAngleTexture()
   Ogre::TextureGpuManager *textureMgr =
     ogreRoot->getRenderSystem()->getTextureGpuManager();
 
-  GZ_ASSERT(!this->dataPtr->ogreRenderTexture, "Should be nullptr");
+  for (uint32_t i = this->NeedsTempStitchTexture() ? 0u : 1u;
+       i < kNumStichTextures; ++i)
+  {
+    GZ_ASSERT(!this->dataPtr->ogreStitchTexture[i], "Should be nullptr");
 
-  this->dataPtr->ogreRenderTexture =
-    textureMgr->createTexture(this->Name() + "_wideAngleCamera",    //
-                              Ogre::GpuPageOutStrategy::Discard,    //
-                              Ogre::TextureFlags::RenderToTexture,  //
-                              Ogre::TextureTypes::Type2D,           //
-                              Ogre::BLANKSTRING,                    //
-                              0u);
+    this->dataPtr->ogreStitchTexture[i] = textureMgr->createTexture(
+      this->Name() + "_wideAngleCameraStitchTex" + std::to_string(i),  //
+      Ogre::GpuPageOutStrategy::Discard,                               //
+      Ogre::TextureFlags::RenderToTexture,                             //
+      Ogre::TextureTypes::Type2D,                                      //
+      Ogre::BLANKSTRING,                                               //
+      0u);
 
-  this->dataPtr->ogreRenderTexture->setResolution(this->ImageWidth(),
-                                                  this->ImageHeight());
-  this->dataPtr->ogreRenderTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
-  this->dataPtr->ogreRenderTexture->_setDepthBufferDefaults(
-    Ogre::DepthBuffer::POOL_NO_DEPTH, false, Ogre::PFG_UNKNOWN);
-  this->dataPtr->ogreRenderTexture->scheduleTransitionTo(
-    Ogre::GpuResidency::Resident);
+    this->dataPtr->ogreStitchTexture[i]->setResolution(this->ImageWidth(),
+                                                       this->ImageHeight());
+    this->dataPtr->ogreStitchTexture[i]->setPixelFormat(
+      Ogre::PFG_RGBA8_UNORM_SRGB);
+    this->dataPtr->ogreStitchTexture[i]->_setDepthBufferDefaults(
+      Ogre::DepthBuffer::POOL_NO_DEPTH, false, Ogre::PFG_UNKNOWN);
+    this->dataPtr->ogreStitchTexture[i]->scheduleTransitionTo(
+      Ogre::GpuResidency::Resident);
+  }
 
   this->dataPtr->envCubeMapTexture =
     textureMgr->createTexture(this->Name() + "_cube_wideAngleCamera",  //
@@ -626,7 +963,6 @@ void Ogre2WideAngleCamera::CreateWideAngleTexture()
 
   // Create compositor workspace
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
-  Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
 
   const uint8_t msaa =
     Ogre2RenderTarget::TargetFSAA(static_cast<uint8_t>(this->antiAliasing));
@@ -637,16 +973,7 @@ void Ogre2WideAngleCamera::CreateWideAngleTexture()
   }
 
   this->CreateFacesWorkspaces(msaa > 1u);
-
-  const Ogre::CompositorChannelVec channelsFinalPass = {
-    this->dataPtr->envCubeMapTexture, this->dataPtr->ogreRenderTexture
-  };
-
-  this->dataPtr->ogreCompositorFinalPass = ogreCompMgr->addWorkspace(
-    ogreSceneManager, channelsFinalPass, this->dataPtr->ogreCamera,
-    "WideAngleCameraFinalPass", false);
-  this->dataPtr->ogreCompositorFinalPass->addListener(
-    &this->dataPtr->workspaceListener);
+  this->CreateStitchWorkspace();
 }
 
 //////////////////////////////////////////////////
@@ -712,7 +1039,8 @@ void Ogre2WideAngleCamera::Copy(Image &_image) const
   }
 
   Ogre::PixelFormatGpu dstOgrePf = Ogre2Conversions::Convert(_image.Format());
-  Ogre::TextureGpu *texture = this->dataPtr->ogreRenderTexture;
+  Ogre::TextureGpu *texture =
+    this->dataPtr->ogreStitchTexture[kStichFinalTexture];
 
   if (Ogre::PixelFormatGpuUtils::isSRgb(dstOgrePf) !=
       Ogre::PixelFormatGpuUtils::isSRgb(texture->getPixelFormat()))
@@ -830,8 +1158,10 @@ math::Vector3d Ogre2WideAngleCamera::Project3d(const math::Vector3d &_pt) const
       double x = cos(phi) * r;
       double y = sin(phi) * r;
 
-      const uint32_t vpWidth = this->dataPtr->ogreRenderTexture->getWidth();
-      const uint32_t vpHeight = this->dataPtr->ogreRenderTexture->getHeight();
+      const uint32_t vpWidth =
+        this->dataPtr->ogreStitchTexture[kStichFinalTexture]->getWidth();
+      const uint32_t vpHeight =
+        this->dataPtr->ogreStitchTexture[kStichFinalTexture]->getHeight();
       // env cam cube map texture is square and likely to be different size from
       // viewport. We need to adjust projected pos based on aspect ratio
       double asp = static_cast<double>(vpWidth) / static_cast<double>(vpHeight);
@@ -879,6 +1209,15 @@ Ogre::Ray Ogre2WideAngleCamera::CameraToViewportRay(
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::PostRender()
 {
+  for (RenderPassPtr &pass : this->dataPtr->renderPasses)
+  {
+    pass->PostRender();
+  }
+  for (RenderPassPtr &pass : this->dataPtr->finalStitchRenderPasses)
+  {
+    pass->PostRender();
+  }
+
   if (this->dataPtr->newImageFrame.ConnectionCount() <= 0u)
     return;
 
@@ -887,7 +1226,8 @@ void Ogre2WideAngleCamera::PostRender()
 
   // blit data from gpu to cpu
   Ogre::Image2 image;
-  image.convertFromTexture(this->dataPtr->ogreRenderTexture, 0u, 0u);
+  image.convertFromTexture(this->dataPtr->ogreStitchTexture[kStichFinalTexture],
+                           0u, 0u);
   Ogre::TextureBox box = image.getData(0u);
 
   // Convert in-place from RGBA32 to RGB24 reusing the same memory region.

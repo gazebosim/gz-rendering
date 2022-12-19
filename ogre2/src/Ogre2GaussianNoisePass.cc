@@ -94,16 +94,7 @@ void Ogre2GaussianNoisePass::PreRender()
 //////////////////////////////////////////////////
 void Ogre2GaussianNoisePass::CreateRenderPass()
 {
-  static int gaussianNodeCounter = 0;
-
-  auto engine = Ogre2RenderEngine::Instance();
-  auto ogreRoot = engine->OgreRoot();
-  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
-
-  std::string nodeDefName = "GaussianNoiseNodeNode_"
-      + std::to_string(gaussianNodeCounter);
-
-  if (ogreCompMgr->hasNodeDefinition(nodeDefName))
+  if (!this->ogreCompositorNodeDefName.empty())
     return;
 
   // The GaussianNoise material is defined in script (gaussian_noise.material).
@@ -119,6 +110,9 @@ void Ogre2GaussianNoisePass::CreateRenderPass()
   }
   if (!ogreMat->isLoaded())
     ogreMat->load();
+
+  static int gaussianNodeCounter = 0;
+
   std::string materialName = matName + "_" +
       std::to_string(gaussianNodeCounter);
   this->dataPtr->gaussianNoiseMat = ogreMat->clone(materialName).get();
@@ -153,6 +147,13 @@ void Ogre2GaussianNoisePass::CreateRenderPass()
   //   // where the texture is reused to store its result
   //   out 1 rt_input
   // }
+
+  auto engine = Ogre2RenderEngine::Instance();
+  auto ogreRoot = engine->OgreRoot();
+  Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  std::string nodeDefName = "GaussianNoiseNodeNode_"
+      + std::to_string(gaussianNodeCounter);
 
   this->ogreCompositorNodeDefName = nodeDefName;
   gaussianNodeCounter++;

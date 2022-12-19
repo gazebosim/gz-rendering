@@ -49,17 +49,28 @@ namespace gz
       /// \brief Create a texture
       public: virtual void CreateRenderTexture();
 
+      /// \brief Destroy render texture created by CreateRenderTexture()
+      /// Note: It's not virtual.
+      protected: void DestroyRenderTexture();
+
       /// \brief Render the camera
       public: virtual void PostRender() override;
 
       // Documentation inherited
       public: virtual void Destroy() override;
 
+      /// \brief Destroys all textures and workspaces, possibly
+      /// for recreation.
+      public: void DestroyTextures();
+
       // Documentation inherited
       public: void AddRenderPass(const RenderPassPtr &_pass) override;
 
       // Documentation inherited
       public: void RemoveRenderPass(const RenderPassPtr &_pass) override;
+
+      // Documentation inherited
+      public: void RemoveAllRenderPasses() override;
 
       /// \brief Gets the environment texture size
       /// \return Texture size
@@ -99,6 +110,37 @@ namespace gz
           std::function<void(const unsigned char *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
 
+
+      /// \brief Returns the workspace name for the final pass
+      /// that stitches all faces.
+      /// \return Workspace definition's name
+      protected: std::string WorkspaceFinalPassDefinitionName() const;
+
+      /// \brief Creates the workspace definition for stitch (final) pass,
+      /// including effects.
+      protected: void CreateStitchWorkspaceDefinition();
+
+      /// \brief Creates the stitch workspaces & their definitions.
+      protected: void CreateStitchWorkspace();
+
+      /// \brief Destroys the stitch workspaces & their definitions.
+      protected: void DestroyStitchWorkspace();
+
+      /// \brief Returns true if we have a temp texture for Render passes
+      /// with WideAngleCameraAfterStitching = true
+      /// \return See description.
+      protected: bool HasTempStitchTexture() const;
+
+      /// \brief Returns what HasTempStitchTexture() should return
+      /// \return True if there are RenderPases with
+      /// WideAngleCameraAfterStitching = true. False otherwise.
+      protected: bool NeedsTempStitchTexture() const;
+
+      /// \brief Returns what HasTempStitchTexture() should return
+      /// \return Returns which channel kStichTmpTexture should be in.
+      /// Depends on whether number of render passes with
+      /// RenderPass::WideAngleCameraAfterStitching == true is odd or even
+      protected: uint32_t TempStitchTextureChannel() const;
 
       /// \brief Returns the workspace name. It's unique for each camera.
       /// \param[in] _faceIdx Face index in range [0; 6)

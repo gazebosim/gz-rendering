@@ -50,6 +50,25 @@ namespace gz
       /// to the camera that is about to render
       /// \param[in] _camera Camera that is about to render
       public: virtual void PreRender(const CameraPtr &_camera) = 0;
+
+      /// \brief WideAngleCamera renders to 6 faces; then stitches all 6
+      /// into a final "fish-eye" lens result.
+      ///
+      /// This function controls whether the effect is applied to each 6
+      /// faces individually; or during the "stitching" pass.
+      ///
+      /// The default setting depends on the RenderPass (e.g. LensFlare
+      /// defaults to true)
+      /// \remark This setting must not be changed after adding the RenderPass
+      /// to a Camera.
+      /// \param[in] _afterStitching True if it should be done after stitching,
+      /// False if it should be done to each of the 6 faces separately.
+      public: virtual void SetWideAngleCameraAfterStitching(
+            bool _afterStitching) = 0;
+
+      /// \brief See SetWideAngleCameraAfterStitching()
+      /// \return The current value set by SetWideAngleCameraAfterStitching
+      public: virtual bool WideAngleCameraAfterStitching() const = 0;
     };
     }
   }

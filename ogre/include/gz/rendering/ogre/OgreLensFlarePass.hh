@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-#ifndef GZ_RENDERING_OGRE2_OGRE2LENSFLAREPASS_HH_
-#define GZ_RENDERING_OGRE2_OGRE2LENSFLAREPASS_HH_
+#ifndef GZ_RENDERING_OGRE_OGRELENSFLAREPASS_HH_
+#define GZ_RENDERING_OGRE_OGRELENSFLAREPASS_HH_
 
 #include <memory>
 
@@ -24,8 +24,8 @@
 #include "gz/math/Vector3.hh"
 
 #include "gz/rendering/base/BaseLensFlarePass.hh"
-#include "gz/rendering/ogre2/Export.hh"
-#include "gz/rendering/ogre2/Ogre2RenderPass.hh"
+#include "gz/rendering/ogre/Export.hh"
+#include "gz/rendering/ogre/OgreRenderPass.hh"
 
 namespace gz
 {
@@ -33,18 +33,24 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
-    /// \brief Ogre2 Implementation of a Lens Flare render pass.
-    class GZ_RENDERING_OGRE2_VISIBLE Ogre2LensFlarePass :
-      public BaseLensFlarePass<Ogre2RenderPass>
+    /// \brief Ogre Implementation of a Lens Flare render pass.
+    class GZ_RENDERING_OGRE_VISIBLE OgreLensFlarePass :
+      public BaseLensFlarePass<OgreRenderPass>
     {
       /// \brief Constructor
-      public: Ogre2LensFlarePass();
+      public: OgreLensFlarePass();
 
       /// \brief Destructor
-      public: ~Ogre2LensFlarePass() override;
+      public: ~OgreLensFlarePass() override;
 
       // Documentation inherited
       public: void Init(ScenePtr _scene) override;
+
+      // Documentation inherited
+      public: void Destroy() override;
+
+      // Documentation inherited
+      public: void CreateRenderPass() override;
 
       // Documentation inherited
       public: void PreRender(const CameraPtr &_camera) override;
@@ -70,17 +76,9 @@ namespace gz
       // Documentation inherited
       public: uint32_t OcclusionSteps() const override;
 
-      // Documentation inherited
-      public: void WorkspaceAdded(
-            Ogre::CompositorWorkspace *_workspace) override;
-
-      // Documentation inherited
-      public: void WorkspaceRemoved(
-            Ogre::CompositorWorkspace *_workspace) override;
-
       /// \brief Check to see if the lens flare is occluded and return a scaling
       /// factor that is proportional to the lens flare's visibility
-      /// \remark Ogre2LensFlarePass::PreRender must have been called first.
+      /// \remark OgreLensFlarePass::PreRender must have been called first.
       /// \param[in] _imgPos light pos in clip space
       /// \param[in] _faceIdx Face idx in range [0; 6)
       /// See RayQuery::SetFromCamera for what each value means
@@ -93,7 +91,7 @@ namespace gz
       GZ_UTILS_UNIQUE_IMPL_PTR(dataPtr)
       /// \endcond
 
-      private: friend class Ogre2LensFlarePassWorkspaceListenerPrivate;
+      private: friend class OgreLensFlareCompositorListenerPrivate;
     };
     }
   }

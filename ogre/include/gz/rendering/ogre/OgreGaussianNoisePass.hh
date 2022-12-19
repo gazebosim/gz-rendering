@@ -58,7 +58,8 @@ namespace gz
       public: void CreateRenderPass() override;
 
       /// \brief Gaussian noise compositor.
-      public: Ogre::CompositorInstance *gaussianNoiseInstance = nullptr;
+      public: Ogre::CompositorInstance *gaussianNoiseInstance
+          [kMaxOgreRenderPassCameras] = {};
 
       /// \brief Gaussian noise compositor listener
       GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING

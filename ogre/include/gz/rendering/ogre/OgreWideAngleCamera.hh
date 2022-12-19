@@ -59,11 +59,27 @@ namespace gz
       /// \brief Create a texture
       public: virtual void CreateRenderTexture();
 
+      /// \brief Destroy render texture created by CreateRenderTexture()
+      /// Note: It's not virtual.
+      protected: void DestroyRenderTexture();
+
       /// \brief Render the camera
       public: virtual void PostRender() override;
 
       // Documentation inherited
       public: virtual void Destroy() override;
+
+      // Documentation inherited
+      public: void AddRenderPass(const RenderPassPtr &_pass) override;
+
+      // Documentation inherited
+      public: void RemoveRenderPass(const RenderPassPtr &_pass) override;
+
+      // Documentation inherited
+      public: void RemoveAllRenderPasses() override;
+
+      /// \brief Update render pass chain if changes were made
+      protected: void UpdateRenderPassChain();
 
       /// \brief Gets the environment texture size
       /// \return Texture size
@@ -104,6 +120,9 @@ namespace gz
 
       /// \brief Implementation of the render call
       public: virtual void Render() override;
+
+      // Documentation inherited.
+      public: void Copy(Image &_image) const override;
 
       // Documentation inherited
       public: common::ConnectionPtr ConnectNewWideAngleFrame(

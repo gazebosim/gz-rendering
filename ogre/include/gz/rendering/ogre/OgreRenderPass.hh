@@ -27,6 +27,9 @@ namespace gz
   namespace rendering
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
+
+    static constexpr uint32_t kMaxOgreRenderPassCameras = 6u;
+
     //
     /* \class OgreRenderPass OgreRenderPass.hh \
      * gz/rendering/ogre/OgreRenderPass.hh
@@ -45,6 +48,12 @@ namespace gz
       /// \param[in] _camera Pointer to the ogre camera.
       public: virtual void SetCamera(Ogre::Camera *_camera);
 
+      /// \brief Set all ogre cameras that the render pass applies to
+      /// at once.
+      /// \param[in] _cameras Pointer to the ogre cameras.
+      public: virtual void SetCameras(
+            Ogre::Camera *_cameras[kMaxOgreRenderPassCameras]);
+
       // Documentation inherited.
       public: void Destroy() override;
 
@@ -52,7 +61,9 @@ namespace gz
       public: virtual void CreateRenderPass();
 
       /// \brief Pointer to the ogre camera
-      protected: Ogre::Camera *ogreCamera = nullptr;
+      /// May have more than one. Must check for nullptr on all of them.
+      /// Not all RenderPasses support multiple cameras
+      protected: Ogre::Camera *ogreCamera[kMaxOgreRenderPassCameras] = {};
     };
     }
   }

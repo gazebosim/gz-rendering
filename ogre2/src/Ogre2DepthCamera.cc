@@ -273,6 +273,8 @@ void Ogre2DepthCamera::Init()
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::Destroy()
 {
+  this->RemoveAllRenderPasses();
+
   if (this->dataPtr->depthBuffer)
   {
     delete [] this->dataPtr->depthBuffer;

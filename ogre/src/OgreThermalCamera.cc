@@ -279,6 +279,8 @@ OgreThermalCamera::~OgreThermalCamera()
 //////////////////////////////////////////////////
 void OgreThermalCamera::Destroy()
 {
+  this->RemoveAllRenderPasses();
+
   if (this->dataPtr->thermalBuffer)
   {
     delete [] this->dataPtr->thermalBuffer;

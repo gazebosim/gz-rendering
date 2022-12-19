@@ -259,6 +259,9 @@ namespace gz
       // Documentation inherited
       public: void RemoveRenderPass(const RenderPassPtr &_pass) override;
 
+      // Documentation inherited
+      public: void RemoveAllRenderPasses() override;
+
       // Documentation inherited.
       public: virtual void Destroy() override;
 

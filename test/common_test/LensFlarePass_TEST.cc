@@ -47,6 +47,7 @@ TEST_F(LensFlarePassTest, LensFlare)
   EXPECT_DOUBLE_EQ(1.0, lensFlarePass->Scale());
   EXPECT_EQ(10u, lensFlarePass->OcclusionSteps());
   EXPECT_EQ(math::Vector3d(1.0, 1.0, 1.0), lensFlarePass->Color());
+  EXPECT_EQ(true, lensFlarePass->WideAngleCameraAfterStitching());
 
   // scale
   const double scale = 0.23;
@@ -62,4 +63,9 @@ TEST_F(LensFlarePassTest, LensFlare)
   const math::Vector3d color = math::Vector3d(0.7, 0.4, 0.12);
   lensFlarePass->SetColor(color);
   EXPECT_EQ(color, lensFlarePass->Color());
+
+  lensFlarePass->SetWideAngleCameraAfterStitching(false);
+  EXPECT_EQ(false, lensFlarePass->WideAngleCameraAfterStitching());
+  lensFlarePass->SetWideAngleCameraAfterStitching(true);
+  EXPECT_EQ(true, lensFlarePass->WideAngleCameraAfterStitching());
 }

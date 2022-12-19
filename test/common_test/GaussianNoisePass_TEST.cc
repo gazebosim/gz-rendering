@@ -46,6 +46,7 @@ TEST_F(GaussianNoisePassTest, GaussianNoise)
   EXPECT_DOUBLE_EQ(0u, noisePass->Mean());
   EXPECT_DOUBLE_EQ(0u, noisePass->StdDev());
   EXPECT_DOUBLE_EQ(0u, noisePass->Bias());
+  EXPECT_EQ(false, noisePass->WideAngleCameraAfterStitching());
 
   // mean
   double mean = 0.23;
@@ -69,4 +70,9 @@ TEST_F(GaussianNoisePassTest, GaussianNoise)
   // Note, tol relaxed to 4-sigma to fix flaky test
   EXPECT_LE(std::fabs(noisePass->Bias()), biasMean + biasStdDev*4);
   EXPECT_GE(std::fabs(noisePass->Bias()), biasMean - biasStdDev*4);
+
+  noisePass->SetWideAngleCameraAfterStitching(false);
+  EXPECT_EQ(false, noisePass->WideAngleCameraAfterStitching());
+  noisePass->SetWideAngleCameraAfterStitching(true);
+  EXPECT_EQ(true, noisePass->WideAngleCameraAfterStitching());
 }

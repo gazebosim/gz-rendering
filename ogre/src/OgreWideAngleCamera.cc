@@ -87,6 +87,9 @@ class gz::rendering::OgreWideAngleCamera::Implementation
   /// \brief A chain of render passes applied to the render target
   public: std::vector<RenderPassPtr> renderPasses;
 
+  /// \brief A chain of render passes applied to final stitched render target
+  public: std::vector<RenderPassPtr> finalStitchRenderPasses;
+
   /// \brief Flag to indicate if render pass need to be rebuilt
   public: bool renderPassDirty = false;
 
@@ -167,6 +170,11 @@ void OgreWideAngleCamera::PreRender()
     pass->PreRender(
       std::dynamic_pointer_cast<Camera>(this->shared_from_this()));
   }
+  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  {
+    pass->PreRender(
+      std::dynamic_pointer_cast<Camera>(this->shared_from_this()));
+  }
 }
 
 //////////////////////////////////////////////////
@@ -238,7 +246,14 @@ void OgreWideAngleCamera::Destroy()
 void OgreWideAngleCamera::AddRenderPass(const RenderPassPtr &_pass)
 {
   // Do NOT pass it to super class.
-  this->dataPtr->renderPasses.push_back(_pass);
+  if (_pass->WideAngleCameraAfterStitching())
+  {
+    this->dataPtr->finalStitchRenderPasses.push_back(_pass);
+  }
+  else
+  {
+    this->dataPtr->renderPasses.push_back(_pass);
+  }
   this->dataPtr->renderPassDirty = true;
 }
 
@@ -254,6 +269,25 @@ void OgreWideAngleCamera::RemoveRenderPass(const RenderPassPtr &_pass)
     this->dataPtr->renderPasses.erase(it);
     this->dataPtr->renderPassDirty = true;
   }
+  else
+  {
+    it = std::find(this->dataPtr->finalStitchRenderPasses.begin(),
+                   this->dataPtr->finalStitchRenderPasses.end(), _pass);
+    if (it != this->dataPtr->finalStitchRenderPasses.end())
+    {
+      (*it)->Destroy();
+      this->dataPtr->finalStitchRenderPasses.erase(it);
+      this->dataPtr->renderPassDirty = true;
+    }
+    else
+    {
+      gzwarn << "OgreWideAngleCamera::RemoveRenderPass pass not found. This "
+                "is fine if you called this function twice. But it may not be "
+                "fine if you changed the value "
+                "RenderPass::WideAngleCameraAfterStitching (see docs)"
+             << std::endl;
+    }
+  }
 }
 
 //////////////////////////////////////////////////
@@ -263,7 +297,12 @@ void OgreWideAngleCamera::RemoveAllRenderPasses()
   {
     pass->Destroy();
   }
+  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  {
+    pass->Destroy();
+  }
   this->dataPtr->renderPasses.clear();
+  this->dataPtr->finalStitchRenderPasses.clear();
   this->dataPtr->renderPassDirty = true;
 }
 
@@ -495,6 +534,13 @@ void OgreWideAngleCamera::UpdateRenderPassChain()
     ogreRenderPass->SetCameras(this->dataPtr->envCameras);
     ogreRenderPass->CreateRenderPass();
   }
+  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  {
+    OgreRenderPass *ogreRenderPass =
+        dynamic_cast<OgreRenderPass *>(pass.get());
+    ogreRenderPass->SetCamera(this->dataPtr->ogreCamera);
+    ogreRenderPass->CreateRenderPass();
+  }
   this->dataPtr->renderPassDirty = false;
 }
 
@@ -722,6 +768,10 @@ void OgreWideAngleCamera::PostRender()
     return;
 
   for (auto pass : this->dataPtr->renderPasses)
+  {
+    pass->PostRender();
+  }
+  for (auto pass : this->dataPtr->finalStitchRenderPasses)
   {
     pass->PostRender();
   }

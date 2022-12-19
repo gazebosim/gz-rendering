@@ -118,6 +118,7 @@ using namespace rendering;
 OgreLensFlarePass::OgreLensFlarePass() :
   dataPtr(utils::MakeUniqueImpl<Implementation>(*this))
 {
+  this->afterStitching = true;
 }
 
 //////////////////////////////////////////////////
@@ -374,13 +375,18 @@ void OgreLensFlareCompositorListenerPrivate::notifyMaterialRender(
 
   const Ogre::Camera *camera;
 
+  uint32_t currentFaceIdx = this->owner.dataPtr->currentFaceIdx;
+  if (this->owner.WideAngleCameraAfterStitching())
+  {
+    currentFaceIdx = 4u;
+  }
+
   {
     OgreWideAngleCamera *wideAngleCamera = dynamic_cast<OgreWideAngleCamera *>(
       this->owner.dataPtr->currentCamera.get());
     if (wideAngleCamera)
     {
-      camera =
-        wideAngleCamera->OgreEnvCameras()[this->owner.dataPtr->currentFaceIdx];
+      camera = wideAngleCamera->OgreEnvCameras()[currentFaceIdx];
     }
     else
     {
@@ -408,7 +414,7 @@ void OgreLensFlareCompositorListenerPrivate::notifyMaterialRender(
   if (lightPos.z >= 0.0)
   {
     lensFlareScale = this->owner.OcclusionScale(
-      OgreConversions::Convert(lightPos), this->owner.dataPtr->currentFaceIdx);
+      OgreConversions::Convert(lightPos), currentFaceIdx);
   }
 
   ++this->owner.dataPtr->currentFaceIdx;

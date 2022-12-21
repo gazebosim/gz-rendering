@@ -300,7 +300,7 @@ TEST_F(MeshTest, MeshClone)
   {
     // since the "top level mesh" has a material, the submesh materials are not
     // unique copies:
-    // https://github.com/gazebosim/gz-rendering/blob/8f961d0c4cc755b6a2ca217d5a73de268ef95514/include/ignition/rendering/base/BaseMesh.hh#L293
+    // https://github.com/gazebosim/gz-rendering/blob/696885518a6b3ef461b06af094b7f32a51e8ad83/include/gz/rendering/base/BaseMesh.hh#L305
     auto clonedSubMesh = clonedMesh->SubMeshByIndex(i);
     auto originalSubMesh = clonedMesh->SubMeshByIndex(i);
     compareMaterials(clonedSubMesh->Material(), originalSubMesh->Material(),

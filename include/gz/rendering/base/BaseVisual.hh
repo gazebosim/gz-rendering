@@ -89,7 +89,10 @@ namespace gz
       public: virtual void SetVisible(bool _visible) override;
 
       // Documentation inherited.
-      public: virtual void SetVisualStatic(bool _static) override;
+      public: virtual bool Static() const override;
+
+      // Documentation inherited.
+      public: virtual void SetStatic(bool _static) override;
 
       // Documentation inherited.
       public: virtual void SetVisibilityFlags(uint32_t _flags) override;
@@ -382,9 +385,16 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseVisual<T>::SetVisualStatic(bool _static)
+    bool BaseVisual<T>::Static() const
     {
-      gzerr << "SetVisualStatic(" << _static << ") not supported for "
+      return false;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetStatic(bool _static)
+    {
+      gzerr << "SetStatic(" << _static << ") not supported for "
             << "render engine: " << this->Scene()->Engine()->Name()
             << std::endl;
     }
@@ -525,6 +535,7 @@ namespace gz
       result->SetLocalPose(this->LocalPose());
       result->SetVisibilityFlags(this->VisibilityFlags());
       result->SetWireframe(this->Wireframe());
+      result->SetStatic(this->Static());
 
       // if the visual that was cloned has child visuals, clone those as well
       auto children_ =

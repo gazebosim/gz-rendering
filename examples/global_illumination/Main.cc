@@ -80,7 +80,7 @@ void buildScene(ScenePtr _scene)
   MeshPtr meshPBRGeom = _scene->CreateMesh(descriptorPBR);
   meshPBRGeom->SetMaterial(matPBR);
   meshPBR->AddGeometry(meshPBRGeom);
-  meshPBR->SetVisualStatic(true);
+  meshPBR->SetStatic(true);
   root->AddChild(meshPBR);
 
   // create green material
@@ -96,7 +96,7 @@ void buildScene(ScenePtr _scene)
   cylinder->SetLocalPosition(3, -0.5, 0.3);
   cylinder->SetLocalScale(0.7, 0.7, 0.7);
   cylinder->SetMaterial(green);
-  cylinder->SetVisualStatic(true);
+  cylinder->SetStatic(true);
   root->AddChild(cylinder);
 
   // create duck material
@@ -115,7 +115,7 @@ void buildScene(ScenePtr _scene)
   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
   meshGeom->SetMaterial(duckMat);
   mesh->AddGeometry(meshGeom);
-  mesh->SetVisualStatic(true);
+  mesh->SetStatic(true);
   root->AddChild(mesh);
 
   // create red material
@@ -131,7 +131,7 @@ void buildScene(ScenePtr _scene)
   sphere->SetLocalPosition(2.5, 0, 0.3);
   sphere->SetLocalRotation(0, 0, 0);
   sphere->SetLocalScale(0.5, 0.5, 0.5);
-  sphere->SetVisualStatic(true);
+  sphere->SetStatic(true);
   sphere->SetMaterial(red);
   root->AddChild(sphere);
 
@@ -152,7 +152,7 @@ void buildScene(ScenePtr _scene)
   box->SetLocalPosition(3.0, 0.5, 0.3);
   box->SetLocalRotation(0, 0, 0);
   box->SetLocalScale(0.5, 0.5, 0.5);
-  box->SetVisualStatic(true);
+  box->SetStatic(true);
   box->SetMaterial(mirrorMat);
   root->AddChild(box);
 
@@ -174,7 +174,7 @@ void buildScene(ScenePtr _scene)
   MeshPtr backpackMeshGeom = _scene->CreateMesh(backpackDesc);
   backpackMeshGeom->SetMaterial(backpackMat);
   backpack->AddGeometry(backpackMeshGeom);
-  backpack->SetVisualStatic(true);
+  backpack->SetStatic(true);
   root->AddChild(backpack);
 
   // create white material
@@ -187,7 +187,7 @@ void buildScene(ScenePtr _scene)
   plane->AddGeometry(_scene->CreatePlane());
   plane->SetLocalScale(20, 20, 1);
   plane->SetLocalPosition(0, 0, -0.5);
-  plane->SetVisualStatic(true);
+  plane->SetStatic(true);
   plane->SetMaterial(white);
   root->AddChild(plane);
 
@@ -235,37 +235,6 @@ void buildScene(ScenePtr _scene)
   light3->SetFalloff(0.8);
   light3->SetCastShadows(false);
   root->AddChild(light3);
-
-  // spot light test
-  int n = 3;
-  for (int i = 0; i < n; ++i)
-  {
-    for (int j = 0; j < n; ++j)
-    {
-      // create box visual
-      std::stringstream name;
-      name << "spotlight_test_" << i << j;
-      VisualPtr boxVis = _scene->CreateVisual(name.str());
-      boxVis->AddGeometry(_scene->CreateBox());
-      boxVis->SetVisualStatic(true);
-      double x = -n + i * n - 5;
-      double y = -n + j * n;
-      boxVis->SetLocalPosition(x, y, 0.0);
-      boxVis->SetLocalRotation(0, 0, 0);
-      boxVis->SetLocalScale(0.5, 0.5, 0.5);
-      boxVis->SetMaterial(green);
-      root->AddChild(boxVis);
-
-      name << "_light";
-      SpotLightPtr spotLight = _scene->CreateSpotLight(name.str());
-      spotLight->SetDiffuseColor(1.0, 1.0, 1.0);
-      spotLight->SetSpecularColor(0.2, 0.2, 0.2);
-      spotLight->SetLocalPosition(x, y, 2.0);
-      spotLight->SetDirection(0, 0, -1);
-      spotLight->SetCastShadows(true);
-      root->AddChild(spotLight);
-    }
-  }
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");

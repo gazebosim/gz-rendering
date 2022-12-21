@@ -29,7 +29,7 @@
 using namespace gz;
 using namespace rendering;
 
-class VisualTest : public CommonRenderingTest 
+class VisualTest : public CommonRenderingTest
 {
 };
 
@@ -584,6 +584,11 @@ TEST_F(VisualTest, Clone)
   child->SetWireframe(false);
   grandChild->SetWireframe(true);
 
+  // set static
+  parent->SetStatic(true);
+  child->SetStatic(true);
+  grandChild->SetStatic(true);
+
   // clone the parent visual
   const auto preCloneNodeCount = scene->NodeCount();
   const auto clonedVisualName = "clonedVisual";
@@ -605,6 +610,7 @@ TEST_F(VisualTest, Clone)
   EXPECT_EQ(clonedVisual->WorldPose(), parent->WorldPose());
   EXPECT_EQ(clonedVisual->LocalPose(), parent->LocalPose());
   EXPECT_EQ(clonedVisual->Wireframe(), parent->Wireframe());
+  EXPECT_EQ(clonedVisual->Static(), parent->Static());
 
   // compare materials (the material is cloned, so the name is different but
   // the properties of the material are the same)

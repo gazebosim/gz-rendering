@@ -121,8 +121,8 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
   }
   else
   {
-    ignwarn << "Attempted to set non-finite origin from camera ["
-            << camera->Name() << "]" << std::endl;
+    gzwarn << "Attempted to set non-finite origin from camera ["
+           << camera->Name() << "]" << std::endl;
   }
 
   auto directionMath = Ogre2Conversions::Convert(ray.getDirection());
@@ -132,8 +132,8 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
   }
   else
   {
-    ignwarn << "Attempted to set non-finite direction from camera ["
-            << camera->Name() << "]" << std::endl;
+    gzwarn << "Attempted to set non-finite direction from camera ["
+           << camera->Name() << "]" << std::endl;
   }
 
   this->dataPtr->imgPos.X() = static_cast<int>(

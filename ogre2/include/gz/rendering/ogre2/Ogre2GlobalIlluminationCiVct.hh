@@ -78,7 +78,8 @@ namespace gz
       public: virtual float ThinWallCounter() const override;
 
       // Documentation inherited.
-      public: virtual void SetResolution(const uint32_t _resolution[3]) override;
+      public: virtual void SetResolution(const uint32_t _resolution[3])
+          override;
 
       // Documentation inherited.
       public: virtual const uint32_t* Resolution() const override;

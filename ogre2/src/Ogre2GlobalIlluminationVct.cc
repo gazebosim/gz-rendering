@@ -114,11 +114,17 @@ void Ogre2GlobalIlluminationVct::Destroy()
   if (this->Enabled())
     this->SetEnabled(false);
 
-  delete this->dataPtr->vctLighting;
-  this->dataPtr->vctLighting = nullptr;
+  if (this->dataPtr->vctLighting)
+  {
+    delete this->dataPtr->vctLighting;
+    this->dataPtr->vctLighting = nullptr;
+  }
 
-  delete this->dataPtr->voxelizer;
-  this->dataPtr->voxelizer = nullptr;
+  if (this->dataPtr->voxelizer)
+  {
+    delete this->dataPtr->voxelizer;
+    this->dataPtr->voxelizer = nullptr;
+  }
 }
 
 //////////////////////////////////////////////////

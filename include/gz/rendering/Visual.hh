@@ -162,7 +162,12 @@ namespace gz
       ///     rarely makes sense
       ///   Dynamic Scene Node + Static MovableObject  = Invalid
       /// \param[in] _static True if this visual should be made static
-      public: virtual void SetVisualStatic(bool _static) = 0;
+      public: virtual void SetStatic(bool _static) = 0;
+
+      /// \brief Get whether the visual is static.
+      /// \return True if the visual is static, false otherwise
+      /// \sa SetStatic
+      public: virtual bool Static() const = 0;
 
       /// \brief Set visibility flags
       /// \param[in] _flags Visibility flags

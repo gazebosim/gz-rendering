@@ -105,7 +105,6 @@ void Ogre2CiVctCascade::Init(Ogre::VctCascadeSetting *_cascade,
 }
 
 //////////////////////////////////////////////////
-
 void Ogre2CiVctCascade::ReInit(Ogre::VctCascadeSetting *_cascade)
 {
   GZ_ASSERT(this->dataPtr->cascade != nullptr,
@@ -225,8 +224,11 @@ void Ogre2GlobalIlluminationCiVct::Destroy()
   if (this->Enabled())
     this->SetEnabled(false);
 
-  delete this->dataPtr->cascadedVoxelizer;
-  this->dataPtr->cascadedVoxelizer = nullptr;
+  if (this->dataPtr->cascadedVoxelizer)
+  {
+    delete this->dataPtr->cascadedVoxelizer;
+    this->dataPtr->cascadedVoxelizer = nullptr;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -234,7 +236,7 @@ void Ogre2GlobalIlluminationCiVct::SetMaxCascades(const uint32_t _maxCascades)
 {
   if (!this->dataPtr->cascades.empty())
   {
-    ignerr << "Can't call SetMaxCascades after AddCascade\n";
+    gzerr << "Can't call SetMaxCascades after AddCascade\n";
     return;
   }
   this->dataPtr->cascadedVoxelizer->reserveNumCascades(_maxCascades);
@@ -428,7 +430,7 @@ void Ogre2GlobalIlluminationCiVct::SetEnabled(bool _enabled)
     if (this->dataPtr->cascadedVoxelizer->getNumCascades() == 0u ||
         this->dataPtr->cascadedVoxelizer->getVctLighting(0u) == nullptr)
     {
-      ignwarn
+      gzwarn
         << "GlobalIlluminationCiVct::Start not yet called. Cannot enable.\n";
       return;
     }
@@ -455,6 +457,9 @@ void Ogre2GlobalIlluminationCiVct::SetEnabled(bool _enabled)
 //////////////////////////////////////////////////
 bool Ogre2GlobalIlluminationCiVct::Enabled() const
 {
+  if (!this->dataPtr->cascadedVoxelizer)
+    return false;
+
   if (this->dataPtr->cascadedVoxelizer->getNumCascades() == 0u ||
       this->dataPtr->cascadedVoxelizer->getVctLighting(0u) == nullptr)
   {

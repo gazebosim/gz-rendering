@@ -476,6 +476,12 @@ void Ogre2Scene::Destroy()
     this->ogreSceneManager->removeRenderQueueListener(
         Ogre2RenderEngine::Instance()->OverlaySystem());
   }
+
+  if (this->dataPtr->activeGi)
+  {
+    this->dataPtr->activeGi->Destroy();
+    this->dataPtr->activeGi.reset();
+  }
 }
 
 //////////////////////////////////////////////////

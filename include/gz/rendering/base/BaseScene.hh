@@ -884,8 +884,8 @@ namespace gz
                 {
                   (void)_id;
                   (void)_name;
-                  ignerr << "GlobalIlluminationCiVct not supported by: "
-                         << this->Engine()->Name() << std::endl;
+                  gzerr << "GlobalIlluminationCiVct not supported by: "
+                        << this->Engine()->Name() << std::endl;
                   return GlobalIlluminationCiVctPtr();
                 }
 

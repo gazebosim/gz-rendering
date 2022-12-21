@@ -32,7 +32,7 @@
 #  pragma warning(pop)
 #endif
 
-class IGNITION_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2NativeWindowPrivate
+class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2NativeWindowPrivate
 {
   // clang-format off
   /// \brief The native Ogre window handle
@@ -52,7 +52,7 @@ static const char *kWorkspaceName = "NativeWindow Copy";
 Ogre2NativeWindow::Ogre2NativeWindow(Ogre::Window *_window) :
   dataPtr(new Ogre2NativeWindowPrivate)
 {
-  dataPtr->window = _window;
+  this->dataPtr->window = _window;
 
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -101,36 +101,38 @@ Ogre2NativeWindow::~Ogre2NativeWindow()
     ogreCompMgr->removeWorkspace(this->dataPtr->workspace);
     this->dataPtr->workspace = nullptr;
   }
-  if (dataPtr->window)
+  if (this->dataPtr->window)
   {
-    Ogre::Root::getSingleton().getRenderSystem()->destroyRenderWindow(
-      dataPtr->window);
-    dataPtr->window = nullptr;
+    // todo(anyone) the call below causes a crash with the error message:
+    // "pure virtual method called"
+    // Ogre::Root::getSingleton().getRenderSystem()->destroyRenderWindow(
+    //   this->dataPtr->window);
+    this->dataPtr->window = nullptr;
   }
 }
 
 //////////////////////////////////////////////////
 void Ogre2NativeWindow::NotifyFocused(bool _focused)
 {
-  dataPtr->window->setFocused(_focused);
+  this->dataPtr->window->setFocused(_focused);
 }
 
 //////////////////////////////////////////////////
 void Ogre2NativeWindow::NotifyVisible(bool _visible)
 {
-  dataPtr->window->_setVisible(_visible);
+  this->dataPtr->window->_setVisible(_visible);
 }
 
 //////////////////////////////////////////////////
 void Ogre2NativeWindow::NotifyWindowMovedOrResized()
 {
-  dataPtr->window->windowMovedOrResized();
+  this->dataPtr->window->windowMovedOrResized();
 }
 
 //////////////////////////////////////////////////
 void Ogre2NativeWindow::RequestResolution(uint32_t _width, uint32_t _height)
 {
-  dataPtr->window->requestResolution(_width, _height);
+  this->dataPtr->window->requestResolution(_width, _height);
 }
 
 //////////////////////////////////////////////////
@@ -140,9 +142,9 @@ void Ogre2NativeWindow::Draw(CameraPtr _camera)
 
   if (!camera)
   {
-    ignwarn << "Using Camera from a different RenderEngine with the wrong "
-               "NativeWindow\n"
-               "Display may be wrong\n";
+    gzwarn << "Using Camera from a different RenderEngine with the wrong "
+              "NativeWindow\n"
+              "Display may be wrong\n";
     return;
   }
 

@@ -223,8 +223,8 @@ std::vector<CameraPtr> createCameras(const std::string &_engineName,
   RenderEngine *engine = rendering::engine(_engineName);
   if (!engine)
   {
-    ignwarn << "Engine '" << _engineName
-              << "' is not supported" << std::endl;
+    gzwarn << "Engine '" << _engineName
+           << "' is not supported" << std::endl;
     return std::vector<CameraPtr>();
   }
   ScenePtr scene = engine->CreateScene("scene");

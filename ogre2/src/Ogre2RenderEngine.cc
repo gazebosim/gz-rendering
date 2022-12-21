@@ -1328,16 +1328,16 @@ NativeWindowPtr Ogre2RenderEngine::CreateNativeWindow(
     }
     catch(const std::exception &_e)
     {
-      ignerr << " Unable to create the rendering window: " << _e.what()
-             << std::endl;
+      gzerr << " Unable to create the rendering window: " << _e.what()
+            << std::endl;
       ogreWindow = nullptr;
     }
   }
 
   if (attempts >= 10)
   {
-    ignerr << "Unable to create the rendering window after [" << attempts
-           << "] attempts." << std::endl;
+    gzerr << "Unable to create the rendering window after [" << attempts
+          << "] attempts." << std::endl;
     return NativeWindowPtr(nullptr);
   }
 

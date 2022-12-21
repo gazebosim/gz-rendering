@@ -94,8 +94,8 @@ void OrbitViewController::Zoom(const double _value)
 {
   if (!std::isfinite(_value))
   {
-    ignerr << "Failed to zoom by non-finite value [" << _value << "]"
-           << std::endl;
+    gzerr << "Failed to zoom by non-finite value [" << _value << "]"
+          << std::endl;
     return;
   }
 
@@ -122,8 +122,8 @@ void OrbitViewController::Pan(const math::Vector2d &_value)
 {
   if (!_value.IsFinite())
   {
-    ignerr << "Failed to pan by non-finite value [" << _value << "]"
-           << std::endl;
+    gzerr << "Failed to pan by non-finite value [" << _value << "]"
+          << std::endl;
     return;
   }
 
@@ -135,8 +135,8 @@ void OrbitViewController::Pan(const math::Vector2d &_value)
 
   if (!this->dataPtr->camera->WorldPosition().IsFinite())
   {
-    ignerr << "Camera world position isn't finite ["
-           << this->dataPtr->camera->WorldPosition() << "]" << std::endl;
+    gzerr << "Camera world position isn't finite ["
+          << this->dataPtr->camera->WorldPosition() << "]" << std::endl;
     return;
   }
 
@@ -171,8 +171,8 @@ void OrbitViewController::Orbit(const math::Vector2d &_value)
 {
   if (!_value.IsFinite())
   {
-    ignerr << "Failed to orbit by non-finite value [" << _value << "]"
-           << std::endl;
+    gzerr << "Failed to orbit by non-finite value [" << _value << "]"
+          << std::endl;
     return;
   }
 

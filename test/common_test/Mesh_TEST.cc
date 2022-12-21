@@ -32,7 +32,7 @@
 using namespace gz;
 using namespace rendering;
 
-class MeshTest : public CommonRenderingTest 
+class MeshTest : public CommonRenderingTest
 {
   public: const std::string TEST_MEDIA_PATH =
         common::joinPaths(std::string(PROJECT_SOURCE_PATH),

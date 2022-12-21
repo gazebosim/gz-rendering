@@ -35,6 +35,10 @@ class GlobalIlluminationTest : public CommonRenderingTest
 /////////////////////////////////////////////////
 TEST_F(GlobalIlluminationTest, GlobalIlluminationVct)
 {
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple.";
+  #endif
+
   CHECK_SUPPORTED_ENGINE("ogre2");
 
   ScenePtr scene = engine->CreateScene("scene");
@@ -95,6 +99,10 @@ TEST_F(GlobalIlluminationTest, GlobalIlluminationVct)
 /////////////////////////////////////////////////
 TEST_F(GlobalIlluminationTest, GlobalIlluminationCiVct)
 {
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple.";
+  #endif
+
   CHECK_SUPPORTED_ENGINE("ogre2");
 
   ScenePtr scene = engine->CreateScene("scene");

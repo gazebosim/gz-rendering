@@ -93,7 +93,7 @@ namespace gz
       /// However it consumes more VRAM and is slower. Recommended: true
       /// \remark This setting has nothing to do with
       /// anistropic texture filtering in GPUs
-      /// \param[in] _anisotropicAnisotropy setting
+      /// \param[in] _anisotropic Anisotropy setting
       public: virtual void SetAnisotropic(bool _anisotropic) = 0;
 
       /// \brief Whether anisotropic setting is on

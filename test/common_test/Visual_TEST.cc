@@ -586,8 +586,6 @@ TEST_F(VisualTest, Clone)
 
   // set static
   parent->SetStatic(true);
-  child->SetStatic(true);
-  grandChild->SetStatic(true);
 
   // clone the parent visual
   const auto preCloneNodeCount = scene->NodeCount();

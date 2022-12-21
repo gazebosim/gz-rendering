@@ -535,7 +535,6 @@ namespace gz
       result->SetLocalPose(this->LocalPose());
       result->SetVisibilityFlags(this->VisibilityFlags());
       result->SetWireframe(this->Wireframe());
-      result->SetStatic(this->Static());
 
       // if the visual that was cloned has child visuals, clone those as well
       auto children_ =
@@ -570,6 +569,8 @@ namespace gz
       for (const auto &[key, val] : this->userData)
         result->SetUserData(key, val);
 
+      // set static property after the geometry is added
+      result->SetStatic(this->Static());
       return result;
     }
     }

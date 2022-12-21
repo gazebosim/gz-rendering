@@ -60,7 +60,6 @@ namespace gz
     public: virtual bool AutoMultiplier() const = 0;
 
     /// \copydoc GlobalIlluminationVct::SetThinWallCounter
-    /// \param[in] _thinWallCounter Value in range (0; inf)
     public: virtual void SetThinWallCounter(float _thinWallCounter) = 0;
 
     /// \brief Value of CiVctCascade::SetThinWallCounter

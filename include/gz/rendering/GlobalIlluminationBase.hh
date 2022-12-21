@@ -64,7 +64,7 @@ namespace gz
       /// \brief Sets this GI solution as enabled
       /// \remarks Only one GI solution can be active at the same time
       /// \see Scene::SetActiveGlobalIllumination
-      /// \param _enabled[in] True to enable, false otherwise
+      /// \param[in] _enabled True to enable, false otherwise
       protected: virtual void SetEnabled(bool _enabled) = 0;
 
       /// \brief Returns true if this GI configuration is currently

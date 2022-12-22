@@ -256,11 +256,12 @@ void keyPressed(const SDL_KeyboardEvent & /*_arg*/)
 }
 
 //////////////////////////////////////////////////
-void keyReleased(const SDL_KeyboardEvent &_arg)
+bool keyReleased(const SDL_KeyboardEvent &_arg)
 {
   if (_arg.keysym.sym == SDLK_ESCAPE || _arg.keysym.sym == SDLK_q)
   {
-    exit(0);
+    // return false to let the main loop know to quit
+    return false;
   }
   else if (_arg.keysym.sym == SDLK_TAB)
   {
@@ -317,6 +318,7 @@ void keyReleased(const SDL_KeyboardEvent &_arg)
 #endif
     }
   }
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -473,7 +475,7 @@ void run(std::vector<ir::CameraPtr> _cameras)
       case SDL_KEYUP:
         if (!evt.key.repeat)
         {
-          keyReleased(evt.key);
+          bQuit = !keyReleased(evt.key);
         }
         break;
       default:

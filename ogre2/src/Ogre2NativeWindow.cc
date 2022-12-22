@@ -105,8 +105,8 @@ Ogre2NativeWindow::~Ogre2NativeWindow()
   {
     // todo(anyone) the call below causes a crash with the error message:
     // "pure virtual method called"
-    // Ogre::Root::getSingleton().getRenderSystem()->destroyRenderWindow(
-    //   this->dataPtr->window);
+    Ogre::Root::getSingleton().getRenderSystem()->destroyRenderWindow(
+      this->dataPtr->window);
     this->dataPtr->window = nullptr;
   }
 }

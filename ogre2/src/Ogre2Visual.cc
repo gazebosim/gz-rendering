@@ -106,6 +106,18 @@ void Ogre2Visual::SetVisible(bool _visible)
 }
 
 //////////////////////////////////////////////////
+void Ogre2Visual::SetStatic(bool _static)
+{
+  this->ogreNode->setStatic(_static);
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Visual::Static() const
+{
+  return this->ogreNode->isStatic();
+}
+
+//////////////////////////////////////////////////
 void Ogre2Visual::SetVisibilityFlags(uint32_t _flags)
 {
   BaseVisual::SetVisibilityFlags(_flags);

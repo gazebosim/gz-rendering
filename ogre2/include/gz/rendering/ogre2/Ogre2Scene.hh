@@ -102,6 +102,15 @@ namespace gz
       // Documentation inherited
       public: virtual bool SkyEnabled() const override;
 
+      // Documentation inherited
+      public: virtual void SetActiveGlobalIllumination(
+            GlobalIlluminationBasePtr _gi) override;
+
+      /// \internal
+      /// \brief Informs light data has changed which means
+      /// GI solution may want to update before rendering
+      public: void SetLightsGiDirty();
+
       // Documentation inherited.
       public: virtual void SetCameraPassCountPerGpuFlush(
             uint8_t _numPass) override;
@@ -351,6 +360,16 @@ namespace gz
       // Documentation inherited
       protected: virtual ParticleEmitterPtr CreateParticleEmitterImpl(
                      unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited
+      protected: virtual GlobalIlluminationVctPtr
+          CreateGlobalIlluminationVctImpl(
+                    unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited
+      protected: virtual GlobalIlluminationCiVctPtr
+          CreateGlobalIlluminationCiVctImpl(
+                    unsigned int _id, const std::string &_name) override;
 
       /// \brief Helper function to initialize an ogre2 object
       /// \param[in] _object Ogre2 object that will be initialized

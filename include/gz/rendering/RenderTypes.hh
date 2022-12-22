@@ -51,6 +51,7 @@ namespace gz
     class BoundingBoxCamera;
     class Camera;
     class Capsule;
+    class CiVctCascade;
     class COMVisual;
     class DepthCamera;
     class DirectionalLight;
@@ -58,6 +59,9 @@ namespace gz
     class GaussianNoisePass;
     class Geometry;
     class GizmoVisual;
+    class GlobalIlluminationBase;
+    class GlobalIlluminationCiVct;
+    class GlobalIlluminationVct;
     class GpuRays;
     class Grid;
     class Heightmap;
@@ -72,6 +76,7 @@ namespace gz
     class Marker;
     class Material;
     class Mesh;
+    class NativeWindow;
     class Node;
     class Object;
     class ObjectFactory;
@@ -107,6 +112,10 @@ namespace gz
     /// \typedef CameraPtr
     /// \brief Shared pointer to Camera
     typedef shared_ptr<Camera> CameraPtr;
+
+    /// \typedef CiVctCascadePtr
+    /// \brief Shared pointer to CiVctCascade
+    typedef std::shared_ptr<CiVctCascade> CiVctCascadePtr;
 
     /// \typedef DepthCameraPtr
     /// \brief Shared pointer to DepthCamera
@@ -208,6 +217,10 @@ namespace gz
     /// \brief Shared pointer to Mesh
     typedef shared_ptr<Mesh> MeshPtr;
 
+    /// \typedef NativeWindowPtr
+    /// \brief Shared pointer to NativeWindow
+    typedef shared_ptr<NativeWindow> NativeWindowPtr;
+
     /// \typedef NodePtr
     /// \brief Shared pointer to Node
     typedef shared_ptr<Node> NodePtr;
@@ -223,6 +236,18 @@ namespace gz
     /// \typedef ParticleEmitterPtr
     /// \brief Shared pointer to ParticleEmitter
     typedef shared_ptr<ParticleEmitter> ParticleEmitterPtr;
+
+    /// \typedef GlobalIlluminationBasePtr
+    /// \brief Shared pointer to GlobalIlluminationBase
+    typedef shared_ptr<GlobalIlluminationBase> GlobalIlluminationBasePtr;
+
+    /// \typedef GlobalIlluminationCiVctPtr
+    /// \brief Shared pointer to GlobalIlluminationCiVct
+    typedef shared_ptr<GlobalIlluminationCiVct> GlobalIlluminationCiVctPtr;
+
+    /// \typedef GlobalIlluminationVctPtr
+    /// \brief Shared pointer to GlobalIlluminationVct
+    typedef shared_ptr<GlobalIlluminationVct> GlobalIlluminationVctPtr;
 
     /// \typedef PointLightPtr
     /// \brief Shared pointer to PointLight

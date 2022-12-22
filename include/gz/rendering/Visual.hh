@@ -118,6 +118,57 @@ namespace gz
       /// \param[in] _visible True if this visual should be made visible
       public: virtual void SetVisible(bool _visible) = 0;
 
+      /// \brief Tells Render Engine this Visual will be static (i.e.
+      /// won't move, rotate or scale)
+      /// You can still move, rotate or scale the Visual; however doing so
+      /// has a performance impact. How much of an impact will depend on the
+      /// rendering backend being used.
+      /// \remark Performance impact of switching staticness depends on
+      /// on engine. In ogre2 it isn't expensive but it isn't
+      /// free either. Try to minimize transitions.
+      /// Raytracing engines may rely on this information for their
+      /// BVH structures
+      /// TODO(anyone): Staticness should be ideally be supplied
+      /// during construction for maximum performance
+      /// \remark ogre2 specific: OgreNext keeps 2 lists of objects.
+      /// Dynamic and Static. Every frame OgreNext iterates through all nodes &
+      /// items in the dynamic lists and forcefully updates them (regardless of
+      /// whether they have actually changed).
+      /// This may sound slow but Ogre 1.x worked by only updating those objects
+      /// that have changed, and it was slower. CPUs care a lot more about
+      /// processing in bulk and having all the data hot in cache.
+      ///
+      /// For the static list, it only iterates through the entire list in that
+      /// frame when the whole list is tagged as dirty. If one element changes,
+      /// then the whole list is dirty (OgreNext *might* be able to optimize it
+      /// and only update a part of the list by narrowing).
+      ///
+      /// Changing a static node transform implies calling OgreNext's
+      /// notifyStaticDirty. This is very cheap so it can be called whenever
+      /// a static object changes. The only thing that needs to be taken into
+      /// account is that notifyStaticDirty should be called as little as
+      /// possible. And by "as little as possible" that means ideally it should
+      /// not be called ever except when loading a scene or when something
+      /// relevant changed. If it gets called e.g. once per frame or more then
+      /// it's the same as having all objects dynamic.
+      ///
+      /// Thus if an object is static, make sure you don't keep moving around
+      /// because it negates the performance of *all* static objects.
+      ///
+      /// \remark (INTERNAL) For implementations:
+      ///   Dynamic Scene Node + Dynamic MovableObject = Valid
+      ///   Static Scene Node  + Static MovableObject  = Valid
+      ///   Static Scene Node  + Dynamic MovableObject = Valid, but
+      ///     rarely makes sense
+      ///   Dynamic Scene Node + Static MovableObject  = Invalid
+      /// \param[in] _static True if this visual should be made static
+      public: virtual void SetStatic(bool _static) = 0;
+
+      /// \brief Get whether the visual is static.
+      /// \return True if the visual is static, false otherwise
+      /// \sa SetStatic
+      public: virtual bool Static() const = 0;
+
       /// \brief Set visibility flags
       /// \param[in] _flags Visibility flags
       public: virtual void SetVisibilityFlags(uint32_t _flags) = 0;

@@ -10,8 +10,9 @@ set(tests
   COMVisual_TEST
   GaussianNoisePass_TEST
   GizmoVisual_TEST
+  GlobalIllumination_TEST
   Grid_TEST
-  Heightmap_TEST 
+  Heightmap_TEST
   InertiaVisual_TEST
   LensFlarePass_TEST
   LidarVisual_TEST
@@ -21,10 +22,10 @@ set(tests
   Material_TEST
   Mesh_TEST
   MeshDescriptor_TEST
-  MoveToHelper_TEST 
-  Node_TEST 
-  OrbitViewController_TEST 
-  OrthoViewController_TEST 
+  MoveToHelper_TEST
+  Node_TEST
+  OrbitViewController_TEST
+  OrthoViewController_TEST
   ParticleEmitter_TEST
   RayQuery_TEST
   RenderEngine_TEST

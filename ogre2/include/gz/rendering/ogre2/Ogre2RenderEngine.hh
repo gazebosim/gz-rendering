@@ -123,6 +123,11 @@ namespace gz
       // Documentation Inherited
       public: virtual rendering::GraphicsAPI GraphicsAPI() const override;
 
+      // Documentation Inherited
+      public: virtual NativeWindowPtr CreateNativeWindow(
+          const std::string &_winHandle, const uint32_t _width,
+          const uint32_t _height, const double _ratio) override;
+
       /// \brief Create a scene
       /// \param[in] _id Unique scene Id
       /// \param[in] _name Name of scene

@@ -89,6 +89,12 @@ namespace gz
       public: virtual void SetVisible(bool _visible) override;
 
       // Documentation inherited.
+      public: virtual bool Static() const override;
+
+      // Documentation inherited.
+      public: virtual void SetStatic(bool _static) override;
+
+      // Documentation inherited.
       public: virtual void SetVisibilityFlags(uint32_t _flags) override;
 
       // Documentation inherited.
@@ -379,6 +385,22 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
+    bool BaseVisual<T>::Static() const
+    {
+      return false;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseVisual<T>::SetStatic(bool _static)
+    {
+      gzerr << "SetStatic(" << _static << ") not supported for "
+            << "render engine: " << this->Scene()->Engine()->Name()
+            << std::endl;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
     gz::math::AxisAlignedBox BaseVisual<T>::LocalBoundingBox() const
     {
       gz::math::AxisAlignedBox box;
@@ -547,6 +569,8 @@ namespace gz
       for (const auto &[key, val] : this->userData)
         result->SetUserData(key, val);
 
+      // set static property after the geometry is added
+      result->SetStatic(this->Static());
       return result;
     }
     }

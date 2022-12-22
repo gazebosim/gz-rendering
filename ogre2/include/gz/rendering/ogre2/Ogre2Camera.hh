@@ -194,6 +194,10 @@ namespace gz
       /// \brief Make ray query our friend so it can use the internal ogre
       /// camera to execute queries
       private: friend class Ogre2RayQuery;
+
+      /// \brief Make NativeWindow our friend so it can use the internal ogre
+      /// RenderTexture to draw
+      private: friend class Ogre2NativeWindow;
     };
     }
   }

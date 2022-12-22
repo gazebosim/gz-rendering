@@ -223,8 +223,8 @@ std::vector<CameraPtr> createCameras(const std::string &_engineName,
   RenderEngine *engine = rendering::engine(_engineName);
   if (!engine)
   {
-    ignwarn << "Engine '" << _engineName
-              << "' is not supported" << std::endl;
+    gzwarn << "Engine '" << _engineName
+           << "' is not supported" << std::endl;
     return std::vector<CameraPtr>();
   }
   ScenePtr scene = engine->CreateScene("scene");
@@ -263,10 +263,10 @@ int main(int _argc, char** _argv)
     }
     else if (type3d.compare(_argv[1]) != 0)
     {
-      ignerr << "Invalid bounding box type given. Valid options are: "
-             << type3d << ", " << type2dVisible << ", or "
-             << type2dFull << "\n";
-      ignerr << "you entered " << _argv[1] << "\n";
+      gzerr << "Invalid bounding box type given. Valid options are: "
+            << type3d << ", " << type2dVisible << ", or "
+            << type2dFull << "\n";
+      gzerr << "you entered " << _argv[1] << "\n";
       return -1;
     }
   }

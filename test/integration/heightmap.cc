@@ -188,7 +188,6 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   const bool result = common::env("MESA_GL_VERSION_OVERRIDE", value, true);
   if (result && value == "3.3" && IsUbuntuFocal())
   {
-    assert(false && "This is a test. Remove this line");
     GTEST_SKIP() << "Test is run on machine with software rendering or mesa "
                  << "driver. Skipping test. " << std::endl;
   }

@@ -129,6 +129,32 @@ public:
     std::string(PROJECT_SOURCE_PATH), "test", "media") };
 };
 
+static bool IsUbuntuFocal()
+{
+  std::ifstream inFile("/etc/os-release", std::ios::binary | std::ios::in);
+
+  if (inFile.is_open())
+  {
+    inFile.seekg(0, std::ios::end);
+    const std::streamsize sizeBytes = inFile.tellg();
+    inFile.seekg(0, std::ios::beg);
+
+    if (sizeBytes > 0 && sizeBytes < 2048)
+    {
+      std::string dataString;
+      dataString.resize((size_t)sizeBytes);
+      inFile.read(dataString.data(), sizeBytes);
+
+      if (dataString.find("UBUNTU_CODENAME=focal") != std::string::npos)
+      {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 /////////////////////////////////////////////////
 TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 {
@@ -152,10 +178,15 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   // ubuntu jenkins CI. Need to investigate further.
   // Github action sets the MESA_GL_VERSION_OVERRIDE variable
   // so check for this variable and disable test if it is set.
+  //
+  // It appears to be either a corruption bug or unsupported feature
+  // by old Mesa version in SW, bundled with Ubuntu Focal.
+  // See
+  // https://github.com/gazebosim/gz-rendering/pull/785#issuecomment-1360643894
 #ifdef __linux__
   std::string value;
   const bool result = common::env("MESA_GL_VERSION_OVERRIDE", value, true);
-  if (result && value == "3.3")
+  if (result && value == "3.3" && IsUbuntuFocal())
   {
     assert(false && "This is a test. Remove this line");
     GTEST_SKIP() << "Test is run on machine with software rendering or mesa "

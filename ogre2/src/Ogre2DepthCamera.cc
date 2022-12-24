@@ -916,7 +916,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
         this->ImageWidth(), this->ImageHeight());
       this->dataPtr->ogreDepthTexture[i]->setNumMipmaps(1u);
       this->dataPtr->ogreDepthTexture[i]->setPixelFormat(
-        Ogre::PFG_RGBA32_FLOAT);
+        Ogre::PFG_RGBA32_UINT);
 
       this->dataPtr->ogreDepthTexture[i]->scheduleTransitionTo(
         Ogre::GpuResidency::Resident);

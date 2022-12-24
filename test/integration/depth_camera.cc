@@ -260,10 +260,7 @@ void DepthCameraTest::DepthCameraBoxes(
       unsigned int ma = *mrgba >> 0 & 0xFF;
       EXPECT_EQ(0u, mr);
       EXPECT_EQ(0u, mg);
-#ifndef __APPLE__
-      // https://github.com/ignitionrobotics/ign-rendering/issues/332
       EXPECT_GT(mb, 0u);
-#endif
 
       // Far left and right points should be red (background color)
       float lc = pointCloudData[pcLeft + 3];
@@ -465,11 +462,8 @@ void DepthCameraTest::DepthCameraBoxes(
           unsigned int a = *rgba >> 0 & 0xFF;
           EXPECT_EQ(0u, r);
           EXPECT_EQ(0u, g);
-#ifndef __APPLE__
-          // https://github.com/ignitionrobotics/ign-rendering/issues/332
           EXPECT_GT(b, 0u);
           EXPECT_EQ(255u, a);
-#endif
         }
       }
     }

@@ -349,31 +349,7 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
             abs(depthg - normalData[normalIdx + 1]) > largeError ||
             abs(depthb - normalData[normalIdx + 2]) > largeError)
         {
-#ifdef __APPLE__
-          // TODO(anyone): It seems there is a HW/SW issue in Metal where the
-          // certain values end up as invalid floating point values and thus get
-          // either flushed to zero or as a generic NaN, destroying the
-          // binary data we were trying to store in the alpha channel of
-          // depthrgba.
-          //
-          // Some HW / driver in Linux seems to also be affected.
-          //
-          // Most likely the solution would be to change Ogre2DepthCamera to
-          // use PFG_RGBA32_UINT instead of PFG_RGBA32_FLOAT and deal
-          // with uint <-> float reinterpretation via:
-          //    - GLSL: uintBitsToFloat()
-          //    - Metal: as_type<uint4>()
-          //
-          // Because this test is still very useful to find Metal errors,
-          // we try to run it anyway.
-          //
-          // See
-          // github.com/gazebosim/gz-rendering/pull/785#issuecomment-1345648893
-          const uint8_t error =
-            depthr == 0u && depthg == 0u && depthb == 0u ? 75u : 9u;
-#else
           const uint8_t error = 9u;
-#endif
           EXPECT_NEAR(depthr, normalData[normalIdx + 0], error);
           EXPECT_NEAR(depthg, normalData[normalIdx + 1], error);
           EXPECT_NEAR(depthb, normalData[normalIdx + 2], error);
@@ -433,14 +409,6 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
       }
     }
 
-#ifdef __APPLE__
-    // TODO(anyone): These thresholds are relaxed to account PFG_RGBA32_UINT
-    // issue mentioned earlier. Once that problem is fixed, this section
-    // should also be removed.
-    EXPECT_LE(numErrors, width * height * 30 / 10000);
-    EXPECT_LE(accumError, 1600);
-    EXPECT_LE(numLargeErrors, width * height * 25 / 10000);
-#else
     // Expect less than 15 pixels in 10k to be different due to GPU &
     // floating point differences when optimizing shaders
     EXPECT_LE(numErrors, width * height * 15 / 10000);
@@ -448,7 +416,6 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
     EXPECT_LE(accumError, 25 * 3);
     // Expect very few "large" errors.
     EXPECT_LE(numLargeErrors, width * height * 5 / 10000);
-#endif
 
     if (this->HasFailure())
     {

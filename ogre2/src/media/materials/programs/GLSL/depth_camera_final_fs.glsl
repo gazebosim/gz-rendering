@@ -23,11 +23,10 @@ in block
   vec2 uv0;
 } inPs;
 
-vulkan_layout( ogre_t0 ) uniform texture2D inputTexture;
-vulkan( layout( ogre_s0 ) uniform sampler texSampler );
+vulkan_layout( ogre_t0 ) uniform utexture2D inputTexture;
 
 vulkan_layout( location = 0 )
-out vec4 fragColor;
+out uvec4 fragColor;
 
 vulkan( layout( ogre_P0 ) uniform Params { )
 	uniform float near;
@@ -42,14 +41,14 @@ void main()
 {
   float tolerance = 1e-6;
 
-  // Note: We use texelFetch because p.a contains an uint32 and sampling
+  // Note: We use PFG_RGBA32_UINT because p.a contains an uint32 and sampling
   // (even w/ point filtering) causes p.a to loss information (e.g.
   // values close to 0 get rounded to 0)
   //
   // See https://github.com/gazebosim/gz-rendering/issues/332
-  vec4 p = texelFetch(vkSampler2D(inputTexture,texSampler), ivec2(inPs.uv0 *texResolution.xy), 0);
+  uvec4 p = texelFetch(inputTexture, ivec2(inPs.uv0 *texResolution.xy), 0);
 
-  vec3 point = p.xyz;
+  vec3 point = uintBitsToFloat(p.xyz);
 
   // Clamp again in case render passes changed depth values
   // to be outside of min/max range
@@ -78,5 +77,5 @@ void main()
     }
   }
 
-  fragColor = vec4(point, p.a);
+  fragColor = uvec4(floatBitsToUint(point), p.a);
 }

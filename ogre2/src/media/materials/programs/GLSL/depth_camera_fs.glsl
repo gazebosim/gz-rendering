@@ -28,7 +28,7 @@ uniform sampler2D colorTexture;
 uniform sampler2D particleTexture;
 uniform sampler2D particleDepthTexture;
 
-out vec4 fragColor;
+out uvec4 fragColor;
 
 uniform vec2 projectionParams;
 uniform float near;
@@ -43,13 +43,13 @@ uniform float particleScatterRatio;
 // rnd is a random number in the range of [0-1]
 uniform float rnd;
 
-float packFloat(vec4 color)
+uint packUnorm4x8Gz(vec4 color)
 {
-  int rgba = (int(round(color.x * 255.0)) << 24) +
-             (int(round(color.y * 255.0)) << 16) +
-             (int(round(color.z * 255.0)) << 8) +
-             int(round(color.w * 255.0));
-  return intBitsToFloat(rgba);
+  uint rgba = (uint(round(color.x * 255.0)) << 24u) +
+              (uint(round(color.y * 255.0)) << 16u) +
+              (uint(round(color.z * 255.0)) << 8u) +
+              uint(round(color.w * 255.0));
+  return rgba;
 }
 
 float toSRGB( float x )
@@ -193,6 +193,5 @@ void main()
   // gamma correct
   color = toSRGB(color);
 
-  float rgba = packFloat(color);
-  fragColor = vec4(point, rgba);
+  fragColor = uvec4(floatBitsToUint(point), packUnorm4x8Gz(color));
 }

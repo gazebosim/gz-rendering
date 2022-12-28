@@ -34,27 +34,24 @@ struct Params
   float4 texResolution;
 };
 
-fragment float4 main_metal
+fragment uint4 main_metal
 (
   PS_INPUT inPs [[stage_in]],
-  texture2d<float>  inputTexture [[texture(0)]],
-  sampler           inputSampler [[sampler(0)]],
+  texture2d<uint> inputTexture [[texture(0)]],
   constant Params &params [[buffer(PARAMETER_SLOT)]]
 )
 {
   float tolerance = 1e-6;
 
-  // Note: We use texelFetch because p.a contains an uint32 and sampling
+  // Note: We use PFG_RGBA32_UINT because p.a contains an uint32 and sampling
   // (even w/ point filtering) causes p.a to loss information (e.g.
   // values close to 0 get rounded to 0)
   //
   // See https://github.com/ignitionrobotics/ign-rendering/issues/332
   // Either: Metal equivalent of texelFetch
-  float4 p = inputTexture.read(uint2(inPs.uv0 * params.texResolution.xy), 0);
-  // Or: Use standard sampler
-  // float4 p = inputTexture.sample(inputSampler, inPs.uv0);
+  uint4 p = inputTexture.read(uint2(inPs.uv0 * params.texResolution.xy), 0);
 
-  float3 point = p.xyz;
+  float3 point = as_type<float3>(p.xyz);
 
   // Clamp again in case render passes changed depth values
   // to be outside of min/max range
@@ -83,6 +80,6 @@ fragment float4 main_metal
     }
   }
 
-  float4 fragColor(point, p.a);
+  uint4 fragColor(as_type<uint3>(point), p.a);
   return fragColor;
 }

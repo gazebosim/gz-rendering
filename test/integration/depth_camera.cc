@@ -237,10 +237,7 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
       unsigned int ma = *mrgba >> 0 & 0xFF;
       EXPECT_EQ(0u, mr);
       EXPECT_EQ(0u, mg);
-#ifndef __APPLE__
-      // https://github.com/gazebosim/gz-rendering/issues/332
       EXPECT_GT(mb, 0u);
-#endif
 
       // Far left and right points should be red (background color)
       float lc = pointCloudData[pcLeft + 3];
@@ -442,11 +439,8 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
           unsigned int a = *rgba >> 0 & 0xFF;
           EXPECT_EQ(0u, r);
           EXPECT_EQ(0u, g);
-#ifndef __APPLE__
-          // https://github.com/gazebosim/gz-rendering/issues/332
           EXPECT_GT(b, 0u);
           EXPECT_EQ(255u, a);
-#endif
         }
       }
     }

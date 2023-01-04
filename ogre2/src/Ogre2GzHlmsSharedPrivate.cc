@@ -38,6 +38,18 @@ namespace gz
   namespace rendering
   {
     /////////////////////////////////////////////////
+    Ogre2GzHlmsShared::~Ogre2GzHlmsShared()
+    {
+      if (!this->vaoManager)
+        return;
+
+      for (auto & buffer : this->perObjectDataBuffers)
+        this->vaoManager->destroyConstBuffer(buffer);
+
+      this->perObjectDataBuffers.clear();
+    }
+
+    /////////////////////////////////////////////////
     void Ogre2GzHlmsShared::BindObjectDataBuffer(
       Ogre::CommandBuffer *_commandBuffer, uint16_t _perObjectDataBufferSlot)
     {
@@ -70,11 +82,18 @@ namespace gz
 
         UnmapObjectDataBuffer();
 
-        const size_t bufferSize =
-          std::min<size_t>(65536, _vaoManager->getConstBufferMaxSize());
-        Ogre::ConstBufferPacked *constBuffer = _vaoManager->createConstBuffer(
-          bufferSize, Ogre::BT_DYNAMIC_PERSISTENT, nullptr, false);
-        this->perObjectDataBuffers.push_back(constBuffer);
+        if (_currConstBufferIdx >= this->perObjectDataBuffers.size())
+        {
+          this->vaoManager = _vaoManager;
+          const size_t bufferSize =
+            std::min<size_t>(65536, _vaoManager->getConstBufferMaxSize());
+          Ogre::ConstBufferPacked *constBuffer = _vaoManager->createConstBuffer(
+            bufferSize, Ogre::BT_DYNAMIC_PERSISTENT, nullptr, false);
+          this->perObjectDataBuffers.push_back(constBuffer);
+        }
+        Ogre::ConstBufferPacked *constBuffer =
+          this->perObjectDataBuffers[_currConstBufferIdx];
+
         this->currPerObjectDataBuffer = constBuffer;
         this->currPerObjectDataPtr = reinterpret_cast<float *>(
           constBuffer->map(0u, constBuffer->getNumElements()));

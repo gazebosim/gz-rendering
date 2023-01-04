@@ -46,6 +46,9 @@ namespace gz
     /// \internal
     class GZ_RENDERING_OGRE2_HIDDEN Ogre2GzHlmsShared
     {
+      /// \brief Destructor
+      protected: ~Ogre2GzHlmsShared();
+
       /// \brief Binds currPerObjectDataBuffer to the right slot.
       /// Does nothing if it's nullptr
       /// \param[in] _commandBuffer Cmd buffer to bind to
@@ -105,6 +108,10 @@ namespace gz
       /// \brief The mapped contents of currPerObjectDataBuffer
       /// \internal
       protected: float *currPerObjectDataPtr = nullptr;
+
+      /// \brief Pointer to Ogre's VAO manager. Used here for destroying const
+      /// buffers.
+      private: Ogre::VaoManager *vaoManager = nullptr;
 
       /// \brief See GzOgreRenderingMode. Public variable.
       /// Modifying it takes change on the next render

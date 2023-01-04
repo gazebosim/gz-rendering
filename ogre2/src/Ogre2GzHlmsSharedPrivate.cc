@@ -80,7 +80,7 @@ namespace gz
         // gl_InstanceId / drawId will be reset to 0. We must create a new
         // buffer and bind that one
 
-        UnmapObjectDataBuffer();
+        this->UnmapObjectDataBuffer();
 
         if (_currConstBufferIdx >= this->perObjectDataBuffers.size())
         {
@@ -105,7 +105,7 @@ namespace gz
 
         this->lastMainConstBuffer = _constBuffers[_currConstBufferIdx];
 
-        BindObjectDataBuffer(_commandBuffer, _perObjectDataBufferSlot);
+        this->BindObjectDataBuffer(_commandBuffer, _perObjectDataBufferSlot);
       }
 
       const size_t offset = _instanceIdx * numFloatsPerObject;

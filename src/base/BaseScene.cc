@@ -156,7 +156,7 @@ VisualPtr BaseScene::VisualAt(const CameraPtr &_camera,
     rayQuery->SetFromCamera(_camera, mousePos);
     RayQueryResult result = rayQuery->ClosestPoint();
 
-    if (result)
+    if (result.objectId > 0u)
     {
       visual = this->Visuals()->GetById(result.objectId);
     }

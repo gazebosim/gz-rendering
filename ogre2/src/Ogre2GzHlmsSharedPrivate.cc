@@ -82,17 +82,20 @@ namespace gz
 
         this->UnmapObjectDataBuffer();
 
+        Ogre::ConstBufferPacked *constBuffer = nullptr;
         if (_currConstBufferIdx >= this->perObjectDataBuffers.size())
         {
           this->vaoManager = _vaoManager;
           const size_t bufferSize =
             std::min<size_t>(65536, _vaoManager->getConstBufferMaxSize());
-          Ogre::ConstBufferPacked *constBuffer = _vaoManager->createConstBuffer(
+          constBuffer = _vaoManager->createConstBuffer(
             bufferSize, Ogre::BT_DYNAMIC_PERSISTENT, nullptr, false);
           this->perObjectDataBuffers.push_back(constBuffer);
         }
-        Ogre::ConstBufferPacked *constBuffer =
-          this->perObjectDataBuffers[_currConstBufferIdx];
+        else
+        {
+          constBuffer = this->perObjectDataBuffers[_currConstBufferIdx];
+        }
 
         this->currPerObjectDataBuffer = constBuffer;
         this->currPerObjectDataPtr = reinterpret_cast<float *>(

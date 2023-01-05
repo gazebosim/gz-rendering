@@ -134,6 +134,12 @@ TEST_F(GlobalIlluminationTest, GlobalIlluminationCiVct)
 
   CHECK_SUPPORTED_ENGINE("ogre2");
 
+  if (engine->GraphicsAPI() != GraphicsAPI::VULKAN)
+  {
+    GTEST_SKIP() << "Global Illumination CI VCT method currently only works "
+                 << "with vulkan backend" << std::endl;
+  }
+
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 

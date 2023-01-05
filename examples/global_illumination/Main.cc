@@ -249,53 +249,60 @@ void buildScene(ScenePtr _scene)
 
 #if GI_METHOD == 1
   auto gi = _scene->CreateGlobalIlluminationVct();
-  const uint32_t resolution[3]{ 128u, 128u, 32u };
-  const uint32_t octantCount[3]{ 4, 4, 2 };
-  gi->SetResolution(resolution);
-  gi->SetAnisotropic(true);
-  gi->SetHighQuality(false);
-  gi->SetThinWallCounter(1.0f);
-  gi->SetOctantCount(octantCount);
-  gi->SetAnisotropic(false);
-  gi->Build();
-  _scene->SetActiveGlobalIllumination(gi);
+  if (gi)
+  {
+    const uint32_t resolution[3]{ 128u, 128u, 32u };
+    const uint32_t octantCount[3]{ 4, 4, 2 };
+    gi->SetResolution(resolution);
+    gi->SetAnisotropic(true);
+    gi->SetHighQuality(false);
+    gi->SetThinWallCounter(1.0f);
+    gi->SetOctantCount(octantCount);
+    gi->SetAnisotropic(false);
+    gi->Build();
+    _scene->SetActiveGlobalIllumination(gi);
+  }
 #elif GI_METHOD == 2
   auto gi = _scene->CreateGlobalIlluminationCiVct();
 
-  gi->SetMaxCascades(3u);
+  if (gi)
+  {
+    gi->SetMaxCascades(3u);
 
-  CiVctCascadePtr cascade = gi->AddCascade(nullptr);
-  const uint32_t resolution[3]{ 128u, 128u, 128u };
-  const uint32_t octantCount[3]{ 4, 4, 2 };
-  cascade->SetAreaHalfSize(gz::math::Vector3d(5.0, 5.0, 5.0));
-  cascade->SetResolution(resolution);
-  cascade->SetCameraStepSize(gz::math::Vector3d(
-    1.0, 1.0, 1.0));  // Will be overriden by autoCalculateStepSizes
-  cascade->SetThinWallCounter(1.0f);
-  cascade->SetOctantCount(octantCount);
+    CiVctCascadePtr cascade = gi->AddCascade(nullptr);
+    const uint32_t resolution[3]{ 128u, 128u, 128u };
+    const uint32_t octantCount[3]{ 4, 4, 2 };
+    cascade->SetAreaHalfSize(gz::math::Vector3d(5.0, 5.0, 5.0));
+    cascade->SetResolution(resolution);
+    cascade->SetCameraStepSize(gz::math::Vector3d(
+      1.0, 1.0, 1.0));  // Will be overriden by autoCalculateStepSizes
+    cascade->SetThinWallCounter(1.0f);
+    cascade->SetOctantCount(octantCount);
 
-  cascade = gi->AddCascade(cascade.get());
-  cascade->SetAreaHalfSize(gz::math::Vector3d(10.0, 10.0, 10.0));
+    cascade = gi->AddCascade(cascade.get());
+    cascade->SetAreaHalfSize(gz::math::Vector3d(10.0, 10.0, 10.0));
 
-  cascade = gi->AddCascade(cascade.get());
-  cascade->SetAreaHalfSize(gz::math::Vector3d(20.0, 20.0, 20.0));
+    cascade = gi->AddCascade(cascade.get());
+    cascade->SetAreaHalfSize(gz::math::Vector3d(20.0, 20.0, 20.0));
 
-  gi->AutoCalculateStepSizes(gz::math::Vector3d(3.0, 3.0, 3.0));
+    gi->AutoCalculateStepSizes(gz::math::Vector3d(3.0, 3.0, 3.0));
 
-  gi->Bind(camera);
-  gi->SetHighQuality(false);
-  gi->Start(2u, true);
-  gi->Build();
-  _scene->SetActiveGlobalIllumination(gi);
+    gi->Bind(camera);
+    gi->SetHighQuality(false);
+    gi->Start(2u, true);
+    gi->Build();
+    _scene->SetActiveGlobalIllumination(gi);
+  }
 #endif
   g_gi = gi;
 }
 
 //////////////////////////////////////////////////
-CameraPtr createCamera(const std::string &_engineName)
+CameraPtr createCamera(const std::string &_engineName,
+    const std::map<std::string, std::string>& _params)
 {
   // create and populate scene
-  RenderEngine *engine = rendering::engine(_engineName);
+  RenderEngine *engine = rendering::engine(_engineName, _params);
   if (!engine)
   {
     std::cout << "Engine '" << _engineName << "' is not supported" << std::endl;
@@ -333,25 +340,38 @@ int main(int _argc, char **_argv)
     return -1;
   }
 
+  std::string engineName("ogre2");
+  if (_argc > 1)
+  {
+    engineName = _argv[1];
+  }
+
+  GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
+  if (_argc > 2)
+  {
+    graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));
+  }
+
   common::Console::SetVerbosity(4);
-  std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  engineNames.push_back("ogre2");
-  for (auto engineName : engineNames)
+  std::map<std::string, std::string> params;
+  if (engineName.compare("ogre2") == 0
+      && graphicsApi == GraphicsAPI::VULKAN)
   {
-    try
+    params["vulkan"] = "1";
+  }
+  try
+  {
+    CameraPtr camera = createCamera(engineName, params);
+    if (camera)
     {
-      CameraPtr camera = createCamera(engineName);
-      if (camera)
-      {
-        cameras.push_back(camera);
-      }
+      cameras.push_back(camera);
     }
-    catch (...)
-    {
-      std::cerr << "Error starting up: " << engineName << std::endl;
-    }
+  }
+  catch (...)
+  {
+    std::cerr << "Error starting up: " << engineName << std::endl;
   }
   run(cameras);
 

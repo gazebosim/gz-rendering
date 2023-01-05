@@ -17,6 +17,7 @@
 
 #include <gz/common/Console.hh>
 
+#include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2ArrowVisual.hh"
 #include "gz/rendering/ogre2/Ogre2AxisVisual.hh"
@@ -1369,6 +1370,13 @@ GlobalIlluminationVctPtr Ogre2Scene::CreateGlobalIlluminationVctImpl(
 GlobalIlluminationCiVctPtr Ogre2Scene::CreateGlobalIlluminationCiVctImpl(
   unsigned int _id, const std::string &_name)
 {
+  auto engine = Ogre2RenderEngine::Instance();
+  if (engine->GraphicsAPI() != GraphicsAPI::VULKAN)
+  {
+    gzerr << "Global Illumination CI VCT (ogre2) is currently "
+          << "only available with vulkan backend." << std::endl;
+    return nullptr;
+  }
   Ogre2GlobalIlluminationCiVctPtr gi(new Ogre2GlobalIlluminationCiVct);
   bool result = this->InitObject(gi, _id, _name);
 

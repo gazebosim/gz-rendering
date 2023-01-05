@@ -351,7 +351,6 @@ int main(int _argc, char **_argv)
   {
     graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));
   }
-  std::cerr << _argv[2] << std::endl;
 
   common::Console::SetVerbosity(4);
   std::vector<CameraPtr> cameras;

@@ -471,6 +471,9 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
   unsigned int g = *rgba >> 16 & 0xFF;
   unsigned int b = *rgba >> 8 & 0xFF;
 
+  // todo(anyone) shaders may return nan values for semi-transparent objects
+  // if there are no objects in the background (behind the semi-transparent
+  // object)
   math::Vector3d point(pixel[0], pixel[1], pixel[2]);
 
   auto rot = Ogre2Conversions::Convert(
@@ -519,7 +522,6 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
         }
       }
       return false;
-
     }
     else
     {

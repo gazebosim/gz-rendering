@@ -38,6 +38,18 @@ namespace gz
   namespace rendering
   {
     /////////////////////////////////////////////////
+    Ogre2GzHlmsShared::~Ogre2GzHlmsShared()
+    {
+      if (!this->vaoManager)
+        return;
+
+      for (auto & buffer : this->perObjectDataBuffers)
+        this->vaoManager->destroyConstBuffer(buffer);
+
+      this->perObjectDataBuffers.clear();
+    }
+
+    /////////////////////////////////////////////////
     void Ogre2GzHlmsShared::BindObjectDataBuffer(
       Ogre::CommandBuffer *_commandBuffer, uint16_t _perObjectDataBufferSlot)
     {
@@ -68,13 +80,23 @@ namespace gz
         // gl_InstanceId / drawId will be reset to 0. We must create a new
         // buffer and bind that one
 
-        UnmapObjectDataBuffer();
+        this->UnmapObjectDataBuffer();
 
-        const size_t bufferSize =
-          std::min<size_t>(65536, _vaoManager->getConstBufferMaxSize());
-        Ogre::ConstBufferPacked *constBuffer = _vaoManager->createConstBuffer(
-          bufferSize, Ogre::BT_DYNAMIC_PERSISTENT, nullptr, false);
-        this->perObjectDataBuffers.push_back(constBuffer);
+        Ogre::ConstBufferPacked *constBuffer = nullptr;
+        if (_currConstBufferIdx >= this->perObjectDataBuffers.size())
+        {
+          this->vaoManager = _vaoManager;
+          const size_t bufferSize =
+            std::min<size_t>(65536, _vaoManager->getConstBufferMaxSize());
+          constBuffer = _vaoManager->createConstBuffer(
+            bufferSize, Ogre::BT_DYNAMIC_PERSISTENT, nullptr, false);
+          this->perObjectDataBuffers.push_back(constBuffer);
+        }
+        else
+        {
+          constBuffer = this->perObjectDataBuffers[_currConstBufferIdx];
+        }
+
         this->currPerObjectDataBuffer = constBuffer;
         this->currPerObjectDataPtr = reinterpret_cast<float *>(
           constBuffer->map(0u, constBuffer->getNumElements()));
@@ -86,7 +108,7 @@ namespace gz
 
         this->lastMainConstBuffer = _constBuffers[_currConstBufferIdx];
 
-        BindObjectDataBuffer(_commandBuffer, _perObjectDataBufferSlot);
+        this->BindObjectDataBuffer(_commandBuffer, _perObjectDataBufferSlot);
       }
 
       const size_t offset = _instanceIdx * numFloatsPerObject;

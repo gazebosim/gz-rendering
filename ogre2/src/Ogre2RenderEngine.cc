@@ -374,6 +374,9 @@ bool Ogre2RenderEngine::InitImpl()
   catch (...)
   {
     gzerr << "Failed to initialize render-engine" << std::endl;
+    gzerr << "Please see the troubleshooting page for possible fixes: "
+          << "https://gazebosim.org/docs/fortress/troubleshooting"
+          << std::endl;
     return false;
   }
 }
@@ -589,8 +592,20 @@ void Ogre2RenderEngine::LoadPlugins()
       // load the plugin
       try
       {
+#if HAVE_GLX
+        // Store the current GLX context in case OGRE plugin init changes it
+        const auto context = glXGetCurrentContext();
+        const auto display = glXGetCurrentDisplay();
+        const auto drawable = glXGetCurrentDrawable();
+#endif
+
         // Load the plugin into OGRE
         this->ogreRoot->loadPlugin(filename, piter->bOptional, nullptr);
+
+#if HAVE_GLX
+        // Restore GLX context
+        glXMakeCurrent(display, drawable, context);
+#endif
       }
       catch(Ogre::Exception &)
       {

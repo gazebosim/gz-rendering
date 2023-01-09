@@ -234,6 +234,7 @@ void Ogre2Heightmap::Init()
         &ogreSceneManager->_getEntityMemoryManager(
           Ogre::/*SCENE_STATIC*/SCENE_DYNAMIC),
         ogreSceneManager, 11u, ogreCompMgr, nullptr, true );
+
   // Does not cast shadows because it uses a raymarching implementation
   // instead of shadow maps. It does receive shadows from shadow maps though
   this->dataPtr->terra->setCastShadows(false);

@@ -713,7 +713,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
             static_cast<Ogre::CompositorPassSceneDef *>(
             colorTargetDef->addPass(Ogre::PASS_SCENE));
         passScene->mShadowNode = this->dataPtr->kShadowNodeName;
-        passScene->mVisibilityMask = GZ_VISIBILITY_ALL;
+        passScene->setVisibilityMask(GZ_VISIBILITY_ALL);
         passScene->mIncludeOverlays = false;
         passScene->mFirstRQ = 0u;
         passScene->mLastRQ = 2u;
@@ -750,7 +750,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
         Ogre::CompositorPassSceneDef *passScene =
             static_cast<Ogre::CompositorPassSceneDef *>(
             colorTargetDef->addPass(Ogre::PASS_SCENE));
-        passScene->mVisibilityMask = GZ_VISIBILITY_ALL;
+        passScene->setVisibilityMask(GZ_VISIBILITY_ALL);
         // todo(anyone) PbsMaterialsShadowNode is hardcoded.
         // Although this may be just fine
         passScene->mShadowNode = this->dataPtr->kShadowNodeName;
@@ -772,8 +772,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
         this->FarClipPlane(),
         this->FarClipPlane()));
       // depth texute does not contain particles
-      passScene->mVisibilityMask = GZ_VISIBILITY_ALL
-          & ~Ogre2ParticleEmitter::kParticleVisibilityFlags;
+      passScene->setVisibilityMask(
+        GZ_VISIBILITY_ALL & ~Ogre2ParticleEmitter::kParticleVisibilityFlags);
     }
 
     Ogre::CompositorTargetDef *particleTargetDef =
@@ -786,8 +786,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
           particleTargetDef->addPass(Ogre::PASS_SCENE));
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue::Black);
-      passScene->mVisibilityMask =
-          Ogre2ParticleEmitter::kParticleVisibilityFlags;
+      passScene->setVisibilityMask(
+        Ogre2ParticleEmitter::kParticleVisibilityFlags);
     }
 
     // rt0 target - converts depth to xyz
@@ -911,7 +911,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
         this->ImageWidth(), this->ImageHeight());
       this->dataPtr->ogreDepthTexture[i]->setNumMipmaps(1u);
       this->dataPtr->ogreDepthTexture[i]->setPixelFormat(
-        Ogre::PFG_RGBA32_FLOAT);
+        Ogre::PFG_RGBA32_UINT);
 
       this->dataPtr->ogreDepthTexture[i]->scheduleTransitionTo(
         Ogre::GpuResidency::Resident);

@@ -146,7 +146,7 @@ void handleMouse()
     g_rayQuery = rayCamera->Scene()->CreateRayQuery();
     if (!g_rayQuery)
     {
-      ignerr << "Failed to create Ray Query" << std::endl;
+      gzerr << "Failed to create Ray Query" << std::endl;
       return;
     }
   }
@@ -285,8 +285,8 @@ bool SaveImage(const uint8_t *_data)
   {
     if (!gz::common::createDirectories(savePath))
     {
-      ignerr << "Could not create a directory [" << savePath
-             << "] for saving images.\n";
+      gzerr << "Could not create a directory [" << savePath
+            << "] for saving images.\n";
       return false;
     }
   }
@@ -409,7 +409,7 @@ void run(std::vector<gz::rendering::CameraPtr> &_cameras)
 {
   if (_cameras.empty())
   {
-    ignerr << "No cameras found. Scene will not be rendered" << std::endl;
+    gzerr << "No cameras found. Scene will not be rendered" << std::endl;
     return;
   }
 

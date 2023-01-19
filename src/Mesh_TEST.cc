@@ -71,7 +71,11 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
   // create the mesh using mesh descriptor
   MeshDescriptor descriptor("unit_box");
   MeshPtr mesh = scene->CreateMesh(descriptor);
-  ASSERT_TRUE(mesh!= nullptr);
+  ASSERT_NE(nullptr, mesh);
+
+  // make sure we can create the mesh again with same descriptor
+  mesh = scene->CreateMesh(descriptor);
+  ASSERT_NE(nullptr, mesh);
 
   // test mesh API
   EXPECT_EQ(mesh->SubMeshCount(), 1u);

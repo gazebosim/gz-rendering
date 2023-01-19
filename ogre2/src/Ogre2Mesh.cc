@@ -63,12 +63,13 @@ Ogre2Mesh::Ogre2Mesh()
 //////////////////////////////////////////////////
 Ogre2Mesh::~Ogre2Mesh()
 {
+  this->Destroy();
 }
 
 //////////////////////////////////////////////////
 void Ogre2Mesh::Destroy()
 {
-  if (!this->ogreItem)
+  if (!this->ogreItem || !this->Scene()->IsInitialized())
     return;
 
   // We need to override BaseMesh::Destroy for ogre2 implementation to control

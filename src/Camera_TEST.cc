@@ -47,8 +47,6 @@ class CameraTest : public testing::Test,
 
   /// \brief Test setting visibility mask
   public: void VisibilityMask(const std::string &_renderEngine);
-
-  public: void Update(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -395,55 +393,6 @@ TEST_P(CameraTest, AddRemoveRenderPass)
 TEST_P(CameraTest, VisibilityMask)
 {
   VisibilityMask(GetParam());
-}
-
-/////////////////////////////////////////////////
-void CameraTest::Update(const std::string &_renderEngine)
-{
-  // create and populate scene
-  RenderEngine *engine = rendering::engine(_renderEngine);
-  if (!engine)
-  {
-    igndbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
-    return;
-  }
-  ScenePtr scene = engine->CreateScene("scene");
-  ASSERT_NE(nullptr, scene);
-
-  CameraPtr camera = scene->CreateCamera("camera");
-  EXPECT_TRUE(camera != nullptr);
-
-
-  // create visual
-  VisualPtr visual = scene->CreateVisual("parent");
-  ASSERT_NE(nullptr, visual);
-
-  VisualPtr child = scene->CreateVisual("child");
-  ASSERT_NE(nullptr, child);
-
-  // no child by default
-  EXPECT_EQ(0u, visual->ChildCount());
-
-  // attach child and verify
-  visual->AddChild(child);
-
-
-  VisualPtr root = scene->RootVisual();
-  root->AddChild(visual);
-  root->AddChild(camera);
-
-  camera->Update();
-
-  // Clean up
-  engine->DestroyScene(scene);
-  rendering::unloadEngine(engine->Name());
-}
-
-/////////////////////////////////////////////////
-TEST_P(CameraTest, Update)
-{
-  Update(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,

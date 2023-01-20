@@ -307,7 +307,7 @@ namespace ignition
     template <class T>
     void BaseNode<T>::PreRender()
     {
-      T::PreRender();
+      std::cerr << "BaseNode::PreRender() " << this->Name() << std::endl;
       this->PreRenderChildren();
     }
 

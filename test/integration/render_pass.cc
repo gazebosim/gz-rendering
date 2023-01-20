@@ -167,6 +167,17 @@ void RenderPassTest::GaussianNoise(const std::string &_renderEngine)
   }
   unsigned int diffAvg = diffSum / (width * height * channelCount);
 
+  common::Image img;
+  img.SetFromData(image.Data<unsigned char>(), camera->ImageWidth(),
+    camera->ImageHeight(), common::Image::RGB_INT8);
+  img.SavePNG("img.png");
+
+  common::Image imgNoise;
+  imgNoise.SetFromData(imageNoise.Data<unsigned char>(), camera->ImageWidth(),
+    camera->ImageHeight(), common::Image::RGB_INT8);
+  imgNoise.SavePNG("img_noise.png");
+
+
   // We expect that there will be some non-zero difference between the two
   // images.
   EXPECT_NE(diffSum, 0u);

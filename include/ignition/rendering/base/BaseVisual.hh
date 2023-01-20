@@ -306,6 +306,7 @@ namespace ignition
     template <class T>
     void BaseVisual<T>::PreRender()
     {
+      std::cerr << "BaseVisual::PreRender() " << this->Name() << std::endl;
       T::PreRender();
       this->PreRenderChildren();
       this->PreRenderGeometries();

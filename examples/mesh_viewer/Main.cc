@@ -56,16 +56,30 @@ void buildScene(ScenePtr _scene)
   root->AddChild(light0);
 
 //! [create a mesh]
+  {
   VisualPtr mesh = _scene->CreateVisual();
   mesh->SetLocalPosition(3, 0, 0);
-  mesh->SetLocalRotation(1.5708, 0, 2.0);
+//  mesh->SetLocalRotation(1.5708, 0, 2.0);
   MeshDescriptor descriptor;
-  descriptor.meshName = common::joinPaths(RESOURCE_PATH, "duck.dae");
+  descriptor.meshName = common::joinPaths(RESOURCE_PATH, "link_3.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
   mesh->AddGeometry(meshGeom);
   root->AddChild(mesh);
+  }
+
+  {
+  VisualPtr mesh = _scene->CreateVisual();
+  mesh->SetLocalPosition(3, 0, 0);
+  MeshDescriptor descriptor;
+  descriptor.meshName = common::joinPaths(RESOURCE_PATH, "link_4.dae");
+  common::MeshManager *meshManager = common::MeshManager::Instance();
+  descriptor.mesh = meshManager->Load(descriptor.meshName);
+  MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+  mesh->AddGeometry(meshGeom);
+  root->AddChild(mesh);
+  }
 //! [create a mesh]
 
   // create gray material

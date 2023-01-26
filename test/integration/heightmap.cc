@@ -70,7 +70,7 @@ void HeightmapTest::TransparencyOverHeightmap(const std::string &_renderEngine)
     }
 #endif
 
-  // Test: the scene consists of red background, semi-transprent green box
+  // Test: the scene consists of red background, semi-transparent green box
   // over blue heightmap
   // check the rgb value of the image at position of the box
   // it should be blending of green box with blue heightmap and no
@@ -81,7 +81,7 @@ void HeightmapTest::TransparencyOverHeightmap(const std::string &_renderEngine)
   if (!engine)
   {
     igndbg << "Engine '" << _renderEngine
-              << "' is not supported" << std::endl;
+           << "' is not supported" << std::endl;
     return;
   }
 
@@ -108,7 +108,7 @@ void HeightmapTest::TransparencyOverHeightmap(const std::string &_renderEngine)
   HeightmapDescriptor desc;
   desc.SetName("example_bowl");
   desc.SetData(data);
-  desc.SetSize({ 17, 17, 7.0 });
+  desc.SetSize({17, 17, 7.0});
   desc.SetSampling(2u);
   desc.SetUseTerrainPaging(false);
 

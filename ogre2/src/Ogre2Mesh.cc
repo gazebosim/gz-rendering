@@ -355,8 +355,24 @@ void Ogre2SubMesh::SetMaterialImpl(MaterialPtr _material)
   // Pbs Hlms material
   else
   {
-    this->ogreSubItem->setDatablock(
-        static_cast<Ogre::HlmsPbsDatablock *>(derived->Datablock()));
+    auto datablock =
+        static_cast<Ogre::HlmsPbsDatablock *>(derived->Datablock());
+    this->ogreSubItem->setDatablock(datablock);
+
+    // update render queue group based on material transparency setting
+    if (datablock->getTransparencyMode() == Ogre::HlmsPbsDatablock::None)
+    {
+      // by default, ogre items are in render queue 10
+      // these are hardcoded in ogre-next and there does not seem to be
+      // an enum of function to retrieve this default render queue group
+      this->ogreSubItem->getParent()->setRenderQueueGroup(10);
+    }
+    else
+    {
+      // put in render queue group 200
+      // v2 entities can be placed in groups 0-99 or 200-224
+      this->ogreSubItem->getParent()->setRenderQueueGroup(200);
+    }
   }
 
   // set cast shadows

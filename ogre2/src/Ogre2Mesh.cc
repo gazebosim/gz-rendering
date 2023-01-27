@@ -357,7 +357,7 @@ void Ogre2SubMesh::SetMaterialImpl(MaterialPtr _material)
   {
     auto datablock =
         static_cast<Ogre::HlmsPbsDatablock *>(derived->Datablock());
-    if (databock)
+    if (datablock)
     {
       this->ogreSubItem->setDatablock(datablock);
 

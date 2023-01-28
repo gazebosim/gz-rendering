@@ -202,15 +202,29 @@ void OgreGpuRays::Destroy()
     this->dataPtr->orthoCam = nullptr;
   }
 
+  if (this->scene && this->dataPtr->ogreCamera)
+  {
+    this->scene->OgreSceneManager()->destroyCamera(this->dataPtr->ogreCamera);
+    this->dataPtr->ogreCamera = nullptr;
+  }
+
+
   if (this->dataPtr->undistMesh)
   {
     delete this->dataPtr->undistMesh;
     this->dataPtr->undistMesh = nullptr;
   }
 
+  if (this->scene && this->dataPtr->visual)
+  {
+    this->scene->DestroyNode(this->dataPtr->visual);
+  }
+
   this->dataPtr->visual.reset();
   this->dataPtr->texIdx.clear();
   this->dataPtr->texCount = 0u;
+
+  OgreNode::Destroy();
 }
 
 /////////////////////////////////////////////////

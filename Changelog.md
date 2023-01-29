@@ -740,7 +740,7 @@
 
 1. Remove Windows Warnings
     * [Pull request #206](https://github.com/ignitionrobotics/ign-rendering/pull/206)
-    * [Pull request #213](https://github.com/ignitionrobotics/ign-rendering/pull/213)
+    * [Pull request #213](https://github.cohttps://github.com/gazebosim/<REPO>/compare/<TO_BRANCH>...<FROM_BRANCH>m/ignitionrobotics/ign-rendering/pull/213)
     * [Pull request #215](https://github.com/ignitionrobotics/ign-rendering/pull/215)
 
 1. Fix spelling Desconstructor -> Destructor
@@ -859,6 +859,12 @@
 
 1. Add support for transparency based on textures alpha channel for ogre1 and ogre2
     * [BitBucket pull request 229](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/229)
+
+
+### Ignition Rendering 3.7.0 (2022-11-29)
+
+1. Migrate ignition to gazebo headers.
+    * [Pull request #705](https://github.com/gazebosim/gz-rendering/pull/705)
 
 ### Ignition Rendering 3.6.1 (2022-11-08)
 

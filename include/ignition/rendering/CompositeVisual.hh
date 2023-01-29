@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_COMPOSITEVISUAL_HH_
-#define IGNITION_RENDERING_COMPOSITEVISUAL_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Visual.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    /// \class CompositeVisual CompositeVisual.hh
-    /// ignition/rendering/CompositeVisual.hh
-    /// \brief Represents a predefined collection of geometries and visuals
-    class IGNITION_RENDERING_VISIBLE CompositeVisual :
-      public virtual Visual
-    {
-      /// \brief Destructor
-      public: virtual ~CompositeVisual() { }
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/CompositeVisual.hh>
+#include <ignition/rendering/config.hh>

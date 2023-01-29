@@ -17,39 +17,39 @@
 
 #include <sstream>
 
-#include <ignition/math/Helpers.hh>
+#include <gz/math/Helpers.hh>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/MeshManager.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/MeshManager.hh>
 
-#include "ignition/common/Time.hh"
+#include "gz/common/Time.hh"
 
-#include "ignition/rendering/ArrowVisual.hh"
-#include "ignition/rendering/AxisVisual.hh"
-#include "ignition/rendering/BoundingBoxCamera.hh"
-#include "ignition/rendering/COMVisual.hh"
-#include "ignition/rendering/InertiaVisual.hh"
-#include "ignition/rendering/JointVisual.hh"
-#include "ignition/rendering/LidarVisual.hh"
-#include "ignition/rendering/LightVisual.hh"
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/Capsule.hh"
-#include "ignition/rendering/DepthCamera.hh"
-#include "ignition/rendering/GizmoVisual.hh"
-#include "ignition/rendering/GpuRays.hh"
-#include "ignition/rendering/Grid.hh"
-#include "ignition/rendering/ParticleEmitter.hh"
-#include "ignition/rendering/RayQuery.hh"
-#include "ignition/rendering/RenderTarget.hh"
-#include "ignition/rendering/Text.hh"
-#include "ignition/rendering/ThermalCamera.hh"
-#include "ignition/rendering/SegmentationCamera.hh"
-#include "ignition/rendering/Visual.hh"
-#include "ignition/rendering/base/BaseStorage.hh"
-#include "ignition/rendering/base/BaseScene.hh"
+#include "gz/rendering/ArrowVisual.hh"
+#include "gz/rendering/AxisVisual.hh"
+#include "gz/rendering/BoundingBoxCamera.hh"
+#include "gz/rendering/COMVisual.hh"
+#include "gz/rendering/InertiaVisual.hh"
+#include "gz/rendering/JointVisual.hh"
+#include "gz/rendering/LidarVisual.hh"
+#include "gz/rendering/LightVisual.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/Capsule.hh"
+#include "gz/rendering/DepthCamera.hh"
+#include "gz/rendering/GizmoVisual.hh"
+#include "gz/rendering/GpuRays.hh"
+#include "gz/rendering/Grid.hh"
+#include "gz/rendering/ParticleEmitter.hh"
+#include "gz/rendering/RayQuery.hh"
+#include "gz/rendering/RenderTarget.hh"
+#include "gz/rendering/Text.hh"
+#include "gz/rendering/ThermalCamera.hh"
+#include "gz/rendering/SegmentationCamera.hh"
+#include "gz/rendering/Visual.hh"
+#include "gz/rendering/base/BaseStorage.hh"
+#include "gz/rendering/base/BaseScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 // Prevent deprecation warnings for simTime

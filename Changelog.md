@@ -860,6 +860,61 @@
 1. Add support for transparency based on textures alpha channel for ogre1 and ogre2
     * [BitBucket pull request 229](https://osrf-migration.github.io/ignition-gh-pages/#!/ignitionrobotics/ign-rendering/pull-requests/229)
 
+### Ignition Rendering 3.6.1 (2022-11-08)
+
+1. Improved coverage: MeshDescriptor, Mesh, MoveToHelper, OrbitViewController, PixelFormat and ShadersParams
+    * [Pull request #748](https://github.com/gazebosim/gz-rendering/pull/748)
+
+1. Suppress Windows warnings
+    * [Pull request #749](https://github.com/gazebosim/gz-rendering/pull/749)
+
+1. Improved RenderEngine and Mesh coverage
+    * [Pull request #739](https://github.com/gazebosim/gz-rendering/pull/739)
+
+1. Increase TransformControl test converage (#668)
+    * [Pull request #741](https://github.com/gazebosim/gz-rendering/pull/741)
+
+1. Increased Marker coverage
+    * [Pull request #738](https://github.com/gazebosim/gz-rendering/pull/738)
+
+1. Added shaderType converage
+    * [Pull request #740](https://github.com/gazebosim/gz-rendering/pull/740)
+
+1. Improved grid coverage
+    * [Pull request #737](https://github.com/gazebosim/gz-rendering/pull/737)
+
+1. Improved coverage Arrow and Axis visuals and fixed some warnings
+    * [Pull request #736](https://github.com/gazebosim/gz-rendering/pull/736)
+
+1. Backport from 6 to 3. Disable C4275 warnings on Windows from OgreUTFString (#621)
+    * [Pull request #707](https://github.com/gazebosim/gz-rendering/pull/707)
+
+1. Remove redundant namespace references
+    * [Pull request #701](https://github.com/gazebosim/gz-rendering/pull/701)
+
+1. Disabling flaky depth and thermal camera tests on mac (#405)
+    * [Pull request #696](https://github.com/gazebosim/gz-rendering/pull/696)
+
+1. Change IGN_DESIGNATION to GZ_DESIGNATION (#677)
+    * [Pull request #691](https://github.com/gazebosim/gz-rendering/pull/691)
+
+1. Add coverage ignore file
+    * [Pull request #689](https://github.com/gazebosim/gz-rendering/pull/689)
+
+1. Ignition -> Gazebo
+    * [Pull request #674](https://github.com/gazebosim/gz-rendering/pull/674)
+
+1. fix checking unofficial ogre version when ogre 1.x is not installed
+    * [Pull request #648](https://github.com/gazebosim/gz-rendering/pull/648)
+
+1. Updated CODEOWNERS
+    * [Pull request #612](https://github.com/gazebosim/gz-rendering/pull/612)
+    * [Pull request #613](https://github.com/gazebosim/gz-rendering/pull/613)
+    * [Pull request #634](https://github.com/gazebosim/gz-rendering/pull/634)
+
+1. Silence CMake policy CMP0072
+    * [Pull request #528](https://github.com/gazebosim/gz-rendering/pull/528)
+
 ### Ignition Rendering 3.6.0 (2021-10-15)
 
 1. Avoid symbol redefition to fix armel builds

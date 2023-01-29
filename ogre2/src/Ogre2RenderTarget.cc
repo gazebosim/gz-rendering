@@ -15,17 +15,17 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/Material.hh"
+#include "gz/rendering/Material.hh"
 
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderPass.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Material.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2RenderPass.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Material.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
 
 namespace ignition
 {
@@ -75,7 +75,7 @@ class Ogre2RenderTargetCompositorListener :
 }
 
 /// \brief Private data class for Ogre2RenderTarget
-class ignition::rendering::Ogre2RenderTargetPrivate
+class gz::rendering::Ogre2RenderTargetPrivate
 {
   /// \brief Listener for chaning compositor pass properties
   public: Ogre2RenderTargetCompositorListener *rtListener = nullptr;
@@ -101,7 +101,7 @@ class ignition::rendering::Ogre2RenderTargetPrivate
   public: Ogre::TextureGpu *ogreTexture[2] = {nullptr, nullptr};
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

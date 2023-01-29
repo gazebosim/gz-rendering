@@ -16,16 +16,16 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
-#include "ignition/rendering/Marker.hh"
-#include "ignition/rendering/Material.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/Marker.hh"
+#include "gz/rendering/Material.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 using namespace std::chrono_literals;
 
@@ -131,6 +131,8 @@ void MarkerTest::Marker(const std::string &_renderEngine)
   // exercise point api
   EXPECT_NO_THROW(marker->AddPoint(math::Vector3d(0, 1, 2),
       math::Color::White));
+  EXPECT_NO_THROW(marker->AddPoint(-2, -1, 0, math::Color::White));
+
   EXPECT_NO_THROW(marker->SetPoint(0, math::Vector3d(3, 1, 2)));
   EXPECT_NO_THROW(marker->ClearPoints());
 

@@ -18,15 +18,15 @@
 #include <map>
 #include <mutex>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/SystemPaths.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/SystemPaths.hh>
 
-#include <ignition/plugin/Loader.hh>
+#include <gz/plugin/Loader.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderEngineManager.hh"
-#include "ignition/rendering/RenderEnginePlugin.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderEngineManager.hh"
+#include "gz/rendering/RenderEnginePlugin.hh"
 
 /// \brief Holds information about an engine
 struct EngineInfo
@@ -36,11 +36,11 @@ struct EngineInfo
   std::string name;
 
   /// \brief The pointer to the render engine.
-  ignition::rendering::RenderEngine *engine;
+  gz::rendering::RenderEngine *engine;
 };
 
 /// \brief Private implementation of the RenderEngineManager class.
-class ignition::rendering::RenderEngineManagerPrivate
+class gz::rendering::RenderEngineManagerPrivate
 {
   /// \brief EngineMap that maps engine name to an engine pointer.
   typedef std::map<std::string, RenderEngine *> EngineMap;
@@ -93,7 +93,7 @@ class ignition::rendering::RenderEngineManagerPrivate
   public: std::map<std::string, std::string> enginePlugins;
 
   /// \brief Plugin loader for managing render engine plugin libraries.
-  public: ignition::plugin::Loader pluginLoader;
+  public: gz::plugin::Loader pluginLoader;
 
   /// \brief Environment variable which holds paths to look for plugins
   public: std::string pluginPathEnv = "IGN_RENDERING_PLUGIN_PATH";
@@ -105,7 +105,7 @@ class ignition::rendering::RenderEngineManagerPrivate
   public: std::recursive_mutex enginesMutex;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

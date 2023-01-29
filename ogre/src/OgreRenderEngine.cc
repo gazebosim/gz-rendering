@@ -30,21 +30,21 @@
 
 # include <sstream>
 
-#include <ignition/plugin/Register.hh>
+#include <gz/plugin/Register.hh>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
 
-#include "ignition/rendering/RenderEngineManager.hh"
-#include "ignition/rendering/ogre/OgreIncludes.hh"
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#include "ignition/rendering/ogre/OgreRenderTypes.hh"
-#include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreStorage.hh"
+#include "gz/rendering/RenderEngineManager.hh"
+#include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/ogre/OgreRenderEngine.hh"
+#include "gz/rendering/ogre/OgreRenderTypes.hh"
+#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreStorage.hh"
 
-class ignition::rendering::OgreRenderEnginePrivate
+class gz::rendering::OgreRenderEnginePrivate
 {
 #if !defined(__APPLE__) && !defined(_WIN32)
   public: XVisualInfo *dummyVisual = nullptr;
@@ -54,7 +54,7 @@ class ignition::rendering::OgreRenderEnginePrivate
   public: std::vector<unsigned int> fsaaLevels;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

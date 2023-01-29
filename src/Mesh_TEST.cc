@@ -19,19 +19,19 @@
 #include <memory>
 #include <string>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/Skeleton.hh>
-#include <ignition/common/SkeletonAnimation.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/common/Skeleton.hh>
+#include <gz/common/SkeletonAnimation.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/Mesh.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/Mesh.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class MeshTest : public testing::Test,
@@ -90,6 +90,11 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
 
   EXPECT_FALSE(mesh->HasSkeleton());
 
+  std::map<std::string, ignition::math::Matrix4d> skinFrames;
+  mesh->SetSkeletonLocalTransforms(skinFrames);
+  auto skeletonLocalTransforms = mesh->SkeletonLocalTransforms();
+  EXPECT_EQ(0u, skeletonLocalTransforms.size());
+
   // test submesh API
   MaterialPtr mat = submesh->Material();
   ASSERT_TRUE(mat != nullptr);
@@ -100,6 +105,8 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
 
   EXPECT_EQ(matClone, submesh->Material());
   EXPECT_NE(mat, submesh->Material());
+
+  submesh->SetMaterial(MaterialPtr(), false);
 
   submesh->SetMaterial("Default/White", false);
   EXPECT_EQ("Default/White", submesh->Material()->Name());
@@ -191,6 +198,9 @@ void MeshTest::MeshSkeleton(const std::string &_renderEngine)
 
     mesh->SetSkeletonLocalTransforms(skinFrames);
   }
+
+  auto skeletonLocalTransforms = mesh->SkeletonLocalTransforms();
+  EXPECT_EQ(31u, skeletonLocalTransforms.size());
 
   // Clean up
   engine->DestroyScene(scene);

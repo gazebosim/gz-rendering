@@ -24,13 +24,13 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre2/Export.hh"
-#include "ignition/rendering/ogre2/Ogre2Camera.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/SegmentationCamera.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre2/Export.hh"
+#include "gz/rendering/ogre2/Ogre2Camera.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/SegmentationCamera.hh"
 
 namespace ignition
 {

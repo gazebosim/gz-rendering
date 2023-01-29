@@ -18,22 +18,22 @@
 
 #include <sstream>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Material.hh>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/Skeleton.hh>
-#include <ignition/common/SkeletonAnimation.hh>
-#include <ignition/common/SubMesh.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Material.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/common/Skeleton.hh>
+#include <gz/common/SkeletonAnimation.hh>
+#include <gz/common/SubMesh.hh>
 
-#include <ignition/math/Matrix4.hh>
+#include <gz/math/Matrix4.hh>
 
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Mesh.hh"
-#include "ignition/rendering/ogre2/Ogre2MeshFactory.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Storage.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Mesh.hh"
+#include "gz/rendering/ogre2/Ogre2MeshFactory.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Storage.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -56,7 +56,7 @@
 #endif
 
 /// \brief Private data for the Ogre2MeshFactory class
-class ignition::rendering::Ogre2MeshFactoryPrivate
+class gz::rendering::Ogre2MeshFactoryPrivate
 {
   /// \brief Vector with the template materials, we keep the pointer to be
   /// able to remove it when nobody is using it.
@@ -64,7 +64,7 @@ class ignition::rendering::Ogre2MeshFactoryPrivate
 };
 
 /// \brief Private data for the Ogre2SubMeshStoreFactory class
-class ignition::rendering::Ogre2SubMeshStoreFactoryPrivate
+class gz::rendering::Ogre2SubMeshStoreFactoryPrivate
 {
 };
 

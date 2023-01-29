@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -24,7 +24,7 @@
   #pragma warning(pop)
 #endif
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

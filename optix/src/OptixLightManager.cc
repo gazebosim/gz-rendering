@@ -14,13 +14,13 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/optix/OptixLightManager.hh"
+#include "gz/rendering/optix/OptixLightManager.hh"
 
-#include "ignition/rendering/optix/OptixLight.hh"
-#include "ignition/rendering/optix/OptixScene.hh"
-#include "ignition/rendering/optix/OptixVisual.hh"
+#include "gz/rendering/optix/OptixLight.hh"
+#include "gz/rendering/optix/OptixScene.hh"
+#include "gz/rendering/optix/OptixVisual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

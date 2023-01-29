@@ -16,7 +16,7 @@
  */
 #include <optix.h>
 #include <optix_math.h>
-#include "ignition/rendering/optix/OptixRayTypes.hh"
+#include "gz/rendering/optix/OptixRayTypes.hh"
 
 rtDeclareVariable(float3, color, , );
 rtDeclareVariable(OptixRadianceRayData, payload, rtPayload, );

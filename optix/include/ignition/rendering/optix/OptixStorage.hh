@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,53 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXSTORAGE_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXSTORAGE_HH_
 
-#include "ignition/rendering/base/BaseStorage.hh"
-
-#include "ignition/rendering/optix/OptixGeometry.hh"
-#include "ignition/rendering/optix/OptixLight.hh"
-#include "ignition/rendering/optix/OptixMaterial.hh"
-#include "ignition/rendering/optix/OptixMesh.hh"
-#include "ignition/rendering/optix/OptixNode.hh"
-#include "ignition/rendering/optix/OptixScene.hh"
-#include "ignition/rendering/optix/OptixSensor.hh"
-#include "ignition/rendering/optix/OptixVisual.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    template class BaseSceneStore<OptixScene>;
-    template class BaseNodeStore<OptixNode>;
-    template class BaseLightStore<OptixLight>;
-    template class BaseSensorStore<OptixSensor>;
-    template class BaseVisualStore<OptixVisual>;
-    template class BaseGeometryStore<OptixGeometry>;
-    template class BaseSubMeshStore<OptixSubMesh>;
-    template class BaseMaterialMap<OptixMaterial>;
-
-    typedef BaseSceneStore<OptixScene>       OptixSceneStore;
-    typedef BaseNodeStore<OptixNode>         OptixNodeStore;
-    typedef BaseLightStore<OptixLight>       OptixLightStore;
-    typedef BaseSensorStore<OptixSensor>     OptixSensorStore;
-    typedef BaseVisualStore<OptixVisual>     OptixVisualStore;
-    typedef BaseGeometryStore<OptixGeometry> OptixGeometryStore;
-    typedef BaseSubMeshStore<OptixSubMesh>   OptixSubMeshStore;
-    typedef BaseMaterialMap<OptixMaterial>   OptixMaterialMap;
-
-    typedef std::shared_ptr<OptixSceneStore>    OptixSceneStorePtr;
-    typedef std::shared_ptr<OptixNodeStore>     OptixNodeStorePtr;
-    typedef std::shared_ptr<OptixLightStore>    OptixLightStorePtr;
-    typedef std::shared_ptr<OptixSensorStore>   OptixSensorStorePtr;
-    typedef std::shared_ptr<OptixVisualStore>   OptixVisualStorePtr;
-    typedef std::shared_ptr<OptixGeometryStore> OptixGeometryStorePtr;
-    typedef std::shared_ptr<OptixSubMeshStore>  OptixSubMeshStorePtr;
-    typedef std::shared_ptr<OptixMaterialMap>   OptixMaterialMapPtr;
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixStorage.hh>
+#include <ignition/rendering/config.hh>

@@ -15,19 +15,19 @@
 */
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/RayQuery.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/Utils.hh"
-#include "ignition/rendering/Visual.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/RayQuery.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/Utils.hh"
+#include "gz/rendering/Visual.hh"
 
 #include "test_config.h"  // NOLINT(build/include)
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class UtilTest : public testing::Test,

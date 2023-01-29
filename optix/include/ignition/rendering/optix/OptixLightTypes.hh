@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,87 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXLIGHTTYPES_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXLIGHTTYPES_HH_
 
-#include <optix_math.h>
-
-#ifndef __CUDA_ARCH__
-namespace ignition
-{
-  namespace rendering
-  {
-  inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-  //
-#endif
-
-  typedef enum OptixLightType_t
-  {
-    LT_DIRECTIONAL = 0,
-    LT_POINT       = 1,
-    LT_SPOT        = 2,
-    LT_COUNT       = 3,
-  } OptixLightType;
-
-  struct OptixLightColor
-  {
-    float4 diffuse;
-    float4 specular;
-  };
-
-  struct OptixLightAttenuation
-  {
-    // cppcheck-suppress unusedStructMember
-    float range;
-    // cppcheck-suppress unusedStructMember
-    float constant;
-    // cppcheck-suppress unusedStructMember
-    float linear;
-    // cppcheck-suppress unusedStructMember
-    float quadratic;
-  };
-
-  struct OptixLightSpot
-  {
-    // cppcheck-suppress unusedStructMember
-    float innerAngle;
-    // cppcheck-suppress unusedStructMember
-    float outerAngle;
-    // cppcheck-suppress unusedStructMember
-    float falloff;
-  };
-
-  struct OptixCommonLightData
-  {
-    float3 position;
-    OptixLightColor color;
-    OptixLightAttenuation atten;
-    // cppcheck-suppress unusedStructMember
-    bool castShadows;
-  };
-
-  struct OptixDirectionalLightData
-  {
-    OptixCommonLightData common;
-    float3 direction;
-  };
-
-  struct OptixPointLightData
-  {
-    OptixCommonLightData common;
-  };
-
-  struct OptixSpotLightData
-  {
-    OptixCommonLightData common;
-    float3 direction;
-    OptixLightSpot spot;
-  };
-
-#ifndef __CUDA_ARCH__
-  }
-  }
-}
-#endif
-
-#endif
+#include <gz/rendering/optix/OptixLightTypes.hh>
+#include <ignition/rendering/config.hh>

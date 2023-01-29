@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/optix/OptixArrowVisual.hh"
+#include "gz/rendering/optix/OptixArrowVisual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,31 +14,5 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2JOINTVISUAL_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2JOINTVISUAL_HH_
-
-#include "ignition/rendering/base/BaseJointVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2JointVisual :
-      public BaseJointVisual<Ogre2Visual>
-    {
-      /// \brief Constructor
-      protected: Ogre2JointVisual();
-
-      /// \brief Destructor
-      public: virtual ~Ogre2JointVisual();
-
-      /// \brief Only scene can instantiate this class
-      private: friend class Ogre2Scene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/ogre2/Ogre2JointVisual.hh>
+#include <ignition/rendering/config.hh>

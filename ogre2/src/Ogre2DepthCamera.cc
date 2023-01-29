@@ -33,19 +33,19 @@
 #endif
 
 #include <math.h>
-#include <ignition/math/Helpers.hh>
+#include <gz/math/Helpers.hh>
 
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2DepthCamera.hh"
-#include "ignition/rendering/ogre2/Ogre2GaussianNoisePass.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2ParticleEmitter.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Sensor.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2DepthCamera.hh"
+#include "gz/rendering/ogre2/Ogre2GaussianNoisePass.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2ParticleEmitter.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Sensor.hh"
 
 #include "Ogre2ParticleNoiseListener.hh"
 
@@ -83,7 +83,7 @@ class Ogre2DepthGaussianNoisePass : public Ogre2GaussianNoisePass
 
 /// \internal
 /// \brief Private data for the Ogre2DepthCamera class
-class ignition::rendering::Ogre2DepthCameraPrivate
+class gz::rendering::Ogre2DepthCameraPrivate
 {
   /// \brief The depth buffer
   public: float *depthBuffer = nullptr;
@@ -95,10 +95,10 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: float *pointCloudImage = nullptr;
 
   /// \brief maximum value used for data outside sensor range
-  public: float dataMaxVal = ignition::math::INF_D;
+  public: float dataMaxVal = gz::math::INF_D;
 
   /// \brief minimum value used for data outside sensor range
-  public: float dataMinVal = -ignition::math::INF_D;
+  public: float dataMinVal = -gz::math::INF_D;
 
   /// \brief 1st pass compositor workspace definition
   public: std::string ogreCompositorWorkspaceDef;
@@ -131,12 +131,12 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: bool renderPassDirty = false;
 
   /// \brief Event used to signal rgb point cloud data
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newRgbPointCloud;
 
   /// \brief Event used to signal depth data
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
               unsigned int, unsigned int, unsigned int,
               const std::string &)> newDepthFrame;
 
@@ -158,7 +158,7 @@ class ignition::rendering::Ogre2DepthCameraPrivate
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

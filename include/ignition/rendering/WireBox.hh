@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,41 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_WIREBOX_HH_
-#define IGNITION_RENDERING_WIREBOX_HH_
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Geometry.hh"
-#include "ignition/math/AxisAlignedBox.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    /// \class WireBox WireBox.hh ignition/rendering/WireBox
-    /// \brief Draws a wireframe box.
-    class IGNITION_RENDERING_VISIBLE WireBox :
-      public virtual Geometry
-    {
-      /// \brief Constructor
-      protected: WireBox();
-
-      /// \brief Destructor
-      public: virtual ~WireBox();
-
-      /// \brief Set the axis aligned box
-      /// \param[in] _box The axis aligned box
-      public: virtual void SetBox(
-                  const ignition::math::AxisAlignedBox &_box) = 0;
-
-      /// \brief Get the wireframe box.
-      /// \return The wireframe box.
-      public: virtual ignition::math::AxisAlignedBox Box() const = 0;
-    };
-    }
-  }
-}
-
-#endif
+#include <gz/rendering/WireBox.hh>
+#include <ignition/rendering/config.hh>

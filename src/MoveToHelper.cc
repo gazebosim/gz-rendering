@@ -15,17 +15,17 @@
  *
  */
 
-#include "ignition/rendering/MoveToHelper.hh"
+#include "gz/rendering/MoveToHelper.hh"
 
 #include <memory>
 
-#include <ignition/common/Animation.hh>
-#include <ignition/common/KeyFrame.hh>
-#include <ignition/math/Pose3.hh>
+#include <gz/common/Animation.hh>
+#include <gz/common/KeyFrame.hh>
+#include <gz/math/Pose3.hh>
 
-#include "ignition/rendering/Camera.hh"
+#include "gz/rendering/Camera.hh"
 
-class ignition::rendering::MoveToHelperPrivate
+class gz::rendering::MoveToHelperPrivate
 {
   /// \brief Pose animation object
   public: std::unique_ptr<common::PoseAnimation> poseAnim;
@@ -40,7 +40,7 @@ class ignition::rendering::MoveToHelperPrivate
   public: math::Pose3d initCameraPose;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 ////////////////////////////////////////////////

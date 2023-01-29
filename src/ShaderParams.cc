@@ -15,14 +15,14 @@
  *
  */
 
-#include "ignition/rendering/ShaderParams.hh"
+#include "gz/rendering/ShaderParams.hh"
 
 #include <unordered_map>
 
-using namespace ignition::rendering;
+using namespace gz::rendering;
 
 
-class ignition::rendering::ShaderParamsPrivate
+class gz::rendering::ShaderParamsPrivate
 {
   /// \brief collection of parameters
   public: std::unordered_map<std::string, ShaderParam> parameters;
@@ -32,7 +32,7 @@ class ignition::rendering::ShaderParamsPrivate
 };
 
 
-class ignition::rendering::ShaderParams::IteratorPrivate
+class gz::rendering::ShaderParams::IteratorPrivate
 {
   /// \brief Iterator from the map in ShaderParamsPrivate
   public: std::unordered_map<std::string, ShaderParam>::const_iterator iter;

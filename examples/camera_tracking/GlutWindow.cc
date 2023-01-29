@@ -31,12 +31,12 @@
 
 #include <mutex>
 
-#include <ignition/common/Console.hh>
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/Image.hh>
-#include <ignition/rendering/RayQuery.hh>
-#include <ignition/rendering/Scene.hh>
-#include <ignition/rendering/OrbitViewController.hh>
+#include <gz/common/Console.hh>
+#include <gz/rendering/Camera.hh>
+#include <gz/rendering/Image.hh>
+#include <gz/rendering/RayQuery.hh>
+#include <gz/rendering/Scene.hh>
+#include <gz/rendering/OrbitViewController.hh>
 
 #include "GlutWindow.hh"
 
@@ -92,8 +92,8 @@ struct mouseButton
 struct mouseButton g_mouse;
 std::mutex g_mouseMutex;
 
-ignition::math::Vector3d g_trackOffset(1.0, 0, 0);
-ignition::math::Vector3d g_followOffset(-3, 0, 3);
+gz::math::Vector3d g_trackOffset(1.0, 0, 0);
+gz::math::Vector3d g_followOffset(-3, 0, 3);
 
 
 //////////////////////////////////////////////////
@@ -158,7 +158,7 @@ void handleMouse()
         2.0 * g_mouse.x / static_cast<double>(rayCamera->ImageWidth()) - 1.0;
     double ny = 1.0 -
         2.0 * g_mouse.y / static_cast<double>(rayCamera->ImageHeight());
-    g_rayQuery->SetFromCamera(rayCamera, ignition::math::Vector2d(nx, ny));
+    g_rayQuery->SetFromCamera(rayCamera, gz::math::Vector2d(nx, ny));
     g_target  = g_rayQuery->ClosestPoint();
     if (!g_target)
     {
@@ -188,7 +188,7 @@ void handleMouse()
   if (g_mouse.motionDirty)
   {
     g_mouse.motionDirty = false;
-    auto drag = ignition::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
+    auto drag = gz::math::Vector2d(g_mouse.dragX, g_mouse.dragY);
 
     // left mouse button pan
     if (g_mouse.button == GLUT_LEFT_BUTTON && g_mouse.state == GLUT_DOWN)
@@ -296,21 +296,21 @@ void keyboardCB(unsigned char _key, int, int)
     if (_key == 'w' || _key == 'W')
     {
       node->SetWorldPosition(node->WorldPosition() +
-          node->WorldRotation() * ignition::math::Vector3d(posIncr, 0, 0));
+          node->WorldRotation() * gz::math::Vector3d(posIncr, 0, 0));
     }
     else if (_key == 's' || _key == 'S')
     {
       node->SetWorldPosition(node->WorldPosition() +
-          node->WorldRotation() * ignition::math::Vector3d(-posIncr, 0, 0));
+          node->WorldRotation() * gz::math::Vector3d(-posIncr, 0, 0));
     }
     else if (_key == 'a' || _key == 'A')
     {
-      node->SetWorldRotation(ignition::math::Quaterniond(0, 0,
+      node->SetWorldRotation(gz::math::Quaterniond(0, 0,
           node->WorldRotation().Yaw() + yawIncr));
     }
     else if (_key == 'd' || _key == 'D')
     {
-      node->SetWorldRotation(ignition::math::Quaterniond(0, 0,
+      node->SetWorldRotation(gz::math::Quaterniond(0, 0,
           node->WorldRotation().Yaw() - yawIncr));
     }
   }
@@ -399,14 +399,14 @@ void keyboardCB(unsigned char _key, int, int)
     if (_key == 't' || _key == 'T')
     {
       double trackPGain = 0.005;
-      double p = ignition::math::equal(cam->TrackPGain(), 1.0) ?
+      double p = gz::math::equal(cam->TrackPGain(), 1.0) ?
           trackPGain : 1.0;
       cam->SetTrackPGain(p);
     }
     else if (_key == 'f' || _key == 'F')
     {
       double followPGain = 0.01;
-      double p = ignition::math::equal(cam->FollowPGain(), 1.0) ?
+      double p = gz::math::equal(cam->FollowPGain(), 1.0) ?
           followPGain : 1.0;
       cam->SetFollowPGain(p);
     }

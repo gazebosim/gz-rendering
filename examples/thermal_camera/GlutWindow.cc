@@ -31,11 +31,11 @@
 
 #include <mutex>
 
-#include <ignition/common/Console.hh>
-#include <ignition/rendering/Camera.hh>
-#include <ignition/rendering/Image.hh>
-#include <ignition/rendering/Scene.hh>
-#include <ignition/rendering/ThermalCamera.hh>
+#include <gz/common/Console.hh>
+#include <gz/rendering/Camera.hh>
+#include <gz/rendering/Image.hh>
+#include <gz/rendering/Scene.hh>
+#include <gz/rendering/ThermalCamera.hh>
 
 #include "GlutWindow.hh"
 
@@ -50,7 +50,7 @@ std::vector<ir::CameraPtr> g_cameras;
 ir::CameraPtr g_camera;
 unsigned int g_cameraIndex = 0;
 ir::ImagePtr g_image;
-ignition::common::ConnectionPtr g_connection;
+gz::common::ConnectionPtr g_connection;
 
 
 bool g_initContext = false;
@@ -88,7 +88,7 @@ void OnNewThermalFrame(const uint16_t *_scan,
 
   // convert temperature to grayscale image
   double range = static_cast<double>(max - min);
-  if (ignition::math::equal(range, 0.0))
+  if (gz::math::equal(range, 0.0))
     range = 1.0;
   unsigned char *data = g_image->Data<unsigned char>();
   for (unsigned int i = 0; i < _height; ++i)

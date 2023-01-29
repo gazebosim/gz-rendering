@@ -24,18 +24,18 @@
 #include <set>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
 
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/ogre/OgreRenderEngine.hh"
-#include "ignition/rendering/ogre/OgreScene.hh"
-#include "ignition/rendering/ogre/OgreMaterial.hh"
-#include "ignition/rendering/ogre/OgreMesh.hh"
-#include "ignition/rendering/ogre/OgreRTShaderSystem.hh"
+#include "gz/rendering/config.hh"
+#include "gz/rendering/ogre/OgreRenderEngine.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
+#include "gz/rendering/ogre/OgreMaterial.hh"
+#include "gz/rendering/ogre/OgreMesh.hh"
+#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
 
-class ignition::rendering::OgreRTShaderSystemPrivate
+class gz::rendering::OgreRTShaderSystemPrivate
 {
   /// \brief The shader generator.
   public: Ogre::RTShader::ShaderGenerator *shaderGenerator = nullptr;
@@ -75,7 +75,7 @@ class ignition::rendering::OgreRTShaderSystemPrivate
   public: std::thread::id threadId;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

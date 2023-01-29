@@ -27,17 +27,17 @@
 #include <iostream>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Skeleton.hh>
-#include <ignition/common/SkeletonAnimation.hh>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/Mesh.hh>
-#include <ignition/rendering.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Skeleton.hh>
+#include <gz/common/SkeletonAnimation.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/rendering.hh>
 
 #include "example_config.hh"
 #include "GlutWindow.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 const std::string RESOURCE_PATH =

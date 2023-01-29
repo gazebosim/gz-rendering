@@ -16,9 +16,9 @@
  */
 
 
-#include "ignition/rendering/Marker.hh"
+#include "gz/rendering/Marker.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

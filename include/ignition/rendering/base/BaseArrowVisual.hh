@@ -96,6 +96,7 @@ namespace ignition
           visual->Destroy();
         }
       }
+      T::Destroy();
     }
 
     //////////////////////////////////////////////////

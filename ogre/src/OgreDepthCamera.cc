@@ -130,6 +130,9 @@ void OgreDepthCamera::Destroy()
       this->ogreCamera = nullptr;
     }
   }
+
+  // call base node destroy to remove parent
+  OgreNode::Destroy();
 }
 
 //////////////////////////////////////////////////

@@ -532,9 +532,9 @@ void SceneTest::DestroyNodes(const std::string &_renderEngine)
   EXPECT_EQ(0u, scene->SensorCount());
   EXPECT_EQ(0u, scene->LightCount());
 
-  EXPECT_DOUBLE_EQ(0.0, scene->SimTime().Double());
-  scene->SetSimTime(common::Time(3.55));
-  EXPECT_DOUBLE_EQ(3.55, scene->SimTime().Double());
+  EXPECT_EQ(std::chrono::milliseconds(0), scene->Time());
+  scene->SetTime(std::chrono::milliseconds(3550));
+  EXPECT_EQ(std::chrono::milliseconds(3550), scene->Time());
 
   // Clean up
   engine->DestroyScene(scene);

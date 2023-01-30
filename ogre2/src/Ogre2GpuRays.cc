@@ -680,6 +680,7 @@ void Ogre2GpuRays::Destroy()
     }
   }
 
+  // call base node destroy to remove parent
   Ogre2Node::Destroy();
 }
 

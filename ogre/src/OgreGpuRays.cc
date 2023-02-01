@@ -214,6 +214,7 @@ void OgreGpuRays::Destroy()
     if (this->dataPtr->visual)
     {
       this->scene->DestroyNode(this->dataPtr->visual);
+      this->dataPtr->visual.reset();
     }
     if (this->dataPtr->canvasMaterial)
     {
@@ -232,7 +233,6 @@ void OgreGpuRays::Destroy()
     this->dataPtr->undistMesh = nullptr;
   }
 
-  this->dataPtr->visual.reset();
   this->dataPtr->texIdx.clear();
   this->dataPtr->texCount = 0u;
 }

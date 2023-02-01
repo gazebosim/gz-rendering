@@ -263,6 +263,8 @@ namespace ignition
       this->dirtyJointType = false;
       this->dirtyAxis = false;
       this->dirtyParentAxis = false;
+
+      T::Destroy();
     }
 
     /////////////////////////////////////////////////

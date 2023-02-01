@@ -740,7 +740,7 @@
 
 1. Remove Windows Warnings
     * [Pull request #206](https://github.com/ignitionrobotics/ign-rendering/pull/206)
-    * [Pull request #213](https://github.cohttps://github.com/gazebosim/<REPO>/compare/<TO_BRANCH>...<FROM_BRANCH>m/ignitionrobotics/ign-rendering/pull/213)
+    * [Pull request #213](https://github.com/ignitionrobotics/ign-rendering/pull/213)
     * [Pull request #215](https://github.com/ignitionrobotics/ign-rendering/pull/215)
 
 1. Fix spelling Desconstructor -> Destructor

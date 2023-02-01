@@ -83,6 +83,7 @@ namespace ignition
           arrow->Destroy();
         }
       }
+      T::Destroy();
     }
 
     //////////////////////////////////////////////////

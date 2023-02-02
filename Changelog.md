@@ -1,6 +1,33 @@
 ## Ignition Rendering
 
-### Ignition Rendering 6.6.0 (2023-01-19)
+### Ignition Rendering 6.6.0 (2023-02-02)
+
+1. Backport Composite BaseVisual destroy fix to 6
+    * [Pull request #818](https://github.com/gazebosim/ign-rendering/pull/818)
+
+1. Forward port 3 to 6.
+    * [Pull request #815](https://github.com/gazebosim/ign-rendering/pull/815)
+    * [Pull request #819](https://github.com/gazebosim/ign-rendering/pull/819)
+
+1. Remove fini to resolve segfault at shutdown
+    * [Pull request #813](https://github.com/gazebosim/ign-rendering/pull/813)
+
+1. Fix transparency over heightmap
+    * [Pull request #811](https://github.com/gazebosim/ign-rendering/pull/811)
+
+1. Fix duplicate PreRrender calls
+    * [Pull request #809](https://github.com/gazebosim/ign-rendering/pull/809)
+
+1. ign -> gz Migrate Ignition Headers : gz-rendering
+    * [Pull request #705](https://github.com/gazebosim/ign-rendering/pull/705)
+
+1. Improved coverage: MeshDescriptor, Mesh, MoveToHelper, OrbitViewController, PixelFormat and ShadersParams
+    * [Pull request #748](https://github.com/gazebosim/ign-rendering/pull/748)
+
+1. Suppress Windows warnings
+    * [Pull request #749](https://github.com/gazebosim/ign-rendering/pull/749)
+
+### Ignition Rendering 6.5.2 (2023-01-19)
 
 1. Mesh clean up in destructor
     * [Pull request #807](https://github.com/gazebosim/ign-rendering/pull/807)

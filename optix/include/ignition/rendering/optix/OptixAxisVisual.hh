@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXAXISVISUAL_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXAXISVISUAL_HH_
 
-#include "ignition/rendering/base/BaseAxisVisual.hh"
-#include "ignition/rendering/optix/OptixVisual.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixAxisVisual :
-      public BaseAxisVisual<OptixVisual>
-    {
-      protected: OptixAxisVisual();
-
-      public: virtual ~OptixAxisVisual();
-
-      private: friend class OptixScene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixAxisVisual.hh>
+#include <ignition/rendering/config.hh>

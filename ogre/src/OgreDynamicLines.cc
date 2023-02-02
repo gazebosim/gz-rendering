@@ -18,19 +18,19 @@
 
 #include <cmath>
 #include <sstream>
-#include <ignition/math/Color.hh>
+#include <gz/math/Color.hh>
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/ogre/OgreDynamicLines.hh"
+#include "gz/common/Console.hh"
+#include "gz/rendering/ogre/OgreDynamicLines.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 enum {POSITION_BINDING, TEXCOORD_BINDING};
 
 
 /// \brief Private implementation
-class ignition::rendering::OgreDynamicLinesPrivate
+class gz::rendering::OgreDynamicLinesPrivate
 {
   /// \brief list of colors at each point
   public: std::vector<math::Color> colors;

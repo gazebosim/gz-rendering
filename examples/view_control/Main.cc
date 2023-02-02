@@ -27,11 +27,11 @@
 #include <iostream>
 #include <vector>
 
-#include <ignition/common/Console.hh>
-#include <ignition/rendering.hh>
+#include <gz/common/Console.hh>
+#include <gz/rendering.hh>
 #include "GlutWindow.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

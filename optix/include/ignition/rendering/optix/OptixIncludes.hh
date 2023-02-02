@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXINCLUDES_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXINCLUDES_HH_
 
-// #include <optixu/optixpp.h>
-#include <optixu/optixpp.h>
-
-#endif
+#include <gz/rendering/optix/OptixIncludes.hh>
+#include <ignition/rendering/config.hh>

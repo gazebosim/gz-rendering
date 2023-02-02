@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/optix/OptixMaterial.hh"
-#include "ignition/rendering/optix/OptixConversions.hh"
-#include "ignition/rendering/optix/OptixRayTypes.hh"
-#include "ignition/rendering/optix/OptixRenderEngine.hh"
-#include "ignition/rendering/optix/OptixScene.hh"
-#include "ignition/rendering/optix/OptixTextureFactory.hh"
+#include "gz/rendering/optix/OptixMaterial.hh"
+#include "gz/rendering/optix/OptixConversions.hh"
+#include "gz/rendering/optix/OptixRayTypes.hh"
+#include "gz/rendering/optix/OptixRenderEngine.hh"
+#include "gz/rendering/optix/OptixScene.hh"
+#include "gz/rendering/optix/OptixTextureFactory.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

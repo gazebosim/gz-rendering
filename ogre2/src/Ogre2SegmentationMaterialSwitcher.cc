@@ -23,10 +23,10 @@
 
 #include <ignition/common/Console.hh>
 
-#include "ignition/rendering/ogre2/Ogre2Heightmap.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Heightmap.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Visual.hh"
+#include "gz/rendering/RenderTypes.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)

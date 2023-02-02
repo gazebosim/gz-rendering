@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,69 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXLIGHTMANAGER_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXLIGHTMANAGER_HH_
 
-#include <string>
-#include <vector>
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/optix/OptixLightTypes.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
-#include "ignition/rendering/optix/Export.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixLightManager
-    {
-      public: explicit OptixLightManager(OptixScenePtr _scene);
-
-      public: virtual ~OptixLightManager();
-
-      public: virtual void AddDirectionalLight(OptixDirectionalLightPtr _light);
-
-      public: virtual void AddPointLight(OptixPointLightPtr _light);
-
-      public: virtual void AddSpotLight(OptixSpotLightPtr _light);
-
-      public: virtual void PreRender();
-
-      public: virtual void Clear();
-
-      protected: virtual void WriteDirectionalBuffer();
-
-      protected: virtual void WritePointBuffer();
-
-      protected: virtual void WriteSpotBuffer();
-
-      protected: template <class T>
-                 void WriteBuffer(optix::Buffer _buffer,
-                     const std::vector<T> &_data);
-
-      private: void CreateBuffers();
-
-      private: template <class T>
-               optix::Buffer CreateBuffer(const std::string &_name);
-
-      protected: OptixScenePtr scene;
-
-      protected: std::vector<OptixDirectionalLightData> directionalData;
-
-      protected: std::vector<OptixPointLightData> pointData;
-
-      protected: std::vector<OptixSpotLightData> spotData;
-
-      protected: optix::Buffer directionalBuffer;
-
-      protected: optix::Buffer pointBuffer;
-
-      protected: optix::Buffer spotBuffer;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixLightManager.hh>
+#include <ignition/rendering/config.hh>

@@ -17,8 +17,10 @@
 
 // Note this include is placed in the src file because
 // otherwise ogre produces compile errors
-#ifdef _MSC_VER
-#pragma warning(push, 0)
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 4005)  // Macro redefinition
+#pragma warning(disable: 5033)  // 'register' is no longer supported
 #endif
 #include <Animation/OgreSkeletonInstance.h>
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
@@ -27,31 +29,31 @@
 #include <OgreMeshManager.h>
 #include <OgreMeshManager2.h>
 #include <OgreMaterialManager.h>
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 #pragma warning(pop)
 #endif
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2Mesh.hh"
-#include "ignition/rendering/ogre2/Ogre2Material.hh"
-#include "ignition/rendering/ogre2/Ogre2Storage.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Mesh.hh"
+#include "gz/rendering/ogre2/Ogre2Material.hh"
+#include "gz/rendering/ogre2/Ogre2Storage.hh"
 
 /// brief Private implementation of the Ogre2Mesh class
-class ignition::rendering::Ogre2MeshPrivate
+class gz::rendering::Ogre2MeshPrivate
 {
 };
 
 /// brief Private implementation of the Ogre2SubMesh class
-class ignition::rendering::Ogre2SubMeshPrivate
+class gz::rendering::Ogre2SubMeshPrivate
 {
   /// \brief name of the mesh inside the mesh manager to be able to
   /// remove it
   public: std::string subMeshName;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

@@ -17,22 +17,21 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
-#include <ignition/utils/ExtraTestMacros.hh>
+#include <gz/common/Console.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/GpuRays.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/SegmentationCamera.hh"
-#include "ignition/rendering/ShaderParams.hh"
-#include "ignition/rendering/ThermalCamera.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/GpuRays.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/SegmentationCamera.hh"
+#include "gz/rendering/ShaderParams.hh"
+#include "gz/rendering/ThermalCamera.hh"
 
-
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class CameraTest: public testing::Test,

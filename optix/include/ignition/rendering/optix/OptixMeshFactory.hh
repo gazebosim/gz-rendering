@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,86 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OPTIX_OPTIXMESHFACTORY_HH_
-#define IGNITION_RENDERING_OPTIX_OPTIXMESHFACTORY_HH_
 
-#include <map>
-#include <string>
-#include <ignition/common/Mesh.hh>
-
-#include "ignition/rendering/MeshDescriptor.hh"
-#include "ignition/rendering/optix/OptixRenderTypes.hh"
-#include "ignition/rendering/optix/OptixMesh.hh"
-#include "ignition/rendering/optix/OptixIncludes.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixSubMeshStoreFactory
-    {
-      // cppcheck-suppress noExplicitConstructor
-      public: OptixSubMeshStoreFactory(OptixScenePtr _scene);
-
-      public: virtual ~OptixSubMeshStoreFactory();
-
-      public: virtual OptixSubMeshStorePtr Create(const MeshDescriptor &_desc);
-
-      protected: virtual optix::Geometry Geometry(
-                     const MeshDescriptor &_desc, unsigned int _subMeshIndex);
-
-      protected: virtual std::string KeyName(const MeshDescriptor &_desc,
-                  unsigned int _subMeshIndex);
-
-      protected: std::map<std::string, optix::Geometry> geometries;
-
-      protected: OptixScenePtr scene;
-    };
-
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixMeshFactory
-    {
-      // cppcheck-suppress noExplicitConstructor
-      public: OptixMeshFactory(OptixScenePtr _scene);
-
-      public: virtual ~OptixMeshFactory();
-
-      public: virtual OptixMeshPtr Create(const MeshDescriptor &_desc);
-
-      protected: virtual OptixMeshPtr Create(OptixSubMeshStorePtr _subMeshes);
-
-      protected: OptixSubMeshStoreFactory subMeshStoreFactory;
-
-      protected: OptixScenePtr scene;
-    };
-
-    class IGNITION_RENDERING_OPTIX_VISIBLE OptixMeshGeometryFactory
-    {
-      public: OptixMeshGeometryFactory(OptixScenePtr _scene,
-                  const common::SubMesh &_subMesh);
-
-      public: virtual ~OptixMeshGeometryFactory();
-
-      public: virtual optix::Geometry Create();
-
-      protected: virtual void CreateGeometry();
-
-      protected: virtual optix::Buffer CreateVertexBuffer();
-
-      protected: virtual optix::Buffer CreateNormalBuffer();
-
-      protected: virtual optix::Buffer CreateTexCoordBuffer();
-
-      protected: virtual optix::Buffer CreateIndexBuffer();
-
-      protected: OptixScenePtr scene;
-
-      protected: const common::SubMesh &subMesh;
-
-      protected: optix::Geometry optixGeometry;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/optix/OptixMeshFactory.hh>
+#include <ignition/rendering/config.hh>

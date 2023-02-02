@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_DEMOWINDOW_HH_
-#define IGNITION_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_DEMOWINDOW_HH_
+#ifndef GZ_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_DEMOWINDOW_HH_
+#define GZ_RENDERING_EXAMPLES_CUSTOM_SCENE_VIEWER_DEMOWINDOW_HH_
 
 #include "TestTypes.hh"
 
-namespace ir = ignition::rendering;
+namespace ir = gz::rendering;
 
 /// \brief Run the demo
 /// \param[in] _Pointer to demo

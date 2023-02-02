@@ -20,13 +20,13 @@
 #include <X11/Xresource.h>
 #endif
 
-#include "ignition/math/Plane.hh"
-#include "ignition/math/Vector2.hh"
-#include "ignition/math/Vector3.hh"
+#include "gz/math/Plane.hh"
+#include "gz/math/Vector2.hh"
+#include "gz/math/Vector3.hh"
 
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/RayQuery.hh"
-#include "ignition/rendering/Utils.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/RayQuery.hh"
+#include "gz/rendering/Utils.hh"
 
 namespace ignition
 {
@@ -91,7 +91,7 @@ math::Vector3d screenToPlane(
   _rayQuery->SetFromCamera(
       _camera, math::Vector2d(nx, ny));
 
-  ignition::math::Planed plane(ignition::math::Vector3d(0, 0, 1), offset);
+  gz::math::Planed plane(gz::math::Vector3d(0, 0, 1), offset);
 
   math::Vector3d origin = _rayQuery->Origin();
   math::Vector3d direction = _rayQuery->Direction();

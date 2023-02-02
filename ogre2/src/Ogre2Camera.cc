@@ -15,12 +15,12 @@
  *
  */
 
-#include "ignition/rendering/ogre2/Ogre2Camera.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTarget.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2SelectionBuffer.hh"
-#include "ignition/rendering/Utils.hh"
+#include "gz/rendering/ogre2/Ogre2Camera.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2SelectionBuffer.hh"
+#include "gz/rendering/Utils.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -33,11 +33,11 @@
 #endif
 
 /// \brief Private data for the Ogre2Camera class
-class ignition::rendering::Ogre2CameraPrivate
+class gz::rendering::Ogre2CameraPrivate
 {
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -311,8 +311,17 @@ VisualPtr Ogre2Camera::VisualAt(const math::Vector2i &_mousePos)
 //////////////////////////////////////////////////
 RenderWindowPtr Ogre2Camera::CreateRenderWindow()
 {
-  // TODO(anyone)
-  return RenderWindowPtr();
+  RenderWindowPtr base = this->scene->CreateRenderWindow();
+  Ogre2RenderWindowPtr renderWindow =
+      std::dynamic_pointer_cast<Ogre2RenderWindow>(base);
+  renderWindow->SetWidth(this->ImageWidth());
+  renderWindow->SetHeight(this->ImageHeight());
+  renderWindow->SetDevicePixelRatio(1);
+  renderWindow->SetCamera(this->ogreCamera);
+  renderWindow->SetBackgroundColor(this->scene->BackgroundColor());
+
+  this->renderTexture = renderWindow;
+  return base;
 }
 
 //////////////////////////////////////////////////

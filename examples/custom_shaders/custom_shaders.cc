@@ -14,15 +14,15 @@
  * limitations under the License.
  *
 */
-#include <ignition/common/Image.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/rendering.hh>
+#include <gz/common/Image.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/rendering.hh>
 
 #include "example_config.hh"
 
-void BuildScene(ignition::rendering::ScenePtr _scene);
+void BuildScene(gz::rendering::ScenePtr _scene);
 
-void PresentImage(ignition::rendering::ImagePtr _image,
+void PresentImage(gz::rendering::ImagePtr _image,
     const std::string &_name);
 
 
@@ -47,15 +47,15 @@ const std::string RESOURCE_PATH =
 //////////////////////////////////////////////////
 int main()
 {
-  // Initialize ignition::rendering
-  auto *engine = ignition::rendering::engine("ogre");
+  // Initialize gz::rendering
+  auto *engine = gz::rendering::engine("ogre");
   if (!engine)
   {
     std::cerr << "Failed to load ogre\n";
     return 1;
   }
   // Create a scene and add stuff to it
-  ignition::rendering::ScenePtr scene = engine->CreateScene("scene");
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   if (!scene)
   {
     std::cerr << "Failed to create scene." << std::endl;
@@ -63,42 +63,42 @@ int main()
   }
   BuildScene(scene);
 
-  ignition::rendering::VisualPtr root = scene->RootVisual();
+  gz::rendering::VisualPtr root = scene->RootVisual();
 
   // Create a camera
-  ignition::rendering::CameraPtr camera;
+  gz::rendering::CameraPtr camera;
   camera = scene->CreateCamera("example_custom_shaders");
   camera->SetImageWidth(width);
   camera->SetImageHeight(height);
   camera->SetHFOV(1.05);
   camera->SetAntiAliasing(2);
   camera->SetAspectRatio(width / height);
-  camera->SetImageFormat(ignition::rendering::PF_R8G8B8);
+  camera->SetImageFormat(gz::rendering::PF_R8G8B8);
   root->AddChild(camera);
 
   // Create a camera for depth image
-  ignition::rendering::CameraPtr depthCamera;
+  gz::rendering::CameraPtr depthCamera;
   depthCamera = scene->CreateCamera("example_custom_shaders_depth");
   depthCamera->SetImageWidth(width);
   depthCamera->SetImageHeight(height);
   depthCamera->SetHFOV(1.05);
   depthCamera->SetAntiAliasing(2);
   depthCamera->SetAspectRatio(width / height);
-  depthCamera->SetImageFormat(ignition::rendering::PF_R8G8B8);
+  depthCamera->SetImageFormat(gz::rendering::PF_R8G8B8);
   root->AddChild(depthCamera);
 
   //! [Get shader path]
   // path to look for vertex and fragment shaders
-  std::string depth_vertex_shader_path = ignition::common::joinPaths(
+  std::string depth_vertex_shader_path = gz::common::joinPaths(
       RESOURCE_PATH,  depth_vertex_shader_file);
 
-  std::string depth_fragment_shader_path = ignition::common::joinPaths(
+  std::string depth_fragment_shader_path = gz::common::joinPaths(
       RESOURCE_PATH, depth_fragment_shader_file);
   //! [Get shader path]
 
   //! [add shader to camera]
   // create shader material
-  ignition::rendering::MaterialPtr depthMat = scene->CreateMaterial();
+  gz::rendering::MaterialPtr depthMat = scene->CreateMaterial();
   depthMat->SetVertexShader(depth_vertex_shader_path);
   depthMat->SetFragmentShader(depth_fragment_shader_path);
 
@@ -106,10 +106,10 @@ int main()
   depthCamera->SetMaterial(depthMat);
   //! [add shader to camera]
 
-  ignition::rendering::ImagePtr image =
-    std::make_shared<ignition::rendering::Image>(camera->CreateImage());
-  ignition::rendering::ImagePtr depthImage =
-    std::make_shared<ignition::rendering::Image>(depthCamera->CreateImage());
+  gz::rendering::ImagePtr image =
+    std::make_shared<gz::rendering::Image>(camera->CreateImage());
+  gz::rendering::ImagePtr depthImage =
+    std::make_shared<gz::rendering::Image>(depthCamera->CreateImage());
 
   depthCamera->Capture(*depthImage);
   PresentImage(depthImage, "depth.png");
@@ -120,14 +120,14 @@ int main()
 }
 
 //////////////////////////////////////////////////
-void PresentImage(ignition::rendering::ImagePtr _image,
+void PresentImage(gz::rendering::ImagePtr _image,
     const std::string &_name)
 {
   // Present the data
   unsigned char *data = _image->Data<unsigned char>();
 
-  ignition::common::Image image;
-  image.SetFromData(data, width, height, ignition::common::Image::RGB_INT8);
+  gz::common::Image image;
+  image.SetFromData(data, width, height, gz::common::Image::RGB_INT8);
 
   image.SavePNG(_name);
 
@@ -135,14 +135,14 @@ void PresentImage(ignition::rendering::ImagePtr _image,
 }
 
 //////////////////////////////////////////////////
-void BuildScene(ignition::rendering::ScenePtr _scene)
+void BuildScene(gz::rendering::ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
-  ignition::rendering::VisualPtr root = _scene->RootVisual();
+  gz::rendering::VisualPtr root = _scene->RootVisual();
 
   // create directional light
-  ignition::rendering::DirectionalLightPtr light0 =
+  gz::rendering::DirectionalLightPtr light0 =
     _scene->CreateDirectionalLight();
   light0->SetDirection(-0.5, 0.5, -1);
   light0->SetDiffuseColor(0.5, 0.5, 0.5);
@@ -150,14 +150,14 @@ void BuildScene(ignition::rendering::ScenePtr _scene)
   root->AddChild(light0);
 
   // create white material
-  ignition::rendering::MaterialPtr grey = _scene->CreateMaterial();
+  gz::rendering::MaterialPtr grey = _scene->CreateMaterial();
   grey->SetAmbient(0.5, 0.5, 0.5);
   grey->SetDiffuse(0.8, 0.8, 0.8);
   grey->SetReceiveShadows(true);
   grey->SetReflectivity(0);
 
   // create plane visual
-  ignition::rendering::VisualPtr plane = _scene->CreateVisual();
+  gz::rendering::VisualPtr plane = _scene->CreateVisual();
   auto geom = _scene->CreatePlane();
   plane->AddGeometry(geom);
   plane->SetLocalScale(5, 8, 1);
@@ -167,20 +167,20 @@ void BuildScene(ignition::rendering::ScenePtr _scene)
 
   // create shader materials
   // path to look for vertex and fragment shader parameters
-  std::string vertex_shader_path = ignition::common::joinPaths(
+  std::string vertex_shader_path = gz::common::joinPaths(
       RESOURCE_PATH, vertex_shader_file);
 
-  std::string fragment_shader_path = ignition::common::joinPaths(
+  std::string fragment_shader_path = gz::common::joinPaths(
       RESOURCE_PATH, fragment_shader_file);
 
   //! [add shader to visual]
   // create shader material
-  ignition::rendering::MaterialPtr shader = _scene->CreateMaterial();
+  gz::rendering::MaterialPtr shader = _scene->CreateMaterial();
   shader->SetVertexShader(vertex_shader_path);
   shader->SetFragmentShader(fragment_shader_path);
 
   // create box visual and apply shader
-  ignition::rendering::VisualPtr box = _scene->CreateVisual();
+  gz::rendering::VisualPtr box = _scene->CreateVisual();
   box->AddGeometry(_scene->CreateBox());
   box->SetOrigin(0.0, 0.5, 0.0);
   box->SetLocalPosition(3, 0, 0);

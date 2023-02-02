@@ -37,21 +37,21 @@
 #pragma warning(pop)
 #endif
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Image.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Image.hh>
 
-#include "ignition/rendering/GraphicsAPI.hh"
-#include "ignition/rendering/ShaderParams.hh"
-#include "ignition/rendering/ShaderType.hh"
-#include "ignition/rendering/ogre2/Ogre2Material.hh"
-#include "ignition/rendering/ogre2/Ogre2Conversions.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/GraphicsAPI.hh"
+#include "gz/rendering/ShaderParams.hh"
+#include "gz/rendering/ShaderType.hh"
+#include "gz/rendering/ogre2/Ogre2Material.hh"
+#include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
 
 
 /// \brief Private data for the Ogre2Material class
-class ignition::rendering::Ogre2MaterialPrivate
+class gz::rendering::Ogre2MaterialPrivate
 {
   /// \brief Ogre stores the name using hashes. This variable will
   /// store the material hash name
@@ -70,7 +70,7 @@ class ignition::rendering::Ogre2MaterialPrivate
   public: ShaderParamsPtr fragmentShaderParams;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

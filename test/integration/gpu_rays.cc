@@ -17,19 +17,19 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
-#include <ignition/common/Image.hh>
-#include <ignition/common/ImageHeightmap.hh>
-#include <ignition/common/Filesystem.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Image.hh>
+#include <gz/common/ImageHeightmap.hh>
+#include <gz/common/Filesystem.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/GpuRays.hh"
-#include "ignition/rendering/Heightmap.hh"
-#include "ignition/rendering/ParticleEmitter.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/GpuRays.hh"
+#include "gz/rendering/Heightmap.hh"
+#include "gz/rendering/ParticleEmitter.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
 
 #define LASER_TOL 2e-4
 #define DOUBLE_TOL 1e-6
@@ -39,7 +39,7 @@
 
 #define WAIT_TIME 0.02
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,

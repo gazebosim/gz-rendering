@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@
 
 #include "test_config.h"  // NOLINT(build/include)
 
-#include "ignition/rendering/ArrowVisual.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
-#include "ignition/rendering/Visual.hh"
+#include "gz/rendering/ArrowVisual.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
+#include "gz/rendering/Visual.hh"
 
 using namespace ignition;
 using namespace rendering;

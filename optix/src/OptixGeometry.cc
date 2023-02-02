@@ -15,12 +15,12 @@
  *
  */
 
-#include "ignition/rendering/optix/OptixGeometry.hh"
+#include "gz/rendering/optix/OptixGeometry.hh"
 
-#include "ignition/rendering/optix/OptixScene.hh"
-#include "ignition/rendering/optix/OptixVisual.hh"
+#include "gz/rendering/optix/OptixScene.hh"
+#include "gz/rendering/optix/OptixVisual.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

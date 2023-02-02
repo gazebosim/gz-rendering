@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/ogre2/Ogre2RenderPass.hh"
+#include "gz/rendering/ogre2/Ogre2RenderPass.hh"
 
 /// \brief Private data for the Ogre2RenderPass class
 class ignition::rendering::Ogre2RenderPassPrivate
 {
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

@@ -15,15 +15,15 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/ogre/OgreVisual.hh"
-#include "ignition/rendering/ogre/OgreWireBox.hh"
-#include "ignition/rendering/ogre/OgreConversions.hh"
-#include "ignition/rendering/ogre/OgreStorage.hh"
-#include "ignition/rendering/Utils.hh"
+#include "gz/rendering/ogre/OgreVisual.hh"
+#include "gz/rendering/ogre/OgreWireBox.hh"
+#include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreStorage.hh"
+#include "gz/rendering/Utils.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 /// \brief Private data for the Ogre2Visual class

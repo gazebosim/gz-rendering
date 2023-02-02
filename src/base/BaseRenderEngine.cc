@@ -15,12 +15,12 @@
  *
  */
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
-#include "ignition/rendering/RenderPassSystem.hh"
-#include "ignition/rendering/base/BaseRenderEngine.hh"
+#include "gz/rendering/RenderPassSystem.hh"
+#include "gz/rendering/base/BaseRenderEngine.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,50 +15,5 @@
  *
  */
 
-#ifndef IGNITION_RENDERING_RENDERENGINEPLUGIN_HH_
-#define IGNITION_RENDERING_RENDERENGINEPLUGIN_HH_
-
-#include <memory>
-#include <string>
-
-#include <ignition/common/SuppressWarning.hh>
-
-#include "ignition/rendering/config.hh"
-#include "ignition/rendering/Export.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    // Forward declarations
-    class RenderEngine;
-    class RenderEnginePluginPrivate;
-
-    /// \brief Base plugin class for render engines
-    class IGNITION_RENDERING_VISIBLE RenderEnginePlugin
-    {
-      /// \brief Constructor
-      public: RenderEnginePlugin();
-
-      /// \brief Destructor
-      public: virtual ~RenderEnginePlugin();
-
-      /// \brief Get the name of render engine
-      /// \return Name of render engine
-      public: virtual std::string Name() const = 0;
-
-      /// \brief Get a pointer to the render engine
-      /// \return Render engine instance
-      public: virtual RenderEngine *Engine() const = 0;
-
-      /// \brief Pointer to private data class
-      IGN_COMMON_WARN_IGNORE__DLL_INTERFACE_MISSING
-      public: std::unique_ptr<RenderEnginePluginPrivate> dataPtr;
-      IGN_COMMON_WARN_RESUME__DLL_INTERFACE_MISSING
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/RenderEnginePlugin.hh>
+#include <ignition/rendering/config.hh>

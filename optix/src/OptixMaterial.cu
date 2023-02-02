@@ -17,8 +17,8 @@
 #include <optix.h>
 #include <optix_math.h>
 #include <optixu/optixu_matrix_namespace.h>
-#include "ignition/rendering/optix/OptixRayTypes.hh"
-#include "ignition/rendering/optix/OptixLightTypes.hh"
+#include "gz/rendering/optix/OptixRayTypes.hh"
+#include "gz/rendering/optix/OptixLightTypes.hh"
 
 // scene variables
 rtDeclareVariable(float3, ambientLightColor, , );

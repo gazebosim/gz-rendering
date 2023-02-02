@@ -17,16 +17,16 @@
 
 #include <gtest/gtest.h>
 
-#include <ignition/common/Console.hh>
+#include <gz/common/Console.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
-#include "ignition/rendering/Camera.hh"
-#include "ignition/rendering/OrbitViewController.hh"
-#include "ignition/rendering/RenderEngine.hh"
-#include "ignition/rendering/RenderingIface.hh"
-#include "ignition/rendering/Scene.hh"
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/OrbitViewController.hh"
+#include "gz/rendering/RenderEngine.hh"
+#include "gz/rendering/RenderingIface.hh"
+#include "gz/rendering/Scene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 class OrbitViewControllerTest : public testing::Test,
@@ -34,6 +34,10 @@ class OrbitViewControllerTest : public testing::Test,
 {
   /// \brief Test basic api
   public: void OrbitViewControl(const std::string &_renderEngine);
+
+  /// \brief Test basic api
+  public: void OrbitViewControlCameraConstructor(
+    const std::string &_renderEngine);
 
   /// \brief test zoom, pan, orbit
   public: void Control(const std::string &_renderEngine);
@@ -84,6 +88,43 @@ void OrbitViewControllerTest::OrbitViewControl(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+void OrbitViewControllerTest::OrbitViewControlCameraConstructor(
+  const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
+  ScenePtr scene = engine->CreateScene("scene");
+  EXPECT_NE(scene, nullptr);
+
+  CameraPtr camera =  scene->CreateCamera("camera");
+  EXPECT_NE(camera, nullptr);
+
+  OrbitViewController viewControl(camera);
+
+  // verify intial values
+  EXPECT_EQ(camera, viewControl.Camera());
+  EXPECT_EQ(math::Vector3d::Zero, viewControl.Target());
+
+  // test setting target
+  math::Vector3d target(1, 0, 0);
+  viewControl.SetTarget(target);
+  EXPECT_EQ(target, viewControl.Target());
+
+  target.Set(-0.3, -5, 1);
+  viewControl.SetTarget(target);
+  EXPECT_EQ(target, viewControl.Target());
+
+  // Clean up
+  engine->DestroyScene(scene);
+  unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
 void OrbitViewControllerTest::Control(const std::string &_renderEngine)
 {
   RenderEngine *engine = rendering::engine(_renderEngine);
@@ -106,6 +147,10 @@ void OrbitViewControllerTest::Control(const std::string &_renderEngine)
   EXPECT_EQ(math::Pose3d::Zero, initialPose);
 
   OrbitViewController viewControl;
+
+  viewControl.Zoom(0);
+  viewControl.Pan(math::Vector2d(0, 0));
+  viewControl.Orbit(math::Vector2d(0, 0));
 
   // test setting camera
   viewControl.SetCamera(camera);
@@ -227,6 +272,12 @@ void OrbitViewControllerTest::Control(const std::string &_renderEngine)
 TEST_P(OrbitViewControllerTest, OrbitViewController)
 {
   OrbitViewControl(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(OrbitViewControllerTest, OrbitViewControllerCameraConstructor)
+{
+  OrbitViewControlCameraConstructor(GetParam());
 }
 
 /////////////////////////////////////////////////

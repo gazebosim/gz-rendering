@@ -14,14 +14,14 @@
  * limitations under the License.
  *
  */
-#include "ignition/rendering/optix/OptixCamera.hh"
+#include "gz/rendering/optix/OptixCamera.hh"
 
-#include <ignition/math/Matrix3.hh>
-#include "ignition/rendering/optix/OptixIncludes.hh"
-#include "ignition/rendering/optix/OptixRenderTarget.hh"
-#include "ignition/rendering/optix/OptixScene.hh"
+#include <gz/math/Matrix3.hh>
+#include "gz/rendering/optix/OptixIncludes.hh"
+#include "gz/rendering/optix/OptixRenderTarget.hh"
+#include "gz/rendering/optix/OptixScene.hh"
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

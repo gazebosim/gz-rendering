@@ -15,10 +15,10 @@
  *
 */
 
-#include "ignition/common/Console.hh"
-#include "ignition/rendering/ogre2/Ogre2MaterialSwitcher.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/RenderTypes.hh"
+#include "gz/common/Console.hh"
+#include "gz/rendering/ogre2/Ogre2MaterialSwitcher.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/RenderTypes.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -32,7 +32,7 @@
   #pragma warning(pop)
 #endif
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 
@@ -45,7 +45,7 @@ std::map<Ogre2MaterialSwitcher *,
 /////////////////////////////////////////////////
 Ogre2MaterialSwitcher::Ogre2MaterialSwitcher(Ogre2ScenePtr _scene)
 {
-  this->currentColor = math::Color(0.0, 0.0, 0.1);
+  this->currentColor = math::Color(0.0f, 0.0f, 0.1f);
   this->scene = _scene;
 
   // plain opaque material

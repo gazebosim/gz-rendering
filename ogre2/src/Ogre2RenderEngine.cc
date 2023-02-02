@@ -27,26 +27,26 @@
   // pulled in by anybody (e.g., Boost).
   #include <Winsock2.h>
 #endif
-#include <ignition/common/Console.hh>
-#include <ignition/common/Filesystem.hh>
-#include <ignition/common/Util.hh>
+#include <gz/common/Console.hh>
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Util.hh>
 
-#include <ignition/plugin/Register.hh>
+#include <gz/plugin/Register.hh>
 
-#include "ignition/rendering/GraphicsAPI.hh"
-#include "ignition/rendering/RenderEngineManager.hh"
-#include "ignition/rendering/ogre2/Ogre2Includes.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderEngine.hh"
-#include "ignition/rendering/ogre2/Ogre2RenderTypes.hh"
-#include "ignition/rendering/ogre2/Ogre2Scene.hh"
-#include "ignition/rendering/ogre2/Ogre2Storage.hh"
+#include "gz/rendering/GraphicsAPI.hh"
+#include "gz/rendering/RenderEngineManager.hh"
+#include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+#include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Storage.hh"
 
 #include "Terra/Hlms/OgreHlmsTerra.h"
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 #include "Terra/TerraWorkspaceListener.h"
 #include "Ogre2IgnHlmsCustomizations.hh"
 
-class ignition::rendering::Ogre2RenderEnginePrivate
+class gz::rendering::Ogre2RenderEnginePrivate
 {
 #if HAVE_GLX
   public: GLXFBConfig* dummyFBConfigs = nullptr;
@@ -69,7 +69,7 @@ class ignition::rendering::Ogre2RenderEnginePrivate
   public: std::unique_ptr<Ogre::TerraWorkspaceListener> terraWorkspaceListener;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
@@ -176,7 +176,7 @@ void Ogre2RenderEngine::Destroy()
 //////////////////////////////////////////////////
 bool Ogre2RenderEngine::IsEnabled() const
 {
-  return this->initialized;
+  return BaseRenderEngine::IsEnabled();
 }
 
 //////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE_OGREARROWVISUAL_HH_
-#define IGNITION_RENDERING_OGRE_OGREARROWVISUAL_HH_
 
-#include "ignition/rendering/base/BaseArrowVisual.hh"
-#include "ignition/rendering/ogre/OgreVisual.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    class IGNITION_RENDERING_OGRE_VISIBLE OgreArrowVisual :
-      public BaseArrowVisual<OgreVisual>
-    {
-      protected: OgreArrowVisual();
-
-      public: virtual ~OgreArrowVisual();
-
-      private: friend class OgreScene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/ogre/OgreArrowVisual.hh>
+#include <ignition/rendering/config.hh>

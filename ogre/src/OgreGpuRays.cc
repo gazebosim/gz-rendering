@@ -15,21 +15,21 @@
  *
 */
 
-#include <ignition/common/Mesh.hh>
-#include <ignition/common/MeshManager.hh>
-#include <ignition/common/SubMesh.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/MeshManager.hh>
+#include <gz/common/SubMesh.hh>
 
-#include <ignition/math/Color.hh>
-#include <ignition/math/Helpers.hh>
-#include <ignition/math/Vector3.hh>
+#include <gz/math/Color.hh>
+#include <gz/math/Helpers.hh>
+#include <gz/math/Vector3.hh>
 
-#include "ignition/rendering/RenderTypes.hh"
-#include "ignition/rendering/ogre/OgreCamera.hh"
-#include "ignition/rendering/ogre/OgreGpuRays.hh"
+#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/ogre/OgreCamera.hh"
+#include "gz/rendering/ogre/OgreGpuRays.hh"
 
 /// \internal
 /// \brief Private data for the OgreGpuRays class
-class ignition::rendering::OgreGpuRaysPrivate
+class gz::rendering::OgreGpuRaysPrivate
 {
   /// \brief Event triggered when new gpu rays range data are available.
   /// \param[in] _frame New frame containing raw gpu rays data.
@@ -37,7 +37,7 @@ class ignition::rendering::OgreGpuRaysPrivate
   /// \param[in] _height Height of frame.
   /// \param[in] _channels Number of channels
   /// \param[in] _format Format of frame.
-  public: ignition::common::EventT<void(const float *,
+  public: gz::common::EventT<void(const float *,
                unsigned int, unsigned int, unsigned int,
                const std::string &)> newGpuRaysFrame;
 
@@ -129,7 +129,7 @@ class ignition::rendering::OgreGpuRaysPrivate
   public: const math::Angle kMinAllowedAngle = 1e-4;
 };
 
-using namespace ignition;
+using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////

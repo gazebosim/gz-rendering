@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Open Source Robotics Foundation
+ * Copyright (C) 2022 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,6 @@
  * limitations under the License.
  *
  */
-#ifndef IGNITION_RENDERING_OGRE2_OGRE2AXISVISUAL_HH_
-#define IGNITION_RENDERING_OGRE2_OGRE2AXISVISUAL_HH_
 
-#include "ignition/rendering/base/BaseAxisVisual.hh"
-#include "ignition/rendering/ogre2/Ogre2Visual.hh"
-
-namespace ignition
-{
-  namespace rendering
-  {
-    inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
-    //
-    /// \brief Ogre2.x implementation of the axis visual class
-    class IGNITION_RENDERING_OGRE2_VISIBLE Ogre2AxisVisual :
-      public BaseAxisVisual<Ogre2Visual>
-    {
-      /// \brief Constructor
-      protected: Ogre2AxisVisual();
-
-      /// \brief Destructor
-      public: virtual ~Ogre2AxisVisual();
-
-      /// \brief Only scene can instantiate an axis visual
-      private: friend class Ogre2Scene;
-    };
-    }
-  }
-}
-#endif
+#include <gz/rendering/ogre2/Ogre2AxisVisual.hh>
+#include <ignition/rendering/config.hh>

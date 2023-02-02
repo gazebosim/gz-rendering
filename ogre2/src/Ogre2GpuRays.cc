@@ -668,8 +668,20 @@ void Ogre2GpuRays::Destroy()
     {
       ogreSceneManager->destroyCamera(this->dataPtr->ogreCamera);
       this->dataPtr->ogreCamera = nullptr;
+
+      for (unsigned int i = 0; i < this->dataPtr->kCubeCameraCount; ++i)
+      {
+        if (this->dataPtr->cubeCam[i])
+        {
+          ogreSceneManager->destroyCamera(this->dataPtr->cubeCam[i]);
+          this->dataPtr->cubeCam[i] = nullptr;
+        }
+      }
     }
   }
+
+  // call base node destroy to remove parent
+  Ogre2Node::Destroy();
 }
 
 /////////////////////////////////////////////////

@@ -17,8 +17,10 @@
 
 // Note this include is placed in the src file because
 // otherwise ogre produces compile errors
-#ifdef _MSC_VER
-#pragma warning(push, 0)
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 4005)  // Macro redefinition
+#pragma warning(disable: 5033)  // 'register' is no longer supported
 #endif
 #include <Animation/OgreSkeletonInstance.h>
 #include <Hlms/Pbs/OgreHlmsPbsDatablock.h>
@@ -27,7 +29,7 @@
 #include <OgreMeshManager.h>
 #include <OgreMeshManager2.h>
 #include <OgreMaterialManager.h>
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 #pragma warning(pop)
 #endif
 
@@ -63,12 +65,13 @@ Ogre2Mesh::Ogre2Mesh()
 //////////////////////////////////////////////////
 Ogre2Mesh::~Ogre2Mesh()
 {
+  this->Destroy();
 }
 
 //////////////////////////////////////////////////
 void Ogre2Mesh::Destroy()
 {
-  if (!this->ogreItem)
+  if (!this->ogreItem || !this->Scene()->IsInitialized())
     return;
 
   // We need to override BaseMesh::Destroy for ogre2 implementation to control
@@ -354,8 +357,27 @@ void Ogre2SubMesh::SetMaterialImpl(MaterialPtr _material)
   // Pbs Hlms material
   else
   {
-    this->ogreSubItem->setDatablock(
-        static_cast<Ogre::HlmsPbsDatablock *>(derived->Datablock()));
+    auto datablock =
+        static_cast<Ogre::HlmsPbsDatablock *>(derived->Datablock());
+    if (datablock)
+    {
+      this->ogreSubItem->setDatablock(datablock);
+
+      // update render queue group based on material transparency setting
+      if (datablock->getTransparencyMode() == Ogre::HlmsPbsDatablock::None)
+      {
+        // by default, ogre items are in render queue 10
+        // these are hardcoded in ogre-next and there does not seem to be
+        // an enum of function to retrieve this default render queue group
+        this->ogreSubItem->getParent()->setRenderQueueGroup(10);
+      }
+      else
+      {
+        // put in render queue group 200
+        // v2 entities can be placed in groups 0-99 or 200-224
+        this->ogreSubItem->getParent()->setRenderQueueGroup(200);
+      }
+    }
   }
 
   // set cast shadows

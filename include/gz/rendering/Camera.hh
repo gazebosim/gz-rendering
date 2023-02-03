@@ -112,6 +112,8 @@ namespace gz
       /// \return The camera's aspect ratio
       public: virtual void SetAspectRatio(const double _ratio) = 0;
 
+      // TODO(anyone): add auto-aspect ratio
+
       /// \brief Get the level of anti-aliasing used during rendering
       /// \return The level of anti-aliasing used during rendering
       public: virtual unsigned int AntiAliasing() const = 0;

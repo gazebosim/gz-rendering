@@ -128,6 +128,8 @@ void Ogre2Marker::PreRender()
 //////////////////////////////////////////////////
 void Ogre2Marker::Destroy()
 {
+  BaseMarker::Destroy();
+
   if (this->dataPtr->geom)
   {
     this->dataPtr->geom->Destroy();
@@ -289,6 +291,7 @@ MaterialPtr Ogre2Marker::Material() const
 void Ogre2Marker::SetPoint(unsigned int _index,
     const math::Vector3d &_value)
 {
+  BaseMarker::SetPoint(_index, _value);
   this->dataPtr->dynamicRenderable->SetPoint(_index, _value);
 }
 
@@ -296,12 +299,14 @@ void Ogre2Marker::SetPoint(unsigned int _index,
 void Ogre2Marker::AddPoint(const math::Vector3d &_pt,
     const math::Color &_color)
 {
+  BaseMarker::AddPoint(_pt, _color);
   this->dataPtr->dynamicRenderable->AddPoint(_pt, _color);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Marker::ClearPoints()
 {
+  BaseMarker::ClearPoints();
   this->dataPtr->dynamicRenderable->Clear();
 }
 

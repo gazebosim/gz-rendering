@@ -95,6 +95,11 @@ namespace gz
       /// \param[in] _activeCamera Camera about to be used for rendering
       public: void UpdateForRender(Ogre::Camera *_activeCamera);
 
+      // Documentation inherited.
+      // \todo(iche033) rename this to Destroy and
+      // make this function public and virtual
+      private: void DestroyImpl();
+
       /// \brief Heightmap should only be created by scene.
       private: friend class OgreScene;
 

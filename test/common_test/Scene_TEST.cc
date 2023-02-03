@@ -25,8 +25,11 @@
 using namespace gz;
 using namespace rendering;
 
-class SceneTest : public CommonRenderingTest 
+class SceneTest : public CommonRenderingTest
 {
+  public: const std::string TEST_MEDIA_PATH =
+        common::joinPaths(std::string(PROJECT_SOURCE_PATH),
+        "test", "media", "skeleton");
 };
 
 /////////////////////////////////////////////////
@@ -405,7 +408,81 @@ TEST_F(SceneTest, DestroyNodes)
   EXPECT_FALSE(scene->HasVisual(childB));
   EXPECT_FALSE(scene->HasVisual(childAA));
 
+  auto gizmoVisual = scene->CreateGizmoVisual("gizmo_visual");
+  auto planeVisual = scene->CreatePlane();
+  auto meshVisual = scene->CreateMesh(
+    common::joinPaths(TEST_MEDIA_PATH, "walk.dae"));
+
+  common::MeshPtr mesh(new common::Mesh());
+  meshVisual = scene->CreateMesh(mesh.get());
+
+  scene->DestroyVisuals();
+
+  common::Material mat(math::Color(1.0f, 0.5f, 0.2f, 1.0f));
+  auto materialVisual = scene->CreateMaterial(mat);
+  scene->DestroyMaterial(materialVisual);
+  scene->DestroyMaterial(MaterialPtr());
+
+  auto depthCameraSensor = scene->CreateDepthCamera();
+  scene->DestroySensors();
+  depthCameraSensor = scene->CreateDepthCamera("camera_depth");
+  scene->DestroySensorByName("camera_depth");
+  depthCameraSensor = scene->CreateDepthCamera("camera_depth");
+  EXPECT_FALSE(scene->HasSensor(ConstSensorPtr()));
+  EXPECT_FALSE(scene->HasSensorId(8));
+  EXPECT_FALSE(scene->HasSensorName("invalid"));
+  EXPECT_TRUE(scene->HasSensorName("camera_depth"));
+
+  auto dCSensor = scene->SensorByName("camera_depth");
+  EXPECT_TRUE(scene->HasSensor(dCSensor));
+  EXPECT_TRUE(scene->HasSensorName("camera_depth"));
+  scene->DestroySensor(dCSensor, false);
+
+  depthCameraSensor = scene->CreateDepthCamera(76);
+  dCSensor = scene->SensorById(76);
+  EXPECT_TRUE(scene->HasSensor(dCSensor));
+  EXPECT_TRUE(scene->HasSensorId(76));
+  scene->DestroySensor(dCSensor, true);
+
+  depthCameraSensor = scene->CreateDepthCamera(76);
+  scene->DestroySensorById(76);
+
+  depthCameraSensor = scene->CreateDepthCamera();
+  scene->DestroySensorByIndex(0);
+
+  // lights
+  auto spotLight = scene->CreateSpotLight();
+  auto pointLight = scene->CreatePointLight("point_light");
+  auto directionalLight = scene->CreateDirectionalLight(99);
+
+  auto directionalLight2 = scene->LightById(99);
+  EXPECT_EQ(directionalLight, directionalLight2);
+
+  auto directionalLight3 = scene->CreateDirectionalLight("directional_light");
+
+  auto pointLight2 = scene->LightByName("point_light");
+  EXPECT_EQ(pointLight, pointLight2);
+
+  scene->DestroyLightByIndex(0);
+  scene->DestroyLight(pointLight, true);
+  scene->DestroyLights();
+
+  spotLight = scene->CreateSpotLight();
+  scene->DestroyNodeByIndex(0);
+
+  spotLight = scene->CreateSpotLight("light_node");
+  scene->DestroyNodeByName("light_node");
+
+  spotLight = scene->CreateSpotLight(56);
+  scene->DestroyNodeById(56);
+
   EXPECT_EQ(0u, scene->VisualCount());
+  EXPECT_EQ(0u, scene->SensorCount());
+  EXPECT_EQ(0u, scene->LightCount());
+
+  EXPECT_EQ(std::chrono::milliseconds(0), scene->Time());
+  scene->SetTime(std::chrono::milliseconds(3550));
+  EXPECT_EQ(std::chrono::milliseconds(3550), scene->Time());
 
   // Clean up
   engine->DestroyScene(scene);

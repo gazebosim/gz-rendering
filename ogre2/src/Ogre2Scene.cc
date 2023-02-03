@@ -1280,11 +1280,12 @@ RenderTexturePtr Ogre2Scene::CreateRenderTextureImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-RenderWindowPtr Ogre2Scene::CreateRenderWindowImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+RenderWindowPtr Ogre2Scene::CreateRenderWindowImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
-  return RenderWindowPtr();
+  Ogre2RenderWindowPtr renderWindow(new Ogre2RenderWindow);
+  bool result = this->InitObject(renderWindow, _id, _name);
+  return (result) ? renderWindow : nullptr;
 }
 
 //////////////////////////////////////////////////

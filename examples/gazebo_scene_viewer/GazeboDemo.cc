@@ -46,7 +46,7 @@ void Connect()
   gazebo::transport::init();
   gazebo::transport::run();
 
-  SceneManager* manager = SceneManager::Instance();
+  SceneManager *manager = SceneManager::Instance();
   manager->Load();
   manager->Init();
 }

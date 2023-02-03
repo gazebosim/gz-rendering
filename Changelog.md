@@ -1,5 +1,10 @@
 ## Ignition Rendering
 
+### Ignition Rendering 3.7.1 (2023-02-03)
+
+1. Remove fini to resolve segfaault at shutdown.
+    * [Pull request #813](https://github.com/gazebosim/gz-rendering/pull/813)
+
 ### Ignition Rendering 3.7.0 (2022-11-29)
 
 1. Migrate ignition to gazebo headers.

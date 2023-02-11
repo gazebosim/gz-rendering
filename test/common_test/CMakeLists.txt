@@ -29,6 +29,7 @@ set(tests
   ParticleEmitter_TEST
   RayQuery_TEST
   RenderEngine_TEST
+  RenderEngineManager_TEST
   RenderingIface_TEST
   RenderPassSystem_TEST
   RenderTarget_TEST

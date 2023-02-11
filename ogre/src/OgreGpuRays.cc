@@ -81,6 +81,9 @@ class gz::rendering::OgreGpuRaysPrivate
   /// \brief Pointer to visual that holds the canvas.
   public: VisualPtr visual;
 
+  /// \brief Canvas material (green color)
+  public: MaterialPtr canvasMaterial;
+
   /// \brief Number of first pass textures.
   public: unsigned int textureCount = 0u;
 
@@ -196,10 +199,32 @@ void OgreGpuRays::Destroy()
     this->dataPtr->matSecondPass = nullptr;
   }
 
-  if (this->scene && this->dataPtr->orthoCam)
+  if (this->scene)
   {
-    this->scene->OgreSceneManager()->destroyCamera(this->dataPtr->orthoCam);
-    this->dataPtr->orthoCam = nullptr;
+    if (this->dataPtr->orthoCam)
+    {
+      this->scene->OgreSceneManager()->destroyCamera(this->dataPtr->orthoCam);
+      this->dataPtr->orthoCam = nullptr;
+    }
+    if (this->dataPtr->ogreCamera)
+    {
+      this->scene->OgreSceneManager()->destroyCamera(this->dataPtr->ogreCamera);
+      this->dataPtr->ogreCamera = nullptr;
+    }
+    if (this->dataPtr->visual)
+    {
+      this->scene->DestroyNode(this->dataPtr->visual);
+      this->dataPtr->visual.reset();
+    }
+    if (this->dataPtr->canvasMaterial)
+    {
+      this->scene->DestroyMaterial(this->dataPtr->canvasMaterial);
+      this->dataPtr->canvasMaterial.reset();
+    }
+
+    // call base node destroy to remove parent
+    if (this->scene->IsInitialized())
+      OgreNode::Destroy();
   }
 
   if (this->dataPtr->undistMesh)
@@ -208,7 +233,6 @@ void OgreGpuRays::Destroy()
     this->dataPtr->undistMesh = nullptr;
   }
 
-  this->dataPtr->visual.reset();
   this->dataPtr->texIdx.clear();
   this->dataPtr->texCount = 0u;
 }
@@ -920,10 +944,10 @@ void OgreGpuRays::CreateCanvas()
   this->dataPtr->visual->SetLocalPosition(0.01, 0, 0);
   this->dataPtr->visual->SetLocalRotation(0, 0, 0);
 
-  MaterialPtr canvasMaterial =
+  this->dataPtr->canvasMaterial =
     this->scene->CreateMaterial(this->Name() + "_green");
-  canvasMaterial->SetAmbient(math::Color(0, 1, 0, 1));
-  this->dataPtr->visual->SetMaterial(canvasMaterial);
+  this->dataPtr->canvasMaterial->SetAmbient(math::Color(0, 1, 0, 1));
+  this->dataPtr->visual->SetMaterial(this->dataPtr->canvasMaterial);
 
   this->dataPtr->visual->SetVisible(true);
 }

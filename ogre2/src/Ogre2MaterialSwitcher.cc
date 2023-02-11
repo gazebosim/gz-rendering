@@ -45,7 +45,7 @@ using namespace rendering;
 /////////////////////////////////////////////////
 Ogre2MaterialSwitcher::Ogre2MaterialSwitcher(Ogre2ScenePtr _scene)
 {
-  this->currentColor = math::Color(0.0, 0.0, 0.1);
+  this->currentColor = math::Color(0.0f, 0.0f, 0.1f);
   this->scene = _scene;
 }
 

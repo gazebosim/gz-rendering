@@ -469,7 +469,6 @@ void Ogre2RenderTarget::PreRender()
   {
     this->material->PreRender();
   }
-
   this->UpdateRenderPassChain();
 }
 
@@ -735,6 +734,13 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
       this->renderPassDirty,
       &this->dataPtr->ogreTexture,
       this->IsRenderWindow());
+
+  if (this->renderPassDirty)
+  {
+    // make sure to render the result after updating the render pass chain
+    for (auto &pass : this->renderPasses)
+      pass->PreRender();
+  }
 
   this->renderPassDirty = false;
 }

@@ -15,5 +15,5 @@
  *
  */
 
-#include <gz/rendering/Camera.hh>
+#include <gz/rendering/optix.hh>
 #include <ignition/rendering/config.hh>

@@ -138,6 +138,57 @@ TEST_F(GpuRaysTest, Configure)
 
 /////////////////////////////////////////////////
 /// \brief Test detection of different boxes
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CreateRemove))
+{
+  CHECK_UNSUPPORTED_ENGINE("optix");
+
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  // test creating and removing gpu rays
+  // create lidar with name
+  std::string sensorName = "my_lidar";
+  GpuRaysPtr lidar = scene->CreateGpuRays(sensorName);
+  ASSERT_NE(nullptr, lidar);
+  auto sensor = scene->SensorByName(sensorName);
+  EXPECT_NE(nullptr, sensor);
+  lidar->SetAngleMin(-1.0);
+  lidar->SetAngleMax(1.0);
+  lidar->SetRayCount(10);
+  lidar->SetVerticalRayCount(1);
+  lidar->PreRender();
+  scene->DestroySensor(lidar);
+  sensor = scene->SensorByName(sensorName);
+  EXPECT_EQ(nullptr, sensor);
+  sensor.reset();
+  lidar.reset();
+
+  // make sure we can create lidar with same name again
+  lidar = scene->CreateGpuRays(sensorName);
+  ASSERT_NE(nullptr, lidar);
+  sensor = scene->SensorByName(sensorName);
+  EXPECT_NE(nullptr, sensor);
+  lidar->SetAngleMin(-2.0);
+  lidar->SetAngleMax(2.0);
+  lidar->SetRayCount(100);
+  lidar->SetVerticalRayCount(1);
+  lidar->PreRender();
+  scene->DestroySensor(lidar);
+  sensor = scene->SensorByName(sensorName);
+  EXPECT_EQ(nullptr, sensor);
+
+  lidar.reset();
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief Test detection of different boxes
 TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");

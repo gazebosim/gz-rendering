@@ -27,6 +27,7 @@
 #include <OgreHighLevelGpuProgram.h>
 #include <OgreHighLevelGpuProgramManager.h>
 #include <OgreHlmsManager.h>
+#include <OgreItem.h>
 #include <OgreMaterialManager.h>
 #include <OgrePixelFormatGpuUtils.h>
 #include <OgreTechnique.h>
@@ -338,6 +339,30 @@ void Ogre2Material::UpdateTransparency()
 
   // from ogre documentation: 0 = full transparency and 1 = fully opaque
   this->ogreDatablock->setTransparency(opacity, mode);
+
+  // set transparent objects to be in a higher render queue group
+  // so they blend properly with heightmaps (render queue 11)
+  auto renderables = this->ogreDatablock->getLinkedRenderables();
+  for (auto & renderable : renderables)
+  {
+    auto subItem = dynamic_cast<Ogre::SubItem *>(renderable);
+    if (subItem)
+    {
+      if (mode == Ogre::HlmsPbsDatablock::None)
+      {
+        // by default, ogre items are in render queue 10
+        // these are hardcoded in ogre-next and there does not seem to be
+        // an enum of function to retrieve this default render queue group
+        subItem->getParent()->setRenderQueueGroup(10);
+      }
+      else
+      {
+        // put in render queue group 200
+        // v2 entities can be placed in groups 0-99 or 200-224
+        subItem->getParent()->setRenderQueueGroup(200);
+      }
+    }
+  }
 }
 
 //////////////////////////////////////////////////

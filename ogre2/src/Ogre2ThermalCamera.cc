@@ -288,7 +288,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
         {
           try
           {
-            temp = std::get<double>(tempAny);
+            temp = static_cast<float>(std::get<double>(tempAny));
           }
           catch(...)
           {

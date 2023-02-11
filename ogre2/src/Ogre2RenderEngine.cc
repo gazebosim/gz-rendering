@@ -229,7 +229,7 @@ void Ogre2RenderEngine::Destroy()
 //////////////////////////////////////////////////
 bool Ogre2RenderEngine::IsEnabled() const
 {
-  return this->initialized;
+  return BaseRenderEngine::IsEnabled();
 }
 
 //////////////////////////////////////////////////

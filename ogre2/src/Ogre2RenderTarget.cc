@@ -469,7 +469,6 @@ void Ogre2RenderTarget::PreRender()
   {
     this->material->PreRender();
   }
-
   this->UpdateRenderPassChain();
 }
 

@@ -72,3 +72,34 @@ TEST(ShaderParams, ConstRangeForLoopDoesNotDirty)
   }
   EXPECT_FALSE(params.IsDirty());
 }
+
+/////////////////////////////////////////////////
+TEST(ShaderParams, Iterator)
+{
+  ShaderParams params;
+  params["some_parameter"] = 4.0f;
+  params["some_parameter2"] = 4.1f;
+  auto iterator = params.begin();
+  auto iteratorCopy = iterator;
+  EXPECT_TRUE(iterator == params.begin());
+  EXPECT_EQ(iteratorCopy->first, iterator->first);
+  EXPECT_EQ("some_parameter2", iterator->first);
+  EXPECT_EQ(ShaderParam::PARAM_FLOAT, iterator->second.Type());
+  float val;
+  EXPECT_TRUE(iterator->second.Value(&val));
+  EXPECT_FLOAT_EQ(4.1f, val);
+
+  iterator++;
+  EXPECT_EQ("some_parameter", iterator->first);
+  EXPECT_EQ(ShaderParam::PARAM_FLOAT, iterator->second.Type());
+  EXPECT_TRUE(iterator->second.Value(&val));
+  EXPECT_FLOAT_EQ(4.0f, val);
+}
+
+
+//////////////////////////////////////////////////
+int main(int argc, char **argv)
+{
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}

@@ -26,7 +26,7 @@
 using namespace gz;
 using namespace rendering;
 
-class OrbitViewControllerTest : public CommonRenderingTest 
+class OrbitViewControllerTest : public CommonRenderingTest
 {
 };
 
@@ -67,6 +67,34 @@ TEST_F(OrbitViewControllerTest, OrbitViewControl)
 }
 
 /////////////////////////////////////////////////
+TEST_F(OrbitViewControllerTest, Constructor)
+{
+  ScenePtr scene = engine->CreateScene("scene");
+  EXPECT_NE(scene, nullptr);
+
+  CameraPtr camera =  scene->CreateCamera("camera");
+  EXPECT_NE(camera, nullptr);
+
+  OrbitViewController viewControl(camera);
+
+  // verify intial values
+  EXPECT_EQ(camera, viewControl.Camera());
+  EXPECT_EQ(math::Vector3d::Zero, viewControl.Target());
+
+  // test setting target
+  math::Vector3d target(1, 0, 0);
+  viewControl.SetTarget(target);
+  EXPECT_EQ(target, viewControl.Target());
+
+  target.Set(-0.3, -5, 1);
+  viewControl.SetTarget(target);
+  EXPECT_EQ(target, viewControl.Target());
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
 TEST_F(OrbitViewControllerTest, Control)
 {
   ScenePtr scene = engine->CreateScene("scene");
@@ -82,6 +110,10 @@ TEST_F(OrbitViewControllerTest, Control)
   EXPECT_EQ(math::Pose3d::Zero, initialPose);
 
   OrbitViewController viewControl;
+
+  viewControl.Zoom(0);
+  viewControl.Pan(math::Vector2d(0, 0));
+  viewControl.Orbit(math::Vector2d(0, 0));
 
   // test setting camera
   viewControl.SetCamera(camera);

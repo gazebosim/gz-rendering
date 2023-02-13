@@ -340,8 +340,17 @@ VisualPtr Ogre2Camera::VisualAt(const math::Vector2i &_mousePos)
 //////////////////////////////////////////////////
 RenderWindowPtr Ogre2Camera::CreateRenderWindow()
 {
-  // TODO(anyone)
-  return RenderWindowPtr();
+  RenderWindowPtr base = this->scene->CreateRenderWindow();
+  Ogre2RenderWindowPtr renderWindow =
+      std::dynamic_pointer_cast<Ogre2RenderWindow>(base);
+  renderWindow->SetWidth(this->ImageWidth());
+  renderWindow->SetHeight(this->ImageHeight());
+  renderWindow->SetDevicePixelRatio(1);
+  renderWindow->SetCamera(this->ogreCamera);
+  renderWindow->SetBackgroundColor(this->scene->BackgroundColor());
+
+  this->renderTexture = renderWindow;
+  return base;
 }
 
 //////////////////////////////////////////////////

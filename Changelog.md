@@ -2,6 +2,106 @@
 
 ### Gazebo Rendering 7.X
 
+### Gazebo Rendering 7.3.0 (2023-03-03)
+
+1. Limit max camera position vector length
+    * [Pull request #824](https://github.com/gazebosim/gz-rendering/pull/824)
+
+1. Cleanup GpuRays properly
+    * [Pull request #817](https://github.com/gazebosim/gz-rendering/pull/817)
+
+1. Ensure composite BaseVisuals are destroyed correctly.
+    * [Pull request #816](https://github.com/gazebosim/gz-rendering/pull/816)
+
+1. Remove fini to resolve segfaault at shutdown
+    * [Pull request #813](https://github.com/gazebosim/gz-rendering/pull/813)
+
+1. Fix transparency over heightmap
+    * [Pull request #811](https://github.com/gazebosim/gz-rendering/pull/811)
+
+1. Fix duplicate PreRender calls
+    * [Pull request #809](https://github.com/gazebosim/gz-rendering/pull/809)
+
+1. Mesh cleanup on destruction
+    * [Pull request #807](https://github.com/gazebosim/gz-rendering/pull/807)
+
+1. Fix gpu lidar memory leak [ogre2]
+    * [Pull request #799](https://github.com/gazebosim/gz-rendering/pull/799)
+
+1. Fix selecting semi-transparent visuals
+    * [Pull request #800](https://github.com/gazebosim/gz-rendering/pull/800)
+
+1. Fix Ogre2DepthCamera on macOS (Fortress)
+    * [Pull request #797](https://github.com/gazebosim/gz-rendering/pull/797)
+
+1. Add Heightmap integration test
+    * [Pull request #785](https://github.com/gazebosim/gz-rendering/pull/785)
+
+1. More ign to gz changes
+    * [Pull request #795](https://github.com/gazebosim/gz-rendering/pull/795)
+
+1. Restore GLX context after OGRE plugin loading finishes.
+    * [Pull request #794](https://github.com/gazebosim/gz-rendering/pull/794)
+
+1. Add message to see troubleshooting page when render engine fails to initialize
+    * [Pull request #793](https://github.com/gazebosim/gz-rendering/pull/793)
+
+1.  Do not overwrite reserved visibility flags in ogre2
+    * [Pull request #784](https://github.com/gazebosim/gz-rendering/pull/784)
+    * [Pull request #783](https://github.com/gazebosim/gz-rendering/pull/783)
+
+1. Fix Metal shader compiler error in GpuRays (Lidar)
+    * [Pull request #786](https://github.com/gazebosim/gz-rendering/pull/786)
+
+1.  Fix memory corruption in Ogre2GpuRays
+    * [Pull request #788](https://github.com/gazebosim/gz-rendering/pull/788)
+    * [Pull request #787](https://github.com/gazebosim/gz-rendering/pull/787)
+
+1. Enable ray heightmap ray query
+    * [Pull request #778](https://github.com/gazebosim/gz-rendering/pull/778)
+
+1. Rename ign to gz in LuxCore demo
+    * [Pull request #781](https://github.com/gazebosim/gz-rendering/pull/781)
+
+1. Fix RenderTarget::destroy not getting called in both ogre1 & ogre2
+    * [Pull request #776](https://github.com/gazebosim/gz-rendering/pull/776)
+
+1. Wrong error log message
+    * [Pull request #777](https://github.com/gazebosim/gz-rendering/pull/777)
+
+1. Implement consistent Auto Aspect Ratio
+    * [Pull request #764](https://github.com/gazebosim/gz-rendering/pull/764)
+
+1. Fix bounding box for glbs
+    * [Pull request #769](https://github.com/gazebosim/gz-rendering/pull/769)
+
+1. Disable flaky VisualAt test on mac
+    * [Pull request #767](https://github.com/gazebosim/gz-rendering/pull/767)
+
+1. Use proper sRGB conversion in DepthCamera
+    * [Pull request #766](https://github.com/gazebosim/gz-rendering/pull/766)
+
+1. Enable Heightmap Test for ogre2 & fix crash when using GpuRays camera
+    * [Pull request #762](https://github.com/gazebosim/gz-rendering/pull/762)
+
+1. Fix non-deterministic rendering due to background texture loading
+    * [Pull request #765](https://github.com/gazebosim/gz-rendering/pull/765)
+
+1. ign -> gz Migrate Ignition Headers : gz-rendering
+    * [Pull request #705](https://github.com/gazebosim/gz-rendering/pull/705)
+
+1. Fix lidar heightmap detection
+    * [Pull request #760](https://github.com/gazebosim/gz-rendering/pull/760)
+
+1. bump to 3.6.1 and update changelog
+    * [Pull request #759](https://github.com/gazebosim/gz-rendering/pull/759)
+
+1. Improved coverage: MeshDescriptor, Mesh, MoveToHelper, OrbitViewController, PixelFormat and ShadersParams
+    * [Pull request #748](https://github.com/gazebosim/gz-rendering/pull/748)
+
+1. Suppress Windows warnings
+    * [Pull request #749](https://github.com/gazebosim/gz-rendering/pull/749)
+
 ### Gazebo Rendering 7.2.0 (2022-11-14)
 
 1. Enable gpu ray query on macOS.

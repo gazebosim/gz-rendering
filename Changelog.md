@@ -19,7 +19,7 @@
 1. Fix transparency over heightmap
     * [Pull request #811](https://github.com/gazebosim/gz-rendering/pull/811)
 
-1. Fix duplicate PreRrender calls
+1. Fix duplicate PreRender calls
     * [Pull request #809](https://github.com/gazebosim/gz-rendering/pull/809)
 
 1. Mesh cleanup on destruction

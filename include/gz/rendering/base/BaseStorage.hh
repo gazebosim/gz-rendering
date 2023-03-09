@@ -94,7 +94,8 @@ namespace gz
 
       typedef std::shared_ptr<U> UPtr;
 
-      typedef std::map<std::string, UPtr> UStore;
+      typedef std::map<std::string, int> UStoreMap;
+      typedef std::vector<UPtr> UStore;
 
       typedef typename UStore::iterator UIter;
 
@@ -192,6 +193,7 @@ namespace gz
       protected: virtual UIter RemoveConstness(ConstUIter _iter);
 
       protected: UStore store;
+      protected: UStoreMap storeMap;
     };
 
     //////////////////////////////////////////////////
@@ -689,6 +691,7 @@ namespace gz
     void BaseStore<T, U>::RemoveAll()
     {
       this->store.clear();
+      this->storeMap.clear();
     }
 
     //////////////////////////////////////////////////
@@ -741,7 +744,7 @@ namespace gz
     BaseStore<T, U>::DerivedById(unsigned int _id) const
     {
       auto iter = this->ConstIterById(_id);
-      return (this->IsValidIter(iter)) ? iter->second : nullptr;
+      return (this->IsValidIter(iter)) ? *iter : nullptr;
     }
 
     //////////////////////////////////////////////////
@@ -750,7 +753,7 @@ namespace gz
     BaseStore<T, U>::DerivedByName(const std::string &_name) const
     {
       auto iter = this->ConstIterByName(_name);
-      return (this->IsValidIter(iter)) ? iter->second : nullptr;
+      return (this->IsValidIter(iter)) ? *iter : nullptr;
     }
 
     //////////////////////////////////////////////////
@@ -759,7 +762,7 @@ namespace gz
     BaseStore<T, U>::DerivedByIndex(unsigned int _index) const
     {
       auto iter = this->ConstIterByIndex(_index);
-      return (this->IsValidIter(iter)) ? iter->second : nullptr;
+      return (this->IsValidIter(iter)) ? *iter : nullptr;
     }
 
     //////////////////////////////////////////////////
@@ -821,7 +824,7 @@ namespace gz
 
       for (auto iter = begin; iter != end; ++iter)
       {
-        if (iter->second == _object)
+        if (*iter == _object)
         {
           return iter;
         }
@@ -840,7 +843,7 @@ namespace gz
 
       for (auto iter = begin; iter != end; ++iter)
       {
-        if (iter->second->Id() == _id)
+        if ((*iter)->Id() == _id)
         {
           return iter;
         }
@@ -854,7 +857,12 @@ namespace gz
     typename BaseStore<T, U>::ConstUIter
     BaseStore<T, U>::ConstIterByName(const std::string &_name) const
     {
-      return this->store.find(_name);
+      auto idx = this->storeMap.find(_name);
+      if (idx == this->storeMap.end())
+      {
+        return this->store.end();
+      }
+      return ConstIterByIndex(idx->second);
     }
 
     //////////////////////////////////////////////////
@@ -929,7 +937,8 @@ namespace gz
         return false;
       }
 
-      this->store[name] = _object;
+      this->storeMap[name] = this->store.size();
+      this->store.emplace_back(_object);
       return true;
     }
 
@@ -943,7 +952,20 @@ namespace gz
         return nullptr;
       }
 
-      UPtr result = _iter->second;
+
+      auto idx = std::distance(this->store.begin(), _iter);
+      std::string nameToErase;
+      for (auto &[name, objIdx] : this->storeMap)
+      {
+        if (objIdx == idx)
+          nameToErase = name;
+
+        if (objIdx >= idx)
+          objIdx--;
+      }
+      this->storeMap.erase(nameToErase);
+
+      UPtr result = *_iter;
       this->store.erase(_iter);
       return result;
     }

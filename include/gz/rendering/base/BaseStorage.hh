@@ -175,14 +175,14 @@ namespace gz
       /// \brief Get a const iterator to the object by id.
       /// Note that the iterator may change or become invalid when objects are
       /// added to / removed from the store.
-      /// \param[in] _object Object id
+      /// \param[in] _id Object id
       /// \return Const iterator to the object
       protected: virtual ConstUIter ConstIterById(unsigned int _id) const;
 
       /// \brief Get a const iterator to the object by name.
       /// Note that the iterator may change or become invalid when objects are
       /// added to / removed from the store.
-      /// \param[in] _object Object name
+      /// \param[in] _name Object name
       /// \return Const iterator to the object
       protected: virtual ConstUIter ConstIterByName(
                      const std::string &_name) const;
@@ -190,7 +190,7 @@ namespace gz
       /// \brief Get a const iterator to the object by index.
       /// Note that the iterator may change or become invalid when objects are
       /// added to / removed from the store.
-      /// \param[in] _object Object index
+      /// \param[in] _index Object index
       /// \return Const iterator to the object
       protected: virtual ConstUIter ConstIterByIndex(unsigned int _index) const;
 
@@ -198,28 +198,28 @@ namespace gz
       /// Note that the iterator may change or become invalid when objects are
       /// added to / removed from the store.
       /// \param[in] _object Object pointer
-      /// \return Const iterator to the object
+      /// \return Iterator to the object
       protected: virtual UIter Iter(ConstTPtr _object);
 
       /// \brief Get an iterator to the object by id.
       /// Note that the iterator may change or become invalid when objects are
       /// added to / removed from the store.
-      /// \param[in] _object Object id
-      /// \return Const iterator to the object
+      /// \param[in] _id Object id
+      /// \return Iterator to the object
       protected: virtual UIter IterById(unsigned int _id);
 
       /// \brief Get an iterator to the object by name.
       /// Note that the iterator may change or become invalid when objects are
       /// added to / removed from the store.
-      /// \param[in] _object Object name
-      /// \return Const iterator to the object
+      /// \param[in] _name Object name
+      /// \return Iterator to the object
       protected: virtual UIter IterByName(const std::string &_name);
 
       /// \brief Get an iterator to the object by index.
       /// Note that the iterator may change or become invalid when objects are
       /// added to / removed from the store.
-      /// \param[in] _object Object index
-      /// \return Const iterator to the object
+      /// \param[in] _index Object index
+      /// \return Iterator to the object
       protected: virtual UIter IterByIndex(unsigned int _index);
 
       protected: virtual bool AddImpl(UPtr _object);

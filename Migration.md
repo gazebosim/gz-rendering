@@ -14,7 +14,7 @@ release will remove the deprecated code.
 
 ### Modifications
 1. The BaseStore internal data structure has changed from an std::map to an
-   std::vector for preformance consideration. This means iterators returned by
+   std::vector for performance consideration. This means iterators returned by
    BaseStore APIs such as `IterByIndex` may now be different from before since
    the order of objects stored in maps and vectors are different. The iterators
    returned may also change or become invalid when objects are added or removed

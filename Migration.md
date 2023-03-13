@@ -12,6 +12,14 @@ release will remove the deprecated code.
     + Deprecated: `HAVE_OGRE`, `HAVE_OGRE2` `HAVE_OPTIX`
     + Replacement: `GZ_RENDERING_HAVE_OGRE`, `GZ_RENDERING_HAVE_OGRE2` `GZ_RENDERING_HAVE_OPTIX`
 
+### Modifications
+1. The BaseStore internal data structure has changed from an std::map to an
+   std::vector for performance consideration. This means iterators returned by
+   BaseStore APIs such as `IterByIndex` may now be different from before since
+   the order of objects stored in maps and vectors are different. The iterators
+   returned may also change or become invalid when objects are added or removed
+   from the store.
+
 ## Gazebo Rendering 6.x to 7.x
 
 ### Deprecations

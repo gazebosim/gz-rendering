@@ -389,7 +389,9 @@ void Ogre2Camera::SetVisibilityMask(uint32_t _mask)
   {
     ignwarn << "Ogre2Camera::SetVisibilityMask: Mask bits " << std::hex
             << ~Ogre::VisibilityFlags::RESERVED_VISIBILITY_FLAGS << std::dec
-            << " are set but will be ignored by ogre2 backend." << std::endl;
+            << " are set but will be ignored as they conflict with the "
+            << "reserved bits used internally by the ogre2 backend."
+            << std::endl;
   }
   BaseSensor::SetVisibilityMask(_mask);
   if (this->renderTexture)

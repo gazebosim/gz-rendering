@@ -333,7 +333,7 @@ TEST_F(SceneTest, DestroyNodes)
   EXPECT_EQ(4u, scene->VisualCount());
 
   // Destroy a child visual by index
-  scene->DestroyVisualByIndex(0u);
+  scene->DestroyVisualByIndex(1u);
   EXPECT_FALSE(parent->HasChild(child02));
   EXPECT_FALSE(scene->HasVisual(child02));
   EXPECT_EQ(2u, parent->ChildCount());

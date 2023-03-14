@@ -301,8 +301,7 @@ void Ogre2Visual::BoundsHelper(gz::math::AxisAlignedBox &_box,
 
   for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
   {
-    NodePtr child = it->second;
-    Ogre2VisualPtr visual = std::dynamic_pointer_cast<Ogre2Visual>(child);
+    Ogre2VisualPtr visual = std::dynamic_pointer_cast<Ogre2Visual>(*it);
     if (visual)
       visual->BoundsHelper(_box, _local, _pose);
   }

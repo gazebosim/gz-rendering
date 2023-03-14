@@ -281,8 +281,7 @@ namespace gz
       }
       for (auto it = children_->Begin(); it != children_->End(); ++it)
       {
-        NodePtr child = it->second;
-        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(*it);
         if (visual) visual->SetMaterial(_material, false);
       }
     }
@@ -341,7 +340,7 @@ namespace gz
       }
       for (auto it = children_->Begin(); it != children_->End(); ++it)
       {
-        it->second->PreRender();
+        (*it)->PreRender();
       }
     }
 
@@ -416,8 +415,7 @@ namespace gz
       }
       for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
       {
-        NodePtr child = it->second;
-        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(*it);
         if (visual)
         {
           gz::math::AxisAlignedBox aabb = visual->LocalBoundingBox();
@@ -445,8 +443,7 @@ namespace gz
       }
       for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
       {
-        NodePtr child = it->second;
-        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(*it);
         if (visual)
           box.Merge(visual->BoundingBox());
       }
@@ -484,8 +481,7 @@ namespace gz
       }
       for (auto it = childNodes->Begin(); it != childNodes->End(); ++it)
       {
-        NodePtr child = it->second;
-        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(*it);
         if (visual)
           visual->SetVisibilityFlags(_flags);
       }
@@ -548,8 +544,7 @@ namespace gz
       }
       for (auto it = children_->Begin(); it != children_->End(); ++it)
       {
-        NodePtr child = it->second;
-        VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
+        VisualPtr visual = std::dynamic_pointer_cast<Visual>(*it);
         // recursively delete all cloned visuals if the child cannot be
         // retrieved, or if cloning the child visual failed
         if (!visual || !visual->Clone("", result))

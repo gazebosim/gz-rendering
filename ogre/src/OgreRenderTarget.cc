@@ -46,6 +46,10 @@
 #include "gz/rendering/ogre/OgreScene.hh"
 #include "gz/rendering/ogre/OgreCamera.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"
+#include "gz/rendering/Utils.hh"
+
+//teju
+#include <iostream>
 
 using namespace gz;
 using namespace rendering;
@@ -68,6 +72,8 @@ OgreRenderTarget::~OgreRenderTarget()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Copy(Image &_image) const
 {
+  //teju
+  std::cout << "enter copy\n";
   if (nullptr == this->RenderTarget())
     return;
 
@@ -81,9 +87,36 @@ void OgreRenderTarget::Copy(Image &_image) const
   }
 
   void* data = _image.Data();
-  Ogre::PixelFormat imageFormat = OgreConversions::Convert(_image.Format());
+  // Ogre::PixelFormat imageFormat = OgreConversions::Convert(_image.Format());
+  Ogre::PixelFormat imageFormat;
+  if (_image.Format() == PF_BAYER_RGGB8)
+  {
+    //teju
+    std::cout << "check R1\n";
+    imageFormat = OgreConversions::Convert(PF_R8G8B8);
+  }
+  else
+  {
+    //teju
+    std::cout << "check R2\n";
+    imageFormat = OgreConversions::Convert(_image.Format());
+  }
+
+  //teju
+  std::cout << "check R3\n";
+
   Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
   this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+
+  //teju
+  std::cout << "check R4\n";
+  if (_image.Format() == PF_BAYER_RGGB8)
+  {
+    //teju
+    std::cout << "check R5\n";
+    gz::rendering::ConvertRGBToBayer(_image);
+    std::cout << "check R6\n";
+  }
 }
 
 //////////////////////////////////////////////////
@@ -360,8 +393,19 @@ void OgreRenderTexture::DestroyTarget()
 //////////////////////////////////////////////////
 void OgreRenderTexture::BuildTarget()
 {
+  //teju
+  std::cout << "enter build target\n";
   Ogre::TextureManager &manager = Ogre::TextureManager::getSingleton();
-  Ogre::PixelFormat ogreFormat = OgreConversions::Convert(this->format);
+  // Ogre::PixelFormat ogreFormat = OgreConversions::Convert(this->format);
+  Ogre::PixelFormat ogreFormat;
+  if (this->format == PF_BAYER_RGGB8)
+  {
+    ogreFormat = OgreConversions::Convert(PF_R8G8B8);
+  }
+  else
+  {
+    ogreFormat = OgreConversions::Convert(this->format);
+  }
 
   // check if target fsaa is supported
   unsigned int fsaa = 0;

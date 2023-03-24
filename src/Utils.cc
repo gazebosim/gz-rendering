@@ -26,7 +26,12 @@
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/RayQuery.hh"
+#include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/Utils.hh"
+//teju
+#include <iostream>
+//teju
+
 
 namespace gz
 {
@@ -248,6 +253,64 @@ gz::math::AxisAlignedBox transformAxisAlignedBox(
   }
   return gz::math::AxisAlignedBox(min, max);
 }
+
+/////////////////////////////////////////////////
+void ConvertRGBToBayer(Image &_image)
+{
+  std::cout << "enter cnvrsn function\n";
+  unsigned char *sourceImageData = _image.Data<unsigned char>();
+
+  unsigned int width = _image.Width();
+  unsigned int height = _image.Height();
+  //teju
+  std::cout << "width: " << width << "\n";
+  std::cout << "Height: " << height << "\n";
+
+  unsigned char *destImageData = new unsigned char[width * height];
+
+  //teju
+  std::cout << "image data conversion begins now\n";
+
+  if (_image.Format() == PF_BAYER_RGGB8)
+  {
+    for (unsigned int i=0; i<width; i++)
+    {
+      for (unsigned int j=0; j<height; j++)
+      {
+        if (j%2)
+        {
+          if (i%2)
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+2];
+          }
+          else
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
+          }
+        }
+        else
+        {
+          if (i%2)
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
+          }
+          else
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+0];
+          }
+        }
+      }
+    }
+
+    //teju
+    std::cout << "image converted\n";
+    std::cout << "modified image will be copied now\n";
+
+    memcpy(sourceImageData, destImageData, sizeof(unsigned char)*width*height);
+    delete [] destImageData;
+  }
+}
+
 }
 }
 }

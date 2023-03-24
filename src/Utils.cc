@@ -28,9 +28,9 @@
 #include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/Utils.hh"
-//teju
-#include <iostream>
-//teju
+
+#include <string.h>
+#include <memory>
 
 
 namespace gz
@@ -257,19 +257,14 @@ gz::math::AxisAlignedBox transformAxisAlignedBox(
 /////////////////////////////////////////////////
 void ConvertRGBToBayer(Image &_image)
 {
-  std::cout << "enter cnvrsn function\n";
   unsigned char *sourceImageData = _image.Data<unsigned char>();
 
   unsigned int width = _image.Width();
   unsigned int height = _image.Height();
-  //teju
-  std::cout << "width: " << width << "\n";
-  std::cout << "Height: " << height << "\n";
 
-  unsigned char *destImageData = new unsigned char[width * height];
-
-  //teju
-  std::cout << "image data conversion begins now\n";
+  // unsigned char *destImageData = new unsigned char[width * height];
+  std::unique_ptr<unsigned char[]> destImageData = 
+                        std::make_unique<unsigned char[]>(width*height);
 
   if (_image.Format() == PF_BAYER_RGGB8)
   {
@@ -302,12 +297,8 @@ void ConvertRGBToBayer(Image &_image)
       }
     }
 
-    //teju
-    std::cout << "image converted\n";
-    std::cout << "modified image will be copied now\n";
-
-    memcpy(sourceImageData, destImageData, sizeof(unsigned char)*width*height);
-    delete [] destImageData;
+    memcpy(sourceImageData, destImageData.get(), sizeof(unsigned char)*width*height);
+    // delete[] destImageData;
   }
 }
 

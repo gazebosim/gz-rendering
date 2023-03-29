@@ -18,6 +18,7 @@
 #define GZ_RENDERING_UTILS_HH_
 
 #include <vector>
+#include <memory>
 
 #include <gz/math/Helpers.hh>
 #include <gz/math/AxisAlignedBox.hh>
@@ -112,10 +113,10 @@ namespace gz
     gz::math::Matrix3d projectionToCameraIntrinsic(
         const gz::math::Matrix4d &_projectionMatrix,
         double _width, double _height);
-    
+
     // \brief convert a rgb image data into bayer image data
     GZ_RENDERING_VISIBLE
-    void ConvertRGBToBayer(Image &_image);
+    std::unique_ptr<unsigned char[]> convertRGBToBayer(Image &_image);
     }
   }
 }

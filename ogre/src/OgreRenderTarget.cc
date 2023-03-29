@@ -48,6 +48,9 @@
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/Utils.hh"
 
+#include <string.h>
+#include <memory>
+
 
 using namespace gz;
 using namespace rendering;
@@ -85,7 +88,10 @@ void OgreRenderTarget::Copy(Image &_image) const
   void* data = _image.Data();
   // Ogre::PixelFormat imageFormat = OgreConversions::Convert(_image.Format());
   Ogre::PixelFormat imageFormat;
-  if (_image.Format() == PF_BAYER_RGGB8)
+  if ((_image.Format() == PF_BAYER_RGGB8) ||
+      (_image.Format() == PF_BAYER_BGGR8) ||
+      (_image.Format() == PF_BAYER_GBRG8) ||
+      (_image.Format() == PF_BAYER_GRBG8))
   {
     imageFormat = OgreConversions::Convert(PF_R8G8B8);
   }
@@ -97,10 +103,18 @@ void OgreRenderTarget::Copy(Image &_image) const
   Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
   this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
 
-  if (_image.Format() == PF_BAYER_RGGB8)
+  if ((_image.Format() == PF_BAYER_RGGB8) ||
+      (_image.Format() == PF_BAYER_BGGR8) ||
+      (_image.Format() == PF_BAYER_GBRG8) ||
+      (_image.Format() == PF_BAYER_GRBG8))
   {
-    gz::rendering::ConvertRGBToBayer(_image);
+    std::unique_ptr<unsigned char[]> destImageData
+                                  = gz::rendering::convertRGBToBayer(_image);
+    memcpy( _image.Data<unsigned char>(),
+            destImageData.get(),
+            sizeof(unsigned char)*width*height);
   }
+
 }
 
 //////////////////////////////////////////////////
@@ -379,7 +393,10 @@ void OgreRenderTexture::BuildTarget()
 {
   Ogre::TextureManager &manager = Ogre::TextureManager::getSingleton();
   Ogre::PixelFormat ogreFormat;
-  if (this->format == PF_BAYER_RGGB8)
+  if ((this->format == PF_BAYER_RGGB8) ||
+      (this->format == PF_BAYER_BGGR8) ||
+      (this->format == PF_BAYER_GBRG8) ||
+      (this->format == PF_BAYER_GRBG8))
   {
     ogreFormat = OgreConversions::Convert(PF_R8G8B8);
   }

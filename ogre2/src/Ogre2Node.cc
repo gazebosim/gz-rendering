@@ -17,6 +17,7 @@
 
 #include <gz/common/Console.hh>
 
+#include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2Node.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
@@ -109,6 +110,16 @@ void Ogre2Node::SetRawLocalPosition(const math::Vector3d &_position)
   if (nullptr == this->ogreNode)
     return;
 
+  // ogre crashes in the compositor shadow pass with an
+  // Ogre::AxisAlignedBox::setExtents assertion error when the camera scene node
+  // position has large values. Added a workaround that places a max limit on
+  // the length of the position vector.
+  if (dynamic_cast<Ogre2Camera *>(this) && _position.Length() > 1e9)
+  {
+    ignerr << "Unable to set camera node position to a distance larger than "
+           << "1e9 from origin" << std::endl;
+    return;
+  }
   this->ogreNode->setPosition(Ogre2Conversions::Convert(_position));
 }
 
@@ -269,5 +280,3 @@ void Ogre2Node::SetLocalScaleImpl(const math::Vector3d &_scale)
 
   this->ogreNode->setScale(Ogre2Conversions::Convert(_scale));
 }
-
-

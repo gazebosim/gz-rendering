@@ -1163,6 +1163,9 @@ void Ogre2RenderEngine::CreateRenderWindow()
   if (res.empty())
   {
     gzerr << "Failed to create dummy render window." << std::endl;
+    gzerr << "Please see the troubleshooting page for possible fixes: "
+          << "https://gazebosim.org/docs/fortress/troubleshooting"
+          << std::endl;
   }
 }
 

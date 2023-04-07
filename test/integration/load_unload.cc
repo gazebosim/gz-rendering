@@ -21,6 +21,7 @@
 
 class LoadUnloadTest : public testing::Test
 {
+  /// \brief A thread that loads and unloads the render engine
   public: void RenderThread()
   {
     gz::common::Console::SetVerbosity(4);
@@ -37,7 +38,8 @@ class LoadUnloadTest : public testing::Test
         gz::rendering::engine(envEngine, engineParams);
     if (!engine)
     {
-      GTEST_SKIP() << "Engine '" << envEngine << "' could not be loaded" << std::endl;
+      GTEST_SKIP() << "Engine '" << envEngine << "' could not be loaded"
+                   << std::endl;
     }
 
     gz::rendering::unloadEngine(envEngine);

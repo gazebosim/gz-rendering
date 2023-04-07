@@ -50,6 +50,10 @@
 # include <GL/glxext.h>
 #endif
 
+#if HAVE_EGL
+  #include <EGL/egl.h>
+#endif
+
 class GZ_RENDERING_OGRE2_HIDDEN
     gz::rendering::Ogre2RenderEnginePrivate
 {
@@ -146,6 +150,12 @@ void Ogre2RenderEngine::Destroy()
 
   this->dataPtr->hlmsPbsTerraShadows.reset();
 
+  if (this->window)
+  {
+    this->window->destroy();
+    this->window = nullptr;
+  }
+
   if (this->ogreRoot)
   {
     // Clean up any textures that may still be in flight.
@@ -166,6 +176,7 @@ void Ogre2RenderEngine::Destroy()
     }
     catch (...)
     {
+      gzerr << "Error deleting ogre root " << std::endl;
     }
     this->ogreRoot = nullptr;
   }
@@ -192,6 +203,12 @@ void Ogre2RenderEngine::Destroy()
       this->dataPtr->dummyFBConfigs = nullptr;
     }
   }
+#endif
+
+#if HAVE_EGL
+  // release egl per-thread state otherwise this causes a crash on exit if
+  // ogre is created and deleted in a thread
+  eglReleaseThread();
 #endif
 }
 
@@ -391,6 +408,7 @@ void Ogre2RenderEngine::LoadAttempt()
   {
     this->CreateContext();
   }
+
   this->CreateRoot();
   this->CreateOverlay();
   this->LoadPlugins();
@@ -1043,7 +1061,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 {
   Ogre::StringVector paramsVector;
   Ogre::NameValuePairList params;
-  window = nullptr;
+  this->window = nullptr;
 
   if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
   {
@@ -1103,19 +1121,18 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 #endif
 
   int attempts = 0;
-  while (window == nullptr && (attempts++) < 10)
+  while (this->window == nullptr && (attempts++) < 10)
   {
     try
     {
-      window = Ogre::Root::getSingleton().createRenderWindow(
+      this->window = Ogre::Root::getSingleton().createRenderWindow(
           stream.str(), _width, _height, false, &params);
-      this->RegisterHlms();
     }
     catch(const std::exception &_e)
     {
       gzerr << " Unable to create the rendering window: " << _e.what()
              << std::endl;
-      window = nullptr;
+      this->window = nullptr;
     }
   }
 
@@ -1126,12 +1143,14 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     return std::string();
   }
 
-  if (window)
+  this->RegisterHlms();
+
+  if (this->window)
   {
-    window->_setVisible(true);
+    this->window->_setVisible(true);
 
     // Windows needs to reposition the render window to 0,0.
-    window->reposition(0, 0);
+    this->window->reposition(0, 0);
   }
   return stream.str();
 }

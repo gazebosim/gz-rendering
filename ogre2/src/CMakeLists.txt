@@ -47,6 +47,14 @@ target_link_libraries(${ogre2_target}
     terra
     GzOGRE2::GzOGRE2)
 
+if (TARGET OpenGL::EGL)
+  target_link_libraries(${ogre2_target}
+  PRIVATE
+      OpenGL::EGL
+  )
+  add_definitions(-DHAVE_EGL=1)
+endif()
+
 set (versioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
 set (unversioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_NO_VERSION_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
 

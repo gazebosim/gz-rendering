@@ -116,7 +116,7 @@ namespace gz
 
     // \brief convert a rgb image data into bayer image data
     GZ_RENDERING_VISIBLE
-    std::unique_ptr<unsigned char[]> convertRGBToBayer(Image &_image);
+    Image convertRGBToBayer(Image &_image);
     }
   }
 }

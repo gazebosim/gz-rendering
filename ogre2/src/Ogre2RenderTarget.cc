@@ -26,6 +26,9 @@
 #include "gz/rendering/ogre2/Ogre2Material.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/Utils.hh"
+
+#include <string.h>
 
 namespace gz
 {
@@ -360,7 +363,18 @@ void Ogre2RenderTarget::Copy(Image &_image) const
     return;
   }
 
-  Ogre::PixelFormatGpu dstOgrePf = Ogre2Conversions::Convert(_image.Format());
+  Ogre::PixelFormatGpu dstOgrePf;
+  if ((_image.Format() == PF_BAYER_RGGB8) ||
+      (_image.Format() == PF_BAYER_BGGR8) ||
+      (_image.Format() == PF_BAYER_GBRG8) ||
+      (_image.Format() == PF_BAYER_GRBG8))
+  {
+    dstOgrePf = Ogre2Conversions::Convert(PF_R8G8B8);
+  }
+  else
+  {
+    dstOgrePf = Ogre2Conversions::Convert(_image.Format());
+  }
   Ogre::TextureGpu *texture = this->RenderTarget();
 
   if (Ogre::PixelFormatGpuUtils::isSRgb(dstOgrePf) !=
@@ -389,6 +403,16 @@ void Ogre2RenderTarget::Copy(Image &_image) const
 
   Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u), dstBox,
                                      dstOgrePf);
+  if ((_image.Format() == PF_BAYER_RGGB8) ||
+      (_image.Format() == PF_BAYER_BGGR8) ||
+      (_image.Format() == PF_BAYER_GBRG8) ||
+      (_image.Format() == PF_BAYER_GRBG8))
+  {
+    Image destImage = gz::rendering::convertRGBToBayer(_image);
+    memcpy( _image.Data<unsigned char>(),
+            destImage.Data<unsigned char>(),
+            sizeof(unsigned char)*width*height);
+   } 
 }
 
 //////////////////////////////////////////////////

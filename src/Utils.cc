@@ -252,15 +252,15 @@ gz::math::AxisAlignedBox transformAxisAlignedBox(
 }
 
 /////////////////////////////////////////////////
-std::unique_ptr<unsigned char[]> convertRGBToBayer(Image &_image)
+Image convertRGBToBayer(Image &_image)
 {
   unsigned char *sourceImageData = _image.Data<unsigned char>();
 
   unsigned int width = _image.Width();
   unsigned int height = _image.Height();
 
-  std::unique_ptr<unsigned char[]> destImageData =
-                        std::make_unique<unsigned char[]>(width*height);
+  Image destImage(width, height, PF_L8);
+  unsigned char *destImageData = destImage.Data<unsigned char>();
 
   if (_image.Format() == PF_BAYER_RGGB8)
   {
@@ -390,7 +390,7 @@ std::unique_ptr<unsigned char[]> convertRGBToBayer(Image &_image)
     }
   }
 
-  return destImageData;
+  return destImage;
 }
 
 

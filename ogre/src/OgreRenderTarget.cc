@@ -49,8 +49,6 @@
 #include "gz/rendering/Utils.hh"
 
 #include <string.h>
-#include <memory>
-
 
 using namespace gz;
 using namespace rendering;
@@ -108,10 +106,9 @@ void OgreRenderTarget::Copy(Image &_image) const
       (_image.Format() == PF_BAYER_GBRG8) ||
       (_image.Format() == PF_BAYER_GRBG8))
   {
-    std::unique_ptr<unsigned char[]> destImageData
-                                  = gz::rendering::convertRGBToBayer(_image);
+    Image destImage = gz::rendering::convertRGBToBayer(_image);
     memcpy( _image.Data<unsigned char>(),
-            destImageData.get(),
+            destImage.Data<unsigned char>(),
             sizeof(unsigned char)*width*height);
   }
 

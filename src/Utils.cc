@@ -393,8 +393,6 @@ Image convertRGBToBayer(Image &_image)
   return destImage;
 }
 
-
 }
 }
 }
-

@@ -412,7 +412,7 @@ void Ogre2RenderTarget::Copy(Image &_image) const
     memcpy( _image.Data<unsigned char>(),
             destImage.Data<unsigned char>(),
             sizeof(unsigned char)*width*height);
-   } 
+   }
 }
 
 //////////////////////////////////////////////////

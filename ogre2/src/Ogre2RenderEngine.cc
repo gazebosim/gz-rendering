@@ -208,7 +208,9 @@ void Ogre2RenderEngine::Destroy()
 #if HAVE_EGL
   // release egl per-thread state otherwise this causes a crash on exit if
   // ogre is created and deleted in a thread
-  eglReleaseThread();
+  // Do this only if we are using GL
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
+    eglReleaseThread();
 #endif
 }
 

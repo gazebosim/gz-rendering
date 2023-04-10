@@ -16,6 +16,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "CommonRenderingTest.hh"
 

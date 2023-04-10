@@ -150,12 +150,6 @@ void Ogre2RenderEngine::Destroy()
 
   this->dataPtr->hlmsPbsTerraShadows.reset();
 
-  if (this->window)
-  {
-    this->window->destroy();
-    this->window = nullptr;
-  }
-
   if (this->ogreRoot)
   {
     // Clean up any textures that may still be in flight.

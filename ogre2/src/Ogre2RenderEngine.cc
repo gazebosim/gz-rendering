@@ -150,12 +150,6 @@ void Ogre2RenderEngine::Destroy()
 
   this->dataPtr->hlmsPbsTerraShadows.reset();
 
-  if (this->window)
-  {
-    this->window->destroy();
-    this->window = nullptr;
-  }
-
   if (this->ogreRoot)
   {
     // Clean up any textures that may still be in flight.
@@ -208,7 +202,9 @@ void Ogre2RenderEngine::Destroy()
 #if HAVE_EGL
   // release egl per-thread state otherwise this causes a crash on exit if
   // ogre is created and deleted in a thread
-  eglReleaseThread();
+  // Do this only if we are using GL
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
+    eglReleaseThread();
 #endif
 }
 

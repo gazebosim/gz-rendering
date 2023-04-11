@@ -16,6 +16,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "CommonRenderingTest.hh"
 
@@ -47,7 +48,7 @@ class LoadUnloadTest : public testing::Test
 };
 
 /////////////////////////////////////////////////
-TEST_F(LoadUnloadTest, Thread)
+TEST_F(LoadUnloadTest, GZ_UTILS_TEST_DISABLED_ON_MAC(Thread))
 {
   // verify that we can load and unload the render engine in a thread
   std::thread renderThread = std::thread(&LoadUnloadTest::RenderThread, this);

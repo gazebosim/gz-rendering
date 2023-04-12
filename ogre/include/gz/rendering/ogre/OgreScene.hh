@@ -205,6 +205,10 @@ namespace gz
       protected: virtual ParticleEmitterPtr CreateParticleEmitterImpl(
                      unsigned int _id, const std::string &_name) override;
 
+      // Documentation inherited
+      protected: virtual ProjectorPtr CreateProjectorImpl(
+                     unsigned int _id, const std::string &_name) override;
+
       protected: virtual bool InitObject(OgreObjectPtr _object,
                      unsigned int _id, const std::string &_name);
 

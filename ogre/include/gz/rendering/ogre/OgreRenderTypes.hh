@@ -19,6 +19,7 @@
 
 #include <memory>
 #include "gz/rendering/base/BaseRenderTypes.hh"
+#include "gz/rendering/base/BaseStorage.hh"
 
 namespace gz
 {
@@ -53,6 +54,7 @@ namespace gz
     class OgreObjectInterface;
     class OgreParticleEmitter;
     class OgrePointLight;
+    class OgreProjector;
     class OgreRayQuery;
     class OgreRenderEngine;
     class OgreRenderTarget;
@@ -109,6 +111,7 @@ namespace gz
     typedef shared_ptr<OgreObjectInterface>      OgreObjectInterfacePtr;
     typedef shared_ptr<OgreParticleEmitter>      OgreParticleEmitterPtr;
     typedef shared_ptr<OgrePointLight>           OgrePointLightPtr;
+    typedef shared_ptr<OgreProjector>            OgreProjectorPtr;
     typedef shared_ptr<OgreRayQuery>             OgreRayQueryPtr;
     typedef shared_ptr<OgreRenderEngine>         OgreRenderEnginePtr;
     typedef shared_ptr<OgreRenderTarget>         OgreRenderTargetPtr;

@@ -38,6 +38,7 @@
 #include "gz/rendering/ogre/OgreMaterial.hh"
 #include "gz/rendering/ogre/OgreMeshFactory.hh"
 #include "gz/rendering/ogre/OgreParticleEmitter.hh"
+#include "gz/rendering/ogre/OgreProjector.hh"
 #include "gz/rendering/ogre/OgreRTShaderSystem.hh"
 #include "gz/rendering/ogre/OgreRayQuery.hh"
 #include "gz/rendering/ogre/OgreRenderEngine.hh"
@@ -666,6 +667,15 @@ ParticleEmitterPtr OgreScene::CreateParticleEmitterImpl(unsigned int _id,
   OgreParticleEmitterPtr visual(new OgreParticleEmitter);
   bool result = this->InitObject(visual, _id, _name);
   return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+ProjectorPtr OgreScene::CreateProjectorImpl(unsigned int _id,
+    const std::string &_name)
+{
+  OgreProjectorPtr projector(new OgreProjector);
+  bool result = this->InitObject(projector, _id, _name);
+  return (result) ? projector : nullptr;
 }
 
 //////////////////////////////////////////////////

@@ -1225,10 +1225,39 @@ namespace gz
 
       /// \brief Create new GI CIVCT solution with the given name. If either the
       /// given ID or name is already in use, NULL will be returned.
-      /// \param[in] _id ID of the new particle emitter
+      /// \param[in] _id ID of the new GI CIVCT
       /// \param[in] _name Name of the new GI CIVCT solution
       /// \return The created GI CIVCT
       public: virtual GlobalIlluminationCiVctPtr CreateGlobalIlluminationCiVct(
+                  unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Create new projector. A unique ID and name will
+      /// automatically be assigned to the visual.
+      /// \return The created projector
+      public: virtual ProjectorPtr CreateProjector() = 0;
+
+      /// \brief Create new projector with the given ID. A unique name
+      /// will automatically be assigned to the visual. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new projector
+      /// \return The created projector
+      public: virtual ProjectorPtr CreateProjector(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new projector with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new projector
+      /// \return The created projector
+      public: virtual ProjectorPtr CreateProjector(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new projector with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new projector
+      /// \param[in] _name Name of the new projector
+      /// \return The created projector
+      public: virtual ProjectorPtr CreateProjector(
                   unsigned int _id, const std::string &_name) = 0;
 
       /// \brief Enable sky in the scene.

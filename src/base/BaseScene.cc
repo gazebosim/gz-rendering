@@ -38,6 +38,7 @@
 #include "gz/rendering/GpuRays.hh"
 #include "gz/rendering/Grid.hh"
 #include "gz/rendering/ParticleEmitter.hh"
+#include "gz/rendering/Projector.hh"
 #include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/RenderTarget.hh"
 #include "gz/rendering/Text.hh"
@@ -1425,6 +1426,36 @@ GlobalIlluminationCiVctPtr BaseScene::CreateGlobalIlluminationCiVct(
   unsigned int _id, const std::string &_name)
 {
   return this->CreateGlobalIlluminationCiVctImpl(_id, _name);
+}
+
+//////////////////////////////////////////////////
+ProjectorPtr BaseScene::CreateProjector()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateProjector(objId);
+}
+
+//////////////////////////////////////////////////
+ProjectorPtr BaseScene::CreateProjector(unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "Projector");
+  return this->CreateProjector(_id, objName);
+}
+
+//////////////////////////////////////////////////
+ProjectorPtr BaseScene::CreateProjector(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateProjector(objId, _name);
+}
+
+//////////////////////////////////////////////////
+ProjectorPtr BaseScene::CreateProjector(unsigned int _id,
+    const std::string &_name)
+{
+  ProjectorPtr projector = this->CreateProjectorImpl(_id, _name);
+  bool result = this->RegisterVisual(projector);
+  return (result) ? projector : nullptr;
 }
 
 //////////////////////////////////////////////////

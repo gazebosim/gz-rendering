@@ -4,6 +4,9 @@
 
 ### Gazebo Rendering 7.3.1 (2023-04-13)
 
+1. Lower severity level for ogre2 visibility mask msgs and unavailable render passes
+    * [Pull request #830](https://github.com/gazebosim/gz-rendering/pull/830)
+
 1.  Fix deleting ogre2 when created (and deleted) in a thread
     * [Pull request #840](https://github.com/gazebosim/gz-rendering/pull/840)
     * [Pull request #841](https://github.com/gazebosim/gz-rendering/pull/841)

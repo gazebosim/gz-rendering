@@ -51,7 +51,7 @@ RenderPassPtr RenderPassSystem::CreateImpl(const std::string &_type)
   }
   else
   {
-    gzerr << "RenderPass of typeid '" << _type << "' is not registered"
+    gzwarn << "RenderPass of typeid '" << _type << "' is not registered"
            << std::endl;
   }
   return pass;

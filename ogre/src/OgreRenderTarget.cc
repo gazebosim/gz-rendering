@@ -92,7 +92,8 @@ void OgreRenderTarget::Copy(Image &_image) const
     imageFormat = OgreConversions::Convert(PF_R8G8B8);
     Image colorImage(this->width, this->height, PF_R8G8B8);
     void *data =  colorImage.Data();
-    Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
+    Ogre::PixelBox ogrePixelBox(
+        this->width, this->height, 1, imageFormat, data);
     this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
     // convert color image to bayer image
     _image = gz::rendering::convertRGBToBayer(colorImage, _image.Format());
@@ -101,7 +102,8 @@ void OgreRenderTarget::Copy(Image &_image) const
   {
     imageFormat = OgreConversions::Convert(_image.Format());
     void *data = _image.Data();
-    Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
+    Ogre::PixelBox ogrePixelBox(
+        this->width, this->height, 1, imageFormat, data);
     this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
   }
 }

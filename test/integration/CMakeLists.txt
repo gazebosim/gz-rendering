@@ -9,10 +9,11 @@ set(tests
   lidar_visual
   render_pass
   scene
-  segmentation_camera 
-  shadows 
+  segmentation_camera
+  shadows
   sky
   thermal_camera
+  load_unload
   wide_angle_camera
 )
 

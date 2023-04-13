@@ -2,6 +2,27 @@
 
 ### Gazebo Rendering 7.X
 
+### Gazebo Rendering 7.3.1 (2023-04-13)
+
+1. Lower severity level for ogre2 visibility mask msgs and unavailable render passes
+    * [Pull request #830](https://github.com/gazebosim/gz-rendering/pull/830)
+
+1.  Fix deleting ogre2 when created (and deleted) in a thread
+    * [Pull request #840](https://github.com/gazebosim/gz-rendering/pull/840)
+    * [Pull request #841](https://github.com/gazebosim/gz-rendering/pull/841)
+
+1. CI workflow: use checkout v3
+    * [Pull request #834](https://github.com/gazebosim/gz-rendering/pull/834)
+
+1. Rename COPYING to LICENSE
+    * [Pull request #833](https://github.com/gazebosim/gz-rendering/pull/833)
+
+1. Add message to see troubleshooting page when render engine fails to create dummy window
+    * [Pull request #829](https://github.com/gazebosim/gz-rendering/pull/829)
+
+1. Tweak max camera position limit
+    * [Pull request #827](https://github.com/gazebosim/gz-rendering/pull/827)
+
 ### Gazebo Rendering 7.3.0 (2023-03-03)
 
 1. Limit max camera position vector length

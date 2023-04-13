@@ -52,13 +52,13 @@ const unsigned char PixelUtil::channelCounts[PF_COUNT] =
       // B8G8R8
       3,
       // BAYER_RGGB8
-      4,
+      1,
       // BAYER_BGGR8
-      4,
+      1,
       // BAYER_GBRG8
-      4,
+      1,
       // BAYER_GRBG8
-      4,
+      1,
       // PF_FLOAT32_R
       1,
       // PF_FLOAT32_RGBA

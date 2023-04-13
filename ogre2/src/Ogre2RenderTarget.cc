@@ -399,20 +399,26 @@ void Ogre2RenderTarget::Copy(Image &_image) const
     static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
       texture->getInternalWidth(), texture->getInternalHeight(), 1u, 1u,
       dstOgrePf, 1u)));
-  dstBox.data = _image.Data();
 
-  Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u), dstBox,
-                                     dstOgrePf);
   if ((_image.Format() == PF_BAYER_RGGB8) ||
       (_image.Format() == PF_BAYER_BGGR8) ||
       (_image.Format() == PF_BAYER_GBRG8) ||
       (_image.Format() == PF_BAYER_GRBG8))
   {
-    Image destImage = gz::rendering::convertRGBToBayer(_image);
-    memcpy( _image.Data<unsigned char>(),
-            destImage.Data<unsigned char>(),
-            sizeof(unsigned char)*width*height);
-   }
+    // create tmp color image to get data from gpu
+    Image colorImage(this->width, this->height, PF_R8G8B8);
+    dstBox.data = colorImage.Data();
+    Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u), dstBox,
+                                       dstOgrePf);
+    // convert color image to bayer image
+    _image = gz::rendering::convertRGBToBayer(colorImage, _image.Format());
+  }
+  else
+  {
+    dstBox.data = _image.Data();
+    Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u), dstBox,
+                                       dstOgrePf);
+  }
 }
 
 //////////////////////////////////////////////////

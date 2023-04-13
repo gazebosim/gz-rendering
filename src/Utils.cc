@@ -252,17 +252,17 @@ gz::math::AxisAlignedBox transformAxisAlignedBox(
 }
 
 /////////////////////////////////////////////////
-Image convertRGBToBayer(Image &_image)
+Image convertRGBToBayer(const Image &_image, PixelFormat _bayerFormat)
 {
-  unsigned char *sourceImageData = _image.Data<unsigned char>();
+  const unsigned char *sourceImageData = _image.Data<unsigned char>();
 
   unsigned int width = _image.Width();
   unsigned int height = _image.Height();
 
-  Image destImage(width, height, PF_L8);
+  Image destImage(width, height, _bayerFormat);
   unsigned char *destImageData = destImage.Data<unsigned char>();
 
-  if (_image.Format() == PF_BAYER_RGGB8)
+  if (_bayerFormat == PF_BAYER_RGGB8)
   {
     for (unsigned int i=0; i < width; i++)
     {
@@ -294,7 +294,7 @@ Image convertRGBToBayer(Image &_image)
     }
   }
 
-  else if (_image.Format() == PF_BAYER_BGGR8)
+  else if (_bayerFormat == PF_BAYER_BGGR8)
   {
     for (unsigned int i=0; i < width; i++)
     {
@@ -326,7 +326,7 @@ Image convertRGBToBayer(Image &_image)
     }
   }
 
-  else if (_image.Format() == PF_BAYER_GBRG8)
+  else if (_bayerFormat == PF_BAYER_GBRG8)
   {
     for (unsigned int i=0; i < width; i++)
     {
@@ -358,7 +358,7 @@ Image convertRGBToBayer(Image &_image)
     }
   }
 
-  else if (_image.Format() == PF_BAYER_GRBG8)
+  else if (_bayerFormat == PF_BAYER_GRBG8)
   {
     for (unsigned int i=0; i < width; i++)
     {

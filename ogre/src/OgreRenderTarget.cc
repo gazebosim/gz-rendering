@@ -74,7 +74,6 @@ void OgreRenderTarget::Copy(Image &_image) const
   if (nullptr == this->RenderTarget())
     return;
 
-  // TODO(anyone): handle Bayer conversions
   // TODO(anyone): handle ogre version differences
 
   if (_image.Width() != this->width || _image.Height() != this->height)
@@ -83,35 +82,28 @@ void OgreRenderTarget::Copy(Image &_image) const
     return;
   }
 
-  void* data = _image.Data();
-  // Ogre::PixelFormat imageFormat = OgreConversions::Convert(_image.Format());
   Ogre::PixelFormat imageFormat;
   if ((_image.Format() == PF_BAYER_RGGB8) ||
       (_image.Format() == PF_BAYER_BGGR8) ||
       (_image.Format() == PF_BAYER_GBRG8) ||
       (_image.Format() == PF_BAYER_GRBG8))
   {
+    // create tmp color image to get data from gpu
     imageFormat = OgreConversions::Convert(PF_R8G8B8);
+    Image colorImage(this->width, this->height, PF_R8G8B8);
+    void *data =  colorImage.Data();
+    Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
+    this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+    // convert color image to bayer image
+    _image = gz::rendering::convertRGBToBayer(colorImage, _image.Format());
   }
   else
   {
     imageFormat = OgreConversions::Convert(_image.Format());
+    void *data = _image.Data();
+    Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
+    this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
   }
-
-  Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
-  this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
-
-  if ((_image.Format() == PF_BAYER_RGGB8) ||
-      (_image.Format() == PF_BAYER_BGGR8) ||
-      (_image.Format() == PF_BAYER_GBRG8) ||
-      (_image.Format() == PF_BAYER_GRBG8))
-  {
-    Image destImage = gz::rendering::convertRGBToBayer(_image);
-    memcpy( _image.Data<unsigned char>(),
-            destImage.Data<unsigned char>(),
-            sizeof(unsigned char)*width*height);
-  }
-
 }
 
 //////////////////////////////////////////////////

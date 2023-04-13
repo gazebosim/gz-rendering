@@ -75,13 +75,13 @@ namespace gz
       public: void SetEnabled(bool _enabled) override;
 
       /// \brief Projector's near clip plane
-      protected: double nearClip = 0.0;
+      protected: double nearClip = 0.1;
 
       /// \brief Projector's far clip plane
-      protected: double farClip = 0.0;
+      protected: double farClip = 10.0;
 
       /// \brief Projector's horizontal field of view
-      protected: math::Angle hfov;
+      protected: math::Angle hfov = math::Angle(0.785398);
 
       /// \brief Texture used by the projector
       protected: std::string textureName;

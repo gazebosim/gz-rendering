@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef GZ_RENDERING_OGREPROJECTOR_HH_
-#define GZ_RENDERING_OGREPROJECTOR_HH_
+#ifndef GZ_RENDERING_OGRE_OGREPROJECTOR_HH_
+#define GZ_RENDERING_OGRE_OGREPROJECTOR_HH_
 
 
 #include <gz/utils/ImplPtr.hh>
@@ -32,7 +32,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
-    /// \brief Projects a material onto surface, light a light projector.
+    /// \brief Projects a material onto a surface
     class GZ_RENDERING_OGRE_VISIBLE OgreProjector :
       public BaseProjector<OgreVisual>
     {
@@ -41,15 +41,6 @@ namespace gz
 
       /// \brief Destructor.
       public: virtual ~OgreProjector();
-
-      // Documentation inherited.
-      // public: virtual void SetFarClipPlane(double _far) override;
-
-      // Documentation inherited.
-      // public: virtual void SetNearClipPlane(double _near) override;
-
-      // Documentation inherited.
-      // public: virtual void SetHFOV(const math::Angle &_hfov) override;
 
       // Documentation inherited.
       public: void PreRender() override;

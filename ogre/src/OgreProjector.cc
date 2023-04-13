@@ -16,11 +16,10 @@
  */
 
 #include <list>
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 #include <OgreEntity.h>
-#include <OgreFrameListener.h>
 #include <OgrePass.h>
 #include <OgreSceneManager.h>
 #include <OgreSceneNode.h>
@@ -38,64 +37,104 @@ namespace gz
   namespace rendering
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
-      /// \brief Frame listener, used to add projection materials when new
-      /// textures are added to Ogre.
-      class OgreProjectorFrameListener : public Ogre::FrameListener
-      {
-        /// \brief Constructor.
-        public: OgreProjectorFrameListener();
+    //
+    /// \brief Frame listener, used to add projection materials when new
+    /// textures are added to Ogre.
+    class OgreProjectorListener
+    {
+      /// \brief Constructor.
+      public: OgreProjectorListener();
 
-        /// \brief Destructor.
-        public: virtual ~OgreProjectorFrameListener();
+      /// \brief Destructor.
+      public: virtual ~OgreProjectorListener();
 
-        public: void Init(Ogre::SceneNode *_parent,
-                          const std::string &_textureName,
-                          double _near = 0.5,
-                          double _far = 10,
-                          const math::Angle &_fov = math::Angle(0.785398163));
+      //// \brief Initialize the projector listener
+      /// \param[in] _parent Parent node to attach the frustum to
+      /// \param[in] _textureName Name of projection texture
+      /// \param[in] _near Near clip plane
+      /// \param[in] _far Far clip plane
+      /// \param[in] _hfov Horizontal FOV
+      public: void Init(Ogre::SceneNode *_parent,
+                        const std::string &_textureName,
+                        double _near = 0.5,
+                        double _far = 10,
+                        const math::Angle &_hfov = math::Angle(0.785398163));
 
-        public: virtual bool frameStarted(const Ogre::FrameEvent &_evt);
+      /// \brief Set whether to enable the projector
+      /// \param[in] _enabled True to enable projector, false to disable
+      public: void SetEnabled(bool _enabled);
 
-        public: void SetTexture(const std::string &_textureName);
+      /// \brief Add decal to materials of entity visible in the frustum
+      public: void AddDecalToVisibleMaterials();
 
-        public: void SetEnabled(bool _enabled);
-        public: void SetUsingShaders(bool _usingShaders);
+      /// \brief Set texture to use for projection
+      /// \param[in] _textureName Name of texture
+      private: void SetTexture(const std::string &_textureName);
 
-        /// \brief Set the pose of the projector.
-        /// \param[in] _pose New pose of the projector
-        public: void SetPose(const math::Pose3d &_pose);
+      /// \brief Create the frustum scene nodes
+      private: void CreateSceneNode();
 
-        public: void SetSceneNode();
+      /// \brief Set the frustum near and far clip planes
+      /// \param[in] _near Near clip plane
+      /// \param[in] _far Far clip plane
+      private: void SetFrustumClipDistance(double _near, double _far);
 
-        public: void SetFrustumClipDistance(double _near, double _far);
-        public: void SetFrustumFOV(double _fov);
-        public: void AddPassToAllMaterials();
-        public: void AddPassToVisibleMaterials();
-        public: void AddPassToMaterials(std::list<std::string> &_matList);
-        public: void AddPassToMaterial(const std::string &_matName);
-        public: void RemovePassFromMaterials();
-        public: void RemovePassFromMaterial(const std::string &_matName);
+      /// \brief Add decal to a list of entity materials.
+      /// \param[in] _matList A list of material names
+      private: void AddDecalToMaterials(std::list<std::string> &_matList);
 
-        public: bool enabled;
-        public:  bool initialized;
-        public: bool usingShaders;
+      /// \brief Add decal to an entity's material.
+      /// \param[in] _matList Name of material
+      private: void AddDecalToMaterial(const std::string &_matName);
 
-        public: std::string nodeName;
-        public: std::string filterNodeName;
+      /// \brief Remove decal from materials of entities
+      private: void RemoveDecalFromMaterials();
 
-        public: std::string textureName;
+      /// \brief Remove decal from an entity  material
+      /// \param[in] _matList Name of material
+      private: void RemoveDecalFromMaterial(const std::string &_matName);
 
-        public: Ogre::Frustum *frustum{nullptr};
-        public: Ogre::Frustum *filterFrustum{nullptr};
-        public: Ogre::PlaneBoundedVolumeListSceneQuery *projectorQuery{nullptr};
+      /// \brief Enabled state of projector listener
+      public: bool enabled{false};
 
-        public: Ogre::SceneNode *parentOgreNode{nullptr};
+      /// \brief Indicates whether the projector listener is
+      /// initialized or not
+      public:  bool initialized{false};
 
-        public: Ogre::SceneNode *node{nullptr};
-        public: Ogre::SceneNode *filterNode{nullptr};
-        public: Ogre::SceneManager *sceneMgr{nullptr};
-        public: std::unordered_map<std::string, Ogre::Pass*> projectorTargets;
-      };
+      /// \brief Name of node that frustum is attached to
+      public: std::string nodeName;
+
+      /// \brief Name of node that frustum filter is attached to
+      public: std::string filterNodeName;
+
+      /// \brief Texture being projected
+      public: std::string textureName;
+
+      /// \brief Projection frustum
+      public: std::unique_ptr<Ogre::Frustum> frustum;
+
+      /// \brief Projection frustum for removing backface projection
+      public: std::unique_ptr<Ogre::Frustum> filterFrustum;
+
+      /// \brief Query used to find objects visible in the projector frustum
+      public: Ogre::PlaneBoundedVolumeListSceneQuery *projectorQuery{nullptr};
+
+      /// \brief Parent of frustum node
+      public: Ogre::SceneNode *parentOgreNode{nullptr};
+
+      /// \brief Frustum node
+      public: Ogre::SceneNode *node{nullptr};
+
+      /// \brief Frustum filter node
+      public: Ogre::SceneNode *filterNode{nullptr};
+
+      /// \brief Ogre scene manager
+      public: Ogre::SceneManager *sceneMgr{nullptr};
+
+      /// \brief A map of targets that has decal texture projected
+      /// onto. Key value pairs are: <material name, material pass>
+      public: std::unordered_map<std::string, Ogre::Pass*> projectorTargets;
+    };
     }
   }
 }
@@ -104,8 +143,9 @@ namespace gz
 class gz::rendering::OgreProjector::Implementation
 {
   /// \brief The projection frame listener.
-  public: OgreProjectorFrameListener projector;
+  public: OgreProjectorListener projector;
 
+  /// \brief Indicate whether the projector is intialized or not
   public: bool initialized{false};
 };
 
@@ -119,40 +159,26 @@ OgreProjector::OgreProjector()
 OgreProjector::~OgreProjector()
 {
   this->SetEnabled(false);
-  // Ogre cleanup
-  Ogre::Root::getSingletonPtr()->removeFrameListener(
-      &this->dataPtr->projector);
 }
 
 /////////////////////////////////////////////////
 void OgreProjector::PreRender()
 {
   if (this->dataPtr->initialized)
-    return;
-
-  int retryCount = 0;
-
-  // TODO remove this while loop?
-  // Initialize the projector
-  while (!this->dataPtr->projector.initialized && retryCount < 10)
   {
-    // init
-    this->dataPtr->projector.Init(this->ogreNode, this->textureName,
-        this->nearClip, this->farClip, this->hfov);
-
-    // TODO set pose? maybe not needed as it should be set downstream
-    // set the projector pose relative to body
-    // this->dataPtr->projector.SetPose(_pose);
-
-    if (!this->dataPtr->projector.initialized)
-    {
-      gzwarn << "starting projector failed, retrying in 1 sec.\n";
-      ++retryCount;
-    }
+    this->dataPtr->projector.AddDecalToVisibleMaterials();
+    return;
   }
 
-  // Add the projector as an Ogre frame listener
-  Ogre::Root::getSingletonPtr()->addFrameListener(&this->dataPtr->projector);
+  // Initialize the projector
+  this->dataPtr->projector.Init(this->ogreNode, this->textureName,
+      this->nearClip, this->farClip, this->hfov);
+
+  if (!this->dataPtr->projector.initialized)
+  {
+    gzwarn << "Starting projector failed." << std::endl;;
+    return;
+  }
 
   this->dataPtr->projector.SetEnabled(true);
 
@@ -167,57 +193,41 @@ void OgreProjector::SetEnabled(bool _enabled)
 }
 
 /////////////////////////////////////////////////
-OgreProjectorFrameListener::OgreProjectorFrameListener()
+OgreProjectorListener::OgreProjectorListener()
 {
-  this->enabled = false;
-  this->initialized = false;
-  this->usingShaders = false;
-
-  this->node = nullptr;
-  this->filterNode = nullptr;
-  this->projectorQuery = nullptr;
-  this->frustum = nullptr;
-  this->filterFrustum = nullptr;
-
-  this->nodeName = "Projector";
-  this->filterNodeName = "ProjectorFilter";
 }
 
 /////////////////////////////////////////////////
-OgreProjectorFrameListener::~OgreProjectorFrameListener()
+OgreProjectorListener::~OgreProjectorListener()
 {
-  this->RemovePassFromMaterials();
+  this->RemoveDecalFromMaterials();
 
   if (this->filterNode)
   {
-    this->filterNode->detachObject(this->filterFrustum);
+    this->filterNode->detachObject(this->filterFrustum.get());
     this->node->removeAndDestroyChild(this->filterNodeName);
     this->filterNode = nullptr;
   }
 
   if (this->node)
   {
-    this->node->detachObject(this->frustum);
+    this->node->detachObject(this->frustum.get());
     Ogre::SceneNode *n = this->parentOgreNode;
     if (n)
       n->removeAndDestroyChild(this->nodeName);
     this->node = nullptr;
   }
 
-  delete this->frustum;
-  delete this->filterFrustum;
-  this->frustum = nullptr;
-  this->filterFrustum = nullptr;
+  this->frustum.reset();
+  this->filterFrustum.reset();
 
   if (this->projectorQuery)
     this->sceneMgr->destroyQuery(this->projectorQuery);
 }
 
 /////////////////////////////////////////////////
-void OgreProjectorFrameListener::Init(Ogre::SceneNode *_parent,
-  const std::string &_textureName,
-  double _near,
-  double _far,
+void OgreProjectorListener::Init(Ogre::SceneNode *_parent,
+  const std::string &_textureName, double _near, double _far,
   const math::Angle &_fov)
 {
   if (this->initialized)
@@ -234,114 +244,83 @@ void OgreProjectorFrameListener::Init(Ogre::SceneNode *_parent,
   this->nodeName = this->parentOgreNode->getName() + "_Projector";
   this->filterNodeName = this->parentOgreNode->getName() + "_ProjectorFilter";
 
-  this->frustum = new Ogre::Frustum();
-  this->filterFrustum = new Ogre::Frustum();
+  this->frustum = std::make_unique<Ogre::Frustum>();
+  this->filterFrustum = std::make_unique<Ogre::Frustum>();
   this->filterFrustum->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
 
   this->sceneMgr = this->parentOgreNode->getCreator();
   this->projectorQuery = this->sceneMgr->createPlaneBoundedVolumeQuery(
       Ogre::PlaneBoundedVolumeList());
 
-  this->SetSceneNode();
+  this->CreateSceneNode();
   this->SetTexture(_textureName);
   this->SetFrustumClipDistance(_near, _far);
 
-  // TODO get aspect ratio from texture
-  double aspectRatio = 1.0;
+  common::Image image(_textureName);
+  double aspectRatio = image.Width() / image.Height();
   const double vfov = 2.0 * atan(tan(_fov.Radian() / 2.0)
       / aspectRatio);
-  this->SetFrustumFOV(vfov);
+
+  this->frustum->setFOVy(Ogre::Radian(vfov));
+  this->filterFrustum->setFOVy(Ogre::Radian(vfov));
 
   this->initialized = true;
 }
 
 /////////////////////////////////////////////////
-bool OgreProjectorFrameListener::frameStarted(
-    const Ogre::FrameEvent &/*_evt*/)
-{
-  if (!this->initialized || !this->enabled || this->textureName.empty())
-    return true;
-
-  this->AddPassToVisibleMaterials();
-
-  return true;
-}
-
-/////////////////////////////////////////////////
-void OgreProjectorFrameListener::SetEnabled(bool _enabled)
+void OgreProjectorListener::SetEnabled(bool _enabled)
 {
   this->enabled = _enabled;
   if (!this->enabled)
-    this->RemovePassFromMaterials();
+    this->RemoveDecalFromMaterials();
   OgreRTShaderSystem::Instance()->UpdateShaders();
 }
 
 /////////////////////////////////////////////////
-void OgreProjectorFrameListener::SetUsingShaders(bool _usingShaders)
-{
-  this->usingShaders = _usingShaders;
-}
-
-/////////////////////////////////////////////////
-void OgreProjectorFrameListener::SetSceneNode()
+void OgreProjectorListener::CreateSceneNode()
 {
   if (this->filterNode)
   {
-    this->filterNode->detachObject(this->filterFrustum);
+    this->filterNode->detachObject(this->filterFrustum.get());
     this->node->removeAndDestroyChild(this->filterNodeName);
     this->filterNode = nullptr;
   }
 
   if (this->node)
   {
-    this->node->detachObject(this->frustum);
+    this->node->detachObject(this->frustum.get());
     this->parentOgreNode->removeAndDestroyChild(this->nodeName);
     this->node = nullptr;
   }
 
   this->node = this->parentOgreNode->createChildSceneNode(
       this->nodeName);
+  this->node->yaw(Ogre::Degree(-90));
+  this->node->roll(Ogre::Degree(-90));
 
   this->filterNode = this->node->createChildSceneNode(
       this->filterNodeName);
 
   if (this->node)
-    this->node->attachObject(this->frustum);
+    this->node->attachObject(this->frustum.get());
 
   if (this->filterNode)
   {
-    this->filterNode->attachObject(this->filterFrustum);
+    this->filterNode->attachObject(this->filterFrustum.get());
     this->filterNode->setOrientation(
       Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Y));
   }
 }
 
 /////////////////////////////////////////////////
-void OgreProjectorFrameListener::SetPose(
-  const math::Pose3d &_pose)
-{
-  Ogre::Quaternion ogreQuaternion =
-      OgreConversions::Convert(_pose.Rot());
-  Ogre::Vector3 ogreVec = OgreConversions::Convert(_pose.Pos());
-  Ogre::Quaternion offsetQuaternion;
-
-  this->node->setPosition(ogreVec);
-  this->node->setOrientation(ogreQuaternion);
-  this->filterNode->setPosition(ogreVec);
-
-  offsetQuaternion = Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Y);
-  this->filterNode->setOrientation(offsetQuaternion);
-}
-
-/////////////////////////////////////////////////
-void OgreProjectorFrameListener::SetTexture(
+void OgreProjectorListener::SetTexture(
     const std::string &_textureName)
 {
   this->textureName = _textureName;
 }
 
 /////////////////////////////////////////////////
-void OgreProjectorFrameListener::SetFrustumClipDistance(double _near,
+void OgreProjectorListener::SetFrustumClipDistance(double _near,
                                                                double _far)
 {
   this->frustum->setNearClipDistance(_near);
@@ -351,35 +330,7 @@ void OgreProjectorFrameListener::SetFrustumClipDistance(double _near,
 }
 
 /////////////////////////////////////////////////
-void OgreProjectorFrameListener::SetFrustumFOV(double _fov)
-{
-  this->frustum->setFOVy(Ogre::Radian(_fov));
-  this->filterFrustum->setFOVy(Ogre::Radian(_fov));
-}
-
-/////////////////////////////////////////////////
-void OgreProjectorFrameListener::AddPassToAllMaterials()
-{
-  std::list<std::string> allMaterials;
-
-  auto it = this->sceneMgr->getMovableObjectIterator("Entity");
-
-  while (it.hasMoreElements())
-  {
-    Ogre::Entity* entity = dynamic_cast<Ogre::Entity*>(it.getNext());
-    if (entity && entity->getName().find("visual") != std::string::npos)
-
-    for (unsigned int i = 0; i < entity->getNumSubEntities(); i++)
-    {
-      allMaterials.push_back(entity->getSubEntity(i)->getMaterialName());
-    }
-  }
-
-  this->AddPassToMaterials(allMaterials);
-}
-
-/////////////////////////////////////////////////
-void OgreProjectorFrameListener::AddPassToVisibleMaterials()
+void OgreProjectorListener::AddDecalToVisibleMaterials()
 {
   std::list<std::string> newVisibleMaterials;
   Ogre::PlaneBoundedVolumeList volumeList;
@@ -394,7 +345,9 @@ void OgreProjectorFrameListener::AddPassToVisibleMaterials()
   for (it = result.movables.begin(); it != result.movables.end(); ++it)
   {
     Ogre::Entity *entity = dynamic_cast<Ogre::Entity*>(*it);
-    if (entity && entity->getName().find("visual") != std::string::npos)
+    if (entity && !entity->getUserObjectBindings().getUserAny().isEmpty() &&
+        entity->getUserObjectBindings().getUserAny().getType() ==
+        typeid(unsigned int))
     {
       for (unsigned int i = 0; i < entity->getNumSubEntities(); i++)
       {
@@ -404,11 +357,11 @@ void OgreProjectorFrameListener::AddPassToVisibleMaterials()
     }
   }
 
-  this->AddPassToMaterials(newVisibleMaterials);
+  this->AddDecalToMaterials(newVisibleMaterials);
 }
 
 /////////////////////////////////////////////////
-void OgreProjectorFrameListener::AddPassToMaterials(
+void OgreProjectorListener::AddDecalToMaterials(
     std::list<std::string> &_matList)
 {
   _matList.remove("");
@@ -430,7 +383,7 @@ void OgreProjectorFrameListener::AddPassToMaterials(
     {
       invisibleMaterial = used->first;
       ++used;
-      this->RemovePassFromMaterial(invisibleMaterial);
+      this->RemoveDecalFromMaterial(invisibleMaterial);
     }
     // Otherwise remove it from the list of passes to be added
     else
@@ -445,7 +398,7 @@ void OgreProjectorFrameListener::AddPassToMaterials(
     // Add pass for new materials
     while (!_matList.empty())
     {
-      this->AddPassToMaterial(_matList.front());
+      this->AddDecalToMaterial(_matList.front());
       _matList.erase(_matList.begin());
     }
 
@@ -454,7 +407,7 @@ void OgreProjectorFrameListener::AddPassToMaterials(
 }
 
 /////////////////////////////////////////////////
-void OgreProjectorFrameListener::AddPassToMaterial(
+void OgreProjectorListener::AddDecalToMaterial(
     const std::string &_matName)
 {
   if (this->projectorTargets.find(_matName) != this->projectorTargets.end())
@@ -466,53 +419,29 @@ void OgreProjectorFrameListener::AddPassToMaterial(
     Ogre::MaterialManager::getSingleton().getByName(_matName));
   Ogre::Pass *pass = mat->getTechnique(0)->createPass();
 
-  if (this->usingShaders)
-  {
-    Ogre::Matrix4 viewProj = this->frustum->getProjectionMatrix() *
-                             this->frustum->getViewMatrix();
-
-    pass->setVertexProgram("Gazebo/TextureProjectionVP");
-
-    // pass->setFragmentProgram("GazeboWorlds/TexProjectionFP");
-    Ogre::GpuProgramParametersSharedPtr vsParams =
-      pass->getVertexProgramParameters();
-
-    Ogre::GpuProgramParametersSharedPtr psParams =
-      pass->getFragmentProgramParameters();
-
-    // vsParams->setNamedAutoConstant(
-    //   "worldViewProjMatrix",
-    //   GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
-    // vsParams->setNamedAutoConstant(
-    //   "worldMatrix",GpuProgramParameters::ACT_WORLD_MATRIX);
-    // vsParams->setNamedConstant("texViewProjMatrix", viewProj);
-
-    vsParams->setNamedAutoConstant(
-      "worldMatrix", Ogre::GpuProgramParameters::ACT_WORLD_MATRIX);
-
-    vsParams->setNamedConstant("texProjMatrix", viewProj);
-
-    // psParams->setNamedConstant("projMap", viewProj);
-
-    pass->setVertexProgramParameters(vsParams);
-
-    // pass->setFragmentProgramParameters(psParams);
-  }
-
   pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
   pass->setDepthBias(1);
   pass->setLightingEnabled(false);
 
+  if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(
+      Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+      this->textureName ))
+  {
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        this->textureName, "FileSystem",
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+  }
+
   Ogre::TextureUnitState *texState =
-    pass->createTextureUnitState(this->textureName);
-  texState->setProjectiveTexturing(true, this->frustum);
+      pass->createTextureUnitState(this->textureName);
+  texState->setProjectiveTexturing(true, this->frustum.get());
   texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
   texState->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
   texState->setTextureBorderColour(Ogre::ColourValue(0.0, 0.0, 0.0, 0.0));
   texState->setColourOperation(Ogre::LBO_ALPHA_BLEND);
 
   texState = pass->createTextureUnitState("projection_filter.png");
-  texState->setProjectiveTexturing(true, this->filterFrustum);
+  texState->setProjectiveTexturing(true, this->filterFrustum.get());
   texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
   texState->setTextureFiltering(Ogre::TFO_NONE);
 
@@ -520,7 +449,7 @@ void OgreProjectorFrameListener::AddPassToMaterial(
 }
 
 /////////////////////////////////////////////////
-void OgreProjectorFrameListener::RemovePassFromMaterials()
+void OgreProjectorListener::RemoveDecalFromMaterials()
 {
   for (auto it = this->projectorTargets.begin();
       it != this->projectorTargets.end(); ++it)
@@ -531,7 +460,7 @@ void OgreProjectorFrameListener::RemovePassFromMaterials()
 }
 
 /////////////////////////////////////////////////
-void OgreProjectorFrameListener::RemovePassFromMaterial(
+void OgreProjectorListener::RemoveDecalFromMaterial(
     const std::string &_matName)
 {
   this->projectorTargets[_matName]->getParent()->removePass(

@@ -116,7 +116,7 @@ namespace gz
 
     /// \brief convert an RGB image data into bayer image data
     /// \param[in] _image Input RGB image
-    /// \param[in] _bayer Bayer format to convert to
+    /// \param[in] _bayerFormat Bayer format to convert to
     /// \return Image in bayer format
     GZ_RENDERING_VISIBLE
     Image convertRGBToBayer(const Image &_image, PixelFormat _bayerFormat);

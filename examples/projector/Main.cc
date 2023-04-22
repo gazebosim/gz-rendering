@@ -27,6 +27,7 @@
 #include <iostream>
 #include <vector>
 
+
 #include <gz/common/Console.hh>
 #include <gz/rendering.hh>
 
@@ -55,7 +56,8 @@ void buildScene(ScenePtr _scene)
 
   // create projector
   std::string texture = common::joinPaths(RESOURCE_PATH,
-      "stereo_projection_pattern_high_res_red.png");
+        "stereo_projection_pattern_high_res_red.png");
+       // "floor_diffuse.PNG");
   ProjectorPtr projector = _scene->CreateProjector();
   projector->SetLocalPosition(1, 0, 1);
   projector->SetLocalRotation(0, 0, GZ_PI);
@@ -88,6 +90,35 @@ void buildScene(ScenePtr _scene)
   plane->SetMaterial(white);
   root->AddChild(plane);
 
+  // create plane2 visual
+  VisualPtr plane2 = _scene->CreateVisual();
+  plane2->AddGeometry(_scene->CreatePlane());
+  plane2->SetLocalScale(10, 10, 1);
+  plane2->SetLocalPosition(5, 0, 5);
+  plane2->SetLocalRotation(math::Quaternion(math::Vector3d(0, -GZ_PI/2, 0)));
+  plane2->SetMaterial(white);
+  root->AddChild(plane2);
+
+  // create plane3 visual
+  VisualPtr plane3 = _scene->CreateVisual();
+  plane3->AddGeometry(_scene->CreatePlane());
+  plane3->SetLocalScale(10, 10, 1);
+  plane3->SetLocalPosition(0, -5, 5);
+  plane3->SetLocalRotation(math::Quaternion(math::Vector3d(-GZ_PI/2, 0, 0)));
+  plane3->SetMaterial(white);
+  root->AddChild(plane3);
+
+  // create plane4 visual
+  VisualPtr plane4 = _scene->CreateVisual();
+  plane4->AddGeometry(_scene->CreatePlane());
+  plane4->SetLocalScale(10, 10, 1);
+  plane4->SetLocalPosition(0, 5, 5);
+  plane4->SetLocalRotation(math::Quaternion(math::Vector3d(GZ_PI/2, 0, 0)));
+  plane4->SetMaterial(white);
+  root->AddChild(plane4);
+
+
+
   // create green material
   MaterialPtr green = _scene->CreateMaterial();
   green->SetAmbient(0.0, 0.5, 0.0);
@@ -103,11 +134,11 @@ void buildScene(ScenePtr _scene)
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(-3.0, 0.0, 5.0);
+  camera->SetLocalPosition(-6.0, 0.0, 8.0);
   camera->SetLocalRotation(0.0, 1.0, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
-  camera->SetAntiAliasing(2);
+//  camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(GZ_PI / 2);
   root->AddChild(camera);

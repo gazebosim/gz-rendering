@@ -43,6 +43,7 @@
 #include "gz/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "gz/rendering/ogre2/Ogre2Node.hh"
 #include "gz/rendering/ogre2/Ogre2ParticleEmitter.hh"
+#include "gz/rendering/ogre2/Ogre2Projector.hh"
 #include "gz/rendering/ogre2/Ogre2RayQuery.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
@@ -1355,6 +1356,15 @@ ParticleEmitterPtr Ogre2Scene::CreateParticleEmitterImpl(unsigned int _id,
   bool result = this->InitObject(visual, _id, _name);
 
   return (result) ? visual : nullptr;
+}
+
+//////////////////////////////////////////////////
+ProjectorPtr Ogre2Scene::CreateProjectorImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2ProjectorPtr projector(new Ogre2Projector);
+  bool result = this->InitObject(projector, _id, _name);
+  return (result) ? projector : nullptr;
 }
 
 //////////////////////////////////////////////////

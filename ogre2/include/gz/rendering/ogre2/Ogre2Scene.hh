@@ -362,6 +362,10 @@ namespace gz
                      unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited
+      protected: virtual ProjectorPtr CreateProjectorImpl(
+                     unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited
       protected: virtual GlobalIlluminationVctPtr
           CreateGlobalIlluminationVctImpl(
                     unsigned int _id, const std::string &_name) override;

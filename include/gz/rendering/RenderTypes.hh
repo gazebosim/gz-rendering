@@ -408,7 +408,7 @@ namespace gz
     /// \brief Shared pointer to const ParticleEmitter
     typedef shared_ptr<const ParticleEmitter> ConstParticleEmitterPtr;
 
-    /// \typedef const Projector
+    /// \typedef const ProjectorPtr
     /// \brief Shared pointer to const Projector
     typedef shared_ptr<const Projector> ConstProjectorPtr;
 
@@ -416,7 +416,7 @@ namespace gz
     /// \brief Shared pointer to const PointLight
     typedef shared_ptr<const PointLight> ConstPointLightPtr;
 
-    /// \typedef RayQueryPtr
+    /// \typedef const RayQueryPtr
     /// \brief Shared pointer to RayQuery
     typedef shared_ptr<const RayQuery> ConstRayQueryPtr;
 

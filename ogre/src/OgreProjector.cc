@@ -38,8 +38,8 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    /// \brief Frame listener, used to add projection materials when new
-    /// textures are added to Ogre.
+    /// \brief Projector listener, used to add a new decal material pass
+    /// onto other entities' materials
     class OgreProjectorListener
     {
       /// \brief Constructor.

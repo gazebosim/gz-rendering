@@ -1376,6 +1376,41 @@ void Ogre2RenderEngine::InitAttempt()
 {
   this->initialized = false;
 
+  Ogre::TextureGpuManager *textureManager = this->ogreRoot->getRenderSystem()->getTextureGpuManager();
+  const Ogre::uint32 decalDiffuseId = 1;
+  textureManager->reservePoolId(decalDiffuseId, 512u, 512u, 8u, 10u,
+                                Ogre::PFG_RGBA8_UNORM_SRGB );
+
+  Ogre::uint8 *blackBuffer = reinterpret_cast<Ogre::uint8*>(
+                                 OGRE_MALLOC_SIMD( 512u * 512u * 4u,
+                                 Ogre::MEMCATEGORY_RESOURCE ) );
+  memset( blackBuffer, 0, 512u * 512u * 4u );
+  Ogre::Image2 blackImage;
+  blackImage.loadDynamicImage( blackBuffer, 512u, 512u, 1u, Ogre::TextureTypes::Type2D,
+                               Ogre::PFG_RGBA8_UNORM_SRGB, true );
+  blackImage.generateMipmaps( false, Ogre::Image2::FILTER_NEAREST );
+  Ogre::TextureGpu *decalTexture = 0;
+  decalTexture = textureManager->createOrRetrieveTexture(
+                     "decals_disabled_diffuse",
+                     Ogre::GpuPageOutStrategy::Discard,
+                     Ogre::TextureFlags::AutomaticBatching |
+                     Ogre::TextureFlags::ManualTexture,
+                     Ogre::TextureTypes::Type2D, Ogre::BLANKSTRING, 0, decalDiffuseId );
+  decalTexture->setResolution( blackImage.getWidth(), blackImage.getHeight() );
+  decalTexture->setNumMipmaps( blackImage.getNumMipmaps() );
+  decalTexture->setPixelFormat( blackImage.getPixelFormat() );
+  decalTexture->scheduleTransitionTo( Ogre::GpuResidency::Resident );
+  blackImage.uploadTo( decalTexture, 0, decalTexture->getNumMipmaps() - 1u );
+
+  blackImage.freeMemory();
+
+  textureManager->createOrRetrieveTexture(
+              "floor_diffuse.PNG", Ogre::GpuPageOutStrategy::Discard,
+              Ogre::CommonTextureTypes::Diffuse,
+              Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+              decalDiffuseId );
+
+
   // init the resources
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups(false);
 

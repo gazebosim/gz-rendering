@@ -14,8 +14,8 @@
  * limitations under the License.
  *
 */
-#ifndef GZ_RENDERING_OGRE_OGREPROJECTOR_HH_
-#define GZ_RENDERING_OGRE_OGREPROJECTOR_HH_
+#ifndef GZ_RENDERING_OGRE2_OGRE2PROJECTOR_HH_
+#define GZ_RENDERING_OGRE2_OGRE2PROJECTOR_HH_
 
 
 #include <gz/utils/ImplPtr.hh>
@@ -24,7 +24,7 @@
 
 #include "gz/rendering/base/BaseProjector.hh"
 #include "gz/rendering/ogre/Export.hh"
-#include "gz/rendering/ogre/OgreVisual.hh"
+#include "gz/rendering/ogre2/Ogre2Visual.hh"
 
 namespace gz
 {
@@ -33,14 +33,14 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
     /// \brief Projects a material onto a surface
-    class GZ_RENDERING_OGRE_VISIBLE OgreProjector :
-      public BaseProjector<OgreVisual>
+    class GZ_RENDERING_OGRE_VISIBLE Ogre2Projector :
+      public BaseProjector<Ogre2Visual>
     {
       /// \brief Constructor.
-      protected: OgreProjector();
+      protected: Ogre2Projector();
 
       /// \brief Destructor.
-      public: virtual ~OgreProjector();
+      public: virtual ~Ogre2Projector();
 
       // Documentation inherited.
       public: virtual void PreRender() override;
@@ -48,8 +48,11 @@ namespace gz
       // Documentation inherited.
       public: virtual void SetEnabled(bool _enabled) override;
 
+      /// \brief Create projector resources
+      private: void CreateProjector();
+
       /// \brief Only the ogre scene can instanstiate this class
-      private: friend class OgreScene;
+      private: friend class Ogre2Scene;
 
       /// \cond warning
       /// \brief Private data pointer

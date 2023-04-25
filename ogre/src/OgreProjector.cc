@@ -467,3 +467,75 @@ void OgreProjectorListener::RemoveDecalFromMaterial(
     this->projectorTargets[_matName]->getIndex());
   this->projectorTargets.erase(this->projectorTargets.find(_matName));
 }
+/*
+/////////////////////////////////////////////////
+void OgreProjector::UpdateCameraListener()
+{
+  // if a custom visibility flag is set, we will need to use a listener
+  // for toggling the visibility of the decal
+  if (this->VisibilityFlags() == GZ_VISIBILITY_ALL)
+  {
+ //   this->dataPtr->decalNode->setVisible(true);
+
+    for (auto &ogreCamIt : this->dataPtr->cameraVisibilityCheck)
+    {
+      Ogre::IdString camName = ogreCamIt.second;
+      // instead of getting the camera pointer through ogreCamIt.first,
+      // find camera pointer again to make sure the camera still exists
+      // because there is a chance that  we are holding onto a dangling pointer
+      // if that camera was deleted already
+      auto ogreCam = this->scene->OgreSceneManager()->getCamera(camName);
+          ogreCam->getViewport()->getTarget()->removeListener(
+          this->dataPtr->listener.get());
+    }
+    this->dataPtr->cameraVisibilityCheck.clear();
+    return;
+  }
+
+  if (!this->dataPtr->listener)
+  {
+    this->dataPtr->listener = std::make_unique<OgreProjectorCameraListener>(
+        this->dataPtr->decalNode);
+  }
+  this->dataPtr->listener->SetVisibilityFlags(this->VisibilityFlags());
+  this->dataPtr->decalNode->setVisible(false);
+
+  // loop through color cameras and add listener to toggle visibility of
+  // decals in these cameras
+  for (unsigned int i = 0; i < this->scene->SensorCount(); ++i)
+  {
+    auto sensor = this->scene->SensorByIndex(i);
+    Ogre2CameraPtr camera = std::dynamic_pointer_cast<Ogre2Camera>(sensor);
+    if (camera)
+    {
+      auto ogreCam = camera->OgreCamera();
+      if (this->dataPtr->cameraVisibilityCheck.find(ogreCam)
+          == this->dataPtr->cameraVisibilityCheck.end())
+      {
+        ogreCam->getViewport()->getTarget()->addListener(
+            this->dataPtr->listener.get());
+        this->dataPtr->cameraVisibilityCheck[ogreCam] = ogreCam->getName();
+      }
+    }
+    else
+    {
+      // depth camera can also generate rgb output (when simulating
+      // RGBD cameras)
+      OgreDepthCameraPtr depthCamera =
+          std::dynamic_pointer_cast<OgreDepthCamera>(sensor);
+      if (depthCamera)
+      {
+        auto ogreCam = depthCamera->OgreCamera();
+        if (this->dataPtr->cameraVisibilityCheck.find(ogreCam)
+            == this->dataPtr->cameraVisibilityCheck.end())
+        {
+          ogreCam->getViewport()->getTarget()->addListener(
+              this->dataPtr->listener.get());
+          this->dataPtr->cameraVisibilityCheck[ogreCam] = ogreCam->getName();
+        }
+      }
+    }
+  }
+}
+
+*/

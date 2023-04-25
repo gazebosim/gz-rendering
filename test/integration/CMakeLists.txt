@@ -7,10 +7,11 @@ set(tests
   gpu_rays
   heightmap
   lidar_visual
+  projector
   render_pass
   scene
-  segmentation_camera 
-  shadows 
+  segmentation_camera
+  shadows
   sky
   thermal_camera
   wide_angle_camera

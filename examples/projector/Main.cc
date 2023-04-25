@@ -57,9 +57,12 @@ void buildScene(ScenePtr _scene)
   // create projector
   std::string texture = common::joinPaths(RESOURCE_PATH,
         "stereo_projection_pattern_high_res_red.png");
+        // "blue_texture.png");
   ProjectorPtr projector = _scene->CreateProjector();
-  projector->SetLocalPosition(2, 0, 1);
-  projector->SetLocalRotation(0, 0, GZ_PI);
+  projector->SetLocalPosition(0, 0, 4);
+  projector->SetLocalRotation(0, GZ_PI/2.0, 0);
+//  projector->SetLocalRotation(0, GZ_PI, 0);
+  // projector->SetLocalRotation(0, 0.3, 0);
   projector->SetTexture(texture);
   projector->SetVisibilityFlags(0x00100001);
   root->AddChild(projector);
@@ -133,7 +136,9 @@ void buildScene(ScenePtr _scene)
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
   camera->SetLocalPosition(-6.0, 0.0, 8.0);
+  // camera->SetLocalPosition(0.0, 0.0, 8.0);
   camera->SetLocalRotation(0.0, 1.0, 0.0);
+  // camera->SetLocalRotation(0.0, GZ_PI / 2.0, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
   camera->SetAspectRatio(1.333);

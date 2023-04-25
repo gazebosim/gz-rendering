@@ -51,6 +51,11 @@ namespace gz
       /// \brief Create projector resources
       private: void CreateProjector();
 
+      /// \brief Update the list of cameras that the listener is added to.
+      /// It loops through all cameras in each iteration to make sure
+      /// we handle the decal's visibility in each of these cameras' view
+      private: void UpdateCameraListener();
+
       /// \brief Only the ogre scene can instanstiate this class
       private: friend class Ogre2Scene;
 

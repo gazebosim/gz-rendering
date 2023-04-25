@@ -57,11 +57,11 @@ void buildScene(ScenePtr _scene)
   // create projector
   std::string texture = common::joinPaths(RESOURCE_PATH,
         "stereo_projection_pattern_high_res_red.png");
-       // "floor_diffuse.PNG");
   ProjectorPtr projector = _scene->CreateProjector();
-  projector->SetLocalPosition(1, 0, 1);
+  projector->SetLocalPosition(2, 0, 1);
   projector->SetLocalRotation(0, 0, GZ_PI);
   projector->SetTexture(texture);
+  projector->SetVisibilityFlags(0x00100001);
   root->AddChild(projector);
 
   // create blue material
@@ -73,7 +73,7 @@ void buildScene(ScenePtr _scene)
   // create visual representing the projector
   VisualPtr box = _scene->CreateVisual();
   box->AddGeometry(_scene->CreateBox());
-  box->SetLocalPosition(1, 0, 1);
+  box->SetLocalPosition(2, 0, 1);
   box->SetLocalScale(0.1, 0.1, 0.1);
   box->SetMaterial(blue);
   root->AddChild(box);
@@ -117,8 +117,6 @@ void buildScene(ScenePtr _scene)
   plane4->SetMaterial(white);
   root->AddChild(plane4);
 
-
-
   // create green material
   MaterialPtr green = _scene->CreateMaterial();
   green->SetAmbient(0.0, 0.5, 0.0);
@@ -138,9 +136,11 @@ void buildScene(ScenePtr _scene)
   camera->SetLocalRotation(0.0, 1.0, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
-//  camera->SetAntiAliasing(2);
   camera->SetAspectRatio(1.333);
   camera->SetHFOV(GZ_PI / 2);
+
+  camera->SetVisibilityMask(0x00000001);
+
   root->AddChild(camera);
 }
 

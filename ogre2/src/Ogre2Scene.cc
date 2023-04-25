@@ -1442,7 +1442,7 @@ void Ogre2Scene::CreateContext()
   // this is required for non-shadow-casting point lights and
   // spot lights to work
   this->ogreSceneManager->setForwardClustered(
-    true, 16, 8, 24, 96, 0, 0, 1, 500);
+    true, 16, 8, 24, 96, 4, 0, 1, 500);
 }
 
 //////////////////////////////////////////////////

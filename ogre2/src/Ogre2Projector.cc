@@ -16,20 +16,58 @@
  */
 
 #include <string>
+#include <unordered_map>
 
+#include <OgreCamera.h>
 #include <OgreDecal.h>
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
 #include <OgreSceneNode.h>
 #include <OgreTextureGpuManager.h>
 
-// TODO remove
-#include <OgreWireAabb.h>
-
+#include "gz/rendering/ogre2/Ogre2Camera.hh"
+#include "gz/rendering/ogre2/Ogre2DepthCamera.hh"
 #include "gz/rendering/ogre2/Ogre2Projector.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 #include "gz/rendering/Utils.hh"
+
+namespace gz
+{
+namespace rendering
+{
+inline namespace GZ_RENDERING_VERSION_NAMESPACE {
+//
+/// \brief Helper class for checking visibility of projecter to a camera
+class Ogre2ProjectorCameraListener: public Ogre::Camera::Listener
+{
+  /// \brief Constructor
+  /// \param[in] _node Pointer to the node that holds the decal (projector)
+  public: Ogre2ProjectorCameraListener(Ogre::SceneNode *_node);
+
+  //// \brief Set the visibility flags for this projector
+  /// \param[in] _flags Visibility flags to set
+  public: void SetVisibilityFlags(uint32_t _flags);
+
+  /// \brief Callback when a camara is about to be rendered
+  /// \param[in] _cam Ogre camera pointer which is about to render
+  private: virtual void cameraPreRenderScene(
+    Ogre::Camera * _cam) override;
+
+  /// \brief Callback when a camera is finisned being rendered
+  /// \param[in] _cam Ogre camera pointer which has already render
+  private: virtual void cameraPostRenderScene(
+    Ogre::Camera * _cam) override;
+
+  /// \brief Projector's visibility flags
+  private: uint32_t visibilityFlags = 0u;
+
+  /// \brief Pointer to the decal ogre scene node
+  public: Ogre::SceneNode *decalNode{nullptr};
+};
+}
+}
+}
 
 using namespace gz;
 using namespace rendering;
@@ -48,6 +86,17 @@ class gz::rendering::Ogre2Projector::Implementation
 
   /// \brief Indicate whether the projector is intialized or not
   public: bool initialized{false};
+
+  /// \brief A map of cameras (<Camera ptr, name>) that the listener has been
+  /// added to
+  public: std::unordered_map<Ogre::Camera *, Ogre::IdString>
+      cameraVisibilityCheck;
+
+  /// \brief Listener for togging projector visibility
+  /// We are using a custom listener because Ogre::Decal's setVisibilityFlags
+  /// does not seem to work
+  public: std::unique_ptr<Ogre2ProjectorCameraListener> listener;
+
 };
 
 /////////////////////////////////////////////////
@@ -64,11 +113,20 @@ Ogre2Projector::~Ogre2Projector()
   if (!this->scene->IsInitialized())
     return;
 
+  for (auto &ogreCamIt : this->dataPtr->cameraVisibilityCheck)
+  {
+    Ogre::IdString camName = ogreCamIt.second;
+    auto ogreCam = this->scene->OgreSceneManager()->findCameraNoThrow(camName);
+      ogreCam->removeListener(this->dataPtr->listener.get());
+  }
+  this->dataPtr->cameraVisibilityCheck.clear();
+
   if (this->dataPtr->textureDiff)
   {
     auto engine = Ogre2RenderEngine::Instance();
     auto ogreRoot = engine->OgreRoot();
-    auto textureGpuManager = ogreRoot->getRenderSystem()->getTextureGpuManager();
+    auto textureGpuManager =
+        ogreRoot->getRenderSystem()->getTextureGpuManager();
     textureGpuManager->destroyTexture(this->dataPtr->textureDiff);
     this->dataPtr->textureDiff = nullptr;
   }
@@ -88,7 +146,8 @@ void Ogre2Projector::PreRender()
     this->dataPtr->initialized = true;
     this->SetEnabled(true);
   }
-  // return;
+
+  this->UpdateCameraListener();
 
   if (this->dataPtr->textureDiff)
   {
@@ -98,10 +157,77 @@ void Ogre2Projector::PreRender()
 }
 
 /////////////////////////////////////////////////
+void Ogre2Projector::UpdateCameraListener()
+{
+  // if a custom visibility flag is set, we will need to use a listener
+  // for toggling the visibility of the decal
+  if (this->VisibilityFlags() == GZ_VISIBILITY_ALL)
+  {
+    this->dataPtr->decalNode->setVisible(true);
+
+    for (auto &ogreCamIt : this->dataPtr->cameraVisibilityCheck)
+    {
+      Ogre::IdString camName = ogreCamIt.second;
+      // instead of getting the camera pointer through ogreCamIt.first,
+      // find camera pointer again to make sure the camera still exists
+      // because there is a chance that  we are holding onto a dangling pointer
+      // if that camera was deleted already
+      auto ogreCam = this->scene->OgreSceneManager()->findCameraNoThrow(camName);
+        ogreCam->removeListener(this->dataPtr->listener.get());
+    }
+    this->dataPtr->cameraVisibilityCheck.clear();
+    return;
+  }
+
+  if (!this->dataPtr->listener)
+  {
+    this->dataPtr->listener = std::make_unique<Ogre2ProjectorCameraListener>(
+        this->dataPtr->decalNode);
+  }
+  this->dataPtr->listener->SetVisibilityFlags(this->VisibilityFlags());
+  this->dataPtr->decalNode->setVisible(false);
+
+  // loop through color cameras and add listener to toggle visibility of
+  // decals in these cameras
+  for (unsigned int i = 0; i < this->scene->SensorCount(); ++i)
+  {
+    auto sensor = this->scene->SensorByIndex(i);
+    Ogre2CameraPtr camera = std::dynamic_pointer_cast<Ogre2Camera>(sensor);
+    if (camera)
+    {
+      auto ogreCam = camera->OgreCamera();
+      if (this->dataPtr->cameraVisibilityCheck.find(ogreCam)
+          == this->dataPtr->cameraVisibilityCheck.end())
+      {
+        ogreCam->addListener(this->dataPtr->listener.get());
+        this->dataPtr->cameraVisibilityCheck[ogreCam] = ogreCam->getName();
+      }
+    }
+    else
+    {
+      // depth camera can also generate rgb output (when simulating
+      // RGBD cameras)
+      Ogre2DepthCameraPtr depthCamera =
+          std::dynamic_pointer_cast<Ogre2DepthCamera>(sensor);
+      if (depthCamera)
+      {
+        auto ogreCam = depthCamera->OgreCamera();
+        if (this->dataPtr->cameraVisibilityCheck.find(ogreCam)
+            == this->dataPtr->cameraVisibilityCheck.end())
+        {
+          ogreCam->addListener(this->dataPtr->listener.get());
+          this->dataPtr->cameraVisibilityCheck[ogreCam] = ogreCam->getName();
+        }
+      }
+    }
+  }
+}
+
+/////////////////////////////////////////////////
 void Ogre2Projector::CreateProjector()
 {
   this->dataPtr->decalNode = this->ogreNode->createChildSceneNode();
-  this->dataPtr->decalNode->roll(Ogre::Degree(-90));
+  this->dataPtr->decalNode->roll(Ogre::Degree(90));
 
   this->dataPtr->decal = this->scene->OgreSceneManager()->createDecal();
   this->dataPtr->decalNode->attachObject(this->dataPtr->decal);
@@ -129,25 +255,22 @@ void Ogre2Projector::CreateProjector()
     return;
   }
 
-///////////
-//  return;
-
-
-
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::TextureGpuManager *textureManager =
     ogreRoot->getRenderSystem()->getTextureGpuManager();
+  int decalDiffuseId = 1;
   this->dataPtr->textureDiff = textureManager->createOrRetrieveTexture(
       this->textureName, this->textureName + "_alias",
-       Ogre::GpuPageOutStrategy::Discard,
+      Ogre::GpuPageOutStrategy::Discard,
       Ogre::CommonTextureTypes::Diffuse,
-      Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME, 1 /*,
-      decalDiffuseId */ );
+      Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
+      decalDiffuseId);
   this->dataPtr->textureDiff->scheduleTransitionTo(Ogre::GpuResidency::Resident);
 
   this->dataPtr->decal->setDiffuseTexture(this->dataPtr->textureDiff);
 
+  // approximate frustum size
   common::Image image(this->textureName);
   const double aspectRatio = image.Width() / image.Height();
   const double vfov = 2.0 * atan(tan(this->hfov.Radian() / 2.0)
@@ -157,8 +280,9 @@ void Ogre2Projector::CreateProjector()
   const double width = 2 * (tan(this->hfov.Radian() / 2) * this->farClip);
   const double height = 2 * (tan(vfov / 2) * this->farClip);
 
-  // this->dataPtr->decalNode->setScale(width, depth, height);
-  this->dataPtr->decalNode->setScale(Ogre::Vector3(11.0f));
+  this->dataPtr->decalNode->setPosition(
+      Ogre::Vector3(this->nearClip + depth * 0.5, 0, 0));
+  this->dataPtr->decalNode->setScale(width, depth, height);
 
   // TODO remove
    // Ogre::WireAabb *wireAabb = this->scene->OgreSceneManager()->createWireAabb();
@@ -172,5 +296,38 @@ void Ogre2Projector::CreateProjector()
 void Ogre2Projector::SetEnabled(bool _enabled)
 {
   BaseProjector::SetEnabled(_enabled);
-//  this->dataPtr->projector.SetEnabled(_enabled);
+  this->SetVisible(_enabled);
+}
+
+
+//////////////////////////////////////////////////
+void Ogre2ProjectorCameraListener::SetVisibilityFlags(uint32_t _flags)
+{
+  this->visibilityFlags = _flags;
+}
+
+//////////////////////////////////////////////////
+Ogre2ProjectorCameraListener::Ogre2ProjectorCameraListener(
+  Ogre::SceneNode *_node)
+{
+  this->decalNode = _node;
+}
+
+//////////////////////////////////////////////////
+void Ogre2ProjectorCameraListener::cameraPreRenderScene(
+    Ogre::Camera *_cam)
+{
+  uint32_t mask = _cam->getLastViewport()->getVisibilityMask();
+  if (this->visibilityFlags & mask && this->decalNode)
+  {
+    this->decalNode->setVisible(true);
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2ProjectorCameraListener::cameraPostRenderScene(
+    Ogre::Camera * /*_cam*/)
+{
+  if (this->decalNode)
+    this->decalNode->setVisible(false);
 }

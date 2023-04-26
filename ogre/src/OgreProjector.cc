@@ -21,12 +21,16 @@
 
 #include <OgreEntity.h>
 #include <OgrePass.h>
+#include <OgreRenderTargetListener.h>
 #include <OgreSceneManager.h>
 #include <OgreSceneNode.h>
 
+#include "gz/rendering/ogre/OgreCamera.hh"
 #include "gz/rendering/ogre/OgreConversions.hh"
+#include "gz/rendering/ogre/OgreDepthCamera.hh"
 #include "gz/rendering/ogre/OgreProjector.hh"
 #include "gz/rendering/ogre/OgreRTShaderSystem.hh"
+#include "gz/rendering/ogre/OgreScene.hh"
 #include "gz/rendering/Utils.hh"
 
 using namespace gz;
@@ -41,6 +45,7 @@ namespace gz
     /// \brief Projector listener, used to add a new decal material pass
     /// onto other entities' materials
     class OgreProjectorListener
+        : public Ogre::RenderTargetListener
     {
       /// \brief Constructor.
       public: OgreProjectorListener();
@@ -67,6 +72,13 @@ namespace gz
       /// \brief Add decal to materials of entity visible in the frustum
       public: void AddDecalToVisibleMaterials();
 
+      /// \brief Remove decal from materials of entities
+      public: void RemoveDecalFromMaterials();
+
+      //// \brief Set the visibility flags for this projector
+      /// \param[in] _flags Visibility flags to set
+      public: void SetVisibilityFlags(uint32_t _flags);
+
       /// \brief Set texture to use for projection
       /// \param[in] _textureName Name of texture
       private: void SetTexture(const std::string &_textureName);
@@ -87,12 +99,21 @@ namespace gz
       /// \param[in] _matList Name of material
       private: void AddDecalToMaterial(const std::string &_matName);
 
-      /// \brief Remove decal from materials of entities
-      private: void RemoveDecalFromMaterials();
-
       /// \brief Remove decal from an entity  material
       /// \param[in] _matList Name of material
       private: void RemoveDecalFromMaterial(const std::string &_matName);
+
+      /// \brief Ogre's pre render update callback
+      /// \param[in] _evt Ogre render target event containing information about
+      /// the source render target.
+      private: virtual void preRenderTargetUpdate(
+                  const Ogre::RenderTargetEvent &_evt);
+
+      /// \brief Ogre's post render update callback
+      /// \param[in] _evt Ogre render target event containing information about
+      /// the source render target.
+      private: virtual void postRenderTargetUpdate(
+                   const Ogre::RenderTargetEvent &_evt);
 
       /// \brief Enabled state of projector listener
       public: bool enabled{false};
@@ -134,6 +155,9 @@ namespace gz
       /// \brief A map of targets that has decal texture projected
       /// onto. Key value pairs are: <material name, material pass>
       public: std::unordered_map<std::string, Ogre::Pass*> projectorTargets;
+
+      /// \brief Projector's visibility flags
+      private: uint32_t visibilityFlags = 0u;
     };
     }
   }
@@ -147,6 +171,11 @@ class gz::rendering::OgreProjector::Implementation
 
   /// \brief Indicate whether the projector is intialized or not
   public: bool initialized{false};
+
+  /// \brief A map of cameras (<Camera ptr, name>) that the listener has been
+  /// added to
+  public: std::unordered_map<Ogre::Camera *, Ogre::String>
+      cameraVisibilityCheck;
 };
 
 /////////////////////////////////////////////////
@@ -166,7 +195,7 @@ void OgreProjector::PreRender()
 {
   if (this->dataPtr->initialized)
   {
-    this->dataPtr->projector.AddDecalToVisibleMaterials();
+    this->UpdateCameraListener();
     return;
   }
 
@@ -212,9 +241,7 @@ OgreProjectorListener::~OgreProjectorListener()
   if (this->node)
   {
     this->node->detachObject(this->frustum.get());
-    Ogre::SceneNode *n = this->parentOgreNode;
-    if (n)
-      n->removeAndDestroyChild(this->nodeName);
+    this->sceneMgr->destroySceneNode(this->node);
     this->node = nullptr;
   }
 
@@ -222,7 +249,10 @@ OgreProjectorListener::~OgreProjectorListener()
   this->filterFrustum.reset();
 
   if (this->projectorQuery)
+  {
     this->sceneMgr->destroyQuery(this->projectorQuery);
+    this->projectorQuery = nullptr;
+  }
 }
 
 /////////////////////////////////////////////////
@@ -321,7 +351,7 @@ void OgreProjectorListener::SetTexture(
 
 /////////////////////////////////////////////////
 void OgreProjectorListener::SetFrustumClipDistance(double _near,
-                                                               double _far)
+    double _far)
 {
   this->frustum->setNearClipDistance(_near);
   this->filterFrustum->setNearClipDistance(_near);
@@ -373,8 +403,8 @@ void OgreProjectorListener::AddDecalToMaterials(
   // Loop through all existing passes, removing those for materials
   //   not in the newlist and skipping pass creation for those in the
   //   newlist that have already been created
-  auto used = projectorTargets.begin();
-  while (used != projectorTargets.end())
+  auto used = this->projectorTargets.begin();
+  while (used != this->projectorTargets.end())
   {
     visibleMaterial = std::find(_matList.begin(), _matList.end(), used->first);
 
@@ -463,11 +493,15 @@ void OgreProjectorListener::RemoveDecalFromMaterials()
 void OgreProjectorListener::RemoveDecalFromMaterial(
     const std::string &_matName)
 {
-  this->projectorTargets[_matName]->getParent()->removePass(
-    this->projectorTargets[_matName]->getIndex());
-  this->projectorTargets.erase(this->projectorTargets.find(_matName));
+  auto projectorTargetIt = this->projectorTargets.find(_matName);
+  if (projectorTargetIt != this->projectorTargets.end())
+  {
+    projectorTargetIt->second->getParent()->removePass(
+        projectorTargetIt->second->getIndex());
+    this->projectorTargets.erase(projectorTargetIt);
+  }
 }
-/*
+
 /////////////////////////////////////////////////
 void OgreProjector::UpdateCameraListener()
 {
@@ -475,45 +509,39 @@ void OgreProjector::UpdateCameraListener()
   // for toggling the visibility of the decal
   if (this->VisibilityFlags() == GZ_VISIBILITY_ALL)
   {
- //   this->dataPtr->decalNode->setVisible(true);
-
     for (auto &ogreCamIt : this->dataPtr->cameraVisibilityCheck)
     {
-      Ogre::IdString camName = ogreCamIt.second;
+      Ogre::String camName = ogreCamIt.second;
       // instead of getting the camera pointer through ogreCamIt.first,
       // find camera pointer again to make sure the camera still exists
       // because there is a chance that  we are holding onto a dangling pointer
       // if that camera was deleted already
       auto ogreCam = this->scene->OgreSceneManager()->getCamera(camName);
           ogreCam->getViewport()->getTarget()->removeListener(
-          this->dataPtr->listener.get());
+          &this->dataPtr->projector);
     }
     this->dataPtr->cameraVisibilityCheck.clear();
+
+    this->dataPtr->projector.AddDecalToVisibleMaterials();
     return;
   }
 
-  if (!this->dataPtr->listener)
-  {
-    this->dataPtr->listener = std::make_unique<OgreProjectorCameraListener>(
-        this->dataPtr->decalNode);
-  }
-  this->dataPtr->listener->SetVisibilityFlags(this->VisibilityFlags());
-  this->dataPtr->decalNode->setVisible(false);
+  this->dataPtr->projector.SetVisibilityFlags(this->VisibilityFlags());
 
   // loop through color cameras and add listener to toggle visibility of
   // decals in these cameras
   for (unsigned int i = 0; i < this->scene->SensorCount(); ++i)
   {
     auto sensor = this->scene->SensorByIndex(i);
-    Ogre2CameraPtr camera = std::dynamic_pointer_cast<Ogre2Camera>(sensor);
+    OgreCameraPtr camera = std::dynamic_pointer_cast<OgreCamera>(sensor);
     if (camera)
     {
-      auto ogreCam = camera->OgreCamera();
+      auto ogreCam = camera->Camera();
       if (this->dataPtr->cameraVisibilityCheck.find(ogreCam)
           == this->dataPtr->cameraVisibilityCheck.end())
       {
         ogreCam->getViewport()->getTarget()->addListener(
-            this->dataPtr->listener.get());
+            &this->dataPtr->projector);
         this->dataPtr->cameraVisibilityCheck[ogreCam] = ogreCam->getName();
       }
     }
@@ -525,12 +553,12 @@ void OgreProjector::UpdateCameraListener()
           std::dynamic_pointer_cast<OgreDepthCamera>(sensor);
       if (depthCamera)
       {
-        auto ogreCam = depthCamera->OgreCamera();
+        auto ogreCam = depthCamera->Camera();
         if (this->dataPtr->cameraVisibilityCheck.find(ogreCam)
             == this->dataPtr->cameraVisibilityCheck.end())
         {
           ogreCam->getViewport()->getTarget()->addListener(
-              this->dataPtr->listener.get());
+              &this->dataPtr->projector);
           this->dataPtr->cameraVisibilityCheck[ogreCam] = ogreCam->getName();
         }
       }
@@ -538,4 +566,26 @@ void OgreProjector::UpdateCameraListener()
   }
 }
 
-*/
+//////////////////////////////////////////////////
+void OgreProjectorListener::SetVisibilityFlags(uint32_t _flags)
+{
+  this->visibilityFlags = _flags;
+}
+
+/////////////////////////////////////////////////
+void OgreProjectorListener::preRenderTargetUpdate(
+    const Ogre::RenderTargetEvent &_evt)
+{
+  uint32_t mask = _evt.source->getViewport(0)->getVisibilityMask();
+  if (this->visibilityFlags & mask)
+  {
+    this->AddDecalToVisibleMaterials();
+  }
+}
+
+/////////////////////////////////////////////////
+void OgreProjectorListener::postRenderTargetUpdate(
+    const Ogre::RenderTargetEvent &/*_evt*/)
+{
+  this->RemoveDecalFromMaterials();
+}

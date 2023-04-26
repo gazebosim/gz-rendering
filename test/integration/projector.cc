@@ -60,7 +60,7 @@ TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
 
   CameraPtr cameraA = scene->CreateCamera();
   ASSERT_NE(nullptr, cameraA);
-  cameraA->SetWorldPosition(0, 0, 0);
+  cameraA->SetWorldPosition(0, 0, -2);
   cameraA->SetWorldRotation(0, GZ_PI / 2.0, 0);
   cameraA->SetVisibilityMask(0x01);
   cameraA->SetImageWidth(256);
@@ -69,7 +69,7 @@ TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
 
   CameraPtr cameraB = scene->CreateCamera();
   ASSERT_NE(nullptr, cameraB);
-  cameraB->SetWorldPosition(0, 0, 0);
+  cameraB->SetWorldPosition(0, 0, -2);
   cameraB->SetWorldRotation(0, GZ_PI / 2.0, 0);
   cameraB->SetVisibilityMask(0x02);
   cameraB->SetImageWidth(256);
@@ -126,28 +126,30 @@ TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
   ASSERT_GT(width, 0u);
   ASSERT_GT(bpp, 0u);
 
-  unsigned int rASum = 0u;
-  unsigned int gASum = 0u;
-  unsigned int bASum = 0u;
-  unsigned int rBSum = 0u;
-  unsigned int gBSum = 0u;
-  unsigned int bBSum = 0u;
-
   // verify that cameraA only sees red texture from projector A and
   // cameraB only sees texture from projector B
-  cameraA->Capture(imageA);
-  cameraB->Capture(imageB);
+  // \todo(anyone) ogre requires rendering a few frames to get correct output
+  // need to investigate and make sure we can generate correct output by
+  // rendering only once
+  unsigned int iterations = 1u;
+  if (engine->Name() == "ogre")
+    iterations = 3u;
+  for (unsigned int i = 0; i < iterations; ++i)
+  {
+    cameraA->Capture(imageA);
+    cameraB->Capture(imageB);
+  }
 
   unsigned char *dataA = imageA.Data<unsigned char>();
   unsigned char *dataB = imageB.Data<unsigned char>();
 
-//  common::Image imgA;
-//  imgA.SetFromData(dataA, width, height, common::Image::RGB_INT8);
-//  imgA.SavePNG("imageA.png");
-//
-//  common::Image imgB;
-//  imgB.SetFromData(dataB, width, height, common::Image::RGB_INT8);
-//  imgB.SavePNG("imageB.png");
+  common::Image imgA;
+  imgA.SetFromData(dataA, width, height, common::Image::RGB_INT8);
+  imgA.SavePNG("imageA.png");
+
+  common::Image imgB;
+  imgB.SetFromData(dataB, width, height, common::Image::RGB_INT8);
+  imgB.SavePNG("imageB.png");
 
   for (unsigned int i = 0; i < height; ++i)
   {
@@ -158,46 +160,19 @@ TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
       unsigned int gA = dataA[idx+1];
       unsigned int bA = dataA[idx+2];
 
-      // color should be red on green background
-      // so pixel is either red or green
-      EXPECT_EQ(0u, bA);
-      if (gA > 0)
-        EXPECT_EQ(0u, rA);
-      else
-        EXPECT_LT(0u, rA);
-
-      rASum += rA;
-      gASum += gA;
-      bASum += bA;
+      // color should be predominantly red
+      EXPECT_GT(rA, gA);
+      EXPECT_GT(rA, bA);
 
       unsigned int rB = dataB[idx];
       unsigned int gB = dataB[idx+1];
       unsigned int bB = dataB[idx+2];
 
-      // color should be blue on green background
-      // so pixel is either blue or green
-      EXPECT_EQ(0u, rB);
-      if (gB > 0)
-        EXPECT_EQ(0u, bB);
-      else
-        EXPECT_LT(0u, bB);
-
-      rBSum += rB;
-      gBSum += gB;
-      bBSum += bB;
+      // color should be predominantly blue
+      EXPECT_GT(bB, gB);
+      EXPECT_GT(bB, rB);
     }
   }
-
-  // one last test:  verify sums of rgb for bother cameras
-  // cameraA should only see red and green
-  EXPECT_GT(rASum, 0u);
-  EXPECT_GT(gASum, 0u);
-  EXPECT_EQ(bASum, 0u);
-
-  // cameraB should only see blue and green
-  EXPECT_EQ(rBSum, 0u);
-  EXPECT_GT(gBSum, 0u);
-  EXPECT_GT(bBSum, 0u);
 
   // Clean up
   engine->DestroyScene(scene);

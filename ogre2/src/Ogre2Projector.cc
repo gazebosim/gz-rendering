@@ -96,7 +96,6 @@ class gz::rendering::Ogre2Projector::Implementation
   /// We are using a custom listener because Ogre::Decal's setVisibilityFlags
   /// does not seem to work
   public: std::unique_ptr<Ogre2ProjectorCameraListener> listener;
-
 };
 
 /////////////////////////////////////////////////

@@ -150,7 +150,6 @@ OgreScene::OgreScene(unsigned int _id, const std::string &_name) :
 
   // there should only be one scene
   static OgreSceneExt ext(this);
-  //static OgreSceneExt ext(dynamic_cast<Scene *>(this));
   this->SetExtension(&ext);
 }
 
@@ -774,7 +773,6 @@ ObjectPtr OgreSceneExt::CreateExt(const std::string &_type)
 {
   if (_type == "projector")
   {
-    // BaseScene *baseScene = dynamic_cast<BaseScene *>(this->scene);
     OgreScene *ogreScene = dynamic_cast<OgreScene *>(this->scene);
     unsigned int objId = ogreScene->CreateObjectId();
     std::stringstream ss;
@@ -783,7 +781,6 @@ ObjectPtr OgreSceneExt::CreateExt(const std::string &_type)
     std::string objName = ss.str();
     ProjectorPtr projector = ogreScene->CreateProjectorImpl(
         objId, objName);
-    // bool result = baseScene->RegisterVisual(projector);
     bool result = ogreScene->Visuals()->Add(projector);
     return (result) ? projector : nullptr;
   }

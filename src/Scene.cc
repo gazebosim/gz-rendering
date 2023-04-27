@@ -21,11 +21,13 @@ using namespace gz;
 using namespace rendering;
 
 // added as static var here for ABI compatibility
-//static std::unordered_map<const Scene *, SceneExt *> g_sceneExtMap;
+static std::unordered_map<const Scene *, SceneExt *> g_sceneExtMap;
 
+//////////////////////////////////////////////////
 Scene::~Scene() = default;
 
-/*SceneExt *Scene::Extension() const
+//////////////////////////////////////////////////
+SceneExt *Scene::Extension() const
 {
   auto it = g_sceneExtMap.find(this);
   if (it != g_sceneExtMap.end())
@@ -33,8 +35,8 @@ Scene::~Scene() = default;
   return nullptr;
 }
 
+//////////////////////////////////////////////////
 void Scene::SetExtension(SceneExt *_ext)
 {
   g_sceneExtMap[this] = _ext;
 }
-*/

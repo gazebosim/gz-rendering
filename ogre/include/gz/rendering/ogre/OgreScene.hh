@@ -221,11 +221,13 @@ namespace gz
 
       protected: virtual MaterialMapPtr Materials() const override;
 
+      // Documentation inherited
+      protected: unsigned int CreateObjectId();
+
       /// \brief Remove internal material cache for a specific material
       /// \param[in] _name Name of the template material to remove.
       public: void ClearMaterialsCache(const std::string &_name);
 
-      protected: unsigned int CreateObjectId() ;
 
       private: void CreateContext();
 
@@ -257,13 +259,15 @@ namespace gz
       private: friend class OgreSceneExt;
     };
 
+    /// \brief Ogre implementation of the scene extension API
     class OgreSceneExt : public SceneExt
     {
       /// \brief Constructor
+      /// \param[in] _scene Pointer to scene
       public: OgreSceneExt(Scene *_scene);
 
       // Documentation inherited
-      public: virtual ObjectPtr CreateExt(const std::string &_type);
+      public: virtual ObjectPtr CreateExt(const std::string &_type) override;
     };
     }
   }

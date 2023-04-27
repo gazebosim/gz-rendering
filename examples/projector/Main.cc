@@ -59,34 +59,34 @@ void buildScene(ScenePtr _scene)
         "stereo_projection_pattern_high_res_red.png");
          // "blue_texture.png");
 
-   SceneExt ext(_scene.get());
-   // ObjectPtr obj = ext.CreateExt("asdf");
-   auto projector = std::dynamic_pointer_cast<Projector>(
-        ext.CreateExt("asdf"));
+   // SceneExt ext(_scene.get());
+   // // ObjectPtr obj = ext.CreateExt("asdf");
+   // auto projector = std::dynamic_pointer_cast<Projector>(
+   //      ext.CreateExt("asdf"));
 
-//  ProjectorPtr projector = std::dynamic_pointer_cast<Projector>(
-//      _scene->Extension()->CreateExt("projector"));
-//  // \todo(iche033) uncomment and use official API in gz-rendering8
-////  ProjectorPtr projector = _scene->CreateProjector();
-//  projector->SetLocalPosition(0, 0, 4);
-//  projector->SetLocalRotation(0, GZ_PI/2.0, 0);
-//  projector->SetTexture(texture);
-//  projector->SetVisibilityFlags(0x01);
-//  root->AddChild(projector);
-//
-//  // create blue material
-//  MaterialPtr blue = _scene->CreateMaterial();
-//  blue->SetAmbient(0.0, 0.0, 0.5);
-//  blue->SetDiffuse(0.0, 0.0, 0.7);
-//  blue->SetSpecular(0.5, 0.5, 0.5);
-//
-//  // create visual representing the projector
-//  VisualPtr box = _scene->CreateVisual();
-//  box->AddGeometry(_scene->CreateBox());
-//  // box->SetLocalPosition(0, 0, 4);
-//  box->SetLocalScale(0.1, 0.1, 0.1);
-//  box->SetMaterial(blue);
-//  projector->AddChild(box);
+  ProjectorPtr projector = std::dynamic_pointer_cast<Projector>(
+      _scene->Extension()->CreateExt("projector"));
+  // \todo(iche033) uncomment and use official API in gz-rendering8
+  // ProjectorPtr projector = _scene->CreateProjector();
+  projector->SetLocalPosition(0, 0, 4);
+  projector->SetLocalRotation(0, GZ_PI/2.0, 0);
+  projector->SetTexture(texture);
+  projector->SetVisibilityFlags(0x01);
+  root->AddChild(projector);
+
+  // create blue material
+  MaterialPtr blue = _scene->CreateMaterial();
+  blue->SetAmbient(0.0, 0.0, 0.5);
+  blue->SetDiffuse(0.0, 0.0, 0.7);
+  blue->SetSpecular(0.5, 0.5, 0.5);
+
+  // create visual representing the projector
+  VisualPtr box = _scene->CreateVisual();
+  box->AddGeometry(_scene->CreateBox());
+  // box->SetLocalPosition(0, 0, 4);
+  box->SetLocalScale(0.1, 0.1, 0.1);
+  box->SetMaterial(blue);
+  projector->AddChild(box);
 
   // create white material
   MaterialPtr white = _scene->CreateMaterial();

@@ -17,6 +17,8 @@
 
 #include <gz/common/Console.hh>
 
+#include "gz/rendering/base/SceneExt.hh"
+
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2ArrowVisual.hh"
 #include "gz/rendering/ogre2/Ogre2AxisVisual.hh"
@@ -110,6 +112,9 @@ using namespace rendering;
 Ogre2Scene::Ogre2Scene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name), dataPtr(std::make_unique<Ogre2ScenePrivate>())
 {
+  // there should only be one scene / scene ext API
+  static Ogre2SceneExt ext(this);
+  this->SetExtension(&ext);
 }
 
 //////////////////////////////////////////////////
@@ -1462,4 +1467,36 @@ void Ogre2Scene::SetSkyEnabled(bool _enabled)
 bool Ogre2Scene::SkyEnabled() const
 {
   return this->dataPtr->skyEnabled;
+}
+
+//////////////////////////////////////////////////
+unsigned int Ogre2Scene::CreateObjectId()
+{
+  return BaseScene::CreateObjectId();
+}
+
+//////////////////////////////////////////////////
+Ogre2SceneExt::Ogre2SceneExt(Scene *_scene)
+    : SceneExt(_scene)
+{
+}
+
+//////////////////////////////////////////////////
+ObjectPtr Ogre2SceneExt::CreateExt(const std::string &_type)
+{
+  if (_type == "projector")
+  {
+    Ogre2Scene *ogreScene = dynamic_cast<Ogre2Scene *>(this->scene);
+    unsigned int objId = ogreScene->CreateObjectId();
+    std::stringstream ss;
+    ss << ogreScene->Name() << "::" <<  "Projector";
+    ss << "(" << std::to_string(objId) << ")";
+    std::string objName = ss.str();
+    ProjectorPtr projector = ogreScene->CreateProjectorImpl(
+        objId, objName);
+    bool result = ogreScene->Visuals()->Add(projector);
+    return (result) ? projector : nullptr;
+  }
+
+  return ObjectPtr();
 }

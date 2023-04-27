@@ -86,10 +86,10 @@ TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
    std::string textureRed = common::joinPaths(
        TEST_MEDIA_PATH, "materials", "textures",
        "red_texture.png");
-  // ProjectorPtr projectorA = std::dynamic_pointer_cast<Projector>(
-  //     scene->Extension()->CreateExt("projector"));
   // \todo(iche033) uncomment and use official API in gz-rendering8
-  ProjectorPtr projectorA = scene->CreateProjector();
+  // ProjectorPtr projectorA = scene->CreateProjector();
+  ProjectorPtr projectorA = std::dynamic_pointer_cast<Projector>(
+      scene->Extension()->CreateExt("projector"));
   ASSERT_NE(nullptr, projectorA);
   projectorA->SetNearClipPlane(1.0);
   projectorA->SetFarClipPlane(6.0);
@@ -102,9 +102,9 @@ TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
        TEST_MEDIA_PATH, "materials", "textures",
        "blue_texture.png");
   // \todo(iche033) uncomment and use official API in gz-rendering8
-  ProjectorPtr projectorB = scene->CreateProjector();
-  // ProjectorPtr projectorB = std::dynamic_pointer_cast<Projector>(
-  //     scene->Extension()->CreateExt("projector"));
+  // ProjectorPtr projectorB = scene->CreateProjector();
+  ProjectorPtr projectorB = std::dynamic_pointer_cast<Projector>(
+      scene->Extension()->CreateExt("projector"));
   ASSERT_NE(nullptr, projectorB);
 
   projectorB->SetNearClipPlane(1.0);

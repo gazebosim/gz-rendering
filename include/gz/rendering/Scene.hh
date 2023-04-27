@@ -43,7 +43,7 @@ namespace gz
     //
     class RenderEngine;
     class SceneExt;
-    static std::unordered_map<const Scene *, SceneExt *> g_sceneExtMap;
+//    static std::unordered_map<const Scene *, SceneExt *> g_sceneExtMap;
 
     /// \class Scene Scene.hh gz/rendering/Scene.hh
     /// \brief Manages a single scene-graph. This class updates scene-wide
@@ -1178,31 +1178,35 @@ namespace gz
       /// \brief Create new projector. A unique ID and name will
       /// automatically be assigned to the visual.
       /// \return The created projector
-      public: virtual ProjectorPtr CreateProjector() = 0;
+      /// \todo(iche033) uncomment in gz-rendering8
+      /// public: virtual ProjectorPtr CreateProjector() = 0;
 
       /// \brief Create new projector with the given ID. A unique name
       /// will automatically be assigned to the visual. If the given ID is
       /// already in use, NULL will be returned.
       /// \param[in] _id ID of the new projector
       /// \return The created projector
-      public: virtual ProjectorPtr CreateProjector(
-                  unsigned int _id) = 0;
+      /// \todo(iche033) uncomment in gz-rendering8
+      /// public: virtual ProjectorPtr CreateProjector(
+      ///            unsigned int _id) = 0;
 
       /// \brief Create new projector with the given name. A unique ID
       /// will automatically be assigned to the visual. If the given name is
       /// already in use, NULL will be returned.
       /// \param[in] _name Name of the new projector
       /// \return The created projector
-      public: virtual ProjectorPtr CreateProjector(
-                  const std::string &_name) = 0;
+      /// \todo(iche033) uncomment in gz-rendering8
+      /// public: virtual ProjectorPtr CreateProjector(
+      ///             const std::string &_name) = 0;
 
       /// \brief Create new projector with the given name. If either the
       /// given ID or name is already in use, NULL will be returned.
       /// \param[in] _id ID of the new projector
       /// \param[in] _name Name of the new projector
       /// \return The created projector
-      public: virtual ProjectorPtr CreateProjector(
-                  unsigned int _id, const std::string &_name) = 0;
+      /// \todo(iche033) uncomment in gz-rendering8
+      /// public: virtual ProjectorPtr CreateProjector(
+      ///             unsigned int _id, const std::string &_name) = 0;
 
       /// \brief Enable sky in the scene.
       /// \param[in] _enabled True to enable sky
@@ -1341,22 +1345,12 @@ namespace gz
       public: virtual void Destroy() = 0;
 
       /// \brief Get scene extention APIs
-      /// This provides new APIs that are experimentatl
-      // public: SceneExt *Extension() const {return nullptr;};
-      public: SceneExt *Extension() const
-      {
-        auto it = g_sceneExtMap.find(this);
-        if (it != g_sceneExtMap.end())
-          return it->second;
-        return nullptr;
-      };
+      /// This provides new Scene APIs that are experimental
+      public: SceneExt *Extension() const;
 
-      /// \brief Set the scene extention APIs
-      /// This provides new APIs that are experimentatl
-      protected: void SetExtension(SceneExt *_ext)
-      {
-        g_sceneExtMap[this] = _ext;
-      }
+      /// \brief Set the scene extention API
+      /// This is called by underlying render engines
+      protected: void SetExtension(SceneExt *_ext);
     };
     }
   }

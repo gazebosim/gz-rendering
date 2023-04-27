@@ -346,8 +346,9 @@ namespace gz
                      unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited
-      protected: virtual ProjectorPtr CreateProjectorImpl(
-                     unsigned int _id, const std::string &_name) override;
+      // \todo(iche033) make this virtual in gz-rendering8
+      protected: ProjectorPtr CreateProjectorImpl(
+                     unsigned int _id, const std::string &_name);
 
       /// \brief Helper function to initialize an ogre2 object
       /// \param[in] _object Ogre2 object that will be initialized
@@ -401,6 +402,9 @@ namespace gz
       // Documentation inherited
       protected: virtual MaterialMapPtr Materials() const override;
 
+      // Documentation inherited
+      protected: unsigned int CreateObjectId();
+
       /// \brief Create the GL context
       private: void CreateContext();
 
@@ -449,7 +453,21 @@ namespace gz
 
       /// \brief Make the render engine our friend
       private: friend class Ogre2RenderEngine;
+
+      private: friend class Ogre2SceneExt;
     };
+
+    /// \brief Ogre2 implementation of the scene extension API
+    class Ogre2SceneExt : public SceneExt
+    {
+      /// \brief Constructor
+      /// \param[in] _scene Pointer to scene
+      public: Ogre2SceneExt(Scene *_scene);
+
+      // Documentation inherited
+      public: virtual ObjectPtr CreateExt(const std::string &_type) override;
+    };
+
     }
   }
 }

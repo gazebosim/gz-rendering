@@ -47,6 +47,7 @@ namespace gz
         return ObjectPtr();
       }
 
+      /// \brief Pointer to scene
       protected: Scene *scene{nullptr};
     };
     }

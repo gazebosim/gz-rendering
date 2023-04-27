@@ -57,19 +57,15 @@ void buildScene(ScenePtr _scene)
   // create projector
   std::string texture = common::joinPaths(RESOURCE_PATH,
         "stereo_projection_pattern_high_res_red.png");
-         // "blue_texture.png");
-
-   // SceneExt ext(_scene.get());
-   // // ObjectPtr obj = ext.CreateExt("asdf");
-   // auto projector = std::dynamic_pointer_cast<Projector>(
-   //      ext.CreateExt("asdf"));
 
   ProjectorPtr projector = std::dynamic_pointer_cast<Projector>(
       _scene->Extension()->CreateExt("projector"));
   // \todo(iche033) uncomment and use official API in gz-rendering8
   // ProjectorPtr projector = _scene->CreateProjector();
-  projector->SetLocalPosition(0, 0, 4);
-  projector->SetLocalRotation(0, GZ_PI/2.0, 0);
+  projector->SetLocalPosition(-4, 0, 4);
+  projector->SetNearClipPlane(1.0);
+  projector->SetFarClipPlane(10.0);
+  projector->SetLocalRotation(0, 0.6, 0);
   projector->SetTexture(texture);
   projector->SetVisibilityFlags(0x01);
   root->AddChild(projector);
@@ -83,7 +79,6 @@ void buildScene(ScenePtr _scene)
   // create visual representing the projector
   VisualPtr box = _scene->CreateVisual();
   box->AddGeometry(_scene->CreateBox());
-  // box->SetLocalPosition(0, 0, 4);
   box->SetLocalScale(0.1, 0.1, 0.1);
   box->SetMaterial(blue);
   projector->AddChild(box);
@@ -136,16 +131,14 @@ void buildScene(ScenePtr _scene)
   // create sphere visual
   VisualPtr sphere = _scene->CreateVisual();
   sphere->AddGeometry(_scene->CreateSphere());
-  sphere->SetLocalPosition(-1, 0, 1);
+  sphere->SetLocalPosition(3, 0, 1);
   sphere->SetMaterial(green);
   root->AddChild(sphere);
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");
-  camera->SetLocalPosition(-6.0, 0.0, 8.0);
-  // camera->SetLocalPosition(0.0, 0.0, 8.0);
-  camera->SetLocalRotation(0.0, 1.0, 0.0);
-  // camera->SetLocalRotation(0.0, GZ_PI / 2.0, 0.0);
+  camera->SetLocalPosition(-5, 0.0, 5.0);
+  camera->SetLocalRotation(0.0, GZ_PI / 5.0, 0.0);
   camera->SetImageWidth(800);
   camera->SetImageHeight(600);
   camera->SetAspectRatio(1.333);

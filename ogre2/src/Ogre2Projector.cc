@@ -269,12 +269,21 @@ void Ogre2Projector::CreateProjector()
 
   this->dataPtr->decal->setDiffuseTexture(this->dataPtr->textureDiff);
 
+
   // approximate frustum size
   common::Image image(this->textureName);
   const double aspectRatio = image.Width() / image.Height();
   const double vfov = 2.0 * atan(tan(this->hfov.Radian() / 2.0)
       / aspectRatio);
 
+  // ogre2 uses screen space decal. Unfortunately this is different from
+  // ogre 1.x. In ogre 1.x the decal projects out like a camera frustum
+  // but in ogre 2.x the decal is a rectangular volume. See related question in
+  // https://forums.ogre3d.org/viewtopic.php?t=95298
+  // Here we are just computing the rectangular volume of the ogre 2.x decal
+  // based on projector properties. It is essentially a bounding box of the
+  // frustum. \todo(anyone) We should change the implementation to match
+  // ogre 1.x
   const double depth = this->farClip - this->nearClip;
   const double width = 2 * (tan(this->hfov.Radian() / 2) * this->farClip);
   const double height = 2 * (tan(vfov / 2) * this->farClip);
@@ -282,13 +291,6 @@ void Ogre2Projector::CreateProjector()
   this->dataPtr->decalNode->setPosition(
       Ogre::Vector3(this->nearClip + depth * 0.5, 0, 0));
   this->dataPtr->decalNode->setScale(width, depth, height);
-
-  // TODO remove
-   // Ogre::WireAabb *wireAabb = this->scene->OgreSceneManager()->createWireAabb();
-   // wireAabb->track(this->dataPtr->decal);
-
-  //For the SceneManager, any of the textures belonging to the same pool will do!
-  // sceneManager->setDecalsDiffuse(textureDiff);
 }
 
 /////////////////////////////////////////////////
@@ -297,7 +299,6 @@ void Ogre2Projector::SetEnabled(bool _enabled)
   BaseProjector::SetEnabled(_enabled);
   this->SetVisible(_enabled);
 }
-
 
 //////////////////////////////////////////////////
 void Ogre2ProjectorCameraListener::SetVisibilityFlags(uint32_t _flags)

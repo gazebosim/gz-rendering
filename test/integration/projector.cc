@@ -47,8 +47,8 @@ TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
-  // Projector is experimental feature in gz-rendering7 and can only be accessed
-  // by the scene extension API
+  // Projector and can only be accessed by the scene extension API
+  // in gz-rendering7
   if (!scene->Extension())
     return;
 

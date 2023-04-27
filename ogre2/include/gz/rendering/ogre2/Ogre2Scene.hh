@@ -345,6 +345,10 @@ namespace gz
       protected: virtual ParticleEmitterPtr CreateParticleEmitterImpl(
                      unsigned int _id, const std::string &_name) override;
 
+      // Documentation inherited
+      protected: virtual ProjectorPtr CreateProjectorImpl(
+                     unsigned int _id, const std::string &_name) override;
+
       /// \brief Helper function to initialize an ogre2 object
       /// \param[in] _object Ogre2 object that will be initialized
       /// \param[in] _id Unique Id to assign to the object

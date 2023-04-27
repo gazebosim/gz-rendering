@@ -40,6 +40,7 @@
 #include "gz/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "gz/rendering/ogre2/Ogre2Node.hh"
 #include "gz/rendering/ogre2/Ogre2ParticleEmitter.hh"
+#include "gz/rendering/ogre2/Ogre2Projector.hh"
 #include "gz/rendering/ogre2/Ogre2RayQuery.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
@@ -1308,6 +1309,15 @@ ParticleEmitterPtr Ogre2Scene::CreateParticleEmitterImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+ProjectorPtr Ogre2Scene::CreateProjectorImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2ProjectorPtr projector(new Ogre2Projector);
+  bool result = this->InitObject(projector, _id, _name);
+  return (result) ? projector : nullptr;
+}
+
+//////////////////////////////////////////////////
 bool Ogre2Scene::InitObject(Ogre2ObjectPtr _object, unsigned int _id,
     const std::string &_name)
 {
@@ -1355,7 +1365,7 @@ void Ogre2Scene::CreateContext()
   // this is required for non-shadow-casting point lights and
   // spot lights to work
   this->ogreSceneManager->setForwardClustered(
-    true, 16, 8, 24, 96, 0, 0, 1, 500);
+    true, 16, 8, 24, 96, 4, 0, 1, 500);
 }
 
 //////////////////////////////////////////////////

@@ -38,6 +38,7 @@
 #include "gz/rendering/GpuRays.hh"
 #include "gz/rendering/Grid.hh"
 #include "gz/rendering/ParticleEmitter.hh"
+#include "gz/rendering/Projector.hh"
 #include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/RenderTarget.hh"
 #include "gz/rendering/Text.hh"
@@ -1368,6 +1369,36 @@ ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+ProjectorPtr BaseScene::CreateProjector()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateProjector(objId);
+}
+
+//////////////////////////////////////////////////
+ProjectorPtr BaseScene::CreateProjector(unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "Projector");
+  return this->CreateProjector(_id, objName);
+}
+
+//////////////////////////////////////////////////
+ProjectorPtr BaseScene::CreateProjector(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateProjector(objId, _name);
+}
+
+//////////////////////////////////////////////////
+ProjectorPtr BaseScene::CreateProjector(unsigned int _id,
+    const std::string &_name)
+{
+  ProjectorPtr projector = this->CreateProjectorImpl(_id, _name);
+  bool result = this->RegisterVisual(projector);
+  return (result) ? projector : nullptr;
+}
+
+//////////////////////////////////////////////////
 void BaseScene::SetSkyEnabled(bool _enabled)  // NOLINT(readability/casting)
 {
   // no op, let derived class implement this.
@@ -1581,3 +1612,21 @@ void BaseScene::CreateMaterials()
   material->SetReceiveShadows(true);
   material->SetLightingEnabled(true);
 }
+
+/*
+//////////////////////////////////////////////////
+BaseSceneExt::BaseSceneExt(Scene *_scene)
+{
+  this->scene = _scene;
+}
+
+//////////////////////////////////////////////////
+ObjectPtr BaseScene::CreateExt(const std::string &_type)
+{
+  BaseScene *baseScene = dynamic_cast<BaseScene *>(this->scene);
+  if (_type == "projector")
+  {
+    return std::dynamic_pointer_cast<Object>(baseScene->CreateProjector());
+  }
+}
+*/

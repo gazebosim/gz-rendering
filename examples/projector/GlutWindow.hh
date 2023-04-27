@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Open Source Robotics Foundation
+ * Copyright (C) 2017 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,16 @@
  * limitations under the License.
  *
  */
+#ifndef GZ_RENDERING_EXAMPLES_VIEW_CONTROL_GLUTWINDOW_HH_
+#define GZ_RENDERING_EXAMPLES_VIEW_CONTROL_GLUTWINDOW_HH_
 
-#include "gz/rendering/Scene.hh"
+#include <vector>
+#include "gz/rendering/RenderTypes.hh"
 
-using namespace gz;
-using namespace rendering;
+namespace ir = gz::rendering;
 
-// added as static var here for ABI compatibility
-//static std::unordered_map<const Scene *, SceneExt *> g_sceneExtMap;
+/// \brief Run the demo and render the scene from the cameras
+/// \param[in] _cameras Cameras in the scene
+void run(std::vector<gz::rendering::CameraPtr> _cameras);
 
-Scene::~Scene() = default;
-
-/*SceneExt *Scene::Extension() const
-{
-  auto it = g_sceneExtMap.find(this);
-  if (it != g_sceneExtMap.end())
-    return it->second;
-  return nullptr;
-}
-
-void Scene::SetExtension(SceneExt *_ext)
-{
-  g_sceneExtMap[this] = _ext;
-}
-*/
+#endif

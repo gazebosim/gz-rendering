@@ -205,6 +205,11 @@ namespace gz
       protected: virtual ParticleEmitterPtr CreateParticleEmitterImpl(
                      unsigned int _id, const std::string &_name) override;
 
+      // Documentation inherited
+      // \todo(iche033) make this virtual in gz-rendering8
+      protected: ProjectorPtr CreateProjectorImpl(
+                     unsigned int _id, const std::string &_name);
+
       protected: virtual bool InitObject(OgreObjectPtr _object,
                      unsigned int _id, const std::string &_name);
 
@@ -219,6 +224,8 @@ namespace gz
       /// \brief Remove internal material cache for a specific material
       /// \param[in] _name Name of the template material to remove.
       public: void ClearMaterialsCache(const std::string &_name);
+
+      protected: unsigned int CreateObjectId() ;
 
       private: void CreateContext();
 
@@ -247,6 +254,16 @@ namespace gz
       protected: Ogre::SceneManager *ogreSceneManager;
 
       private: friend class OgreRenderEngine;
+      private: friend class OgreSceneExt;
+    };
+
+    class OgreSceneExt : public SceneExt
+    {
+      /// \brief Constructor
+      public: OgreSceneExt(Scene *_scene);
+
+      // Documentation inherited
+      public: virtual ObjectPtr CreateExt(const std::string &_type);
     };
     }
   }

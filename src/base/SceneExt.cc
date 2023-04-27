@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Open Source Robotics Foundation
+ * Copyright (C) 2023 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,26 +15,22 @@
  *
  */
 
-#include "gz/rendering/Scene.hh"
+/*
+#include "gz/rendering/base/SceneExt.hh"
 
 using namespace gz;
 using namespace rendering;
 
-// added as static var here for ABI compatibility
-//static std::unordered_map<const Scene *, SceneExt *> g_sceneExtMap;
-
-Scene::~Scene() = default;
-
-/*SceneExt *Scene::Extension() const
+SceneExt::SceneExt(Scene *_scene)
 {
-  auto it = g_sceneExtMap.find(this);
-  if (it != g_sceneExtMap.end())
-    return it->second;
-  return nullptr;
+  this->scene = _scene;
 }
 
-void Scene::SetExtension(SceneExt *_ext)
+SceneExt::~SceneExt() = default;
+
+ObjectPtr SceneExt::CreateExt(const std::string & _type)
 {
-  g_sceneExtMap[this] = _ext;
+  return ObjectPtr();
 }
 */
+

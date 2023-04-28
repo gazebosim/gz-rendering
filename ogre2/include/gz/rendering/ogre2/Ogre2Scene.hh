@@ -465,7 +465,8 @@ namespace gz
       public: Ogre2SceneExt(Scene *_scene);
 
       // Documentation inherited
-      public: virtual ObjectPtr CreateExt(const std::string &_type) override;
+      public: virtual ObjectPtr CreateExt(const std::string &_type,
+          const std::string &_name = "") override;
     };
 
     }

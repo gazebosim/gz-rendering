@@ -769,16 +769,21 @@ OgreSceneExt::OgreSceneExt(Scene *_scene)
 }
 
 //////////////////////////////////////////////////
-ObjectPtr OgreSceneExt::CreateExt(const std::string &_type)
+ObjectPtr OgreSceneExt::CreateExt(const std::string &_type,
+      const std::string &_name)
 {
   if (_type == "projector")
   {
     OgreScene *ogreScene = dynamic_cast<OgreScene *>(this->scene);
     unsigned int objId = ogreScene->CreateObjectId();
-    std::stringstream ss;
-    ss << ogreScene->Name() << "::" <<  "Projector";
-    ss << "(" << std::to_string(objId) << ")";
-    std::string objName = ss.str();
+    std::string objName = _name;
+    if (objName.empty())
+    {
+      std::stringstream ss;
+      ss << ogreScene->Name() << "::" <<  "Projector";
+      ss << "(" << std::to_string(objId) << ")";
+      objName = ss.str();
+    }
     ProjectorPtr projector = ogreScene->CreateProjectorImpl(
         objId, objName);
     bool result = ogreScene->Visuals()->Add(projector);

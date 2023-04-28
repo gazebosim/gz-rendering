@@ -51,9 +51,13 @@ class LoadUnloadTest : public testing::Test
 TEST_F(LoadUnloadTest, GZ_UTILS_TEST_DISABLED_ON_MAC(Thread))
 {
   // verify that we can load and unload the render engine in a thread
-  std::thread renderThread = std::thread(&LoadUnloadTest::RenderThread, this);
-  EXPECT_TRUE(renderThread.joinable());
-  EXPECT_NO_THROW(renderThread.join());
+  for (unsigned int i = 0; i < 2u; ++i)
+  {
+    std::thread renderThread = std::thread(&LoadUnloadTest::RenderThread, this);
+    EXPECT_TRUE(renderThread.joinable());
+    EXPECT_NO_THROW(renderThread.join());
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
 }
 
 

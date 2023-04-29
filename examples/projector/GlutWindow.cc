@@ -32,8 +32,11 @@
 #include <mutex>
 
 #include <gz/common/Console.hh>
+#include <gz/math/Quaternion.hh>
+#include <gz/math/Vector3.hh>
 #include <gz/rendering/Camera.hh>
 #include <gz/rendering/Image.hh>
+#include <gz/rendering/Projector.hh>
 #include <gz/rendering/RayQuery.hh>
 #include <gz/rendering/Scene.hh>
 #include <gz/rendering/OrbitViewController.hh>
@@ -54,6 +57,9 @@ unsigned int g_cameraIndex = 0;
 ir::ImagePtr g_image;
 
 bool g_initContext = false;
+
+double g_pitch = 0.001;
+bool g_moveProjector = true;
 
 #if __APPLE__
   CGLContextObj g_context;
@@ -223,6 +229,21 @@ void handleMouse()
   }
 }
 
+//////////////////////////////////////////////////
+void moveProjector()
+{
+  ir::CameraPtr camera = g_cameras[g_cameraIndex];
+  ir::ProjectorPtr projector =
+      std::dynamic_pointer_cast<ir::Projector>(
+      camera->Scene()->VisualByName("projector"));
+
+  gz::math::Quaterniond rot = projector->LocalRotation();
+  gz::math::Vector3d euler = rot.Euler();
+  if (euler.Y() <= 0u || euler.Y() > (GZ_PI / 3.0))
+    g_pitch = -g_pitch;
+  gz::math::Quaterniond pitchRot(0, g_pitch, 0);
+  projector->SetLocalRotation(pitchRot * rot);
+}
 
 //////////////////////////////////////////////////
 void displayCB()
@@ -236,6 +257,9 @@ void displayCB()
     glXMakeCurrent(g_display, g_drawable, g_context);
   }
 #endif
+
+  if (g_moveProjector)
+    moveProjector();
 
   g_cameras[g_cameraIndex]->Capture(*g_image);
   handleMouse();
@@ -275,6 +299,10 @@ void keyboardCB(unsigned char _key, int, int)
   {
     g_cameraIndex = (g_cameraIndex + 1) % g_cameras.size();
   }
+  else if (_key == 'p')
+  {
+    g_moveProjector = !g_moveProjector;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -306,10 +334,11 @@ void initContext()
 //////////////////////////////////////////////////
 void printUsage()
 {
-  std::cout << "===============================" << std::endl;
-  std::cout << "  TAB - Switch render engines  " << std::endl;
-  std::cout << "  ESC - Exit                   " << std::endl;
-  std::cout << "===============================" << std::endl;
+  std::cout << "=================================" << std::endl;
+  std::cout << "  TAB - Switch render engines    " << std::endl;
+  std::cout << "  ESC - Exit                     " << std::endl;
+  std::cout << "  P   - Toggle projector motion  " << std::endl;
+  std::cout << "=================================" << std::endl;
 }
 
 //////////////////////////////////////////////////

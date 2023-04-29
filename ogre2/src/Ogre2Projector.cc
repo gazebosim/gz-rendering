@@ -90,7 +90,7 @@ class gz::rendering::Ogre2Projector::Implementation
   /// \brief A map of cameras (<Camera ptr, name>) that the listener has been
   /// added to
   public: std::unordered_map<Ogre::Camera *, Ogre::IdString>
-      cameraVisibilityCheck;
+      camerasWithListener;
 
   /// \brief Listener for togging projector visibility
   /// We are using a custom listener because Ogre::Decal's setVisibilityFlags
@@ -112,13 +112,13 @@ Ogre2Projector::~Ogre2Projector()
   if (!this->scene->IsInitialized())
     return;
 
-  for (auto &ogreCamIt : this->dataPtr->cameraVisibilityCheck)
+  for (auto &ogreCamIt : this->dataPtr->camerasWithListener)
   {
     Ogre::IdString camName = ogreCamIt.second;
     auto ogreCam = this->scene->OgreSceneManager()->findCameraNoThrow(camName);
       ogreCam->removeListener(this->dataPtr->listener.get());
   }
-  this->dataPtr->cameraVisibilityCheck.clear();
+  this->dataPtr->camerasWithListener.clear();
 
   if (this->dataPtr->textureDiff)
   {
@@ -164,7 +164,7 @@ void Ogre2Projector::UpdateCameraListener()
   {
     this->dataPtr->decalNode->setVisible(true);
 
-    for (auto &ogreCamIt : this->dataPtr->cameraVisibilityCheck)
+    for (auto &ogreCamIt : this->dataPtr->camerasWithListener)
     {
       Ogre::IdString camName = ogreCamIt.second;
       // instead of getting the camera pointer through ogreCamIt.first,
@@ -174,7 +174,7 @@ void Ogre2Projector::UpdateCameraListener()
       auto ogreCam = this->scene->OgreSceneManager()->findCameraNoThrow(camName);
         ogreCam->removeListener(this->dataPtr->listener.get());
     }
-    this->dataPtr->cameraVisibilityCheck.clear();
+    this->dataPtr->camerasWithListener.clear();
     return;
   }
 
@@ -195,11 +195,11 @@ void Ogre2Projector::UpdateCameraListener()
     if (camera)
     {
       auto ogreCam = camera->OgreCamera();
-      if (this->dataPtr->cameraVisibilityCheck.find(ogreCam)
-          == this->dataPtr->cameraVisibilityCheck.end())
+      if (this->dataPtr->camerasWithListener.find(ogreCam)
+          == this->dataPtr->camerasWithListener.end())
       {
         ogreCam->addListener(this->dataPtr->listener.get());
-        this->dataPtr->cameraVisibilityCheck[ogreCam] = ogreCam->getName();
+        this->dataPtr->camerasWithListener[ogreCam] = ogreCam->getName();
       }
     }
     else
@@ -211,11 +211,11 @@ void Ogre2Projector::UpdateCameraListener()
       if (depthCamera)
       {
         auto ogreCam = depthCamera->OgreCamera();
-        if (this->dataPtr->cameraVisibilityCheck.find(ogreCam)
-            == this->dataPtr->cameraVisibilityCheck.end())
+        if (this->dataPtr->camerasWithListener.find(ogreCam)
+            == this->dataPtr->camerasWithListener.end())
         {
           ogreCam->addListener(this->dataPtr->listener.get());
-          this->dataPtr->cameraVisibilityCheck[ogreCam] = ogreCam->getName();
+          this->dataPtr->camerasWithListener[ogreCam] = ogreCam->getName();
         }
       }
     }

@@ -59,7 +59,7 @@ void buildScene(ScenePtr _scene)
         "stereo_projection_pattern_high_res_red.png");
 
   ProjectorPtr projector = std::dynamic_pointer_cast<Projector>(
-      _scene->Extension()->CreateExt("projector"));
+      _scene->Extension()->CreateExt("projector", "projector"));
   // \todo(iche033) uncomment and use official API in gz-rendering8
   // ProjectorPtr projector = _scene->CreateProjector();
   projector->SetLocalPosition(-4, 0, 4);

@@ -143,12 +143,10 @@ TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
 
   // verify that cameraA only sees red texture from projector A and
   // cameraB only sees texture from projector B
-  // \todo(anyone) ogre requires rendering a few frames to get correct output
-  // need to investigate and make sure we can generate correct output by
-  // rendering only once
+  // ogre requires rendering a couple of frames to get correct output
   unsigned int iterations = 1u;
   if (engine->Name() == "ogre")
-    iterations = 3u;
+    iterations = 2u;
   for (unsigned int i = 0; i < iterations; ++i)
   {
     cameraA->Capture(imageA);

@@ -135,7 +135,6 @@ namespace gz
 using namespace gz;
 using namespace rendering;
 
-
 //////////////////////////////////////////////////
 OgreScene::OgreScene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name),

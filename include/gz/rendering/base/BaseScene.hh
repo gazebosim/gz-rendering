@@ -918,14 +918,6 @@ namespace gz
       private: NodeStorePtr nodes;
       GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
-
-/*
-    class GZ_RENDERING_VISIBLE BaseSceneExt : SceneExt
-    {
-      public: BaseSceneExt(Scene *_scene);
-      public: virtual ObjectPtr CreateExt(const std::string &_type) override;
-    };
-*/
     }
   }
 }

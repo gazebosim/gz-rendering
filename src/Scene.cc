@@ -20,6 +20,7 @@
 using namespace gz;
 using namespace rendering;
 
+/// \brief Keep track of scene extensions
 // added as static var here for ABI compatibility
 static std::unordered_map<const Scene *, SceneExt *> g_sceneExtMap;
 

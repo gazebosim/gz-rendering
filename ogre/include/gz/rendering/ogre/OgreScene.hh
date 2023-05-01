@@ -228,7 +228,6 @@ namespace gz
       /// \param[in] _name Name of the template material to remove.
       public: void ClearMaterialsCache(const std::string &_name);
 
-
       private: void CreateContext();
 
       private: void CreateRootVisual();

@@ -30,6 +30,8 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Scene Extension class. Provides API extension to the Scene
+    /// class without breaking ABI.
     class GZ_RENDERING_VISIBLE SceneExt
     {
       /// \brief Constructor

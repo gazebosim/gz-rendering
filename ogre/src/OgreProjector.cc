@@ -134,11 +134,11 @@ namespace gz
       private: virtual void postRenderTargetUpdate(
                    const Ogre::RenderTargetEvent &_evt);
 
+      // Documentation inherited
       public: virtual Ogre::Technique *handleSchemeNotFound(
                   uint16_t _schemeIndex, const Ogre::String &_schemeName,
                   Ogre::Material *_originalMaterial, uint16_t _lodIndex,
                   const Ogre::Renderable *_rend);
-
 
       /// \brief Enabled state of projector listener
       public: bool enabled{false};
@@ -484,8 +484,6 @@ void OgreProjectorListener::RemoveDecalFromInvisibleMaterials(
 void OgreProjectorListener::AddDecalToMaterials(
     std::unordered_set<std::string> &_matSet)
 {
-  // _matSet.remove("");
-  // _matSet.unique();
   this->RemoveDecalFromInvisibleMaterials(_matSet);
 
   if (!_matSet.empty())

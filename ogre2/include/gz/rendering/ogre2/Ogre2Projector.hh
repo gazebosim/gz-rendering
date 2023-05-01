@@ -32,7 +32,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
-    /// \brief Projects a material onto a surface
+    /// \brief Ogre 2.x implementation of a Projector class.
     class GZ_RENDERING_OGRE_VISIBLE Ogre2Projector :
       public BaseProjector<Ogre2Visual>
     {

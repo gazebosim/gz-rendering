@@ -43,7 +43,7 @@ class Ogre2ProjectorCameraListener: public Ogre::Camera::Listener
 {
   /// \brief Constructor
   /// \param[in] _node Pointer to the node that holds the decal (projector)
-  public: Ogre2ProjectorCameraListener(Ogre::SceneNode *_node);
+  public: Ogre2ProjectorCameraListener(Ogre::Decal *_decal);
 
   //// \brief Set the visibility flags for this projector
   /// \param[in] _flags Visibility flags to set
@@ -64,6 +64,9 @@ class Ogre2ProjectorCameraListener: public Ogre::Camera::Listener
 
   /// \brief Pointer to the decal ogre scene node
   public: Ogre::SceneNode *decalNode{nullptr};
+
+  /// \brief Decal - Texture projected onto a surface
+  public: Ogre::Decal *decal{nullptr};
 };
 }
 }
@@ -134,6 +137,11 @@ Ogre2Projector::~Ogre2Projector()
     this->scene->OgreSceneManager()->destroyDecal(this->dataPtr->decal);
     this->dataPtr->decal = nullptr;
   }
+  if (this->dataPtr->decalNode)
+  {
+    this->scene->OgreSceneManager()->destroySceneNode(this->dataPtr->decalNode);
+    this->dataPtr->decalNode = nullptr;
+  }
 }
 
 /////////////////////////////////////////////////
@@ -147,12 +155,6 @@ void Ogre2Projector::PreRender()
   }
 
   this->UpdateCameraListener();
-
-  if (this->dataPtr->textureDiff)
-  {
-    this->scene->OgreSceneManager()->setDecalsDiffuse(
-        this->dataPtr->textureDiff);
-  }
 }
 
 /////////////////////////////////////////////////
@@ -182,7 +184,7 @@ void Ogre2Projector::UpdateCameraListener()
   if (!this->dataPtr->listener)
   {
     this->dataPtr->listener = std::make_unique<Ogre2ProjectorCameraListener>(
-        this->dataPtr->decalNode);
+        this->dataPtr->decal);
   }
   this->dataPtr->listener->SetVisibilityFlags(this->VisibilityFlags());
   this->dataPtr->decalNode->setVisible(false);
@@ -309,9 +311,10 @@ void Ogre2ProjectorCameraListener::SetVisibilityFlags(uint32_t _flags)
 
 //////////////////////////////////////////////////
 Ogre2ProjectorCameraListener::Ogre2ProjectorCameraListener(
-  Ogre::SceneNode *_node)
+  Ogre::Decal *_decal)
 {
-  this->decalNode = _node;
+  this->decal = _decal;
+  this->decalNode = _decal->getParentSceneNode();;
 }
 
 //////////////////////////////////////////////////
@@ -319,9 +322,11 @@ void Ogre2ProjectorCameraListener::cameraPreRenderScene(
     Ogre::Camera *_cam)
 {
   uint32_t mask = _cam->getLastViewport()->getVisibilityMask();
-  if (this->visibilityFlags & mask && this->decalNode)
+  if (this->visibilityFlags & mask && this->decalNode && this->decal)
   {
     this->decalNode->setVisible(true);
+    this->decalNode->getCreator()->setDecalsDiffuse(
+        this->decal->getDiffuseTexture());
   }
 }
 

@@ -17,6 +17,8 @@
 #ifndef GZ_RENDERING_SCENEEXT_HH_
 #define GZ_RENDERING_SCENEEXT_HH_
 
+#include <string>
+
 #include "gz/rendering/config.hh"
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Scene.hh"

@@ -171,8 +171,9 @@ void Ogre2Projector::UpdateCameraListener()
       // find camera pointer again to make sure the camera still exists
       // because there is a chance that  we are holding onto a dangling pointer
       // if that camera was deleted already
-      auto ogreCam = this->scene->OgreSceneManager()->findCameraNoThrow(camName);
-        ogreCam->removeListener(this->dataPtr->listener.get());
+      auto ogreCam =
+          this->scene->OgreSceneManager()->findCameraNoThrow(camName);
+      ogreCam->removeListener(this->dataPtr->listener.get());
     }
     this->dataPtr->camerasWithListener.clear();
     return;
@@ -265,10 +266,10 @@ void Ogre2Projector::CreateProjector()
       Ogre::CommonTextureTypes::Diffuse,
       Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
       decalDiffuseId);
-  this->dataPtr->textureDiff->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+  this->dataPtr->textureDiff->scheduleTransitionTo(
+      Ogre::GpuResidency::Resident);
 
   this->dataPtr->decal->setDiffuseTexture(this->dataPtr->textureDiff);
-
 
   // approximate frustum size
   common::Image image(this->textureName);

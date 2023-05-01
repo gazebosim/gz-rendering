@@ -66,6 +66,9 @@ namespace gz
                         double _far = 10,
                         const math::Angle &_hfov = math::Angle(0.785398163));
 
+      /// \brief Destroy the projector listener by cleaning up resources
+      public: void Destroy();
+
       /// \brief Set whether to enable the projector
       /// \param[in] _enabled True to enable projector, false to disable
       public: void SetEnabled(bool _enabled);
@@ -222,7 +225,10 @@ OgreProjector::OgreProjector()
 /////////////////////////////////////////////////
 OgreProjector::~OgreProjector()
 {
+  if (!this->Scene()->IsInitialized())
+    return;
   this->SetEnabled(false);
+  this->dataPtr->projector.Destroy();
 }
 
 /////////////////////////////////////////////////
@@ -264,30 +270,7 @@ OgreProjectorListener::OgreProjectorListener()
 /////////////////////////////////////////////////
 OgreProjectorListener::~OgreProjectorListener()
 {
-  this->RemoveDecalFromMaterials();
-
-  if (this->filterNode)
-  {
-    this->filterNode->detachObject(this->filterFrustum.get());
-    this->node->removeAndDestroyChild(this->filterNodeName);
-    this->filterNode = nullptr;
-  }
-
-  if (this->node)
-  {
-    this->node->detachObject(this->frustum.get());
-    this->sceneMgr->destroySceneNode(this->node);
-    this->node = nullptr;
-  }
-
-  this->frustum.reset();
-  this->filterFrustum.reset();
-
-  if (this->projectorQuery)
-  {
-    this->sceneMgr->destroyQuery(this->projectorQuery);
-    this->projectorQuery = nullptr;
-  }
+  this->Destroy();
 }
 
 /////////////////////////////////////////////////
@@ -330,6 +313,39 @@ void OgreProjectorListener::Init(Ogre::SceneNode *_parent,
   this->filterFrustum->setFOVy(Ogre::Radian(vfov));
 
   this->initialized = true;
+}
+
+/////////////////////////////////////////////////
+void OgreProjectorListener::Destroy()
+{
+  this->RemoveDecalFromMaterials();
+
+  if (this->filterNode)
+  {
+    this->filterNode->detachObject(this->filterFrustum.get());
+    this->node->removeAndDestroyChild(this->filterNodeName);
+    this->filterNode = nullptr;
+  }
+
+  if (this->node)
+  {
+    this->node->detachObject(this->frustum.get());
+    this->sceneMgr->destroySceneNode(this->node);
+    this->node = nullptr;
+  }
+
+  this->frustum.reset();
+  this->filterFrustum.reset();
+
+  if (this->projectorQuery)
+  {
+    this->sceneMgr->destroyQuery(this->projectorQuery);
+    this->projectorQuery = nullptr;
+  }
+
+  this->visibleMaterials.clear();
+  this->matClones.clear();
+  this->initialized = false;
 }
 
 /////////////////////////////////////////////////
@@ -428,31 +444,6 @@ std::unordered_set<std::string> OgreProjectorListener::FindVisibleMaterials()
 /////////////////////////////////////////////////
 void OgreProjectorListener::AddDecalToVisibleMaterials()
 {
-/*  std::list<std::string> newVisibleMaterials;
-  Ogre::PlaneBoundedVolumeList volumeList;
-
-  volumeList.push_back(this->frustum->getPlaneBoundedVolume());
-
-  this->projectorQuery->setVolumes(volumeList);
-  Ogre::SceneQueryResult result = this->projectorQuery->execute();
-
-  // Find all visible materials
-  Ogre::SceneQueryResultMovableList::iterator it;
-  for (it = result.movables.begin(); it != result.movables.end(); ++it)
-  {
-    Ogre::Entity *entity = dynamic_cast<Ogre::Entity*>(*it);
-    if (entity && !entity->getUserObjectBindings().getUserAny().isEmpty() &&
-        entity->getUserObjectBindings().getUserAny().getType() ==
-        typeid(unsigned int))
-    {
-      for (unsigned int i = 0; i < entity->getNumSubEntities(); i++)
-      {
-        newVisibleMaterials.push_back(
-          entity->getSubEntity(i)->getMaterialName());
-      }
-    }
-  }
-*/
   auto newVisibleMaterials = std::move(this->FindVisibleMaterials());
 
   this->AddDecalToMaterials(newVisibleMaterials);

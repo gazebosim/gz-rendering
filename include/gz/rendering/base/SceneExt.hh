@@ -47,9 +47,11 @@ namespace gz
       /// \brief Generic create function
       /// \param[in] _type Type of object to create
       /// \param[in] _name Name of object
-      public: virtual ObjectPtr CreateExt(const std::string & /*_type*/,
-          const std::string & /*_name*/ = "")
+      public: virtual ObjectPtr CreateExt(const std::string & _type,
+          const std::string & _name = "")
       {
+        (void)_type;
+        (void)_name;
         return ObjectPtr();
       }
 

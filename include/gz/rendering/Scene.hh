@@ -1175,6 +1175,7 @@ namespace gz
       public: virtual ParticleEmitterPtr CreateParticleEmitter(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \cond PRIVATE
       /// \brief Create new projector. A unique ID and name will
       /// automatically be assigned to the visual.
       /// \return The created projector
@@ -1207,6 +1208,7 @@ namespace gz
       /// \todo(iche033) uncomment in gz-rendering8
       /// public: virtual ProjectorPtr CreateProjector(
       ///             unsigned int _id, const std::string &_name) = 0;
+      /// \endcond
 
       /// \brief Enable sky in the scene.
       /// \param[in] _enabled True to enable sky

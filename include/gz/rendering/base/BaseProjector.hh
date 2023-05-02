@@ -57,7 +57,7 @@ namespace gz
       public: virtual void SetNearClipPlane(double _near) override;
 
       // Documentation inherited
-      public: virtual math::Angle HFOV() const;
+      public: virtual math::Angle HFOV() const override;
 
       // Documentation inherited
       public: virtual void SetHFOV(const math::Angle &_hfov) override;

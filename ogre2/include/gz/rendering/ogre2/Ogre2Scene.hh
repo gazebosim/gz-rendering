@@ -403,7 +403,7 @@ namespace gz
       protected: virtual MaterialMapPtr Materials() const override;
 
       // Documentation inherited
-      protected: unsigned int CreateObjectId();
+      protected: unsigned int CreateObjectId() override;
 
       /// \brief Create the GL context
       private: void CreateContext();

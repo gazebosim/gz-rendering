@@ -222,7 +222,7 @@ namespace gz
       protected: virtual MaterialMapPtr Materials() const override;
 
       // Documentation inherited
-      protected: unsigned int CreateObjectId();
+      protected: unsigned int CreateObjectId() override;
 
       /// \brief Remove internal material cache for a specific material
       /// \param[in] _name Name of the template material to remove.

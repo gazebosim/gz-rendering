@@ -31,8 +31,8 @@ const char *PixelUtil::names[PF_COUNT] =
       "B8G8R8",
       "BAYER_RGGB8",
       "BAYER_BGGR8",
-      "BAYER_GBGR8",
-      "BAYER_GRGB8",
+      "BAYER_GBRG8",
+      "BAYER_GRBG8",
       "FLOAT32_R",
       "FLOAT32_RGBA",
       "FLOAT32_RGB",
@@ -52,13 +52,13 @@ const unsigned char PixelUtil::channelCounts[PF_COUNT] =
       // B8G8R8
       3,
       // BAYER_RGGB8
-      4,
+      1,
       // BAYER_BGGR8
-      4,
-      // BAYER_GBGR8
-      4,
-      // BAYER_GRGB8
-      4,
+      1,
+      // BAYER_GBRG8
+      1,
+      // BAYER_GRBG8
+      1,
       // PF_FLOAT32_R
       1,
       // PF_FLOAT32_RGBA
@@ -86,9 +86,9 @@ const unsigned char PixelUtil::channelByteCounts[PF_COUNT] =
       1,
       // BAYER_BGGR8
       1,
-      // BAYER_GBGR8
+      // BAYER_GBRG8
       1,
-      // BAYER_GRGB8
+      // BAYER_GRBG8
       1,
       // PF_FLOAT32_R
       4,

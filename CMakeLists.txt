@@ -63,11 +63,17 @@ if ((NOT ${CMAKE_VERSION} VERSION_LESS 3.11) AND (NOT OpenGL_GL_PREFERENCE))
   set(OpenGL_GL_PREFERENCE "GLVND")
 endif()
 
-gz_find_package(OpenGL REQUIRED
-  COMPONENTS OpenGL
-  OPTIONAL_COMPONENTS EGL
-  REQUIRED_BY ogre ogre2
-  PKGCONFIG gl)
+if (APPLE)
+  gz_find_package(OpenGL
+    REQUIRED_BY ogre ogre2
+    PKGCONFIG gl)
+else()
+  gz_find_package(OpenGL REQUIRED
+    COMPONENTS OpenGL
+    OPTIONAL_COMPONENTS EGL
+    REQUIRED_BY ogre ogre2
+    PKGCONFIG gl)
+endif()
 
 if (OpenGL_FOUND)
   set(HAVE_OPENGL TRUE)

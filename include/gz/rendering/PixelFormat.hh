@@ -43,10 +43,10 @@ namespace gz
       PF_BAYER_RGGB8  = 4,
       /// < Bayer BGGR, 1-byte per channel
       PF_BAYER_BGGR8  = 5,
-      /// < Bayer GBGR, 1-byte per channel
-      PF_BAYER_GBGR8  = 6,
-      /// < Bayer GRGB, 1-byte per channel
-      PF_BAYER_GRGB8  = 7,
+      /// < Bayer GBRG, 1-byte per channel
+      PF_BAYER_GBRG8  = 6,
+      /// < Bayer GRBG, 1-byte per channel
+      PF_BAYER_GRBG8  = 7,
       // Float32 format one channel
       PF_FLOAT32_R    = 8,
       // Float32 format and RGB

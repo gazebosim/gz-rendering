@@ -28,12 +28,14 @@ inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 std::string getResourcePath()
 {
-  return gz::common::joinPaths(getInstallPrefix(), GZ_RENDERING_RELATIVE_RESOURCE_PATH);
+  return gz::common::joinPaths(
+      getInstallPrefix(), GZ_RENDERING_RELATIVE_RESOURCE_PATH);
 }
 
 std::string getEngineInstallDir()
 {
-  return gz::common::joinPaths(getInstallPrefix(), GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR);
+  return gz::common::joinPaths(
+      getInstallPrefix(), GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR);
 }
 
 }

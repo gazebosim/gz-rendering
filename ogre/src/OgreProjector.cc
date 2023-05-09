@@ -580,7 +580,7 @@ void OgreProjector::UpdateCameraListener()
       Ogre::String camName = ogreCamIt.second;
       // instead of getting the camera pointer through ogreCamIt.first,
       // find camera pointer again to make sure the camera still exists
-      // because there is a chance that  we are holding onto a dangling pointer
+      // because there is a chance that we are holding onto a dangling pointer
       // if that camera was deleted already
       auto ogreCam = this->scene->OgreSceneManager()->getCamera(camName);
           ogreCam->getViewport()->getTarget()->removeListener(

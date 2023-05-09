@@ -42,7 +42,7 @@ inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 class Ogre2ProjectorCameraListener: public Ogre::Camera::Listener
 {
   /// \brief Constructor
-  /// \param[in] _node Pointer to the node that holds the decal (projector)
+  /// \param[in] _decal Pointer to the ogre decal (projected texture)
   public: Ogre2ProjectorCameraListener(Ogre::Decal *_decal);
 
   //// \brief Set the visibility flags for this projector
@@ -171,7 +171,7 @@ void Ogre2Projector::UpdateCameraListener()
       Ogre::IdString camName = ogreCamIt.second;
       // instead of getting the camera pointer through ogreCamIt.first,
       // find camera pointer again to make sure the camera still exists
-      // because there is a chance that  we are holding onto a dangling pointer
+      // because there is a chance that we are holding onto a dangling pointer
       // if that camera was deleted already
       auto ogreCam =
           this->scene->OgreSceneManager()->findCameraNoThrow(camName);

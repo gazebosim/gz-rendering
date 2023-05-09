@@ -36,10 +36,10 @@
 #include <gz/math/Vector3.hh>
 #include <gz/rendering/Camera.hh>
 #include <gz/rendering/Image.hh>
+#include <gz/rendering/OrbitViewController.hh>
 #include <gz/rendering/Projector.hh>
 #include <gz/rendering/RayQuery.hh>
 #include <gz/rendering/Scene.hh>
-#include <gz/rendering/OrbitViewController.hh>
 
 #include "GlutWindow.hh"
 

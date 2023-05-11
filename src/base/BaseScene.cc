@@ -1613,21 +1613,3 @@ void BaseScene::CreateMaterials()
   material->SetReceiveShadows(true);
   material->SetLightingEnabled(true);
 }
-
-/*
-//////////////////////////////////////////////////
-BaseSceneExt::BaseSceneExt(Scene *_scene)
-{
-  this->scene = _scene;
-}
-
-//////////////////////////////////////////////////
-ObjectPtr BaseScene::CreateExt(const std::string &_type)
-{
-  BaseScene *baseScene = dynamic_cast<BaseScene *>(this->scene);
-  if (_type == "projector")
-  {
-    return std::dynamic_pointer_cast<Object>(baseScene->CreateProjector());
-  }
-}
-*/

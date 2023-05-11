@@ -1535,6 +1535,9 @@ void Ogre2Material::SetFragmentShader(const std::string &_path)
 
   auto mat = this->Material();
   auto pass = mat->getTechnique(0u)->getPass(0);
+  Ogre::HlmsBlendblock block;
+  block.setBlendType(Ogre::SBT_TRANSPARENT_ALPHA);
+  pass->setBlendblock(block);
   pass->setFragmentProgram(fragmentShader->getName());
   mat->compile();
   mat->load();

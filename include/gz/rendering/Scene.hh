@@ -43,7 +43,6 @@ namespace gz
     //
     class RenderEngine;
     class SceneExt;
-//    static std::unordered_map<const Scene *, SceneExt *> g_sceneExtMap;
 
     /// \class Scene Scene.hh gz/rendering/Scene.hh
     /// \brief Manages a single scene-graph. This class updates scene-wide

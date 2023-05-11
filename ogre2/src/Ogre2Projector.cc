@@ -115,7 +115,7 @@ Ogre2Projector::~Ogre2Projector()
   if (!this->scene->IsInitialized())
     return;
 
-  for (auto &ogreCamIt : this->dataPtr->camerasWithListener)
+  for (const auto &ogreCamIt : this->dataPtr->camerasWithListener)
   {
     Ogre::IdString camName = ogreCamIt.second;
     auto ogreCam = this->scene->OgreSceneManager()->findCameraNoThrow(camName);

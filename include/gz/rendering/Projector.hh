@@ -42,15 +42,15 @@ namespace gz
       /// \brief Destructor
       public: virtual ~Projector();
 
-      /// \brief Get the camera's far clipping plane distance
+      /// \brief Get the projector's far clipping plane distance
       /// \return Far clipping plane distance
       public: virtual double FarClipPlane() const = 0;
 
-      /// \brief Set the camera's far clipping plane distance
+      /// \brief Set the projector's far clipping plane distance
       /// \param[in] _far Far clipping plane distance
       public: virtual void SetFarClipPlane(double _far) = 0;
 
-      /// \brief Get the camera's near clipping plane distance
+      /// \brief Get the projector's near clipping plane distance
       /// \return Near clipping plane distance
       public: virtual double NearClipPlane() const = 0;
 
@@ -58,11 +58,11 @@ namespace gz
       /// \param[in] _near Near clipping plane distance
       public: virtual void SetNearClipPlane(double _near) = 0;
 
-      /// \brief Get the camera's horizontal field-of-view
-      /// \return Angle containing the camera's horizontal field-of-view
+      /// \brief Get the projector's horizontal field-of-view
+      /// \return Angle containing the projector's horizontal field-of-view
       public: virtual math::Angle HFOV() const = 0;
 
-      /// \brief Set the camera's horizontal field-of-view
+      /// \brief Set the projector's horizontal field-of-view
       /// \param[in] _hfov Desired horizontal field-of-view
       public: virtual void SetHFOV(const math::Angle &_hfov) = 0;
 

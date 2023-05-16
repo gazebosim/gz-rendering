@@ -54,6 +54,7 @@ TEST_F(LoadUnloadTest, GZ_UTILS_TEST_DISABLED_ON_MAC(Thread))
   std::thread renderThread = std::thread(&LoadUnloadTest::RenderThread, this);
   EXPECT_TRUE(renderThread.joinable());
   EXPECT_NO_THROW(renderThread.join());
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 

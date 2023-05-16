@@ -604,8 +604,8 @@ void OgreRenderEngine::CreateResources()
         std::make_pair(p + "/materials/programs", "General"));
     archNames.push_back(
         std::make_pair(p + "/materials/scripts", "General"));
-    // archNames.push_back(
-    //     std::make_pair(prefix + "/materials/textures", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/materials/textures", "General"));
     // archNames.push_back(
     //     std::make_pair(prefix + "/media/models", "General"));
     archNames.push_back(

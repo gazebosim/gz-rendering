@@ -40,8 +40,8 @@ release will remove the deprecated code.
     * CMake `-config` files
     * Paths that depend on the project name
 
-1. Fixed Bayer image format enums to match the Bayer formats used in gz-common
-and gz-msgs.
+1. Updated Bayer image format enums in `PixelFormat.h` to match the Bayer
+formats used in gz-common and gz-msgs.
   * `PF_BAYER_GBGR8` -> `PF_BAYER_GBRG8`
   * `PF_BAYER_GRGB8` -> `PF_BAYER_GRBG8`
 

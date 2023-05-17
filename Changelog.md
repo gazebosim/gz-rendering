@@ -2,6 +2,20 @@
 
 ### Gazebo Rendering 7.X
 
+### Gazebo Rendering 7.4.0 (2023-05-17)
+
+1. Add optional binary relocatability
+    * [Pull request #804](https://github.com/gazebosim/gz-rendering/pull/804)
+
+1. Add Projector
+    * [Pull request #845](https://github.com/gazebosim/gz-rendering/pull/845)
+
+1. Add support for bayer images to Ogre and Ogre2
+    * [Pull request #838](https://github.com/gazebosim/gz-rendering/pull/838)
+
+1. Fix requiring OpenGL on macOS
+    * [Pull request #844](https://github.com/gazebosim/gz-rendering/pull/844)
+
 ### Gazebo Rendering 7.3.1 (2023-04-13)
 
 1. Lower severity level for ogre2 visibility mask msgs and unavailable render passes

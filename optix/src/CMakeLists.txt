@@ -29,8 +29,6 @@ set(cuda_sources
 
 set_property(
   SOURCE OptixRenderEngine.cc
-  PROPERTY COMPILE_DEFINITIONS
-  GZ_RENDERING_RESOURCE_PATH="${GZ_RENDERING_RESOURCE_PATH}"
 )
 
 target_link_libraries(${optix_target}
@@ -43,7 +41,9 @@ target_link_libraries(${optix_target}
     optix::optix_prime)
 
 # Build the unit tests
-gz_build_tests(TYPE UNIT SOURCES ${gtest_sources})
+gz_build_tests(TYPE UNIT
+               SOURCES ${gtest_sources}
+               ENVIRONMENT GZ_RENDERING_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX})
 
 # Note that plugins are currently being installed in 2 places: /lib and the engine-plugins dir
 install(TARGETS ${optix_target} DESTINATION ${GZ_RENDERING_ENGINE_INSTALL_DIR})

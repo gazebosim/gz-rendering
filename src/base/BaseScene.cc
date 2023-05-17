@@ -28,6 +28,7 @@
 #include "gz/rendering/BoundingBoxCamera.hh"
 #include "gz/rendering/COMVisual.hh"
 #include "gz/rendering/InertiaVisual.hh"
+#include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/JointVisual.hh"
 #include "gz/rendering/LidarVisual.hh"
 #include "gz/rendering/LightVisual.hh"
@@ -1601,7 +1602,7 @@ void BaseScene::CreateMaterials()
   }
 
   std::string resourcePath = (env) ? std::string(env) :
-      GZ_RENDERING_RESOURCE_PATH;
+      gz::rendering::getResourcePath();
 
   // path to look for CoM material texture
   std::string com_material_texture_path = common::joinPaths(

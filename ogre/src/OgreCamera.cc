@@ -15,6 +15,7 @@
  *
  */
 
+#include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/ogre/OgreCamera.hh"
 #include "gz/rendering/ogre/OgreConversions.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"

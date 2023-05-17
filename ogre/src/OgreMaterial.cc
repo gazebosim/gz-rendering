@@ -18,6 +18,7 @@
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
 
+#include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/ShaderParams.hh"
 #include "gz/rendering/ogre/OgreMaterial.hh"
 #include "gz/rendering/ogre/OgreConversions.hh"
@@ -737,7 +738,7 @@ void OgreMaterial::SetDepthMaterial(const double _far,
   }
 
   std::string resourcePath = (env) ? std::string(env) :
-      GZ_RENDERING_RESOURCE_PATH;
+      gz::rendering::getResourcePath();
 
   // path to look for vertex and fragment shader parameters
   std::string depth_vertex_shader_path = common::joinPaths(

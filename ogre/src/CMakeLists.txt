@@ -27,7 +27,6 @@ find_package(OpenGL)
 set_property(
   SOURCE OgreRenderEngine.cc OgreRTShaderSystem.cc OgreGpuRays.cc OgreMaterial.cc OgreDepthCamera.cc OgreThermalCamera.cc
   PROPERTY COMPILE_DEFINITIONS
-  GZ_RENDERING_RESOURCE_PATH="${GZ_RENDERING_RESOURCE_PATH}"
   OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
 )
 
@@ -41,7 +40,10 @@ target_link_libraries(${ogre_target}
     )
 
 # Build the unit tests
-gz_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre_target})
+gz_build_tests(TYPE UNIT
+               SOURCES ${gtest_sources}
+               LIB_DEPS ${ogre_target}
+               ENVIRONMENT GZ_RENDERING_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX})
 
 # Note that plugins are currently being installed in 2 places: /lib and the engine-plugins dir
 install(TARGETS ${ogre_target} DESTINATION ${GZ_RENDERING_ENGINE_INSTALL_DIR})

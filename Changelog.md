@@ -2,7 +2,7 @@
 
 ### Gazebo Rendering 7.X
 
-### Gazebo Rendering 7.4.0 (2023-05-17)
+### Gazebo Rendering 7.4.0 (2023-05-18)
 
 1. Add optional binary relocatability
     * [Pull request #804](https://github.com/gazebosim/gz-rendering/pull/804)

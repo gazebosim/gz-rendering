@@ -23,7 +23,7 @@
 #include "gz/rendering/config.hh"
 
 #include "gz/rendering/base/BaseProjector.hh"
-#include "gz/rendering/ogre/Export.hh"
+#include "gz/rendering/ogre2/Export.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 
 namespace gz
@@ -33,7 +33,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
     /// \brief Ogre 2.x implementation of a Projector class.
-    class GZ_RENDERING_OGRE_VISIBLE Ogre2Projector :
+    class GZ_RENDERING_OGRE2_VISIBLE Ogre2Projector :
       public BaseProjector<Ogre2Visual>
     {
       /// \brief Constructor.

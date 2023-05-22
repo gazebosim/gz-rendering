@@ -27,6 +27,7 @@ set(tests
   OrbitViewController_TEST
   OrthoViewController_TEST
   ParticleEmitter_TEST
+  Projector_TEST
   RayQuery_TEST
   RenderEngine_TEST
   RenderEngineManager_TEST

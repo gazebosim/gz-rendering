@@ -96,7 +96,7 @@ std::string OptixRenderEngine::PtxFile(const std::string& _fileBase) const
   }
 
   std::string resourcePath = (env) ? std::string(env) :
-      GZ_RENDERING_RESOURCE_PATH;
+      gz::rendering::getResourcePath();
   resourcePath = common::joinPaths(resourcePath, "optix");
   folders.push_back(resourcePath);
 

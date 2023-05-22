@@ -63,9 +63,17 @@ if ((NOT ${CMAKE_VERSION} VERSION_LESS 3.11) AND (NOT OpenGL_GL_PREFERENCE))
   set(OpenGL_GL_PREFERENCE "GLVND")
 endif()
 
-gz_find_package(OpenGL
-  REQUIRED_BY ogre ogre2
-  PKGCONFIG gl)
+if (APPLE)
+  gz_find_package(OpenGL
+    REQUIRED_BY ogre ogre2
+    PKGCONFIG gl)
+else()
+  gz_find_package(OpenGL REQUIRED
+    COMPONENTS OpenGL
+    OPTIONAL_COMPONENTS EGL
+    REQUIRED_BY ogre ogre2
+    PKGCONFIG gl)
+endif()
 
 if (OpenGL_FOUND)
   set(HAVE_OPENGL TRUE)
@@ -151,9 +159,12 @@ if (UNIX AND NOT APPLE)
 endif()
 
 # Plugin install dirs
-set(GZ_RENDERING_ENGINE_INSTALL_DIR
-  ${CMAKE_INSTALL_PREFIX}/${GZ_LIB_INSTALL_DIR}/gz-${GZ_DESIGNATION}-${PROJECT_VERSION_MAJOR}/engine-plugins
+set(GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR
+  ${GZ_LIB_INSTALL_DIR}/gz-${GZ_DESIGNATION}-${PROJECT_VERSION_MAJOR}/engine-plugins
 )
+set(GZ_RENDERING_ENGINE_INSTALL_DIR
+  ${CMAKE_INSTALL_PREFIX}/${GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR})
+
 
 #--------------------------------------
 # Find dependencies that we ignore for Visual Studio
@@ -181,7 +192,8 @@ else()
   set(GZ_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 endif()
 
-set(GZ_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/${GZ_DATA_INSTALL_DIR})
+set(GZ_RENDERING_RELATIVE_RESOURCE_PATH ${GZ_DATA_INSTALL_DIR})
+set(GZ_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/${GZ_RENDERING_RELATIVE_RESOURCE_PATH})
 
 #============================================================================
 # Configure the build

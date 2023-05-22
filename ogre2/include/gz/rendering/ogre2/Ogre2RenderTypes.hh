@@ -56,6 +56,7 @@ namespace gz
     class Ogre2Object;
     class Ogre2ObjectInterface;
     class Ogre2ParticleEmitter;
+    class Ogre2Projector;
     class Ogre2PointLight;
     class Ogre2RayQuery;
     class Ogre2RenderEngine;
@@ -114,6 +115,7 @@ namespace gz
     typedef shared_ptr<Ogre2GlobalIlluminationVct>
       Ogre2GlobalIlluminationVctPtr;
     typedef shared_ptr<Ogre2PointLight>           Ogre2PointLightPtr;
+    typedef shared_ptr<Ogre2Projector>            Ogre2ProjectorPtr;
     typedef shared_ptr<Ogre2RayQuery>             Ogre2RayQueryPtr;
     typedef shared_ptr<Ogre2RenderEngine>         Ogre2RenderEnginePtr;
     typedef shared_ptr<Ogre2RenderTarget>         Ogre2RenderTargetPtr;

@@ -28,6 +28,7 @@
 #include "gz/rendering/BoundingBoxCamera.hh"
 #include "gz/rendering/COMVisual.hh"
 #include "gz/rendering/InertiaVisual.hh"
+#include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/JointVisual.hh"
 #include "gz/rendering/LidarVisual.hh"
 #include "gz/rendering/LightVisual.hh"
@@ -38,6 +39,7 @@
 #include "gz/rendering/GpuRays.hh"
 #include "gz/rendering/Grid.hh"
 #include "gz/rendering/ParticleEmitter.hh"
+#include "gz/rendering/Projector.hh"
 #include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/RenderTarget.hh"
 #include "gz/rendering/Text.hh"
@@ -1368,6 +1370,36 @@ ParticleEmitterPtr BaseScene::CreateParticleEmitter(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+ProjectorPtr BaseScene::CreateProjector()
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateProjector(objId);
+}
+
+//////////////////////////////////////////////////
+ProjectorPtr BaseScene::CreateProjector(unsigned int _id)
+{
+  std::string objName = this->CreateObjectName(_id, "Projector");
+  return this->CreateProjector(_id, objName);
+}
+
+//////////////////////////////////////////////////
+ProjectorPtr BaseScene::CreateProjector(const std::string &_name)
+{
+  unsigned int objId = this->CreateObjectId();
+  return this->CreateProjector(objId, _name);
+}
+
+//////////////////////////////////////////////////
+ProjectorPtr BaseScene::CreateProjector(unsigned int _id,
+    const std::string &_name)
+{
+  ProjectorPtr projector = this->CreateProjectorImpl(_id, _name);
+  bool result = this->RegisterVisual(projector);
+  return (result) ? projector : nullptr;
+}
+
+//////////////////////////////////////////////////
 GlobalIlluminationVctPtr BaseScene::CreateGlobalIlluminationVct()
 {
   unsigned int objId = this->CreateObjectId();
@@ -1639,7 +1671,7 @@ void BaseScene::CreateMaterials()
   }
 
   std::string resourcePath = (env) ? std::string(env) :
-      GZ_RENDERING_RESOURCE_PATH;
+      gz::rendering::getResourcePath();
 
   // path to look for CoM material texture
   std::string com_material_texture_path = common::joinPaths(

@@ -17,6 +17,7 @@
 
 #include <gz/common/Console.hh>
 
+#include "gz/rendering/base/SceneExt.hh"
 #include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2ArrowVisual.hh"
@@ -43,6 +44,7 @@
 #include "gz/rendering/ogre2/Ogre2MeshFactory.hh"
 #include "gz/rendering/ogre2/Ogre2Node.hh"
 #include "gz/rendering/ogre2/Ogre2ParticleEmitter.hh"
+#include "gz/rendering/ogre2/Ogre2Projector.hh"
 #include "gz/rendering/ogre2/Ogre2RayQuery.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
@@ -119,6 +121,9 @@ using namespace rendering;
 Ogre2Scene::Ogre2Scene(unsigned int _id, const std::string &_name) :
   BaseScene(_id, _name), dataPtr(std::make_unique<Ogre2ScenePrivate>())
 {
+  // there should only be one scene / scene ext API
+  static Ogre2SceneExt ext(this);
+  this->SetExtension(&ext);
 }
 
 //////////////////////////////////////////////////
@@ -1358,6 +1363,15 @@ ParticleEmitterPtr Ogre2Scene::CreateParticleEmitterImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
+ProjectorPtr Ogre2Scene::CreateProjectorImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2ProjectorPtr projector(new Ogre2Projector);
+  bool result = this->InitObject(projector, _id, _name);
+  return (result) ? projector : nullptr;
+}
+
+//////////////////////////////////////////////////
 GlobalIlluminationVctPtr Ogre2Scene::CreateGlobalIlluminationVctImpl(
   unsigned int _id, const std::string &_name)
 {
@@ -1432,7 +1446,7 @@ void Ogre2Scene::CreateContext()
   // this is required for non-shadow-casting point lights and
   // spot lights to work
   this->ogreSceneManager->setForwardClustered(
-    true, 16, 8, 24, 96, 0, 0, 1, 500);
+    true, 16, 8, 24, 96, 4, 0, 1, 500);
 }
 
 //////////////////////////////////////////////////
@@ -1551,4 +1565,41 @@ void Ogre2Scene::SetLightsGiDirty()
   {
     this->dataPtr->lightsGiDirty = true;
   }
+}
+
+//////////////////////////////////////////////////
+unsigned int Ogre2Scene::CreateObjectId()
+{
+  return BaseScene::CreateObjectId();
+}
+
+//////////////////////////////////////////////////
+Ogre2SceneExt::Ogre2SceneExt(Scene *_scene)
+    : SceneExt(_scene)
+{
+}
+
+//////////////////////////////////////////////////
+ObjectPtr Ogre2SceneExt::CreateExt(const std::string &_type,
+    const std::string &_name)
+{
+  if (_type == "projector")
+  {
+    Ogre2Scene *ogreScene = dynamic_cast<Ogre2Scene *>(this->scene);
+    unsigned int objId = ogreScene->CreateObjectId();
+    std::string objName = _name;
+    if (objName.empty())
+    {
+      std::stringstream ss;
+      ss << ogreScene->Name() << "::" <<  "Projector";
+      ss << "(" << std::to_string(objId) << ")";
+      objName = ss.str();
+    }
+    ProjectorPtr projector = ogreScene->CreateProjectorImpl(
+        objId, objName);
+    bool result = ogreScene->Visuals()->Add(projector);
+    return (result) ? projector : nullptr;
+  }
+
+  return ObjectPtr();
 }

@@ -27,6 +27,7 @@
 #include <gz/plugin/Register.hh>
 
 #include "gz/rendering/GraphicsAPI.hh"
+#include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/RenderEngineManager.hh"
 #include "gz/rendering/ogre2/Ogre2Includes.hh"
 #include "gz/rendering/ogre2/Ogre2NativeWindow.hh"
@@ -61,6 +62,10 @@
 # include <X11/Xutil.h>
 # include <GL/glx.h>
 # include <GL/glxext.h>
+#endif
+
+#if HAVE_EGL
+  #include <EGL/egl.h>
 #endif
 
 class GZ_RENDERING_OGRE2_HIDDEN
@@ -197,6 +202,7 @@ void Ogre2RenderEngine::Destroy()
     }
     catch (...)
     {
+      gzerr << "Error deleting ogre root " << std::endl;
     }
     this->ogreRoot = nullptr;
   }
@@ -223,6 +229,14 @@ void Ogre2RenderEngine::Destroy()
       this->dataPtr->dummyFBConfigs = nullptr;
     }
   }
+#endif
+
+#if HAVE_EGL
+  // release egl per-thread state otherwise this causes a crash on exit if
+  // ogre is created and deleted in a thread
+  // Do this only if we are using GL
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
+    eglReleaseThread();
 #endif
 }
 
@@ -472,6 +486,7 @@ void Ogre2RenderEngine::LoadAttempt()
   {
     this->CreateContext();
   }
+
   this->CreateRoot();
   this->CreateOverlay();
   this->LoadPlugins();
@@ -862,7 +877,8 @@ void Ogre2RenderEngine::RegisterHlms()
   }
 
   std::string resourcePath = (env) ? std::string(env) :
-      GZ_RENDERING_RESOURCE_PATH;
+      gz::rendering::getResourcePath();
+
   // install path
   std::string mediaPath = common::joinPaths(resourcePath, "ogre2", "media");
   if (!common::exists(mediaPath))
@@ -1065,7 +1081,7 @@ void Ogre2RenderEngine::CreateResources()
   }
 
   std::string resourcePath = (env) ? std::string(env) :
-      GZ_RENDERING_RESOURCE_PATH;
+      gz::rendering::getResourcePath();
   // install path
   std::string mediaPath = common::joinPaths(resourcePath, "ogre2", "media");
   if (!common::exists(mediaPath))
@@ -1253,7 +1269,6 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     {
       this->window = Ogre::Root::getSingleton().createRenderWindow(
           stream.str(), _width, _height, false, &params);
-      this->RegisterHlms();
     }
     catch(const std::exception &_e)
     {
@@ -1269,6 +1284,8 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
            << "] attempts." << std::endl;
     return std::string();
   }
+
+  this->RegisterHlms();
 
   if (this->window)
   {

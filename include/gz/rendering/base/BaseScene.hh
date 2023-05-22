@@ -576,6 +576,21 @@ namespace gz
                   unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited.
+      public: virtual ProjectorPtr CreateProjector() override;
+
+      // Documentation inherited.
+      public: virtual ProjectorPtr CreateProjector(unsigned int _id)
+                  override;
+
+      // Documentation inherited.
+      public: virtual ProjectorPtr CreateProjector(
+                  const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual ProjectorPtr CreateProjector(
+                  unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual GlobalIlluminationVctPtr
                   CreateGlobalIlluminationVct() override;
 
@@ -857,6 +872,20 @@ namespace gz
                    gzerr << "ParticleEmitter not supported by: "
                           << this->Engine()->Name() << std::endl;
                    return ParticleEmitterPtr();
+                 }
+
+      /// \brief Implementation for creating a Projector.
+      /// \param[in] _id Unique id.
+      /// \param[in] _name Name of Projector.
+      /// \return Pointer to the created projector
+      protected: virtual ProjectorPtr CreateProjectorImpl(
+                     unsigned int _id, const std::string &_name)
+                 {
+                   (void)_id;
+                   (void)_name;
+                   gzerr << "Projector not supported by: "
+                          << this->Engine()->Name() << std::endl;
+                   return ProjectorPtr();
                  }
 
       /// \brief Implementation for creating a GlobalIlluminationVct.

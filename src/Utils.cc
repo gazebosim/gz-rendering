@@ -26,7 +26,9 @@
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/RayQuery.hh"
+#include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/Utils.hh"
+
 
 namespace gz
 {
@@ -248,6 +250,149 @@ gz::math::AxisAlignedBox transformAxisAlignedBox(
   }
   return gz::math::AxisAlignedBox(min, max);
 }
+
+/////////////////////////////////////////////////
+Image convertRGBToBayer(const Image &_image, PixelFormat _bayerFormat)
+{
+  const unsigned char *sourceImageData = _image.Data<unsigned char>();
+
+  unsigned int width = _image.Width();
+  unsigned int height = _image.Height();
+
+  Image destImage(width, height, _bayerFormat);
+  unsigned char *destImageData = destImage.Data<unsigned char>();
+
+  if (_bayerFormat == PF_BAYER_RGGB8)
+  {
+    for (unsigned int i=0; i < width; i++)
+    {
+      for (unsigned int j=0; j < height; j++)
+      {
+        if (j%2)
+        {
+          if (i%2)
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+2];
+          }
+          else
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
+          }
+        }
+        else
+        {
+          if (i%2)
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
+          }
+          else
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+0];
+          }
+        }
+      }
+    }
+  }
+
+  else if (_bayerFormat == PF_BAYER_BGGR8)
+  {
+    for (unsigned int i=0; i < width; i++)
+    {
+      for (unsigned int j=0; j < height; j++)
+      {
+        if (j%2)
+        {
+          if (i%2)
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+0];
+          }
+          else
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
+          }
+        }
+        else
+        {
+          if (i%2)
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
+          }
+          else
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+2];
+          }
+        }
+      }
+    }
+  }
+
+  else if (_bayerFormat == PF_BAYER_GBRG8)
+  {
+    for (unsigned int i=0; i < width; i++)
+    {
+      for (unsigned int j=0; j < height; j++)
+      {
+        if (j%2)
+        {
+          if (i%2)
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
+          }
+          else
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+2];
+          }
+        }
+        else
+        {
+          if (i%2)
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+0];
+          }
+          else
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
+          }
+        }
+      }
+    }
+  }
+
+  else if (_bayerFormat == PF_BAYER_GRBG8)
+  {
+    for (unsigned int i=0; i < width; i++)
+    {
+      for (unsigned int j=0; j < height; j++)
+      {
+        if (j%2)
+        {
+          if (i%2)
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
+          }
+          else
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+0];
+          }
+        }
+        else
+        {
+          if (i%2)
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+2];
+          }
+          else
+          {
+            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
+          }
+        }
+      }
+    }
+  }
+
+  return destImage;
+}
+
 }
 }
 }

@@ -17,9 +17,27 @@
 
 #include "gz/rendering/Scene.hh"
 
-namespace gz::rendering
-{
+using namespace gz;
+using namespace rendering;
 
+/// \brief Keep track of scene extensions
+// added as static var here for ABI compatibility
+static std::unordered_map<const Scene *, SceneExt *> g_sceneExtMap;
+
+//////////////////////////////////////////////////
 Scene::~Scene() = default;
 
-}  // namespace gz::rendering
+//////////////////////////////////////////////////
+SceneExt *Scene::Extension() const
+{
+  auto it = g_sceneExtMap.find(this);
+  if (it != g_sceneExtMap.end())
+    return it->second;
+  return nullptr;
+}
+
+//////////////////////////////////////////////////
+void Scene::SetExtension(SceneExt *_ext)
+{
+  g_sceneExtMap[this] = _ext;
+}

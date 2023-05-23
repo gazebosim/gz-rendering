@@ -82,6 +82,7 @@ namespace gz
     class ObjectFactory;
     class ParticleEmitter;
     class PointLight;
+    class Projector;
     class RayQuery;
     class RenderEngine;
     class RenderPass;
@@ -253,6 +254,10 @@ namespace gz
     /// \brief Shared pointer to PointLight
     typedef shared_ptr<PointLight> PointLightPtr;
 
+    /// \typedef ProjectorPtr
+    /// \brief Shared pointer to Projector
+    typedef shared_ptr<Projector> ProjectorPtr;
+
     /// \typedef RayQueryPtr
     /// \brief Shared pointer to RayQuery
     typedef shared_ptr<RayQuery> RayQueryPtr;
@@ -407,7 +412,11 @@ namespace gz
     /// \brief Shared pointer to const PointLight
     typedef shared_ptr<const PointLight> ConstPointLightPtr;
 
-    /// \typedef RayQueryPtr
+    /// \typedef const ProjectorPtr
+    /// \brief Shared pointer to const Projector
+    typedef shared_ptr<const Projector> ConstProjectorPtr;
+
+    /// \typedef const RayQueryPtr
     /// \brief Shared pointer to RayQuery
     typedef shared_ptr<const RayQuery> ConstRayQueryPtr;
 

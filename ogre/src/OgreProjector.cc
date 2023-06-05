@@ -444,7 +444,7 @@ std::unordered_set<std::string> OgreProjectorListener::FindVisibleMaterials()
 /////////////////////////////////////////////////
 void OgreProjectorListener::AddDecalToVisibleMaterials()
 {
-  auto newVisibleMaterials = std::move(this->FindVisibleMaterials());
+  auto newVisibleMaterials = this->FindVisibleMaterials();
 
   this->AddDecalToMaterials(newVisibleMaterials);
 }
@@ -652,8 +652,7 @@ void OgreProjectorListener::SetVisibilityFlags(uint32_t _flags)
 /////////////////////////////////////////////////
 void OgreProjectorListener::UpdateVisibleMaterials()
 {
-  this->visibleMaterials =
-      std::move(this->FindVisibleMaterials());
+  this->visibleMaterials = this->FindVisibleMaterials();
 }
 
 /////////////////////////////////////////////////

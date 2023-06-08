@@ -163,6 +163,9 @@ void OgreGpuRays::Init()
 //////////////////////////////////////////////////
 void OgreGpuRays::Destroy()
 {
+  if (!this->dataPtr->ogreCamera)
+    return;
+
   if (this->dataPtr->gpuRaysBuffer)
   {
     delete [] this->dataPtr->gpuRaysBuffer;

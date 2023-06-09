@@ -29,7 +29,11 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /// \class Capsule Capsule.hh gz/rendering/Capsule
-    /// \brief Geometry for a capsule shape.
+    /// \brief Geometry for a capsule shape. The APIs allow setting
+    /// the capsule's radius and length directly which ensure that the
+    /// the geometry remains the shape of a capsule. In comparison, if
+    /// the size is changed via the parent Node's Set*Scale function, the
+    /// capsule may become deformed.
     class GZ_RENDERING_VISIBLE Capsule :
       public virtual Geometry
     {

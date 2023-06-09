@@ -68,9 +68,12 @@ namespace gz
     float *Ogre2GzHlmsShared::MapObjectDataBufferFor(
       uint32_t _instanceIdx, Ogre::CommandBuffer *_commandBuffer,
       Ogre::VaoManager *_vaoManager, const ConstBufferPackedVec &_constBuffers,
-      uint32_t _currConstBufferIdx, uint32_t */*_startMappedConstBuffer*/,
+      uint32_t _currConstBufferIdx, uint32_t *_startMappedConstBuffer,
       uint16_t _perObjectDataBufferSlot)
     {
+      // This argument is used only in the MACRO, and it generating a warning.
+      // This should void the warning
+      (void)_startMappedConstBuffer;
       const uint32_t numFloatsPerObject = 4u;
 
       if (!this->currPerObjectDataBuffer ||

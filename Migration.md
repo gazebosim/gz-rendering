@@ -40,6 +40,11 @@ release will remove the deprecated code.
     * CMake `-config` files
     * Paths that depend on the project name
 
+1. Updated Bayer image format enums in `PixelFormat.h` to match the Bayer
+formats used in gz-common and gz-msgs.
+  * `PF_BAYER_GBGR8` -> `PF_BAYER_GBRG8`
+  * `PF_BAYER_GRGB8` -> `PF_BAYER_GRBG8`
+
 ## Gazebo Rendering 6.2.1 to 6.X
 
 ### Modifications

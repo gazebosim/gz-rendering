@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 #============================================================================
 # Initialize the project
 #============================================================================
-project(gz-rendering7 VERSION 7.3.1)
+project(gz-rendering7 VERSION 7.4.0)
 
 #============================================================================
 # Find gz-cmake
@@ -131,9 +131,12 @@ if (OGRE2_FOUND)
 endif()
 
 # Plugin install dirs
-set(GZ_RENDERING_ENGINE_INSTALL_DIR
-  ${CMAKE_INSTALL_PREFIX}/${GZ_LIB_INSTALL_DIR}/gz-${GZ_DESIGNATION}-${PROJECT_VERSION_MAJOR}/engine-plugins
+set(GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR
+  ${GZ_LIB_INSTALL_DIR}/gz-${GZ_DESIGNATION}-${PROJECT_VERSION_MAJOR}/engine-plugins
 )
+set(GZ_RENDERING_ENGINE_INSTALL_DIR
+  ${CMAKE_INSTALL_PREFIX}/${GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR})
+
 
 #--------------------------------------
 # Find dependencies that we ignore for Visual Studio
@@ -161,7 +164,8 @@ else()
   set(GZ_RENDERING_PLUGIN_PATH ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 endif()
 
-set(GZ_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/${GZ_DATA_INSTALL_DIR})
+set(GZ_RENDERING_RELATIVE_RESOURCE_PATH ${GZ_DATA_INSTALL_DIR})
+set(GZ_RENDERING_RESOURCE_PATH ${CMAKE_INSTALL_PREFIX}/${GZ_RENDERING_RELATIVE_RESOURCE_PATH})
 
 #============================================================================
 # Configure the build

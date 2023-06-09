@@ -18,6 +18,7 @@
 #define GZ_RENDERING_GRAPHICSAPI_HH_
 
 #include <string>
+#include <cstdint>
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
 

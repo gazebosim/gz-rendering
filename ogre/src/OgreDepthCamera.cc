@@ -23,6 +23,7 @@
   #include <windows.h>
 #endif
 #include <gz/math/Helpers.hh>
+#include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/ogre/OgreDepthCamera.hh"
 #include "gz/rendering/ogre/OgreMaterial.hh"
 
@@ -235,7 +236,7 @@ void OgreDepthCamera::CreatePointCloudTexture()
   }
 
   std::string resourcePath = (env) ? std::string(env) :
-      GZ_RENDERING_RESOURCE_PATH;
+      gz::rendering::getResourcePath();
 
   // path to look for vertex and fragment shader parameters
   std::string pcdVSPath = common::joinPaths(

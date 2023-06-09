@@ -27,6 +27,7 @@
 #include <gz/plugin/Register.hh>
 
 #include "gz/rendering/GraphicsAPI.hh"
+#include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/RenderEngineManager.hh"
 #include "gz/rendering/ogre2/Ogre2Includes.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -766,7 +767,8 @@ void Ogre2RenderEngine::RegisterHlms()
   }
 
   std::string resourcePath = (env) ? std::string(env) :
-      GZ_RENDERING_RESOURCE_PATH;
+      gz::rendering::getResourcePath();
+
   // install path
   std::string mediaPath = common::joinPaths(resourcePath, "ogre2", "media");
   if (!common::exists(mediaPath))
@@ -969,7 +971,7 @@ void Ogre2RenderEngine::CreateResources()
   }
 
   std::string resourcePath = (env) ? std::string(env) :
-      GZ_RENDERING_RESOURCE_PATH;
+      gz::rendering::getResourcePath();
   // install path
   std::string mediaPath = common::joinPaths(resourcePath, "ogre2", "media");
   if (!common::exists(mediaPath))

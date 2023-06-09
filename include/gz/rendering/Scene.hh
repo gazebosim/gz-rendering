@@ -26,6 +26,8 @@
 
 #include <gz/math/Color.hh>
 
+#include "gz/rendering/base/SceneExt.hh"
+
 #include "gz/rendering/config.hh"
 #include "gz/rendering/HeightmapDescriptor.hh"
 #include "gz/rendering/MeshDescriptor.hh"
@@ -40,6 +42,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     class RenderEngine;
+    class SceneExt;
 
     /// \class Scene Scene.hh gz/rendering/Scene.hh
     /// \brief Manages a single scene-graph. This class updates scene-wide
@@ -1171,6 +1174,41 @@ namespace gz
       public: virtual ParticleEmitterPtr CreateParticleEmitter(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \cond PRIVATE
+      /// \brief Create new projector. A unique ID and name will
+      /// automatically be assigned to the visual.
+      /// \return The created projector
+      /// \todo(iche033) uncomment in gz-rendering8
+      /// public: virtual ProjectorPtr CreateProjector() = 0;
+
+      /// \brief Create new projector with the given ID. A unique name
+      /// will automatically be assigned to the visual. If the given ID is
+      /// already in use, NULL will be returned.
+      /// \param[in] _id ID of the new projector
+      /// \return The created projector
+      /// \todo(iche033) uncomment in gz-rendering8
+      /// public: virtual ProjectorPtr CreateProjector(
+      ///            unsigned int _id) = 0;
+
+      /// \brief Create new projector with the given name. A unique ID
+      /// will automatically be assigned to the visual. If the given name is
+      /// already in use, NULL will be returned.
+      /// \param[in] _name Name of the new projector
+      /// \return The created projector
+      /// \todo(iche033) uncomment in gz-rendering8
+      /// public: virtual ProjectorPtr CreateProjector(
+      ///             const std::string &_name) = 0;
+
+      /// \brief Create new projector with the given name. If either the
+      /// given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new projector
+      /// \param[in] _name Name of the new projector
+      /// \return The created projector
+      /// \todo(iche033) uncomment in gz-rendering8
+      /// public: virtual ProjectorPtr CreateProjector(
+      ///             unsigned int _id, const std::string &_name) = 0;
+      /// \endcond
+
       /// \brief Enable sky in the scene.
       /// \param[in] _enabled True to enable sky
       public: virtual void SetSkyEnabled(bool _enabled) = 0;
@@ -1306,6 +1344,14 @@ namespace gz
       /// use of this scene after its destruction will result in undefined
       /// behavior.
       public: virtual void Destroy() = 0;
+
+      /// \brief Get scene extention APIs
+      /// This provides new Scene APIs that are experimental
+      public: SceneExt *Extension() const;
+
+      /// \brief Set the scene extention API
+      /// This is called by underlying render engines
+      protected: void SetExtension(SceneExt *_ext);
     };
     }
   }

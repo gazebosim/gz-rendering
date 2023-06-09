@@ -15,6 +15,9 @@ endif()
 
 # Create the library target.
 gz_create_core_library(SOURCES ${sources})
+gz_add_get_install_prefix_impl(GET_INSTALL_PREFIX_FUNCTION gz::rendering::getInstallPrefix
+                               GET_INSTALL_PREFIX_HEADER gz/rendering/InstallationDirectories.hh
+                               OVERRIDE_INSTALL_PREFIX_ENV_VARIABLE GZ_RENDERING_INSTALL_PREFIX)
 
 # Include the interface directories that we always need.
 #gz_target_interface_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
@@ -24,6 +27,13 @@ set_property(
   SOURCE RenderEngineManager.cc
   PROPERTY COMPILE_DEFINITIONS
   GZ_RENDERING_PLUGIN_PATH="${GZ_RENDERING_PLUGIN_PATH}"
+)
+
+set_property(
+  SOURCE InstallationDirectories.cc
+  PROPERTY COMPILE_DEFINITIONS
+  GZ_RENDERING_RELATIVE_RESOURCE_PATH="${GZ_RENDERING_RELATIVE_RESOURCE_PATH}"
+  GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR="${GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR}"
 )
 
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
@@ -38,4 +48,6 @@ if (UNIX AND NOT APPLE)
 endif()
 
 # Build the unit tests.
-gz_build_tests(TYPE UNIT SOURCES ${gtest_sources})
+gz_build_tests(TYPE UNIT
+               SOURCES ${gtest_sources}
+               ENVIRONMENT GZ_RENDERING_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX})

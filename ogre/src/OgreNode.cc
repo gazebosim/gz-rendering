@@ -106,8 +106,8 @@ void OgreNode::SetRawLocalPosition(const math::Vector3d &_position)
   // the length of the position vector.
   if (dynamic_cast<OgreCamera *>(this) && _position.Length() > 1e8)
   {
-    ignerr << "Unable to set camera node position to a distance larger than "
-           << "1e8 from origin" << std::endl;
+    gzerr << "Unable to set camera node position to a distance larger than "
+          << "1e8 from origin" << std::endl;
     return;
   }
   this->ogreNode->setPosition(OgreConversions::Convert(_position));

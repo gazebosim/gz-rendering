@@ -18,7 +18,6 @@ gz_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre2_target)
 set_property(
   SOURCE Ogre2RenderEngine.cc
   PROPERTY COMPILE_DEFINITIONS
-  GZ_RENDERING_RESOURCE_PATH="${GZ_RENDERING_RESOURCE_PATH}"
   OGRE2_RESOURCE_PATH="${OGRE2_RESOURCE_PATH}"
   OGRE2_VERSION="${OGRE2_VERSION}"
 )
@@ -82,6 +81,9 @@ if (USE_GLX)
 endif()
 
 # Build the unit tests
-gz_build_tests(TYPE UNIT SOURCES ${gtest_sources} LIB_DEPS ${ogre2_target})
+gz_build_tests(TYPE UNIT
+               SOURCES ${gtest_sources}
+               LIB_DEPS ${ogre2_target}
+               ENVIRONMENT GZ_RENDERING_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX})
 
 install(DIRECTORY "media"  DESTINATION ${GZ_RENDERING_RESOURCE_PATH}/ogre2)

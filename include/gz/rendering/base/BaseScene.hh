@@ -576,6 +576,25 @@ namespace gz
                   unsigned int _id, const std::string &_name) override;
 
       // Documentation inherited.
+      // \todo(iche033) uncomment in gz-rendering8
+      // public: virtual ProjectorPtr CreateProjector() override;
+
+      // Documentation inherited.
+      // \todo(iche033) uncomment in gz-rendering8
+      // public: virtual ProjectorPtr CreateProjector(unsigned int _id)
+      //                 override;
+
+      // Documentation inherited.
+      // \todo(iche033) uncomment in gz-rendering8
+      // public: virtual ProjectorPtr CreateProjector(
+      //             const std::string &_name) override;
+
+      // Documentation inherited.
+      // \todo(iche033) uncomment in gz-rendering8
+      // public: virtual ProjectorPtr CreateProjector(
+      //             unsigned int _id, const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual void SetSkyEnabled(bool _enabled) override;
 
       // Documentation inherited.
@@ -822,6 +841,21 @@ namespace gz
                           << this->Engine()->Name() << std::endl;
                    return ParticleEmitterPtr();
                  }
+
+      /// \brief Implementation for creating a Projector.
+      /// \param[in] _id Unique id.
+      /// \param[in] _name Name of Projector.
+      /// \return Pointer to the created projector
+      // \todo(iche033) uncomment in gz-rendering8
+      // protected: virtual ProjectorPtr CreateProjectorImpl(
+      //                unsigned int _id, const std::string &_name)
+      //            {
+      //              (void)_id;
+      //              (void)_name;
+      //              gzerr << "Projector not supported by: "
+      //                     << this->Engine()->Name() << std::endl;
+      //              return ProjectorPtr();
+      //            }
 
       protected: virtual LightStorePtr Lights() const = 0;
 

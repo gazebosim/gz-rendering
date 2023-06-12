@@ -86,7 +86,6 @@ void OgreLightVisual::CreateVisual()
     this->dataPtr->line->AddPoint(p.X(), p.Y(), p.Z());
   }
   this->dataPtr->line->Update();
-  this->ogreNode->setVisible(true);
 }
 
 //////////////////////////////////////////////////

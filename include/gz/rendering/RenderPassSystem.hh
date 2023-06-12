@@ -17,6 +17,7 @@
 #ifndef GZ_RENDERING_RENDERPASSSYSTEM_HH_
 #define GZ_RENDERING_RENDERPASSSYSTEM_HH_
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -49,23 +50,46 @@ namespace gz
       public: virtual RenderPass *New() const = 0;
     };
 
+    class GZ_RENDERING_VISIBLE BaseRenderPassSystem
+    {
+      public: using RenderPassFactoryFn = std::function<RenderPass*(void)>;
+
+      public: BaseRenderPassSystem();
+
+      public: virtual ~BaseRenderPassSystem();
+
+      /// \brief Register a render pass factory to the system
+      /// \param[in] _type Render pass type, i.e. type id of render pass class
+      /// \param[in] _factory Factory function used to create the render pass
+      public: void Register(const std::string &_type,
+          RenderPassFactoryFn _factoryFn);
+
+      /// \brief Implementation for creating render passes
+      /// \param[in] _type Render pass type, i.e. type id of render pass class
+      /// \return Pointer to the render pass created
+      public: RenderPassPtr Create(const std::string &_type);
+
+      public: template<typename T> RenderPassPtr Create()
+              {
+                return this->Create(typeid(T).name());
+              }
+
+      GZ_UTILS_UNIQUE_IMPL_PTR(dataPtr);
+    };
+
     /* \class RenderPassSystem RenderPassSystem.hh \
      * gz/rendering/RenderPassSystem.hh
      */
     /// \brief A class for creating and managing render passes
     class GZ_RENDERING_VISIBLE RenderPassSystem
     {
-      /// \brief Constructor
-      public: RenderPassSystem();
-
-      /// \brief Destructor
-      public: virtual ~RenderPassSystem();
+      private: static BaseRenderPassSystem& Implementation();
 
       /// \brief Templated function for creating render passes
       /// \return Pointer to the render pass created
       public: template<typename T> RenderPassPtr Create()
               {
-                return this->CreateImpl(typeid(T).name());
+                return this->Implementation().Create(typeid(T).name());
               }
 
       /// \brief Register a render pass factory to the system
@@ -73,20 +97,6 @@ namespace gz
       /// \param[in] _factory Factory used to create the render pass
       public: static void Register(const std::string &_type,
           RenderPassFactory *_factory);
-
-      /// \brief Implementation for creating render passes
-      /// \param[in] _type Render pass type, i.e. type id of render pass class
-      /// \return Pointer to the render pass created
-      private: RenderPassPtr CreateImpl(const std::string &_type);
-
-      /// \brief A map of render pass type id name to its factory class
-      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
-      private: static std::map<std::string, RenderPassFactory *> renderPassMap;
-
-      /// \internal
-      /// \brief Pointer to private data class
-      private: std::unique_ptr<RenderPassSystemPrivate> dataPtr;
-      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
     };
 
     /// \brief Render pass registration macro

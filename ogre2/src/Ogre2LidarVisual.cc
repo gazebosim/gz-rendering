@@ -15,6 +15,7 @@
  *
  */
 
+#if OGRE_GLSUPPORT
 #ifdef __APPLE__
   #define GL_SILENCE_DEPRECATION
   #include <OpenGL/gl.h>
@@ -22,6 +23,7 @@
 #else
 #ifndef _WIN32
   #include <GL/gl.h>
+#endif
 #endif
 #endif
 
@@ -160,11 +162,13 @@ void Ogre2LidarVisual::Create()
       engine->OgreRoot()->getRenderSystem()->getFriendlyName();
   if (renderSystemName.find("OpenGL") != std::string::npos)
   {
+#if OGRE_GLSUPPORT
 #ifdef __APPLE__
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 #else
 #ifndef _WIN32
     glEnable(GL_PROGRAM_POINT_SIZE);
+#endif
 #endif
 #endif
   }

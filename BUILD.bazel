@@ -1,0 +1,142 @@
+load(
+    "@gz//bazel/skylark:build_defs.bzl",
+    "GZ_FEATURES",
+    "GZ_ROOT",
+    "GZ_VISIBILITY",
+    "gz_configure_header",
+    "gz_export_header",
+    "gz_include_header",
+)
+
+package(
+    default_visibility = GZ_VISIBILITY,
+    features = GZ_FEATURES,
+)
+
+licenses(["notice"])  # Apache-2.0
+
+exports_files(["LICENSE"])
+
+gz_configure_header(
+    name = "rendering_config_hh",
+    src = "include/gz/rendering/config.hh.in",
+    cmakelists = ["CMakeLists.txt"],
+    defines = {
+        # These definitions are deprecated, this is merely to suppress generator warnings
+        "GZ_RENDERING_RESOURCE_PATH": "unused",
+        "GZ_RENDERING_ENGINE_INSTALL_DIR": "unused",
+    },
+    package = "rendering",
+    undefines = [
+        "HAVE_OGRE",
+        "HAVE_OPTIX",
+    ],
+)
+
+gz_export_header(
+    name = "include/gz/rendering/Export.hh",
+    export_base = "GZ_RENDERING",
+    lib_name = "gz-rendering",
+    visibility = ["//visibility:private"],
+)
+
+public_headers_no_gen = glob([
+    "include/gz/rendering/*.hh",
+    "include/gz/rendering/base/*.hh",
+])
+
+sources = glob(
+    [
+        "src/*.cc",
+        "src/base/*.cc",
+    ],
+    exclude = [
+        "src/*_TEST.cc",
+    ],
+)
+
+gz_include_header(
+    name = "rendering_hh_genrule",
+    out = "include/gz/rendering.hh",
+    hdrs = public_headers_no_gen + [
+        "include/gz/rendering/config.hh",
+        "include/gz/rendering/Export.hh",
+    ],
+)
+
+public_headers = public_headers_no_gen + [
+    "include/gz/rendering/config.hh",
+    "include/gz/rendering/Export.hh",
+    "include/gz/rendering.hh",
+]
+
+cc_library(
+    name = "rendering",
+    srcs = sources,
+    hdrs = public_headers,
+    includes = ["include"],
+    local_defines = [
+        "GZ_RENDERING_BAZEL_BUILD",
+        'GZ_RENDERING_PLUGIN_PATH=\\"\\"',
+        'GZ_RENDERING_RELATIVE_RESOURCE_PATH=\\"\\"',
+        'GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR=\\"ogre2\\"',
+    ],
+    deps = [
+        GZ_ROOT + "common",
+        GZ_ROOT + "common/events",
+        GZ_ROOT + "common/geospatial",
+        GZ_ROOT + "common/graphics",
+        GZ_ROOT + "math",
+        GZ_ROOT + "plugin:core",
+        GZ_ROOT + "plugin:loader",
+        GZ_ROOT + "utils",
+    ],
+)
+
+test_sources = glob(
+    include = ["src/*_TEST.cc"],
+)
+
+[cc_test(
+    name = src.replace("/", "_").replace(".cc", "").replace("src_", ""),
+    srcs = [src],
+    env = {
+        "GZ_BAZEL": "1",
+        "GZ_BAZEL_PATH": "rendering",
+    },
+    deps = [
+        ":rendering",
+        "@gtest",
+        "@gtest//:gtest_main",
+    ],
+) for src in test_sources]
+
+common_test_sources = glob(
+    include = ["test/common_test/*_TEST.cc"],
+)
+
+[cc_test(
+    name = src.replace("/", "_").replace(".cc", "").replace("src_", ""),
+    srcs = [
+        src,
+        "test/common_test/CommonRenderingTest.hh",
+    ],
+    data = [
+        "test/media",
+        GZ_ROOT + "rendering/ogre2:libgz-rendering-ogre2.so",
+    ],
+    env = {
+        "GZ_BAZEL": "1",
+        "GZ_BAZEL_PATH": "rendering",
+        "GZ_ENGINE_TO_TEST": "ogre2",
+        "GZ_ENGINE_BACKEND": "opengl",
+        "GZ_ENGINE_HEADLESS": "true",
+    },
+    includes = ["test/common_test"],
+    deps = [
+        ":rendering",
+        GZ_ROOT + "common/testing",
+        "@gtest",
+        "@gtest//:gtest_main",
+    ],
+) for src in common_test_sources]

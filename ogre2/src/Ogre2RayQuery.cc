@@ -56,6 +56,12 @@ class gz::rendering::Ogre2RayQueryPrivate
 
   /// \brief thread that ray query is created in
   public: std::thread::id threadId;
+
+  public: ~Ogre2RayQueryPrivate() {
+    if (rayQuery != nullptr) {
+      delete rayQuery;
+    }
+  }
 };
 
 using namespace gz;

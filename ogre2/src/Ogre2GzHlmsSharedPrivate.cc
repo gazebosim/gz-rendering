@@ -71,6 +71,9 @@ namespace gz
       uint32_t _currConstBufferIdx, uint32_t *_startMappedConstBuffer,
       uint16_t _perObjectDataBufferSlot)
     {
+      // This argument is used only in the MACRO, and it generating a warning.
+      // This should void the warning
+      (void)_startMappedConstBuffer;
       const uint32_t numFloatsPerObject = 4u;
 
       if (!this->currPerObjectDataBuffer ||

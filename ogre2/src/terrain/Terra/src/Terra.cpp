@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 #include "Terra/TerraShadowMapper.h"
 #include "Terra/Hlms/OgreHlmsTerra.h"
+#include "Terra/Hlms/OgreHlmsTerraDatablock.h"
 
 #include "OgreImage2.h"
 

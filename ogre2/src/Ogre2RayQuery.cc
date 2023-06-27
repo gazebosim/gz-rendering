@@ -138,8 +138,6 @@ void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
 //////////////////////////////////////////////////
 RayQueryResult Ogre2RayQuery::ClosestPoint(bool _forceSceneUpdate)
 {
-  RayQueryResult result;
-
   if (!this->dataPtr->camera ||
       !this->dataPtr->camera->Parent() ||
       std::this_thread::get_id() != this->dataPtr->threadId)

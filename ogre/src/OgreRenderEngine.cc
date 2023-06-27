@@ -843,5 +843,5 @@ OgreRenderEngine *OgreRenderEngine::Instance()
 }
 
 // Register this plugin
-GZ_ADD_PLUGIN(OgreRenderEnginePlugin,
+GZ_ADD_PLUGIN(rendering::OgreRenderEnginePlugin,
               rendering::RenderEnginePlugin)

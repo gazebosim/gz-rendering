@@ -24,7 +24,9 @@
 
 #include "CommonRenderingTest.hh"
 
+#include "gz/rendering/Camera.hh"
 #include "gz/rendering/Scene.hh"
+#include "gz/rendering/Sensor.hh"
 
 #include <gz/utils/ExtraTestMacros.hh>
 
@@ -103,8 +105,12 @@ void SceneFactoryTest::checkMemLeak(const std::function<void(ScenePtr)> &_cb)
   double resPercentChange = (residentEnd - residentStart) / residentStart;
   double sharePercentChange = (shareEnd - shareStart) / shareStart;
 
+  gzdbg << "ResPercentStart[" << residentStart << "] "
+        << " ResPercentEnd[" << residentEnd << "]" << std::endl;
   gzdbg << "ResPercentChange[" << resPercentChange << "] "
     << "ResMaxPercentChange[" << resMaxPercentChange << "]" << std::endl;
+  gzdbg << "sharePercentStart[" << shareStart << "] "
+        << " sharePercentEnd[" << shareEnd << "]" << std::endl;
   gzdbg << "SharePercentChange[" << sharePercentChange << "] "
     << "ShareMaxPercentChange[" << shareMaxPercentChange << "]" << std::endl;
 
@@ -155,6 +161,31 @@ TEST_F(SceneFactoryTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(VisualMemoryLeak))
       }
       // Recursive destroy - all child visuals should also be destroyed
       _scene->DestroyVisual(parent, true);
+    }
+  };
+
+  this->checkMemLeak(function);
+}
+
+/////////////////////////////////////////////////
+TEST_F(SceneFactoryTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CameraMemoryLeak))
+{
+  auto function = [](ScenePtr _scene)
+  {
+    const unsigned int numCycles = 100;
+
+    for (unsigned int j = 0; j < numCycles; ++j)
+    {
+      // parent visual
+      auto root = _scene->RootVisual();
+      rendering::CameraPtr camera = _scene->CreateCamera("camera");
+      camera->SetImageWidth(3840);
+      camera->SetImageHeight(2160);
+      camera->SetHFOV(GZ_PI / 2);
+      root->AddChild(camera);
+      camera->Update();
+      root->RemoveChild(camera);
+      _scene->DestroySensor(camera);
     }
   };
 

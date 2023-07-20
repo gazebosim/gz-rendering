@@ -377,3 +377,33 @@ TEST_F(CameraTest, IntrinsicMatrix)
   // Clean up
   engine->DestroyScene(scene);
 }
+
+/////////////////////////////////////////////////
+TEST_F(CameraTest, CreateDestroy)
+{
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  // test create and destroy camera
+  CameraPtr camera = scene->CreateCamera("camera");
+  EXPECT_NE(nullptr, camera);
+  auto sensor = scene->SensorByName("camera");
+  EXPECT_NE(nullptr, sensor);
+  EXPECT_EQ(camera, sensor);
+  scene->DestroySensor(camera);
+  sensor =  scene->SensorByName("camera");
+  EXPECT_EQ(nullptr, sensor);
+
+  // test create camera with same name
+  EXPECT_FALSE(scene->HasSensorName("camera"));
+  CameraPtr camera2 = scene->CreateCamera("camera");
+  EXPECT_NE(nullptr, camera2);
+  auto sensor2 = scene->SensorByIndex(0);
+  EXPECT_NE(nullptr, sensor2);
+  EXPECT_EQ(camera2, sensor2);
+  EXPECT_EQ("camera", sensor2->Name());
+  scene->DestroySensorByName("camera");
+  EXPECT_FALSE(scene->HasSensorName("camera"));
+  sensor2 =  scene->SensorById(0);
+  EXPECT_EQ(nullptr, sensor2);
+}

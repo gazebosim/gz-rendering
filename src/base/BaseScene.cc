@@ -467,6 +467,7 @@ void BaseScene::DestroySensor(SensorPtr _sensor, bool _recursive)
   {
     this->Sensors()->Destroy(_sensor);
   }
+//  this->Sensors()->Remove(_sensor);
 }
 
 //////////////////////////////////////////////////

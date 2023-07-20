@@ -61,6 +61,7 @@ void OgreCamera::Destroy()
       this->ogreCamera = nullptr;
     }
   }
+  BaseCamera::Destroy();
 }
 
 //////////////////////////////////////////////////

@@ -71,6 +71,7 @@ void Ogre2Camera::Destroy()
     ogreSceneManager->destroyCamera(this->ogreCamera);
     this->ogreCamera = nullptr;
   }
+  BaseCamera::Destroy();
 }
 
 //////////////////////////////////////////////////

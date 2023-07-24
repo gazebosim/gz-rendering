@@ -61,6 +61,14 @@ void OgreCamera::Destroy()
       this->ogreCamera = nullptr;
     }
   }
+
+  if (this->selectionBuffer)
+  {
+    delete this->selectionBuffer;
+    this->selectionBuffer = nullptr;
+  }
+
+  BaseCamera::Destroy();
 }
 
 //////////////////////////////////////////////////

@@ -131,10 +131,8 @@ void Ogre2ParticleEmitter::SetType(
   this->type = _type;
 
   this->dataPtr->emitterDirty = true;
-  // todo(anyone) remove this call. We had to do this since we can't override
-  // PreRender() as it breaks ABI. We should rename PreRenderImpl to PreRender()
-  // in next release.
-  this->PreRenderImpl();
+  // Call PreRender to re-create the particle emitter
+  this->PreRender();
 }
 
 //////////////////////////////////////////////////
@@ -243,10 +241,6 @@ void Ogre2ParticleEmitter::SetParticleSize(
   this->particleSize = _size;
 
   this->dataPtr->emitterDirty = true;
-  // todo(anyone) remove this call. We had to do this since we can't override
-  // PreRender() as it breaks ABI. We should rename PreRenderImpl to PreRender()
-  // in next release.
-  this->PreRenderImpl();
 }
 
 //////////////////////////////////////////////////
@@ -434,12 +428,8 @@ void Ogre2ParticleEmitter::Init()
 }
 
 //////////////////////////////////////////////////
-void Ogre2ParticleEmitter::PreRenderImpl()
+void Ogre2ParticleEmitter::PreRender()
 {
-  // todo(anyone) rename this function to PreRender() so it overrides function
-  // from base class. Since this rename breaks ABI, we should rename this
-  // function in the next release
-
   // recreate the particle system if needed
   // currently this is needed when user changes type or particle size
   if (this->dataPtr->emitterDirty)

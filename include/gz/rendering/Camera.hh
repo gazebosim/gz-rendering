@@ -111,7 +111,7 @@ namespace gz
       /// Setting a value <= 0.0 indicates the aspect ratio will be
       /// automatically calculated based on width & height.
       ///
-      /// \return The camera's aspect ratio
+      /// \param[in] _ratio The camera's aspect ratio
       public: virtual void SetAspectRatio(const double _ratio) = 0;
 
       // TODO(anyone): add auto-aspect ratio

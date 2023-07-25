@@ -155,6 +155,8 @@ void Ogre2SegmentationCamera::Destroy()
   }
 
   this->dataPtr->materialSwitcher.reset();
+
+  BaseCamera::Destroy();
 }
 
 /////////////////////////////////////////////////

@@ -96,9 +96,7 @@ namespace gz
       public: void UpdateForRender(Ogre::Camera *_activeCamera);
 
       // Documentation inherited.
-      // \todo(iche033) rename this to Destroy and
-      // make this function public and virtual
-      private: void DestroyImpl();
+      public: virtual void Destroy() override;
 
       /// \brief Heightmap should only be created by scene.
       private: friend class OgreScene;

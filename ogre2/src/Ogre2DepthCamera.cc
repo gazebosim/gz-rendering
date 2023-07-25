@@ -358,6 +358,8 @@ void Ogre2DepthCamera::Destroy()
       this->ogreCamera = nullptr;
     }
   }
+
+  BaseDepthCamera::Destroy();
 }
 
 //////////////////////////////////////////////////

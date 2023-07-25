@@ -149,11 +149,17 @@ Ogre2RenderEngine::Ogre2RenderEngine() :
   this->dummyWindowId = 0;
 
   std::string ogrePath = std::string(OGRE2_RESOURCE_PATH);
-  this->ogrePaths.push_back(ogrePath);
+  std::vector<std::string> paths = common::split(ogrePath, ":");
+  for (const auto &path : paths)
+    this->ogrePaths.push_back(path);
 
   const char *env = std::getenv("OGRE2_RESOURCE_PATH");
   if (env)
-    this->ogrePaths.push_back(std::string(env));
+  {
+    paths = common::split(std::string(env), ":");
+    for (const auto &path : paths)
+      this->ogrePaths.push_back(path);
+  }
 }
 
 //////////////////////////////////////////////////

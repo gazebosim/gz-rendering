@@ -124,7 +124,10 @@ void OgreSelectionBuffer::DeleteRTTBuffer()
     this->dataPtr->buffer = nullptr;
   }
   if (this->dataPtr->pixelBox)
+  {
     delete this->dataPtr->pixelBox;
+    this->dataPtr->pixelBox = nullptr;
+  }
 }
 
 /////////////////////////////////////////////////

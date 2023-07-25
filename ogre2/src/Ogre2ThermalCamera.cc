@@ -780,6 +780,8 @@ void Ogre2ThermalCamera::Destroy()
   }
 
   this->dataPtr->thermalMaterialSwitcher.reset();
+
+  BaseThermalCamera::Destroy();
 }
 
 //////////////////////////////////////////////////

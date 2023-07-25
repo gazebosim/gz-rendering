@@ -144,6 +144,9 @@ void OgreWideAngleCamera::PreRender()
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::Destroy()
 {
+  if (!this->dataPtr->ogreCamera)
+    return;
+
   if (this->dataPtr->imageBuffer)
   {
     delete [] this->dataPtr->imageBuffer;
@@ -180,6 +183,13 @@ void OgreWideAngleCamera::Destroy()
     }
   }
 
+  if (this->dataPtr->ogreCamera)
+  {
+    this->scene->OgreSceneManager()->destroyCamera(
+        this->dataPtr->ogreCamera->getName());
+    this->dataPtr->ogreCamera = nullptr;
+  }
+
   if (this->dataPtr->envCubeMapTexture)
   {
     Ogre::TextureManager::getSingleton().remove(
@@ -200,6 +210,8 @@ void OgreWideAngleCamera::Destroy()
         this->dataPtr->compMat->getName());
     this->dataPtr->compMat.setNull();
   }
+
+  BaseWideAngleCamera::Destroy();
 }
 
 //////////////////////////////////////////////////

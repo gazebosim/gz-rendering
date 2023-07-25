@@ -163,6 +163,9 @@ void OgreGpuRays::Init()
 //////////////////////////////////////////////////
 void OgreGpuRays::Destroy()
 {
+  if (!this->dataPtr->ogreCamera)
+    return;
+
   if (this->dataPtr->gpuRaysBuffer)
   {
     delete [] this->dataPtr->gpuRaysBuffer;
@@ -235,6 +238,8 @@ void OgreGpuRays::Destroy()
 
   this->dataPtr->texIdx.clear();
   this->dataPtr->texCount = 0u;
+
+  BaseGpuRays::Destroy();
 }
 
 /////////////////////////////////////////////////

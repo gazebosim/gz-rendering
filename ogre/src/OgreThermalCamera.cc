@@ -344,6 +344,8 @@ void OgreThermalCamera::Destroy()
       this->ogreCamera = nullptr;
     }
   }
+
+  BaseThermalCamera::Destroy();
 }
 
 //////////////////////////////////////////////////

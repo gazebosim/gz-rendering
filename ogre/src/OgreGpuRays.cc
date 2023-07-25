@@ -238,6 +238,8 @@ void OgreGpuRays::Destroy()
 
   this->dataPtr->texIdx.clear();
   this->dataPtr->texCount = 0u;
+
+  BaseGpuRays::Destroy();
 }
 
 /////////////////////////////////////////////////

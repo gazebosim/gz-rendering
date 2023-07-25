@@ -55,7 +55,6 @@ namespace gz
       /// \brief Destroys all scenes created by render-engine and releases all
       /// loaded resources. This should be called when the given render-engine
       /// will no longer be used during runtime.
-      /// \return True if the render-engine was successfully destroyed
       public: virtual void Destroy() = 0;
 
       // TODO(anyone): merge with Destroy

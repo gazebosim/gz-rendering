@@ -86,15 +86,14 @@ namespace gz
       public: virtual void SetColorRangeImage(const std::string &_image)
           override;
 
+      // Documentation inherited.
+      public: virtual void PreRender() override;
+
       /// \brief Particle system visibility flags
       public: static const uint32_t kParticleVisibilityFlags;
 
       // Documentation inherited.
       protected: virtual void Init() override;
-
-      /// \brief Internal pre-render function added to avoid breaking ABI
-      /// compatibility
-      private: void PreRenderImpl();
 
       /// \brief Create the particle system
       private: void CreateParticleSystem();

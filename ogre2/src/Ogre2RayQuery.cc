@@ -88,6 +88,16 @@ Ogre2RayQuery::Ogre2RayQuery()
 //////////////////////////////////////////////////
 Ogre2RayQuery::~Ogre2RayQuery()
 {
+  if (this->dataPtr->rayQuery)
+  {
+    Ogre2ScenePtr ogreScene =
+        std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
+    if (ogreScene)
+    {
+      ogreScene->OgreSceneManager()->destroyQuery(this->dataPtr->rayQuery);
+      this->dataPtr->rayQuery = nullptr;
+    }
+  }
 }
 
 //////////////////////////////////////////////////

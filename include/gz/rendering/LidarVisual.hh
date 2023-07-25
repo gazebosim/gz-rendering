@@ -121,7 +121,7 @@ namespace gz
       public: virtual unsigned int VerticalRayCount() const = 0;
 
       /// \brief Set number of horizontal rays
-      /// \return _horizontalRayCount Number of vertical rays
+      /// \param[in] _horizontalRayCount Number of vertical rays
       public: virtual void SetHorizontalRayCount(
                   unsigned int _horizontalRayCount) = 0;
 

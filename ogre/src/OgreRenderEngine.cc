@@ -839,7 +839,7 @@ Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
 //////////////////////////////////////////////////
 OgreRenderEngine *OgreRenderEngine::Instance()
 {
-  return SingletonT<OgreRenderEngine>::Instance();
+  return gz::common::SingletonT<OgreRenderEngine>::Instance();
 }
 
 // Register this plugin

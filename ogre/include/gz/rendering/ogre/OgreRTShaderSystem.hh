@@ -42,8 +42,7 @@ namespace gz
     ///
     /// This class allows Gazebo to generate per-pixel shaders for every
     /// material at run-time.
-    class GZ_RENDERING_OGRE_VISIBLE OgreRTShaderSystem :
-      public common::SingletonT<OgreRTShaderSystem>
+    class GZ_RENDERING_OGRE_VISIBLE OgreRTShaderSystem
     {
       /// \enum LightingModel
       /// \brief The type of lighting
@@ -169,7 +168,6 @@ namespace gz
       public: void Update();
 
       /// \brief Get a pointer to the Ogre RT shader system
-      /// \todo(anyone) Remove inheritance from Singleton base class
       /// \return a pointer to the Ogre RT shader system
       public: static OgreRTShaderSystem *Instance();
 

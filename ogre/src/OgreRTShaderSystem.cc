@@ -756,5 +756,5 @@ bool OgreRTShaderSystem::IsInitialized() const
 //////////////////////////////////////////////////
 OgreRTShaderSystem *OgreRTShaderSystem::Instance()
 {
-  return SingletonT<OgreRTShaderSystem>::Instance();
+  return gz::common::SingletonT<OgreRTShaderSystem>::Instance();
 }

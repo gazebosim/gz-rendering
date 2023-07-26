@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  */
+
+#include <memory>
+
 #include "gz/rendering/Image.hh"
 
 /// \brief Shared pointer to raw image buffer

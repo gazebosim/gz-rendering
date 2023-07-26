@@ -20,7 +20,6 @@
 #include <memory>
 
 #include <gz/utils/ImplPtr.hh>
-// #include <gz/utils/SuppressWarning.hh>
 
 #include "gz/rendering/config.hh"
 #include "gz/rendering/PixelFormat.hh"
@@ -45,24 +44,6 @@ namespace gz
       /// \param[in] _format Image pixel format
       public: Image(unsigned int _width, unsigned int _height,
                   PixelFormat _format);
-
-      /// \brief Copy Constructor
-      /// \param[in] _other The other image
-      public: Image(const Image &_other);
-
-      /// \brief Copy assignment operator
-      /// \param[in] _image The new image
-      /// \return a reference to this instance
-      public: Image &operator=(const Image &_image);
-
-      /// \brief Move constructor
-      /// \param[in] _image Image to move.
-      public: Image(Image &&_image);
-
-      /// \brief Move assignment operator
-      /// \param[in] _image The new image
-      /// \return a reference to this instance
-      public: Image &operator=(Image &&_image);
 
       /// \brief Destructor
       public: virtual ~Image();
@@ -107,7 +88,7 @@ namespace gz
       public: template <typename T>
               T *Data();
 
-      GZ_UTILS_UNIQUE_IMPL_PTR(dataPtr)
+      GZ_UTILS_IMPL_PTR(dataPtr)
     };
 
     //////////////////////////////////////////////////

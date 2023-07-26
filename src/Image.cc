@@ -19,7 +19,7 @@
 /// \brief Shared pointer to raw image buffer
 typedef std::shared_ptr<unsigned char> DataPtr;
 
-/// \brief Private fields of image lens
+/// \brief Private fields of Image
 class gz::rendering::Image::Implementation
 {
   /// \brief Image width in pixels
@@ -50,14 +50,14 @@ struct ArrayDeleter
 
 //////////////////////////////////////////////////
 Image::Image()
-  : dataPtr(utils::MakeUniqueImpl<Implementation>())
+  : dataPtr(utils::MakeImpl<Implementation>())
 {
 }
 
 //////////////////////////////////////////////////
 Image::Image(unsigned int _width, unsigned int _height,
   PixelFormat _format)
-  : dataPtr(utils::MakeUniqueImpl<Implementation>())
+  : dataPtr(utils::MakeImpl<Implementation>())
 {
   this->dataPtr->width = _width;
   this->dataPtr->height = _height;
@@ -65,38 +65,6 @@ Image::Image(unsigned int _width, unsigned int _height,
   unsigned int size = this->MemorySize();
   this->dataPtr->data =
       DataPtr(new unsigned char[size], ArrayDeleter<unsigned char>());
-}
-
-//////////////////////////////////////////////////
-Image::Image(const Image &_other)
-  : dataPtr(utils::MakeUniqueImpl<Implementation>())
-{
-  // Avoid incorrect cppcheck error about dataPtr being assigned in constructor
-  Image::Implementation &dp = *(this->dataPtr);
-  dp = *(_other.dataPtr);
-}
-
-/////////////////////////////////////////////////
-Image::Image(Image &&_image)
-  : dataPtr(std::exchange(_image.dataPtr, nullptr))
-{
-}
-
-/////////////////////////////////////////////////
-Image &Image::operator=(const Image &_image)
-{
-  this->dataPtr->width = _image.dataPtr->width;
-  this->dataPtr->height = _image.dataPtr->height;
-  this->dataPtr->format = _image.dataPtr->format;
-  this->dataPtr->data = _image.dataPtr->data;
-  return *this;
-}
-
-/////////////////////////////////////////////////
-Image &Image::operator=(Image &&_image)
-{
-  std::swap(this->dataPtr, _image.dataPtr);
-  return *this;
 }
 
 //////////////////////////////////////////////////

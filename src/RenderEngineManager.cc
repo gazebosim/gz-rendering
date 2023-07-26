@@ -386,7 +386,7 @@ void RenderEngineManager::SetPluginPaths(const std::list<std::string> &_paths)
 //////////////////////////////////////////////////
 RenderEngineManager *RenderEngineManager::Instance()
 {
-  return SingletonT<RenderEngineManager>::Instance();
+  return gz::common::SingletonT<RenderEngineManager>::Instance();
 }
 
 //////////////////////////////////////////////////

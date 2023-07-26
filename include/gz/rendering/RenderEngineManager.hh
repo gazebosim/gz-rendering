@@ -43,8 +43,7 @@ namespace gz
     /// render-engines available at runtime. RenderEngine objects should not
     /// be access directly, but instead via the RenderEngineManager to maintain
     /// a flexible render-engine agnostic design.
-    class GZ_RENDERING_VISIBLE RenderEngineManager :
-      public virtual common::SingletonT<RenderEngineManager>
+    class GZ_RENDERING_VISIBLE RenderEngineManager
     {
       /// \brief Constructor
       public: RenderEngineManager();
@@ -136,7 +135,6 @@ namespace gz
       public: void SetPluginPaths(const std::list<std::string> &_paths);
 
       /// \brief Get a pointer to the render engine manager
-      /// \todo(anyone) Remove inheritance from Singleton base class
       /// \return a pointer to the render engine manager
       public: static RenderEngineManager *Instance();
 

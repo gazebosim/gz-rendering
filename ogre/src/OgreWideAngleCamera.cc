@@ -37,9 +37,9 @@
 #include "gz/rendering/ogre/OgreWideAngleCamera.hh"
 
 #include "gz/rendering/ogre/OgreConversions.hh"
-#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
 #include "gz/rendering/ogre/OgreRenderEngine.hh"
 #include "gz/rendering/ogre/OgreRenderPass.hh"
+#include "gz/rendering/ogre/OgreRTShaderSystem.hh"
 
 /// \brief Private data for the WideAngleCamera class
 class gz::rendering::OgreWideAngleCamera::Implementation
@@ -180,6 +180,9 @@ void OgreWideAngleCamera::PreRender()
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::Destroy()
 {
+  if (!this->dataPtr->ogreCamera)
+    return;
+
   this->RemoveAllRenderPasses();
 
   if (this->dataPtr->imageBuffer)
@@ -218,6 +221,13 @@ void OgreWideAngleCamera::Destroy()
     }
   }
 
+  if (this->dataPtr->ogreCamera)
+  {
+    this->scene->OgreSceneManager()->destroyCamera(
+        this->dataPtr->ogreCamera->getName());
+    this->dataPtr->ogreCamera = nullptr;
+  }
+
   if (this->dataPtr->envCubeMapTexture)
   {
     Ogre::TextureManager::getSingleton().remove(
@@ -240,6 +250,7 @@ void OgreWideAngleCamera::Destroy()
   }
 
   this->DestroyRenderTexture();
+  BaseWideAngleCamera::Destroy();
 }
 
 //////////////////////////////////////////////////

@@ -208,11 +208,19 @@ void Ogre2SelectionBuffer::DeleteRTTBuffer()
     this->dataPtr->ogreCompositorWorkspace = nullptr;
   }
 
-  auto engine = Ogre2RenderEngine::Instance();
-  auto ogreRoot = engine->OgreRoot();
-  ogreRoot->getRenderSystem()->getTextureGpuManager()->destroyTexture(
-    this->dataPtr->renderTexture);
-  this->dataPtr->renderTexture = nullptr;
+  if (this->dataPtr->renderTexture)
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    auto ogreRoot = engine->OgreRoot();
+    Ogre::TextureGpuManager *textureMgr =
+      ogreRoot->getRenderSystem()->getTextureGpuManager();
+    if (textureMgr->findTextureNoThrow(
+        this->dataPtr->renderTexture->getName()))
+    {
+      textureMgr->destroyTexture(this->dataPtr->renderTexture);
+      this->dataPtr->renderTexture = nullptr;
+    }
+  }
 }
 
 /////////////////////////////////////////////////

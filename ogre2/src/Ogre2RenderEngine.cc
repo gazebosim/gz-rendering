@@ -1455,7 +1455,7 @@ Ogre::CompositorWorkspaceListener *Ogre2RenderEngine::TerraWorkspaceListener()
 //////////////////////////////////////////////////
 Ogre2RenderEngine *Ogre2RenderEngine::Instance()
 {
-  return SingletonT<Ogre2RenderEngine>::Instance();
+  return gz::common::SingletonT<Ogre2RenderEngine>::Instance();
 }
 
 // Register this plugin

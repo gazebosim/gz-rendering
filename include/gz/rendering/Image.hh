@@ -19,7 +19,7 @@
 
 #include <memory>
 
-#include <gz/utils/SuppressWarning.hh>
+#include <gz/utils/ImplPtr.hh>
 
 #include "gz/rendering/config.hh"
 #include "gz/rendering/PixelFormat.hh"
@@ -35,11 +35,8 @@ namespace gz
     /// \brief Encapsulates a raw image buffer and relevant properties
     class GZ_RENDERING_VISIBLE Image
     {
-      /// \brief Shared pointer to raw image buffer
-      typedef std::shared_ptr<unsigned char> DataPtr;
-
       /// \brief Default constructor
-      public: Image() = default;
+      public: Image();
 
       /// \brief Constructor
       /// \param[in] _width Image width in pixels
@@ -49,7 +46,7 @@ namespace gz
                   PixelFormat _format);
 
       /// \brief Destructor
-      public: ~Image();
+      public: virtual ~Image();
 
       /// \brief Get image width in pixels
       /// \return The image width in pixels
@@ -91,33 +88,21 @@ namespace gz
       public: template <typename T>
               T *Data();
 
-      /// \brief Image width in pixels
-      private: unsigned int width = 0;
-
-      /// \brief Image height in pixels
-      private: unsigned int height = 0;
-
-      /// \brief Image pixel format
-      private: PixelFormat format = PF_UNKNOWN;
-
-      GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
-      /// \brief Pointer to the image data
-      private: DataPtr data = nullptr;
-      GZ_UTILS_WARN_RESUME__DLL_INTERFACE_MISSING
+      GZ_UTILS_IMPL_PTR(dataPtr)
     };
 
     //////////////////////////////////////////////////
     template <typename T>
     const T *Image::Data() const
     {
-      return static_cast<const T *>(this->data.get());
+      return static_cast<const T *>(this->Data());
     }
 
     //////////////////////////////////////////////////
     template <typename T>
     T *Image::Data()
     {
-      return static_cast<T *>(this->data.get());
+      return static_cast<T *>(this->Data());
     }
     }
   }

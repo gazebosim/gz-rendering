@@ -14,7 +14,29 @@
  * limitations under the License.
  *
  */
+
+#include <memory>
+
 #include "gz/rendering/Image.hh"
+
+/// \brief Shared pointer to raw image buffer
+typedef std::shared_ptr<unsigned char> DataPtr;
+
+/// \brief Private fields of Image
+class gz::rendering::Image::Implementation
+{
+  /// \brief Image width in pixels
+  public: unsigned int width = 0;
+
+  /// \brief Image height in pixels
+  public: unsigned int height = 0;
+
+  /// \brief Image pixel format
+  public: PixelFormat format = PF_UNKNOWN;
+
+  /// \brief Pointer to the image data
+  public: DataPtr data = nullptr;
+};
 
 using namespace gz;
 using namespace rendering;
@@ -30,14 +52,22 @@ struct ArrayDeleter
 };
 
 //////////////////////////////////////////////////
-Image::Image(unsigned int _width, unsigned int _height,
-  PixelFormat _format) :
-  width(_width),
-  height(_height)
+Image::Image()
+  : dataPtr(utils::MakeImpl<Implementation>())
 {
-  this->format = PixelUtil::Sanitize(_format);
+}
+
+//////////////////////////////////////////////////
+Image::Image(unsigned int _width, unsigned int _height,
+  PixelFormat _format)
+  : dataPtr(utils::MakeImpl<Implementation>())
+{
+  this->dataPtr->width = _width;
+  this->dataPtr->height = _height;
+  this->dataPtr->format = PixelUtil::Sanitize(_format);
   unsigned int size = this->MemorySize();
-  this->data = DataPtr(new unsigned char[size], ArrayDeleter<unsigned char>());
+  this->dataPtr->data =
+      DataPtr(new unsigned char[size], ArrayDeleter<unsigned char>());
 }
 
 //////////////////////////////////////////////////
@@ -46,41 +76,42 @@ Image::~Image() = default;
 //////////////////////////////////////////////////
 unsigned int Image::Width() const
 {
-  return this->width;
+  return this->dataPtr->width;
 }
 
 //////////////////////////////////////////////////
 unsigned int Image::Height() const
 {
-  return this->height;
+  return this->dataPtr->height;
 }
 
 //////////////////////////////////////////////////
 PixelFormat Image::Format() const
 {
-  return this->format;
+  return this->dataPtr->format;
 }
 
 //////////////////////////////////////////////////
 unsigned int Image::Depth() const
 {
-  return PixelUtil::ChannelCount(this->format);
+  return PixelUtil::ChannelCount(this->dataPtr->format);
 }
 
 //////////////////////////////////////////////////
 unsigned int Image::MemorySize() const
 {
-  return PixelUtil::MemorySize(this->format, this->width, this->height);
+  return PixelUtil::MemorySize(this->dataPtr->format, this->dataPtr->width,
+      this->dataPtr->height);
 }
 
 //////////////////////////////////////////////////
 const void *Image::Data() const
 {
-  return this->data.get();
+  return this->dataPtr->data.get();
 }
 
 //////////////////////////////////////////////////
 void *Image::Data()
 {
-  return this->data.get();
+  return this->dataPtr->data.get();
 }

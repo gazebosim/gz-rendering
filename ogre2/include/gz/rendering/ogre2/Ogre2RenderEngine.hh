@@ -79,8 +79,7 @@ namespace gz
     /// underlying ogre2 render engine, loads its plugins, and creates
     /// resources needed for the engine to run
     class GZ_RENDERING_OGRE2_VISIBLE Ogre2RenderEngine :
-      public virtual BaseRenderEngine,
-      public common::SingletonT<Ogre2RenderEngine>
+      public virtual BaseRenderEngine
     {
       /// \brief Constructor
       private: Ogre2RenderEngine();
@@ -230,7 +229,6 @@ namespace gz
           *TerraWorkspaceListener() const;
 
       /// \brief Get a pointer to the render engine
-      /// \todo(anyone) Remove inheritance from Singleton base class
       /// \return a pointer to the render engine
       public: static Ogre2RenderEngine *Instance();
 

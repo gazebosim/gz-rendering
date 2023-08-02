@@ -66,8 +66,7 @@ namespace gz
     };
 
     class GZ_RENDERING_OGRE_VISIBLE OgreRenderEngine :
-      public virtual BaseRenderEngine,
-      public common::SingletonT<OgreRenderEngine>
+      public virtual BaseRenderEngine
     {
       /// \enum OgreRenderPathType
       /// \brief The type of rendering path used by the rendering engine.
@@ -114,7 +113,6 @@ namespace gz
       public: std::vector<unsigned int> FSAALevels() const;
 
       /// \brief Get a pointer to the render engine
-      /// \todo(anyone) Remove inheritance from Singleton base class
       /// \return a pointer to the render engine
       public: static OgreRenderEngine *Instance();
 

@@ -69,6 +69,21 @@ namespace gz
       /// mode
       /// \sa TransformAxis, TransformMode
       public: virtual VisualPtr ChildByAxis(unsigned int _axis) const = 0;
+
+      /// \brief Update the Gizmo visual's rotation visuals to face the specified
+      /// position.
+      /// \param[in] _pos Position to face. One typical position to face is
+      /// the eye (camera) position so that the rotation visuals are rendered
+      /// in a pose that is not behind the object the Gizmo visual is
+      /// attached to.
+      /// \param[in] _rot Rotation to be applied. For local space rotation,
+      /// set this to the rotation of the object that the Gizmo visual is
+      /// attached to so that the rotation visuals are rotated to match the
+      ///  object's rotation. For world space rotation, set this to identity
+      /// quarternion for rotation visuals to be rendered in a pose that the
+      /// rotation visuals are aligned with the world axes.
+      public: virtual void LookAt(const math::Vector3d &_pos,
+          const math::Quaterniond &_rot) = 0;
     };
     }
   }

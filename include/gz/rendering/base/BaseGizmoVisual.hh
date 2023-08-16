@@ -74,6 +74,10 @@ namespace gz
       // Documentation inherited
       public: virtual VisualPtr ChildByAxis(unsigned int _axis) const override;
 
+      // Documentation inherited
+      public: virtual void LookAt(const math::Vector3d &_pos,
+          const math::Quaterniond &_rot) override;
+
       /// \brief Reset the gizmo visual state
       public: virtual void Reset();
 
@@ -716,6 +720,35 @@ namespace gz
         return it->second;
 
       return VisualPtr();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseGizmoVisual<T>::LookAt(const math::Vector3d &_pos,
+        const math::Quaterniond &_rot)
+    {
+      math::Vector3d dir = _pos - this->WorldPosition();
+      dir = dir.Normalize();
+      dir = _rot.RotateVectorReverse(dir);
+      math::Vector3d xRot(atan2(-dir.Y(), dir.Z()), 0, 0);
+      math::Vector3d xRotOffset(0, -GZ_PI * 0.5, 0);
+      this->visuals[TransformAxis::TA_ROTATION_X]->SetWorldRotation(
+          _rot * math::Quaterniond(xRot) * math::Quaterniond(xRotOffset));
+
+      math::Vector3d yRot(0, atan2(dir.X(), dir.Z()), 0);
+      math::Vector3d yRotOffset(GZ_PI * 0.5, -GZ_PI * 0.5, 0);
+      this->visuals[TransformAxis::TA_ROTATION_Y]->SetWorldRotation(
+          _rot * math::Quaterniond(yRot) * math::Quaterniond(yRotOffset));
+
+      math::Vector3d zRot(0, 0, atan2(dir.Y(), dir.X()));
+      this->visuals[TransformAxis::TA_ROTATION_Z]->SetWorldRotation(
+          _rot * math::Quaterniond(zRot));
+
+      math::Matrix4d lookAt;
+      lookAt = lookAt.LookAt(_pos, this->WorldPosition());
+      math::Vector3d circleRotOffset(0, GZ_PI * 0.5, 0);
+      this->visuals[TransformAxis::TA_ROTATION_Z << 1]->SetWorldRotation(
+          lookAt.Rotation() * math::Quaterniond(circleRotOffset));
     }
     }
   }

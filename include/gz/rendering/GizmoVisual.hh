@@ -70,8 +70,8 @@ namespace gz
       /// \sa TransformAxis, TransformMode
       public: virtual VisualPtr ChildByAxis(unsigned int _axis) const = 0;
 
-      /// \brief Update the Gizmo visual's rotation visuals to face the specified
-      /// position.
+      /// \brief Update the Gizmo visual's rotation visuals to face the
+      /// specified position.
       /// \param[in] _pos Position to face. One typical position to face is
       /// the eye (camera) position so that the rotation visuals are rendered
       /// in a pose that is not behind the object the Gizmo visual is

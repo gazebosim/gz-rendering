@@ -79,7 +79,7 @@ namespace gz
       /// \param[in] _rot Rotation to be applied. For local space rotation,
       /// set this to the rotation of the object that the Gizmo visual is
       /// attached to so that the rotation visuals are rotated to match the
-      ///  object's rotation. For world space rotation, set this to identity
+      /// object's rotation. For world space rotation, set this to identity
       /// quarternion for rotation visuals to be rendered in a pose that the
       /// rotation visuals are aligned with the world axes.
       public: virtual void LookAt(const math::Vector3d &_pos,

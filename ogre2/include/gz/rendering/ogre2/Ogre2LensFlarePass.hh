@@ -79,7 +79,7 @@ namespace gz
             Ogre::CompositorWorkspace *_workspace) override;
 
       // Documentation inherited
-      public: void Destroy() override;
+      public: virtual void Destroy() override;
 
       /// \brief Check to see if the lens flare is occluded and return a scaling
       /// factor that is proportional to the lens flare's visibility

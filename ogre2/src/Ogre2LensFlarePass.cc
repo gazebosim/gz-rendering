@@ -126,6 +126,14 @@ Ogre2LensFlarePass::Ogre2LensFlarePass() :
 //////////////////////////////////////////////////
 Ogre2LensFlarePass::~Ogre2LensFlarePass()
 {
+  this->Destroy();
+}
+
+//////////////////////////////////////////////////
+void Ogre2LensFlarePass::Destroy()
+{
+  this->dataPtr->rayQuery.reset();
+  this->dataPtr->currentCamera.reset();
 }
 
 //////////////////////////////////////////////////

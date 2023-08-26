@@ -151,7 +151,12 @@ Ogre2Material::~Ogre2Material()
 void Ogre2Material::Destroy()
 {
   if (!this->Scene()->IsInitialized())
+  {
+    // just reset the ogre pointers and return.
+    this->dataPtr->ogreSolidColorMat.reset();
+    this->dataPtr->ogreSolidColorShader.reset();
     return;
+  }
 
   if (!this->ogreDatablock)
     return;

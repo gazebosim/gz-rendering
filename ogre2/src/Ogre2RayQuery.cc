@@ -88,6 +88,9 @@ Ogre2RayQuery::Ogre2RayQuery()
 //////////////////////////////////////////////////
 Ogre2RayQuery::~Ogre2RayQuery()
 {
+  if (!this->Scene()->IsInitialized())
+    return;
+
   if (this->dataPtr->rayQuery)
   {
     Ogre2ScenePtr ogreScene =

@@ -144,6 +144,9 @@ Ogre2SelectionBuffer::Ogre2SelectionBuffer(const std::string &_cameraName,
 /////////////////////////////////////////////////
 Ogre2SelectionBuffer::~Ogre2SelectionBuffer()
 {
+  if (!this->dataPtr->scene || !this->dataPtr->scene->IsInitialized())
+    return;
+
   this->DeleteRTTBuffer();
 
   // remove selectionMaterial in destructor
@@ -157,7 +160,14 @@ Ogre2SelectionBuffer::~Ogre2SelectionBuffer()
   }
 
   // remove selection buffer camera
-  this->dataPtr->sceneMgr->destroyCamera(this->dataPtr->selectionCamera);
+  if (this->dataPtr->selectionCamera)
+  {
+    this->dataPtr->selectionCamera->removeListener(
+        this->dataPtr->materialSwitcher.get());
+    this->dataPtr->sceneMgr->destroyCamera(this->dataPtr->selectionCamera);
+    this->dataPtr->selectionCamera = nullptr;
+    this->dataPtr->materialSwitcher.reset();
+  }
 }
 
 /////////////////////////////////////////////////

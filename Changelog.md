@@ -6,6 +6,48 @@
 
 ### Gazebo Rendering 7.X
 
+### Gazebo Rendering 7.4.1 (2023-08-17)
+
+1. Infrastructure
+    * [Pull request #879](https://github.com/gazebosim/gz-rendering/pull/879)
+    * [Pull request #878](https://github.com/gazebosim/gz-rendering/pull/878)
+
+1. Restore missing Ogre2Heightmap::DestroyImpl implementation
+    * [Pull request #870](https://github.com/gazebosim/gz-rendering/pull/870)
+
+1. Destroy sensor node on exit
+    * [Pull request #869](https://github.com/gazebosim/gz-rendering/pull/869)
+
+1. Parse `OGRE2_RESOURCE_PATH` as a list of strings
+    * [Pull request #867](https://github.com/gazebosim/gz-rendering/pull/867)
+
+1. Fix a leak in ogre2 ray query
+    * [Pull request #866](https://github.com/gazebosim/gz-rendering/pull/866)
+
+1. Fixed light visual in OGRE
+    * [Pull request #862](https://github.com/gazebosim/gz-rendering/pull/862)
+
+1. Removed unused parameter warning
+    * [Pull request #861](https://github.com/gazebosim/gz-rendering/pull/861)
+
+1. Replace ignerr with gzerr
+    * [Pull request #857](https://github.com/gazebosim/gz-rendering/pull/857)
+
+1. Minor cleanup of ogre/ogre2: fix namespace, unused variable, missing header
+    * [Pull request #858](https://github.com/gazebosim/gz-rendering/pull/858)
+
+1. Fix missing header in CameraLens
+    * [Pull request #855](https://github.com/gazebosim/gz-rendering/pull/855)
+
+1. Fix missing cstdint header in latest gcc build
+    * [Pull request #853](https://github.com/gazebosim/gz-rendering/pull/853)
+
+1. OgreNext: Fix shaders compilation on d3d12 mesa driver (WSLg)
+    * [Pull request #851](https://github.com/gazebosim/gz-rendering/pull/851)
+
+1. Fix visibility decorator of Ogre2Projector
+    * [Pull request #850](https://github.com/gazebosim/gz-rendering/pull/850)
+
 ### Gazebo Rendering 7.4.0 (2023-05-18)
 
 1. Add optional binary relocatability

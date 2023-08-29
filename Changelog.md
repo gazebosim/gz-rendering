@@ -4,6 +4,64 @@
 
 ### Gazebo Rendering 8.0.0 (202X-XX-XX)
 
+1. Infrastructure
+    * [Pull request #888](https://github.com/gazebosim/gz-rendering/pull/888)
+    * [Pull request #868](https://github.com/gazebosim/gz-rendering/pull/868)
+
+1. Clean up internal resources on Destroy
+    * [Pull request #886](https://github.com/gazebosim/gz-rendering/pull/886)
+
+1. Remove ignition
+    * [Pull request #877](https://github.com/gazebosim/gz-rendering/pull/877)
+
+1. Remove inheritance from Singleton class.
+    * [Pull request #876](https://github.com/gazebosim/gz-rendering/pull/876)
+
+1. Add private data class to Image
+    * [Pull request #875](https://github.com/gazebosim/gz-rendering/pull/875)
+
+1. Remove RenderEngineManager's inheritance from Singleton base class
+    * [Pull request #874](https://github.com/gazebosim/gz-rendering/pull/874)
+
+1. Override PreRender function in Ogre2ParticleEmitter
+    * [Pull request #871](https://github.com/gazebosim/gz-rendering/pull/871)
+
+1. Fix calling GpuRays::Destroy more than once
+    * [Pull request #860](https://github.com/gazebosim/gz-rendering/pull/860)
+
+1. Use std::vector instead of std::map in BaseStorage
+    * [Pull request #831](https://github.com/gazebosim/gz-rendering/pull/831)
+
+1. Limit Global Illumination CI CVT method to vulkan backend
+    * [Pull request #798](https://github.com/gazebosim/gz-rendering/pull/798)
+
+1. Global illumination VCT & CI VCT
+    * [Pull request #675](https://github.com/gazebosim/gz-rendering/pull/675)
+
+1. Add LensFlare to ogre1
+    * [Pull request #775](https://github.com/gazebosim/gz-rendering/pull/775)
+
+1. Cleanup config.hh.in and deprecate public HAVE_ macros
+    * [Pull request #791](https://github.com/gazebosim/gz-rendering/pull/791)
+
+1. Add `GZ_RENDERING_HAVE_VULKAN` to guard vulkan code in header
+    * [Pull request #790](https://github.com/gazebosim/gz-rendering/pull/790)
+
+1. Look for vulkan in CMakeLists
+    * [Pull request #782](https://github.com/gazebosim/gz-rendering/pull/782)
+
+1. Add LensFlarePass (ogre2 engine)
+    * [Pull request #752](https://github.com/gazebosim/gz-rendering/pull/752)
+
+1. Add Support for wide-angle cameras in ogre2
+    * [Pull request #733](https://github.com/gazebosim/gz-rendering/pull/733)
+
+1. Fix wrong Z check in OgreWideAngleCamera::Project3d
+    * [Pull request #746](https://github.com/gazebosim/gz-rendering/pull/746)
+
+1. Add necessary headers for Vulkan QML GUI backend
+    * [Pull request #706](https://github.com/gazebosim/gz-rendering/pull/706)
+
 ### Gazebo Rendering 7.X
 
 ### Gazebo Rendering 7.4.1 (2023-08-17)

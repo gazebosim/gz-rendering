@@ -103,7 +103,7 @@ namespace gz
     template <class T>
     VisualPtr BaseArrowVisual<T>::Head() const
     {
-      return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(2));
+      return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(0));
     }
 
     //////////////////////////////////////////////////
@@ -117,44 +117,28 @@ namespace gz
     template <class T>
     VisualPtr BaseArrowVisual<T>::Rotation() const
     {
-      return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(0));
+      return std::dynamic_pointer_cast<Visual>(this->ChildByIndex(2));
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseArrowVisual<T>::ShowArrowHead(bool _b)
     {
-      NodePtr child = this->ChildByIndex(2);
-      VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
-      if (visual)
-      {
-        visual->SetVisible(_b);
-      }
+      this->Head()->SetVisible(_b);
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseArrowVisual<T>::ShowArrowShaft(bool _b)
     {
-      NodePtr child = this->ChildByIndex(1);
-      VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
-      if (visual)
-      {
-        visual->SetVisible(_b);
-      }
+      this->Shaft()->SetVisible(_b);
     }
 
     //////////////////////////////////////////////////
     template <class T>
     void BaseArrowVisual<T>::ShowArrowRotation(bool _b)
     {
-      NodePtr child = this->ChildByIndex(0);
-      VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
-      if (visual)
-      {
-        visual->SetVisible(_b);
-        this->rotationVisible = _b;
-      }
+      this->Rotation()->SetVisible(_b);
     }
 
     //////////////////////////////////////////////////
@@ -163,16 +147,11 @@ namespace gz
     {
       T::SetVisible(_visible);
 
-      NodePtr child = this->ChildByIndex(0);
-      VisualPtr visual = std::dynamic_pointer_cast<Visual>(child);
-      if (visual)
-      {
-        // Force rotation visual visibility to false
-        // if the arrow visual is not visible.
-        // Else, rotation visual's visibility overrides
-        // its parent's visibility.
-        visual->SetVisible(this->rotationVisible && _visible);
-      }
+      // Force rotation visual visibility to false
+      // if the arrow visual is not visible.
+      // Else, rotation visual's visibility overrides
+      // its parent's visibility.
+      this->Rotation()->SetVisible(this->rotationVisible && _visible);
     }
 
     //////////////////////////////////////////////////

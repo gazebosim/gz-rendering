@@ -51,29 +51,37 @@ TEST_F(ArrowVisualTest, ArrowVisual)
   // check children and geometry
   EXPECT_EQ(3u, visual->ChildCount());
 
-  NodePtr node = visual->ChildByIndex(0u);
+  NodePtr node = visual->Rotation();
   VisualPtr child = std::dynamic_pointer_cast<Visual>(node);
   ASSERT_NE(nullptr, child);
   EXPECT_EQ(1u, child->GeometryCount());
-  EXPECT_EQ(node, visual->Rotation());
+  MeshPtr mesh = std::dynamic_pointer_cast<Mesh>(child->GeometryByIndex(0u));
+  ASSERT_NE(nullptr, mesh);
+  MeshDescriptor desc = mesh->Descriptor();
+  EXPECT_NE(std::string::npos, desc.meshName.find("rotation"));
 
-  node = visual->ChildByIndex(1u);
+  node = visual->Shaft();
   child = std::dynamic_pointer_cast<Visual>(node);
   ASSERT_NE(nullptr, child);
   EXPECT_EQ(1u, child->GeometryCount());
-  EXPECT_EQ(node, visual->Shaft());
+  mesh = std::dynamic_pointer_cast<Mesh>(child->GeometryByIndex(0u));
+  ASSERT_NE(nullptr, mesh);
+  desc = mesh->Descriptor();
+  EXPECT_NE(std::string::npos, desc.meshName.find("cylinder"));
 
-  node = visual->ChildByIndex(2u);
+  node = visual->Head();
   child = std::dynamic_pointer_cast<Visual>(node);
   ASSERT_NE(nullptr, child);
   EXPECT_EQ(1u, child->GeometryCount());
-  EXPECT_EQ(node, visual->Head());
-
   // test destroy
   ArrowVisualPtr visual2 = scene->CreateArrowVisual();
   ASSERT_NE(nullptr, visual2);
   visual2->Destroy();
   EXPECT_EQ(0u, visual2->ChildCount());
+  mesh = std::dynamic_pointer_cast<Mesh>(child->GeometryByIndex(0u));
+  ASSERT_NE(nullptr, mesh);
+  desc = mesh->Descriptor();
+  EXPECT_NE(std::string::npos, desc.meshName.find("cone"));
 
   // Clean up
   engine->DestroyScene(scene);

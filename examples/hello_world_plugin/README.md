@@ -36,8 +36,9 @@ Now you can run `gz sim` with the name of the resultant library file (without th
 or the file extension, i.e., libHelloWorldPlugin.so -> HelloWorldPlugin):
 
 ~~~
-gz sim --render-engine HelloWorldPlugin
+gz sim -v 4 --render-engine HelloWorldPlugin empty.sdf
 ~~~
 
 You should see a blank screen within the Gazebo GUI, as this mocked plugin provides no implementation
-for the scene.
+for the scene. The Gazebo Component Inspector should show that the Render Engine Gui Plugin and
+the Render Engine Server Plugin are now set to use the `HelloWorldPlugin`.

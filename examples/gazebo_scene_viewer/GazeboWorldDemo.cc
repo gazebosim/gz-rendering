@@ -103,7 +103,6 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
 
   engineNames.push_back(ogreEngineName);
-  engineNames.push_back("optix");
 
   for (auto engineName : engineNames)
   {

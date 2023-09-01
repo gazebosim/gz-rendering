@@ -24,7 +24,6 @@ You'll see:
 
 ```{.sh}
 [Msg] Loading plugin [gz-rendering8-ogre]
-Engine 'optix' is not supported
 ===============================
   TAB - Switch render engines
   ESC - Exit

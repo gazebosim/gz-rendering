@@ -1,5 +1,28 @@
 ## Ignition Rendering
 
+### Ignition Rendering 6.6.1 (2023-09-01)
+
+1. Fixed light visual in OGRE
+    * [Pull request #864](https://github.com/gazebosim/gz-rendering/pull/864)
+
+1. Lower severity level for ogre2 visibility mask msgs and unavailable render passes
+    * [Pull request #830](https://github.com/gazebosim/gz-rendering/pull/830)
+
+1. Infrastructure
+    * [Pull request #834](https://github.com/gazebosim/gz-rendering/pull/834)
+
+1. Rename COPYING to LICENSE
+    * [Pull request #833](https://github.com/gazebosim/gz-rendering/pull/833)
+
+1. Add message to see troubleshooting page when render engine fails to create dummy window
+    * [Pull request #829](https://github.com/gazebosim/gz-rendering/pull/829)
+
+1. Tweak max camera position limit
+    * [Pull request #827](https://github.com/gazebosim/gz-rendering/pull/827)
+
+1. Limit max camera position vector length
+    * [Pull request #824](https://github.com/gazebosim/gz-rendering/pull/824)
+
 ### Ignition Rendering 6.6.0 (2023-02-02)
 
 1. Backport Composite BaseVisual destroy fix to 6

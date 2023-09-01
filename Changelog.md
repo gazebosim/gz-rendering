@@ -3,7 +3,7 @@
 ### Ignition Rendering 6.6.1 (2023-09-01)
 
 1. Fixed light visual in OGRE
-    * [Pull request #864](https://github.com/gazebosim/gz-rendering/pull/#864)
+    * [Pull request #864](https://github.com/gazebosim/gz-rendering/pull/864)
 
 1. Lower severity level for ogre2 visibility mask msgs and unavailable render passes
     * [Pull request #830](https://github.com/gazebosim/gz-rendering/pull/830)

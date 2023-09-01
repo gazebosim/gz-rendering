@@ -36,7 +36,7 @@ Now you can run `gz sim` with the name of the resultant library file (without th
 or the file extension, i.e., libHelloWorldPlugin.so -> HelloWorldPlugin):
 
 ~~~
-gz sim -v 4 --render-engine HelloWorldPlugin empty.sdf
+gz sim --render-engine HelloWorldPlugin empty.sdf
 ~~~
 
 You should see a blank screen within the Gazebo GUI, as this mocked plugin provides no implementation

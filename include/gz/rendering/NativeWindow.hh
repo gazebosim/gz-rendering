@@ -38,8 +38,11 @@ namespace gz
     /// on OS and RenderSystem
     class GZ_RENDERING_VISIBLE NativeWindow
     {
+      /// \brief Constructor
+      public: NativeWindow();
+
       /// \brief Destructor
-      public: virtual ~NativeWindow() { }
+      public: virtual ~NativeWindow();
 
       /// \brief Tells the native window whether it's under focus
       /// \param[in] _focused True if we acquired focus. False if we lost it

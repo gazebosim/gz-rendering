@@ -1343,7 +1343,7 @@ NativeWindowPtr Ogre2RenderEngine::CreateNativeWindow(
 #ifdef _WIN32
     params["externalGLContext"] =
       std::to_string((size_t)wglGetCurrentContext());
-#  elidef __APPLE__
+#elif defined(__APPLE__)
     params["externalGLContext"] =
       std::to_string((size_t)CGLGetCurrentContext());
 #else

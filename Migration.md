@@ -18,7 +18,9 @@ release will remove the deprecated code.
    BaseStore APIs such as `IterByIndex` may now be different from before since
    the order of objects stored in maps and vectors are different. The iterators
    returned may also change or become invalid when objects are added or removed
-   from the store.
+   from the store. This impacts users using APIs to access nodes / visuals by
+   index, e.g. `Node::ChildByIndex` and `Scene::VisualByIndex` may now
+   return a different node pointer.
 
 ## Gazebo Rendering 6.x to 7.x
 

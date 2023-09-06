@@ -32,6 +32,7 @@
 #include <Compositor/OgreCompositorWorkspace.h>
 #include <Compositor/OgreCompositorWorkspaceListener.h>
 #include <Compositor/Pass/PassQuad/OgreCompositorPassQuad.h>
+#include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
 #include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
 #include <OgreDepthBuffer.h>
 #include <OgreImage2.h>
@@ -150,6 +151,16 @@ class gz::rendering::Ogre2WideAngleCamera::Implementation
   /// \brief See Ogre2WideAngleCameraWorkspaceListenerPrivate
   public: Ogre2WideAngleCameraWorkspaceListenerPrivate workspaceListener;
 
+  /// \brief Name of sky box material
+  public: const std::string kSkyboxMaterialName = "SkyBox";
+
+  /// \brief Background material of the render target
+  public: MaterialPtr backgroundMaterial;
+
+  /// \brief Flag to indicate if the render target background material has
+  /// changed
+  public: bool backgroundMaterialDirty = false;
+
   explicit Implementation(gz::rendering::Ogre2WideAngleCamera &_owner) :
     workspaceListener(_owner)
   {
@@ -215,6 +226,13 @@ void Ogre2WideAngleCamera::DestroyRenderTexture()
 void Ogre2WideAngleCamera::PreRender()
 {
   BaseCamera::PreRender();
+
+  if (this->dataPtr->backgroundMaterialDirty)
+  {
+    this->UpdateBackgroundMaterial();
+    this->RemoveAllRenderPasses();
+    this->DestroyTextures();
+  }
 
   {
     auto thisAsCameraPtr =
@@ -621,6 +639,26 @@ void Ogre2WideAngleCamera::CreateWorkspaceDefinition(bool _withMsaa)
   const IdString cubemapPassNodeName =
     _withMsaa ? "WideAngleCameraCubemapPassMsaa" : "WideAngleCameraCubemapPass";
 
+  bool validBackground = this->dataPtr->backgroundMaterial &&
+      !this->dataPtr->backgroundMaterial->EnvironmentMap().empty();
+
+  // render background, e.g. sky, after opaque stuff
+  if (validBackground)
+  {
+    Ogre::CompositorNodeDef *nodeDef = ogreCompMgr->getNodeDefinitionNonConst(
+        cubemapPassNodeName);
+    Ogre::CompositorTargetDef *target0 = nodeDef->getTargetPass(0);
+
+    // quad pass
+    Ogre::CompositorPassQuadDef *passQuad =
+        static_cast<Ogre::CompositorPassQuadDef *>(
+        target0->addPass(Ogre::PASS_QUAD));
+    passQuad->mMaterialName = this->dataPtr->kSkyboxMaterialName + "_"
+        + this->Name();
+    passQuad->mFrustumCorners =
+        Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
+  }
+
   for (uint32_t faceIdx = 0u; faceIdx < kWideAngleNumCubemapFaces; ++faceIdx)
   {
     const std::string wsDefName = this->WorkspaceDefinitionName(faceIdx);
@@ -969,7 +1007,7 @@ void Ogre2WideAngleCamera::CreateWideAngleTexture()
 
   if (msaa > 1u)
   {
-    SetupMSAA(ogreCompMgr, msaa);
+    this->SetupMSAA(ogreCompMgr, msaa);
   }
 
   this->CreateFacesWorkspaces(msaa > 1u);
@@ -1363,4 +1401,52 @@ void Ogre2WideAngleCameraWorkspaceListenerPrivate::passPreExecute(
 
     this->owner.PrepareForFinalPass(pass);
   }
+}
+
+//////////////////////////////////////////////////
+void Ogre2WideAngleCamera::SetBackgroundMaterial(MaterialPtr _material)
+{
+  this->dataPtr->backgroundMaterial = _material;
+  this->dataPtr->backgroundMaterialDirty = true;
+}
+
+//////////////////////////////////////////////////
+MaterialPtr Ogre2WideAngleCamera::BackgroundMaterial() const
+{
+  return this->dataPtr->backgroundMaterial;
+}
+
+//////////////////////////////////////////////////
+void Ogre2WideAngleCamera::UpdateBackgroundMaterial()
+{
+  if (!this->dataPtr->backgroundMaterialDirty)
+    return;
+
+  bool validBackground = this->dataPtr->backgroundMaterial &&
+      !this->dataPtr->backgroundMaterial->EnvironmentMap().empty();
+
+  if (validBackground)
+  {
+    Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
+    std::string skyMatName = this->dataPtr->kSkyboxMaterialName + "_"
+        + this->Name();
+    auto mat = matManager.getByName(skyMatName);
+    if (!mat)
+    {
+      auto skyboxMat = matManager.getByName(this->dataPtr->kSkyboxMaterialName);
+      if (!skyboxMat)
+      {
+        gzerr << "Unable to find skybox material" << std::endl;
+        return;
+      }
+      mat = skyboxMat->clone(skyMatName);
+    }
+    Ogre::TextureUnitState *texUnit =
+        mat->getTechnique(0u)->getPass(0u)->getTextureUnitState(0u);
+    texUnit->setTextureName(this->dataPtr->backgroundMaterial->EnvironmentMap(),
+        Ogre::TextureTypes::TypeCube);
+    texUnit->setHardwareGammaEnabled(false);
+  }
+
+  this->dataPtr->backgroundMaterialDirty = false;
 }

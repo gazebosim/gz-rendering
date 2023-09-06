@@ -40,7 +40,7 @@ There are 2 other types of boxes:
 * 2D visible: box around the visible parts of an object.
 * 2D full: box around the object, including parts that aren't visible to the camera.
 
-Compare the two 2D box types as followS:
+Compare the two 2D box types as follows:
 
 ```{.sh}
 ./boundingbox_camera 2D_visible

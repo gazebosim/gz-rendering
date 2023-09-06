@@ -1017,7 +1017,9 @@ void Ogre2WideAngleCamera::CreateWideAngleTexture()
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::Render()
 {
-  const uint32_t currVisibilityMask = this->VisibilityMask();
+  // make sure we do not alter the reserved visibility flags
+  const uint32_t currVisibilityMask = this->VisibilityMask() &
+    Ogre::VisibilityFlags::RESERVED_VISIBILITY_FLAGS;
   this->dataPtr->cubePassSceneDef->mVisibilityMask = currVisibilityMask;
 
   this->scene->StartRendering(this->dataPtr->ogreCamera);

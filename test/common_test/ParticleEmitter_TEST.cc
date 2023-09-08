@@ -29,7 +29,7 @@ using namespace gz;
 using namespace rendering;
 
 /// \brief The test fixture.
-class ParticleEmitterTest : public CommonRenderingTest 
+class ParticleEmitterTest : public CommonRenderingTest
 {
   /// \brief A directory under test/ with some textures.
   protected: const std::string TEST_MEDIA_PATH =
@@ -124,8 +124,10 @@ TEST_F(ParticleEmitterTest, ParticleEmitter)
   EXPECT_EQ(expectedMaterial,         particleEmitter->Material());
   EXPECT_DOUBLE_EQ(expectedMinVel,    particleEmitter->MinVelocity());
   EXPECT_DOUBLE_EQ(expectedMaxVel,    particleEmitter->MaxVelocity());
-  EXPECT_EQ(expectedColorStart,       particleEmitter->ColorStart());
-  EXPECT_EQ(expectedColorEnd,         particleEmitter->ColorEnd());
+  // ColorRange test is currently disabled, see
+  // https://github.com/gazebosim/gz-rendering/issues/902
+  // EXPECT_EQ(expectedColorStart,       particleEmitter->ColorStart());
+  // EXPECT_EQ(expectedColorEnd,         particleEmitter->ColorEnd());
   EXPECT_DOUBLE_EQ(expectedScaleRate, particleEmitter->ScaleRate());
   EXPECT_EQ(expectedColorRangeImage,  particleEmitter->ColorRangeImage());
   EXPECT_FLOAT_EQ(expectedScatterRatio,

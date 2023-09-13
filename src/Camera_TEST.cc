@@ -476,7 +476,7 @@ TEST_P(CameraTest, VisibilityMask)
 }
 
 /////////////////////////////////////////////////
-TEST_F(CameraTest, IntrinsicMatrix)
+TEST_P(CameraTest, IntrinsicMatrix)
 {
   IntrinsicMatrix(GetParam());
 }

@@ -48,6 +48,9 @@ class CameraTest : public testing::Test,
 
   /// \brief Test setting visibility mask
   public: void VisibilityMask(const std::string &_renderEngine);
+
+  /// \brief Test setting intrinsic matrix
+  public: void IntrinsicMatrix(const std::string &_renderEngine);
 };
 
 /////////////////////////////////////////////////
@@ -367,48 +370,17 @@ void CameraTest::VisibilityMask(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
-TEST_P(CameraTest, ViewProjectionMatrix)
+void CameraTest::IntrinsicMatrix(const std::string &_renderEngine)
 {
-  ViewProjectionMatrix(GetParam());
-}
+  // create and populate scene
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+              << "' is not supported" << std::endl;
+    return;
+  }
 
-/////////////////////////////////////////////////
-TEST_P(CameraTest, RenderTexture)
-{
-  RenderTexture(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(CameraTest, TrackFollow)
-{
-  TrackFollow(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(CameraTest, AddRemoveRenderPass)
-{
-  AddRemoveRenderPass(GetParam());
-}
-
-/////////////////////////////////////////////////
-TEST_P(CameraTest, VisibilityMask)
-{
-  VisibilityMask(GetParam());
-}
-
-INSTANTIATE_TEST_CASE_P(Camera, CameraTest,
-    RENDER_ENGINE_VALUES,
-    PrintToStringParam());
-
-int main(int argc, char **argv)
-{
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
-
-/////////////////////////////////////////////////
-TEST_F(CameraTest, IntrinsicMatrix)
-{
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -471,4 +443,50 @@ TEST_F(CameraTest, IntrinsicMatrix)
 
   // Clean up
   engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_P(CameraTest, ViewProjectionMatrix)
+{
+  ViewProjectionMatrix(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(CameraTest, RenderTexture)
+{
+  RenderTexture(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(CameraTest, TrackFollow)
+{
+  TrackFollow(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(CameraTest, AddRemoveRenderPass)
+{
+  AddRemoveRenderPass(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(CameraTest, VisibilityMask)
+{
+  VisibilityMask(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_F(CameraTest, IntrinsicMatrix)
+{
+  IntrinsicMatrix(GetParam());
+}
+
+INSTANTIATE_TEST_CASE_P(Camera, CameraTest,
+    RENDER_ENGINE_VALUES,
+    PrintToStringParam());
+
+int main(int argc, char **argv)
+{
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }

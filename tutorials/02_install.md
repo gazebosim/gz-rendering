@@ -151,7 +151,7 @@ conda activate gz-ws
 
 ## Binary Installation
 
-```
+```bash
 conda install libgz-rendering<#> --channel conda-forge
 ```
 

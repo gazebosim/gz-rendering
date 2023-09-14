@@ -34,7 +34,7 @@ sudo apt-get update
 sudo apt-get install libgz-rendering<#>-dev
 ```
 
-Be sure to replace `<#>` with a number value, such as `1` or `2`, depending on which version you need.
+Be sure to replace `<#>` with a number value, such as `7` or `8`, depending on which version you need.
 
 ## Source Installation
 
@@ -70,11 +70,11 @@ build the relevant plugins if dependencies are found.
 
 **OGRE 1.x**
 ```
-# this installs ogre 1.9. Alternatively, you can install 1.8
+# this installs ogre 1.9
 sudo apt-get install libogre-1.9-dev
 ```
 
-**OGRE 2.x (supported in Versions >= gz-rendering1)**
+**OGRE-Next 2.x**
 
 Add OSRF packages if you have not done so already:
 ```
@@ -84,9 +84,9 @@ wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 sudo apt update
 ```
 
-Install OGRE 2.2 debs
+Install OGRE-Next 2.3 debs
 ```
-sudo apt install libogre-2.2-dev
+sudo apt install libogre-next-dev
 ```
 
 **OptiX (experimental)**
@@ -114,7 +114,7 @@ sdk 4.0.2, comment out lines 167-206).
 
 1. Clone the repository
   ```
-  # Optionally, append `-b ign-rendering#` (replace # with a number) to check out a specific version
+  # Optionally, append `-b gz-rendering#` (replace # with a number) to check out a specific version
   git clone http://github.com/gazebosim/gz-rendering
   ```
 
@@ -151,7 +151,12 @@ conda activate gz-ws
 
 ## Binary Installation
 
-`libgz-rendering<#>` Conda feedstock is not yet available, pending [conda-forge/staged-recipes#13551](https://github.com/conda-forge/staged-recipes/issues/13551).
+```
+conda install libgz-rendering<#> --channel conda-forge
+```
+
+Be sure to replace `<#>` with a number value, such as 7 or 8, depending on
+which version you need.
 
 ## Source Installation
 
@@ -176,7 +181,7 @@ This assumes you have created and activated a Conda environment while installing
 
 3. Navigate to where you would like to build the library, and clone the repository.
   ```
-  # Optionally, append `-b ign-rendering#` (replace # with a number) to check out a specific version
+  # Optionally, append `-b gz-rendering#` (replace # with a number) to check out a specific version
   git clone https://github.com/gazebosim/gz-rendering.git
   ```
 
@@ -209,23 +214,23 @@ Install Gazebo Rendering:
   brew install gz-rendering<#>
   ```
 
-Be sure to replace `<#>` with a number value, such as 5 or 6, depending on
+Be sure to replace `<#>` with a number value, such as 7 or 8, depending on
 which version you need.
 
 ## Source Installation
 
 1. Clone the repository
   ```
-  git clone https://github.com/gazebosim/gz-rendering -b ign-rendering<#>
+  git clone https://github.com/gazebosim/gz-rendering -b gz-rendering<#>
   ```
-  Be sure to replace `<#>` with a number value, such as 5 or 6, depending on
+  Be sure to replace `<#>` with a number value, such as 7 or 8, depending on
   which version you need.
 
 2. Install dependencies
   ```
   brew install --only-dependencies gz-rendering<#>
   ```
-  Be sure to replace `<#>` with a number value, such as 5 or 6, depending on
+  Be sure to replace `<#>` with a number value, such as 7 or 8, depending on
   which version you need.
 
 3. Configure and build
@@ -273,7 +278,7 @@ To control the testing configuration, use the following environment variables:
 
   ```
   # Specify the rendering engine to use (ogre, ogre2, optix)
-  GZ_ENGINE_TO_TEST=ogre2 
+  GZ_ENGINE_TO_TEST=ogre2
 
   # Specify the ogre2 backend to use (vulkan, gl3plus, metal (macOS))
   GZ_ENGINE_BACKEND=vulkan

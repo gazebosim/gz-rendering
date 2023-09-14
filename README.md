@@ -10,7 +10,7 @@
 Build | Status
 -- | --
 Test coverage | [![codecov](https://codecov.io/gh/gazebosim/gz-rendering/branch/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/gz-rendering/branch/default)
-Ubuntu Focal | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-main-focal-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-main-focal-amd64)
+Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-ci-main-jammy-amd64)](https://build.osrfoundation.org/job/gz_rendering-ci-main-jammy-amd64)
 Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-main-homebrew-amd64)
 Windows       | [![Build Status](https://build.osrfoundation.org/job/ign_rendering-ci-win/badge/icon)](https://build.osrfoundation.org/job/ign_rendering-ci-win/)
 

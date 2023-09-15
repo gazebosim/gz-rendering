@@ -415,6 +415,17 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
       continue;
     }
 
+    if (!_ogreParams->_findNamedConstantDefinition(name_param.first) &&
+        !(OgreRenderEngine::Instance()->GraphicsAPI() !=
+            GraphicsAPI::OPENGL &&
+            (ShaderParam::PARAM_TEXTURE == name_param.second.Type() ||
+             ShaderParam::PARAM_TEXTURE_CUBE == name_param.second.Type())))
+    {
+      gzwarn << "Unable to find GPU program parameter: "
+              << name_param.first << std::endl;
+      continue;
+    }
+
     if (ShaderParam::PARAM_FLOAT == name_param.second.Type())
     {
       float value;
@@ -472,7 +483,7 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
             dirPath))
           {
             Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-                dirPath, "FileSystem", "General");
+                dirPath, "FileSystem", this->ogreGroup);
           }
         }
       }

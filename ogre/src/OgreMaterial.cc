@@ -407,6 +407,14 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
 {
   for (const auto &name_param : *_params)
   {
+    auto *constantDef =
+        Ogre::GpuProgramParameters::getAutoConstantDefinition(name_param.first);
+    if (constantDef)
+    {
+      _ogreParams->setNamedAutoConstant(name_param.first, constantDef->acType);
+      continue;
+    }
+
     if (ShaderParam::PARAM_FLOAT == name_param.second.Type())
     {
       float value;
@@ -440,6 +448,84 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
       uint32_t multiple = 1;
       _ogreParams->setNamedConstant(name_param.first,
         reinterpret_cast<int*>(buffer.get()), count, multiple);
+    }
+    else if (ShaderParam::PARAM_TEXTURE == name_param.second.Type() ||
+             ShaderParam::PARAM_TEXTURE_CUBE == name_param.second.Type())
+    {
+      // add the textures to the resource path
+      std::string value;
+      uint32_t uvSetIndex = 0;
+      name_param.second.Value(value, uvSetIndex);
+      ShaderParam::ParamType type = name_param.second.Type();
+
+      std::string baseName = value;
+      std::string dirPath = value;
+      if (common::isFile(value))
+      {
+        baseName = common::basename(value);
+        size_t idx = value.rfind(baseName);
+        if (idx != std::string::npos)
+        {
+          dirPath = value.substr(0, idx);
+          if (!dirPath.empty() &&
+            !Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+            dirPath))
+          {
+            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+                dirPath, "FileSystem", "General");
+          }
+        }
+      }
+      else
+      {
+        gzerr << "Shader param texture not found: " << value << std::endl;
+        continue;
+      }
+
+      // get the material and create the texture unit state if it does not exist
+      auto texUnit = this->ogrePass->getTextureUnitState(name_param.first);
+      if (!texUnit)
+      {
+        texUnit = this->ogrePass->createTextureUnitState();
+        texUnit->setName(name_param.first);
+      }
+      // make sure to cast to int before calling setNamedConstant later
+      // to set the texture index
+      int texIndex = static_cast<int>(
+          this->ogrePass->getTextureUnitStateIndex(texUnit));
+
+      // set texture coordinate set
+      texUnit->setTextureCoordSet(uvSetIndex);
+
+      // regular 2d texture
+      if (type == ShaderParam::ParamType::PARAM_TEXTURE)
+      {
+        texUnit->setTextureName(baseName);
+      }
+      // cube maps
+      else if (type == ShaderParam::ParamType::PARAM_TEXTURE_CUBE)
+      {
+        texUnit->setCubicTextureName(baseName, true);
+        // must apply this check for Metal rendering to work
+        // (i.e. not segfault). See the discussion in:
+        // https://github.com/gazebosim/gz-rendering/pull/541
+        if (texUnit->isLoaded())
+        {
+          texUnit->_load();
+        }
+      }
+      else
+      {
+        gzerr << "Unrecognized texture type set for shader param: "
+               << name_param.first << std::endl;
+        continue;
+      }
+      if (OgreRenderEngine::Instance()->GraphicsAPI() ==
+          GraphicsAPI::OPENGL)
+      {
+        // set the texture map index
+        _ogreParams->setNamedConstant(name_param.first, &texIndex, 1, 1);
+      }
     }
   }
 }

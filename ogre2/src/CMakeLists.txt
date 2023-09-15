@@ -27,10 +27,14 @@ set_property(
 target_compile_definitions(${ogre2_target}
   PRIVATE OGRE_IGNORE_UNKNOWN_DEBUG)
 
+# Add OGRE2_LIBRARY_DIRS to INSTALL_RPATH
+# Append to a copy of CMAKE_INSTALL_RPATH since that is the default
+set(ogre2_target_install_rpath ${CMAKE_INSTALL_RPATH})
+list(APPEND ogre2_target_install_rpath ${OGRE2_LIBRARY_DIRS})
 set_property(
   TARGET ${ogre2_target}
   PROPERTY INSTALL_RPATH
-  ${OGRE2_LIBRARY_DIRS}
+  ${ogre2_target_install_rpath}
 )
 
 target_include_directories(${ogre2_target}

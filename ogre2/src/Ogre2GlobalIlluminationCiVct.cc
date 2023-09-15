@@ -213,6 +213,11 @@ Ogre2GlobalIlluminationCiVct::~Ogre2GlobalIlluminationCiVct()
 }
 
 //////////////////////////////////////////////////
+Ogre2CiVctCascade::~Ogre2CiVctCascade()
+{
+}
+
+//////////////////////////////////////////////////
 void Ogre2GlobalIlluminationCiVct::Init()
 {
   this->dataPtr->cascadedVoxelizer = new Ogre::VctCascadedVoxelizer();

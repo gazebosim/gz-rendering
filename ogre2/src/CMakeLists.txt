@@ -9,6 +9,7 @@ if (MSVC)
   # warning is not important since those members do not need to be interfaced
   # with.
   set_source_files_properties(${sources} ${gtest_sources} COMPILE_FLAGS "/wd4251")
+  set_source_files_properties(${sources} ${gtest_sources} COMPILE_FLAGS "/D_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS")
 endif()
 
 set(engine_name "ogre2")

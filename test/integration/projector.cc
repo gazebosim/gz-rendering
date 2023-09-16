@@ -20,8 +20,10 @@
 #include "CommonRenderingTest.hh"
 
 #include <gz/common/Image.hh>
+#include <gz/common/geospatial/ImageHeightmap.hh>
 
 #include "gz/rendering/Camera.hh"
+#include "gz/rendering/Heightmap.hh"
 #include "gz/rendering/Material.hh"
 #include "gz/rendering/Projector.hh"
 #include "gz/rendering/Scene.hh"
@@ -46,11 +48,6 @@ TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
 {
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
-
-  // Projector and can only be accessed by the scene extension API
-  // in gz-rendering7
-  if (!scene->Extension())
-    return;
 
   scene->SetBackgroundColor(0, 0, 0);
   scene->SetAmbientLight(1, 1, 1);
@@ -152,11 +149,9 @@ TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
 
   common::Image imgA;
   imgA.SetFromData(dataA, width, height, common::Image::RGB_INT8);
-  imgA.SavePNG("imageA.png");
 
   common::Image imgB;
   imgB.SetFromData(dataB, width, height, common::Image::RGB_INT8);
-  imgB.SavePNG("imageB.png");
 
   for (unsigned int i = 0; i < height; ++i)
   {
@@ -180,6 +175,104 @@ TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
       EXPECT_GT(bB, rB);
     }
   }
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
+{
+  // This test checks that projectors and heightmaps can co-exist
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  scene->SetBackgroundColor(0, 0, 0);
+  scene->SetAmbientLight(1, 1, 1);
+
+  VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  DirectionalLightPtr light0 = scene->CreateDirectionalLight();
+  light0->SetDirection(0.0, 0.0, -1);
+  light0->SetDiffuseColor(1.0, 1.0, 1.0);
+  light0->SetSpecularColor(1.0, 1.0, 1.0);
+  root->AddChild(light0);
+
+  CameraPtr cameraA = scene->CreateCamera();
+  ASSERT_NE(nullptr, cameraA);
+  cameraA->SetWorldPosition(0, 0, -2);
+  cameraA->SetWorldRotation(0, GZ_PI / 2.0, 0);
+  cameraA->SetVisibilityMask(0x01);
+  cameraA->SetImageWidth(256);
+  cameraA->SetImageHeight(256);
+  root->AddChild(cameraA);
+
+  // create projectors with different visibility flags
+   std::string textureRed = common::joinPaths(
+       TEST_MEDIA_PATH, "materials", "textures",
+       "red_texture.png");
+  ProjectorPtr projectorA = scene->CreateProjector();
+  ASSERT_NE(nullptr, projectorA);
+  projectorA->SetNearClipPlane(1.0);
+  projectorA->SetFarClipPlane(6.0);
+  projectorA->SetTexture(textureRed);
+  projectorA->SetVisibilityFlags(0x01);
+  projectorA->SetWorldRotation(0, GZ_PI / 2.0, 0);
+  root->AddChild(projectorA);
+
+  // create ImageHeightmap
+  auto data = std::make_shared<common::ImageHeightmap>();
+  data->Load(common::joinPaths(TEST_MEDIA_PATH, "heightmap_bowl.png"));
+
+  HeightmapDescriptor desc;
+  desc.SetName("example_bowl");
+  desc.SetData(data);
+  desc.SetSize({ 17, 17, 7.0 });
+  desc.SetSampling(2u);
+  desc.SetUseTerrainPaging(false);
+
+  const auto textureImage =
+    common::joinPaths(TEST_MEDIA_PATH, "materials", "textures", "texture.png");
+  const auto normalImage = common::joinPaths(TEST_MEDIA_PATH, "materials",
+                                             "textures", "flat_normal.png");
+
+  HeightmapTexture textureA;
+  textureA.SetSize(1.0);
+  textureA.SetDiffuse(textureImage);
+  textureA.SetNormal(normalImage);
+  desc.AddTexture(textureA);
+
+  HeightmapBlend blendA;
+  blendA.SetMinHeight(2.0);
+  blendA.SetFadeDistance(5.0);
+  desc.AddBlend(blendA);
+
+  HeightmapTexture textureB;
+  textureB.SetSize(1.0);
+  textureB.SetDiffuse(textureImage);
+  textureB.SetNormal(normalImage);
+  desc.AddTexture(textureB);
+
+  HeightmapBlend blendB;
+  blendB.SetMinHeight(4.0);
+  blendB.SetFadeDistance(5.0);
+  desc.AddBlend(blendB);
+
+  HeightmapTexture textureC;
+  textureC.SetSize(1.0);
+  textureC.SetDiffuse(textureImage);
+  textureC.SetNormal(normalImage);
+  desc.AddTexture(textureC);
+  auto heightmapGeom = scene->CreateHeightmap(desc);
+  auto vis = scene->CreateVisual();
+  vis->AddGeometry(heightmapGeom);
+  root->AddChild(vis);
+
+  // render once to update scene graph and make sure
+  // there are no crashes
+  Image imageA = cameraA->CreateImage();
+  EXPECT_NO_THROW(cameraA->Capture(imageA));
 
   // Clean up
   engine->DestroyScene(scene);

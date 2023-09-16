@@ -260,6 +260,9 @@ void Ogre2Heightmap::Init()
 
   Ogre::Hlms *hlmsTerra =
           ogreRoot->getHlmsManager()->getHlms(Ogre::HLMS_USER3);
+  hlmsTerra->setDebugOutputPath(true, false);
+  // hlmsTerra->_setProperty(Ogre::HlmsBaseProp::EnableDecals, 0);
+  // hlmsTerra->_setProperty(Ogre::HlmsBaseProp::DecalsDiffuse, 1);
 
   GZ_ASSERT(dynamic_cast<Ogre::HlmsTerra*>(hlmsTerra),
              "HlmsTerra incorrectly setup, memory corrupted, or "

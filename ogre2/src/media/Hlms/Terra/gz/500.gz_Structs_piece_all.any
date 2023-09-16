@@ -8,4 +8,7 @@
 
 @piece( custom_VStoPS_terra )
 	INTERPOLANT( float localHeight, @counter(texcoord) );
+
+  // added to prevent crash when decals are in the scene
+	INTERPOLANT( float3 normal, @counter(texcoord) );
 @end

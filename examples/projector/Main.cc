@@ -30,8 +30,6 @@
 #include <gz/common/Console.hh>
 #include <gz/rendering.hh>
 
-#include <gz/common/geospatial/ImageHeightmap.hh>
-
 #include "example_config.hh"
 #include "GlutWindow.hh"
 
@@ -144,51 +142,6 @@ void buildScene(ScenePtr _scene)
   camera->SetVisibilityMask(0x01);
 
   root->AddChild(camera);
-
-    auto data = std::make_shared<common::ImageHeightmap>();
-    data->Load(common::joinPaths(RESOURCE_PATH, "heightmap_bowl.png"));
-
-    HeightmapDescriptor desc;
-    desc.SetName("example_bowl");
-    desc.SetData(data);
-    desc.SetSize({17, 17, 10});
-    desc.SetSampling(2u);
-    desc.SetUseTerrainPaging(false);
-
-    HeightmapTexture textureA;
-    textureA.SetSize(1.0);
-    textureA.SetDiffuse("../media/dirt_diffusespecular.png");
-    textureA.SetNormal("../media/flat_normal.png");
-    desc.AddTexture(textureA);
-
-    HeightmapBlend blendA;
-    blendA.SetMinHeight(2.0);
-    blendA.SetFadeDistance(5.0);
-    desc.AddBlend(blendA);
-
-    HeightmapTexture textureB;
-    textureB.SetSize(1.0);
-    textureB.SetDiffuse("../media/grass_diffusespecular.png");
-    textureB.SetNormal("../media/flat_normal.png");
-    desc.AddTexture(textureB);
-
-    HeightmapBlend blendB;
-    blendB.SetMinHeight(4.0);
-    blendB.SetFadeDistance(5.0);
-    desc.AddBlend(blendB);
-
-    HeightmapTexture textureC;
-    textureC.SetSize(1.0);
-    textureC.SetDiffuse("../media/fungus_diffusespecular.png");
-    textureC.SetNormal("../media/flat_normal.png");
-    desc.SetPosition({-20, 10, 0});
-    desc.AddTexture(textureC);
-
-    auto heightmapGeom = _scene->CreateHeightmap(desc);
-
-    auto vis = _scene->CreateVisual();
-    vis->AddGeometry(heightmapGeom);
-    root->AddChild(vis);
 }
 
 //////////////////////////////////////////////////

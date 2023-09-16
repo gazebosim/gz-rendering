@@ -208,7 +208,7 @@ TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   cameraA->SetImageHeight(256);
   root->AddChild(cameraA);
 
-  // create projectors with different visibility flags
+  // create projector
    std::string textureRed = common::joinPaths(
        TEST_MEDIA_PATH, "materials", "textures",
        "red_texture.png");

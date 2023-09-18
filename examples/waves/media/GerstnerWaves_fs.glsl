@@ -34,7 +34,7 @@ varying vec2 bumpCoord;
 void main()
 {
   // Apply bump mapping to normal vector to make waves look more detailed:
-  vec4 bump = texture2D(bumpMap, bumpCoord)*2.0 - 1.0;
+  vec4 bump = texture2D(bumpMap, bumpCoord) * 2.0 - 1.0;
   vec3 N = normalize(rotMatrix * bump.xyz);
 
   // Reflected ray:
@@ -52,7 +52,7 @@ void main()
   vec4 envColor = textureCube(cubeMap, R, 0.0);
 
   // Cheap hdr effect:
-  envColor.rgb *= (envColor.r+envColor.g+envColor.b)*hdrMultiplier;
+  envColor.rgb *= (envColor.r + envColor.g + envColor.b) * hdrMultiplier;
 
   // Compute refraction ratio (Fresnel):
   float facing = 1.0 - dot(-E, N);

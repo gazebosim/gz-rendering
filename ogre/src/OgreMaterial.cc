@@ -422,7 +422,7 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
              ShaderParam::PARAM_TEXTURE_CUBE == name_param.second.Type())))
     {
       gzwarn << "Unable to find GPU program parameter: "
-              << name_param.first << std::endl;
+             << name_param.first << std::endl;
       continue;
     }
 

@@ -68,6 +68,10 @@
   #include <EGL/egl.h>
 #endif
 
+#if defined(__APPLE__)
+#include <OpenGL/CGLCurrent.h>
+#endif
+
 class GZ_RENDERING_OGRE2_HIDDEN
     gz::rendering::Ogre2RenderEnginePrivate
 {

@@ -15,7 +15,6 @@ Gazebo @GZ_DESIGNATION_CAP@ library and how to use the library effectively.
 **The examples**
 
 1. \subpage actor_animation  "Actor animation"
-2. \subpage gazebo_scene_viewer  "Gazebo scene viewer"
 3. \subpage mesh_viewer  "Mesh viewer"
 4. \subpage custom_scene_viewer  "Custom scene viewer"
 5. \subpage camera_tracking  "Camera tracking"

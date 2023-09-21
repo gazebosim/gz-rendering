@@ -52,8 +52,11 @@ namespace gz
         STATIC_VISUALS = 1u << 1u
       };
 
+      /// \brief Constructor
+      public: GlobalIlluminationBase();
+
       /// \brief Destructor
-      public: virtual ~GlobalIlluminationBase() { }
+      public: virtual ~GlobalIlluminationBase();
 
       /// \brief Initialize the class
       protected: virtual void Init() = 0;

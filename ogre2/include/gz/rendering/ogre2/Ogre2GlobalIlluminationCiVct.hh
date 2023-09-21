@@ -47,6 +47,8 @@ namespace gz
       /// \brief Constructor
       public: explicit Ogre2CiVctCascade();
 
+      public: ~Ogre2CiVctCascade() override;
+
       /// \brief Initializes the cascade
       /// \param[in] _cascade Cascade we control
       /// \param[in] _ref Reference to clone settings from (can be nullptr)

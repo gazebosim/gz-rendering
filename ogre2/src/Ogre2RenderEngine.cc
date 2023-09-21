@@ -68,6 +68,10 @@
   #include <EGL/egl.h>
 #endif
 
+#if defined(__APPLE__)
+#include <OpenGL/CGLCurrent.h>
+#endif
+
 class GZ_RENDERING_OGRE2_HIDDEN
     gz::rendering::Ogre2RenderEnginePrivate
 {
@@ -1343,7 +1347,7 @@ NativeWindowPtr Ogre2RenderEngine::CreateNativeWindow(
 #ifdef _WIN32
     params["externalGLContext"] =
       std::to_string((size_t)wglGetCurrentContext());
-#  elidef __APPLE__
+#elif defined(__APPLE__)
     params["externalGLContext"] =
       std::to_string((size_t)CGLGetCurrentContext());
 #else

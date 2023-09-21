@@ -48,8 +48,11 @@ namespace gz
                 DVM_None
               };
 
+      /// \brief Constructor
+      public: GlobalIlluminationVct();
+
       /// \brief Destructor
-      public: virtual ~GlobalIlluminationVct() { }
+      public: virtual ~GlobalIlluminationVct();
 
       /// \brief Resolution of the 3D Voxel. Must be multiple of 2
       /// \remarks To avoid wasting RAM, make this function your first call

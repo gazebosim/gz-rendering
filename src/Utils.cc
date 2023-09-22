@@ -164,6 +164,25 @@ float screenScalingFactor()
 }
 
 /////////////////////////////////////////////////
+ignition::math::Matrix3d projectionToCameraIntrinsic(
+    const gz::math::Matrix4d &_projectionMatrix,
+    double _width, double _height)
+{
+  // Extracting the intrinsic matrix :
+  // https://ogrecave.github.io/ogre/api/13/class_ogre_1_1_math.html
+  double fX = (_projectionMatrix(0, 0) * _width) / 2.0;
+  double fY = (_projectionMatrix(1, 1) * _height) / 2.0;
+  double cX = (-1.0 * _width *
+               (_projectionMatrix(0, 2) - 1.0)) / 2.0;
+  double cY = _height + (_height *
+               (_projectionMatrix(1, 2) - 1)) / 2.0;
+
+  return gz::math::Matrix3d(fX, 0, cX,
+                            0, fY, cY,
+                            0, 0, 1);
+}
+
+/////////////////////////////////////////////////
 ignition::math::AxisAlignedBox transformAxisAlignedBox(
     const ignition::math::AxisAlignedBox &_bbox,
     const ignition::math::Pose3d &_pose)

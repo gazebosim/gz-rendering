@@ -97,6 +97,20 @@ namespace ignition
     ignition::math::AxisAlignedBox transformAxisAlignedBox(
         const ignition::math::AxisAlignedBox &_box,
         const ignition::math::Pose3d &_pose);
+
+    /// \brief Convert a given camera projection matrix
+    /// to an intrinsics matrix. Intrinsics matrix is different
+    /// from the matrix returned by Camera::ProjectionMatrix(),
+    /// which is used by OpenGL internally.
+    /// The matrix returned contains the camera calibrated values.
+    /// \param[in] _projectionMatrix Camera's projection matrix.
+    /// \param[in] _width Camera's image width.
+    /// \param[in] _height Camera's image height.
+    /// \return Camera's intrinsic matrix.
+    IGNITION_RENDERING_VISIBLE
+    ignition::math::Matrix3d projectionToCameraIntrinsic(
+        const ignition::math::Matrix4d &_projectionMatrix,
+        double _width, double _height);
     }
   }
 }

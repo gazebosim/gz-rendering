@@ -45,7 +45,7 @@ void buildScene(ScenePtr _scene)
 {
   // initialize _scene
   _scene->SetAmbientLight(0.3, 0.3, 0.3);
-  _scene->SetBackgroundColor(0.0, 0.0, 0.3);
+  _scene->SetBackgroundColor(0.3, 0.3, 0.3);
   VisualPtr root = _scene->RootVisual();
 
   // create directional light

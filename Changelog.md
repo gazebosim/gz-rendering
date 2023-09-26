@@ -2,6 +2,21 @@
 
 ### Gazebo Rendering 7.X
 
+### Gazebo Rendering 7.4.2 (2023-09-26)
+
+1. ogre2: use CMAKE_INSTALL_RPATH
+    * [Pull request #909](https://github.com/gazebosim/gz-rendering/pull/909)
+
+1. Disable setting color range in particle emitter
+    * [Pull request #903](https://github.com/gazebosim/gz-rendering/pull/903)
+
+1. Documentation updates
+    * [Pull request #892](https://github.com/gazebosim/gz-rendering/pull/892)
+    * [Pull request #896](https://github.com/gazebosim/gz-rendering/pull/896)
+
+1. Revert mesh viewer background color back to gray
+    * [Pull request #894](https://github.com/gazebosim/gz-rendering/pull/894)
+
 ### Gazebo Rendering 7.4.1 (2023-08-17)
 
 1. Infrastructure

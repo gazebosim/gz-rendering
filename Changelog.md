@@ -2,7 +2,7 @@
 
 ### Gazebo Rendering 8.X
 
-### Gazebo Rendering 8.0.0 (202X-XX-XX)
+### Gazebo Rendering 8.0.0 (2023-09-29)
 
 1. Remove gazebo scene viewer example
     * [Pull request #915](https://github.com/gazebosim/gz-rendering/pull/915)

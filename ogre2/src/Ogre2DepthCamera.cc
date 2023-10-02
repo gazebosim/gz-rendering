@@ -25,6 +25,7 @@
 
 #include <math.h>
 #include <gz/math/Helpers.hh>
+#include <gz/math/Matrix4.hh>
 
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
@@ -965,6 +966,18 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
       break;
     }
   }
+}
+
+/////////////////////////////////////////////////
+math::Matrix4d Ogre2DepthCamera::ProjectionMatrix() const {
+  return Ogre2Conversions::Convert(this->ogreCamera->getProjectionMatrix());
+}
+
+/////////////////////////////////////////////////
+void Ogre2DepthCamera::SetProjectionMatrix(const math::Matrix4d &_matrix) {
+  BaseDepthCamera::SetProjectionMatrix(_matrix);
+  this->ogreCamera->setCustomProjectionMatrix(
+      true, Ogre2Conversions::Convert(this->projectionMatrix));
 }
 
 //////////////////////////////////////////////////

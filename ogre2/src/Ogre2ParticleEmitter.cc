@@ -290,6 +290,10 @@ void Ogre2ParticleEmitter::SetColorRange(
     const gz::math::Color &_colorStart,
     const gz::math::Color &_colorEnd)
 {
+  // see https://github.com/gazebosim/gz-rendering/issues/902
+  gzwarn << "ParticleEmitter SetColorRange is currently disabled." << std::endl;
+  return;
+
   // Color interpolator affector.
   if (!this->dataPtr->colorInterpolatorAffector)
   {

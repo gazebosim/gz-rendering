@@ -936,7 +936,7 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
         continue;
       }
 
-      // get the material and create the texture unit state it does not exist
+      // get the material and create the texture unit state if it does not exist
       auto mat = this->Material();
       auto pass = mat->getTechnique(0u)->getPass(0);
       auto texUnit = pass->getTextureUnitState(name_param.first);

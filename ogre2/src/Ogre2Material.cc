@@ -1229,8 +1229,10 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
   if (texture->getWidth() == 0)
   {
     auto data = _img->RGBAData();
-
-    texture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+    Ogre::PixelFormatGpu format = Ogre::PFG_RGBA8_UNORM;
+    if (this->ogreDatablock->suggestUsingSRGB(_type))
+      format = Ogre::PFG_RGBA8_UNORM_SRGB;
+    texture->setPixelFormat(format);
     texture->setTextureType(Ogre::TextureTypes::Type2D);
     texture->setNumMipmaps(1u);
     texture->setResolution(_img->Width(), _img->Height());

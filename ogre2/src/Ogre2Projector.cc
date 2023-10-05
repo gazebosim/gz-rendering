@@ -163,9 +163,11 @@ void Ogre2Projector::UpdateCameraListener()
 {
   // if a custom visibility flag is set, we will need to use a listener
   // for toggling the visibility of the decal
-  if (this->VisibilityFlags() == GZ_VISIBILITY_ALL)
+  if ((this->VisibilityFlags() & GZ_VISIBILITY_ALL) == GZ_VISIBILITY_ALL)
   {
     this->dataPtr->decalNode->setVisible(true);
+    this->dataPtr->decalNode->getCreator()->setDecalsDiffuse(
+        this->dataPtr->decal->getDiffuseTexture());
 
     for (auto &ogreCamIt : this->dataPtr->camerasWithListener)
     {

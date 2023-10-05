@@ -23,7 +23,10 @@
   #include <windows.h>
 #endif
 #include <gz/math/Helpers.hh>
+#include <gz/math/Matrix4.hh>
+
 #include "gz/rendering/InstallationDirectories.hh"
+#include "gz/rendering/ogre/OgreConversions.hh"
 #include "gz/rendering/ogre/OgreDepthCamera.hh"
 #include "gz/rendering/ogre/OgreMaterial.hh"
 
@@ -310,6 +313,18 @@ void OgreDepthCamera::DestroyDepthTexture()
     dynamic_cast<OgreRenderTexture *>(this->depthTexture.get())->Destroy();
     this->depthTexture.reset();
   }
+}
+
+/////////////////////////////////////////////////
+math::Matrix4d OgreDepthCamera::ProjectionMatrix() const {
+  return OgreConversions::Convert(this->ogreCamera->getProjectionMatrix());
+}
+
+/////////////////////////////////////////////////
+void OgreDepthCamera::SetProjectionMatrix(const math::Matrix4d &_matrix) {
+  BaseDepthCamera::SetProjectionMatrix(_matrix);
+  this->ogreCamera->setCustomProjectionMatrix(
+      true, OgreConversions::Convert(this->projectionMatrix));
 }
 
 //////////////////////////////////////////////////

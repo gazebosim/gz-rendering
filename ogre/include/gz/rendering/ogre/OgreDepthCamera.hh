@@ -27,6 +27,8 @@
 #include <memory>
 #include <string>
 
+#include <gz/math/Matrix4.hh>
+
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/base/BaseDepthCamera.hh"
 #include "gz/rendering/ogre/OgreConversions.hh"
@@ -82,6 +84,13 @@ namespace gz
       /// \brief Destroy render texture created by CreateDepthTexture()
       /// Note: It's not virtual.
       protected: void DestroyDepthTexture();
+
+      // Documentation inherited.
+      public: virtual math::Matrix4d ProjectionMatrix() const override;
+
+      // Documentation inherited.
+      public: virtual void SetProjectionMatrix(
+          const math::Matrix4d &_matrix) override;
 
       /// \brief Render the camera
       public: virtual void PostRender() override;

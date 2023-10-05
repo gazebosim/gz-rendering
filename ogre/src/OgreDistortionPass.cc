@@ -444,6 +444,21 @@ void OgreDistortionPass::Destroy()
     this->dataPtr->distortionInstance = nullptr;
     this->dataPtr->distortionCompositorListener.reset();
   }
+
+  if (!this->dataPtr->distortionMaterial.isNull())
+  {
+    Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
+    matManager.remove(this->dataPtr->distortionMaterial->getName());
+    this->dataPtr->distortionMaterial.setNull();
+  }
+
+  if (!this->dataPtr->distortionTexture.isNull())
+  {
+    auto &textureManager = Ogre::TextureManager::getSingleton();
+    textureManager.unload(this->dataPtr->distortionTexture->getName());
+    textureManager.remove(this->dataPtr->distortionTexture->getName());
+    this->dataPtr->distortionTexture.setNull();
+  }
 }
 
 //////////////////////////////////////////////////

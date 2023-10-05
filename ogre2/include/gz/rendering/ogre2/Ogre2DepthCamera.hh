@@ -27,6 +27,8 @@
 #include <memory>
 #include <string>
 
+#include <gz/math/Matrix4.hh>
+
 #include "gz/rendering/base/BaseDepthCamera.hh"
 #include "gz/rendering/ogre2/Ogre2ObjectInterface.hh"
 #include "gz/rendering/ogre2/Ogre2Sensor.hh"
@@ -78,6 +80,13 @@ namespace gz
       /// \brief Creates an Ogre Workspace instance. Assumes the definition
       /// already and the depth texture have already been created
       private: void CreateWorkspaceInstance();
+
+      // Documentation inherited.
+      public: virtual math::Matrix4d ProjectionMatrix() const override;
+
+      // Documentation inherited.
+      public: virtual void SetProjectionMatrix(
+          const math::Matrix4d &_matrix) override;
 
       // Documentation inherited
       public: virtual void PreRender() override;

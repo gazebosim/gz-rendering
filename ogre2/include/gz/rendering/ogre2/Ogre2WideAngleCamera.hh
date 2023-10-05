@@ -110,6 +110,13 @@ namespace gz
           std::function<void(const unsigned char *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;
 
+      /// \brief Set the background material of this camera
+      /// \param[in] _material Material to set the background to
+      public: void SetBackgroundMaterial(MaterialPtr _material);
+
+      /// \brief Get the background material of this camera
+      /// \return background material
+      public: MaterialPtr BackgroundMaterial() const;
 
       /// \brief Returns the workspace name for the final pass
       /// that stitches all faces.
@@ -178,6 +185,9 @@ namespace gz
       /// \param[in] _msaa Value in range [2; 256)
       protected: void SetupMSAA(Ogre::CompositorManager2 *_ogreCompMgr,
                                 uint8_t _msaa);
+
+      /// \brief Update the background material
+      private: void UpdateBackgroundMaterial();
 
       /// \brief Saves the CompositorPassSceneDef of each of the 6 passes
       /// defined in WideAngleCamera.compositor data file for later

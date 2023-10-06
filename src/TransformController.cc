@@ -131,40 +131,13 @@ void TransformController::Update()
   math::Quaterniond rot;
   if (this->dataPtr->mode == TransformMode::TM_ROTATION)
   {
-    math::Vector3d eye = this->dataPtr->camera->WorldPosition() - pos;
-    eye = eye.Normalize();
     math::Quaterniond nodeRot;
     if (this->dataPtr->space == TransformSpace::TS_LOCAL)
     {
       nodeRot = this->dataPtr->node->WorldRotation();
-      eye = nodeRot.RotateVectorReverse(eye);
     }
-    VisualPtr xVis = this->dataPtr->gizmoVisual->ChildByAxis(
-        TransformAxis::TA_ROTATION_X);
-    math::Vector3d xRot(atan2(-eye.Y(), eye.Z()), 0, 0);
-    math::Vector3d xRotOffset(0, -GZ_PI * 0.5, 0);
-    xVis->SetWorldRotation(nodeRot *
-        math::Quaterniond(xRot) * math::Quaterniond(xRotOffset));
-
-    VisualPtr yVis = this->dataPtr->gizmoVisual->ChildByAxis(
-        TransformAxis::TA_ROTATION_Y);
-    math::Vector3d yRot(0, atan2(eye.X(), eye.Z()), 0);
-    math::Vector3d yRotOffset(GZ_PI * 0.5, -GZ_PI * 0.5, 0);
-    yVis->SetWorldRotation(nodeRot *
-        math::Quaterniond(yRot) * math::Quaterniond(yRotOffset));
-
-    VisualPtr zVis = this->dataPtr->gizmoVisual->ChildByAxis(
-        TransformAxis::TA_ROTATION_Z);
-    math::Vector3d zRot(0, 0, atan2(eye.Y(), eye.X()));
-    zVis->SetWorldRotation(nodeRot * math::Quaterniond(zRot));
-
-    VisualPtr circleVis = this->dataPtr->gizmoVisual->ChildByAxis(
-        TransformAxis::TA_ROTATION_Z << 1);
-    math::Matrix4d lookAt;
-    lookAt = lookAt.LookAt(this->dataPtr->camera->WorldPosition(), pos);
-    math::Vector3d circleRotOffset(0, GZ_PI * 0.5, 0);
-    circleVis->SetWorldRotation(
-        lookAt.Rotation() * math::Quaterniond(circleRotOffset));
+    this->dataPtr->gizmoVisual->LookAt(this->dataPtr->camera->WorldPosition(),
+        nodeRot);
   }
   else
   {

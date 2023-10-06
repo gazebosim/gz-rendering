@@ -26,7 +26,7 @@
 using namespace gz;
 using namespace rendering;
 
-class GizmoVisualTest : public CommonRenderingTest 
+class GizmoVisualTest : public CommonRenderingTest
 {
 };
 
@@ -163,6 +163,60 @@ TEST_F(GizmoVisualTest, Material)
   EXPECT_EQ(xMat, xMat4);
   EXPECT_EQ(yMat, yMat4);
   EXPECT_EQ(zMat, zMat4);
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(GizmoVisualTest, LookAt)
+{
+  ScenePtr scene = engine->CreateScene("scene");
+  // create visual
+  GizmoVisualPtr gizmo = scene->CreateGizmoVisual();
+  ASSERT_NE(nullptr, gizmo);
+
+  // set to rotation mode
+  gizmo->SetTransformMode(TransformMode::TM_ROTATION);
+  EXPECT_EQ(TransformMode::TM_ROTATION, gizmo->Mode());
+
+  VisualPtr xrot = gizmo->ChildByAxis(TransformAxis::TA_ROTATION_X);
+  ASSERT_NE(nullptr, xrot);
+  VisualPtr yrot = gizmo->ChildByAxis(TransformAxis::TA_ROTATION_Y);
+  ASSERT_NE(nullptr, yrot);
+  VisualPtr zrot = gizmo->ChildByAxis(TransformAxis::TA_ROTATION_Z);
+  ASSERT_NE(nullptr, zrot);
+
+  math::Vector3d pos = math::Vector3d::UnitX;
+  math::Quaterniond rot;
+  gizmo->LookAt(pos, rot);
+  auto newX = math::Quaterniond(math::Vector3d::UnitY, GZ_PI / 2);
+  auto newY = math::Quaterniond(math::Vector3d::UnitX, GZ_PI / 2);
+  auto newZ = math::Quaterniond::Identity;
+  EXPECT_EQ(newX.Euler().Abs(), xrot->WorldRotation().Euler().Abs());
+  EXPECT_EQ(newY.Euler().Abs(), yrot->WorldRotation().Euler().Abs());
+  EXPECT_EQ(newZ.Euler().Abs(), zrot->WorldRotation().Euler().Abs());
+
+  pos = math::Vector3d::UnitY;
+  gizmo->LookAt(pos, rot);
+  newX = math::Quaterniond(math::Vector3d::UnitZ, GZ_PI / 2) *
+         math::Quaterniond(math::Vector3d::UnitX, GZ_PI / 2);
+  newY = math::Quaterniond(math::Vector3d::UnitY, GZ_PI / 2) *
+         math::Quaterniond(math::Vector3d::UnitX, GZ_PI / 2);
+  newZ = math::Quaterniond(math::Vector3d::UnitZ, GZ_PI / 2);
+  EXPECT_EQ(newX.Euler().Abs(), xrot->WorldRotation().Euler().Abs());
+  EXPECT_EQ(newY.Euler().Abs(), yrot->WorldRotation().Euler().Abs());
+  EXPECT_EQ(newZ.Euler().Abs(), zrot->WorldRotation().Euler().Abs());
+
+  pos = math::Vector3d::UnitZ;
+  gizmo->LookAt(pos, rot);
+  newX = math::Quaterniond(math::Vector3d::UnitY, GZ_PI / 2);
+  newY = math::Quaterniond(math::Vector3d::UnitZ, GZ_PI / 2) *
+         math::Quaterniond(math::Vector3d::UnitY, GZ_PI / 2);
+  newZ = math::Quaterniond::Identity;
+  EXPECT_EQ(newX.Euler().Abs(), xrot->WorldRotation().Euler().Abs());
+  EXPECT_EQ(newY.Euler().Abs(), yrot->WorldRotation().Euler().Abs());
+  EXPECT_EQ(newZ.Euler().Abs(), zrot->WorldRotation().Euler().Abs());
 
   // Clean up
   engine->DestroyScene(scene);

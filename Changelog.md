@@ -479,6 +479,15 @@
 
 ### Gazebo Rendering 6.X
 
+### Gazebo Rendering 6.6.2 (2023-10-03)
+
+1. Backport camera intrinsics calculation : Refactor
+    * [Pull request #905](https://github.com/gazebosim/gz-rendering/pull/905)
+    * [Pull request #929](https://github.com/gazebosim/gz-rendering/pull/929)
+
+1. Revert mesh viewer background color back to gray
+    * [Pull request #894](https://github.com/gazebosim/gz-rendering/pull/894)
+
 ### Gazebo Rendering 6.6.1 (2023-09-01)
 
 1. Fixed light visual in OGRE

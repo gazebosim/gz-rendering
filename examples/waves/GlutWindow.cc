@@ -339,7 +339,7 @@ void initUniforms()
   g_vsParams = shader->VertexShaderParams();
 
   auto engine = g_camera->Scene()->Engine();
-  if (engine->Name() == "ogre2")
+  if (engine->Name() == "ogre2" || engine->Name() == "ogre")
   {
     // worldviewproj_matrix is a constant defined by ogre.
     // Here we add a line to add this constant to the params.

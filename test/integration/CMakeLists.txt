@@ -15,6 +15,7 @@ set(tests
   sky
   thermal_camera
   load_unload
+  waves
   wide_angle_camera
 )
 

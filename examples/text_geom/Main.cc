@@ -126,7 +126,6 @@ int main(int _argc, char** _argv)
   std::vector<CameraPtr> cameras;
 
   engineNames.push_back("ogre");
-  engineNames.push_back("optix");
   for (auto engineName : engineNames)
   {
     try

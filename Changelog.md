@@ -2,9 +2,161 @@
 
 ### Gazebo Rendering 8.X
 
-### Gazebo Rendering 8.0.0 (202X-XX-XX)
+### Gazebo Rendering 8.0.0 (2023-09-29)
+
+1. Remove gazebo scene viewer example
+    * [Pull request #915](https://github.com/gazebosim/gz-rendering/pull/915)
+
+1. Fix projector FOV, orientation, and crashes
+    * [Pull request #913](https://github.com/gazebosim/gz-rendering/pull/913)
+
+1. Include the CGL header on macOS
+    * [Pull request #911](https://github.com/gazebosim/gz-rendering/pull/911)
+
+1. ogre2: use CMAKE_INSTALL_RPATH
+    * [Pull request #909](https://github.com/gazebosim/gz-rendering/pull/909)
+
+1. Fixed build on MSVC.
+    * [Pull request #897](https://github.com/gazebosim/gz-rendering/pull/897)
+
+1. Documentation fixes
+    * [Pull request #895](https://github.com/gazebosim/gz-rendering/pull/895)
+    * [Pull request #906](https://github.com/gazebosim/gz-rendering/pull/906)
+    * [Pull request #907](https://github.com/gazebosim/gz-rendering/pull/907)
+
+1. Fix wide angle camera visibility flags
+    * [Pull request #900](https://github.com/gazebosim/gz-rendering/pull/900)
+
+1. Fix arrow visual indexing
+    * [Pull request #889](https://github.com/gazebosim/gz-rendering/pull/889)
+
+1. Do not load optix engine in examples
+    * [Pull request #893](https://github.com/gazebosim/gz-rendering/pull/893)
+
+1. Infrastructure
+    * [Pull request #888](https://github.com/gazebosim/gz-rendering/pull/888)
+    * [Pull request #868](https://github.com/gazebosim/gz-rendering/pull/868)
+
+1. Clean up internal resources on Destroy
+    * [Pull request #886](https://github.com/gazebosim/gz-rendering/pull/886)
+
+1. ign -> gz
+    * [Pull request #877](https://github.com/gazebosim/gz-rendering/pull/877)
+
+1. Remove inheritance from Singleton class.
+    * [Pull request #876](https://github.com/gazebosim/gz-rendering/pull/876)
+    * [Pull request #874](https://github.com/gazebosim/gz-rendering/pull/874)
+
+1. Add private data class to Image
+    * [Pull request #875](https://github.com/gazebosim/gz-rendering/pull/875)
+
+1. Override PreRender function in Ogre2ParticleEnitter
+    * [Pull request #871](https://github.com/gazebosim/gz-rendering/pull/871)
+
+1. Fix calling GpuRays::Destroy more than once
+    * [Pull request #860](https://github.com/gazebosim/gz-rendering/pull/860)
+
+1. Use std::vector instead of std::map in BaseStorage
+    * [Pull request #831](https://github.com/gazebosim/gz-rendering/pull/831)
+
+1. Limit Global Illumination CI CVT method to vulkan backend
+    * [Pull request #798](https://github.com/gazebosim/gz-rendering/pull/798)
+
+1. Global illumination VCT & CI VCT
+    * [Pull request #675](https://github.com/gazebosim/gz-rendering/pull/675)
+
+1. Add LensFlare to ogre1
+    * [Pull request #775](https://github.com/gazebosim/gz-rendering/pull/775)
+
+1. Cleanup config.hh.in and deprecate public HAVE_ macros
+    * [Pull request #791](https://github.com/gazebosim/gz-rendering/pull/791)
+
+1. Add GZ_RENDERING_HAVE_VULKAN to guard vulkan code in header
+    * [Pull request #790](https://github.com/gazebosim/gz-rendering/pull/790)
+
+1. Look for vulkan in CMakeLists
+    * [Pull request #782](https://github.com/gazebosim/gz-rendering/pull/782)
+
+1. Add LensFlarePass (ogre2 engine)
+    * [Pull request #752](https://github.com/gazebosim/gz-rendering/pull/752)
+
+1. Add Support for wide-angle cameras in ogre2
+    * [Pull request #733](https://github.com/gazebosim/gz-rendering/pull/733)
+
+1. Fix wrong Z check in OgreWideAngleCamera::Project3d
+    * [Pull request #746](https://github.com/gazebosim/gz-rendering/pull/746)
+
+1. Add necessary headers for Vulkan QML GUI backend
+    * [Pull request #706](https://github.com/gazebosim/gz-rendering/pull/706)
+
+1. Revert "Expose camera intrinsic matrix API (#700)"
+    * [Pull request #756](https://github.com/gazebosim/gz-rendering/pull/756)
+
+1. Expose camera intrinsic matrix API
+    * [Pull request #700](https://github.com/gazebosim/gz-rendering/pull/700)
+
+1. ⬆️  Bump main to 8.0.0~pre1
+    * [Pull request #699](https://github.com/gazebosim/gz-rendering/pull/699)
+
 
 ### Gazebo Rendering 7.X
+
+### Gazebo Rendering 7.4.2 (2023-09-26)
+
+1. ogre2: use CMAKE_INSTALL_RPATH
+    * [Pull request #909](https://github.com/gazebosim/gz-rendering/pull/909)
+
+1. Disable setting color range in particle emitter
+    * [Pull request #903](https://github.com/gazebosim/gz-rendering/pull/903)
+
+1. Documentation updates
+    * [Pull request #892](https://github.com/gazebosim/gz-rendering/pull/892)
+    * [Pull request #896](https://github.com/gazebosim/gz-rendering/pull/896)
+
+1. Revert mesh viewer background color back to gray
+    * [Pull request #894](https://github.com/gazebosim/gz-rendering/pull/894)
+
+### Gazebo Rendering 7.4.1 (2023-08-17)
+
+1. Infrastructure
+    * [Pull request #879](https://github.com/gazebosim/gz-rendering/pull/879)
+    * [Pull request #878](https://github.com/gazebosim/gz-rendering/pull/878)
+
+1. Restore missing Ogre2Heightmap::DestroyImpl implementation
+    * [Pull request #870](https://github.com/gazebosim/gz-rendering/pull/870)
+
+1. Destroy sensor node on exit
+    * [Pull request #869](https://github.com/gazebosim/gz-rendering/pull/869)
+
+1. Parse `OGRE2_RESOURCE_PATH` as a list of strings
+    * [Pull request #867](https://github.com/gazebosim/gz-rendering/pull/867)
+
+1. Fix a leak in ogre2 ray query
+    * [Pull request #866](https://github.com/gazebosim/gz-rendering/pull/866)
+
+1. Fixed light visual in OGRE
+    * [Pull request #862](https://github.com/gazebosim/gz-rendering/pull/862)
+
+1. Removed unused parameter warning
+    * [Pull request #861](https://github.com/gazebosim/gz-rendering/pull/861)
+
+1. Replace ignerr with gzerr
+    * [Pull request #857](https://github.com/gazebosim/gz-rendering/pull/857)
+
+1. Minor cleanup of ogre/ogre2: fix namespace, unused variable, missing header
+    * [Pull request #858](https://github.com/gazebosim/gz-rendering/pull/858)
+
+1. Fix missing header in CameraLens
+    * [Pull request #855](https://github.com/gazebosim/gz-rendering/pull/855)
+
+1. Fix missing cstdint header in latest gcc build
+    * [Pull request #853](https://github.com/gazebosim/gz-rendering/pull/853)
+
+1. OgreNext: Fix shaders compilation on d3d12 mesa driver (WSLg)
+    * [Pull request #851](https://github.com/gazebosim/gz-rendering/pull/851)
+
+1. Fix visibility decorator of Ogre2Projector
+    * [Pull request #850](https://github.com/gazebosim/gz-rendering/pull/850)
 
 ### Gazebo Rendering 7.4.0 (2023-05-18)
 
@@ -326,6 +478,38 @@
     * [Pull request #479](https://github.com/gazebosim/ign-rendering/pull/479)
 
 ### Gazebo Rendering 6.X
+
+### Gazebo Rendering 6.6.2 (2023-10-03)
+
+1. Backport camera intrinsics calculation : Refactor
+    * [Pull request #905](https://github.com/gazebosim/gz-rendering/pull/905)
+    * [Pull request #929](https://github.com/gazebosim/gz-rendering/pull/929)
+
+1. Revert mesh viewer background color back to gray
+    * [Pull request #894](https://github.com/gazebosim/gz-rendering/pull/894)
+
+### Gazebo Rendering 6.6.1 (2023-09-01)
+
+1. Fixed light visual in OGRE
+    * [Pull request #864](https://github.com/gazebosim/gz-rendering/pull/864)
+
+1. Lower severity level for ogre2 visibility mask msgs and unavailable render passes
+    * [Pull request #830](https://github.com/gazebosim/gz-rendering/pull/830)
+
+1. Infrastructure
+    * [Pull request #834](https://github.com/gazebosim/gz-rendering/pull/834)
+
+1. Rename COPYING to LICENSE
+    * [Pull request #833](https://github.com/gazebosim/gz-rendering/pull/833)
+
+1. Add message to see troubleshooting page when render engine fails to create dummy window
+    * [Pull request #829](https://github.com/gazebosim/gz-rendering/pull/829)
+
+1. Tweak max camera position limit
+    * [Pull request #827](https://github.com/gazebosim/gz-rendering/pull/827)
+
+1. Limit max camera position vector length
+    * [Pull request #824](https://github.com/gazebosim/gz-rendering/pull/824)
 
 ### Gazebo Rendering 6.6.0 (2023-02-02)
 

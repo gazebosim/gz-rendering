@@ -32,9 +32,9 @@ namespace gz
     class GZ_RENDERING_VISIBLE BaseNativeWindow :
       public virtual NativeWindow
     {
-      protected: BaseNativeWindow() {}
+      protected: BaseNativeWindow();
 
-      public: virtual ~BaseNativeWindow() {}
+      public: virtual ~BaseNativeWindow();
 
       // Documentation Inherited.
       public: virtual void NotifyFocused(bool /*_focused*/) override {}

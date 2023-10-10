@@ -223,7 +223,6 @@ int main(int _argc, char** _argv)
   sceneDemo->AddScene(SceneBuilderPtr(new ShadowSceneBuilder(5)));
 //! [add scenes]
   sceneDemo->AddCamera(ogreEngineName, params);
-  sceneDemo->AddCamera("optix");
   sceneDemo->Run();
   return 0;
 }

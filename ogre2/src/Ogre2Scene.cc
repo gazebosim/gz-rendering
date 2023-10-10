@@ -1096,6 +1096,8 @@ WideAngleCameraPtr Ogre2Scene::CreateWideAngleCameraImpl(const unsigned int _id,
 {
   Ogre2WideAngleCameraPtr camera(new Ogre2WideAngleCamera);
   bool result = this->InitObject(camera, _id, _name);
+  if (this->backgroundMaterial)
+    camera->SetBackgroundMaterial(this->backgroundMaterial);
   return (result) ? camera : nullptr;
 }
 
@@ -1534,6 +1536,13 @@ void Ogre2Scene::SetSkyEnabled(bool _enabled)
     if (camera)
     {
       camera->SetBackgroundMaterial(skyboxMat);
+    }
+    else
+    {
+      auto wideAngleCamera =
+          std::dynamic_pointer_cast<Ogre2WideAngleCamera>(sensor);
+      if (wideAngleCamera)
+        wideAngleCamera->SetBackgroundMaterial(skyboxMat);
     }
   }
   this->dataPtr->skyEnabled = _enabled;

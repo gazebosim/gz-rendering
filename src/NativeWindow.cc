@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2023 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,15 @@
  * limitations under the License.
  *
  */
-#ifndef GZ_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
-#define GZ_RENDERING_EXAMPLES_CAMERAWINDOW_HH_
 
-#include <vector>
-#include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/NativeWindow.hh"
 
-namespace gz = gz::rendering;
+using namespace gz;
+using namespace rendering;
 
-void GlutRun(std::vector<gz::CameraPtr> _cameras);
+//////////////////////////////////////////////////
+NativeWindow::NativeWindow() = default;
 
-void GlutDisplay();
+//////////////////////////////////////////////////
+NativeWindow::~NativeWindow() = default;
 
-void GlutIdle();
-
-void GlutKeyboard(unsigned char _key, int _x, int _y);
-
-void GlutReshape(int _width, int _height);
-
-void GlutInitCamera(gz::CameraPtr _camera);
-
-void GlutInitContext();
-
-void GlutPrintUsage();
-
-#endif

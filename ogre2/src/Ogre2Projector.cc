@@ -110,15 +110,16 @@ Ogre2Projector::Ogre2Projector()
 /////////////////////////////////////////////////
 Ogre2Projector::~Ogre2Projector()
 {
-  this->SetEnabled(false);
-
   if (!this->scene->IsInitialized())
     return;
+
+  this->SetEnabled(false);
 
   for (const auto &ogreCamIt : this->dataPtr->camerasWithListener)
   {
     Ogre::IdString camName = ogreCamIt.second;
     auto ogreCam = this->scene->OgreSceneManager()->findCameraNoThrow(camName);
+    if (ogreCam)
       ogreCam->removeListener(this->dataPtr->listener.get());
   }
   this->dataPtr->camerasWithListener.clear();
@@ -162,9 +163,11 @@ void Ogre2Projector::UpdateCameraListener()
 {
   // if a custom visibility flag is set, we will need to use a listener
   // for toggling the visibility of the decal
-  if (this->VisibilityFlags() == GZ_VISIBILITY_ALL)
+  if ((this->VisibilityFlags() & GZ_VISIBILITY_ALL) == GZ_VISIBILITY_ALL)
   {
     this->dataPtr->decalNode->setVisible(true);
+    this->dataPtr->decalNode->getCreator()->setDecalsDiffuse(
+        this->dataPtr->decal->getDiffuseTexture());
 
     for (auto &ogreCamIt : this->dataPtr->camerasWithListener)
     {
@@ -230,6 +233,7 @@ void Ogre2Projector::CreateProjector()
 {
   this->dataPtr->decalNode = this->ogreNode->createChildSceneNode();
   this->dataPtr->decalNode->roll(Ogre::Degree(90));
+  this->dataPtr->decalNode->yaw(Ogre::Degree(180));
 
   this->dataPtr->decal = this->scene->OgreSceneManager()->createDecal();
   this->dataPtr->decalNode->attachObject(this->dataPtr->decal);
@@ -275,7 +279,8 @@ void Ogre2Projector::CreateProjector()
 
   // approximate frustum size
   common::Image image(this->textureName);
-  const double aspectRatio = image.Width() / image.Height();
+  const double aspectRatio = static_cast<double>(image.Width()) /
+                             static_cast<double>(image.Height());
   const double vfov = 2.0 * atan(tan(this->hfov.Radian() / 2.0)
       / aspectRatio);
 

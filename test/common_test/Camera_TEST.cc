@@ -335,12 +335,12 @@ TEST_F(CameraTest, IntrinsicMatrix)
   EXPECT_DOUBLE_EQ(cameraIntrinsics(1, 2), 120);
 
   // Verify rest of the intrinsics
-  EXPECT_EQ(cameraIntrinsics(0, 1), 0);
-  EXPECT_EQ(cameraIntrinsics(1, 0), 0);
-  EXPECT_EQ(cameraIntrinsics(0, 1), 0);
-  EXPECT_EQ(cameraIntrinsics(2, 0), 0);
-  EXPECT_EQ(cameraIntrinsics(2, 1), 0);
-  EXPECT_EQ(cameraIntrinsics(2, 2), 1);
+  EXPECT_DOUBLE_EQ(cameraIntrinsics(0, 1), 0);
+  EXPECT_DOUBLE_EQ(cameraIntrinsics(1, 0), 0);
+  EXPECT_DOUBLE_EQ(cameraIntrinsics(0, 1), 0);
+  EXPECT_DOUBLE_EQ(cameraIntrinsics(2, 0), 0);
+  EXPECT_DOUBLE_EQ(cameraIntrinsics(2, 1), 0);
+  EXPECT_DOUBLE_EQ(cameraIntrinsics(2, 2), 1);
 
   // Verify that changing camera size changes intrinsics
   height = 1000;

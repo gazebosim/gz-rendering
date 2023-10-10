@@ -941,7 +941,7 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
         continue;
       }
 
-      // get the material and create the texture unit state it does not exist
+      // get the material and create the texture unit state if it does not exist
       auto mat = this->Material();
       auto pass = mat->getTechnique(0u)->getPass(0);
       auto texUnit = pass->getTextureUnitState(name_param.first);
@@ -1234,8 +1234,10 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
   if (texture->getWidth() == 0)
   {
     auto data = _img->RGBAData();
-
-    texture->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+    Ogre::PixelFormatGpu format = Ogre::PFG_RGBA8_UNORM;
+    if (this->ogreDatablock->suggestUsingSRGB(_type))
+      format = Ogre::PFG_RGBA8_UNORM_SRGB;
+    texture->setPixelFormat(format);
     texture->setTextureType(Ogre::TextureTypes::Type2D);
     texture->setNumMipmaps(1u);
     texture->setResolution(_img->Width(), _img->Height());

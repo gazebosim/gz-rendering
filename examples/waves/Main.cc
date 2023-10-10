@@ -43,6 +43,9 @@
 using namespace gz;
 using namespace rendering;
 
+const std::string vertexShaderGLSLFile = "GerstnerWaves_vs.glsl";
+const std::string fragmentShaderGLSLFile = "GerstnerWaves_fs.glsl";
+
 const std::string vertexShaderGLSL330File = "GerstnerWaves_vs_330.glsl";
 const std::string fragmentShaderGLSL330File = "GerstnerWaves_fs_330.glsl";
 
@@ -78,6 +81,11 @@ void buildScene(ScenePtr _scene,
   {
     vertexShaderFile = vertexShaderMetalFile;
     fragmentShaderFile = fragmentShaderMetalFile;
+  }
+  else if (_engineName == "ogre")
+  {
+    vertexShaderFile = vertexShaderGLSLFile;
+    fragmentShaderFile = fragmentShaderGLSLFile;
   }
   else
   {
@@ -179,14 +187,6 @@ int main(int _argc, char** _argv)
          {
           params["metal"] = "1";
          }
-      }
-      else
-      {
-        // todo(anyone) Passing textures to custom shaders is currently
-        // only available in ogre2
-        engineName = "ogre2";
-        gzerr << "Only ogre2 engine is supported. Switching to use ogre2."
-               << std::endl;
       }
 
       CameraPtr camera = createCamera(engineName, params);

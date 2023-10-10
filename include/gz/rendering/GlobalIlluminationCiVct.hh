@@ -31,8 +31,11 @@ namespace gz
 
   class GZ_RENDERING_VISIBLE CiVctCascade
   {
+    /// \brief Constructor
+    public: CiVctCascade();
+
     /// \brief Destructor
-    public: virtual ~CiVctCascade() {}
+    public: virtual ~CiVctCascade();
 
     /// \brief Sets whether to correctly calculate GI occlusion caused
     /// by occluders against area lights. Consumes more VRAM.
@@ -149,8 +152,11 @@ namespace gz
               DVM_None
             };
 
+    /// \brief Constructor
+    public: GlobalIlluminationCiVct();
+
     /// \brief Destructor
-    public: virtual ~GlobalIlluminationCiVct() { }
+    public: virtual ~GlobalIlluminationCiVct();
 
     /// \brief Tells how many times AddCascade will be called.
     /// You can call it fewer times (i.e. some kb of RAM will be wasted)

@@ -10,7 +10,7 @@
 Build | Status
 -- | --
 Test coverage | [![codecov](https://codecov.io/gh/gazebosim/gz-rendering/branch/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/gz-rendering/branch/default)
-Ubuntu Focal | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-main-focal-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-main-focal-amd64)
+Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-ci-main-jammy-amd64)](https://build.osrfoundation.org/job/gz_rendering-ci-main-jammy-amd64)
 Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=ignition_rendering-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/ignition_rendering-ci-main-homebrew-amd64)
 Windows       | [![Build Status](https://build.osrfoundation.org/job/ign_rendering-ci-win/badge/icon)](https://build.osrfoundation.org/job/ign_rendering-ci-win/)
 
@@ -47,12 +47,12 @@ of libraries designed to rapidly develop robot applications.
 
 # Install
 
-See the [installation tutorial](https://gazebosim.org/api/rendering/5.0/installation.html).
+See the [installation tutorial](https://gazebosim.org/api/rendering/8/installation.html).
 
 # Usage
 
 The Gazebo Rendering API can be found in the documentation. See the
-[installation tutorial](https://gazebosim.org/api/rendering/5.0/installation.html)
+[installation tutorial](https://gazebosim.org/api/rendering/8/installation.html)
 on how to build the documentation files using Doxygen.
 
 You can also take a look at the sample applications in the `examples` folder.
@@ -74,7 +74,7 @@ Rendering engine plugin implementation code is stored in their own folders
 
 * `ogre` : OGRE 1.x rendering engine plugin
 
-* `ogre2` : OGRE 2.x rendering engine plugin (available in versions >= gz-rendering1)
+* `ogre2` : OGRE-Next 2.x rendering engine plugin
 
 * `optix` : OptiX rendering engine plugin
 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(gz-rendering-render-pass)
 
-find_package(gz-rendering8)
+find_package(gz-rendering9)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})

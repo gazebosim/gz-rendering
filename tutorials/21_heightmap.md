@@ -25,7 +25,7 @@ Example 1 (image heightmap):
 You'll see:
 
 ```{.sh}
-[Msg] Loading plugin [gz-rendering8-ogre]
+[Msg] Loading plugin [gz-rendering9-ogre]
 [Msg] Loading heightmap: scene::Heightmap(65528)
 [Msg] Heightmap loaded. Process took 217 ms.
 ===============================

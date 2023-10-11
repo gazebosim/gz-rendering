@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(gz-rendering-global_illumination)
 
-find_package(gz-rendering8)
+find_package(gz-rendering9)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(gz-rendering-camera-tracking)
-find_package(gz-rendering8 REQUIRED)
+find_package(gz-rendering9 REQUIRED)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})

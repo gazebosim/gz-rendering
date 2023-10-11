@@ -47,12 +47,12 @@ of libraries designed to rapidly develop robot applications.
 
 # Install
 
-See the [installation tutorial](https://gazebosim.org/api/rendering/8/installation.html).
+See the [installation tutorial](https://gazebosim.org/api/rendering/9/installation.html).
 
 # Usage
 
 The Gazebo Rendering API can be found in the documentation. See the
-[installation tutorial](https://gazebosim.org/api/rendering/8/installation.html)
+[installation tutorial](https://gazebosim.org/api/rendering/9/installation.html)
 on how to build the documentation files using Doxygen.
 
 You can also take a look at the sample applications in the `examples` folder.

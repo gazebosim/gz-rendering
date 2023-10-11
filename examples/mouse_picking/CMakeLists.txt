@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(gz-rendering-mouse-picking)
-find_package(gz-rendering8 REQUIRED)
+find_package(gz-rendering9 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}

@@ -1,5 +1,9 @@
 ## Gazebo Rendering
 
+### Gazebo Rendering 9.X
+
+### Gazebo Rendering 9.0.0 (2023-XX-XX)
+
 ### Gazebo Rendering 8.X
 
 ### Gazebo Rendering 8.0.0 (2023-09-29)

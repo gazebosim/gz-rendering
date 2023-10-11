@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(gz-rendering-projector)
-find_package(gz-rendering8 REQUIRED)
+find_package(gz-rendering9 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
@@ -30,8 +30,8 @@ target_link_libraries(projector
   ${GLUT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
-  gz-rendering8::gz-rendering8
-  gz-rendering8::core
+  gz-rendering9::gz-rendering9
+  gz-rendering9::core
 )
 
 add_custom_command(TARGET projector POST_BUILD

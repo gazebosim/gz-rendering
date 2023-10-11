@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10.2 FATAL_ERROR)
 project(gz-rendering-visualization-demo)
 
-find_package(gz-rendering8)
+find_package(gz-rendering9)
 
 if (APPLE OR UNIX)
   find_package(GLUT REQUIRED)

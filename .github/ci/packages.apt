@@ -6,7 +6,7 @@ libgz-common6-dev
 libgz-math7-dev
 libgz-math7-eigen3-dev
 libgz-plugin2-dev
-libgz-utils2-dev
+libgz-utils3-dev
 libogre-1.9-dev
 libxi-dev
 libxmu-dev

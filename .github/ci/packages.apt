@@ -1,8 +1,8 @@
 freeglut3-dev
 libfreeimage-dev
 libglew-dev
-libgz-cmake3-dev
-libgz-common5-dev
+libgz-cmake4-dev
+libgz-common6-dev
 libgz-math7-dev
 libgz-math7-eigen3-dev
 libgz-plugin2-dev

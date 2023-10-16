@@ -3,8 +3,8 @@ project(gz-rendering-simple-demo-qml)
 
 #------------------------------------------------------------------------
 # Find gz-cmake
-find_package(gz-cmake3 REQUIRED)
-set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
+find_package(gz-cmake4 REQUIRED)
+set(GZ_CMAKE_VER ${gz-cmake4_VERSION_MAJOR})
 
 #------------------------------------------------------------------------
 # Find gz-rendering

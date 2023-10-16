@@ -60,7 +60,7 @@ sudo apt install -y \
     libgz-cmake4-dev \
     libgz-math8-dev \
     libgz-common6-dev \
-    libgz-plugin2-dev
+    libgz-plugin3-dev
 ```
 
 ### Supported Rendering Engines

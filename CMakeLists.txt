@@ -31,8 +31,8 @@ option(USE_UNOFFICIAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the bui
 
 #--------------------------------------
 # Find gz-math
-gz_find_package(gz-math7 REQUIRED COMPONENTS eigen3)
-set(GZ_MATH_VER ${gz-math7_VERSION_MAJOR})
+gz_find_package(gz-math8 REQUIRED COMPONENTS eigen3)
+set(GZ_MATH_VER ${gz-math8_VERSION_MAJOR})
 
 #--------------------------------------
 # Find gz-common

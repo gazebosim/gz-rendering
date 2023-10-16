@@ -58,7 +58,7 @@ sudo apt install -y \
     libxmu-dev \
     libxi-dev \
     libgz-cmake4-dev \
-    libgz-math7-dev \
+    libgz-math8-dev \
     libgz-common6-dev \
     libgz-plugin2-dev
 ```

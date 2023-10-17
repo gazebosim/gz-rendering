@@ -4,7 +4,7 @@ set(GZ_PLUGIN_VER 2)
 set(GZ_COMMON_VER 5)
 
 find_package(gz-rendering7 REQUIRED)
-find_package(gz-plugin2 REQUIRED COMPONENTS all)
+find_package(gz-plugin3 REQUIRED COMPONENTS all)
 
 if (NOT DEFINED ENV{LUXCORE_SDK_PATH})
   message(FATAL_ERROR "Must define LUXCORE_SDK_PATH")

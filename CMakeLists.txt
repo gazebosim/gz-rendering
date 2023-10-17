@@ -9,8 +9,8 @@ project(gz-rendering9 VERSION 9.0.0)
 # Find gz-cmake
 #============================================================================
 # If you get an error at this line, you need to install gz-cmake
-find_package(gz-cmake3 REQUIRED)
-set(GZ_CMAKE_VER ${gz-cmake3_VERSION_MAJOR})
+find_package(gz-cmake4 REQUIRED)
+set(GZ_CMAKE_VER ${gz-cmake4_VERSION_MAJOR})
 
 #============================================================================
 # Set up the project
@@ -31,24 +31,24 @@ option(USE_UNOFFICIAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the bui
 
 #--------------------------------------
 # Find gz-math
-gz_find_package(gz-math7 REQUIRED COMPONENTS eigen3)
-set(GZ_MATH_VER ${gz-math7_VERSION_MAJOR})
+gz_find_package(gz-math8 REQUIRED COMPONENTS eigen3)
+set(GZ_MATH_VER ${gz-math8_VERSION_MAJOR})
 
 #--------------------------------------
 # Find gz-common
-gz_find_package(gz-common5 REQUIRED
+gz_find_package(gz-common6 REQUIRED
   COMPONENTS graphics events geospatial)
-set(GZ_COMMON_VER ${gz-common5_VERSION_MAJOR})
+set(GZ_COMMON_VER ${gz-common6_VERSION_MAJOR})
 
 #--------------------------------------
 # Find gz-plugin
-gz_find_package(gz-plugin2 REQUIRED COMPONENTS all)
-set(GZ_PLUGIN_VER ${gz-plugin2_VERSION_MAJOR})
+gz_find_package(gz-plugin3 REQUIRED COMPONENTS all)
+set(GZ_PLUGIN_VER ${gz-plugin3_VERSION_MAJOR})
 
 #--------------------------------------
 # Find gz-utils
-gz_find_package(gz-utils2 REQUIRED)
-set(GZ_UTILS_VER ${gz-utils2_VERSION_MAJOR})
+gz_find_package(gz-utils3 REQUIRED)
+set(GZ_UTILS_VER ${gz-utils3_VERSION_MAJOR})
 
 #--------------------------------------
 # Find FreeImage

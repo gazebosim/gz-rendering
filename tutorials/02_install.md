@@ -57,10 +57,10 @@ sudo apt install -y \
     freeglut3-dev \
     libxmu-dev \
     libxi-dev \
-    libgz-cmake3-dev \
-    libgz-math7-dev \
-    libgz-common5-dev \
-    libgz-plugin2-dev
+    libgz-cmake4-dev \
+    libgz-math8-dev \
+    libgz-common6-dev \
+    libgz-plugin3-dev
 ```
 
 ### Supported Rendering Engines

@@ -121,7 +121,11 @@ int main(int _argc, char** _argv)
     ogreEngineName = _argv[1];
   }
 
+#ifdef __APPLE__
+  GraphicsAPI graphicsApi = GraphicsAPI::METAL;
+#else
   GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
+#endif
   if (_argc > 2)
   {
     graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));
@@ -132,7 +136,6 @@ int main(int _argc, char** _argv)
   std::vector<CameraPtr> cameras;
 
   engineNames.push_back(ogreEngineName);
-  engineNames.push_back("optix");
 
   for (auto engineName : engineNames)
   {

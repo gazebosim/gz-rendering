@@ -129,7 +129,7 @@ void RenderThread::Print(const QSurfaceFormat &_format)
             return "CompatibilityProfile";
         default:
             return "Invalid OpenGLContextProfile";
-        } 
+        }
     };
 
     auto renderableTypeToString = [] (QSurfaceFormat::RenderableType _value) -> std::string
@@ -146,7 +146,7 @@ void RenderThread::Print(const QSurfaceFormat &_format)
             return "OpenVG";
         default:
             return "Invalid RenderableType";
-        } 
+        }
     };
 
     auto swapBehaviorToString = [] (QSurfaceFormat::SwapBehavior _value) -> std::string
@@ -161,7 +161,7 @@ void RenderThread::Print(const QSurfaceFormat &_format)
             return "DoubleBuffer";
         default:
             return "Invalid SwapBehavior";
-        } 
+        }
     };
 
     // surface format info
@@ -200,7 +200,7 @@ QSurfaceFormat RenderThread::CreateSurfaceFormat()
     format.setProfile(QSurfaceFormat::CoreProfile);
     format.setRenderableType(QSurfaceFormat::OpenGL);
 
-    return format;    
+    return format;
 }
 
 //--------------------------------------------------------------------------
@@ -273,7 +273,26 @@ TextureNode::TextureNode(QQuickWindow *_window)
 {
     // Our texture node must have a texture, so use the default 0 texture.
     // createTextureFromNativeObject()
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+# ifndef _WIN32
+#   pragma GCC diagnostic push
+#   pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+# endif
     this->texture = this->window->createTextureFromId(0, QSize(1, 1));
+# ifndef _WIN32
+#   pragma GCC diagnostic pop
+# endif
+#else
+    int texId = 0;
+    this->texture =
+        this->window->createTextureFromNativeObject(
+            QQuickWindow::NativeObjectTexture,
+            static_cast<void *>(&texId),
+            0,
+            QSize(1, 1));
+#endif
+
+
     this->setTexture(this->texture);
     this->setFiltering(QSGTexture::Linear);
 }
@@ -314,8 +333,23 @@ void TextureNode::PrepareNode()
         this->texture = nullptr;
         // note: include QQuickWindow::TextureHasAlphaChannel if the rendered content
         // has alpha.
-        // createTextureFromNativeObject
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+# ifndef _WIN32
+#   pragma GCC diagnostic push
+#   pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+# endif
         this->texture = this->window->createTextureFromId(newId, size);
+# ifndef _WIN32
+#   pragma GCC diagnostic pop
+# endif
+#else
+        this->texture =
+            this->window->createTextureFromNativeObject(
+                QQuickWindow::NativeObjectTexture,
+                static_cast<void *>(&newId),
+                0,
+                size);
+#endif
         this->setTexture(this->texture);
 
         this->markDirty(DirtyMaterial);
@@ -342,7 +376,7 @@ void ThreadRenderer::Ready()
     this->renderThread->surface->setFormat(this->renderThread->context->format());
     this->renderThread->surface->create();
 
-    // carry out any initialisation before moving to thread 
+    // carry out any initialisation before moving to thread
     this->renderThread->InitialiseOnMainThread();
 
     // Move to Render thread

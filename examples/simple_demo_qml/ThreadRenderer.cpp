@@ -272,7 +272,6 @@ TextureNode::TextureNode(QQuickWindow *_window)
     , window(_window)
 {
     // Our texture node must have a texture, so use the default 0 texture.
-    // createTextureFromNativeObject()
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 # ifndef _WIN32
 #   pragma GCC diagnostic push
@@ -291,7 +290,6 @@ TextureNode::TextureNode(QQuickWindow *_window)
             0,
             QSize(1, 1));
 #endif
-
 
     this->setTexture(this->texture);
     this->setFiltering(QSGTexture::Linear);

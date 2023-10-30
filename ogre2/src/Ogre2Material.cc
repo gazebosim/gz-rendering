@@ -1242,7 +1242,6 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
     // upload raw color image data to gpu texture
     Ogre::Image2 img;
     img.loadDynamicImage(&data[0], false, texture);
-    // img.save(_name, 1, 1);
     img.uploadTo(texture, 0, 0);
   }
 

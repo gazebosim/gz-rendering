@@ -495,6 +495,8 @@ namespace ignition
       this->visuals[TransformAxis::TA_TRANSLATION_X] = transXVis;
       this->visuals[TransformAxis::TA_TRANSLATION_Y] = transYVis;
       this->visuals[TransformAxis::TA_TRANSLATION_Z] = transZVis;
+      // Store the translation origin visual in this->visuals using a key
+      // that's not already occupied by the TransformAxis enum
       this->visuals[TransformAxis::TA_TRANSLATION_Z << 1] = transOrigin;
 
       // translation handles
@@ -584,6 +586,8 @@ namespace ignition
       this->visuals[TransformAxis::TA_ROTATION_X] = rotXVis;
       this->visuals[TransformAxis::TA_ROTATION_Y] = rotYVis;
       this->visuals[TransformAxis::TA_ROTATION_Z] = rotZVis;
+      // Store the full rotation visual in this->visuals using a key
+      // that's not already occupied by the TransformAxis enum
       this->visuals[TransformAxis::TA_ROTATION_Z << 1] = rotFullVis;
 
       // rotation handles

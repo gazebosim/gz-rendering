@@ -12,75 +12,35 @@ find_package(gz-rendering9)
 
 #======================================
 # Find Qt
-find_package(Qt5 REQUIRED COMPONENTS
+find_package(Qt6 REQUIRED COMPONENTS
     Core
     Gui
     Qml
     Quick
-    QuickControls2
     Widgets
 )
-
-include_directories(
-    ${PROJECT_SOURCE_DIR}/include
-    ${Qt5Core_INCLUDE_DIRS}
-    ${Qt5Qml_INCLUDE_DIRS}
-    ${Qt5Quick_INCLUDE_DIRS}
-    ${Qt5QuickControls2_INCLUDE_DIRS}
-    ${Qt5Widgets_INCLUDE_DIRS}
-)
-
-add_definitions(
-    ${Qt5Widgets_DEFINITIONS}
-    ${Qt5Qml_DEFINITIONS}
-    ${${Qt5Quick_DEFINITIONS}}
-)
-
-#======================================
-# Configure Qt
-
-qt5_add_resources(QT_RESOURCES
-    Main.qrc
-)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+qt_standard_project_setup(REQUIRES 6.5)
 
 #======================================
 # Build
 
-add_executable(simple_demo_qml
-    Main.cc
-    GzRenderer.hh
-    GzRenderer.cc
-    ThreadRenderer.h
-    ThreadRenderer.cpp
-    ${QT_RESOURCES}
+qt_add_executable(simple_demo_qml main.cc
+  ogre_texture_import.cc ogre_texture_import.h
+  ogre_texture_node.cc ogre_texture_node.h)
+
+qt_add_qml_module(simple_demo_qml
+  URI simple_demo_qml
+  VERSION 1.0
+  QML_FILES main.qml
 )
 
-target_include_directories(simple_demo_qml PUBLIC
-    ${GZ-RENDERING_INCLUDE_DIRS}
-    ${OGRE2_INCLUDE_DIRS}
-    ${OpenGL_INCLUDE_DIRS}
+set_target_properties(simple_demo_qml PROPERTIES
+    # Prevent name clash with build subdirectory on case-insensitive file systems
+    OUTPUT_NAME simple_demo_qml_app
 )
 
-target_link_libraries(simple_demo_qml PUBLIC
-    ${GZ-RENDERING_LIBRARIES}
-    ${OGRE2_LIBRARIES}
-    ${OPENGL_LIBRARIES}
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Qml
-    Qt5::Quick
-)
-
-set_target_properties(simple_demo_qml
-    PROPERTIES
-        QT_QML_MODULE_VERSION 1.0
-        QT_QML_MODULE_URI GzRendering
-    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
-)
+target_link_libraries(simple_demo_qml PRIVATE
+  Qt::Core
+  Qt::Quick
+  Qt::Qml
+  Qt::Gui gz-rendering9::gz-rendering9)

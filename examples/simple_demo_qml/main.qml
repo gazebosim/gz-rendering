@@ -1,11 +1,11 @@
 import QtQuick 2.0
-import GzRendering 1.0
+import simple_demo_qml
 
 Item {
   width: 800
   height: 600
 
-  ThreadRenderer {
+  OgreTextureItem {
     id: renderer
     anchors.fill: parent
     anchors.margins: 10

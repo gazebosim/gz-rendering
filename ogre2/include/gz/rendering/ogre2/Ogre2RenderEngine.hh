@@ -87,6 +87,8 @@ namespace gz
       /// \brief Destructor
       public: virtual ~Ogre2RenderEngine();
 
+      public: void ManualLoad(const std::map<std::string, std::string> &_params);
+
       // Documentation Inherited.
       public: virtual void Destroy() override;
 
@@ -261,6 +263,9 @@ namespace gz
 
       /// \brief True to use the current opengl context
       private: bool useCurrentGLContext = false;
+
+      private: std::string SDL2x11 = {};
+      private: std::string parentWindowHandle = {};
 
       /// \brief Pointer to private data
       private: std::unique_ptr<Ogre2RenderEnginePrivate> dataPtr;

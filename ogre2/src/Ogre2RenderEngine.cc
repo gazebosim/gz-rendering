@@ -148,10 +148,6 @@ RenderEngine *Ogre2RenderEnginePlugin::Engine() const
 Ogre2RenderEngine::Ogre2RenderEngine() :
   dataPtr(new Ogre2RenderEnginePrivate)
 {
-  this->dummyDisplay = nullptr;
-  this->dummyContext = 0;
-  this->dummyWindowId = 0;
-
   std::string ogrePath = std::string(OGRE2_RESOURCE_PATH);
   std::vector<std::string> paths = common::split(ogrePath, ":");
   for (const auto &path : paths)
@@ -366,6 +362,142 @@ SceneStorePtr Ogre2RenderEngine::Scenes() const
 }
 
 //////////////////////////////////////////////////
+void Ogre2RenderEngine::ManualLoad(const std::map<std::string, std::string> &_params)
+{
+  this->dataPtr->vkExternalInstance.instance = nullptr;
+  this->dataPtr->vkExternalDevice.physicalDevice = nullptr;
+  this->dataPtr->vkExternalDevice.device = nullptr;
+  this->dataPtr->vkExternalDevice.graphicsQueue = nullptr;
+  this->dataPtr->vkExternalDevice.presentQueue = nullptr;
+
+  auto it = _params.find("vulkan");
+  if (it != _params.end())
+  {
+    bool useVulkan {false};
+    std::istringstream(it->second) >> useVulkan;
+    if (useVulkan)
+    {
+      gzdbg << "[OGRE2] Using Vulkan Backend" << std::endl;
+      this->dataPtr->graphicsAPI = GraphicsAPI::VULKAN;
+
+      it = _params.find("external_instance");
+      if (it != _params.end())
+      {
+        const auto *gzExternalInstance =
+          reinterpret_cast<const GzVulkanExternalInstance *>(
+            Ogre::StringConverter::parseUnsignedLong(it->second));
+
+        this->dataPtr->vkExternalInstance.instance =
+          gzExternalInstance->instance;
+        // This works as long as std::vector memory is actually contiguous
+        this->dataPtr->vkExternalInstance.instanceLayers.appendPOD(
+          &*gzExternalInstance->instanceLayers.begin(),
+          &*gzExternalInstance->instanceLayers.end());
+        this->dataPtr->vkExternalInstance.instanceExtensions.appendPOD(
+          &*gzExternalInstance->instanceExtensions.begin(),
+          &*gzExternalInstance->instanceExtensions.end());
+      }
+
+      it = _params.find("external_device");
+      if (it != _params.end())
+      {
+        const auto *gzExternalDevice =
+          reinterpret_cast<const GzVulkanExternalDevice *>(
+            Ogre::StringConverter::parseUnsignedLong(it->second));
+
+        this->dataPtr->vkExternalDevice.physicalDevice =
+          gzExternalDevice->physicalDevice;
+        this->dataPtr->vkExternalDevice.device = gzExternalDevice->device;
+        this->dataPtr->vkExternalDevice.graphicsQueue =
+          gzExternalDevice->graphicsQueue;
+        this->dataPtr->vkExternalDevice.presentQueue =
+          gzExternalDevice->presentQueue;
+        // This works as long as std::vector memory is actually contiguous
+        this->dataPtr->vkExternalDevice.deviceExtensions.appendPOD(
+          &*gzExternalDevice->deviceExtensions.begin(),
+          &*gzExternalDevice->deviceExtensions.end());
+      }
+    }
+  }
+
+  // init the resources
+
+  try
+  {
+    this->CreateLogger();
+    this->CreateRoot();
+    this->CreateOverlay();
+    this->LoadPlugins();
+
+    this->CreateRenderSystem();
+    this->ogreRoot->initialise(false);
+
+    Ogre::StringVector paramsVector;
+    Ogre::NameValuePairList params;
+    this->window = nullptr;
+
+    params["SDL2x11"] = _params.find("SDL2x11")->second;
+    params["parentWindowHandle"] = _params.find("parentWindowHandle")->second;
+    params["FSAA"] = "0";
+    params["stereoMode"] = "Frame Sequential";
+    params["border"] = "none";
+
+    std::ostringstream stream;
+    stream << "OgreWindow(0)" << "_1";
+
+    // Needed for retina displays
+    params["contentScalingFactor"] = "1";
+    params["gamma"] = "Yes";
+    params["parentWindowHandle"] = this->winID;
+
+    int attempts = 0;
+    while (this->window == nullptr && (attempts++) < 10)
+    {
+      try
+      {
+        this->window = Ogre::Root::getSingleton().createRenderWindow(
+            stream.str(), 640, 480, false, &params);
+      }
+      catch(const std::exception &_e)
+      {
+        gzerr << " Unable to create the rendering window: " << _e.what()
+               << std::endl;
+        this->window = nullptr;
+      }
+    }
+
+    if (attempts >= 10)
+    {
+      gzerr << "Unable to create the rendering window after [" << attempts
+             << "] attempts." << std::endl;
+    }
+
+    this->RegisterHlms();
+
+    if (this->window)
+    {
+      this->window->_setVisible(true);
+    }
+
+    this->CreateResources();
+
+    this->loaded = true;
+    this->initialized = true;
+  }
+  catch (Ogre::Exception &ex)
+  {
+    gzerr << ex.what() << std::endl;
+  }
+  catch (...)
+  {
+    gzerr << "Failed to load render-engine" << std::endl;
+  }
+
+  Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups(false);
+  this->scenes = Ogre2SceneStorePtr(new Ogre2SceneStore);
+}
+
+//////////////////////////////////////////////////
 bool Ogre2RenderEngine::LoadImpl(
     const std::map<std::string, std::string> &_params)
 {
@@ -389,6 +521,16 @@ bool Ogre2RenderEngine::LoadImpl(
     std::istringstream(it->second) >> useMetal;
     if(useMetal)
         this->dataPtr->graphicsAPI = GraphicsAPI::METAL;
+  }
+
+  it = _params.find("SDL2x11");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->SDL2x11;
+
+  it = _params.find("parentWindowHandle");
+  if (it != _params.end())
+  {
+    std::istringstream(it->second) >> this->parentWindowHandle;
   }
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_VULKAN
@@ -492,7 +634,8 @@ void Ogre2RenderEngine::LoadAttempt()
   this->CreateLogger();
   if (!this->useCurrentGLContext &&
       (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL ||
-       this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN))
+       this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN) &&
+       !this->SDL2x11.empty())
   {
     this->CreateContext();
   }
@@ -1171,8 +1314,15 @@ void Ogre2RenderEngine::CreateRenderWindow()
 
   SDLx11 vulkanX11Data;
 
-  if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN &&
+      !this->SDL2x11.empty())
   {
+    gzdbg << "Reusing SDL context" << std::endl;
+    handle = this->SDL2x11;
+  }
+  else if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
+  {
+    gzdbg << "Using dummy GLX context" << std::endl;
     if(this->dummyWindowId && this->dummyDisplay)
     {
       vulkanX11Data.window = this->dummyWindowId;
@@ -1204,12 +1354,9 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   Ogre::NameValuePairList params;
   this->window = nullptr;
 
-  if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN && !this->SDL2x11.empty())
   {
-    if (!_handle.empty())
-    {
-      params["SDL2x11"] = _handle;
-    }
+    params["SDL2x11"] = this->SDL2x11;
   }
   else
   {
@@ -1243,7 +1390,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   stream << "OgreWindow(0)" << "_" << _handle;
 
   // Needed for retina displays
-  params["contentScalingFactor"] = std::to_string(_ratio);
+  params["contentScalingFactor"] = (_ratio);
 
   // Ogre 2 PBS expects gamma correction
   params["gamma"] = "Yes";

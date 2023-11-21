@@ -141,7 +141,7 @@ void Ogre2LidarVisual::Destroy()
   }
 
   this->dataPtr->lidarPoints.clear();
-  this->dataPtr->pointsMat.setNull();
+  this->dataPtr->pointsMat.reset();
 }
 
 //////////////////////////////////////////////////

@@ -28,22 +28,9 @@ set_property(
 target_compile_definitions(${ogre2_target}
   PRIVATE OGRE_IGNORE_UNKNOWN_DEBUG)
 
-# Add OGRE2_LIBRARY_DIRS to INSTALL_RPATH
-# Append to a copy of CMAKE_INSTALL_RPATH since that is the default
-set(ogre2_target_install_rpath ${CMAKE_INSTALL_RPATH})
-list(APPEND ogre2_target_install_rpath ${OGRE2_LIBRARY_DIRS})
-set_property(
-  TARGET ${ogre2_target}
-  PROPERTY INSTALL_RPATH
-  ${ogre2_target_install_rpath}
-)
-
 target_include_directories(${ogre2_target}
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}
-  # VCT GI needs this
-  ${OGRE2_INCLUDE}/Hlms/Pbs
-  ${OGRE2_INCLUDE}/Hlms/Common
 )
 
 target_link_libraries(${ogre2_target}
@@ -52,21 +39,18 @@ target_link_libraries(${ogre2_target}
     gz-math${GZ_MATH_VER}::eigen3
   PRIVATE
     gz-plugin${GZ_PLUGIN_VER}::register
-    ${OPENGL_LIBRARIES}
     terra
-    GzOGRE2::GzOGRE2)
-
-
-if (TARGET OpenGL::EGL)
-  target_link_libraries(${ogre2_target}
-  PRIVATE
-      OpenGL::EGL
-  )
-  add_definitions(-DHAVE_EGL=1)
-endif()
+    ogre_next_vendor::OgreMain
+    ogre_next_vendor::Overlay
+    ogre_next_vendor::HlmsPbs
+    ogre_next_vendor::HlmsUnlit
+    ogre_next_vendor::PlanarReflections
+    GLX
+)
 
 target_compile_definitions(${ogre2_target} PRIVATE $<$<CONFIG:Debug>:DEBUG=1 _DEBUG=1>)
 
+target_compile_definitions(${ogre2_target} PRIVATE HAVE_GLX=true HAVE_EGL=true)
 
 set (versioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
 set (unversioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_NO_VERSION_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -83,15 +67,6 @@ if (WIN32)
 else()
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink ${versioned} ${unversioned})
   INSTALL(FILES ${PROJECT_BINARY_DIR}/${unversioned} DESTINATION ${GZ_RENDERING_ENGINE_INSTALL_DIR})
-endif()
-
-if (NOT (APPLE OR WIN32))
-  option(USE_GLX "Use GLX to create OpenGL contexts." ON)
-else()
-  option(USE_GLX "Use GLX to create OpenGL contexts." OFF)
-endif()
-if (USE_GLX)
-  add_definitions(-DHAVE_GLX=1)
 endif()
 
 # Build the unit tests

@@ -48,9 +48,7 @@ Ogre2InertiaVisual::Ogre2InertiaVisual()
 }
 
 //////////////////////////////////////////////////
-Ogre2InertiaVisual::~Ogre2InertiaVisual()
-{
-}
+Ogre2InertiaVisual::~Ogre2InertiaVisual() = default;
 
 //////////////////////////////////////////////////
 void Ogre2InertiaVisual::PreRender()
@@ -86,8 +84,8 @@ void Ogre2InertiaVisual::Destroy()
 }
 
 //////////////////////////////////////////////////
-void Ogre2InertiaVisual::Load(const gz::math::Pose3d &_pose,
-                              const gz::math::Vector3d &_scale)
+void Ogre2InertiaVisual::LoadInertial(const gz::math::Pose3d &_pose,
+                                      const gz::math::Vector3d &_scale)
 {
   if (!this->dataPtr->crossLines)
   {

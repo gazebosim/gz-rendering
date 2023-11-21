@@ -68,7 +68,7 @@ namespace gz
       public: virtual void SetLifetime(double _lifetime) override;
 
       // Documentation inherited.
-      public: virtual void SetMaterial(const MaterialPtr &_material) override;
+      public: virtual void SetParticleMaterial(const MaterialPtr &_material) override;
 
       // Documentation inherited.
       public: virtual void SetVelocityRange(double _minVelocity,

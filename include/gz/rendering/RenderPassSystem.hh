@@ -44,6 +44,9 @@ namespace gz
     /// \brief A factory interface for creating render passes
     class GZ_RENDERING_VISIBLE RenderPassFactory
     {
+      /// \brief Destructor
+      public: virtual ~RenderPassFactory();
+
       /// \brief Instantiate new render pass
       /// \return New render pass
       public: virtual RenderPass *New() const = 0;

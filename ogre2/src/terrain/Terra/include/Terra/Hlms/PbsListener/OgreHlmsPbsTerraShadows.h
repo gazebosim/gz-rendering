@@ -47,7 +47,7 @@ namespace Ogre
 
     public:
         HlmsPbsTerraShadows();
-        ~HlmsPbsTerraShadows();
+        virtual ~HlmsPbsTerraShadows();
 
         void setTerra( Terra *terra );
 

@@ -205,8 +205,10 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
   const double aspectRatio = this->AspectRatio();
   const double angle = this->HFOV().Radian();
   const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
-  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
-  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
+  this->ogreCamera->setFOVy(
+    static_cast<Ogre::Radian>(static_cast<Ogre::Real>(vfov)));
+  this->ogreCamera->setAspectRatio(
+    static_cast<Ogre::Real>(aspectRatio));
 
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();

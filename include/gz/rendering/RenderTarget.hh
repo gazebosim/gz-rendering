@@ -89,7 +89,7 @@ namespace gz
       /// Object::PreRender but with the added bonus that it has access
       /// to the camera that is about to render
       /// \param[in] _camera Camera that is about to render
-      public: virtual void PreRender(const CameraPtr &_camera) = 0;
+      public: virtual void CameraPreRender(const CameraPtr &_camera) = 0;
 
       /// \brief Add a render pass to the render target
       /// \param[in] _pass New render pass to add

@@ -302,7 +302,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
         Ogre::SubItem *subItem = item->getSubItem(i);
         subItem->setCustomParameter(1, customParameter);
 
-        if (!subItem->getMaterial().isNull())
+        if (subItem->getMaterial())
         {
           this->materialMap.push_back({ subItem, subItem->getMaterial() });
 

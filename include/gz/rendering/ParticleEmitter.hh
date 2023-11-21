@@ -161,12 +161,12 @@ namespace gz
       /// \brief Get the material which all particles in the emitter will use.
       /// \return The material pointer.
       /// \sa SetMaterial
-      public: virtual MaterialPtr Material() const = 0;
+      public: virtual MaterialPtr ParticleMaterial() const = 0;
 
       /// \brief Sets the material which all particles in the emitter will use.
       /// \param[in] _material The material pointer.
       /// \sa Material
-      public: virtual void SetMaterial(const MaterialPtr &_material) = 0;
+      public: virtual void SetParticleMaterial(const MaterialPtr &_material) = 0;
 
       /// \brief Get the minimum velocity each particle is emitted (m/s).
       /// \return Minimum velocity.

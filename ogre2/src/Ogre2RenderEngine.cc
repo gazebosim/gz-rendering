@@ -36,6 +36,7 @@
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 #include "gz/rendering/ogre2/Ogre2Storage.hh"
 
+#include "OgreAbiUtils.h"
 #include "Ogre2GzHlmsPbsPrivate.hh"
 #include "Ogre2GzHlmsTerraPrivate.hh"
 #include "Ogre2GzHlmsUnlitPrivate.hh"
@@ -316,7 +317,7 @@ void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
                 Ogre::MaterialManager::getSingleton().getByName(
                     fullPath);
 
-              if (!matPtr.isNull())
+              if (matPtr)
               {
                 // is this necessary to do here? Someday try it without
                 matPtr->compile();
@@ -768,7 +769,8 @@ void Ogre2RenderEngine::CreateRoot()
 {
   try
   {
-    this->ogreRoot = new Ogre::Root("", "", "");
+    auto cookie = Ogre::generateAbiCookie();
+    this->ogreRoot = new Ogre::Root(&cookie, "", "", "");
   }
   catch (Ogre::Exception &)
   {
@@ -841,6 +843,7 @@ void Ogre2RenderEngine::LoadPlugins()
       if (!common::exists(filename))
       {
         filename = filename + "." + std::string(OGRE2_VERSION);
+
         if (!common::exists(filename))
         {
           if (piter->name.find("RenderSystem") != std::string::npos)
@@ -1314,15 +1317,8 @@ void Ogre2RenderEngine::CreateRenderWindow()
 
   SDLx11 vulkanX11Data;
 
-  if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN &&
-      !this->SDL2x11.empty())
+  if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
   {
-    gzdbg << "Reusing SDL context" << std::endl;
-    handle = this->SDL2x11;
-  }
-  else if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
-  {
-    gzdbg << "Using dummy GLX context" << std::endl;
     if(this->dummyWindowId && this->dummyDisplay)
     {
       vulkanX11Data.window = this->dummyWindowId;
@@ -1350,7 +1346,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     const unsigned int _width, const unsigned int _height,
     const double _ratio, const unsigned int _antiAliasing)
 {
-  Ogre::StringVector paramsVector;
+    Ogre::StringVector paramsVector;
   Ogre::NameValuePairList params;
   this->window = nullptr;
 
@@ -1449,9 +1445,10 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
     this->window->_setVisible(true);
 
     // Windows needs to reposition the render window to 0,0.
-    this->window->reposition(0, 0);
+    // this->window->reposition(0, 0);
   }
   return stream.str();
+
 }
 
 //////////////////////////////////////////////////

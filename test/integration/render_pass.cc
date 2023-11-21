@@ -546,7 +546,7 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
   RenderPassPtr pass = rpSystem->Create<LensFlarePass>();
   LensFlarePassPtr lensFlarePass =
     std::dynamic_pointer_cast<LensFlarePass>(pass);
-  lensFlarePass->Init(scene);
+  lensFlarePass->InitFromScene(scene);
   lensFlarePass->SetLight(light);
   camera->AddRenderPass(lensFlarePass);
 

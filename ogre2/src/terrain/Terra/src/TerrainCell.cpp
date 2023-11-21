@@ -181,7 +181,7 @@ namespace Ogre
         ((float*RESTRICT_ALIAS)gpuPtr)[15] = m_parentTerra->m_invDepth;
     }
     //-----------------------------------------------------------------------
-    const LightList& TerrainCell::getLights(void) const
+    const LightList& TerrainCell::getLights() const
     {
         return m_parentTerra->queryLights();
     }

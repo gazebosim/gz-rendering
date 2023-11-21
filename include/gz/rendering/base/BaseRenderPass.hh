@@ -48,7 +48,7 @@ namespace gz
       public: virtual bool IsEnabled() const override;
 
       // Documentation inherited
-      public: void PreRender(const CameraPtr &_camera) override;
+      public: void CameraPreRender(const CameraPtr &_camera) override;
 
       // Documentation inherited
       public: void SetWideAngleCameraAfterStitching(bool _afterStitching)
@@ -95,7 +95,7 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseRenderPass<T>::PreRender(const CameraPtr &/*_camera*/)
+    void BaseRenderPass<T>::CameraPreRender(const CameraPtr &/*_camera*/)
     {
       T *thisT = this;
       thisT->PreRender();  // NOT the same as doing T::PreRender

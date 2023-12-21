@@ -9,10 +9,10 @@
 
 Build | Status
 -- | --
-Test coverage | [![codecov](https://codecov.io/gh/gazebosim/gz-rendering/branch/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/gz-rendering/branch/default)
-Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-ci-main-jammy-amd64)](https://build.osrfoundation.org/job/gz_rendering-ci-main-jammy-amd64)
-Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/gz_rendering-ci-main-homebrew-amd64)
-Windows       | [![Build Status](https://build.osrfoundation.org/job/gz_rendering-main-win/badge/icon)](https://build.osrfoundation.org/job/gz_rendering-main-win/)
+Test coverage | [![codecov](https://codecov.io/gh/gazebosim/gz-rendering/tree/gz-rendering8/graph/badge.svg)](https://codecov.io/gh/gazebosim/gz-rendering/tree/gz-rendering8)
+Ubuntu Jammy  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-ci-gz-rendering8-jammy-amd64)](https://build.osrfoundation.org/job/gz_rendering-ci-gz-rendering8-jammy-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-ci-gz-rendering8-homebrew-amd64)](https://build.osrfoundation.org/job/gz_rendering-ci-gz-rendering8-homebrew-amd64)
+Windows       | [![Build Status](https://build.osrfoundation.org/job/gz_rendering-8-win/badge/icon)](https://build.osrfoundation.org/job/gz_rendering-8-win/)
 
 Gazebo Rendering is a C++ library designed to provide an abstraction
 for different rendering engines. It offers unified APIs for creating

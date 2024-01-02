@@ -1024,14 +1024,6 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   delete [] scan;
   scan = nullptr;
 
-  // \todo(iche033) Implement Ogre2Heightmap::Destroy function in gz-rendering8
-  // this should not be needed once Ogre2Heightmap::Destroy is implemented.
-  if (engine->Name() == "ogre2")
-  {
-    vis->Destroy();
-    heightmap.reset();
-  }
-
   // Clean up
   engine->DestroyScene(scene);
 }

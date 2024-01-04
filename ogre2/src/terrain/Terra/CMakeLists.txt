@@ -7,10 +7,8 @@ file( GLOB_RECURSE TERRA_SOURCES
 )
 
 add_library(${PROJECT_NAME} STATIC ${TERRA_SOURCES})
+set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-if(GZ_ADD_fPIC_TO_LIBRARIES AND NOT _gz_add_library_INTERFACE)
-  target_compile_options(${PROJECT_NAME} PRIVATE -fPIC)
-endif()
 
 # disable all warnings for Terra
 if (UNIX)

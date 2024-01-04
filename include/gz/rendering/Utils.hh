@@ -29,6 +29,7 @@
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
+#include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/Image.hh"
 
@@ -120,6 +121,12 @@ namespace gz
     /// \return Image in bayer format
     GZ_RENDERING_VISIBLE
     Image convertRGBToBayer(const Image &_image, PixelFormat _bayerFormat);
+
+    /// \brief Convenience function to get the default graphics API based on
+    /// current platform
+    /// \return Graphics API, i.e. METAL, OPENGL, VULKAN
+    GZ_RENDERING_VISIBLE
+    GraphicsAPI defaultGraphicsAPI();
     }
   }
 }

@@ -25,8 +25,9 @@
 #include "gz/math/Vector3.hh"
 
 #include "gz/rendering/Camera.hh"
-#include "gz/rendering/RayQuery.hh"
+#include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/PixelFormat.hh"
+#include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/Utils.hh"
 
 
@@ -391,6 +392,16 @@ Image convertRGBToBayer(const Image &_image, PixelFormat _bayerFormat)
   }
 
   return destImage;
+}
+
+/////////////////////////////////////////////////
+GraphicsAPI defaultGraphicsAPI()
+{
+#ifdef __APPLE__
+  return GraphicsAPI::METAL;
+#else
+  return GraphicsAPI::OPENGL;
+#endif
 }
 
 }

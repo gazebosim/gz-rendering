@@ -317,7 +317,7 @@ int main(int _argc, char** _argv)
   std::vector<std::string> engineNames;
   std::vector<CameraPtr> cameras;
 
-  GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
+  GraphicsAPI graphicsApi = defaultGraphicsAPI();
   if (_argc > 2)
   {
     graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));

@@ -115,7 +115,7 @@ void buildScene(ScenePtr _scene)
   camera->SetImageFormat(PixelFormat::PF_FLOAT32_RGBA);
   camera->SetNearClipPlane(0.15);
   camera->SetFarClipPlane(10.0);
-  camera->SetAntiAliasing(2);  
+  camera->SetAntiAliasing(2);
   camera->CreateDepthTexture();
 
   root->AddChild(camera);
@@ -154,7 +154,7 @@ int main(int _argc, char** _argv)
     engineName = _argv[1];
   }
 
-  GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
+  GraphicsAPI graphicsApi = defaultGraphicsAPI();
   if (_argc > 2)
   {
     graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));

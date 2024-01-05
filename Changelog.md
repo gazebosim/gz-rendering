@@ -1,5 +1,15 @@
 ## Ignition Rendering
 
+### Gazebo Rendering 3.7.2 (2024-01-05)
+
+1. Update github action workflows
+    * [Pull request #940](https://github.com/gazebosim/gz-rendering/pull/940)
+    * [Pull request #834](https://github.com/gazebosim/gz-rendering/pull/834)
+    * [Pull request #833](https://github.com/gazebosim/gz-rendering/pull/833)
+
+1. Add minor comments to BaseGizmoVisual
+    * [Pull request #881](https://github.com/gazebosim/gz-rendering/pull/881)
+
 ### Ignition Rendering 3.7.1 (2023-02-03)
 
 1. Remove fini to resolve segfaault at shutdown.

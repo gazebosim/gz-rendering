@@ -214,7 +214,6 @@ configure_file("${PROJECT_SOURCE_DIR}/cppcheck.suppress.in"
                ${PROJECT_BINARY_DIR}/cppcheck.suppress)
 
 gz_configure_build(QUIT_IF_BUILD_ERRORS
-    HIDE_SYMBOLS_BY_DEFAULT
     COMPONENTS ${RENDERING_COMPONENTS})
 
 if (GZ_RENDERING_HAVE_OGRE2)

@@ -16,6 +16,7 @@
  */
 
 #include <gz/common/Console.hh>
+#include <gz/common/Timer.hh>
 
 #include "gz/rendering/Material.hh"
 
@@ -430,9 +431,13 @@ void Ogre2RenderTarget::Copy(Image &_image) const
   }
   else
   {
+    common::Timer t;
+    t.Start();
     dstBox.data = _image.Data();
     Ogre::Image2::copyContentsToMemory(
         texture, texture->getEmptyBox(0u), dstBox, dstOgrePf);
+    t.Stop();
+    std::cerr << "Ogre2RenderTarget copyContents " << t.ElapsedTime().count() << std::endl;
   }
 }
 

@@ -19,6 +19,7 @@
 #include <gz/math/Vector3.hh>
 
 #include <gz/common/Console.hh>
+#include <gz/common/Timer.hh>
 #include <gz/math/Helpers.hh>
 
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
@@ -230,6 +231,10 @@ Ogre2LaserRetroMaterialSwitcher::Ogre2LaserRetroMaterialSwitcher(
 void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
   Ogre::CompositorPass *_pass)
 {
+  common::Timer t;
+  t.Start();
+
+
   if(_pass->getDefinition()->mIdentifier == kLaserRetro1stPassQuad)
   {
     GZ_ASSERT(dynamic_cast<Ogre::CompositorPassQuad *>(_pass),
@@ -485,12 +490,17 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
 
   // Remove the reference count on noBlend we created
   hlmsManager->destroyBlendblock(noBlend);
+
+  t.Stop();
+  // std::cerr << "    Ogre2GpuRays passPre " << t.ElapsedTime().count() << std::endl;
 }
 
 //////////////////////////////////////////////////
 void Ogre2LaserRetroMaterialSwitcher::passPosExecute(
   Ogre::CompositorPass *_pass)
 {
+  common::Timer t;
+  t.Start();
   if(_pass->getDefinition()->mIdentifier != kLaserRetroMainDepthPassId)
     return;
 
@@ -546,6 +556,10 @@ void Ogre2LaserRetroMaterialSwitcher::passPosExecute(
   }
 
   engine->SetGzOgreRenderingMode(GORM_NORMAL);
+
+  t.Stop();
+  // std::cerr << "    Ogre2GpuRays passPost " << t.ElapsedTime().count() << std::endl;
+
 }
 
 //////////////////////////////////////////////////
@@ -1204,6 +1218,10 @@ void Ogre2GpuRays::CreateGpuRaysTextures()
 /////////////////////////////////////////////////
 void Ogre2GpuRays::UpdateRenderTarget1stPass()
 {
+
+  common::Timer t;
+  t.Start();
+
   Ogre::vector<Ogre::TextureGpu *>::type swappedTargets;
   swappedTargets.reserve(2u);
 
@@ -1218,7 +1236,13 @@ void Ogre2GpuRays::UpdateRenderTarget1stPass()
 
     this->dataPtr->ogreCompositorWorkspace1st[i]->_validateFinalTarget();
     this->dataPtr->ogreCompositorWorkspace1st[i]->_beginUpdate(false);
+
+    common::Timer t2;
+    t2.Start();
     this->dataPtr->ogreCompositorWorkspace1st[i]->_update();
+    t2.Stop();
+    // std::cerr << "    Ogre2GpuRays 1stPass _update " << t2.ElapsedTime().count() << std::endl;
+
     this->dataPtr->ogreCompositorWorkspace1st[i]->_endUpdate(false);
 
     swappedTargets.clear();
@@ -1227,11 +1251,18 @@ void Ogre2GpuRays::UpdateRenderTarget1stPass()
 
     this->dataPtr->ogreCompositorWorkspace1st[i]->setEnabled(false);
   }
+
+  t.Stop();
+  // std::cerr << "  Ogre2GpuRays 1stPass " << t.ElapsedTime().count() << " : " << this->dataPtr->cubeFaceIdx.size() << std::endl;
 }
 
 /////////////////////////////////////////////////
 void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 {
+  common::Timer t;
+  t.Start();
+
+
   this->dataPtr->ogreCompositorWorkspace2nd->_validateFinalTarget();
   this->dataPtr->ogreCompositorWorkspace2nd->_beginUpdate(false);
   this->dataPtr->ogreCompositorWorkspace2nd->_update();
@@ -1240,11 +1271,16 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
   Ogre::vector<Ogre::TextureGpu *>::type swappedTargets;
   swappedTargets.reserve(2u);
   this->dataPtr->ogreCompositorWorkspace2nd->_swapFinalTarget(swappedTargets);
+
+  t.Stop();
+  // std::cerr << "  Ogre2GpuRays 2ndPass " << t.ElapsedTime().count() << std::endl;
 }
 
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
+  common::Timer t;
+  t.Start();
   this->scene->StartRendering(this->dataPtr->ogreCamera);
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -1264,6 +1300,9 @@ void Ogre2GpuRays::Render()
   hlmsCustomizations.minDistanceClip = -1;
 
   this->scene->FlushGpuCommandsAndStartNewFrame(6u, false);
+  t.Stop();
+  // std::cerr << "============================================= Ogre2GpuRays Render() " << t.ElapsedTime().count() << std::endl;
+  std::cerr <<  t.ElapsedTime().count() << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -1276,6 +1315,9 @@ void Ogre2GpuRays::PreRender()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::PostRender()
 {
+  common::Timer t;
+  t.Start();
+
   unsigned int width = this->dataPtr->w2nd;
   unsigned int height = this->dataPtr->h2nd;
 
@@ -1340,6 +1382,9 @@ void Ogre2GpuRays::PostRender()
 
   this->dataPtr->newGpuRaysFrame(this->dataPtr->gpuRaysScan,
       width, height, this->Channels(), "PF_FLOAT32_RGB");
+
+  t.Stop();
+  // std::cerr << "Ogre2GpuRays PostRender() " << t.ElapsedTime().count() << " : "  << width << "x" << height << std::endl;
 
   // Uncomment to debug output
   // std::cerr << "wxh: " << width << " x " << height << std::endl;

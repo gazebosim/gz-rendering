@@ -968,6 +968,8 @@ void Ogre2GpuRays::Setup1stPass()
       passScene->setVisibilityMask(
         this->VisibilityMask() &
         ~Ogre2ParticleEmitter::kParticleVisibilityFlags);
+      passScene->mEnableForwardPlus = false;
+      passScene->setLightVisibilityMask(0x0);
     }
 
     Ogre::CompositorTargetDef *particleTargetDef =
@@ -983,6 +985,8 @@ void Ogre2GpuRays::Setup1stPass()
       // set camera custom visibility mask when rendering particles
       passScene->mVisibilityMask =
           Ogre2ParticleEmitter::kParticleVisibilityFlags;
+      passScene->mEnableForwardPlus = false;
+      passScene->setLightVisibilityMask(0x0);
     }
 
     // rt_input target - converts depth to range

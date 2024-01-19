@@ -2,8 +2,15 @@
 
 ### Ignition Rendering 6.6.3 (2024-01-19)
 
-1. Revert mesh viewer background color back to gray
-    * [Pull request #894](https://github.com/gazebosim/gz-rendering/pull/894)
+1. Backport ogre2 lidar performance improvement
+    * [Pull request #956](https://github.com/gazebosim/gz-rendering/pull/956)
+
+1. Add minor comments to BaseGizmoVisual
+    * [Pull request #881](https://github.com/gazebosim/gz-rendering/pull/881)
+
+1. Infrastructure
+    * [Pull request #940](https://github.com/gazebosim/gz-rendering/pull/940)
+    * [Pull request #939](https://github.com/gazebosim/gz-rendering/pull/939)
 
 ### Ignition Rendering 6.6.2 (2023-10-03)
 

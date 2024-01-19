@@ -1,5 +1,10 @@
 ## Ignition Rendering
 
+### Ignition Rendering 6.6.3 (2024-01-19)
+
+1. Revert mesh viewer background color back to gray
+    * [Pull request #894](https://github.com/gazebosim/gz-rendering/pull/894)
+
 ### Ignition Rendering 6.6.2 (2023-10-03)
 
 1. Backport camera intrinsics calculation : Refactor

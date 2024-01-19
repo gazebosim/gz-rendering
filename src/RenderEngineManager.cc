@@ -378,13 +378,23 @@ RenderEngine *RenderEngineManagerPrivate::Engine(EngineInfo _info,
     if (defaultIt != this->defaultEngines.end())
       libName = defaultIt->second;
 
+    std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
+    // Check to see if we need to load the engine
+    auto engineIt = this->engines.find(libName);
+    bool loadEngine = engineIt == this->engines.end() ||
+                      !engineIt->second;
+
     // Load the engine plugin
-    if (this->LoadEnginePlugin(libName, _path))
+    if (loadEngine && this->LoadEnginePlugin(libName, _path))
     {
-      std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
-      auto engineIt = this->engines.find(libName);
+      engineIt = this->engines.find(libName);
       if (engineIt != this->engines.end())
         engine = engineIt->second;
+    }
+    else if (engineIt->second)
+    {
+      // Engine is already loaded
+      engine = engineIt->second;
     }
   }
 

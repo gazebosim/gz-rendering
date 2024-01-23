@@ -168,6 +168,8 @@ void Ogre2Projector::UpdateCameraListener()
     this->dataPtr->decalNode->setVisible(true);
     this->dataPtr->decalNode->getCreator()->setDecalsDiffuse(
         this->dataPtr->decal->getDiffuseTexture());
+    this->dataPtr->decalNode->getCreator()->setDecalsEmissive(
+        this->dataPtr->decal->getEmissiveTexture());
 
     for (auto &ogreCamIt : this->dataPtr->camerasWithListener)
     {
@@ -276,6 +278,7 @@ void Ogre2Projector::CreateProjector()
       Ogre::GpuResidency::Resident);
 
   this->dataPtr->decal->setDiffuseTexture(this->dataPtr->textureDiff);
+  this->dataPtr->decal->setEmissiveTexture(this->dataPtr->textureDiff);
 
   // approximate frustum size
   common::Image image(this->textureName);
@@ -332,6 +335,8 @@ void Ogre2ProjectorCameraListener::cameraPreRenderScene(
     this->decalNode->setVisible(true);
     this->decalNode->getCreator()->setDecalsDiffuse(
         this->decal->getDiffuseTexture());
+    this->decalNode->getCreator()->setDecalsEmissive(
+        this->decal->getEmissiveTexture());
   }
 }
 

@@ -33,8 +33,11 @@ compositor_node GpuRays1stPass
       // kLaserRetroMainDepthPassId
       identifier 9525
 
-      // IGN_VISIBILITY_ALL & ~Ogre2ParticleEmitter::kParticleVisibilityFlags
+      // GZ_VISIBILITY_ALL & ~Ogre2ParticleEmitter::kParticleVisibilityFlags
       visibility_mask 0xFEFFFFF
+
+      enable_forwardplus no
+      light_visibility_mask 0x0
 
       profiling_id "GpuRays1stPass Color"
     }
@@ -52,6 +55,9 @@ compositor_node GpuRays1stPass
 
       // Ogre2ParticleEmitter::kParticleVisibilityFlags
       visibility_mask 0x00100000
+
+      enable_forwardplus no
+      light_visibility_mask 0x0
 
       profiling_id "GpuRays1stPass Particle"
     }

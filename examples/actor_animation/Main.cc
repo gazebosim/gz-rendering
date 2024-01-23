@@ -188,7 +188,7 @@ int main(int _argc, char** _argv)
     ogreEngineName = _argv[1];
   }
 
-  GraphicsAPI graphicsApi = GraphicsAPI::OPENGL;
+  GraphicsAPI graphicsApi = defaultGraphicsAPI();
   if (_argc > 2)
   {
     graphicsApi = GraphicsAPIUtils::Set(std::string(_argv[2]));

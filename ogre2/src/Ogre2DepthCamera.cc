@@ -167,7 +167,7 @@ class gz::rendering::Ogre2DepthCameraPrivate
   /// target will be updated to match the workspace's execution mask so that
   /// these passes are executed, otherwise they will be skipped for performance
   /// improvement.
-  public: const uint8_t kDepthExecutionMask = 0xFE;
+  public: const uint8_t kDepthExecutionMask = 0xEF;
 
   /// \brief Pointer to the color target in the workspace
   public: Ogre::CompositorTargetDef *colorTarget{nullptr};
@@ -979,7 +979,8 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
           externalTargets,
           this->ogreCamera,
           this->dataPtr->ogreCompositorWorkspaceDef,
-          false, -1, 0, 0, Ogre::Vector4::ZERO, 0x00, this->dataPtr->kDepthExecutionMask);
+          false, -1, 0, 0, Ogre::Vector4::ZERO, 0x00,
+          this->dataPtr->kDepthExecutionMask);
 
   this->dataPtr->ogreCompositorWorkspace->addListener(
     engine->TerraWorkspaceListener());

@@ -23,6 +23,7 @@
   #include <windows.h>
 #endif
 
+#include <cstdint>
 #include <math.h>
 #include <gz/math/Helpers.hh>
 

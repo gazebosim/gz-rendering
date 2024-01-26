@@ -23,6 +23,7 @@
   #include <windows.h>
 #endif
 
+#include <cstdint>
 #include <math.h>
 #include <gz/math/Helpers.hh>
 
@@ -30,7 +31,6 @@
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2DepthCamera.hh"
 #include "gz/rendering/ogre2/Ogre2GaussianNoisePass.hh"
-#include "gz/rendering/ogre2/Ogre2Includes.hh"
 #include "gz/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
@@ -39,6 +39,21 @@
 #include "gz/rendering/ogre2/Ogre2Sensor.hh"
 
 #include "Ogre2ParticleNoiseListener.hh"
+
+#ifdef _MSC_VER
+  #pragma warning(push, 0)
+#endif
+#include <Compositor/OgreCompositorManager2.h>
+#include <Compositor/OgreCompositorWorkspace.h>
+#include <Compositor/Pass/PassClear/OgreCompositorPassClearDef.h>
+#include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
+#include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
+#include <OgreRoot.h>
+#include <OgreSceneManager.h>
+#include <OgreTechnique.h>
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
 
 namespace gz
 {
@@ -147,6 +162,17 @@ class gz::rendering::Ogre2DepthCameraPrivate
 
   /// \brief Name of shadow compositor node
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
+
+  /// \brief Execution mask for this workspace
+  /// If RGB point color data are requested, the execution mask of the color
+  /// target will be updated to match the workspace's execution mask so that
+  /// these passes are executed, otherwise they will be skipped for performance
+  /// improvement.
+  public: const uint8_t kDepthExecutionMask = 0xEF;
+
+  /// \brief Pointer to the color target in the workspace
+  public: Ogre::CompositorTargetDef *colorTarget{nullptr};
+
 };
 
 using namespace gz;
@@ -314,6 +340,7 @@ void Ogre2DepthCamera::Destroy()
   {
     ogreCompMgr->removeWorkspace(
         this->dataPtr->ogreCompositorWorkspace);
+    this->dataPtr->colorTarget = nullptr;
   }
 
   if (this->dataPtr->depthMaterial)
@@ -703,12 +730,17 @@ void Ogre2DepthCamera::CreateDepthTexture()
     baseNodeDef->setNumTargetPass(4);
     Ogre::CompositorTargetDef *colorTargetDef =
         baseNodeDef->addTargetPass("colorTexture");
-
     if (validBackground)
-      colorTargetDef->setNumPasses(3);
+      colorTargetDef->setNumPasses(4);
     else
-      colorTargetDef->setNumPasses(2);
+      colorTargetDef->setNumPasses(3);
     {
+      // clear pass
+      Ogre::CompositorPassSceneDef *passClear =
+          static_cast<Ogre::CompositorPassSceneDef *>(
+          colorTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->mExecutionMask = this->dataPtr->kDepthExecutionMask;
+
       // scene pass - opaque
       {
         Ogre::CompositorPassSceneDef *passScene =
@@ -732,6 +764,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
               Ogre2Conversions::Convert(this->Scene()->BackgroundColor()));
 
         }
+        passScene->mExecutionMask = ~this->dataPtr->kDepthExecutionMask;
       }
 
       // render background, e.g. sky, after opaque stuff
@@ -745,6 +778,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
             + this->Name();
         passQuad->mFrustumCorners =
             Ogre::CompositorPassQuadDef::CAMERA_DIRECTION;
+        passQuad->mExecutionMask = ~this->dataPtr->kDepthExecutionMask;
       }
 
       // scene pass - transparent stuff
@@ -757,6 +791,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
         // Although this may be just fine
         passScene->mShadowNode = this->dataPtr->kShadowNodeName;
         passScene->mFirstRQ = 2u;
+        passScene->mExecutionMask = ~this->dataPtr->kDepthExecutionMask;
       }
     }
 
@@ -773,9 +808,11 @@ void Ogre2DepthCamera::CreateDepthTexture()
         this->FarClipPlane(),
         this->FarClipPlane(),
         this->FarClipPlane()));
-      // depth texute does not contain particles
+      // depth texture does not contain particles
       passScene->setVisibilityMask(
         GZ_VISIBILITY_ALL & ~Ogre2ParticleEmitter::kParticleVisibilityFlags);
+      passScene->mEnableForwardPlus = false;
+      passScene->setLightVisibilityMask(0x0);
     }
 
     Ogre::CompositorTargetDef *particleTargetDef =
@@ -790,6 +827,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
       passScene->setAllClearColours(Ogre::ColourValue::Black);
       passScene->setVisibilityMask(
         Ogre2ParticleEmitter::kParticleVisibilityFlags);
+      passScene->mEnableForwardPlus = false;
+      passScene->setLightVisibilityMask(0x0);
     }
 
     // rt0 target - converts depth to xyz
@@ -919,7 +958,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
         Ogre::GpuResidency::Resident);
   }
 
-  CreateWorkspaceInstance();
+  this->CreateWorkspaceInstance();
 }
 
 //////////////////////////////////////////////////
@@ -941,7 +980,8 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
           externalTargets,
           this->ogreCamera,
           this->dataPtr->ogreCompositorWorkspaceDef,
-          false);
+          false, -1, 0, 0, Ogre::Vector4::ZERO, 0x00,
+          this->dataPtr->kDepthExecutionMask);
 
   this->dataPtr->ogreCompositorWorkspace->addListener(
     engine->TerraWorkspaceListener());
@@ -1003,6 +1043,34 @@ void Ogre2DepthCamera::PreRender()
 
   if (!this->dataPtr->ogreCompositorWorkspace)
     this->CreateWorkspaceInstance();
+
+  if (!this->dataPtr->colorTarget)
+  {
+    auto engine = Ogre2RenderEngine::Instance();
+    auto ogreRoot = engine->OgreRoot();
+    Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
+    Ogre::CompositorNodeDef *nodeDef =
+        ogreCompMgr->getNodeDefinitionNonConst(
+        this->dataPtr->ogreCompositorBaseNodeDef);
+    this->dataPtr->colorTarget = nodeDef->getTargetPass(0);
+  }
+
+  Ogre::CompositorPassDefVec &colorPasses =
+      this->dataPtr->colorTarget->getCompositorPassesNonConst();
+  GZ_ASSERT(colorPasses.size() > 2u,
+            "Ogre2DepthCamera color target should contain more than 2 passes");
+  GZ_ASSERT(colorPasses[0]->getType() == Ogre::PASS_CLEAR,
+            "Ogre2DepthCamera color target should start with a clear pass");
+  colorPasses[0]->mExecutionMask =
+    (this->dataPtr->newRgbPointCloud.ConnectionCount() > 0u) ?
+    ~this->dataPtr->kDepthExecutionMask :this->dataPtr->kDepthExecutionMask;
+  for (unsigned int i = 1; i < colorPasses.size(); ++i)
+  {
+    colorPasses[i]->mExecutionMask =
+        (this->dataPtr->newRgbPointCloud.ConnectionCount() > 0u) ?
+        this->dataPtr->kDepthExecutionMask :
+        ~this->dataPtr->kDepthExecutionMask;
+  }
 
   // update depth camera render passes
   Ogre2RenderTarget::UpdateRenderPassChain(

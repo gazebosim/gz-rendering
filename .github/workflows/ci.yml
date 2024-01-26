@@ -1,12 +1,6 @@
 name: Ubuntu CI
 
-on:
-  pull_request:
-  push:
-    branches:
-      - 'ign-rendering[0-9]'
-      - 'gz-rendering[0-9]?'
-      - 'main'
+on: [push, pull_request]
 
 jobs:
   jammy-ci:

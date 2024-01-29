@@ -152,11 +152,11 @@ Ogre2SelectionBuffer::~Ogre2SelectionBuffer()
   // remove selectionMaterial in destructor
   // this does not need to be done in DeleteRTTBuffer as we do not need to
   // reload the same material every time
-  if (!this->dataPtr->selectionMaterial.isNull())
+  if (this->dataPtr->selectionMaterial)
   {
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->selectionMaterial->getName());
-    this->dataPtr->selectionMaterial.setNull();
+    this->dataPtr->selectionMaterial.reset();
   }
 
   // remove selection buffer camera
@@ -271,7 +271,7 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
   std::string matSelectionName = "SelectionBuffer";
   std::string matSelectionCloneName =
       this->dataPtr->camera->getName() + "_" + matSelectionName;
-  if (this->dataPtr->selectionMaterial.isNull())
+  if (!this->dataPtr->selectionMaterial)
   {
     Ogre::MaterialPtr matSelection =
         Ogre::MaterialManager::getSingleton().getByName(matSelectionName);

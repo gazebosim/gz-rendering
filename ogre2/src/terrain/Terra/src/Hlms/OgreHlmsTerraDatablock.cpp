@@ -55,7 +55,7 @@ namespace Ogre
     // GZ CUSTOMIZE END
     const size_t HlmsTerraDatablock::MaterialSizeInGpuAligned   = alignToNextMultiple(
                                                                     HlmsTerraDatablock::MaterialSizeInGpu,
-                                                                    4 * 4 );
+                                                                    static_cast<size_t>(4 * 4));
 
     //-----------------------------------------------------------------------------------
     HlmsTerraDatablock::HlmsTerraDatablock( IdString name, HlmsTerra *creator,

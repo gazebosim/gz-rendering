@@ -45,7 +45,7 @@ Ogre2BoundingBoxMaterialSwitcher::Ogre2BoundingBoxMaterialSwitcher(
     Ogre::MaterialManager::getSingleton().load("gz-rendering/plain_color",
         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
 
-  this->plainMaterial = res.staticCast<Ogre::Material>();
+  this->plainMaterial = Ogre::static_pointer_cast<Ogre::Material>(res);
   this->plainMaterial->load();
 
   // plain overlay material

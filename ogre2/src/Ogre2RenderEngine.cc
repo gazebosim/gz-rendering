@@ -15,6 +15,7 @@
  *
  */
 
+#include <OgreLog.h>
 #ifdef _WIN32
   // Ensure that Winsock2.h is included before Windows.h, which can get
   // pulled in by anybody (e.g., Boost).
@@ -36,6 +37,7 @@
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 #include "gz/rendering/ogre2/Ogre2Storage.hh"
 
+#include "OgreAbiUtils.h"
 #include "Ogre2GzHlmsPbsPrivate.hh"
 #include "Ogre2GzHlmsTerraPrivate.hh"
 #include "Ogre2GzHlmsUnlitPrivate.hh"
@@ -71,6 +73,37 @@
 #if defined(__APPLE__)
 #include <OpenGL/CGLCurrent.h>
 #endif
+
+
+class GZ_RENDERING_OGRE2_HIDDEN Ogre2LogListener: public Ogre::LogListener
+{
+ public:
+  ~Ogre2LogListener() override = default;
+  void messageLogged(
+    const Ogre::String &message,
+    Ogre::LogMessageLevel lml,
+    bool maskDebug,
+    const Ogre::String &logName,
+    bool &skipThisMessage ) override
+  {
+    std::stringstream msg;
+
+    msg << "[" << logName << "] " << message << std::endl;
+
+    switch (lml)
+    {
+      case Ogre::LogMessageLevel::LML_NORMAL:
+        gz::common::Console::msg() << msg.str();
+        break;
+      case Ogre::LogMessageLevel::LML_TRIVIAL:
+        gz::common::Console::dbg() << msg.str();
+        break;
+      case Ogre::LogMessageLevel::LML_CRITICAL:
+        gz::common::Console::err() << msg.str();
+        break;
+    }
+  }
+};
 
 class GZ_RENDERING_OGRE2_HIDDEN
     gz::rendering::Ogre2RenderEnginePrivate
@@ -148,10 +181,6 @@ RenderEngine *Ogre2RenderEnginePlugin::Engine() const
 Ogre2RenderEngine::Ogre2RenderEngine() :
   dataPtr(new Ogre2RenderEnginePrivate)
 {
-  this->dummyDisplay = nullptr;
-  this->dummyContext = 0;
-  this->dummyWindowId = 0;
-
   std::string ogrePath = std::string(OGRE2_RESOURCE_PATH);
   std::vector<std::string> paths = common::split(ogrePath, ":");
   for (const auto &path : paths)
@@ -173,9 +202,7 @@ Ogre::Window * Ogre2RenderEngine::OgreWindow() const
 }
 
 //////////////////////////////////////////////////
-Ogre2RenderEngine::~Ogre2RenderEngine()
-{
-}
+Ogre2RenderEngine::~Ogre2RenderEngine() = default;
 
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::Destroy()
@@ -192,7 +219,7 @@ void Ogre2RenderEngine::Destroy()
 
   this->dataPtr->hlmsPbsTerraShadows.reset();
 
-  if (this->ogreRoot)
+  if (this->ogreRoot != nullptr)
   {
     // Clean up any textures that may still be in flight.
     Ogre::TextureGpuManager *mgr =
@@ -221,19 +248,19 @@ void Ogre2RenderEngine::Destroy()
   this->ogreLogManager = nullptr;
 
 #if HAVE_GLX
-  if (this->dummyDisplay)
+  if (this->dummyDisplay != nullptr)
   {
-    Display *x11Display = static_cast<Display*>(this->dummyDisplay);
-    if (this->dummyContext)
+    auto *x11Display = static_cast<Display*>(this->dummyDisplay);
+    if (this->dummyContext != nullptr)
     {
-      GLXContext x11Context = static_cast<GLXContext>(this->dummyContext);
+      auto *x11Context = static_cast<GLXContext>(this->dummyContext);
       glXDestroyContext(x11Display, x11Context);
       this->dummyContext = nullptr;
     }
     XDestroyWindow(x11Display, this->dummyWindowId);
     XCloseDisplay(x11Display);
     this->dummyDisplay = nullptr;
-    if (this->dataPtr->dummyFBConfigs)
+    if (this->dataPtr->dummyFBConfigs != nullptr)
     {
       XFree(this->dataPtr->dummyFBConfigs);
       this->dataPtr->dummyFBConfigs = nullptr;
@@ -320,7 +347,7 @@ void Ogre2RenderEngine::AddResourcePath(const std::string &_uri)
                 Ogre::MaterialManager::getSingleton().getByName(
                     fullPath);
 
-              if (!matPtr.isNull())
+              if (matPtr)
               {
                 // is this necessary to do here? Someday try it without
                 matPtr->compile();
@@ -385,9 +412,9 @@ bool Ogre2RenderEngine::LoadImpl(
   it = _params.find("metal");
   if (it != _params.end())
   {
-    bool useMetal;
+    bool useMetal {false};
     std::istringstream(it->second) >> useMetal;
-    if(useMetal)
+    if (useMetal)
         this->dataPtr->graphicsAPI = GraphicsAPI::METAL;
   }
 
@@ -402,7 +429,7 @@ bool Ogre2RenderEngine::LoadImpl(
   it = _params.find("vulkan");
   if (it != _params.end())
   {
-    bool useVulkan;
+    bool useVulkan {false};
     std::istringstream(it->second) >> useVulkan;
     if(useVulkan)
     {
@@ -518,7 +545,8 @@ void Ogre2RenderEngine::CreateLogger()
 
   // create actual log
   this->ogreLogManager = new Ogre::LogManager();
-  this->ogreLogManager->createLog(logPath, true, false, false);
+  auto *log = this->ogreLogManager->createLog(logPath, true, false, false);
+  log->addListener(new Ogre2LogListener());
 }
 
 //////////////////////////////////////////////////
@@ -625,7 +653,8 @@ void Ogre2RenderEngine::CreateRoot()
 {
   try
   {
-    this->ogreRoot = new Ogre::Root("", "", "");
+    auto cookie = Ogre::generateAbiCookie();
+    this->ogreRoot = new Ogre::Root(&cookie, "", "", "");
   }
   catch (Ogre::Exception &)
   {
@@ -903,14 +932,32 @@ void Ogre2RenderEngine::RegisterHlms()
       rootHlmsFolder, "2.0", "scripts", "Compositors");
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
       pbsCompositorFolder, "FileSystem", "General");
+
   Ogre::String commonMaterialFolder = common::joinPaths(
       rootHlmsFolder, "2.0", "scripts", "materials", "Common");
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
       commonMaterialFolder, "FileSystem", "General");
+
+  Ogre::String commonAnyMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common", "Any");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonAnyMaterialFolder, "FileSystem", "General");
+
   Ogre::String commonGLSLMaterialFolder = common::joinPaths(
       rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLSL");
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
       commonGLSLMaterialFolder, "FileSystem", "General");
+
+  Ogre::String commonGLESMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common", "GLES");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonGLESMaterialFolder, "FileSystem", "General");
+
+  Ogre::String commonHLSLMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Common", "HLSL");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      commonHLSLMaterialFolder, "FileSystem", "General");
+
   Ogre::String terraMaterialFolder = common::joinPaths(
       rootHlmsFolder, "2.0", "scripts", "materials", "Terra");
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
@@ -1139,6 +1186,8 @@ void Ogre2RenderEngine::CreateResources()
     archNames.push_back(
         std::make_pair(p + "/Hlms/Common/GLSL", "General"));
     archNames.push_back(
+        std::make_pair(p + "/Hlms/Common/HLSL", "General"));
+    archNames.push_back(
         std::make_pair(p + "/Hlms/Pbs/Any", "General"));
 
     for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
@@ -1292,17 +1341,17 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   {
     gzerr << "Unable to create the rendering window after [" << attempts
            << "] attempts." << std::endl;
-    return std::string();
+    return {};
   }
 
   this->RegisterHlms();
 
-  if (this->window)
+  if (this->window != nullptr)
   {
     this->window->_setVisible(true);
 
     // Windows needs to reposition the render window to 0,0.
-    this->window->reposition(0, 0);
+    // this->window->reposition(0, 0);
   }
   return stream.str();
 }

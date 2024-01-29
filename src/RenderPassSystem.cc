@@ -30,6 +30,9 @@ class gz::rendering::RenderPassSystemPrivate
 std::map<std::string, RenderPassFactory *> RenderPassSystem::renderPassMap;
 
 //////////////////////////////////////////////////
+RenderPassFactory::~RenderPassFactory() = default;
+
+//////////////////////////////////////////////////
 // RenderPassSystem
 //////////////////////////////////////////////////
 RenderPassSystem::RenderPassSystem() :

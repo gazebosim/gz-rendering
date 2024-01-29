@@ -704,7 +704,7 @@ void Ogre2BoundingBoxCameraPrivate::MeshVertices(
         Ogre::VertexArrayObject *vao = vaos[0];
 
         // request async read from buffer
-        Ogre::VertexArrayObject::ReadRequestsArray requests;
+        Ogre::VertexArrayObject::ReadRequestsVec requests;
         requests.push_back(Ogre::VertexArrayObject::ReadRequests(
           Ogre::VES_POSITION));
         vao->readRequests(requests);
@@ -1165,7 +1165,7 @@ void Ogre2BoundingBoxCamera::MeshMinimalBox(
       Ogre::VertexArrayObject *vao = vaos[0];
 
       // request async read from buffer
-      Ogre::VertexArrayObject::ReadRequestsArray requests;
+      Ogre::VertexArrayObject::ReadRequestsVec requests;
       requests.push_back(Ogre::VertexArrayObject::ReadRequests(
         Ogre::VES_POSITION));
       vao->readRequests(requests);

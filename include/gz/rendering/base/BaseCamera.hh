@@ -352,7 +352,7 @@ namespace gz
       {
         CameraPtr camera =
           std::dynamic_pointer_cast<Camera>(this->shared_from_this());
-        this->RenderTarget()->PreRender(camera);
+          this->RenderTarget()->CameraPreRender(camera);
       }
 
       // camera following

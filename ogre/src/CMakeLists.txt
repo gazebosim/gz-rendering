@@ -35,9 +35,9 @@ target_link_libraries(${ogre_target}
     ${gz-common${GZ_COMMON_VER}_LIBRARIES}
   PRIVATE
     gz-plugin${GZ_PLUGIN_VER}::register
-    ${OPENGL_LIBRARIES}
-    GzOGRE::GzOGRE
-    )
+    ogre_vendor::OgreMain
+    ogre_vendor::Paging
+)
 
 # Build the unit tests
 gz_build_tests(TYPE UNIT

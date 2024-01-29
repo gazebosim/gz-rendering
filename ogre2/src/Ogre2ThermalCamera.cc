@@ -329,7 +329,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           // see media/materials/programs/GLSL/thermal_camera_fs.glsl
           subItem->setCustomParameter(1, Ogre::Vector4(color, 0, 0, 0.0));
 
-          if (!subItem->getMaterial().isNull())
+          if (subItem->getMaterial())
           {
             this->materialMap.push_back({ subItem, subItem->getMaterial() });
 
@@ -449,7 +449,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
         {
           Ogre::SubItem *subItem = item->getSubItem(i);
 
-          if (!subItem->getMaterial().isNull())
+          if (subItem->getMaterial())
           {
             // TODO(anyone): We need to keep the material's vertex shader
             // to keep vertex deformation consistent. See
@@ -492,7 +492,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
           // the diffuse texture (if any). The actual value doesn't matter.
           subItem->setCustomParameter(2u, Ogre::Vector4::ZERO);
 
-          if (!subItem->getMaterial().isNull())
+          if (subItem->getMaterial())
           {
             this->materialMap.push_back({ subItem, subItem->getMaterial() });
 
@@ -755,7 +755,7 @@ void Ogre2ThermalCamera::Destroy()
   {
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->thermalMaterial->getName());
-    this->dataPtr->thermalMaterial.setNull();
+    this->dataPtr->thermalMaterial.reset();
   }
 
   if (!this->dataPtr->ogreCompositorWorkspaceDef.empty())
@@ -836,8 +836,10 @@ void Ogre2ThermalCamera::CreateThermalTexture()
   const double aspectRatio = this->AspectRatio();
   const double angle = this->HFOV().Radian();
   const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
-  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
-  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
+  this->ogreCamera->setFOVy(
+    static_cast<Ogre::Radian>(static_cast<Ogre::Real>(vfov)));
+  this->ogreCamera->setAspectRatio(
+    static_cast<Ogre::Real>(aspectRatio));
 
   // Load thermal material
   // The ThermalCamera material is defined in script (thermal_camera.material).

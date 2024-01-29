@@ -98,10 +98,10 @@ namespace gz
       public: virtual void SetLifetime(double _lifetime) override;
 
       // Documentation inherited.
-      public: virtual MaterialPtr Material() const override;
+      public: virtual MaterialPtr ParticleMaterial() const override;
 
       // Documentation inherited.
-      public: virtual void SetMaterial(const MaterialPtr &_material) override;
+      public: virtual void SetParticleMaterial(const MaterialPtr &_material) override;
 
       // Documentation inherited.
       public: virtual double MinVelocity() const override;
@@ -334,14 +334,14 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    MaterialPtr BaseParticleEmitter<T>::Material() const
+    MaterialPtr BaseParticleEmitter<T>::ParticleMaterial() const
     {
       return this->material;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetMaterial(const MaterialPtr &_material)
+    void BaseParticleEmitter<T>::SetParticleMaterial(const MaterialPtr &_material)
     {
       this->material = _material;
     }

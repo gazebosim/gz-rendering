@@ -36,13 +36,13 @@ namespace gz
     {
       /// \brief Constructor
       /// \param[in] _scene Pointer to scene
-      public: SceneExt(Scene *_scene)
+      public: explicit SceneExt(Scene *_scene)
       {
         this->scene = _scene;
       }
 
       /// \brief Destructor
-      public: ~SceneExt() = default;
+      public: virtual ~SceneExt() = default;
 
       /// \brief Generic create function
       /// \param[in] _type Type of object to create

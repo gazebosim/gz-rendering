@@ -289,7 +289,7 @@ TEST_F(LidarVisualTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 
   gpuRays2->Update();
   // Test Copy method instead of using the callback for the second rays caster
-  gpuRays2->Copy(scan2);
+  gpuRays2->CopyData(scan2);
 
   // copy ray caster values to lidar data
   std::vector<double> pts2;
@@ -319,7 +319,7 @@ TEST_F(LidarVisualTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 
   gpuRays->Update();
   gpuRays2->Update();
-  gpuRays2->Copy(scan2);
+  gpuRays2->CopyData(scan2);
 
   pts.clear();
   for (int j = 0; j < vRayCount; j++)

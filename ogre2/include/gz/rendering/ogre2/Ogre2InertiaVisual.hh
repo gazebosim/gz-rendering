@@ -58,7 +58,7 @@ namespace gz
       /// \brief Load the Inertia visual from its pose and scale
       /// \param[in] _pose Pose of the Inertia visual
       /// \param[in] _scale Scale factor of the box visual
-      public: void Load(const gz::math::Pose3d &_pose,
+      public: void LoadInertial(const gz::math::Pose3d &_pose,
           const gz::math::Vector3d &_scale) override;
 
       /// \brief Get the box visual

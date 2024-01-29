@@ -66,6 +66,9 @@ class GZ_RENDERING_OGRE2_HIDDEN Ogre2WideAngleCameraWorkspaceListenerPrivate :
   {
   }
 
+  /// \brief destructor
+  public: virtual ~Ogre2WideAngleCameraWorkspaceListenerPrivate() = default;
+
   /// \brief Called when each pass is about to be executed.
   /// \param[in] _pass Ogre pass which is about to execute
   public: virtual void passPreExecute(Ogre::CompositorPass *_pass) override;
@@ -240,11 +243,11 @@ void Ogre2WideAngleCamera::PreRender()
 
     for (RenderPassPtr &pass : this->dataPtr->renderPasses)
     {
-      pass->PreRender(thisAsCameraPtr);
+      pass->CameraPreRender(thisAsCameraPtr);
     }
     for (RenderPassPtr &pass : this->dataPtr->finalStitchRenderPasses)
     {
-      pass->PreRender(thisAsCameraPtr);
+      pass->CameraPreRender(thisAsCameraPtr);
     }
   }
 

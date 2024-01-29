@@ -335,6 +335,12 @@ int main(int _argc, char** _argv)
         params["metal"] = "1";
       }
 
+      if (engineName.compare("ogre2") == 0
+          && graphicsApi == GraphicsAPI::VULKAN)
+      {
+        params["vulkan"] = "1";
+      }
+
       CameraPtr camera = createCamera(engineName, params);
       if (camera)
       {

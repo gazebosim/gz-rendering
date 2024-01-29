@@ -49,7 +49,7 @@ namespace gz
       public: virtual const float *Data() const = 0;
 
       /// \brief Copy to the specified memory direction the gpu rays data.
-      public: virtual void Copy(float *_data) = 0;
+      public: virtual void CopyData(float *_data) = 0;
 
       /// \brief Configure behaviour for data values outside of camera range
       /// \param[in] _clamp True to clamp data to camera clip distances,

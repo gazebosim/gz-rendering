@@ -260,7 +260,7 @@ void Ogre2ParticleEmitter::SetLifetime(double _lifetime)
 }
 
 //////////////////////////////////////////////////
-void Ogre2ParticleEmitter::SetMaterial(const MaterialPtr &_material)
+void Ogre2ParticleEmitter::SetParticleMaterial(const MaterialPtr &_material)
 {
   // Sanity check: The material cannot be nullptr.
   if (!_material)

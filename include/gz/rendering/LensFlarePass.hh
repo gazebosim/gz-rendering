@@ -42,7 +42,7 @@ namespace gz
 
       /// \brief Initializes the Lens Flare Pass with given scene
       /// \param[in] _scene Pointer to scene
-      public: virtual void Init(ScenePtr _scene) = 0;
+      public: virtual void InitFromScene(ScenePtr _scene) = 0;
 
       /// \brief Set the light that generates lens flare
       /// \param[in] _light Pointer to light

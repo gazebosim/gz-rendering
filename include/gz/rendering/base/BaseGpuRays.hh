@@ -54,7 +54,7 @@ namespace gz
       public: virtual const float *Data() const override;
 
       // Documentation inherited.
-      public: virtual void Copy(float *_data) override;
+      public: virtual void CopyData(float *_data) override;
 
       // Documentation inherited.
       public: virtual void SetClamp(bool _enable) override;
@@ -224,7 +224,7 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseGpuRays<T>::Copy(float *_dataDest)
+    void BaseGpuRays<T>::CopyData(float *_dataDest)
     {
       // Unused
       (void)_dataDest;

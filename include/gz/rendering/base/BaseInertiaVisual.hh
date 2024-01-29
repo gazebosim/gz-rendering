@@ -53,7 +53,7 @@ namespace gz
                   const gz::math::Inertiald &_inertial) override;
 
       // Documentation inherited.
-      public: virtual void Load(const gz::math::Pose3d &,
+      public: virtual void LoadInertial(const gz::math::Pose3d &,
           const gz::math::Vector3d &) override;
 
       // Documentation inherited
@@ -108,13 +108,13 @@ namespace gz
       else
       {
         // Apply additional rotation by boxRot
-        this->Load(gz::math::Pose3d(xyz, q * boxRot), boxScale);
+        this->LoadInertial(gz::math::Pose3d(xyz, q * boxRot), boxScale);
       }
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseInertiaVisual<T>::Load(const gz::math::Pose3d &,
+    void BaseInertiaVisual<T>::LoadInertial(const gz::math::Pose3d &,
         const gz::math::Vector3d &)
     {
       // no op

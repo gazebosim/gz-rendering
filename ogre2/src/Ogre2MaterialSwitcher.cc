@@ -95,7 +95,7 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
 
       subItem->setCustomParameter(1, ogreCurrentColor);
 
-      if (!subItem->getMaterial().isNull())
+      if (subItem->getMaterial())
       {
         this->materialMap.push_back({ subItem, subItem->getMaterial() });
 

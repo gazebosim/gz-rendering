@@ -40,7 +40,7 @@ using namespace gz;
 using namespace rendering;
 
 /// \brief Private data for the Ogre2CiVctCascadePrivate class
-class DETAIL_GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2CiVctCascadePrivate
+class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2CiVctCascadePrivate
 {
   // clang-format off
   /// \brief Pointer to cascade setting
@@ -49,7 +49,7 @@ class DETAIL_GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2CiVctCascadePrivate
 };
 
 /// \brief Private data for the Ogre2GlobalIlluminationCiVct class
-class DETAIL_GZ_RENDERING_OGRE2_HIDDEN
+class GZ_RENDERING_OGRE2_HIDDEN
   gz::rendering::Ogre2GlobalIlluminationCiVctPrivate
 {
   // clang-format off

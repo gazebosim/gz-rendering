@@ -15,6 +15,7 @@
  *
 */
 
+#include <gz/common/Timer.hh>
 #include <gz/math/Vector2.hh>
 #include <gz/math/Vector3.hh>
 
@@ -205,6 +206,16 @@ class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2GpuRaysPrivate
   /// \brief Max number of cameras used for creating the cubemap of depth
   /// textures for generating lidar data
   public: const unsigned int kCubeCameraCount = 6;
+
+  /// \brief Execution mask for this workspace
+  /// If particles exist in the scene, the execution mask of the particle
+  /// target will be updated to match the workspace's execution mask so that
+  /// these passes are executed, otherwise they will be skipped for performance
+  /// improvement.
+  public: const uint8_t kGpuRaysExecutionMask = 0xEF;
+
+  /// \brief Pointer to the particle target definition in the workspace
+  public: Ogre::CompositorTargetDef *particleTargetDef{nullptr};
 };
 
 using namespace gz;
@@ -621,6 +632,7 @@ void Ogre2GpuRays::Destroy()
       this->dataPtr->firstPassTextures[i] = nullptr;
     }
   }
+  this->dataPtr->particleTargetDef = nullptr;
 
   // remove 2nd pass texture, material, compositor
   if (this->dataPtr->secondPassTexture)
@@ -1021,12 +1033,17 @@ void Ogre2GpuRays::Setup1stPass()
   Ogre::CompositorNodeDef *nodeDef =
     ogreCompMgr->getNodeDefinitionNonConst("GpuRays1stPass");
   Ogre::CompositorTargetDef *target0 = nodeDef->getTargetPass(0);
-  Ogre::CompositorPassDefVec &passes = target0->getCompositorPassesNonConst();
-  assert(passes.size() >= 1u);
-  assert(passes[0]->getType() == Ogre::PASS_SCENE);
-  assert(dynamic_cast<Ogre::CompositorPassSceneDef *>(passes[0]));
+  Ogre::CompositorPassDefVec &colorPasses = target0->getCompositorPassesNonConst();
+  assert(colorPasses.size() >= 1u);
+  assert(colorPasses[0]->getType() == Ogre::PASS_SCENE);
+  assert(dynamic_cast<Ogre::CompositorPassSceneDef *>(colorPasses[0]));
   this->dataPtr->mainPassSceneDef =
-    static_cast<Ogre::CompositorPassSceneDef *>(passes[0]);
+    static_cast<Ogre::CompositorPassSceneDef *>(colorPasses[0]);
+
+  Ogre::CompositorTargetDef *target1 = nodeDef->getTargetPass(1);
+  this->dataPtr->particleTargetDef = target1;
+  GZ_ASSERT(this->dataPtr->particleTargetDef != nullptr,
+            "Unable to get particle target in Ogre2GpuRays");
 
   const std::string wsDefName = "GpuRays1stPassWorkspace";
   Ogre::CompositorWorkspaceDef *wsDef =
@@ -1245,6 +1262,8 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
+  common::Timer t;
+  t.Start();
   this->scene->StartRendering(this->dataPtr->ogreCamera);
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -1264,6 +1283,8 @@ void Ogre2GpuRays::Render()
   hlmsCustomizations.minDistanceClip = -1;
 
   this->scene->FlushGpuCommandsAndStartNewFrame(6u, false);
+  t.Stop();
+  std::cerr << t.ElapsedTime().count() << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -1271,6 +1292,27 @@ void Ogre2GpuRays::PreRender()
 {
   if (!this->dataPtr->cubeUVTexture)
     this->CreateGpuRaysTextures();
+
+  if (this->dataPtr->particleTargetDef)
+  {
+    bool hasParticles =
+        this->scene->OgreSceneManager()->getMovableObjectIterator(
+        Ogre::ParticleSystemFactory::FACTORY_TYPE_NAME).hasMoreElements();
+    Ogre::CompositorPassDefVec &particlePasses =
+        this->dataPtr->particleTargetDef->getCompositorPassesNonConst();
+    GZ_ASSERT(particlePasses.size() == 2u,
+        "Ogre2DepthCamera particle target should 2 passes");
+    GZ_ASSERT(particlePasses[0]->getType() == Ogre::PASS_CLEAR,
+        "Ogre2DepthCamera particle target should start with a clear pass");
+    GZ_ASSERT(particlePasses[1]->getType() == Ogre::PASS_SCENE,
+        "Ogre2DepthCamera particle target should end with a scene pass");
+    particlePasses[0]->mExecutionMask =
+      (hasParticles) ? ~this->dataPtr->kGpuRaysExecutionMask :
+                       this->dataPtr->kGpuRaysExecutionMask;
+    particlePasses[1]->mExecutionMask =
+      (hasParticles) ? this->dataPtr->kGpuRaysExecutionMask :
+                       ~this->dataPtr->kGpuRaysExecutionMask;
+  }
 }
 
 //////////////////////////////////////////////////

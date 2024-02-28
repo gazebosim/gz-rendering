@@ -23,8 +23,6 @@
   #include <windows.h>
 #endif
 
-#include <gz/common/Timer.hh>
-
 #include <cstdint>
 #include <math.h>
 #include <gz/math/Helpers.hh>
@@ -1024,8 +1022,6 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::Render()
 {
-  common::Timer t;
-  t.Start();
   // Our shaders rely on clamped values so enable it for this sensor
   //
   // TODO(anyone): Matias N. Goldberg (dark_sylinc) insists this is a hack
@@ -1049,9 +1045,6 @@ void Ogre2DepthCamera::Render()
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 
   this->ogreCamera->_setNeedsDepthClamp(bOldDepthClamp);
-
-  t.Stop();
-  std::cerr << t.ElapsedTime().count() << std::endl;
 }
 
 //////////////////////////////////////////////////

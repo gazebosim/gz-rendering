@@ -1059,14 +1059,14 @@ void Ogre2DepthCamera::PreRender()
 
   // Disable color target (set to clear pass) if there are no rgb point cloud
   // connections
-  if (!this->dataPtr->colorTargetDef)
+  if (this->dataPtr->colorTargetDef)
   {
     Ogre::CompositorPassDefVec &colorPasses =
         this->dataPtr->colorTargetDef->getCompositorPassesNonConst();
     GZ_ASSERT(colorPasses.size() > 2u,
-              "Ogre2DepthCamera color target should contain more than 2 passes");
+        "Ogre2DepthCamera color target should contain more than 2 passes");
     GZ_ASSERT(colorPasses[0]->getType() == Ogre::PASS_CLEAR,
-              "Ogre2DepthCamera color target should start with a clear pass");
+        "Ogre2DepthCamera color target should start with a clear pass");
     colorPasses[0]->mExecutionMask =
       (this->dataPtr->newRgbPointCloud.ConnectionCount() > 0u) ?
       ~this->dataPtr->kDepthExecutionMask :this->dataPtr->kDepthExecutionMask;
@@ -1088,11 +1088,11 @@ void Ogre2DepthCamera::PreRender()
     Ogre::CompositorPassDefVec &particlePasses =
         this->dataPtr->particleTargetDef->getCompositorPassesNonConst();
     GZ_ASSERT(particlePasses.size() == 2u,
-              "Ogre2DepthCamera particle target should 2 passes");
+        "Ogre2DepthCamera particle target should 2 passes");
     GZ_ASSERT(particlePasses[0]->getType() == Ogre::PASS_CLEAR,
-              "Ogre2DepthCamera particle target should start with a clear pass");
+        "Ogre2DepthCamera particle target should start with a clear pass");
     GZ_ASSERT(particlePasses[1]->getType() == Ogre::PASS_SCENE,
-              "Ogre2DepthCamera particle target should end with a scene pass");
+        "Ogre2DepthCamera particle target should end with a scene pass");
     particlePasses[0]->mExecutionMask =
       (hasParticles) ? ~this->dataPtr->kDepthExecutionMask :
                        this->dataPtr->kDepthExecutionMask;

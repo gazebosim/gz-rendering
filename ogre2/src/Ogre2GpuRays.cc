@@ -1032,7 +1032,8 @@ void Ogre2GpuRays::Setup1stPass()
   Ogre::CompositorNodeDef *nodeDef =
     ogreCompMgr->getNodeDefinitionNonConst("GpuRays1stPass");
   Ogre::CompositorTargetDef *target0 = nodeDef->getTargetPass(0);
-  Ogre::CompositorPassDefVec &colorPasses = target0->getCompositorPassesNonConst();
+  Ogre::CompositorPassDefVec &colorPasses =
+      target0->getCompositorPassesNonConst();
   assert(colorPasses.size() >= 1u);
   assert(colorPasses[0]->getType() == Ogre::PASS_SCENE);
   assert(dynamic_cast<Ogre::CompositorPassSceneDef *>(colorPasses[0]));

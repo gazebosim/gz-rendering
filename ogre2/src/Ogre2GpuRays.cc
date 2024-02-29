@@ -15,7 +15,6 @@
  *
 */
 
-#include <gz/common/Timer.hh>
 #include <gz/math/Vector2.hh>
 #include <gz/math/Vector3.hh>
 
@@ -1113,7 +1112,8 @@ void Ogre2GpuRays::Setup1stPass()
           compoChannels,
           this->dataPtr->cubeCam[i],
           wsDefName,
-          false);
+          false, -1, 0, 0, Ogre::Vector4::ZERO, 0x00,
+          this->dataPtr->kGpuRaysExecutionMask);
 
     compoChannels.pop_back();
 
@@ -1262,8 +1262,6 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
-  common::Timer t;
-  t.Start();
   this->scene->StartRendering(this->dataPtr->ogreCamera);
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -1283,8 +1281,6 @@ void Ogre2GpuRays::Render()
   hlmsCustomizations.minDistanceClip = -1;
 
   this->scene->FlushGpuCommandsAndStartNewFrame(6u, false);
-  t.Stop();
-  std::cerr << t.ElapsedTime().count() << std::endl;
 }
 
 //////////////////////////////////////////////////

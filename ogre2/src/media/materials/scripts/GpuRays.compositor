@@ -65,7 +65,7 @@ compositor_node GpuRays1stPass
       enable_forwardplus no
       light_visibility_mask 0x0
 
-      execution_mask 0x00
+      execution_mask 0x0
 
       profiling_id "GpuRays1stPass Particle"
     }

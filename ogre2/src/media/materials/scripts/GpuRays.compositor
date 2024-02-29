@@ -45,6 +45,12 @@ compositor_node GpuRays1stPass
 
   target particleTextureRtv
   {
+    pass clear
+    {
+      execution_mask 0xEF
+      colour_value 0 0 0 1
+    }
+
     pass render_scene
     {
       load
@@ -58,6 +64,8 @@ compositor_node GpuRays1stPass
 
       enable_forwardplus no
       light_visibility_mask 0x0
+
+      execution_mask 0x0
 
       profiling_id "GpuRays1stPass Particle"
     }

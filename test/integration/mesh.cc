@@ -82,9 +82,9 @@ TEST_F(MeshTest, NormalMapWithoutTexCoord)
   std::string textureMapName0 = "red_diffuse_map";
   auto textureMapData0 = std::make_shared<common::Image>();
   auto red = std::make_unique<unsigned char[]>(3);
-  red.get()[0] = 255;
-  red.get()[1] = 0;
-  red.get()[2] = 0;
+  red.get()[0] = 255u;
+  red.get()[1] = 0u;
+  red.get()[2] = 0u;
   textureMapData0->SetFromData(red.get(), 1, 1, common::Image::RGB_INT8);
   material0->SetTextureImage(textureMapName0, textureMapData0);
 
@@ -92,9 +92,9 @@ TEST_F(MeshTest, NormalMapWithoutTexCoord)
   std::string normalMapName = "normal_map";
   auto normalMapData = std::make_shared<common::Image>();
   auto normal = std::make_unique<unsigned char[]>(3);
-  normal.get()[0] = 127;
-  normal.get()[1] = 127;
-  normal.get()[2] = 255;
+  normal.get()[0] = 127u;
+  normal.get()[1] = 127u;
+  normal.get()[2] = 255u;
   normalMapData->SetFromData(normal.get(), 1, 1, common::Image::RGB_INT8);
 
   pbr.SetNormalMap(normalMapName, common::NormalMapSpace::TANGENT,
@@ -120,9 +120,9 @@ TEST_F(MeshTest, NormalMapWithoutTexCoord)
   std::string textureMapName1 = "green_diffuse_map";
   auto textureMapData1 = std::make_shared<common::Image>();
   auto green = std::make_unique<unsigned char[]>(3);
-  green.get()[0] = 0;
-  green.get()[1] = 255;
-  green.get()[2] = 0;
+  green.get()[0] = 0u;
+  green.get()[1] = 255u;
+  green.get()[2] = 0u;
   textureMapData1->SetFromData(green.get(), 1, 1, common::Image::RGB_INT8);
   material1->SetTextureImage(textureMapName1, textureMapData1);
   mesh.AddMaterial(material1);

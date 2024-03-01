@@ -381,13 +381,18 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       // TODO(anyone): specular colors
 
       // two dimensional texture coordinates
-      // add all texture coordinate sets
+      // If submesh does not have texcoord sets, add one default set.
+      // This is needed otherwise ogre2 will fail to generate tangents during
+      // Ogre::v2::Mesh::importV1() and throw an ogre exception if we try to
+      // apply normal maps to a submesh. Resulting object would then appear
+      // white without any PBR textures.
       if (subMesh.TexCoordSetCount() == 0u)
       {
-          vertexDecl->addElement(0, currOffset, Ogre::VET_FLOAT2,
-              Ogre::VES_TEXTURE_COORDINATES, 0);
-          currOffset += Ogre::v1::VertexElement::getTypeSize(Ogre::VET_FLOAT2);
+        vertexDecl->addElement(0, currOffset, Ogre::VET_FLOAT2,
+            Ogre::VES_TEXTURE_COORDINATES, 0);
+        currOffset += Ogre::v1::VertexElement::getTypeSize(Ogre::VET_FLOAT2);
       }
+      // Add all texture coordinate sets
       else
       {
         for (unsigned int k = 0u; k < subMesh.TexCoordSetCount(); ++k)
@@ -396,7 +401,8 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
           {
             vertexDecl->addElement(0, currOffset, Ogre::VET_FLOAT2,
                 Ogre::VES_TEXTURE_COORDINATES, k);
-            currOffset += Ogre::v1::VertexElement::getTypeSize(Ogre::VET_FLOAT2);
+            currOffset +=
+                Ogre::v1::VertexElement::getTypeSize(Ogre::VET_FLOAT2);
           }
         }
       }

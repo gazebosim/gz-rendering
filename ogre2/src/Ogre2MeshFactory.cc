@@ -382,13 +382,22 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
       // two dimensional texture coordinates
       // add all texture coordinate sets
-      for (unsigned int k = 0u; k < subMesh.TexCoordSetCount(); ++k)
+      if (subMesh.TexCoordSetCount() == 0u)
       {
-        if (subMesh.TexCoordCountBySet(k) > 0)
-        {
           vertexDecl->addElement(0, currOffset, Ogre::VET_FLOAT2,
-              Ogre::VES_TEXTURE_COORDINATES, k);
+              Ogre::VES_TEXTURE_COORDINATES, 0);
           currOffset += Ogre::v1::VertexElement::getTypeSize(Ogre::VET_FLOAT2);
+      }
+      else
+      {
+        for (unsigned int k = 0u; k < subMesh.TexCoordSetCount(); ++k)
+        {
+          if (subMesh.TexCoordCountBySet(k) > 0)
+          {
+            vertexDecl->addElement(0, currOffset, Ogre::VET_FLOAT2,
+                Ogre::VES_TEXTURE_COORDINATES, k);
+            currOffset += Ogre::v1::VertexElement::getTypeSize(Ogre::VET_FLOAT2);
+          }
         }
       }
 
@@ -436,12 +445,20 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
         }
 
         // Add all texture coordinate sets
-        for (unsigned int k = 0u; k < subMesh.TexCoordSetCount(); ++k)
+        if (subMesh.TexCoordSetCount() == 0u)
         {
-          if (subMesh.TexCoordCountBySet(k) > 0u)
+          *vertices++ = 0;
+          *vertices++ = 0;
+        }
+        else
+        {
+          for (unsigned int k = 0u; k < subMesh.TexCoordSetCount(); ++k)
           {
-            *vertices++ = subMesh.TexCoordBySet(j, k).X();
-            *vertices++ = subMesh.TexCoordBySet(j, k).Y();
+            if (subMesh.TexCoordCountBySet(k) > 0u)
+            {
+              *vertices++ = subMesh.TexCoordBySet(j, k).X();
+              *vertices++ = subMesh.TexCoordBySet(j, k).Y();
+            }
           }
         }
       }

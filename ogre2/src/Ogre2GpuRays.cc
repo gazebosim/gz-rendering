@@ -42,6 +42,7 @@
 #endif
 #include <Compositor/OgreCompositorManager2.h>
 #include <Compositor/OgreCompositorWorkspace.h>
+#include <Compositor/Pass/PassClear/OgreCompositorPassClearDef.h>
 #include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
 #include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
 #include <OgreDepthBuffer.h>
@@ -204,6 +205,16 @@ class gz::rendering::Ogre2GpuRaysPrivate
   /// \brief Max number of cameras used for creating the cubemap of depth
   /// textures for generating lidar data
   public: const unsigned int kCubeCameraCount = 6;
+
+  /// \brief Execution mask for this workspace
+  /// If particles exist in the scene, the execution mask of the particle
+  /// target will be updated to match the workspace's execution mask so that
+  /// these passes are executed, otherwise they will be skipped for performance
+  /// improvement.
+  public: const uint8_t kGpuRaysExecutionMask = 0xEF;
+
+  /// \brief Pointer to the particle target definition in the workspace
+  public: Ogre::CompositorTargetDef *particleTargetDef{nullptr};
 };
 
 using namespace gz;
@@ -445,6 +456,7 @@ void Ogre2GpuRays::Destroy()
         this->dataPtr->ogreCompositorNodeDef1st);
     this->dataPtr->ogreCompositorWorkspaceDef1st.clear();
   }
+  this->dataPtr->particleTargetDef = nullptr;
 
   // remove 2nd pass texture, material, compositor
   if (this->dataPtr->secondPassTexture)
@@ -972,14 +984,21 @@ void Ogre2GpuRays::Setup1stPass()
       passScene->setLightVisibilityMask(0x0);
     }
 
-    Ogre::CompositorTargetDef *particleTargetDef =
+    this->dataPtr->particleTargetDef =
         nodeDef->addTargetPass("particleTexture");
-    particleTargetDef->setNumPasses(1);
+    this->dataPtr->particleTargetDef->setNumPasses(2);
     {
+      // clear pass
+      Ogre::CompositorPassClearDef *passClear =
+          static_cast<Ogre::CompositorPassClearDef *>(
+          this->dataPtr->particleTargetDef->addPass(Ogre::PASS_CLEAR));
+      passClear->setAllClearColours(Ogre::ColourValue::Black);
+      passClear->mExecutionMask = this->dataPtr->kGpuRaysExecutionMask;
+
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
           static_cast<Ogre::CompositorPassSceneDef *>(
-          particleTargetDef->addPass(Ogre::PASS_SCENE));
+          this->dataPtr->particleTargetDef->addPass(Ogre::PASS_SCENE));
       passScene->setAllLoadActions(Ogre::LoadAction::Clear);
       passScene->setAllClearColours(Ogre::ColourValue::Black);
       // set camera custom visibility mask when rendering particles
@@ -987,6 +1006,7 @@ void Ogre2GpuRays::Setup1stPass()
           Ogre2ParticleEmitter::kParticleVisibilityFlags;
       passScene->mEnableForwardPlus = false;
       passScene->setLightVisibilityMask(0x0);
+      passScene->mExecutionMask = 0x0;
     }
 
     // rt_input target - converts depth to range
@@ -1081,7 +1101,8 @@ void Ogre2GpuRays::Setup1stPass()
           this->dataPtr->firstPassTextures[i],
           this->dataPtr->cubeCam[i],
           wsDefName,
-          false);
+          false, -1, 0, 0, 0, Ogre::Vector4::ZERO, 0x00,
+          this->dataPtr->kGpuRaysExecutionMask);
 
     Ogre::CompositorNode *node =
         this->dataPtr->ogreCompositorWorkspace1st[i]->getNodeSequence()[0];
@@ -1341,6 +1362,27 @@ void Ogre2GpuRays::PreRender()
 {
   if (!this->dataPtr->cubeUVTexture)
     this->CreateGpuRaysTextures();
+
+  if (this->dataPtr->particleTargetDef)
+  {
+    bool hasParticles =
+        this->scene->OgreSceneManager()->getMovableObjectIterator(
+        Ogre::ParticleSystemFactory::FACTORY_TYPE_NAME).hasMoreElements();
+    Ogre::CompositorPassDefVec &particlePasses =
+        this->dataPtr->particleTargetDef->getCompositorPassesNonConst();
+    IGN_ASSERT(particlePasses.size() == 2u,
+        "Ogre2DepthCamera particle target should 2 passes");
+    IGN_ASSERT(particlePasses[0]->getType() == Ogre::PASS_CLEAR,
+        "Ogre2DepthCamera particle target should start with a clear pass");
+    IGN_ASSERT(particlePasses[1]->getType() == Ogre::PASS_SCENE,
+        "Ogre2DepthCamera particle target should end with a scene pass");
+    particlePasses[0]->mExecutionMask =
+      (hasParticles) ? ~this->dataPtr->kGpuRaysExecutionMask :
+                       this->dataPtr->kGpuRaysExecutionMask;
+    particlePasses[1]->mExecutionMask =
+      (hasParticles) ? this->dataPtr->kGpuRaysExecutionMask :
+                       ~this->dataPtr->kGpuRaysExecutionMask;
+  }
 }
 
 //////////////////////////////////////////////////

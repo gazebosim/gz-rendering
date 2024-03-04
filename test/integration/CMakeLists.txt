@@ -7,6 +7,7 @@ set(tests
   gpu_rays
   heightmap
   lidar_visual
+  mesh
   projector
   render_pass
   scene

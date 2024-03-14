@@ -2,6 +2,65 @@
 
 ### Gazebo Rendering 8.X
 
+### Gazebo Rendering 8.1.0 (2024-03-14)
+
+1. Fix setting normal map when not all submeshes have texcoords (ogre2)
+    * [Pull request #976](https://github.com/gazebosim/gz-rendering/pull/976)
+
+1. Update ogre2 symbol visibility macro in private classes
+    * [Pull request #972](https://github.com/gazebosim/gz-rendering/pull/972)
+
+1. Improve Ogre2DepthCamera  performance
+    * [Pull request #971](https://github.com/gazebosim/gz-rendering/pull/971)
+    * [Pull request #965](https://github.com/gazebosim/gz-rendering/pull/965)
+
+1. Fix repeatedly loading engine when calling sceneFromFirstEngine
+    * [Pull request #961](https://github.com/gazebosim/gz-rendering/pull/961)
+
+1. Improve Ogre2GpuRays performance
+    * [Pull request #955](https://github.com/gazebosim/gz-rendering/pull/955)
+    * [Pull request #973](https://github.com/gazebosim/gz-rendering/pull/973)
+
+1. Correctly set position-independent code
+    * [Pull request #950](https://github.com/gazebosim/gz-rendering/pull/950)
+
+1. Remove todo in gpu ray test
+    * [Pull request #949](https://github.com/gazebosim/gz-rendering/pull/949)
+
+1. Update CI badges to point to release branch job
+    * [Pull request #948](https://github.com/gazebosim/gz-rendering/pull/948)
+    * [Pull request #947](https://github.com/gazebosim/gz-rendering/pull/947)
+
+1. Set projector emissive texture
+    * [Pull request #946](https://github.com/gazebosim/gz-rendering/pull/946)
+
+1. Add minor comments to BaseGizmoVisual
+    * [Pull request #881](https://github.com/gazebosim/gz-rendering/pull/881)
+
+1. Update examples to use metal as default graphics API on mac
+    * [Pull request #937](https://github.com/gazebosim/gz-rendering/pull/937)
+
+1. Extend ogre 1.x custom shaders support
+    * [Pull request #908](https://github.com/gazebosim/gz-rendering/pull/908)
+
+1. Support skybox in wide angle cam view
+    * [Pull request #901](https://github.com/gazebosim/gz-rendering/pull/901)
+
+1. Minor fix for projector visibility flags
+    * [Pull request #920](https://github.com/gazebosim/gz-rendering/pull/920)
+
+1. Fix use of srgb format for texture map data
+    * [Pull request #931](https://github.com/gazebosim/gz-rendering/pull/931)
+
+1. Infrastructure
+    * [Pull request #925](https://github.com/gazebosim/gz-rendering/pull/925)
+    * [Pull request #939](https://github.com/gazebosim/gz-rendering/pull/939)
+    * [Pull request #940](https://github.com/gazebosim/gz-rendering/pull/940)
+    * [Pull request #967](https://github.com/gazebosim/gz-rendering/pull/967)
+
+1. Fix float comparison warnings in test
+    * [Pull request #929](https://github.com/gazebosim/gz-rendering/pull/929)
+
 ### Gazebo Rendering 8.0.0 (2023-09-29)
 
 1. Remove gazebo scene viewer example

@@ -17,37 +17,36 @@
 
 #include <gz/common/Console.hh>
 
+#include <gz/utils/NeverDestroyed.hh>
+
 #include "gz/rendering/RenderPassSystem.hh"
 
 using namespace gz;
 using namespace rendering;
 
 /// \brief Private implementation of the RenderPassSystem class
-class gz::rendering::RenderPassSystemPrivate
+class gz::rendering::BaseRenderPassSystem::Implementation
 {
+  public: std::map<std::string, RenderPassFactoryFn> factoryFns;
 };
 
-std::map<std::string, RenderPassFactory *> RenderPassSystem::renderPassMap;
-
 //////////////////////////////////////////////////
-// RenderPassSystem
-//////////////////////////////////////////////////
-RenderPassSystem::RenderPassSystem() :
-  dataPtr(new RenderPassSystemPrivate)
+BaseRenderPassSystem::BaseRenderPassSystem()
+  : dataPtr(gz::utils::MakeUniqueImpl<Implementation>())
 {
 }
 
 //////////////////////////////////////////////////
-RenderPassSystem::~RenderPassSystem() = default;
+BaseRenderPassSystem::~BaseRenderPassSystem() = default;
 
 //////////////////////////////////////////////////
-RenderPassPtr RenderPassSystem::CreateImpl(const std::string &_type)
+RenderPassPtr BaseRenderPassSystem::Create(const std::string &_type)
 {
   RenderPassPtr pass;
-  auto it = renderPassMap.find(_type);
-  if (it != renderPassMap.end())
+  auto itFn = this->dataPtr->factoryFns.find(_type);
+  if (itFn != this->dataPtr->factoryFns.end())
   {
-    pass.reset(it->second->New());
+    pass.reset(itFn->second());
   }
   else
   {
@@ -58,8 +57,21 @@ RenderPassPtr RenderPassSystem::CreateImpl(const std::string &_type)
 }
 
 //////////////////////////////////////////////////
-void RenderPassSystem::Register(const std::string &_name,
-    RenderPassFactory *_factory)
+void BaseRenderPassSystem::Register(const std::string &_name,
+    RenderPassFactoryFn _factoryFn)
 {
-  renderPassMap[_name] = _factory;
+  this->dataPtr->factoryFns[_name] = _factoryFn;
+}
+
+//////////////////////////////////////////////////
+BaseRenderPassSystem& RenderPassSystem::Implementation()
+{
+  static gz::utils::NeverDestroyed<BaseRenderPassSystem> instance;
+  return instance.Access();
+}
+
+//////////////////////////////////////////////////
+void RenderPassSystem::Register(const std::string &_type, RenderPassFactory *_factory)
+{
+  Implementation().Register(_type, [_factory](){return _factory->New();});
 }

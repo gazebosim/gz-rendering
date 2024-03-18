@@ -1,0 +1,20 @@
+load(
+    "@gz//bazel/skylark:build_defs.bzl",
+    "GZ_FEATURES",
+    "GZ_ROOT",
+    "GZ_VISIBILITY",
+    "gz_configure_header",
+    "gz_export_header",
+    "gz_include_header",
+)
+
+cc_binary(
+    name = "simple_demo_sdl2",
+    srcs = ["simple_demo_sdl2/Main.cc"],
+    deps = [
+        GZ_ROOT + "common",
+        GZ_ROOT + "rendering",
+        "@sdl2",
+        "@vulkan",
+    ],
+)

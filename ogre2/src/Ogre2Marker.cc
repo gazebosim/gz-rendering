@@ -101,11 +101,13 @@ void Ogre2Marker::PreRender()
           engine->OgreRoot()->getRenderSystem()->getFriendlyName();
       if (renderSystemName.find("OpenGL") != std::string::npos)
       {
+      #if OGRE_GLSUPPORT
       #ifdef __APPLE__
         glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
       #else
       #ifndef _WIN32
         glEnable(GL_PROGRAM_POINT_SIZE);
+      #endif
       #endif
       #endif
       }

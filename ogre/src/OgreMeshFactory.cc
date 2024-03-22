@@ -20,7 +20,6 @@
 
 #include <gz/common/Console.hh>
 #include <gz/common/Material.hh>
-#include <gz/common/MeshManager.hh>
 #include <gz/common/Skeleton.hh>
 #include <gz/common/SkeletonAnimation.hh>
 #include <gz/common/SubMesh.hh>

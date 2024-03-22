@@ -72,17 +72,24 @@ void buildScene(ScenePtr _scene)
   matPBR->SetEnvironmentMap(environmentMap);
 
   // create mesh for PBR
-  VisualPtr meshPBR = _scene->CreateVisual("pump");
-  meshPBR->SetLocalPosition(2, 0.0, -0.3);
-  meshPBR->SetLocalRotation(0, 0, 0);
   MeshDescriptor descriptorPBR;
   descriptorPBR.meshName = common::joinPaths(RESOURCE_PATH, "pump.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptorPBR.mesh = meshManager->Load(descriptorPBR.meshName);
-  MeshPtr meshPBRGeom = _scene->CreateMesh(descriptorPBR);
-  meshPBRGeom->SetMaterial(matPBR);
-  meshPBR->AddGeometry(meshPBRGeom);
-  root->AddChild(meshPBR);
+  if (descriptorPBR.mesh)
+  {
+    VisualPtr meshPBR = _scene->CreateVisual("pump");
+    meshPBR->SetLocalPosition(2, 0.0, -0.3);
+    meshPBR->SetLocalRotation(0, 0, 0);
+    MeshPtr meshPBRGeom = _scene->CreateMesh(descriptorPBR);
+    meshPBRGeom->SetMaterial(matPBR);
+    meshPBR->AddGeometry(meshPBRGeom);
+    root->AddChild(meshPBR);
+  }
+  else
+  {
+    gzerr << "Failed load mesh: " << descriptorPBR.meshName << std::endl;
+  }
 
   // create green material
   MaterialPtr green = _scene->CreateMaterial();

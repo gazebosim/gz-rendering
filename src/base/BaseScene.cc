@@ -21,7 +21,6 @@
 
 #include <gz/common/Console.hh>
 #include <gz/common/Mesh.hh>
-#include <gz/common/MeshManager.hh>
 
 #include "gz/rendering/ArrowVisual.hh"
 #include "gz/rendering/AxisVisual.hh"

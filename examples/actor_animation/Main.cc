@@ -69,6 +69,12 @@ void buildScene(ScenePtr _scene, std::vector<VisualPtr> &_visuals,
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
   //! [load mesh]
+  if (!descriptor.mesh)
+  {
+    gzerr << "Failed to load mesh: " << descriptor.meshName << std::endl;
+    // Do not launch example if actor mesh is not found.
+    return;
+  }
 
   // add bvh animation
   //! [add animation]

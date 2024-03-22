@@ -119,6 +119,7 @@ TEST_F(WavesTest, Waves)
       TEST_MEDIA_PATH, "meshes", "mesh.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
+  ASSERT_NE(nullptr, descriptor.mesh);
   MeshPtr meshGeom = scene->CreateMesh(descriptor);
   waves->AddGeometry(meshGeom);
   waves->SetLocalPosition(3, 0, 0);

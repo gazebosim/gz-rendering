@@ -53,18 +53,26 @@ VisualPtr createDuck(ScenePtr _scene,
   n_ducks++;
 
   // create a mesh
-  VisualPtr mesh = _scene->CreateVisual(
-    "duck" + std::to_string(n_ducks));
-  mesh->SetLocalPosition(_position);
-  mesh->SetLocalRotation(_rotation);
+  VisualPtr mesh;
   MeshDescriptor descriptor;
   descriptor.meshName = common::joinPaths(RESOURCE_PATH, "duck.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
-  MeshPtr meshGeom = _scene->CreateMesh(descriptor);
-  mesh->AddGeometry(meshGeom);
-  mesh->SetMaterial(_material);
-  mesh->SetUserData("label", 5);
+  if (descriptor.mesh)
+  {
+    mesh = _scene->CreateVisual(
+      "duck" + std::to_string(n_ducks));
+    mesh->SetLocalPosition(_position);
+    mesh->SetLocalRotation(_rotation);
+    MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+    mesh->AddGeometry(meshGeom);
+    mesh->SetMaterial(_material);
+    mesh->SetUserData("label", 5);
+  }
+  else
+  {
+    gzerr << "Failed load mesh: " << descriptor.meshName << std::endl;
+  }
 
   return mesh;
 }
@@ -168,7 +176,8 @@ void buildScene(ScenePtr _scene, BoundingBoxType _type)
 
   // create a mesh
   auto duck = createDuck(_scene, math::Vector3d(5, 0, 0), skyBlue);
-  root->AddChild(duck);
+  if (duck)
+    root->AddChild(duck);
 
   // create a sphere1
   auto sphere1 = createSphere(_scene, math::Vector3d(3, -1.5, 0), green);

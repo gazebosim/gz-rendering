@@ -20,14 +20,12 @@
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
 
-#if !defined(kronos_intptr_t) || !defined(khronos_intptr_t)
-// Conda-forge's glext.h is old and has a bug.
+// conda-forge's glext.h is old and has a bug.
 // This is a minimally-intrusive fix to correct types.
 // On modern GL distributions, glx.h will override these.
 # include <KHR/khrplatform.h>
 typedef khronos_ssize_t GLsizeiptr;
 typedef khronos_intptr_t GLintptr;
-#endif
 
 # include <GL/glx.h>
 #endif

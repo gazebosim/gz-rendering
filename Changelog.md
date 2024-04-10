@@ -2,6 +2,14 @@
 
 ### Gazebo Rendering 8.X
 
+### Gazebo Rendering 8.1.1 (2024-04-10)
+
+1. Use relative install paths for plugin shared libraries and media files
+    * [Pull request #984](https://github.com/gazebosim/gz-rendering/pull/984)
+
+1. Handle null mesh pointers in examples
+    * [Pull request #982](https://github.com/gazebosim/gz-rendering/pull/982)
+
 ### Gazebo Rendering 8.1.0 (2024-03-14)
 
 1. Fix setting normal map when not all submeshes have texcoords (ogre2)

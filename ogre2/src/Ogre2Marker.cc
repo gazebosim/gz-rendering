@@ -27,9 +27,6 @@
 
 #include <gz/common/Console.hh>
 
-#include <gz/common/Mesh.hh>
-#include <gz/common/MeshManager.hh>
-
 #include "gz/rendering/ogre2/Ogre2Capsule.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2DynamicRenderable.hh"

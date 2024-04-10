@@ -56,18 +56,25 @@ void buildScene(ScenePtr _scene)
   root->AddChild(plane);
 
   // create a mesh
-  VisualPtr mesh = _scene->CreateVisual();
-  mesh->SetLocalPosition(3, 0, 0);
-  mesh->SetLocalRotation(1.5708, 0, 2.0);
+  float temperature = 315.0;
   MeshDescriptor descriptor;
   descriptor.meshName = common::joinPaths(RESOURCE_PATH, "duck.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
-  MeshPtr meshGeom = _scene->CreateMesh(descriptor);
-  mesh->AddGeometry(meshGeom);
-  float temperature = 315.0;
-  mesh->SetUserData("temperature", temperature);
-  root->AddChild(mesh);
+  if (descriptor.mesh)
+  {
+    VisualPtr mesh = _scene->CreateVisual();
+    mesh->SetLocalPosition(3, 0, 0);
+    mesh->SetLocalRotation(1.5708, 0, 2.0);
+    MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+    mesh->AddGeometry(meshGeom);
+    mesh->SetUserData("temperature", temperature);
+    root->AddChild(mesh);
+  }
+  else
+  {
+    gzerr << "Failed load mesh: " << descriptor.meshName << std::endl;
+  }
 
   // create a box
   VisualPtr box = _scene->CreateVisual("box");

@@ -103,6 +103,7 @@ TEST_F(MeshTest, MeshSkeleton)
   descriptor.meshName = common::joinPaths(TEST_MEDIA_PATH, "walk.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
+  ASSERT_NE(nullptr, descriptor.mesh);
 
   MeshPtr mesh = scene->CreateMesh(descriptor);
   actorVisual->AddGeometry(mesh);
@@ -181,6 +182,7 @@ TEST_F(MeshTest, MeshSkeletonAnimation)
   descriptor.meshName = common::joinPaths(TEST_MEDIA_PATH, "walk.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
+  ASSERT_NE(nullptr, descriptor.mesh);
   MeshPtr mesh = scene->CreateMesh(descriptor);
 
   EXPECT_TRUE(mesh->HasSkeleton());

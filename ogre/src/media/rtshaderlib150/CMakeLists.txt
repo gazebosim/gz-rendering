@@ -10,5 +10,5 @@ SGXLib_NormalMapLighting.glsl
 SGXLib_PerPixelLighting.glsl
 )
 
-install(FILES ${files} DESTINATION ${GZ_RENDERING_RESOURCE_PATH}/ogre/media/rtshaderlib150)
+install(FILES ${files} DESTINATION ${GZ_RENDERING_RELATIVE_RESOURCE_PATH}/ogre/media/rtshaderlib150)
 

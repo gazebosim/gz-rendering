@@ -106,18 +106,25 @@ void buildScene(ScenePtr _scene,
   shader->SetVertexShader(vertexShaderPath);
   shader->SetFragmentShader(fragmentShaderPath);
 
-   // create waves visual
-   VisualPtr waves = _scene->CreateVisual("waves");
-   MeshDescriptor descriptor;
-   descriptor.meshName = common::joinPaths(RESOURCE_PATH, "mesh.dae");
-   common::MeshManager *meshManager = common::MeshManager::Instance();
-   descriptor.mesh = meshManager->Load(descriptor.meshName);
-   MeshPtr meshGeom = _scene->CreateMesh(descriptor);
-   waves->AddGeometry(meshGeom);
-   waves->SetLocalPosition(3, 0, 0);
-   waves->SetLocalScale(1, 1, 1);
-   waves->SetMaterial(shader);
-   root->AddChild(waves);
+  // create waves visual
+  MeshDescriptor descriptor;
+  descriptor.meshName = common::joinPaths(RESOURCE_PATH, "mesh.dae");
+  common::MeshManager *meshManager = common::MeshManager::Instance();
+  descriptor.mesh = meshManager->Load(descriptor.meshName);
+  if (descriptor.mesh)
+  {
+    VisualPtr waves = _scene->CreateVisual("waves");
+    MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+    waves->AddGeometry(meshGeom);
+    waves->SetLocalPosition(3, 0, 0);
+    waves->SetLocalScale(1, 1, 1);
+    waves->SetMaterial(shader);
+    root->AddChild(waves);
+  }
+  else
+  {
+    gzerr << "Failed load mesh: " << descriptor.meshName << std::endl;
+  }
 
   // create camera
   CameraPtr camera = _scene->CreateCamera("camera");

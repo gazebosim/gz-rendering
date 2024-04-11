@@ -19,6 +19,14 @@
 #if !defined(__APPLE__) && !defined(_WIN32)
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
+
+// conda-forge's glext.h is old and has a bug.
+// This is a minimally-intrusive fix to correct types.
+// On modern GL distributions, glx.h will override these.
+# include <KHR/khrplatform.h>
+typedef khronos_ssize_t GLsizeiptr;
+typedef khronos_intptr_t GLintptr;
+
 # include <GL/glx.h>
 #endif
 

@@ -351,13 +351,13 @@ void Ogre2DepthCamera::Destroy()
   {
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->depthMaterial->getName());
-    this->dataPtr->depthMaterial.setNull();
+    this->dataPtr->depthMaterial.reset();
   }
   if (this->dataPtr->depthFinalMaterial)
   {
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->depthFinalMaterial->getName());
-    this->dataPtr->depthFinalMaterial.setNull();
+    this->dataPtr->depthFinalMaterial.reset();
   }
 
   if (!this->dataPtr->ogreCompositorWorkspaceDef.empty())
@@ -447,8 +447,10 @@ void Ogre2DepthCamera::CreateDepthTexture()
   const double angle = this->HFOV().Radian();
   const double vfov =
     this->LimitFOV(2.0 * atan(tan(angle / 2.0) / aspectRatio));
-  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
-  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
+  this->ogreCamera->setFOVy(
+    static_cast<Ogre::Radian>(static_cast<Ogre::Real>(vfov)));
+  this->ogreCamera->setAspectRatio(
+    static_cast<Ogre::Real>(aspectRatio));
 
   // Load depth material
   // The DepthCamera material is defined in script (depth_camera.material).
@@ -1129,7 +1131,7 @@ void Ogre2DepthCamera::PreRender()
     CameraPtr camera =
         std::dynamic_pointer_cast<Camera>(this->shared_from_this());
     for (auto &pass : this->dataPtr->renderPasses)
-      pass->PreRender(camera);
+      pass->CameraPreRender(camera);
   }
 
   // add the particle noise listener again if worksapce is recreated due to

@@ -137,7 +137,7 @@ void Ogre2LensFlarePass::Destroy()
 }
 
 //////////////////////////////////////////////////
-void Ogre2LensFlarePass::Init(ScenePtr _scene)
+void Ogre2LensFlarePass::InitFromScene(ScenePtr _scene)
 {
   this->scene = std::dynamic_pointer_cast<Ogre2Scene>(_scene);
   this->dataPtr->rayQuery = _scene->CreateRayQuery();
@@ -145,7 +145,7 @@ void Ogre2LensFlarePass::Init(ScenePtr _scene)
 }
 
 //////////////////////////////////////////////////
-void Ogre2LensFlarePass::PreRender(const CameraPtr &_camera)
+void Ogre2LensFlarePass::CameraPreRender(const CameraPtr &_camera)
 {
   if (!this->enabled || this->light == nullptr)
     return;

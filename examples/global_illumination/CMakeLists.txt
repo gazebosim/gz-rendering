@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(gz-rendering-global_illumination)
 
-find_package(gz-rendering9)
+find_package(gz-rendering9 REQUIRED)
+find_package(gz-common6 REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
@@ -25,6 +26,7 @@ add_executable(global_illumination Main.cc Sdl2Window.cc)
 target_link_libraries(global_illumination
   ${SDL2_LIBRARIES}
   ${GZ-RENDERING_LIBRARIES}
+  gz-common6::gz-common6
   )
 
 add_custom_command(TARGET global_illumination POST_BUILD

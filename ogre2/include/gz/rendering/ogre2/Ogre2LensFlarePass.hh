@@ -44,10 +44,10 @@ namespace gz
       public: ~Ogre2LensFlarePass() override;
 
       // Documentation inherited
-      public: void Init(ScenePtr _scene) override;
+      public: void InitFromScene(ScenePtr _scene) override;
 
       // Documentation inherited
-      public: void PreRender(const CameraPtr &_camera) override;
+      public: void CameraPreRender(const CameraPtr &_camera) override;
 
       // Documentation inherited
       public: void PostRender() override;

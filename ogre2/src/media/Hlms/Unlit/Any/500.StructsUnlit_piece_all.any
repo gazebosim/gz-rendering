@@ -99,7 +99,7 @@
 			@end
 		@end
 		@property( hlms_colour )
-			INTERPOLANT( float4 colour, @counter(texcoord) );
+			INTERPOLANT( midf4 colour, @counter(texcoord) );
 		@end
 		@foreach( out_uv_half_count, n )
 			INTERPOLANT( float@value( out_uv_half_count@n ) uv@n, @counter(texcoord) );@end
@@ -112,6 +112,11 @@
 			@property( !exponential_shadow_maps )
 				FLAT_INTERPOLANT( float constBias, @counter(texcoord) );
 			@end
+		@end
+	@end
+	@property( hlms_emulate_clip_distances && hlms_pso_clip_distances )
+		@foreach( hlms_pso_clip_distances, n )
+			INTERPOLANT( float clipDistance@n, @counter(texcoord) );
 		@end
 	@end
 	@insertpiece( custom_VStoPS )

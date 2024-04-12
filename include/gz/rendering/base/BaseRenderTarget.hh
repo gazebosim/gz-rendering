@@ -41,7 +41,7 @@ namespace gz
       public: virtual ~BaseRenderTarget();
 
       // Documentation inherited.
-      public: virtual void PreRender(const CameraPtr &_camera) override;
+      public: virtual void CameraPreRender(const CameraPtr &_camera) override;
 
       // Documentation inherited.
       public: virtual void PreRender() override;
@@ -165,11 +165,11 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseRenderTarget<T>::PreRender(const CameraPtr &_camera)
+    void BaseRenderTarget<T>::CameraPreRender(const CameraPtr &_camera)
     {
       this->PreRender();
       for (auto &pass : this->renderPasses)
-        pass->PreRender(_camera);
+        pass->CameraPreRender(_camera);
     }
 
     //////////////////////////////////////////////////

@@ -954,9 +954,6 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       // to set the texture index
       int texIndex = static_cast<int>(pass->getTextureUnitStateIndex(texUnit));
 
-      // set texture coordinate set
-      texUnit->setTextureCoordSet(uvSetIndex);
-
       // set to wrap mode otherwise default is clamp mode
       Ogre::HlmsSamplerblock samplerBlockRef;
       samplerBlockRef.mU = Ogre::TAM_WRAP;

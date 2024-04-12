@@ -323,7 +323,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   gpuRays2->Update();
   scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
   // Test Copy method instead of using the callback for the second rays caster
-  gpuRays2->Copy(scan2);
+  gpuRays2->CopyData(scan2);
 
   // Only box01 should be visible to rays caster 2
   EXPECT_FLOAT_EQ(scan2[0], maxRange);
@@ -342,7 +342,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
   scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
   gpuRays2->Update();
   scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
-  gpuRays2->Copy(scan2);
+  gpuRays2->CopyData(scan2);
 
   for (int i = 0; i < gpuRays->RayCount(); ++i)
     EXPECT_FLOAT_EQ(scan[i * 3], math::INF_F);

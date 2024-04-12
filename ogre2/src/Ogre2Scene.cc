@@ -815,7 +815,6 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
       texDef->width = std::max(atlasRes.x, 1u);
       texDef->height = std::max(atlasRes.y, 1u);
       texDef->format = Ogre::PFG_D32_FLOAT;
-      texDef->depthBufferId = Ogre::DepthBuffer::POOL_NON_SHAREABLE;
       texDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
       texDef->preferDepthTexture = false;
       texDef->fsaa = "0";

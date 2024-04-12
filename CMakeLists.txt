@@ -79,84 +79,13 @@ if (OpenGL_FOUND)
   set(HAVE_OPENGL TRUE)
 endif()
 
-#--------------------------------------
-# Find OGRE
-list(APPEND gz_ogre_components "RTShaderSystem" "Terrain" "Overlay" "Paging")
+#find_package(ogre_vendor REQUIRED)
+#set(GZ_RENDERING_HAVE_OGRE TRUE)
 
-gz_find_package(GzOGRE VERSION 1.9.0
-  COMPONENTS ${gz_ogre_components}
-  REQUIRED_BY ogre
-  PRIVATE_FOR ogre)
+find_package(ogre_next_vendor REQUIRED)
+set(GZ_RENDERING_HAVE_OGRE2 TRUE)
+set(GZ_RENDERING_HAVE_VULKAN TRUE)
 
-# Ogre versions greater than 1.9.x are not officialy supported.
-# Display a warning for the users on this setup unless they provide
-# USE_UNOFFICIAL_OGRE_VERSIONS flag
-if (NOT USE_UNOFFICIAL_OGRE_VERSIONS)
-  if (OGRE_VERSION VERSION_GREATER_EQUAL 1.10.0)
-    GZ_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
-                      "The software might compile and even work but support from upstream"
-                      "could be reduced to accepting patches for newer versions")
-  endif()
-endif()
-
-if (OGRE_FOUND)
-  # find boost - mainly needed on macOS and also by the terrain component
-  find_package(Boost)
-  if (Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-  endif()
-
-  set(GZ_RENDERING_HAVE_OGRE TRUE)
-endif()
-
-#--------------------------------------
-# Find OGRE2: first try to find OGRE2 built with PlanarReflections support and
-# fallback to look for OGRE2 without it. Both seems to works for gz-rendering.
-# See https://github.com/gazebosim/gz-rendering/issues/597
-gz_find_package(GzOGRE2 VERSION 2.3.1
-    COMPONENTS HlmsPbs HlmsUnlit Overlay PlanarReflections
-    PRIVATE_FOR ogre2
-    QUIET)
-
-if ("${OGRE2-PlanarReflections}" STREQUAL "OGRE2-PlanarReflections-NOTFOUND")
-  message(STATUS "PlanarReflections component was not found. Try looking without it:")
-  gz_find_package(GzOGRE2 VERSION 2.3.1
-    COMPONENTS HlmsPbs HlmsUnlit Overlay
-    REQUIRED_BY ogre2
-    PRIVATE_FOR ogre2)
-endif()
-
-if (OGRE2_FOUND)
-  set(GZ_RENDERING_HAVE_OGRE2 TRUE)
-endif()
-
-#--------------------------------------
-# Find Vulkan
-# ogre-next 2.3 is built with vulkan support on Jammy
-# Make sure we have vulkan headers, e.g. vulkan/vulkan_core.h
-if (UNIX AND NOT APPLE)
-  # check if ogre-next vulkan headers are installed
-  find_path(ogre_vulkan_INCLUDE "RenderSystems/Vulkan/OgreVulkanDevice.h"
-    HINTS ${OGRE2_INCLUDE_DIRS})
-
-  # if not installed, ogre-next is likely built on platform without vulkan
-  # support, e.g. Focal
-  if (NOT ogre_vulkan_INCLUDE)
-    message(STATUS "Skipping vulkan support for component [ogre2]")
-  else()
-    find_path(vulkan_INCLUDE vulkan/vulkan_core.h)
-    if(NOT vulkan_INCLUDE)
-      message(STATUS "Looking for vulkan header (vulkan/vulkan_core.h) - not found")
-      gz_build_warning("Skipping component [ogre2]: Missing vulkan headers.\n")
-      # Create a variable to indicate that we need to skip the component
-      set(INTERNAL_SKIP_ogre2 true)
-      set(GZ_RENDERING_HAVE_OGRE2 FALSE)
-    else()
-      message(STATUS "Looking for vulkan header (vulkan/vulkan_core.h) - found")
-      set(GZ_RENDERING_HAVE_VULKAN TRUE)
-    endif()
-  endif()
-endif()
 
 # Plugin install dirs
 set(GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR
@@ -166,23 +95,6 @@ set(GZ_RENDERING_ENGINE_INSTALL_DIR
   ${CMAKE_INSTALL_PREFIX}/${GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR})
 
 
-#--------------------------------------
-# Find dependencies that we ignore for Visual Studio
-if(NOT MSVC)
-  #--------------------------------------
-  # Find CUDA
-  find_package(CUDA)
-
-  #--------------------------------------
-  # Find OptiX
-  gz_find_package(OptiX VERSION 3.8.0
-      REQUIRED_BY optix
-      PRIVATE_FOR optix)
-
-  if (OptiX_FOUND AND CUDA_FOUND)
-    set(GZ_RENDERING_HAVE_OPTIX TRUE)
-  endif()
-endif()
 
 #####################################
 # Define compile-time default variables

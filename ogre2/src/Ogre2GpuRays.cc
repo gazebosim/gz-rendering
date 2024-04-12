@@ -372,7 +372,7 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
       subItem->setCustomParameter(1u,
                                   Ogre::Vector4(color, color, color, 1.0));
 
-      if (!subItem->getMaterial().isNull())
+      if (subItem->getMaterial())
       {
         this->materialMap.push_back({ subItem, subItem->getMaterial() });
 
@@ -1406,7 +1406,7 @@ const float* Ogre2GpuRays::Data() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2GpuRays::Copy(float *_dataDest)
+void Ogre2GpuRays::CopyData(float *_dataDest)
 {
   unsigned int width = this->dataPtr->w2nd;
   unsigned int height = this->dataPtr->h2nd;

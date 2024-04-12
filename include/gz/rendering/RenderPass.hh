@@ -35,7 +35,7 @@ namespace gz
       : public virtual Object
     {
       /// \brief Destructor
-      public: virtual ~RenderPass();
+      public: ~RenderPass() override;
 
       /// \brief Set to enable or disable the render pass
       /// \param[in] _enabled True to enable the render pass, false to disable.
@@ -49,7 +49,7 @@ namespace gz
       /// Object::PreRender but with the added bonus that it has access
       /// to the camera that is about to render
       /// \param[in] _camera Camera that is about to render
-      public: virtual void PreRender(const CameraPtr &_camera) = 0;
+      public: virtual void CameraPreRender(const CameraPtr &_camera) = 0;
 
       /// \brief WideAngleCamera renders to 6 faces; then stitches all 6
       /// into a final "fish-eye" lens result.

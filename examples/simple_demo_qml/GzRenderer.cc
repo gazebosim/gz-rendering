@@ -25,6 +25,8 @@
 
 #include <gz/common/Console.hh>
 
+#include <gz/math/Helpers.hh>
+
 #include <iostream>
 
 using namespace gz;
@@ -285,7 +287,7 @@ void GzRenderer::InitEngine()
 //////////////////////////////////////////////////
 void GzRenderer::UpdateCamera()
 {
-  double angle = this->cameraOffset / 2 * M_PI;
+  double angle = this->cameraOffset / 2 * GZ_PI;
   double x = sin(angle) * 3.0 + 3.0;
   double y = cos(angle) * 3.0;
   this->camera->SetLocalPosition(x, y, 0.0);

@@ -127,6 +127,7 @@ namespace gz
     void BaseGlobalIlluminationVct<T>::SetResolution(
       const uint32_t _resolution[3])
     {
+      (void)(_resolution);
     GZ_ASSERT(math::isPowerOfTwo(_resolution[0]),
           "Resolution must be power of 2");
     GZ_ASSERT(math::isPowerOfTwo(_resolution[1]),
@@ -148,6 +149,7 @@ namespace gz
     void BaseGlobalIlluminationVct<T>::SetOctantCount(
       const uint32_t _octants[3])
     {
+      (void)(_octants);
     GZ_ASSERT(_octants[0] > 0u, "Subdivision must be greater than 0");
     GZ_ASSERT(_octants[1] > 0u, "Subdivision must be greater than 0");
     GZ_ASSERT(_octants[2] > 0u, "Subdivision must be greater than 0");

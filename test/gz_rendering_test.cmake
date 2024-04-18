@@ -15,7 +15,7 @@
 #
 #################################################
 
-include(GzPython)
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 # Determine Ubuntu version to enable/disable vulkan backend testing
 if (UNIX AND NOT APPLE)

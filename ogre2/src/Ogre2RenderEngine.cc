@@ -1263,6 +1263,22 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   {
     params["externalGLControl"] = "true";
     params["currentGLContext"] = "true";
+
+#if defined(_MSC_VER)
+    if (!this->winID.empty())
+    {
+      params["externalWindowHandle"] = this->winID;
+    }
+    else
+    {
+      gzerr << "useCurrentGLContext option specified, "
+            << "but no winID specified." << std::endl
+            << "On Windows if useCurrentGLContext is specified, "
+            << "the ogre2 rendering requires that also winID is specified."
+            << std::endl;
+      return std::string();
+    }
+#endif
   }
 
 #if !defined(__APPLE__) && !defined(_MSC_VER)

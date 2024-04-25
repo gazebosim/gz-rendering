@@ -171,6 +171,9 @@ set(GZ_RENDERING_ENGINE_INSTALL_DIR
 if(NOT MSVC)
   #--------------------------------------
   # Find CUDA
+  # Module is being removed in CMake and needs a non trivial
+  # migration https://cmake.org/cmake/help/latest/policy/CMP0146.html
+  cmake_policy(SET CMP0146 OLD)
   find_package(CUDA)
 
   #--------------------------------------

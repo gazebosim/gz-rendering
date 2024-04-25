@@ -236,8 +236,10 @@ void OgreDistortionPass::CreateRenderPass()
 
       // Make sure the distorted pixel is within the texture dimensions
       if (distortedCol >= 0 && distortedRow >= 0 &&
-          distortedCol < this->dataPtr->distortionTexWidth &&
-          distortedRow < this->dataPtr->distortionTexHeight)
+          static_cast<unsigned int>(distortedCol) <
+            this->dataPtr->distortionTexWidth &&
+          static_cast<unsigned int>(distortedRow) <
+            this->dataPtr->distortionTexHeight)
       {
         distortedIdx = distortedRow * this->dataPtr->distortionTexWidth +
           distortedCol;

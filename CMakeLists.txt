@@ -175,7 +175,7 @@ if(NOT MSVC)
   # migration https://cmake.org/cmake/help/latest/policy/CMP0146.html
   if(POLICY CMP0146)
     cmake_policy(SET CMP0146 OLD)
-  enddif()
+  endif()
   find_package(CUDA)
 
   #--------------------------------------

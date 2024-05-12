@@ -75,6 +75,7 @@ static const std::array<std::string, EmitterType::EM_NUM_EMITTERS>
       {
         "Point",
         "Box",
+        "Cone",
         "Cylinder",
         "Ellipsoid",
       };
@@ -154,6 +155,7 @@ void Ogre2ParticleEmitter::SetEmitterSize(const gz::math::Vector3d &_size)
       break;
     }
     case EmitterType::EM_BOX:
+    case EmitterType::EM_CONE:
     case EmitterType::EM_CYLINDER:
     case EmitterType::EM_ELLIPSOID:
     {

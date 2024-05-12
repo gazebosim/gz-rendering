@@ -47,8 +47,11 @@ namespace gz
       /// \brief Ellipsoid emitter.
       EM_ELLIPSOID        = 3,
 
+      /// \brief Cone emitter.
+      EM_CONE             = 4,
+
       /// \brief Total number of emitters (keep always at the end).
-      EM_NUM_EMITTERS     = 4,
+      EM_NUM_EMITTERS     = 5,
     };
 
     /// \class ParticleEmitter ParticleEmitter.hh
@@ -86,8 +89,10 @@ namespace gz
       /// the emmiter type:
       ///   - EM_POINT: The area is ignored.
       ///   - EM_BOX: The area is interpreted as width X height X depth.
+      ///   - EM_CONE: The area is interpreted as the bounding box of the
+      ///                  cone. The cone is oriented along the Z-axis.
       ///   - EM_CYLINDER: The area is interpreted as the bounding box of the
-      ///                  cilinder. The cylinder is oriented along the Z-axis.
+      ///                  cylinder. The cylinder is oriented along the Z-axis.
       ///   - EM_ELLIPSOID: The area is interpreted as the bounding box of an
       ///                   ellipsoid shaped area, i.e. a sphere or
       ///                   squashed-sphere area. The parameters are again

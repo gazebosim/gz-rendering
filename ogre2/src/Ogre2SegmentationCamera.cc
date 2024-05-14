@@ -19,6 +19,7 @@
 
 #include <gz/common/Console.hh>
 #include <gz/math/Color.hh>
+#include <gz/math/Matrix4.hh>
 
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"

@@ -743,7 +743,7 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraProjection))
 
   int imgWidth = 256;
   int imgHeight = 256;
-  double aspectRatio = imgWidth/imgHeight;
+  double aspectRatio = imgWidth / imgHeight;
 
   double unitBoxSize = 1.0;
   gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);

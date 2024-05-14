@@ -43,6 +43,7 @@
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
 #include <gz/math/Helpers.hh>
+#include <gz/math/Matrix4.hh>
 
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"

@@ -31,6 +31,7 @@
 #include <gz/math/Color.hh>
 #include <gz/math/Vector4.hh>
 #include <gz/math/eigen3/Util.hh>
+#include <gz/math/Matrix4.hh>
 #include <gz/math/OrientedBox.hh>
 
 #include "gz/rendering/RenderTypes.hh"

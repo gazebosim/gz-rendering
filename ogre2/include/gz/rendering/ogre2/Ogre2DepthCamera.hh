@@ -133,10 +133,6 @@ namespace gz
       // Documentation inherited.
       public: virtual Ogre::Camera *OgreCamera() const override;
 
-      // Documentation inherited.
-      public: virtual void SetProjectionMatrix(
-          const math::Matrix4d &_matrix) override;
-
       /// \brief Get a pointer to the render target.
       /// \return Pointer to the render target
       protected: virtual RenderTargetPtr RenderTarget() const override;

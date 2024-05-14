@@ -824,8 +824,7 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraProjection))
     EXPECT_LT(0u, hasInfValues);
 
     // Now override with a custom projection matrix
-    // camera intrinsic parameters
-    // This projection is computed from a small horizontal FOV
+    // This projection matrix corresponds to a small horizontal FOV
     // (hfov = 0.5)
     gz::math::Matrix4d projectionMatrix(
         3.91632, 0, 0, 0,

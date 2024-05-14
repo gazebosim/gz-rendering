@@ -185,6 +185,7 @@ void Ogre2DepthGaussianNoisePass::PreRender()
 {
   // This function is similar to Ogre2GaussianNoisePass but duplicated here
   // for Ogre2DepthCamera
+
   if (!this->gaussianNoiseMat)
     return;
 

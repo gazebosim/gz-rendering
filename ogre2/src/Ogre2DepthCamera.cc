@@ -1057,8 +1057,9 @@ void Ogre2DepthCamera::PreRender()
   if (!this->dataPtr->ogreCompositorWorkspace)
     this->CreateWorkspaceInstance();
 
-  // todo(iche03) Override BaseCamera::SetProjectionMatrix() function
-  // instead of checking and setting the custom projection matrix here
+  // todo(iche033) Override BaseCamera::SetProjectionMatrix() function in
+  // main / gz-rendering9 instead of checking and setting the custom
+  // projection matrix here
   if (this->ogreCamera &&
       this->projectionMatrix != gz::math::Matrix4d::Zero)
   {

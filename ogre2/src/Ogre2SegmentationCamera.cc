@@ -166,8 +166,9 @@ void Ogre2SegmentationCamera::PreRender()
   if (!this->dataPtr->ogreSegmentationTexture)
     this->CreateSegmentationTexture();
 
-  // todo(iche03) Override BaseCamera::SetProjectionMatrix() function
-  // instead of checking and setting the custom projection matrix here
+  // todo(iche033) Override BaseCamera::SetProjectionMatrix() function in
+  // main / gz-rendering9 instead of checking and setting the custom
+  // projection matrix here
   if (this->ogreCamera &&
       this->projectionMatrix != gz::math::Matrix4d::Zero)
   {

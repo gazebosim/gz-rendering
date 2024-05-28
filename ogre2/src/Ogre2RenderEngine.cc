@@ -22,6 +22,8 @@
 #endif
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
+#include <gz/common/StringUtils.hh>
+#include <gz/common/SystemPaths.hh>
 #include <gz/common/Util.hh>
 
 #include <gz/plugin/Register.hh>
@@ -118,14 +120,15 @@ Ogre2RenderEngine::Ogre2RenderEngine() :
   this->dummyWindowId = 0;
 
   std::string ogrePath = std::string(OGRE2_RESOURCE_PATH);
-  std::vector<std::string> paths = common::split(ogrePath, ":");
+  std::vector<std::string> paths = common::Split(ogrePath,
+      common::SystemPaths::Delimiter());
   for (const auto &path : paths)
     this->ogrePaths.push_back(path);
 
   const char *env = std::getenv("OGRE2_RESOURCE_PATH");
   if (env)
   {
-    paths = common::split(std::string(env), ":");
+    paths = common::Split(std::string(env), common::SystemPaths::Delimiter());
     for (const auto &path : paths)
       this->ogrePaths.push_back(path);
   }

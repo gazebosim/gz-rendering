@@ -25,6 +25,14 @@
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/base/BaseRenderTypes.hh"
 
+// overloaded-virtuals warnings appeared on Ubuntu Noble
+// GCC-13. it is not easy to fix them without breaking ABI
+// ignore them to preserve current ABI.
+#if defined(__GNUC__) || defined(__clang__)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Woverloaded-virtual"
+#endif
+
 namespace gz
 {
   namespace rendering
@@ -406,4 +414,9 @@ namespace gz
     }
   }
 }
+
+#if defined(__GNUC__) || defined(__clang__)
+# pragma GCC diagnostic pop
+#endif
+
 #endif

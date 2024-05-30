@@ -46,7 +46,7 @@ gz_build_tests(TYPE UNIT
                ENVIRONMENT GZ_RENDERING_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX})
 
 # Note that plugins are currently being installed in 2 places: /lib and the engine-plugins dir
-install(TARGETS ${ogre_target} DESTINATION ${GZ_RENDERING_ENGINE_INSTALL_DIR})
+install(TARGETS ${ogre_target} DESTINATION ${GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR})
 
 if(WIN32)
   # tests needs .dll in the same directory
@@ -66,7 +66,7 @@ if (WIN32)
   ${GZ_RENDERING_ENGINE_INSTALL_DIR}\/${unversioned})")
 else()
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink ${versioned} ${unversioned})
-  INSTALL(FILES ${PROJECT_BINARY_DIR}/${unversioned} DESTINATION ${GZ_RENDERING_ENGINE_INSTALL_DIR})
+  INSTALL(FILES ${PROJECT_BINARY_DIR}/${unversioned} DESTINATION ${GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR})
 endif()
 
 add_subdirectory(media)

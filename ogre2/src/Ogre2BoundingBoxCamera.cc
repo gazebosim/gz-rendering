@@ -31,6 +31,7 @@
 #include <gz/math/Color.hh>
 #include <gz/math/Vector4.hh>
 #include <gz/math/eigen3/Util.hh>
+#include <gz/math/Matrix4.hh>
 #include <gz/math/OrientedBox.hh>
 
 #include "gz/rendering/RenderTypes.hh"
@@ -463,6 +464,21 @@ void Ogre2BoundingBoxCamera::PreRender()
 {
   if (!this->dataPtr->ogreRenderTexture)
     this->CreateBoundingBoxTexture();
+
+  // todo(iche033) Override BaseCamera::SetProjectionMatrix() function in
+  // main / gz-rendering9 instead of checking and setting the custom
+  // projection matrix here
+  if (this->dataPtr->ogreCamera &&
+      this->projectionMatrix != gz::math::Matrix4d::Zero)
+  {
+    if (this->projectionMatrix !=
+        Ogre2Conversions::Convert(
+        this->dataPtr->ogreCamera->getProjectionMatrix()))
+    {
+      this->dataPtr->ogreCamera->setCustomProjectionMatrix(true,
+          Ogre2Conversions::Convert(this->projectionMatrix));
+    }
+  }
 
   this->dataPtr->outputBoxes.clear();
 }

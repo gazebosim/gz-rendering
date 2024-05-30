@@ -29,7 +29,7 @@
 using namespace gz;
 using namespace rendering;
 
-class MeshDescriptorTest : public CommonRenderingTest 
+class MeshDescriptorTest : public CommonRenderingTest
 {
 };
 

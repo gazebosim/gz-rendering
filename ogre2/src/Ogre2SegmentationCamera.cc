@@ -19,6 +19,7 @@
 
 #include <gz/common/Console.hh>
 #include <gz/math/Color.hh>
+#include <gz/math/Matrix4.hh>
 
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
@@ -164,6 +165,20 @@ void Ogre2SegmentationCamera::PreRender()
 {
   if (!this->dataPtr->ogreSegmentationTexture)
     this->CreateSegmentationTexture();
+
+  // todo(iche033) Override BaseCamera::SetProjectionMatrix() function in
+  // main / gz-rendering9 instead of checking and setting the custom
+  // projection matrix here
+  if (this->ogreCamera &&
+      this->projectionMatrix != gz::math::Matrix4d::Zero)
+  {
+    if (this->projectionMatrix !=
+        Ogre2Conversions::Convert(this->ogreCamera->getProjectionMatrix()))
+    {
+      this->ogreCamera->setCustomProjectionMatrix(true,
+          Ogre2Conversions::Convert(this->projectionMatrix));
+    }
+  }
 }
 
 /////////////////////////////////////////////////

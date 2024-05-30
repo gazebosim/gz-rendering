@@ -1069,6 +1069,19 @@ void Ogre2DepthCamera::PreRender()
   if (!this->dataPtr->ogreCompositorWorkspace)
     this->CreateWorkspaceInstance();
 
+  // todo(iche033) Override BaseCamera::SetProjectionMatrix() function in
+  // main / gz-rendering9 instead of checking and setting the custom
+  // projection matrix here
+  if (this->ogreCamera &&
+      this->projectionMatrix != gz::math::Matrix4d::Zero)
+  {
+    if (this->projectionMatrix !=
+        Ogre2Conversions::Convert(this->ogreCamera->getProjectionMatrix()))
+    {
+      this->ogreCamera->setCustomProjectionMatrix(true,
+          Ogre2Conversions::Convert(this->projectionMatrix));
+    }
+  }
 
   // Disable color target (set to clear pass) if there are no rgb point cloud
   // connections

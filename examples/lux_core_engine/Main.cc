@@ -123,19 +123,25 @@ void buildScene(ScenePtr _scene)
   box2->SetMaterial(boxMaterial2);
 
   // Duck Scene
-  MaterialPtr matte = _scene->CreateMaterial();
-  matte->SetDiffuse(1.0, 0.0, 0.0);
-
-  VisualPtr mesh = _scene->CreateVisual();
   MeshDescriptor descriptor;
   descriptor.meshName = "media/duck.dae";
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
-  MeshPtr meshGeom = _scene->CreateMesh(descriptor);
-  mesh->AddGeometry(meshGeom);
-  mesh->SetLocalRotation(GZ_PI / 2, 0, -GZ_PI / 4);
-  mesh->SetLocalPosition(-0.25, -1.25, 1.25);
-  mesh->SetMaterial(matte);
+  if (descriptor.mesh)
+  {
+    VisualPtr mesh = _scene->CreateVisual();
+    MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+    mesh->AddGeometry(meshGeom);
+    mesh->SetLocalRotation(GZ_PI / 2, 0, -GZ_PI / 4);
+    mesh->SetLocalPosition(-0.25, -1.25, 1.25);
+    MaterialPtr matte = _scene->CreateMaterial();
+    matte->SetDiffuse(1.0, 0.0, 0.0);
+    mesh->SetMaterial(matte);
+  }
+  else
+  {
+    gzerr << "Failed load mesh: " << descriptor.meshName << std::endl;
+  }
 }
 
 //////////////////////////////////////////////////

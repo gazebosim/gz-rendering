@@ -56,27 +56,41 @@ void buildScene(ScenePtr _scene)
   root->AddChild(light0);
 
 //! [create a mesh]
-  VisualPtr mesh = _scene->CreateVisual();
-  mesh->SetLocalPosition(3, 0, 0);
-  mesh->SetLocalRotation(1.5708, 0, 2.0);
   MeshDescriptor descriptor;
   descriptor.meshName = common::joinPaths(RESOURCE_PATH, "duck.dae");
   common::MeshManager *meshManager = common::MeshManager::Instance();
   descriptor.mesh = meshManager->Load(descriptor.meshName);
-  MeshPtr meshGeom = _scene->CreateMesh(descriptor);
-  mesh->AddGeometry(meshGeom);
-  root->AddChild(mesh);
+  if (descriptor.mesh)
+  {
+    VisualPtr mesh = _scene->CreateVisual();
+    mesh->SetLocalPosition(3, 0, 0);
+    mesh->SetLocalRotation(1.5708, 0, 2.0);
+    MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+    mesh->AddGeometry(meshGeom);
+    root->AddChild(mesh);
+  }
+  else
+  {
+    gzerr << "Failed load mesh: " << descriptor.meshName << std::endl;
+  }
 //! [create a mesh]
 
   // create a pbr glb mesh
-  mesh = _scene->CreateVisual();
-  mesh->SetLocalPosition(3, 2, 0);
-  mesh->SetLocalRotation(0, 0, 0);
   descriptor.meshName = common::joinPaths(RESOURCE_PATH, "AmbulanceStretcher.glb");
   descriptor.mesh = meshManager->Load(descriptor.meshName);
-  meshGeom = _scene->CreateMesh(descriptor);
-  mesh->AddGeometry(meshGeom);
-  root->AddChild(mesh);
+  if (descriptor.mesh)
+  {
+    VisualPtr mesh = _scene->CreateVisual();
+    mesh->SetLocalPosition(3, 2, 0);
+    mesh->SetLocalRotation(0, 0, 0);
+    MeshPtr meshGeom = _scene->CreateMesh(descriptor);
+    mesh->AddGeometry(meshGeom);
+    root->AddChild(mesh);
+  }
+  else
+  {
+    gzerr << "Failed load mesh: " << descriptor.meshName << std::endl;
+  }
 
   // create gray material
   MaterialPtr gray = _scene->CreateMaterial();

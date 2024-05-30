@@ -16,6 +16,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <string>
 
 #include "CommonRenderingTest.hh"
 
@@ -731,6 +732,126 @@ TEST_F(DepthCameraTest, DepthCameraParticles)
     delete [] scan;
     if (pointCloudData)
       delete [] pointCloudData;
+  }
+
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraProjection))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+
+  int imgWidth = 256;
+  int imgHeight = 256;
+  double aspectRatio = imgWidth / imgHeight;
+
+  double unitBoxSize = 1.0;
+  gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  // Create an scene with a box in it
+  gz::rendering::VisualPtr root = scene->RootVisual();
+
+  // create box visual
+  gz::rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  box->SetLocalPosition(boxPosition);
+  box->SetLocalScale(unitBoxSize, unitBoxSize, unitBoxSize);
+  root->AddChild(box);
+  {
+    // Create depth camera
+    auto depthCamera = scene->CreateDepthCamera("DepthCamera");
+    ASSERT_NE(depthCamera, nullptr);
+
+    gz::math::Pose3d testPose(gz::math::Vector3d(0, 0, 0),
+        gz::math::Quaterniond::Identity);
+    depthCamera->SetLocalPose(testPose);
+
+    // Set initial camera parameters using a wide horizontal FOV
+    double farDist = 100.0;
+    double nearDist = 0.01;
+    double hfov = 1.5;
+    depthCamera->SetImageWidth(imgWidth);
+    EXPECT_EQ(depthCamera->ImageWidth(),
+      static_cast<unsigned int>(imgWidth));
+    depthCamera->SetImageHeight(imgHeight);
+    EXPECT_EQ(depthCamera->ImageHeight(),
+      static_cast<unsigned int>(imgHeight));
+    depthCamera->SetFarClipPlane(farDist);
+    EXPECT_DOUBLE_EQ(depthCamera->FarClipPlane(), farDist);
+    depthCamera->SetNearClipPlane(nearDist);
+    EXPECT_DOUBLE_EQ(depthCamera->NearClipPlane(), nearDist);
+    depthCamera->SetAspectRatio(aspectRatio);
+    EXPECT_DOUBLE_EQ(depthCamera->AspectRatio(), aspectRatio);
+    depthCamera->SetHFOV(hfov);
+    EXPECT_DOUBLE_EQ(depthCamera->HFOV().Radian(), hfov);
+
+    depthCamera->CreateDepthTexture();
+    scene->RootVisual()->AddChild(depthCamera);
+
+    // Set a callback on the  camera sensor to get a depth camera frame
+    float *scan = new float[imgHeight * imgWidth];
+    gz::common::ConnectionPtr connection =
+      depthCamera->ConnectNewDepthFrame(
+          std::bind(&::OnNewDepthFrame, scan,
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+            std::placeholders::_4, std::placeholders::_5));
+
+    g_depthCounter = 0u;
+    depthCamera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+    EXPECT_EQ(1u, g_depthCounter);
+
+    float expectedRange = boxPosition.X() - unitBoxSize * 0.5;
+    unsigned int hasInfValues = 0u;
+    unsigned int hasBoxValues = 0u;
+    for (unsigned int i = 0; i < depthCamera->ImageHeight(); ++i)
+    {
+      for (unsigned int j = 0; j < depthCamera->ImageWidth(); ++j)
+      {
+        float x = scan[i * depthCamera->ImageWidth() + j];
+        if (gz::math::equal(expectedRange, x))
+          hasBoxValues++;
+        else if (std::isinf(x))
+          hasInfValues++;
+        else
+          FAIL() << "Unexpected range value: " << x;
+      }
+    }
+    EXPECT_LT(0u, hasBoxValues);
+    EXPECT_LT(0u, hasInfValues);
+
+    // Now override with a custom projection matrix
+    // This projection matrix corresponds to a small horizontal FOV
+    // (hfov = 0.5)
+    gz::math::Matrix4d projectionMatrix(
+        3.91632, 0, 0, 0,
+        0, 3.91632, 0, 0,
+        0, 0, -1.0002, -0.20002,
+        0, 0, -1, 0);
+    depthCamera->SetProjectionMatrix(projectionMatrix);
+    depthCamera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+    EXPECT_EQ(2u, g_depthCounter);
+
+    // The camera should use the updated projection matrix and
+    // the box should fill the whole image.
+    // Verify all range values at the expected box range
+    for (unsigned int i = 0; i < depthCamera->ImageHeight(); ++i)
+    {
+      for (unsigned int j = 0; j < depthCamera->ImageWidth(); ++j)
+      {
+        float x = scan[i * depthCamera->ImageWidth() + j];
+        EXPECT_FLOAT_EQ(expectedRange, x);
+       }
+    }
+
+    // Clean up
+    connection.reset();
+    delete [] scan;
   }
 
   engine->DestroyScene(scene);

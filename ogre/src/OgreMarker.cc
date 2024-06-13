@@ -107,6 +107,7 @@ Ogre::MovableObject *OgreMarker::OgreObject() const
       return nullptr;
     case MT_BOX:
     case MT_CAPSULE:
+    case MT_CONE:
     case MT_CYLINDER:
     case MT_SPHERE:
     {
@@ -184,6 +185,7 @@ void OgreMarker::SetMaterial(MaterialPtr _material, bool _unique)
       break;
     case MT_BOX:
     case MT_CAPSULE:
+    case MT_CONE:
     case MT_CYLINDER:
     case MT_SPHERE:
     {
@@ -256,6 +258,10 @@ void OgreMarker::SetType(MarkerType _markerType)
     case MT_CAPSULE:
       this->dataPtr->geom =
         std::dynamic_pointer_cast<OgreGeometry>(this->scene->CreateCapsule());
+      break;
+    case MT_CONE:
+      this->dataPtr->geom =
+        std::dynamic_pointer_cast<OgreGeometry>(this->scene->CreateCone());
       break;
     case MT_CYLINDER:
       this->dataPtr->geom =

@@ -117,7 +117,7 @@ void ShaderParam::InitializeBuffer(uint32_t _count)
 {
   this->dataPtr->count = _count;
   this->dataPtr->buffer.reset(new float[_count],
-      std::default_delete<float[]>());
+      [](void *ptr) { delete [] static_cast<float*>(ptr); });
 }
 
 //////////////////////////////////////////////////

@@ -155,6 +155,7 @@ Ogre::MovableObject *Ogre2Marker::OgreObject() const
       return nullptr;
     case MT_BOX:
     case MT_CAPSULE:
+    case MT_CONE:
     case MT_CYLINDER:
     case MT_SPHERE:
     {
@@ -236,6 +237,7 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
       break;
     case MT_BOX:
     case MT_CAPSULE:
+    case MT_CONE:
     case MT_CYLINDER:
     case MT_SPHERE:
     {
@@ -341,6 +343,10 @@ void Ogre2Marker::SetType(MarkerType _markerType)
     case MT_CAPSULE:
       isGeom = true;
       newGeom = this->scene->CreateCapsule();
+      break;
+    case MT_CONE:
+      isGeom = true;
+      newGeom = this->scene->CreateCone();
       break;
     case MT_CYLINDER:
       isGeom = true;

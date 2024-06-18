@@ -68,6 +68,9 @@ namespace gz
 
       /// \brief Capsule geometry
       MT_CAPSULE        = 11,
+
+      /// \brief Cone geometry
+      MT_CONE           = 12,
     };
 
     /// \class Marker Marker.hh gz/rendering/Marker

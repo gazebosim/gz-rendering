@@ -87,7 +87,7 @@ namespace gz
       ///   - EM_POINT: The area is ignored.
       ///   - EM_BOX: The area is interpreted as width X height X depth.
       ///   - EM_CYLINDER: The area is interpreted as the bounding box of the
-      ///                  cilinder. The cylinder is oriented along the Z-axis.
+      ///                  cylinder. The cylinder is oriented along the Z-axis.
       ///   - EM_ELLIPSOID: The area is interpreted as the bounding box of an
       ///                   ellipsoid shaped area, i.e. a sphere or
       ///                   squashed-sphere area. The parameters are again

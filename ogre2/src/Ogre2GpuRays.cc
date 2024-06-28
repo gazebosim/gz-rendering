@@ -133,8 +133,8 @@ class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2GpuRaysPrivate
   /// \brief Outgoing gpu rays data, used by newGpuRaysFrame event.
   public: float *gpuRaysScan = nullptr;
 
-  /// \brief Cubemap cameras
-  public: Ogre::Camera *cubeCam[6];
+  /// \brief Cubemap camera
+  public: Ogre::Camera *cubeCam{nullptr};
 
   /// \brief Texture packed with cubemap face and uv data
   public: Ogre::TextureGpu *cubeUVTexture = nullptr;
@@ -567,7 +567,6 @@ Ogre2GpuRays::Ogre2GpuRays()
 
   for (unsigned int i = 0; i < this->dataPtr->kCubeCameraCount; ++i)
   {
-    this->dataPtr->cubeCam[i] = nullptr;
     this->dataPtr->ogreCompositorWorkspace1st[i] = nullptr;
     this->dataPtr->laserRetroMaterialSwitcher[i] = nullptr;
     this->dataPtr->firstPassTextures[i] = nullptr;
@@ -680,13 +679,10 @@ void Ogre2GpuRays::Destroy()
       ogreSceneManager->destroyCamera(this->dataPtr->ogreCamera);
       this->dataPtr->ogreCamera = nullptr;
 
-      for (unsigned int i = 0; i < this->dataPtr->kCubeCameraCount; ++i)
+      if (this->dataPtr->cubeCam)
       {
-        if (this->dataPtr->cubeCam[i])
-        {
-          ogreSceneManager->destroyCamera(this->dataPtr->cubeCam[i]);
-          this->dataPtr->cubeCam[i] = nullptr;
-        }
+        ogreSceneManager->destroyCamera(this->dataPtr->cubeCam);
+        this->dataPtr->cubeCam = nullptr;
       }
     }
   }
@@ -1064,32 +1060,18 @@ void Ogre2GpuRays::Setup1stPass()
 
   // create cubemap cameras and render to texture using 1st pass compositor
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
+  this->dataPtr->cubeCam = ogreSceneManager->createCamera(
+      this->Name() + "_env");
+  this->dataPtr->cubeCam->detachFromParent();
+  this->ogreNode->attachObject(this->dataPtr->cubeCam);
+  this->dataPtr->cubeCam->setFOVy(Ogre::Degree(90));
+  this->dataPtr->cubeCam->setAspectRatio(1);
+  this->dataPtr->cubeCam->setNearClipDistance(this->dataPtr->nearClipCube);
+  this->dataPtr->cubeCam->setFarClipDistance(this->FarClipPlane());
+  this->dataPtr->cubeCam->setFixedYawAxis(false);
+
   for (auto i : this->dataPtr->cubeFaceIdx)
   {
-    this->dataPtr->cubeCam[i] = ogreSceneManager->createCamera(
-        this->Name() + "_env" + std::to_string(i));
-    this->dataPtr->cubeCam[i]->detachFromParent();
-    this->ogreNode->attachObject(this->dataPtr->cubeCam[i]);
-    this->dataPtr->cubeCam[i]->setFOVy(Ogre::Degree(90));
-    this->dataPtr->cubeCam[i]->setAspectRatio(1);
-    this->dataPtr->cubeCam[i]->setNearClipDistance(this->dataPtr->nearClipCube);
-    this->dataPtr->cubeCam[i]->setFarClipDistance(this->FarClipPlane());
-    this->dataPtr->cubeCam[i]->setFixedYawAxis(false);
-    this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(-90));
-    this->dataPtr->cubeCam[i]->roll(Ogre::Degree(-90));
-
-    // orient camera to create cubemap
-    if (i == 0)
-      this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(-90));
-    else if (i == 1)
-      this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(90));
-    else if (i == 2)
-      this->dataPtr->cubeCam[i]->pitch(Ogre::Degree(90));
-    else if (i == 3)
-      this->dataPtr->cubeCam[i]->pitch(Ogre::Degree(-90));
-    else if (i == 5)
-      this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(180));
-
     // create render texture - these textures pack the range data
     // that will be used in the 2nd pass
     texName = this->Name() + "_first_pass_" + std::to_string(i);
@@ -1118,7 +1100,7 @@ void Ogre2GpuRays::Setup1stPass()
         ogreCompMgr->addWorkspace(
           this->scene->OgreSceneManager(),
           compoChannels,
-          this->dataPtr->cubeCam[i],
+          this->dataPtr->cubeCam,
           wsDefName,
           false, -1, 0, 0, Ogre::Vector4::ZERO, 0x00,
           this->dataPtr->kGpuRaysExecutionMask);
@@ -1238,7 +1220,23 @@ void Ogre2GpuRays::UpdateRenderTarget1stPass()
   // update the compositors
   for (auto i : this->dataPtr->cubeFaceIdx)
   {
-    this->scene->UpdateAllHeightmaps(this->dataPtr->cubeCam[i]);
+    this->dataPtr->cubeCam->setOrientation(Ogre::Quaternion::IDENTITY);
+    this->dataPtr->cubeCam->yaw(Ogre::Degree(-90));
+    this->dataPtr->cubeCam->roll(Ogre::Degree(-90));
+    // orient camera to its corresponding cubemap face
+    if (i == 0)
+      this->dataPtr->cubeCam->yaw(Ogre::Degree(-90));
+    else if (i == 1)
+      this->dataPtr->cubeCam->yaw(Ogre::Degree(90));
+    else if (i == 2)
+      this->dataPtr->cubeCam->pitch(Ogre::Degree(90));
+    else if (i == 3)
+      this->dataPtr->cubeCam->pitch(Ogre::Degree(-90));
+    else if (i == 5)
+      this->dataPtr->cubeCam->yaw(Ogre::Degree(180));
+
+    this->scene->UpdateAllHeightmaps(this->dataPtr->cubeCam);
+
     this->dataPtr->ogreCompositorWorkspace1st[i]->setEnabled(true);
 
     this->dataPtr->ogreCompositorWorkspace1st[i]->_validateFinalTarget();

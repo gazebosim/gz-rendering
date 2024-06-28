@@ -765,10 +765,13 @@ void Ogre2GpuRays::ConfigureCamera()
   // Configure first pass texture size
   // Each cubemap texture covers 90 deg FOV so determine number of samples
   // within the view for both horizontal and vertical FOV
-  unsigned int hs = static_cast<unsigned int>(
-      GZ_PI * 0.5 / hfovAngle.Radian() * this->RangeCount());
-  unsigned int vs = static_cast<unsigned int>(
-      GZ_PI * 0.5 / vfovAngle * this->VerticalRangeCount());
+  unsigned int hs = (hfovAngle.Radian() < GZ_PI_2) ? this->RangeCount() :
+    static_cast<unsigned int>(
+    GZ_PI_2 / hfovAngle.Radian() * this->RangeCount());
+
+  unsigned int vs = (vfovAngle < GZ_PI_2) ? this->VerticalRangeCount() :
+    static_cast<unsigned int>(
+    GZ_PI_2 / vfovAngle * this->VerticalRangeCount());
 
   // get the max number from the two
   unsigned int v = std::max(hs, vs);
@@ -782,12 +785,12 @@ void Ogre2GpuRays::ConfigureCamera()
   v |= v >> 16;
   v++;
 
-  // limit min texture size to 128
   // This is needed for large fov with low sample count,
   // e.g. 360 degrees and only 4 samples. Otherwise the depth data returned are
   // inaccurate.
   // \todo(anyone) For small fov, we shouldn't need such a high min texture size
-  // requirement, e.g. a single ray lidar only needs 1x1 texture. Look for ways
+  // requirement, e.g. a single ray lidar only needs 1x1 texture. However,
+  // using lower res textures also give inaccurate results. Look for ways
   // to compute the optimal min texture size
   unsigned int min1stPassSamples = 128u;
 
@@ -986,6 +989,7 @@ void Ogre2GpuRays::Setup1stPass()
     Ogre::TextureFlags::RenderToTexture, Ogre::TextureTypes::Type2D);
   this->dataPtr->colorTexture->setResolution(this->dataPtr->w1st,
                                              this->dataPtr->h1st);
+  this->dataPtr->colorTexture->setNumMipmaps(1u);
   this->dataPtr->colorTexture->setPixelFormat(Ogre::PFG_R16_UNORM);
   this->dataPtr->colorTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
@@ -996,6 +1000,7 @@ void Ogre2GpuRays::Setup1stPass()
     Ogre::TextureFlags::RenderToTexture, Ogre::TextureTypes::Type2D);
   this->dataPtr->depthTexture->setResolution(this->dataPtr->w1st,
                                              this->dataPtr->h1st);
+  this->dataPtr->depthTexture->setNumMipmaps(1u);
   this->dataPtr->depthTexture->setPixelFormat(Ogre::PFG_D32_FLOAT);
   this->dataPtr->depthTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
@@ -1006,6 +1011,7 @@ void Ogre2GpuRays::Setup1stPass()
     Ogre::TextureFlags::RenderToTexture, Ogre::TextureTypes::Type2D);
   this->dataPtr->particleTexture->setResolution(this->dataPtr->w1st / 2u,
                                              this->dataPtr->h1st/ 2u);
+  this->dataPtr->particleTexture->setNumMipmaps(1u);
   this->dataPtr->particleTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM);
   this->dataPtr->particleTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
@@ -1016,6 +1022,7 @@ void Ogre2GpuRays::Setup1stPass()
     Ogre::TextureFlags::RenderToTexture, Ogre::TextureTypes::Type2D);
   this->dataPtr->particleDepthTexture->setResolution(this->dataPtr->w1st / 2u,
                                                      this->dataPtr->h1st / 2u);
+  this->dataPtr->particleDepthTexture->setNumMipmaps(1u);
   this->dataPtr->particleDepthTexture->setPixelFormat(Ogre::PFG_D32_FLOAT);
   this->dataPtr->particleDepthTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);

@@ -754,7 +754,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(SingleRay))
   int mid = 0;
   double unitBoxSize = 1.0;
   double expectedRangeAtMidPointBox = testPose.Pos().Z() -
-      (abs(box01Pose.Pos().Z()) + unitBoxSize/2);
+      (std::abs(box01Pose.Pos().Z()) + unitBoxSize / 2);
 
   // ray should detect box
   EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox, LASER_TOL);
@@ -764,7 +764,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(SingleRay))
   visualBox1->SetWorldPosition(newBox01Pose.Pos());
   gpuRays->Update();
   expectedRangeAtMidPointBox = testPose.Pos().Z() -
-      (abs(newBox01Pose.Pos().Z()) + unitBoxSize/2);
+      (std::abs(newBox01Pose.Pos().Z()) + unitBoxSize / 2);
   EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox, LASER_TOL);
 
   c.reset();

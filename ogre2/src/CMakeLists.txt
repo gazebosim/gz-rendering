@@ -65,7 +65,10 @@ if (TARGET OpenGL::EGL)
   add_definitions(-DHAVE_EGL=1)
 endif()
 
-target_compile_definitions(${ogre2_target} PRIVATE $<$<CONFIG:Debug>:DEBUG=1 _DEBUG=1>)
+# You might need to uncomment the following `target_compile_definitions`
+# if you've built Ogre from source in Debug mode
+# https://github.com/OGRECave/ogre-next/blob/003f51a0a90d1cf93fbea3c7302565b07c4f87b0/OgreMain/include/OgrePlatform.h#L350-L372
+# target_compile_definitions(${ogre2_target} PRIVATE $<$<CONFIG:Debug>:DEBUG=1 _DEBUG=1>)
 
 
 set (versioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})

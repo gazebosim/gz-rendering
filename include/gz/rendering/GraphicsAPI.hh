@@ -17,6 +17,7 @@
 #ifndef IGNITION_RENDERING_GRAPHICSAPI_HH_
 #define IGNITION_RENDERING_GRAPHICSAPI_HH_
 
+#include <cstdint>
 #include <string>
 #include "ignition/rendering/config.hh"
 #include "ignition/rendering/Export.hh"

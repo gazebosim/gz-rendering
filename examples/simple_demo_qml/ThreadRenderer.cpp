@@ -321,8 +321,9 @@ void TextureNode::NewTexture(int _id, const QSize &_size)
 void TextureNode::PrepareNode()
 {
     this->mutex.lock();
+    // new texture ID from render engine (Ogre)
     int newId = this->id;
-    QSize size = this->size;
+    QSize newSize = this->size;
     this->id = 0;
     this->mutex.unlock();
     if (newId)
@@ -331,12 +332,42 @@ void TextureNode::PrepareNode()
         this->texture = nullptr;
         // note: include QQuickWindow::TextureHasAlphaChannel if the rendered content
         // has alpha.
+
+        printf("%s", this->renderer->getGraphicsAPI());
+
+        // TODO: ifdef for opengl
+        // {
+            // intermediate FBO for copying texture data
+            GLuint rhiFbo = 0;
+            // texture ID for internal texture to hold texture data from render engine texture,
+            // in linear GL_RGB format
+            GLuint rhiId = 0;
+
+            QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+            // get currently bound FBO so it can be restored later
+            GLint currentFbo;
+            f->glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFbo);
+
+            // bind render engine texture to RHI FBO
+            f->glGenFramebuffers(1, &rhiFbo);
+            f->glBindFramebuffer(GL_FRAMEBUFFER, rhiFbo);
+            f->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                GL_TEXTURE_2D, newId, 0);
+
+            // copy render engine texture (newId) to internal texture (rhiId)
+            // internal texture will be passed to Qt later
+            f->glGenTextures(1, &rhiId);
+            f->glBindTexture(GL_TEXTURE_2D, rhiId);
+            f->glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0,
+                newSize.width(), newSize.height(), 0);
+        // }
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 # ifndef _WIN32
 #   pragma GCC diagnostic push
 #   pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 # endif
-        this->texture = this->window->createTextureFromId(newId, size);
+        this->texture = this->window->createTextureFromId(rhiId, newSize);
 # ifndef _WIN32
 #   pragma GCC diagnostic pop
 # endif
@@ -344,9 +375,15 @@ void TextureNode::PrepareNode()
         this->texture =
             this->window->createTextureFromNativeObject(
                 QQuickWindow::NativeObjectTexture,
-                static_cast<void *>(&newId),
+                static_cast<void *>(&rhiId),
                 0,
-                size);
+                newSize);
+
+        // unbind render engine texture from RHI FBO, rebind to previously bound FBO
+        f->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+              GL_TEXTURE_2D, 0, 0);
+        f->glBindTexture(GL_TEXTURE_2D, 0);
+        f->glBindFramebuffer(GL_FRAMEBUFFER, (GLuint) currentFbo);
 #endif
         this->setTexture(this->texture);
 

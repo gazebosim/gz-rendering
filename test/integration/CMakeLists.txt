@@ -10,6 +10,10 @@ set(tests
   thermal_camera.cc
 )
 
+if (APPLE)
+  list(REMOVE_ITEM tests camera.cc)
+endif()
+
 link_directories(${PROJECT_BINARY_DIR}/test)
 
 # Test symbols having the right name on linux only

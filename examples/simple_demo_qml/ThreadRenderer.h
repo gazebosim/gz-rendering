@@ -148,6 +148,9 @@ private:
 
     QSGTexture *texture = nullptr;
     QQuickWindow *window = nullptr;
+
+    // TODO: support other graphics APIs
+    gz::rendering::GraphicsAPI graphicsAPI = gz::rendering::GraphicsAPI::OPENGL;
 };
 
 //--------------------------------------------------------------------------

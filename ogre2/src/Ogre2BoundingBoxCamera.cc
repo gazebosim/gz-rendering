@@ -465,21 +465,6 @@ void Ogre2BoundingBoxCamera::PreRender()
   if (!this->dataPtr->ogreRenderTexture)
     this->CreateBoundingBoxTexture();
 
-  // todo(iche033) Override BaseCamera::SetProjectionMatrix() function in
-  // main / gz-rendering9 instead of checking and setting the custom
-  // projection matrix here
-  if (this->dataPtr->ogreCamera &&
-      this->projectionMatrix != gz::math::Matrix4d::Zero)
-  {
-    if (this->projectionMatrix !=
-        Ogre2Conversions::Convert(
-        this->dataPtr->ogreCamera->getProjectionMatrix()))
-    {
-      this->dataPtr->ogreCamera->setCustomProjectionMatrix(true,
-          Ogre2Conversions::Convert(this->projectionMatrix));
-    }
-  }
-
   this->dataPtr->outputBoxes.clear();
 }
 
@@ -1548,4 +1533,19 @@ void Ogre2BoundingBoxCamera::SetBoundingBoxType(BoundingBoxType _type)
 BoundingBoxType Ogre2BoundingBoxCamera::Type() const
 {
   return this->dataPtr->type;
+}
+
+/////////////////////////////////////////////////
+math::Matrix4d Ogre2BoundingBoxCamera::ProjectionMatrix() const
+{
+  return Ogre2Conversions::Convert(
+      this->dataPtr->ogreCamera->getProjectionMatrix());
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
+{
+  BaseBoundingBoxCamera::SetProjectionMatrix(_matrix);
+  this->dataPtr->ogreCamera->setCustomProjectionMatrix(
+      true, Ogre2Conversions::Convert(this->projectionMatrix));
 }

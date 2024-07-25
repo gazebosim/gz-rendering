@@ -183,10 +183,6 @@ namespace gz
       /// \return a list of FSAA levels
       public: std::vector<unsigned int> FSAALevels() const;
 
-      /// \brief Deprecated. Use SphericalClipMinDistance instead
-      public: Ogre2GzHlmsSphericalClipMinDistance GZ_DEPRECATED(7) &
-          HlmsCustomizations();
-
       /// \brief Retrieves Hlms customizations for tweaking them
       /// \return Ogre HLMS customizations
       public: Ogre2GzHlmsSphericalClipMinDistance &SphericalClipMinDistance();
@@ -201,13 +197,6 @@ namespace gz
       /// and see Ogre::GzHlmsPbs
       /// \param[in] renderingMode
       public: void SetGzOgreRenderingMode(GzOgreRenderingMode renderingMode);
-      // TODO(CH3): Deprecated. Remove on tock.
-      public:
-        inline void GZ_DEPRECATED(7) SetIgnOgreRenderingMode(
-          GzOgreRenderingMode renderingMode)
-        {
-          return SetGzOgreRenderingMode(renderingMode);
-        }
 
       /// \internal
       /// \brief Get a pointer to the Pbs listener that adds terra shadows.

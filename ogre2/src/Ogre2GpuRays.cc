@@ -127,9 +127,6 @@ class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2GpuRaysPrivate
                unsigned int, unsigned int, unsigned int,
                const std::string &)> newGpuRaysFrame;
 
-  /// \brief Raw buffer of gpu rays data.
-  public: float *gpuRaysBuffer = nullptr;
-
   /// \brief Outgoing gpu rays data, used by newGpuRaysFrame event.
   public: float *gpuRaysScan = nullptr;
 
@@ -596,12 +593,6 @@ void Ogre2GpuRays::Destroy()
 {
   if (!this->dataPtr->ogreCamera)
     return;
-
-  if (this->dataPtr->gpuRaysBuffer)
-  {
-    delete [] this->dataPtr->gpuRaysBuffer;
-    this->dataPtr->gpuRaysBuffer = nullptr;
-  }
 
   if (this->dataPtr->gpuRaysScan)
   {
@@ -1326,31 +1317,12 @@ void Ogre2GpuRays::PostRender()
   PixelFormat format = PF_FLOAT32_RGBA;
   unsigned int rawChannelCount = PixelUtil::ChannelCount(format);
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
-  int rawLen = width * height * rawChannelCount;
-
-  if (!this->dataPtr->gpuRaysBuffer)
-  {
-    this->dataPtr->gpuRaysBuffer = new float[rawLen];
-  }
 
   // blit data from gpu to cpu
   Ogre::Image2 image;
   image.convertFromTexture(this->dataPtr->secondPassTexture, 0u, 0u);
   Ogre::TextureBox box = image.getData(0u);
   float *bufferTmp = static_cast<float *>(box.data);
-
-  // TODO(anyone): It seems wasteful to have gpuRaysBuffer at all
-  // We should be able to convert directly from bufferTmp to gpuRaysScan
-
-  // copy data row by row. The texture box may not be a contiguous region of
-  // a texture
-  for (unsigned int i = 0; i < height; ++i)
-  {
-    unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
-    unsigned int rowIdx = i * width * rawChannelCount;
-    memcpy(&this->dataPtr->gpuRaysBuffer[rowIdx], &bufferTmp[rawDataRowIdx],
-        width * rawChannelCount * bytesPerChannel);
-  }
 
   // Metal does not support RGB32_FLOAT so the internal texture format is
   // RGBA32_FLOAT. For backward compatibility, output data is kept in RGB
@@ -1364,21 +1336,19 @@ void Ogre2GpuRays::PostRender()
   // copy data from RGBA buffer to RGB buffer
   for (unsigned int row = 0; row < height; ++row)
   {
+    unsigned int rawDataRowIdx = row * box.bytesPerRow / bytesPerChannel;
+    unsigned int rowIdx = row * width * this->Channels();
+
     // the texture box step size could be larger than our image buffer step
     // size
     for (unsigned int column = 0; column < width; ++column)
     {
-      unsigned int idx = (row * width * this->Channels()) +
-          column * this->Channels();
-      unsigned int rawIdx = (row * width * rawChannelCount) +
-          column * rawChannelCount;
+      unsigned int idx = rowIdx + column * this->Channels();
+      unsigned int rawIdx = rawDataRowIdx + column * rawChannelCount;
 
-      this->dataPtr->gpuRaysScan[idx] =
-          this->dataPtr->gpuRaysBuffer[rawIdx];
-      this->dataPtr->gpuRaysScan[idx + 1] =
-          this->dataPtr->gpuRaysBuffer[rawIdx + 1];
-      this->dataPtr->gpuRaysScan[idx + 2] =
-          this->dataPtr->gpuRaysBuffer[rawIdx + 2];
+      this->dataPtr->gpuRaysScan[idx] = bufferTmp[rawIdx];
+      this->dataPtr->gpuRaysScan[idx + 1] = bufferTmp[rawIdx + 1];
+      this->dataPtr->gpuRaysScan[idx + 2] = bufferTmp[rawIdx + 2];
     }
   }
 

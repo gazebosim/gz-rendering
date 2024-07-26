@@ -62,8 +62,8 @@ namespace gz
       /// \brief Handle on mouse click
       /// \param[in] _x X coordinate in pixels.
       /// \param[in] _y Y coordinate in pixels.
-      /// \return Returns the Ogre item at the coordinate.
-      public: Ogre::Item *OnSelectionClick(const int _x, const int _y);
+      /// \return Returns the Ogre movable object at the coordinate.
+      public: Ogre::MovableObject *OnSelectionClick(int _x, int _y);
 
       /// \brief Perform selection operation and get ogre item and
       /// point of intersection.
@@ -72,8 +72,18 @@ namespace gz
       /// \param[out] _item Ogre item at the coordinate.
       /// \param[out] _point 3D point of intersection with the ogre item's mesh.
       /// \return True if an ogre item is found, false otherwise
-      public: bool ExecuteQuery(const int _x, const int _y, Ogre::Item *&_item,
-          math::Vector3d &_point);
+      public: bool GZ_DEPRECATED(9) ExecuteQuery(const int _x, const int _y,
+          Ogre::Item *&_item, math::Vector3d &_point);
+
+      /// \brief Perform selection operation and get ogre item and
+      /// point of intersection.
+      /// \param[in] _x X coordinate in pixels.
+      /// \param[in] _y Y coordinate in pixels.
+      /// \param[out] _obj Ogre movable object at the coordinate.
+      /// \param[out] _point 3D point of intersection with the ogre object.
+      /// \return True if an ogre object is found, false otherwise
+      public: bool ExecuteQuery(int _x, int _y,
+          Ogre::MovableObject *&_obj, math::Vector3d &_point);
 
       /// \brief Set dimension of the selection buffer
       /// \param[in] _width X dimension in pixels.

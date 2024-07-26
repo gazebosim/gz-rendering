@@ -321,19 +321,19 @@ VisualPtr Ogre2Camera::VisualAt(const math::Vector2i &_mousePos)
   math::Vector2i mousePos(
       static_cast<int>(std::rint(ratio * _mousePos.X())),
       static_cast<int>(std::rint(ratio * _mousePos.Y())));
-  Ogre::Item *ogreItem = this->selectionBuffer->OnSelectionClick(
+  Ogre::MovableObject *ogreObj = this->selectionBuffer->OnSelectionClick(
       mousePos.X(), mousePos.Y());
 
-  if (ogreItem)
+  if (ogreObj)
   {
-    if (!ogreItem->getUserObjectBindings().getUserAny().isEmpty() &&
-        ogreItem->getUserObjectBindings().getUserAny().getType() ==
+    if (!ogreObj->getUserObjectBindings().getUserAny().isEmpty() &&
+        ogreObj->getUserObjectBindings().getUserAny().getType() ==
         typeid(unsigned int))
     {
       try
       {
         result = this->scene->VisualById(Ogre::any_cast<unsigned int>(
-              ogreItem->getUserObjectBindings().getUserAny()));
+              ogreObj->getUserObjectBindings().getUserAny()));
       }
       catch(Ogre::Exception &e)
       {

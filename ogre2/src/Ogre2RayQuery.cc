@@ -247,10 +247,10 @@ RayQueryResult Ogre2RayQuery::ClosestPointBySelectionBuffer()
     this->dataPtr->camera->ImageWidth(), this->dataPtr->camera->ImageHeight());
 
   RayQueryResult result;
-  Ogre::Item *ogreItem = nullptr;
+  Ogre::MovableObject *ogreObj = nullptr;
   math::Vector3d point;
   bool success = this->dataPtr->camera->SelectionBuffer()->ExecuteQuery(
-      this->dataPtr->imgPos.X(), this->dataPtr->imgPos.Y(), ogreItem, point);
+      this->dataPtr->imgPos.X(), this->dataPtr->imgPos.Y(), ogreObj, point);
   result.distance = -1;
 
   if (success)
@@ -258,20 +258,15 @@ RayQueryResult Ogre2RayQuery::ClosestPointBySelectionBuffer()
     double distance = this->dataPtr->camera->WorldPosition().Distance(point)
         - this->dataPtr->camera->NearClipPlane();
     unsigned int objectId = 0;
-    if (ogreItem)
+    if (ogreObj)
     {
-      if (!ogreItem->getUserObjectBindings().getUserAny().isEmpty() &&
-          ogreItem->getUserObjectBindings().getUserAny().getType() ==
+      if (!ogreObj->getUserObjectBindings().getUserAny().isEmpty() &&
+          ogreObj->getUserObjectBindings().getUserAny().getType() ==
           typeid(unsigned int))
       {
-        auto userAny = ogreItem->getUserObjectBindings().getUserAny();
+        auto userAny = ogreObj->getUserObjectBindings().getUserAny();
         objectId = Ogre::any_cast<unsigned int>(userAny);
       }
-    }
-    else
-    {
-      // \todo(anyone) Change ExecuteQuery to return Ogre::MovableObject
-      // in gz-rendering8 so heightmaps can be included in the result
     }
     if (!std::isinf(distance))
     {

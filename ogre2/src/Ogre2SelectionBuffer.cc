@@ -413,17 +413,31 @@ void Ogre2SelectionBuffer::SetDimensions(
   this->CreateRTTBuffer();
 }
 /////////////////////////////////////////////////
-Ogre::Item *Ogre2SelectionBuffer::OnSelectionClick(const int _x, const int _y)
+Ogre::MovableObject *Ogre2SelectionBuffer::OnSelectionClick(int _x, int _y)
 {
-  Ogre::Item *item = nullptr;
+  Ogre::MovableObject *obj = nullptr;
   math::Vector3d point;
-  this->ExecuteQuery(_x, _y, item, point);
-  return item;
+  this->ExecuteQuery(_x, _y, obj, point);
+  return obj;
 }
 
 /////////////////////////////////////////////////
 bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
     Ogre::Item *&_item, math::Vector3d &_point)
+{
+  Ogre::MovableObject *obj = nullptr;
+  bool out = this->ExecuteQuery(_x, _y, obj, _point);
+
+  Ogre::Item *item = dynamic_cast<Ogre::Item *>(obj);
+  if (item)
+    _item = item;
+
+  return out;
+}
+
+/////////////////////////////////////////////////
+bool Ogre2SelectionBuffer::ExecuteQuery(int _x, int _y,
+    Ogre::MovableObject *&_obj, math::Vector3d &_point)
 {
   if (!this->dataPtr->renderTexture)
     return false;
@@ -529,11 +543,8 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
         {
           if (entName == heightmap->Name())
           {
-            // \todo(anyone) change return type to MovableObject instead of item
-            // in gz-rendering8 so we can uncomment the line below to return a
-            //  heightmap object
-            // _item = std::dynamic_pointer_cast<Ogre2Heightmap>(
-            //     heightmap->OgreObject());
+            _obj = std::dynamic_pointer_cast<Ogre2Heightmap>(
+                heightmap)->OgreObject();
             _point = point;
             return true;
           }
@@ -543,7 +554,7 @@ bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
     }
     else
     {
-      _item = dynamic_cast<Ogre::Item *>(collection[0]);
+      _obj = dynamic_cast<Ogre::MovableObject *>(collection[0]);
       _point = point;
       return true;
     }

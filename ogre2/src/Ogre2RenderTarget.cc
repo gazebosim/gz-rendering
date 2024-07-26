@@ -945,16 +945,9 @@ void Ogre2RenderTarget::RebuildMaterial()
 //////////////////////////////////////////////////
 // Ogre2RenderTexture
 //////////////////////////////////////////////////
-#ifndef _WIN32
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
 Ogre2RenderTexture::Ogre2RenderTexture()
 {
 }
-#ifndef _WIN32
-#pragma GCC diagnostic pop
-#endif
 
 //////////////////////////////////////////////////
 Ogre2RenderTexture::~Ogre2RenderTexture()

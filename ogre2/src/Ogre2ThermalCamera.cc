@@ -341,7 +341,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
             //
             // material may be a nullptr if we called setMaterial directly
             // (i.e. it's not using Ogre2Material interface).
-            // In those cases we fallback to PBS in the current IORM mode.
+            // In those cases we fallback to PBS in the current GORM mode.
             auto material = Ogre::MaterialManager::getSingleton().getByName(
               subItem->getMaterial()->getName() + "_solid",
               Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
@@ -504,7 +504,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
             //
             // material may be a nullptr if we called setMaterial directly
             // (i.e. it's not using Ogre2Material interface).
-            // In those cases we fallback to PBS in the current IORM mode.
+            // In those cases we fallback to PBS in the current GORM mode.
             auto material = Ogre::MaterialManager::getSingleton().getByName(
               subItem->getMaterial()->getName() + "_solid",
               Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);

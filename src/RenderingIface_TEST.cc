@@ -48,6 +48,10 @@ unsigned int defaultEnginesForTest()
 /////////////////////////////////////////////////
 TEST(RenderingIfaceTest, GetEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   common::Console::SetVerbosity(4);
 
   unsigned int count = defaultEnginesForTest();

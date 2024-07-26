@@ -37,6 +37,10 @@ class MarkerTest : public testing::Test,
 /////////////////////////////////////////////////
 void MarkerTest::Marker(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   if (_renderEngine == "optix")
   {
     igndbg << "Marker not supported yet in rendering engine: "

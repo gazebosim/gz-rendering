@@ -44,7 +44,7 @@ class ArrowVisualTest : public testing::Test,
 void ArrowVisualTest::ArrowVisual(const std::string &_renderEngine)
 {
 #ifdef __APPLE__                                                                                                                                                                              
-  std::cerr << "Skipping test for apple, see issue #35." << std::endl;
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
   return;
 #endif
 

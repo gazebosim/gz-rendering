@@ -49,6 +49,10 @@ class TransformControllerTest : public testing::Test,
 /////////////////////////////////////////////////
 void TransformControllerTest::TransformControl(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {

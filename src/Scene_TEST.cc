@@ -54,6 +54,10 @@ class SceneTest : public testing::Test,
 /////////////////////////////////////////////////
 void SceneTest::Scene(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)

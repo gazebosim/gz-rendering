@@ -873,19 +873,6 @@ void Ogre2RenderEngine::RegisterHlms()
 {
   const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
 
-  // TODO(CH3): Deprecated. Remove on tock.
-  if (!env)
-  {
-    env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
-
-    if (env)
-    {
-      gzwarn << "Using deprecated environment variable "
-             << "[IGN_RENDERING_RESOURCE_PATH]. Please use "
-             << "[GZ_RENDERING_RESOURCE_PATH] instead." << std::endl;
-    }
-  }
-
   std::string resourcePath = (env) ? std::string(env) :
       gz::rendering::getResourcePath();
 
@@ -1076,19 +1063,6 @@ void Ogre2RenderEngine::RegisterHlms()
 void Ogre2RenderEngine::CreateResources()
 {
   const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
-
-  // TODO(CH3): Deprecated. Remove on tock.
-  if (!env)
-  {
-    env = std::getenv("IGN_RENDERING_RESOURCE_PATH");
-
-    if (env)
-    {
-      gzwarn << "Using deprecated environment variable "
-             << "[IGN_RENDERING_RESOURCE_PATH]. Please use "
-             << "[GZ_RENDERING_RESOURCE_PATH] instead." << std::endl;
-    }
-  }
 
   std::string resourcePath = (env) ? std::string(env) :
       gz::rendering::getResourcePath();
@@ -1429,12 +1403,6 @@ void Ogre2RenderEngine::InitAttempt()
 std::vector<unsigned int> Ogre2RenderEngine::FSAALevels() const
 {
   return this->dataPtr->fsaaLevels;
-}
-
-/////////////////////////////////////////////////
-Ogre2GzHlmsSphericalClipMinDistance& Ogre2RenderEngine::HlmsCustomizations()
-{
-  return this->dataPtr->sphericalClipMinDistance;
 }
 
 /////////////////////////////////////////////////

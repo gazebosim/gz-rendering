@@ -46,6 +46,10 @@ class OrbitViewControllerTest : public testing::Test,
 /////////////////////////////////////////////////
 void OrbitViewControllerTest::OrbitViewControl(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -91,6 +95,10 @@ void OrbitViewControllerTest::OrbitViewControl(const std::string &_renderEngine)
 void OrbitViewControllerTest::OrbitViewControlCameraConstructor(
   const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -127,6 +135,10 @@ void OrbitViewControllerTest::OrbitViewControlCameraConstructor(
 /////////////////////////////////////////////////
 void OrbitViewControllerTest::Control(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {

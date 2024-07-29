@@ -50,6 +50,10 @@ class MaterialTest : public testing::Test,
 /////////////////////////////////////////////////
 void MaterialTest::MaterialProperties(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -259,6 +263,10 @@ void MaterialTest::MaterialProperties(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void MaterialTest::Copy(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {

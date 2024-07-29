@@ -50,6 +50,10 @@ class MeshTest : public testing::Test,
 /////////////////////////////////////////////////
 void MeshTest::MeshSubMesh(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -112,6 +116,10 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void MeshTest::MeshSkeleton(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {

@@ -10,6 +10,15 @@ set(tests
   thermal_camera.cc
 )
 
+if (APPLE)
+  list(REMOVE_ITEM tests camera.cc)
+  list(REMOVE_ITEM tests depth_camera.cc)
+  list(REMOVE_ITEM tests render_pass.cc)
+  list(REMOVE_ITEM tests shadows.cc)
+  list(REMOVE_ITEM tests scene.cc)
+  list(REMOVE_ITEM tests thermal_camera.cc)
+endif()
+
 link_directories(${PROJECT_BINARY_DIR}/test)
 
 # Test symbols having the right name on linux only

@@ -5,6 +5,20 @@ Deprecated code produces compile-time warnings. These warning serve as
 notification to users that their code should be upgraded. The next major
 release will remove the deprecated code.
 
+## Gazebo Rendering 8.x to 9.x
+
+### Deprecations
+
+1. **Ogre2SelectionBuffer**
+    + Deprecated: `bool ExecuteQuery(const int _x, const int _y, Ogre::Item *&_item, math::Vector3d &_point)`
+    + Replacement: `bool ExecuteQuery(int _x, int _y, Ogre::MovableObject *&_obj, math::Vector3d &_point)`
+
+### Modifications
+
+1. **Ogre2SelectionBuffer**
+    + Removed: `Ogre::OgreItem *OnSelectionClick(const int _x, const int _y)`
+    + Replacement: `Ogre::MovableObject *OnSelectionClick(int _x, int _y)`
+
 ## Gazebo Rendering 7.x to 8.x
 
 ### Deprecations

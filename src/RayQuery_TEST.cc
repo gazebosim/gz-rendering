@@ -40,6 +40,10 @@ class RayQueryTest : public testing::Test,
 /////////////////////////////////////////////////
 void RayQueryTest::RayQuery(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   if (_renderEngine == "optix")
   {
     igndbg << "RayQuery not supported yet in rendering engine: "

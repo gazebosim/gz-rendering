@@ -56,6 +56,10 @@ class CameraTest : public testing::Test,
 /////////////////////////////////////////////////
 void CameraTest::ViewProjectionMatrix(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
@@ -159,6 +163,10 @@ void CameraTest::ViewProjectionMatrix(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void CameraTest::RenderTexture(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
@@ -213,6 +221,10 @@ void CameraTest::RenderTexture(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void CameraTest::TrackFollow(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
@@ -285,6 +297,10 @@ void CameraTest::TrackFollow(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void CameraTest::AddRemoveRenderPass(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)

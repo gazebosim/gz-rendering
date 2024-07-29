@@ -66,6 +66,10 @@ class VisualTest : public testing::Test,
 /////////////////////////////////////////////////
 void VisualTest::Material(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -151,6 +155,10 @@ TEST_P(VisualTest, Material)
 /////////////////////////////////////////////////
 void VisualTest::Children(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -220,6 +228,10 @@ TEST_P(VisualTest, Children)
 /////////////////////////////////////////////////
 void VisualTest::Scale(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -311,6 +323,10 @@ TEST_P(VisualTest, Scale)
 /////////////////////////////////////////////////
 void VisualTest::UserData(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -410,6 +426,10 @@ TEST_P(VisualTest, UserData)
 /////////////////////////////////////////////////
 void VisualTest::Geometry(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {

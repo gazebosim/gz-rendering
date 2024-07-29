@@ -25,6 +25,8 @@
 #include "gz/rendering/Projector.hh"
 #include "gz/rendering/Scene.hh"
 
+#include <gz/common/testing/TestPaths.hh>
+
 using namespace gz;
 using namespace rendering;
 
@@ -32,9 +34,8 @@ using namespace rendering;
 class ProjectorTest : public CommonRenderingTest
 {
   /// \brief A directory under test/ with some textures.
-  protected: const std::string TEST_MEDIA_PATH =
-      common::joinPaths(std::string(PROJECT_SOURCE_PATH),
-      "test", "media", "materials", "textures");
+  public: const std::string TEST_MEDIA_PATH =
+        gz::common::testing::TestFile("media", "materials", "textures");
 };
 
 /////////////////////////////////////////////////

@@ -22,14 +22,15 @@
 #include "gz/rendering/RenderTarget.hh"
 #include "gz/rendering/Scene.hh"
 
+#include <gz/common/testing/TestPaths.hh>
+
 using namespace gz;
 using namespace rendering;
 
 class SceneTest : public CommonRenderingTest
 {
   public: const std::string TEST_MEDIA_PATH =
-        common::joinPaths(std::string(PROJECT_SOURCE_PATH),
-        "test", "media", "skeleton");
+        gz::common::testing::TestFile("media", "skeleton");
 };
 
 /////////////////////////////////////////////////

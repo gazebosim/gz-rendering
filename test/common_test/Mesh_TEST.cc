@@ -24,6 +24,7 @@
 #include <gz/common/MeshManager.hh>
 #include <gz/common/Skeleton.hh>
 #include <gz/common/SkeletonAnimation.hh>
+#include <gz/common/testing/TestPaths.hh>
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/Mesh.hh"
@@ -35,8 +36,7 @@ using namespace rendering;
 class MeshTest : public CommonRenderingTest
 {
   public: const std::string TEST_MEDIA_PATH =
-        common::joinPaths(std::string(PROJECT_SOURCE_PATH),
-        "test", "media", "meshes");
+        gz::common::testing::TestFile("media", "meshes");
 };
 
 /////////////////////////////////////////////////

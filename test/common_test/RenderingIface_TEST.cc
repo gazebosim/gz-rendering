@@ -84,7 +84,8 @@ TEST(RenderingIfaceTest, GetEngine)
   EXPECT_FALSE(isEngineLoaded("no_such_engine"));
   EXPECT_EQ(nullptr, sceneFromFirstRenderEngine());
 
-  RenderEngine *eng = engine(envEngine, std::map<std::string, std::string>());
+  auto engineParams = GetEngineParams(envEngine, envBackend, envHeadless);
+  RenderEngine *eng = engine(envEngine, engineParams);
   ASSERT_NE(nullptr, eng);
   auto engineName = eng->Name();
   ASSERT_FALSE(engineName.empty());

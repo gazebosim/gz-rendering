@@ -1131,20 +1131,6 @@ void Ogre2ThermalCamera::PreRender()
 {
   if (!this->dataPtr->ogreThermalTexture)
     this->CreateThermalTexture();
-
-  // todo(iche033) Override BaseCamera::SetProjectionMatrix() function in
-  // main / gz-rendering9 instead of checking and setting the custom
-  // projection matrix here
-  if (this->ogreCamera &&
-      this->projectionMatrix != gz::math::Matrix4d::Zero)
-  {
-    if (this->projectionMatrix !=
-        Ogre2Conversions::Convert(this->ogreCamera->getProjectionMatrix()))
-    {
-      this->ogreCamera->setCustomProjectionMatrix(true,
-          Ogre2Conversions::Convert(this->projectionMatrix));
-    }
-  }
 }
 
 //////////////////////////////////////////////////
@@ -1235,4 +1221,18 @@ RenderTargetPtr Ogre2ThermalCamera::RenderTarget() const
 Ogre::Camera *Ogre2ThermalCamera::OgreCamera() const
 {
   return this->ogreCamera;
+}
+
+/////////////////////////////////////////////////
+math::Matrix4d Ogre2ThermalCamera::ProjectionMatrix() const
+{
+  return Ogre2Conversions::Convert(this->ogreCamera->getProjectionMatrix());
+}
+
+/////////////////////////////////////////////////
+void Ogre2ThermalCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
+{
+  BaseThermalCamera::SetProjectionMatrix(_matrix);
+  this->ogreCamera->setCustomProjectionMatrix(
+      true, Ogre2Conversions::Convert(this->projectionMatrix));
 }

@@ -68,6 +68,13 @@ namespace gz
       // Documentation inherited
       public: virtual void PostRender() override;
 
+      // Documentation inherited.
+      public: virtual math::Matrix4d ProjectionMatrix() const override;
+
+      // Documentation inherited.
+      public: virtual void SetProjectionMatrix(
+          const math::Matrix4d &_matrix) override;
+
       // Documentation inherited
       public: virtual gz::common::ConnectionPtr
         ConnectNewSegmentationFrame(

@@ -75,6 +75,13 @@ namespace gz
       /// \brief Render the camera
       public: virtual void PostRender() override;
 
+      // Documentation inherited.
+      public: virtual math::Matrix4d ProjectionMatrix() const override;
+
+      // Documentation inherited.
+      public: virtual void SetProjectionMatrix(
+          const math::Matrix4d &_matrix) override;
+
       /// \brief Connect to the new thermal image event
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope

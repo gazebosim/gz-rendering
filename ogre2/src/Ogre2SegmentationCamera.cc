@@ -165,20 +165,6 @@ void Ogre2SegmentationCamera::PreRender()
 {
   if (!this->dataPtr->ogreSegmentationTexture)
     this->CreateSegmentationTexture();
-
-  // todo(iche033) Override BaseCamera::SetProjectionMatrix() function in
-  // main / gz-rendering9 instead of checking and setting the custom
-  // projection matrix here
-  if (this->ogreCamera &&
-      this->projectionMatrix != gz::math::Matrix4d::Zero)
-  {
-    if (this->projectionMatrix !=
-        Ogre2Conversions::Convert(this->ogreCamera->getProjectionMatrix()))
-    {
-      this->ogreCamera->setCustomProjectionMatrix(true,
-          Ogre2Conversions::Convert(this->projectionMatrix));
-    }
-  }
 }
 
 /////////////////////////////////////////////////
@@ -438,4 +424,18 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
 Ogre::Camera *Ogre2SegmentationCamera::OgreCamera() const
 {
   return this->ogreCamera;
+}
+
+/////////////////////////////////////////////////
+math::Matrix4d Ogre2SegmentationCamera::ProjectionMatrix() const
+{
+  return Ogre2Conversions::Convert(this->ogreCamera->getProjectionMatrix());
+}
+
+/////////////////////////////////////////////////
+void Ogre2SegmentationCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
+{
+  BaseSegmentationCamera::SetProjectionMatrix(_matrix);
+  this->ogreCamera->setCustomProjectionMatrix(
+      true, Ogre2Conversions::Convert(this->projectionMatrix));
 }

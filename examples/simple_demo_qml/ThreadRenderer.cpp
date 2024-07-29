@@ -334,10 +334,6 @@ void TextureNode::PrepareNode()
         // note: include QQuickWindow::TextureHasAlphaChannel if the rendered content
         // has alpha.
 
-        QOpenGLFunctions *glFuncs = QOpenGLContext::currentContext()->functions();
-        glFuncs->glBindTexture(GL_TEXTURE_2D, newId);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SRGB_DECODE_EXT, GL_SKIP_DECODE_EXT);
-
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 # ifndef _WIN32
 #   pragma GCC diagnostic push

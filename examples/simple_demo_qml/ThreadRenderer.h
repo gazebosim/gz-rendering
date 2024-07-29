@@ -80,7 +80,6 @@
 #include <QQuickWindow>
 #include <QSGSimpleTextureNode>
 #include <QThread>
-#include <QOpenGLFunctions>
 
 //--------------------------------------------------------------------------
 /*

@@ -222,12 +222,19 @@ void GzRenderer::InitialiseOnMainThread()
 //////////////////////////////////////////////////
 void GzRenderer::Render()
 {
-  // pre-render may regenerate textureId if the size changes
-  this->camera->PreRender();
-  this->textureId = this->camera->RenderTextureGLId();
-
   // render to texture
   this->camera->Update();
+
+  GLuint texIdSrgb = this->camera->RenderTextureGLId();
+
+  if (this->textureId != texIdSrgb)
+  {
+    glBindTexture(GL_TEXTURE_2D, texIdSrgb);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_SRGB_DECODE_EXT,
+                    GL_SKIP_DECODE_EXT);
+  }
+
+  this->textureId = texIdSrgb;
 
   // Move camera
   this->UpdateCamera();
@@ -276,10 +283,6 @@ void GzRenderer::InitEngine()
   // quick check on sizing...
   gzmsg << "imageW: " << this->camera->ImageWidth() << "\n";
   gzmsg << "imageH: " << this->camera->ImageHeight() << "\n";
-
-  // pre-render will force texture creation and may update texture id
-  this->camera->PreRender();
-  this->textureId = this->camera->RenderTextureGLId();
 }
 
 //////////////////////////////////////////////////

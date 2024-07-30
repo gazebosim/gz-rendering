@@ -321,22 +321,25 @@ void TextureNode::NewTexture(int _id, const QSize &_size)
 void TextureNode::PrepareNode()
 {
     this->mutex.lock();
+    // new render engine texture ID
     int newId = this->id;
-    QSize size = this->size;
+    QSize newSize = this->size;
     this->id = 0;
     this->mutex.unlock();
+
     if (newId)
     {
         delete this->texture;
         this->texture = nullptr;
         // note: include QQuickWindow::TextureHasAlphaChannel if the rendered content
         // has alpha.
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 # ifndef _WIN32
 #   pragma GCC diagnostic push
 #   pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 # endif
-        this->texture = this->window->createTextureFromId(newId, size);
+        this->texture = this->window->createTextureFromId(newId, newSize);
 # ifndef _WIN32
 #   pragma GCC diagnostic pop
 # endif
@@ -346,7 +349,7 @@ void TextureNode::PrepareNode()
                 QQuickWindow::NativeObjectTexture,
                 static_cast<void *>(&newId),
                 0,
-                size);
+                newSize);
 #endif
         this->setTexture(this->texture);
 

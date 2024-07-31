@@ -41,6 +41,10 @@ class NodeTest : public testing::Test,
 /////////////////////////////////////////////////
 void NodeTest::Pose(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {

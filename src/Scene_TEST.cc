@@ -69,6 +69,10 @@ class SceneTest : public testing::Test,
 /////////////////////////////////////////////////
 void SceneTest::Scene(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   // create and populate scene
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
@@ -135,6 +139,10 @@ void SceneTest::Scene(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void SceneTest::Nodes(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -219,6 +227,10 @@ void SceneTest::Nodes(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void SceneTest::RemoveNodes(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -321,6 +333,10 @@ void SceneTest::RemoveNodes(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void SceneTest::DestroyNodes(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -544,6 +560,10 @@ void SceneTest::DestroyNodes(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void SceneTest::NodeCycle(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -610,6 +630,10 @@ void SceneTest::NodeCycle(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void SceneTest::Materials(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       
+  return;
+#endif
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {

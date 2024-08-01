@@ -196,8 +196,8 @@ void OgreDistortionPass::CreateRenderPass()
       distortedLocation,
       newDistortedCoordinates,
       currDistortedCoordinates;
-  unsigned int distortedIdx,
-      distortedCol,
+  unsigned int distortedIdx;
+  int distortedCol,
       distortedRow;
   double normalizedColLocation, normalizedRowLocation;
 
@@ -223,9 +223,9 @@ void OgreDistortionPass::CreateRenderPass()
           focalLength);
 
       // compute the index in the distortion map
-      distortedCol = static_cast<unsigned int>(round(distortedLocation.X() *
+      distortedCol = static_cast<int>(round(distortedLocation.X() *
         this->dataPtr->distortionTexWidth));
-      distortedRow = static_cast<unsigned int>(round(distortedLocation.Y() *
+      distortedRow = static_cast<int>(round(distortedLocation.Y() *
         this->dataPtr->distortionTexHeight));
 
       // Note that the following makes sure that, for significant distortions,
@@ -235,8 +235,11 @@ void OgreDistortionPass::CreateRenderPass()
       // nonlegacy distortion modes.
 
       // Make sure the distorted pixel is within the texture dimensions
-      if (distortedCol < this->dataPtr->distortionTexWidth &&
-          distortedRow < this->dataPtr->distortionTexHeight)
+      if (distortedCol >= 0 && distortedRow >= 0 &&
+          static_cast<unsigned int>(distortedCol) <
+            this->dataPtr->distortionTexWidth &&
+          static_cast<unsigned int>(distortedRow) <
+            this->dataPtr->distortionTexHeight)
       {
         distortedIdx = distortedRow * this->dataPtr->distortionTexWidth +
           distortedCol;

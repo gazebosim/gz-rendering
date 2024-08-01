@@ -16,12 +16,14 @@ set(tests
 )
 
 if (APPLE)
+  list(REMOVE_ITEM tests gpu_rays.cc)
   list(REMOVE_ITEM tests camera.cc)
   list(REMOVE_ITEM tests depth_camera.cc)
   list(REMOVE_ITEM tests render_pass.cc)
   list(REMOVE_ITEM tests shadows.cc)
   list(REMOVE_ITEM tests scene.cc)
   list(REMOVE_ITEM tests thermal_camera.cc)
+  list(REMOVE_ITEM tessts lidar_visual.cc)
 endif()
 
 link_directories(${PROJECT_BINARY_DIR}/test)

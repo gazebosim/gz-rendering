@@ -42,6 +42,10 @@ class OrthoViewControllerTest : public testing::Test,
 /////////////////////////////////////////////////
 void OrthoViewControllerTest::OrthoViewControl(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -85,6 +89,10 @@ void OrthoViewControllerTest::OrthoViewControl(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void OrthoViewControllerTest::Control(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {

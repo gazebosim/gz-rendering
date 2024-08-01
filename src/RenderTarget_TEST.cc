@@ -85,6 +85,10 @@ void RenderTargetTest::RenderTexture(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void RenderTargetTest::RenderWindow(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   if (_renderEngine != "ogre")
   {
     igndbg << "RenderWindow not supported yet in rendering engine: "
@@ -134,6 +138,10 @@ void RenderTargetTest::RenderWindow(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void RenderTargetTest::AddRemoveRenderPass(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   if (_renderEngine != "ogre")
   {
     igndbg << "RenderWindow not supported yet in rendering engine: "

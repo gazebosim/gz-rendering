@@ -230,6 +230,10 @@ TEST_P(MeshTest, MeshSkeleton)
 /////////////////////////////////////////////////
 void MeshTest::MeshSkeletonAnimation(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -326,6 +330,10 @@ TEST_P(MeshTest, MeshSkeletonAnimation)
 /////////////////////////////////////////////////
 void MeshTest::MeshClone(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {

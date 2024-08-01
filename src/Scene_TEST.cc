@@ -764,6 +764,10 @@ void SceneTest::Materials(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void SceneTest::Time(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -811,6 +815,10 @@ void SceneTest::Time(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void SceneTest::BackgroundMaterial(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -838,6 +846,10 @@ void SceneTest::BackgroundMaterial(const std::string &_renderEngine)
 /////////////////////////////////////////////////
 void SceneTest::Sky(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {

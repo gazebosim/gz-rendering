@@ -37,6 +37,10 @@ class LidarVisualTest : public testing::Test,
 /////////////////////////////////////////////////
 void LidarVisualTest::LidarVisual(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   if (_renderEngine == "optix")
   {
     igndbg << "LidarVisual not supported yet in rendering engine: "

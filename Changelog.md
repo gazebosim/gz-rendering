@@ -6,6 +6,29 @@
 
 ### Gazebo Rendering 8.X
 
+### Gazebo Rendering 8.2.0
+
+1. Backport: Adding cone primitives.
+    * [Pull request #1003](https://github.com/gazebosim/gz-rendering/pull/1003)
+
+1. Fixes deleter passed to the std::shared_ptr<void>
+    * [Pull request #1009](https://github.com/gazebosim/gz-rendering/pull/1009)
+
+1. ogre2: Set custom projection matrix for other types of cameras
+    * [Pull request #1002](https://github.com/gazebosim/gz-rendering/pull/1002)
+
+1. Fix gz-cmake declaration on package.xml (Fix windows builds)
+    * [Pull request #1005](https://github.com/gazebosim/gz-rendering/pull/1005)
+
+1. Add package.xml
+    * [Pull request #981](https://github.com/gazebosim/gz-rendering/pull/981)
+
+1. Workaround on warnings for Ubuntu Noble
+    * [Pull request #995](https://github.com/gazebosim/gz-rendering/pull/995)
+
+1. Ogre2RenderEngine: on Windows if useCurrentGLContext is specified, set the externalWindowsHandle ogre-next option
+    * [Pull request #992](https://github.com/gazebosim/gz-rendering/pull/992)
+
 ### Gazebo Rendering 8.1.1 (2024-04-10)
 
 1. Use relative install paths for plugin shared libraries and media files

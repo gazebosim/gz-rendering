@@ -127,14 +127,11 @@ class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2GpuRaysPrivate
                unsigned int, unsigned int, unsigned int,
                const std::string &)> newGpuRaysFrame;
 
-  /// \brief Raw buffer of gpu rays data.
-  public: float *gpuRaysBuffer = nullptr;
-
   /// \brief Outgoing gpu rays data, used by newGpuRaysFrame event.
   public: float *gpuRaysScan = nullptr;
 
-  /// \brief Cubemap cameras
-  public: Ogre::Camera *cubeCam[6];
+  /// \brief Cubemap camera
+  public: Ogre::Camera *cubeCam{nullptr};
 
   /// \brief Texture packed with cubemap face and uv data
   public: Ogre::TextureGpu *cubeUVTexture = nullptr;
@@ -567,7 +564,6 @@ Ogre2GpuRays::Ogre2GpuRays()
 
   for (unsigned int i = 0; i < this->dataPtr->kCubeCameraCount; ++i)
   {
-    this->dataPtr->cubeCam[i] = nullptr;
     this->dataPtr->ogreCompositorWorkspace1st[i] = nullptr;
     this->dataPtr->laserRetroMaterialSwitcher[i] = nullptr;
     this->dataPtr->firstPassTextures[i] = nullptr;
@@ -597,12 +593,6 @@ void Ogre2GpuRays::Destroy()
 {
   if (!this->dataPtr->ogreCamera)
     return;
-
-  if (this->dataPtr->gpuRaysBuffer)
-  {
-    delete [] this->dataPtr->gpuRaysBuffer;
-    this->dataPtr->gpuRaysBuffer = nullptr;
-  }
 
   if (this->dataPtr->gpuRaysScan)
   {
@@ -680,13 +670,10 @@ void Ogre2GpuRays::Destroy()
       ogreSceneManager->destroyCamera(this->dataPtr->ogreCamera);
       this->dataPtr->ogreCamera = nullptr;
 
-      for (unsigned int i = 0; i < this->dataPtr->kCubeCameraCount; ++i)
+      if (this->dataPtr->cubeCam)
       {
-        if (this->dataPtr->cubeCam[i])
-        {
-          ogreSceneManager->destroyCamera(this->dataPtr->cubeCam[i]);
-          this->dataPtr->cubeCam[i] = nullptr;
-        }
+        ogreSceneManager->destroyCamera(this->dataPtr->cubeCam);
+        this->dataPtr->cubeCam = nullptr;
       }
     }
   }
@@ -765,10 +752,13 @@ void Ogre2GpuRays::ConfigureCamera()
   // Configure first pass texture size
   // Each cubemap texture covers 90 deg FOV so determine number of samples
   // within the view for both horizontal and vertical FOV
-  unsigned int hs = static_cast<unsigned int>(
-      GZ_PI * 0.5 / hfovAngle.Radian() * this->RangeCount());
-  unsigned int vs = static_cast<unsigned int>(
-      GZ_PI * 0.5 / vfovAngle * this->VerticalRangeCount());
+  unsigned int hs = (hfovAngle.Radian() < GZ_PI_2) ? this->RangeCount() :
+    static_cast<unsigned int>(
+    GZ_PI_2 / hfovAngle.Radian() * this->RangeCount());
+
+  unsigned int vs = (vfovAngle < GZ_PI_2) ? this->VerticalRangeCount() :
+    static_cast<unsigned int>(
+    GZ_PI_2 / vfovAngle * this->VerticalRangeCount());
 
   // get the max number from the two
   unsigned int v = std::max(hs, vs);
@@ -782,12 +772,12 @@ void Ogre2GpuRays::ConfigureCamera()
   v |= v >> 16;
   v++;
 
-  // limit min texture size to 128
   // This is needed for large fov with low sample count,
   // e.g. 360 degrees and only 4 samples. Otherwise the depth data returned are
   // inaccurate.
   // \todo(anyone) For small fov, we shouldn't need such a high min texture size
-  // requirement, e.g. a single ray lidar only needs 1x1 texture. Look for ways
+  // requirement, e.g. a single ray lidar only needs 1x1 texture. However,
+  // using lower res textures also give inaccurate results. Look for ways
   // to compute the optimal min texture size
   unsigned int min1stPassSamples = 128u;
 
@@ -986,6 +976,7 @@ void Ogre2GpuRays::Setup1stPass()
     Ogre::TextureFlags::RenderToTexture, Ogre::TextureTypes::Type2D);
   this->dataPtr->colorTexture->setResolution(this->dataPtr->w1st,
                                              this->dataPtr->h1st);
+  this->dataPtr->colorTexture->setNumMipmaps(1u);
   this->dataPtr->colorTexture->setPixelFormat(Ogre::PFG_R16_UNORM);
   this->dataPtr->colorTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
@@ -996,6 +987,7 @@ void Ogre2GpuRays::Setup1stPass()
     Ogre::TextureFlags::RenderToTexture, Ogre::TextureTypes::Type2D);
   this->dataPtr->depthTexture->setResolution(this->dataPtr->w1st,
                                              this->dataPtr->h1st);
+  this->dataPtr->depthTexture->setNumMipmaps(1u);
   this->dataPtr->depthTexture->setPixelFormat(Ogre::PFG_D32_FLOAT);
   this->dataPtr->depthTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
@@ -1006,6 +998,7 @@ void Ogre2GpuRays::Setup1stPass()
     Ogre::TextureFlags::RenderToTexture, Ogre::TextureTypes::Type2D);
   this->dataPtr->particleTexture->setResolution(this->dataPtr->w1st / 2u,
                                              this->dataPtr->h1st/ 2u);
+  this->dataPtr->particleTexture->setNumMipmaps(1u);
   this->dataPtr->particleTexture->setPixelFormat(Ogre::PFG_RGBA8_UNORM);
   this->dataPtr->particleTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
@@ -1016,6 +1009,7 @@ void Ogre2GpuRays::Setup1stPass()
     Ogre::TextureFlags::RenderToTexture, Ogre::TextureTypes::Type2D);
   this->dataPtr->particleDepthTexture->setResolution(this->dataPtr->w1st / 2u,
                                                      this->dataPtr->h1st / 2u);
+  this->dataPtr->particleDepthTexture->setNumMipmaps(1u);
   this->dataPtr->particleDepthTexture->setPixelFormat(Ogre::PFG_D32_FLOAT);
   this->dataPtr->particleDepthTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
@@ -1057,32 +1051,18 @@ void Ogre2GpuRays::Setup1stPass()
 
   // create cubemap cameras and render to texture using 1st pass compositor
   Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
+  this->dataPtr->cubeCam = ogreSceneManager->createCamera(
+      this->Name() + "_env");
+  this->dataPtr->cubeCam->detachFromParent();
+  this->ogreNode->attachObject(this->dataPtr->cubeCam);
+  this->dataPtr->cubeCam->setFOVy(Ogre::Degree(90));
+  this->dataPtr->cubeCam->setAspectRatio(1);
+  this->dataPtr->cubeCam->setNearClipDistance(this->dataPtr->nearClipCube);
+  this->dataPtr->cubeCam->setFarClipDistance(this->FarClipPlane());
+  this->dataPtr->cubeCam->setFixedYawAxis(false);
+
   for (auto i : this->dataPtr->cubeFaceIdx)
   {
-    this->dataPtr->cubeCam[i] = ogreSceneManager->createCamera(
-        this->Name() + "_env" + std::to_string(i));
-    this->dataPtr->cubeCam[i]->detachFromParent();
-    this->ogreNode->attachObject(this->dataPtr->cubeCam[i]);
-    this->dataPtr->cubeCam[i]->setFOVy(Ogre::Degree(90));
-    this->dataPtr->cubeCam[i]->setAspectRatio(1);
-    this->dataPtr->cubeCam[i]->setNearClipDistance(this->dataPtr->nearClipCube);
-    this->dataPtr->cubeCam[i]->setFarClipDistance(this->FarClipPlane());
-    this->dataPtr->cubeCam[i]->setFixedYawAxis(false);
-    this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(-90));
-    this->dataPtr->cubeCam[i]->roll(Ogre::Degree(-90));
-
-    // orient camera to create cubemap
-    if (i == 0)
-      this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(-90));
-    else if (i == 1)
-      this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(90));
-    else if (i == 2)
-      this->dataPtr->cubeCam[i]->pitch(Ogre::Degree(90));
-    else if (i == 3)
-      this->dataPtr->cubeCam[i]->pitch(Ogre::Degree(-90));
-    else if (i == 5)
-      this->dataPtr->cubeCam[i]->yaw(Ogre::Degree(180));
-
     // create render texture - these textures pack the range data
     // that will be used in the 2nd pass
     texName = this->Name() + "_first_pass_" + std::to_string(i);
@@ -1111,7 +1091,7 @@ void Ogre2GpuRays::Setup1stPass()
         ogreCompMgr->addWorkspace(
           this->scene->OgreSceneManager(),
           compoChannels,
-          this->dataPtr->cubeCam[i],
+          this->dataPtr->cubeCam,
           wsDefName,
           false, -1, 0, 0, Ogre::Vector4::ZERO, 0x00,
           this->dataPtr->kGpuRaysExecutionMask);
@@ -1231,7 +1211,23 @@ void Ogre2GpuRays::UpdateRenderTarget1stPass()
   // update the compositors
   for (auto i : this->dataPtr->cubeFaceIdx)
   {
-    this->scene->UpdateAllHeightmaps(this->dataPtr->cubeCam[i]);
+    this->dataPtr->cubeCam->setOrientation(Ogre::Quaternion::IDENTITY);
+    this->dataPtr->cubeCam->yaw(Ogre::Degree(-90));
+    this->dataPtr->cubeCam->roll(Ogre::Degree(-90));
+    // orient camera to its corresponding cubemap face
+    if (i == 0)
+      this->dataPtr->cubeCam->yaw(Ogre::Degree(-90));
+    else if (i == 1)
+      this->dataPtr->cubeCam->yaw(Ogre::Degree(90));
+    else if (i == 2)
+      this->dataPtr->cubeCam->pitch(Ogre::Degree(90));
+    else if (i == 3)
+      this->dataPtr->cubeCam->pitch(Ogre::Degree(-90));
+    else if (i == 5)
+      this->dataPtr->cubeCam->yaw(Ogre::Degree(180));
+
+    this->scene->UpdateAllHeightmaps(this->dataPtr->cubeCam);
+
     this->dataPtr->ogreCompositorWorkspace1st[i]->setEnabled(true);
 
     this->dataPtr->ogreCompositorWorkspace1st[i]->_validateFinalTarget();
@@ -1321,31 +1317,12 @@ void Ogre2GpuRays::PostRender()
   PixelFormat format = PF_FLOAT32_RGBA;
   unsigned int rawChannelCount = PixelUtil::ChannelCount(format);
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
-  int rawLen = width * height * rawChannelCount;
-
-  if (!this->dataPtr->gpuRaysBuffer)
-  {
-    this->dataPtr->gpuRaysBuffer = new float[rawLen];
-  }
 
   // blit data from gpu to cpu
   Ogre::Image2 image;
   image.convertFromTexture(this->dataPtr->secondPassTexture, 0u, 0u);
   Ogre::TextureBox box = image.getData(0u);
   float *bufferTmp = static_cast<float *>(box.data);
-
-  // TODO(anyone): It seems wasteful to have gpuRaysBuffer at all
-  // We should be able to convert directly from bufferTmp to gpuRaysScan
-
-  // copy data row by row. The texture box may not be a contiguous region of
-  // a texture
-  for (unsigned int i = 0; i < height; ++i)
-  {
-    unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
-    unsigned int rowIdx = i * width * rawChannelCount;
-    memcpy(&this->dataPtr->gpuRaysBuffer[rowIdx], &bufferTmp[rawDataRowIdx],
-        width * rawChannelCount * bytesPerChannel);
-  }
 
   // Metal does not support RGB32_FLOAT so the internal texture format is
   // RGBA32_FLOAT. For backward compatibility, output data is kept in RGB
@@ -1359,21 +1336,19 @@ void Ogre2GpuRays::PostRender()
   // copy data from RGBA buffer to RGB buffer
   for (unsigned int row = 0; row < height; ++row)
   {
+    unsigned int rawDataRowIdx = row * box.bytesPerRow / bytesPerChannel;
+    unsigned int rowIdx = row * width * this->Channels();
+
     // the texture box step size could be larger than our image buffer step
     // size
     for (unsigned int column = 0; column < width; ++column)
     {
-      unsigned int idx = (row * width * this->Channels()) +
-          column * this->Channels();
-      unsigned int rawIdx = (row * width * rawChannelCount) +
-          column * rawChannelCount;
+      unsigned int idx = rowIdx + column * this->Channels();
+      unsigned int rawIdx = rawDataRowIdx + column * rawChannelCount;
 
-      this->dataPtr->gpuRaysScan[idx] =
-          this->dataPtr->gpuRaysBuffer[rawIdx];
-      this->dataPtr->gpuRaysScan[idx + 1] =
-          this->dataPtr->gpuRaysBuffer[rawIdx + 1];
-      this->dataPtr->gpuRaysScan[idx + 2] =
-          this->dataPtr->gpuRaysBuffer[rawIdx + 2];
+      this->dataPtr->gpuRaysScan[idx] = bufferTmp[rawIdx];
+      this->dataPtr->gpuRaysScan[idx + 1] = bufferTmp[rawIdx + 1];
+      this->dataPtr->gpuRaysScan[idx + 2] = bufferTmp[rawIdx + 2];
     }
   }
 

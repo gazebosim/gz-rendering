@@ -1344,7 +1344,12 @@ void Ogre2WideAngleCamera::PrepareForFinalPass(Ogre::Pass *_pass)
   const double ratio = static_cast<double>(this->ImageWidth()) /
                        static_cast<double>(this->ImageHeight());
   const double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / ratio);
-  this->dataPtr->ogreCamera->setFOVy(Ogre::Radian(Ogre::Real(vfov)));
+
+  // Setting the fov is likely not necessary in the final pass but
+  // clamp to max fov supported by ogre to avoid issues with building the
+  // frustum
+  this->dataPtr->ogreCamera->setFOVy(Ogre::Radian(
+      Ogre::Real(std::clamp(vfov, 0.0, GZ_PI))));
 
   const float localHfov = static_cast<float>(this->HFOV().Radian());
 

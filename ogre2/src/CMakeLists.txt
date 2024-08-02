@@ -17,7 +17,13 @@ set(engine_name "ogre2")
 gz_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre2_target)
 
 set(OGRE2_RESOURCE_PATH_STR "${OGRE2_RESOURCE_PATH}")
-string(REPLACE ";" ":" OGRE2_RESOURCE_PATH_STR "${OGRE2_RESOURCE_PATH}")
+# On non-Windows, we need to convert the CMake list delimited (;) to the 
+# list delimiter used in list of paths in code (:)
+# On Windows, the list delimiter in code is already ;, not need to change it to :
+if(NOT WIN32)
+  string(REPLACE ";" ":" OGRE2_RESOURCE_PATH_STR "${OGRE2_RESOURCE_PATH}")
+endif()
+
 set_property(
   SOURCE Ogre2RenderEngine.cc
   PROPERTY COMPILE_DEFINITIONS

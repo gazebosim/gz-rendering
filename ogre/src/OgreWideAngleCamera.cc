@@ -452,7 +452,11 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
 
   double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / ratio);
   this->dataPtr->ogreCamera->setAspectRatio(ratio);
-  this->dataPtr->ogreCamera->setFOVy(Ogre::Radian(vfov));
+  // Setting the fov is likely not necessary for the ogreCamera but
+  // clamp to max fov supported by ogre to avoid issues with building the
+  // frustum
+  this->dataPtr->ogreCamera->setFOVy(Ogre::Radian(
+      Ogre::Real(std::clamp(vfov, 0.0, GZ_PI))));
 
   // create the env cameras and textures
   this->CreateEnvCameras();

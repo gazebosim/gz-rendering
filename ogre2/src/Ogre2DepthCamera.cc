@@ -92,14 +92,12 @@ class Ogre2DepthGaussianNoisePass : public Ogre2GaussianNoisePass
 /// \brief Private data for the Ogre2DepthCamera class
 class gz::rendering::Ogre2DepthCameraPrivate
 {
-  /// \brief The depth buffer
+  /// \brief The depth buffer - also the outgoing point cloud data used
+  /// by newRgbPointCloud event
   public: float *depthBuffer = nullptr;
 
   /// \brief Outgoing depth data, used by newDepthFrame event.
   public: float *depthImage = nullptr;
-
-  /// \brief Outgoing point cloud data, used by newRgbPointCloud event.
-  public: float *pointCloudImage = nullptr;
 
   /// \brief maximum value used for data outside sensor range
   public: float dataMaxVal = gz::math::INF_D;
@@ -314,12 +312,6 @@ void Ogre2DepthCamera::Destroy()
   {
     delete [] this->dataPtr->depthImage;
     this->dataPtr->depthImage = nullptr;
-  }
-
-  if (this->dataPtr->pointCloudImage)
-  {
-    delete [] this->dataPtr->pointCloudImage;
-    this->dataPtr->pointCloudImage = nullptr;
   }
 
   if (!this->ogreCamera)
@@ -1195,10 +1187,6 @@ void Ogre2DepthCamera::PostRender()
   {
     this->dataPtr->depthImage = new float[len];
   }
-  if (!this->dataPtr->pointCloudImage)
-  {
-    this->dataPtr->pointCloudImage = new float[len * channelCount];
-  }
 
   // fill depth data
   for (unsigned int i = 0; i < height; ++i)
@@ -1216,10 +1204,8 @@ void Ogre2DepthCamera::PostRender()
   // point cloud data
   if (this->dataPtr->newRgbPointCloud.ConnectionCount() > 0u)
   {
-    memcpy(this->dataPtr->pointCloudImage,
-      this->dataPtr->depthBuffer, len * channelCount * sizeof(float));
     this->dataPtr->newRgbPointCloud(
-        this->dataPtr->pointCloudImage, width, height, channelCount,
+        this->dataPtr->depthBuffer, width, height, channelCount,
         "PF_FLOAT32_RGBA");
 
     // Uncomment to debug color output
@@ -1229,7 +1215,7 @@ void Ogre2DepthCamera::PostRender()
     //   for (unsigned int j = 0; j < width; ++j)
     //   {
     //     float color =
-    //         this->dataPtr->pointCloudImage[step + j*channelCount + 3];
+    //         this->dataPtr->depthBuffer[step + j*channelCount + 3];
     //     // unpack rgb data
     //     uint32_t *rgba = reinterpret_cast<uint32_t *>(&color);
     //     unsigned int r = *rgba >> 24 & 0xFF;
@@ -1246,9 +1232,9 @@ void Ogre2DepthCamera::PostRender()
     // {
     //   for (unsigned int j = 0; j < width; ++j)
     //   {
-    //     gzdbg << "[" << this->dataPtr->pointCloudImage[i*width*4+j*4] << "]"
-    //       << "[" << this->dataPtr->pointCloudImage[i*width*4+j*4+1] << "]"
-    //       << "[" << this->dataPtr->pointCloudImage[i*width*4+j*4+2] << "],";
+    //     gzdbg << "[" << this->dataPtr->depthBuffer[i*width*4+j*4] << "]"
+    //       << "[" << this->dataPtr->depthBuffer[i*width*4+j*4+1] << "]"
+    //       << "[" << this->dataPtr->depthBuffer[i*width*4+j*4+2] << "],";
     //   }
     //   gzdbg << std::endl;
     // }

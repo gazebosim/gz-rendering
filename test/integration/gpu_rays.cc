@@ -697,8 +697,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(SingleRay))
     GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
 
-  // Test GPU single ray box intersection.
-  // Place GPU above box looking downwards
+  // Test single ray box intersection.
+  // Place ray above box looking downwards
   // ray should intersect with center of box
 
   const double hMinAngle = 0.0;
@@ -713,7 +713,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(SingleRay))
 
   VisualPtr root = scene->RootVisual();
 
-  // Create first ray caster
+  // Create ray caster
   gz::math::Pose3d testPose(gz::math::Vector3d(0, 0, 7),
       gz::math::Quaterniond(0, GZ_PI/2.0, 0));
 
@@ -731,7 +731,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(SingleRay))
 
   // box in the center
   gz::math::Pose3d box01Pose(gz::math::Vector3d(0, 0, 4.5),
-                                   gz::math::Quaterniond::Identity);
+                             gz::math::Quaterniond::Identity);
   VisualPtr visualBox1 = scene->CreateVisual("UnitBox1");
   visualBox1->AddGeometry(scene->CreateBox());
   visualBox1->SetWorldPosition(box01Pose.Pos());
@@ -754,9 +754,17 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(SingleRay))
   int mid = 0;
   double unitBoxSize = 1.0;
   double expectedRangeAtMidPointBox = testPose.Pos().Z() -
-      (abs(box01Pose.Pos().Z()) + unitBoxSize/2);
+      (std::abs(box01Pose.Pos().Z()) + unitBoxSize / 2);
 
-  // rays caster 1 should see box01 and box02
+  // ray should detect box
+  EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox, LASER_TOL);
+
+  gz::math::Pose3d newBox01Pose(gz::math::Vector3d(0, 0, 3.5),
+                                gz::math::Quaterniond::Identity);
+  visualBox1->SetWorldPosition(newBox01Pose.Pos());
+  gpuRays->Update();
+  expectedRangeAtMidPointBox = testPose.Pos().Z() -
+      (std::abs(newBox01Pose.Pos().Z()) + unitBoxSize / 2);
   EXPECT_NEAR(scan[mid], expectedRangeAtMidPointBox, LASER_TOL);
 
   c.reset();

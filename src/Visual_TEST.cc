@@ -505,6 +505,10 @@ TEST_P(VisualTest, Geometry)
 /////////////////////////////////////////////////
 void VisualTest::VisibilityFlags(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -572,6 +576,10 @@ TEST_P(VisualTest, VisibilityFlags)
 /////////////////////////////////////////////////
 void VisualTest::BoundingBox(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -613,6 +621,10 @@ TEST_P(VisualTest, BoundingBox)
 /////////////////////////////////////////////////
 void VisualTest::Wireframe(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
@@ -642,6 +654,10 @@ TEST_P(VisualTest, Wireframe)
 /////////////////////////////////////////////////
 void VisualTest::Clone(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {

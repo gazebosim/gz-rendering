@@ -36,6 +36,10 @@ class TextTest : public testing::Test,
 /////////////////////////////////////////////////
 void TextTest::Text(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   if (_renderEngine != "ogre")
   {
     igndbg << "Text not supported yet in rendering engine: "

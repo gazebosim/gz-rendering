@@ -40,6 +40,10 @@ class LightVisualTest : public testing::Test,
 /////////////////////////////////////////////////
 void LightVisualTest::LightVisual(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {

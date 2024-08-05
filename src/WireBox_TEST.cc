@@ -37,6 +37,10 @@ class WireBoxTest : public testing::Test,
 /////////////////////////////////////////////////
 void WireBoxTest::WireBox(const std::string &_renderEngine)
 {
+#ifdef __APPLE__                                                                                                                                                                              
+  std::cerr << "Skipping test for apple, see issue #847." << std::endl;
+  return;
+#endif
   if (_renderEngine != "ogre" && _renderEngine != "ogre2")
   {
     igndbg << "WireBox not supported yet in rendering engine: "

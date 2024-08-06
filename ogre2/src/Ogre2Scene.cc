@@ -651,15 +651,15 @@ void Ogre2Scene::UpdateShadowNode()
 
   // directional lights
   unsigned int atlasId = 0u;
-  unsigned int texSize = 2048u;
-  unsigned int halfTexSize = static_cast<unsigned int>(texSize * 0.5);
+  unsigned int dirTexSize = 4096u;
+  unsigned int halfTexSize = static_cast<unsigned int>(dirTexSize * 0.5);
   for (unsigned int i = 0; i < dirLightCount; ++i)
   {
     shadowParam.technique = Ogre::SHADOWMAP_PSSM;
     shadowParam.atlasId = atlasId;
     shadowParam.numPssmSplits = 3u;
-    shadowParam.resolution[0].x = texSize;
-    shadowParam.resolution[0].y = texSize;
+    shadowParam.resolution[0].x = dirTexSize;
+    shadowParam.resolution[0].y = dirTexSize;
     shadowParam.resolution[1].x = halfTexSize;
     shadowParam.resolution[1].y = halfTexSize;
     shadowParam.resolution[2].x = halfTexSize;
@@ -667,9 +667,9 @@ void Ogre2Scene::UpdateShadowNode()
     shadowParam.atlasStart[0].x = 0u;
     shadowParam.atlasStart[0].y = 0u;
     shadowParam.atlasStart[1].x = 0u;
-    shadowParam.atlasStart[1].y = texSize;
+    shadowParam.atlasStart[1].y = dirTexSize;
     shadowParam.atlasStart[2].x = halfTexSize;
-    shadowParam.atlasStart[2].y = texSize;
+    shadowParam.atlasStart[2].y = dirTexSize;
     shadowParam.supportedLightTypes = 0u;
     shadowParam.addLightType(Ogre::Light::LT_DIRECTIONAL);
     shadowParams.push_back(shadowParam);
@@ -678,19 +678,20 @@ void Ogre2Scene::UpdateShadowNode()
 
   // others
   unsigned int maxTexSize = 8192u;
+  unsigned int spotPointTexSize = 2048u;
   unsigned int rowIdx = 0;
   unsigned int colIdx = 0;
-  unsigned int rowSize = maxTexSize / texSize;
+  unsigned int rowSize = maxTexSize / spotPointTexSize;
   unsigned int colSize = rowSize;
 
   for (unsigned int i = 0; i < spotPointLightCount; ++i)
   {
     shadowParam.technique = Ogre::SHADOWMAP_FOCUSED;
     shadowParam.atlasId = atlasId;
-    shadowParam.resolution[0].x = texSize;
-    shadowParam.resolution[0].y = texSize;
-    shadowParam.atlasStart[0].x = colIdx * texSize;
-    shadowParam.atlasStart[0].y = rowIdx * texSize;
+    shadowParam.resolution[0].x = spotPointTexSize;
+    shadowParam.resolution[0].y = spotPointTexSize;
+    shadowParam.atlasStart[0].x = colIdx * spotPointTexSize;
+    shadowParam.atlasStart[0].y = rowIdx * spotPointTexSize;
 
     shadowParam.supportedLightTypes = 0u;
     shadowParam.addLightType(Ogre::Light::LT_DIRECTIONAL);

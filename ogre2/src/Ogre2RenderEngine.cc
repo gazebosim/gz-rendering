@@ -483,7 +483,7 @@ bool Ogre2RenderEngine::InitImpl()
   {
     gzerr << "Failed to initialize render-engine" << std::endl;
     gzerr << "Please see the troubleshooting page for possible fixes: "
-          << "https://gazebosim.org/docs/fortress/troubleshooting"
+          << "https://gazebosim.org/docs/latest/troubleshooting"
           << std::endl;
     return false;
   }

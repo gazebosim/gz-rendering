@@ -1475,6 +1475,11 @@ bool BaseScene::SkyEnabled() const
   return false;
 }
 
+void BaseScene::SetTexSize(unsigned int _texSize)
+{
+  return this->SetTexSize(_texSize);
+}
+
 //////////////////////////////////////////////////
 void BaseScene::SetActiveGlobalIllumination(GlobalIlluminationBasePtr _gi)
 {

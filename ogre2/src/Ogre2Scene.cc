@@ -90,6 +90,8 @@ class gz::rendering::Ogre2ScenePrivate
   /// \brief Flag to indicate if sky is enabled or not
   public: bool skyEnabled = false;
 
+  public: unsigned int dirTexSize = 2048u;
+
   /// \brief Flag to alert the user its usage of PreRender/PostRender
   /// is incorrect
   public: bool frameUpdateStarted = false;
@@ -651,7 +653,7 @@ void Ogre2Scene::UpdateShadowNode()
 
   // directional lights
   unsigned int atlasId = 0u;
-  unsigned int dirTexSize = 4096u;
+  unsigned int dirTexSize = this->dataPtr->dirTexSize;
   unsigned int halfTexSize = static_cast<unsigned int>(dirTexSize * 0.5);
   for (unsigned int i = 0; i < dirLightCount; ++i)
   {
@@ -1553,6 +1555,11 @@ void Ogre2Scene::SetSkyEnabled(bool _enabled)
 bool Ogre2Scene::SkyEnabled() const
 {
   return this->dataPtr->skyEnabled;
+}
+
+void Ogre2Scene::SetTexSize(unsigned int _texSize)
+{
+  this->dataPtr->dirTexSize = _texSize;
 }
 
 //////////////////////////////////////////////////

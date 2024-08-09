@@ -51,12 +51,6 @@ gz_find_package(gz-utils3 REQUIRED)
 set(GZ_UTILS_VER ${gz-utils3_VERSION_MAJOR})
 
 #--------------------------------------
-# Find FreeImage
-gz_find_package(FreeImage VERSION 3.9
-  REQUIRED_BY optix
-  PRIVATE_FOR optix)
-
-#--------------------------------------
 # Find OpenGL
 # See CMP0072 for more details (cmake --help-policy CMP0072)
 if ((NOT ${CMAKE_VERSION} VERSION_LESS 3.11) AND (NOT OpenGL_GL_PREFERENCE))
@@ -170,19 +164,23 @@ set(GZ_RENDERING_ENGINE_INSTALL_DIR
 # Find dependencies that we ignore for Visual Studio
 if(NOT MSVC)
   #--------------------------------------
+  # Find FreeImage
+  gz_find_package(FreeImage VERSION 3.9
+    REQUIRED_BY optix
+    PRIVATE_FOR optix)
+
+  #--------------------------------------
   # Find CUDA
   # Module is being removed in CMake and needs a non trivial
   # migration https://cmake.org/cmake/help/latest/policy/CMP0146.html
   if(POLICY CMP0146)
     cmake_policy(SET CMP0146 OLD)
   endif()
-  find_package(CUDA)
+  find_package(CUDA QUIET)
 
   #--------------------------------------
   # Find OptiX
-  gz_find_package(OptiX VERSION 3.8.0
-      REQUIRED_BY optix
-      PRIVATE_FOR optix)
+  gz_find_package(OptiX QUIET VERSION 3.8.0)
 
   if (OptiX_FOUND AND CUDA_FOUND)
     set(GZ_RENDERING_HAVE_OPTIX TRUE)

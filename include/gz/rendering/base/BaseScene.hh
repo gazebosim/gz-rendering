@@ -628,7 +628,7 @@ namespace gz
       // Documentation inherited.
       public: virtual bool SkyEnabled() const override;
 
-      public: virtual void SetTexSize(unsigned int _texSize) override;
+      public: virtual void SetShadowTextureSize(unsigned int _textureSize) override;
 
       // Documentation inherited.
       public: virtual void SetActiveGlobalIllumination(

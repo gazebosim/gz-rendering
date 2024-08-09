@@ -1270,7 +1270,7 @@ namespace gz
       /// \return true to sky is enabled, false otherwise
       public: virtual bool SkyEnabled() const = 0;
 
-      public: virtual void SetTexSize(unsigned int _texSize) = 0;
+      public: virtual void SetShadowTextureSize(unsigned int _textureSize) = 0;
 
       /// \brief Sets the given GI as the current new active GI solution
       /// \param[in] _gi GI solution that should be active. Nullptr to disable

@@ -15,6 +15,8 @@
  *
  */
 
+#include <GL/gl.h>
+
 #include <gz/common/Console.hh>
 
 #include "gz/rendering/base/SceneExt.hh"
@@ -678,8 +680,17 @@ void Ogre2Scene::UpdateShadowNode()
     atlasId++;
   }
 
-  // others
   unsigned int maxTexSize = 8192u;
+
+  if (engine->GraphicsAPI() == GraphicsAPI::OPENGL)
+  {
+    GLint glMaxTexSize;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &glMaxTexSize);
+
+    maxTexSize = glMaxTexSize;
+  }
+
+  // others
   unsigned int spotPointTexSize = 2048u;
   unsigned int rowIdx = 0;
   unsigned int colIdx = 0;
@@ -1557,9 +1568,9 @@ bool Ogre2Scene::SkyEnabled() const
   return this->dataPtr->skyEnabled;
 }
 
-void Ogre2Scene::SetTexSize(unsigned int _texSize)
+void Ogre2Scene::SetShadowTextureSize(unsigned int _textureSize)
 {
-  this->dataPtr->dirTexSize = _texSize;
+  this->dataPtr->dirTexSize = _textureSize;
 }
 
 //////////////////////////////////////////////////

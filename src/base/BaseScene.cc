@@ -1475,9 +1475,9 @@ bool BaseScene::SkyEnabled() const
   return false;
 }
 
-void BaseScene::SetTexSize(unsigned int _texSize)
+void BaseScene::SetShadowTextureSize(unsigned int _textureSize)
 {
-  return this->SetTexSize(_texSize);
+  return this->SetShadowTextureSize(_textureSize);
 }
 
 //////////////////////////////////////////////////

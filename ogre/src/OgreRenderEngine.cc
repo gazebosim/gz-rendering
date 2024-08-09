@@ -38,6 +38,9 @@ typedef khronos_intptr_t GLintptr;
 
 # include <sstream>
 
+#include <OgreDynLib.h>
+#include <OgreDynLibManager.h>
+
 #include <gz/plugin/Register.hh>
 
 #include <gz/common/Console.hh>
@@ -65,6 +68,61 @@ class gz::rendering::OgreRenderEnginePrivate
 
 using namespace gz;
 using namespace rendering;
+
+// Plugin loading and unloading code adapted from Ogre.
+// Unloading the RenderSystem_GL plugin was found to cause a crash when the
+// rendering thread exits. This only happens on Ubuntu 24.04 when running
+// ogre using system debs, see
+// https://github.com/gazebosim/gz-rendering/issues/1007
+// To workaournd ths issue, we adapth the code for loadng and unloading
+// ogre plugin here. We load the RenderSystem_GL library manually and store it
+// in gz-rendering and on shutdown we stop the plugin and delete the lib without
+// unloading it.
+// \todo(iche033) Find a proper way to unload the library without causing a
+// crash.
+
+typedef void (*DLL_START_PLUGIN)(void);
+typedef void (*DLL_STOP_PLUGIN)(void);
+std::vector<Ogre::DynLib *>  mPluginLibs;
+
+void loadPlugin(const std::string &_pluginName)
+{
+  // Load plugin library
+  Ogre::DynLib *lib = OGRE_NEW Ogre::DynLib(_pluginName);
+  lib->load();
+  if (std::find(mPluginLibs.begin(), mPluginLibs.end(), lib) ==
+      mPluginLibs.end())
+  {
+    mPluginLibs.push_back(lib);
+    // Call startup function
+    #ifdef __GNUC__
+    __extension__
+    #endif
+    DLL_START_PLUGIN pFunc = (DLL_START_PLUGIN)lib->getSymbol("dllStartPlugin");
+    if (!pFunc)
+      OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND,
+                  "Cannot find symbol dllStartPlugin in library " + _pluginName,
+                  "Ogre::Root::loadPlugin");
+    pFunc();
+  }
+}
+
+void unloadPlugin(Ogre::DynLib *_pluginLib)
+{
+  // Call plugin shutdown
+  #ifdef __GNUC__
+  __extension__
+  #endif
+  DLL_STOP_PLUGIN pFunc = reinterpret_cast<DLL_STOP_PLUGIN>(
+      _pluginLib->getSymbol("dllStopPlugin"));
+  pFunc();
+
+  // Unload library & destroy
+  // \todo(iche033) Unloading the RenderSystem_GL system causes a crash
+  // on thread exit so commented out for now.
+  // _pluginLib->unload();
+  delete _pluginLib;
+}
 
 //////////////////////////////////////////////////
 OgreRenderEnginePlugin::OgreRenderEnginePlugin()
@@ -121,6 +179,14 @@ void OgreRenderEngine::Destroy()
     try
     {
       // TODO(anyone): do we need to catch segfault on delete?
+
+      // manually shutdown render system and stop the RenderSystem_GL library
+      this->ogreRoot->shutdown();
+      this->ogreRoot->getRenderSystem()->shutdown();
+      this->ogreRoot->setRenderSystem(nullptr);
+      for (auto &lib : mPluginLibs)
+        unloadPlugin(lib);
+
       delete this->ogreRoot;
     }
     catch (...)
@@ -458,17 +524,26 @@ void OgreRenderEngine::LoadPlugins()
 
     for (piter = plugins.begin(); piter != plugins.end(); ++piter)
     {
+
+      bool isGLPlugin = std::string(*piter).find("RenderSystem_GL")
+          != std::string::npos;
       try
       {
-        // Load the plugin into OGRE
-        this->ogreRoot->loadPlugin(*piter+extension);
+        // Load the plugin
+        if (isGLPlugin)
+          loadPlugin(*piter+extension);
+        else
+          this->ogreRoot->loadPlugin(*piter+extension);
       }
       catch(Ogre::Exception &e)
       {
         try
         {
-          // Load the debug plugin into OGRE
-          this->ogreRoot->loadPlugin(*piter+"_d"+extension);
+          // Load the debug plugin
+          if (isGLPlugin)
+            loadPlugin(*piter+"_d"+extension);
+          else
+            this->ogreRoot->loadPlugin(*piter+"_d"+extension);
         }
         catch(Ogre::Exception &ed)
         {

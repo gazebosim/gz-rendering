@@ -180,13 +180,20 @@ void OgreRenderEngine::Destroy()
     {
       // TODO(anyone): do we need to catch segfault on delete?
 
-      // manually shutdown render system and stop the RenderSystem_GL library
+      // Manually shutdown ogre and stop the RenderSystem_GL library
+      // without unloading it.
+      // \todo(iche033) replace this whole block with:
+      //   delete this->ogreRoot
+      // once we are able to unload the RenderSystem_GL library without
+      // crashing.
       this->ogreRoot->shutdown();
-      this->ogreRoot->getRenderSystem()->shutdown();
+      this->ogreRoot->destroySceneManager(
+          this->ogreRoot->_getCurrentSceneManager());
+      Ogre::TextureManager::getSingletonPtr()->unloadAll();
+      Ogre::ShadowTextureManager::getSingletonPtr()->clear();
       this->ogreRoot->setRenderSystem(nullptr);
       for (auto &lib : mPluginLibs)
         unloadPlugin(lib);
-
       delete this->ogreRoot;
     }
     catch (...)

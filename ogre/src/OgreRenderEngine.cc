@@ -40,6 +40,7 @@ typedef khronos_intptr_t GLintptr;
 
 #include <OgreDynLib.h>
 #include <OgreDynLibManager.h>
+#include <OgrePlugin.h>
 
 #include <gz/plugin/Register.hh>
 
@@ -80,7 +81,6 @@ using namespace rendering;
 // unloading it.
 // \todo(iche033) Find a proper way to unload the library without causing a
 // crash.
-
 typedef void (*DLL_START_PLUGIN)(void);
 typedef void (*DLL_STOP_PLUGIN)(void);
 std::vector<Ogre::DynLib *>  mPluginLibs;
@@ -123,6 +123,30 @@ void unloadPlugin(Ogre::DynLib *_pluginLib)
   // _pluginLib->unload();
   delete _pluginLib;
 }
+
+/// A dummy plugin class that is installed to the ogre root before shutdown.
+/// We use this as a hook to get a callback from ogre root when all plugins
+/// are being unloaded. This is so that we can unload the RenderSystem_GL
+/// at the right time.
+class DummyPlugin : public Ogre::Plugin
+{
+  public: DummyPlugin() {}
+  public: const Ogre::String& getName() const
+          {
+            return pluginName;
+          }
+  public: void install() {}
+  public: void initialise() {}
+  public: void shutdown() {}
+  public: void uninstall()
+          {
+            for (auto &lib : mPluginLibs)
+              unloadPlugin(lib);
+            mPluginLibs.clear();
+          }
+  const Ogre::String pluginName = "dummy";
+};
+DummyPlugin gDummyPlugin;
 
 //////////////////////////////////////////////////
 OgreRenderEnginePlugin::OgreRenderEnginePlugin()
@@ -176,24 +200,13 @@ void OgreRenderEngine::Destroy()
 
   if (ogreRoot)
   {
+    // TODO(anyone): do we need to catch segfault on delete?
     try
     {
-      // TODO(anyone): do we need to catch segfault on delete?
+      // Install a dummy plugin that allows use to manually shutdown ogre
+      // and stop the RenderSystem_GL library.
+      this->ogreRoot->installPlugin(&gDummyPlugin);
 
-      // Manually shutdown ogre and stop the RenderSystem_GL library
-      // without unloading it.
-      // \todo(iche033) replace this whole block with:
-      //   delete this->ogreRoot
-      // once we are able to unload the RenderSystem_GL library without
-      // crashing.
-      this->ogreRoot->shutdown();
-      this->ogreRoot->destroySceneManager(
-          this->ogreRoot->_getCurrentSceneManager());
-      Ogre::TextureManager::getSingletonPtr()->unloadAll();
-      Ogre::ShadowTextureManager::getSingletonPtr()->clear();
-      this->ogreRoot->setRenderSystem(nullptr);
-      for (auto &lib : mPluginLibs)
-        unloadPlugin(lib);
       delete this->ogreRoot;
     }
     catch (...)

@@ -1568,9 +1568,12 @@ bool Ogre2Scene::SkyEnabled() const
   return this->dataPtr->skyEnabled;
 }
 
-void Ogre2Scene::SetShadowTextureSize(unsigned int _textureSize)
+void Ogre2Scene::SetShadowTextureSize(LightType _lightType, unsigned int _textureSize)
 {
-  this->dataPtr->dirTexSize = _textureSize;
+  if (_lightType == LightType::LT_DIRECTIONAL)
+  {
+    this->dataPtr->dirTexSize = _textureSize;
+  }
 }
 
 //////////////////////////////////////////////////

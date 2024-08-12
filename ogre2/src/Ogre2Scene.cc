@@ -1570,6 +1570,7 @@ bool Ogre2Scene::SkyEnabled() const
   return this->dataPtr->skyEnabled;
 }
 
+//////////////////////////////////////////////////
 void Ogre2Scene::SetShadowTextureSize(LightType _lightType, unsigned int _textureSize)
 {
   // If _textureSize exceeds max possible tex size, then use default
@@ -1607,6 +1608,18 @@ void Ogre2Scene::SetShadowTextureSize(LightType _lightType, unsigned int _textur
   {
     this->dataPtr->dirTexSize = _textureSize;
   }
+}
+
+//////////////////////////////////////////////////
+unsigned int Ogre2Scene::ShadowTextureSize(LightType _lightType) 
+{
+  // todo: return based on light type, currently only dir light is supported
+  if (_lightType)
+  {
+    return this->dataPtr->dirTexSize;
+  }
+
+  return this->dataPtr->dirTexSize;
 }
 
 //////////////////////////////////////////////////

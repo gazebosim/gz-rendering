@@ -1486,6 +1486,12 @@ void BaseScene::SetShadowTextureSize(LightType _lightType, unsigned int _texture
 }
 
 //////////////////////////////////////////////////
+unsigned int BaseScene::ShadowTextureSize(LightType _lightType)
+{
+  return this->ShadowTextureSize(_lightType);
+}
+
+//////////////////////////////////////////////////
 void BaseScene::SetActiveGlobalIllumination(GlobalIlluminationBasePtr _gi)
 {
   // no op, let derived class implement this.

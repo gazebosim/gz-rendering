@@ -632,6 +632,9 @@ namespace gz
       public: virtual void SetShadowTextureSize(LightType _lightType, unsigned int _textureSize) override;
 
       // Documentation inherited.
+      public: virtual unsigned int ShadowTextureSize(LightType _lightType) override;
+
+      // Documentation inherited.
       public: virtual void SetActiveGlobalIllumination(
             GlobalIlluminationBasePtr _gi) override;
 

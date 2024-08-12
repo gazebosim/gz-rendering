@@ -92,6 +92,10 @@ class gz::rendering::Ogre2ScenePrivate
   /// \brief Flag to indicate if sky is enabled or not
   public: bool skyEnabled = false;
 
+  /// \brief Max shadow texture size
+  public: unsigned int maxTexSize = 8192u;
+
+  /// \brief Shadow texture size for directional light
   public: unsigned int dirTexSize = 2048u;
 
   /// \brief Flag to alert the user its usage of PreRender/PostRender
@@ -680,21 +684,19 @@ void Ogre2Scene::UpdateShadowNode()
     atlasId++;
   }
 
-  unsigned int maxTexSize = 8192u;
-
   if (engine->GraphicsAPI() == GraphicsAPI::OPENGL)
   {
     GLint glMaxTexSize;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &glMaxTexSize);
 
-    maxTexSize = glMaxTexSize;
+    this->dataPtr->maxTexSize = glMaxTexSize;
   }
 
   // others
   unsigned int spotPointTexSize = 2048u;
   unsigned int rowIdx = 0;
   unsigned int colIdx = 0;
-  unsigned int rowSize = maxTexSize / spotPointTexSize;
+  unsigned int rowSize = this->dataPtr->maxTexSize / spotPointTexSize;
   unsigned int colSize = rowSize;
 
   for (unsigned int i = 0; i < spotPointLightCount; ++i)
@@ -1570,6 +1572,37 @@ bool Ogre2Scene::SkyEnabled() const
 
 void Ogre2Scene::SetShadowTextureSize(LightType _lightType, unsigned int _textureSize)
 {
+  // If _textureSize exceeds max possible tex size, then use default
+  if (_textureSize > this->dataPtr->maxTexSize / 2)
+  {
+    gzerr << "<texture_size> of '" << _textureSize
+          << "' exceeds maximum possible texture size,"
+          << " using default texture size" << std::endl;
+    return;
+  } 
+
+  // Generate list of possible tex size options, each a power of 2, starting at 1024
+  std::vector<unsigned int> texSizeOptions;
+  unsigned int texSizeOption = 1024u;
+  while (texSizeOption <= this->dataPtr->maxTexSize / 2)
+  {
+    texSizeOptions.push_back(texSizeOption);
+    texSizeOption *= 2;
+  }
+
+  // if _textureSize is not a valid texture size, then use default
+  bool validTexSize = std::find(texSizeOptions.begin(),
+      texSizeOptions.end(), _textureSize)
+      != texSizeOptions.end() ? true : false;
+  if (!validTexSize) 
+  {
+    gzerr << "<texture_size> of '" << _textureSize
+          << "' is not a valid texture size,"
+          << " using default texture size" << std::endl;
+    return;
+  }
+
+  // Set shadow texture size as _textureSize if value is valid
   if (_lightType == LightType::LT_DIRECTIONAL)
   {
     this->dataPtr->dirTexSize = _textureSize;

@@ -1273,12 +1273,14 @@ namespace gz
 
       /// @brief  \brief Set the shadow texture size for the given light type.
       /// @param _lightType Light type that creates the shadow
-      /// @param _textureSize Shadow texture size 
-      public: virtual void SetShadowTextureSize(LightType _lightType, unsigned int _textureSize) = 0;
+      /// @param _textureSize Shadow texture size
+      public: virtual void SetShadowTextureSize(LightType _lightType,
+                  unsigned int _textureSize) = 0;
 
       /// @brief \brief Get the shadow texture size for the given light type.
       /// @param _lightType Light type that creates the shadow
-      public: virtual unsigned int ShadowTextureSize(LightType _lightType) = 0;
+      public: virtual unsigned int ShadowTextureSize(LightType _lightType)
+                  const = 0;
 
       /// \brief Sets the given GI as the current new active GI solution
       /// \param[in] _gi GI solution that should be active. Nullptr to disable

@@ -1571,7 +1571,8 @@ bool Ogre2Scene::SkyEnabled() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Scene::SetShadowTextureSize(LightType _lightType, unsigned int _textureSize)
+void Ogre2Scene::SetShadowTextureSize(LightType _lightType,
+    unsigned int _textureSize)
 {
   // If _textureSize exceeds max possible tex size, then use default
   if (_textureSize > this->dataPtr->maxTexSize / 2)
@@ -1580,9 +1581,10 @@ void Ogre2Scene::SetShadowTextureSize(LightType _lightType, unsigned int _textur
           << "' exceeds maximum possible texture size,"
           << " using default texture size" << std::endl;
     return;
-  } 
+  }
 
-  // Generate list of possible tex size options, each a power of 2, starting at 1024
+  // Generate list of possible tex size options, each a power of 2,
+  // starting at 1024
   std::vector<unsigned int> texSizeOptions;
   unsigned int texSizeOption = 1024u;
   while (texSizeOption <= this->dataPtr->maxTexSize / 2)
@@ -1591,11 +1593,11 @@ void Ogre2Scene::SetShadowTextureSize(LightType _lightType, unsigned int _textur
     texSizeOption *= 2;
   }
 
-  // if _textureSize is not a valid texture size, then use default
+  // if _textureSize is an invalid texture size, then use default
   bool validTexSize = std::find(texSizeOptions.begin(),
       texSizeOptions.end(), _textureSize)
       != texSizeOptions.end() ? true : false;
-  if (!validTexSize) 
+  if (!validTexSize)
   {
     gzerr << "<texture_size> of '" << _textureSize
           << "' is not a valid texture size,"
@@ -1611,7 +1613,7 @@ void Ogre2Scene::SetShadowTextureSize(LightType _lightType, unsigned int _textur
 }
 
 //////////////////////////////////////////////////
-unsigned int Ogre2Scene::ShadowTextureSize(LightType _lightType) 
+unsigned int Ogre2Scene::ShadowTextureSize(LightType _lightType) const
 {
   // todo: return based on light type, currently only dir light is supported
   if (_lightType)

@@ -144,7 +144,7 @@ namespace gz
       public: virtual void PostRender() override;
 
       // Documentation inherited.
-      public: virtual unsigned int GLId();
+      public: virtual unsigned int GLId() const override;
 
       public: virtual void Buffer(float *buffer);
 

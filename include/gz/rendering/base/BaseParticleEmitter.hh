@@ -101,7 +101,8 @@ namespace gz
       public: virtual MaterialPtr Material() const override;
 
       // Documentation inherited.
-      public: virtual void SetMaterial(const MaterialPtr &_material) override;
+      public: virtual void SetMaterial(MaterialPtr _material,
+                  bool _unique = true) override;
 
       // Documentation inherited.
       public: virtual double MinVelocity() const override;
@@ -341,7 +342,8 @@ namespace gz
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseParticleEmitter<T>::SetMaterial(const MaterialPtr &_material)
+    void BaseParticleEmitter<T>::SetMaterial(MaterialPtr _material,
+        bool /*_unique*/)
     {
       this->material = _material;
     }

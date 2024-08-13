@@ -46,7 +46,7 @@ namespace gz
       public: virtual ~Ogre2GaussianNoisePass();
 
       // Documentation inherited
-      public: void PreRender() override;
+      public: virtual void PreRender(const CameraPtr &_camera) override;
 
       // Documentation inherited
       public: void CreateRenderPass() override;

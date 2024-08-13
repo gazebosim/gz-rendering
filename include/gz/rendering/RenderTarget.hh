@@ -85,6 +85,9 @@ namespace gz
       /// \return Render target background color.
       public: virtual math::Color BackgroundColor() const = 0;
 
+      // Documentation inherited
+      public: using Object::PreRender;
+
       /// \brief See Object::PreRender. This function will call
       /// Object::PreRender but with the added bonus that it has access
       /// to the camera that is about to render

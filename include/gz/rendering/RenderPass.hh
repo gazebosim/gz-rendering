@@ -69,6 +69,10 @@ namespace gz
       /// \brief See SetWideAngleCameraAfterStitching()
       /// \return The current value set by SetWideAngleCameraAfterStitching
       public: virtual bool WideAngleCameraAfterStitching() const = 0;
+
+      // Documentation inherited
+      // Use PreRender(const CameraPtr &) instead
+      private: using Object::PreRender;
     };
     }
   }

@@ -1,5 +1,8 @@
-This package uses the Liberation Sans font.
+This package uses the following fonts:
 
-https://en.wikipedia.org/wiki/Liberation_fonts
+- Liberation Sans
+  - https://en.wikipedia.org/wiki/Liberation_fonts
+  - https://www.fontsquirrel.com/fonts/Liberation-Sans
 
-https://www.fontsquirrel.com/fonts/Liberation-Sans
+- Roboto
+  - https://fonts.google.com/specimen/Roboto/about

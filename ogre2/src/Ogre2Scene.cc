@@ -53,6 +53,7 @@
 #include "gz/rendering/ogre2/Ogre2Light.hh"
 #include "gz/rendering/ogre2/Ogre2LightVisual.hh"
 #include "gz/rendering/ogre2/Ogre2LidarVisual.hh"
+#include "gz/rendering/ogre2/Ogre2FrustumVisual.hh"
 #include "gz/rendering/ogre2/Ogre2Marker.hh"
 #include "gz/rendering/ogre2/Ogre2Material.hh"
 #include "gz/rendering/ogre2/Ogre2MeshFactory.hh"
@@ -1342,6 +1343,15 @@ LidarVisualPtr Ogre2Scene::CreateLidarVisualImpl(unsigned int _id,
   Ogre2LidarVisualPtr lidar(new Ogre2LidarVisual);
   bool result = this->InitObject(lidar, _id, _name);
   return (result) ? lidar: nullptr;
+}
+
+//////////////////////////////////////////////////
+FrustumVisualPtr Ogre2Scene::CreateFrustumVisualImpl(unsigned int _id,
+    const std::string &_name)
+{
+  Ogre2FrustumVisualPtr frustum(new Ogre2FrustumVisual);
+  bool result = this->InitObject(frustum, _id, _name);
+  return (result) ? frustum: nullptr;
 }
 
 //////////////////////////////////////////////////

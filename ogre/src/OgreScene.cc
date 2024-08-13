@@ -35,6 +35,7 @@
 #include "gz/rendering/ogre/OgreInertiaVisual.hh"
 #include "gz/rendering/ogre/OgreJointVisual.hh"
 #include "gz/rendering/ogre/OgreLidarVisual.hh"
+#include "gz/rendering/ogre/OgreFrustumVisual.hh"
 #include "gz/rendering/ogre/OgreLightVisual.hh"
 #include "gz/rendering/ogre/OgreMarker.hh"
 #include "gz/rendering/ogre/OgreMaterial.hh"
@@ -620,6 +621,15 @@ LidarVisualPtr OgreScene::CreateLidarVisualImpl(unsigned int _id,
   OgreLidarVisualPtr lidar(new OgreLidarVisual);
   bool result = this->InitObject(lidar, _id, _name);
   return (result) ? lidar: nullptr;
+}
+
+//////////////////////////////////////////////////
+FrustumVisualPtr OgreScene::CreateFrustumVisualImpl(unsigned int _id,
+                                      const std::string &_name)
+{
+  OgreFrustumVisualPtr frustum(new OgreFrustumVisual);
+  bool result = this->InitObject(frustum, _id, _name);
+  return (result) ? frustum: nullptr;
 }
 
 //////////////////////////////////////////////////

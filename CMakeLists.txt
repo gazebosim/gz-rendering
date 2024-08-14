@@ -53,7 +53,7 @@ set(GZ_UTILS_VER ${gz-utils3_VERSION_MAJOR})
 #--------------------------------------
 # Find OpenGL
 # See CMP0072 for more details (cmake --help-policy CMP0072)
-if ((NOT ${CMAKE_VERSION} VERSION_LESS 3.11) AND (NOT OpenGL_GL_PREFERENCE))
+if (NOT OpenGL_GL_PREFERENCE)
   set(OpenGL_GL_PREFERENCE "GLVND")
 endif()
 

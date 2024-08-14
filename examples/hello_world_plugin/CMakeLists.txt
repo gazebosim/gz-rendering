@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 
 find_package(gz-rendering9 REQUIRED)
 set(GZ_RENDERING_VER ${gz-rendering9_VERSION_MAJOR})

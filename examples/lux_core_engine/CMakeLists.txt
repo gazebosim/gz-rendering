@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 
 set(GZ_PLUGIN_VER 2)
 set(GZ_COMMON_VER 5)

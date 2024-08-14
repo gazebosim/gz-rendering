@@ -70,83 +70,27 @@ class gz::rendering::OgreRenderEnginePrivate
 using namespace gz;
 using namespace rendering;
 
-// Plugin loading and unloading code adapted from Ogre.
 // Unloading the RenderSystem_GL plugin was found to cause a crash when the
 // rendering thread exits. This only happens on Ubuntu 24.04 when running
 // ogre using system debs, see
 // https://github.com/gazebosim/gz-rendering/issues/1007
-// To workaournd ths issue, we adapth the code for loadng and unloading
-// ogre plugin here. We load the RenderSystem_GL library manually and store it
-// in gz-rendering and on shutdown we stop the plugin and delete the lib without
-// unloading it.
+// To workaround ths issue, we adapt the code for loading the ogre plugin here.
+// We load the RenderSystem_GL library manually and store it in gz-rendering.
+// On shutdown, ogre root will uninstall this plugin and delete the GL
+// render system objects. However, gz-rendering does not unload this plugin.
 // \todo(iche033) Find a proper way to unload the library without causing a
 // crash.
 typedef void (*DLL_START_PLUGIN)(void);
-typedef void (*DLL_STOP_PLUGIN)(void);
-std::vector<Ogre::DynLib *>  mPluginLibs;
+void *glPluginHandle;
 
-void loadPlugin(const std::string &_pluginName)
+void loadGLPlugin(const std::string &_pluginName)
 {
-  // Load plugin library
-  Ogre::DynLib *lib = OGRE_NEW Ogre::DynLib(_pluginName);
-  lib->load();
-  if (std::find(mPluginLibs.begin(), mPluginLibs.end(), lib) ==
-      mPluginLibs.end())
-  {
-    mPluginLibs.push_back(lib);
-    // Call startup function
-    #ifdef __GNUC__
-    __extension__
-    #endif
-    DLL_START_PLUGIN pFunc = (DLL_START_PLUGIN)lib->getSymbol("dllStartPlugin");
-    if (!pFunc)
-      OGRE_EXCEPT(Ogre::Exception::ERR_ITEM_NOT_FOUND,
-                  "Cannot find symbol dllStartPlugin in library " + _pluginName,
-                  "Ogre::Root::loadPlugin");
-    pFunc();
-  }
-}
-
-void unloadPlugin(Ogre::DynLib *_pluginLib)
-{
-  // Call plugin shutdown
-  #ifdef __GNUC__
-  __extension__
-  #endif
-  DLL_STOP_PLUGIN pFunc = reinterpret_cast<DLL_STOP_PLUGIN>(
-      _pluginLib->getSymbol("dllStopPlugin"));
+  glPluginHandle = dlopen(_pluginName.c_str(), RTLD_LAZY | RTLD_LOCAL);
+  DLL_START_PLUGIN pFunc = (DLL_START_PLUGIN)DYNLIB_GETSYM(
+      glPluginHandle, "dllStartPlugin");
   pFunc();
-
-  // Unload library & destroy
-  // \todo(iche033) Unloading the RenderSystem_GL system causes a crash
-  // on thread exit so commented out for now.
-  // _pluginLib->unload();
-  delete _pluginLib;
+  return;
 }
-
-/// A dummy plugin class that is installed to the ogre root before shutdown.
-/// We use this as a hook to get a callback from ogre root when all plugins
-/// are being unloaded. This is so that we can unload the RenderSystem_GL
-/// at the right time.
-class DummyPlugin : public Ogre::Plugin
-{
-  public: DummyPlugin() {}
-  public: const Ogre::String& getName() const
-          {
-            return pluginName;
-          }
-  public: void install() {}
-  public: void initialise() {}
-  public: void shutdown() {}
-  public: void uninstall()
-          {
-            for (auto &lib : mPluginLibs)
-              unloadPlugin(lib);
-            mPluginLibs.clear();
-          }
-  const Ogre::String pluginName = "dummy";
-};
-DummyPlugin gDummyPlugin;
 
 //////////////////////////////////////////////////
 OgreRenderEnginePlugin::OgreRenderEnginePlugin()
@@ -203,10 +147,6 @@ void OgreRenderEngine::Destroy()
     // TODO(anyone): do we need to catch segfault on delete?
     try
     {
-      // Install a dummy plugin that allows use to manually shutdown ogre
-      // and stop the RenderSystem_GL library.
-      this->ogreRoot->installPlugin(&gDummyPlugin);
-
       delete this->ogreRoot;
     }
     catch (...)
@@ -551,7 +491,7 @@ void OgreRenderEngine::LoadPlugins()
       {
         // Load the plugin
         if (isGLPlugin)
-          loadPlugin(*piter+extension);
+          loadGLPlugin(*piter+extension);
         else
           this->ogreRoot->loadPlugin(*piter+extension);
       }
@@ -561,7 +501,7 @@ void OgreRenderEngine::LoadPlugins()
         {
           // Load the debug plugin
           if (isGLPlugin)
-            loadPlugin(*piter+"_d"+extension);
+            loadGLPlugin(*piter+"_d"+extension);
           else
             this->ogreRoot->loadPlugin(*piter+"_d"+extension);
         }

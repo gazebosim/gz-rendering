@@ -39,8 +39,6 @@ typedef khronos_intptr_t GLintptr;
 # include <sstream>
 
 #include <OgreDynLib.h>
-#include <OgreDynLibManager.h>
-#include <OgrePlugin.h>
 
 #include <gz/plugin/Register.hh>
 

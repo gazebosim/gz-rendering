@@ -15,7 +15,15 @@
  *
  */
 
-#include <GL/gl.h>
+#ifdef __APPLE__
+  #define GL_SILENCE_DEPRECATION
+  #include <OpenGL/gl.h>
+  #include <OpenGL/glext.h>
+#else
+#ifndef _WIN32
+  #include <GL/gl.h>
+#endif
+#endif
 
 #include <gz/common/Console.hh>
 
@@ -97,6 +105,9 @@ class gz::rendering::Ogre2ScenePrivate
 
   /// \brief Shadow texture size for directional light
   public: unsigned int dirTexSize = 2048u;
+
+  /// \brief Shadow texture size for spot and point lights
+  public: unsigned int spotPointTexSize = 2048u;
 
   /// \brief Flag to alert the user its usage of PreRender/PostRender
   /// is incorrect
@@ -693,7 +704,7 @@ void Ogre2Scene::UpdateShadowNode()
   }
 
   // others
-  unsigned int spotPointTexSize = 2048u;
+  unsigned int spotPointTexSize = this->dataPtr->spotPointTexSize;
   unsigned int rowIdx = 0;
   unsigned int colIdx = 0;
   unsigned int rowSize = this->dataPtr->maxTexSize / spotPointTexSize;
@@ -1574,6 +1585,14 @@ bool Ogre2Scene::SkyEnabled() const
 void Ogre2Scene::SetShadowTextureSize(LightType _lightType,
     unsigned int _textureSize)
 {
+  // If _lightType is not supported, block with gzerr message
+  if (_lightType != LightType::LT_DIRECTIONAL)
+  {
+    gzerr << "Light type [" << _lightType << "] is not supported."
+          << std::endl;
+    return;
+  }
+
   // If _textureSize exceeds max possible tex size, then use default
   if (_textureSize > this->dataPtr->maxTexSize / 2)
   {
@@ -1583,21 +1602,9 @@ void Ogre2Scene::SetShadowTextureSize(LightType _lightType,
     return;
   }
 
-  // Generate list of possible tex size options, each a power of 2,
-  // starting at 1024
-  std::vector<unsigned int> texSizeOptions;
-  unsigned int texSizeOption = 1024u;
-  while (texSizeOption <= this->dataPtr->maxTexSize / 2)
-  {
-    texSizeOptions.push_back(texSizeOption);
-    texSizeOption *= 2;
-  }
-
   // if _textureSize is an invalid texture size, then use default
-  bool validTexSize = std::find(texSizeOptions.begin(),
-      texSizeOptions.end(), _textureSize)
-      != texSizeOptions.end() ? true : false;
-  if (!validTexSize)
+  if (_textureSize < 1024u || _textureSize > (this->dataPtr->maxTexSize / 2)
+      || !math::isPowerOfTwo(_textureSize))
   {
     gzerr << "<texture_size> of '" << _textureSize
           << "' is not a valid texture size,"
@@ -1616,12 +1623,18 @@ void Ogre2Scene::SetShadowTextureSize(LightType _lightType,
 unsigned int Ogre2Scene::ShadowTextureSize(LightType _lightType) const
 {
   // todo: return based on light type, currently only dir light is supported
-  if (_lightType)
+  switch (_lightType)
   {
-    return this->dataPtr->dirTexSize;
+    case LightType::LT_DIRECTIONAL:
+      return this->dataPtr->dirTexSize;
+    case LightType::LT_SPOT:
+    case LightType::LT_POINT:
+      return this->dataPtr->spotPointTexSize;
+    default:
+    case LightType::LT_EMPTY:
+      gzerr << "Invalid light type [" << _lightType << "]" << std::endl;
+      return 0;
   }
-
-  return this->dataPtr->dirTexSize;
 }
 
 //////////////////////////////////////////////////

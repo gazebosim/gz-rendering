@@ -1271,14 +1271,14 @@ namespace gz
       /// \return true to sky is enabled, false otherwise
       public: virtual bool SkyEnabled() const = 0;
 
-      /// @brief  \brief Set the shadow texture size for the given light type.
-      /// @param _lightType Light type that creates the shadow
-      /// @param _textureSize Shadow texture size
+      /// \brief Set the shadow texture size for the given light type.
+      /// \param _lightType Light type that creates the shadow
+      /// \param _textureSize Shadow texture size
       public: virtual void SetShadowTextureSize(LightType _lightType,
                   unsigned int _textureSize) = 0;
 
-      /// @brief \brief Get the shadow texture size for the given light type.
-      /// @param _lightType Light type that creates the shadow
+      /// \brief Get the shadow texture size for the given light type.
+      /// \param _lightType Light type that creates the shadow
       public: virtual unsigned int ShadowTextureSize(LightType _lightType)
                   const = 0;
 

@@ -15,6 +15,8 @@
  *
  */
 
+#include <dlfcn.h>
+
 #include <map>
 #include <mutex>
 

@@ -85,7 +85,11 @@ DYNLIB_HANDLE glPluginHandle;
 
 void loadGLPlugin(const std::string &_pluginName)
 {
+#ifdef _WIN32
   glPluginHandle = DYNLIB_LOAD(_pluginName.c_str());
+#else
+  glPluginHandle = dlopen(_pluginName.c_str(), RTLD_LAZY | RTLD_LOCAL);
+#endif
   DLL_START_PLUGIN pFunc = (DLL_START_PLUGIN)DYNLIB_GETSYM(
       glPluginHandle, "dllStartPlugin");
   pFunc();

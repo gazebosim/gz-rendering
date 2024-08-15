@@ -48,7 +48,7 @@ namespace gz
       public: virtual bool IsEnabled() const override;
 
       // Documentation inherited
-      public: void PreRender(const CameraPtr &_camera) override;
+      public: virtual void PreRender(const CameraPtr &_camera) override;
 
       // Documentation inherited
       public: void SetWideAngleCameraAfterStitching(bool _afterStitching)

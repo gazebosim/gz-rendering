@@ -76,7 +76,7 @@ class Ogre2DepthGaussianNoisePass : public Ogre2GaussianNoisePass
   public: virtual ~Ogre2DepthGaussianNoisePass() {}
 
   // Documentation inherited.
-  public: void PreRender() override;
+  public: virtual void PreRender(const CameraPtr &_camera) override;
 
   // Documentation inherited.
   public: void CreateRenderPass() override;
@@ -180,7 +180,7 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-void Ogre2DepthGaussianNoisePass::PreRender()
+void Ogre2DepthGaussianNoisePass::PreRender(const CameraPtr &/*_camera*/)
 {
   // This function is similar to Ogre2GaussianNoisePass but duplicated here
   // for Ogre2DepthCamera

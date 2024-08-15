@@ -19,6 +19,14 @@ release will remove the deprecated code.
     + Removed: `Ogre::OgreItem *OnSelectionClick(const int _x, const int _y)`
     + Replacement: `Ogre::MovableObject *OnSelectionClick(int _x, int _y)`
 
+1. **GpuRays**
+    + Made function private: `void Copy(Image &_image)`
+    + Use the overloaded function: `void Copy(float *_data)`
+
+1. **RenderPass**
+    + Made function private: `void PreRender()`
+    + Use the overloaded function: `void PreRender(const CameraPtr &_camera)`
+
 ## Gazebo Rendering 7.x to 8.x
 
 ### Deprecations

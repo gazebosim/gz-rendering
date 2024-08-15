@@ -1597,8 +1597,9 @@ bool Ogre2Scene::SetShadowTextureSize(LightType _lightType,
   if (_textureSize > this->dataPtr->maxTexSize / 2)
   {
     gzerr << "<texture_size> of '" << _textureSize
-          << "' exceeds maximum possible texture size,"
-          << " using default texture size" << std::endl;
+          << "' exceeds maximum possible texture size of "
+          << this->dataPtr->maxTexSize <<
+          << ", using default texture size" << std::endl;
     return false;
   }
 

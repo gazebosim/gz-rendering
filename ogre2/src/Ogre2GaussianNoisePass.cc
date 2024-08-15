@@ -60,7 +60,7 @@ Ogre2GaussianNoisePass::~Ogre2GaussianNoisePass()
 }
 
 //////////////////////////////////////////////////
-void Ogre2GaussianNoisePass::PreRender()
+void Ogre2GaussianNoisePass::PreRender(const CameraPtr &/*_camera*/)
 {
   if (!this->dataPtr->gaussianNoiseMat)
     return;

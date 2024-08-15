@@ -36,6 +36,8 @@ typedef khronos_intptr_t GLintptr;
   #include <Winsock2.h>
 #endif
 
+#include <dlfcn.h>
+
 # include <sstream>
 
 #include <OgreDynLib.h>

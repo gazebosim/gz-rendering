@@ -27,12 +27,21 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
-    enum GZ_RENDERING_VISIBLE LightType
+    /// \enum LightType
+    /// \brief Enum for Light types.
+    enum class GZ_RENDERING_VISIBLE LightType
     {
-      LT_EMPTY = 0,
-      LT_POINT = 1,
-      LT_DIRECTIONAL = 2,
-      LT_SPOT = 3
+      /// \brief No light type specified
+      EMPTY = 0,
+
+      /// \brief Point light
+      POINT = 1,
+
+      /// \brief Directional light
+      DIRECTIONAL = 2,
+
+      /// \brief Spot light
+      SPOT = 3
     };
 
     //

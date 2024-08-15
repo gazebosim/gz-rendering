@@ -753,7 +753,7 @@ TEST_F(SceneTest, Sky)
 }
 
 /////////////////////////////////////////////////
-TEST_F(SceneTest, ShadowTexture)
+TEST_F(SceneTest, ShadowTextureSize)
 {
   CHECK_SUPPORTED_ENGINE("ogre2");
 
@@ -761,22 +761,22 @@ TEST_F(SceneTest, ShadowTexture)
   ASSERT_NE(nullptr, scene);
 
   // Default shadow texture size for directional light is 2048u
-  EXPECT_EQ(scene->ShadowTextureSize(LightType::LT_DIRECTIONAL), 2048u);
+  EXPECT_EQ(scene->ShadowTextureSize(LightType::DIRECTIONAL), 2048u);
 
   // Currently only support setting shadow texture size for
   // directional light
   // If set shadow texture size for other light types, it is ignored
-  scene->SetShadowTextureSize(LightType::LT_POINT, 4096u);
-  EXPECT_EQ(scene->ShadowTextureSize(LightType::LT_POINT), 2048u);
+  EXPECT_FALSE(scene->SetShadowTextureSize(LightType::POINT, 4096u));
+  EXPECT_EQ(scene->ShadowTextureSize(LightType::POINT), 2048u);
 
-  scene->SetShadowTextureSize(LightType::LT_SPOT, 4096u);
-  EXPECT_EQ(scene->ShadowTextureSize(LightType::LT_SPOT), 2048u);
+  EXPECT_FALSE(scene->SetShadowTextureSize(LightType::SPOT, 4096u));
+  EXPECT_EQ(scene->ShadowTextureSize(LightType::SPOT), 2048u);
 
   // If set shadow texture size to a valid value, change it
-  scene->SetShadowTextureSize(LightType::LT_DIRECTIONAL, 8192u);
-  EXPECT_EQ(scene->ShadowTextureSize(LightType::LT_DIRECTIONAL), 8192u);
+  EXPECT_TRUE(scene->SetShadowTextureSize(LightType::DIRECTIONAL, 8192u));
+  EXPECT_EQ(scene->ShadowTextureSize(LightType::DIRECTIONAL), 8192u);
 
   // If set shadow texture size to an invalid value, use default
-  scene->SetShadowTextureSize(LightType::LT_DIRECTIONAL, 1000u);
-  EXPECT_EQ(scene->ShadowTextureSize(LightType::LT_DIRECTIONAL), 8192u);
+  EXPECT_FALSE(scene->SetShadowTextureSize(LightType::DIRECTIONAL, 1000u));
+  EXPECT_EQ(scene->ShadowTextureSize(LightType::DIRECTIONAL), 8192u);
 }

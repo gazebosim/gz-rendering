@@ -1582,15 +1582,15 @@ bool Ogre2Scene::SkyEnabled() const
 }
 
 //////////////////////////////////////////////////
-void Ogre2Scene::SetShadowTextureSize(LightType _lightType,
+bool Ogre2Scene::SetShadowTextureSize(LightType _lightType,
     unsigned int _textureSize)
 {
   // If _lightType is not supported, block with gzerr message
-  if (_lightType != LightType::LT_DIRECTIONAL)
+  if (_lightType != LightType::DIRECTIONAL)
   {
-    gzerr << "Light type [" << _lightType << "] is not supported."
-          << std::endl;
-    return;
+    gzerr << "Light type [" << static_cast<int>(_lightType)
+          << "] is not supported." << std::endl;
+    return false;
   }
 
   // If _textureSize exceeds max possible tex size, then use default
@@ -1599,7 +1599,7 @@ void Ogre2Scene::SetShadowTextureSize(LightType _lightType,
     gzerr << "<texture_size> of '" << _textureSize
           << "' exceeds maximum possible texture size,"
           << " using default texture size" << std::endl;
-    return;
+    return false;
   }
 
   // if _textureSize is an invalid texture size, then use default
@@ -1609,14 +1609,15 @@ void Ogre2Scene::SetShadowTextureSize(LightType _lightType,
     gzerr << "<texture_size> of '" << _textureSize
           << "' is not a valid texture size,"
           << " using default texture size" << std::endl;
-    return;
+    return false;
   }
 
   // Set shadow texture size as _textureSize if value is valid
-  if (_lightType == LightType::LT_DIRECTIONAL)
+  if (_lightType == LightType::DIRECTIONAL)
   {
     this->dataPtr->dirTexSize = _textureSize;
   }
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -1625,14 +1626,15 @@ unsigned int Ogre2Scene::ShadowTextureSize(LightType _lightType) const
   // todo: return based on light type, currently only dir light is supported
   switch (_lightType)
   {
-    case LightType::LT_DIRECTIONAL:
+    case LightType::DIRECTIONAL:
       return this->dataPtr->dirTexSize;
-    case LightType::LT_SPOT:
-    case LightType::LT_POINT:
+    case LightType::SPOT:
+    case LightType::POINT:
       return this->dataPtr->spotPointTexSize;
     default:
-    case LightType::LT_EMPTY:
-      gzerr << "Invalid light type [" << _lightType << "]" << std::endl;
+    case LightType::EMPTY:
+      gzerr << "Invalid light type [" << static_cast<int>(_lightType) << "]"
+            << std::endl;
       return 0;
   }
 }

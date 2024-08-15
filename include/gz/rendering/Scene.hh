@@ -1274,7 +1274,7 @@ namespace gz
       /// \brief Set the shadow texture size for the given light type.
       /// \param _lightType Light type that creates the shadow
       /// \param _textureSize Shadow texture size
-      public: virtual void SetShadowTextureSize(LightType _lightType,
+      public: virtual bool SetShadowTextureSize(LightType _lightType,
                   unsigned int _textureSize) = 0;
 
       /// \brief Get the shadow texture size for the given light type.

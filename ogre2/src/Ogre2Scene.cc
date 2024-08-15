@@ -700,6 +700,8 @@ void Ogre2Scene::UpdateShadowNode()
     GLint glMaxTexSize;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &glMaxTexSize);
 
+    // todo: there are issues when setting dirTexSize to a val larger
+    // than 16K
     this->dataPtr->maxTexSize = std::min(this->dataPtr->maxTexSize,
         static_cast<unsigned int>(glMaxTexSize));
   }

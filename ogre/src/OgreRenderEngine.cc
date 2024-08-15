@@ -81,12 +81,12 @@ using namespace rendering;
 // \todo(iche033) Find a proper way to unload the library without causing a
 // crash.
 typedef void (*DLL_START_PLUGIN)(void);
-DYNLIB_HANDLE glPluginHandle;
+void *glPluginHandle;
 
 void loadGLPlugin(const std::string &_pluginName)
 {
   glPluginHandle = dlopen(_pluginName.c_str(), RTLD_LAZY | RTLD_LOCAL);
-  DLL_START_PLUGIN pFunc = (DLL_START_PLUGIN)DYNLIB_GETSYM(
+  DLL_START_PLUGIN pFunc = (DLL_START_PLUGIN)dlsym(
       glPluginHandle, "dllStartPlugin");
   pFunc();
   return;

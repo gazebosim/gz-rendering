@@ -101,7 +101,7 @@ class gz::rendering::Ogre2ScenePrivate
   public: bool skyEnabled = false;
 
   /// \brief Max shadow texture size
-  public: unsigned int maxTexSize = 8192u;
+  public: unsigned int maxTexSize = 16384u;
 
   /// \brief Shadow texture size for directional light
   public: unsigned int dirTexSize = 2048u;
@@ -700,7 +700,8 @@ void Ogre2Scene::UpdateShadowNode()
     GLint glMaxTexSize;
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &glMaxTexSize);
 
-    this->dataPtr->maxTexSize = glMaxTexSize;
+    this->dataPtr->maxTexSize = std::min(this->dataPtr->maxTexSize,
+        static_cast<unsigned int>(glMaxTexSize));
   }
 
   // others
@@ -1594,18 +1595,17 @@ bool Ogre2Scene::SetShadowTextureSize(LightType _lightType,
   }
 
   // If _textureSize exceeds max possible tex size, then use default
-  if (_textureSize > this->dataPtr->maxTexSize / 2)
+  if (_textureSize > this->dataPtr->maxTexSize)
   {
     gzerr << "<texture_size> of '" << _textureSize
           << "' exceeds maximum possible texture size of "
-          << this->dataPtr->maxTexSize <<
+          << this->dataPtr->maxTexSize
           << ", using default texture size" << std::endl;
     return false;
   }
 
   // if _textureSize is an invalid texture size, then use default
-  if (_textureSize < 1024u || _textureSize > (this->dataPtr->maxTexSize / 2)
-      || !math::isPowerOfTwo(_textureSize))
+  if (_textureSize < 512u || !math::isPowerOfTwo(_textureSize))
   {
     gzerr << "<texture_size> of '" << _textureSize
           << "' is not a valid texture size,"

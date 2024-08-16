@@ -426,7 +426,7 @@ void OgreRenderTexture::BuildTarget()
 }
 
 //////////////////////////////////////////////////
-unsigned int OgreRenderTexture::GLId()
+unsigned int OgreRenderTexture::GLId() const
 {
   if (!this->ogreTexture)
     return 0u;

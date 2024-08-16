@@ -190,6 +190,10 @@ namespace gz
       /// \return The vertical resolution.
       /// \sa VerticalRayCount()
       public: virtual double VerticalResolution() const = 0;
+
+      // Disallow use of Camera::Copy by making it private.
+      // Use the overloaded Copy(float *) function instead.
+      private: using Camera::Copy;
     };
   }
   }

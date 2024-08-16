@@ -26,6 +26,24 @@ namespace gz
   namespace rendering
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
+
+    /// \enum LightType
+    /// \brief Enum for Light types.
+    enum class GZ_RENDERING_VISIBLE LightType
+    {
+      /// \brief No light type specified
+      EMPTY = 0,
+
+      /// \brief Point light
+      POINT = 1,
+
+      /// \brief Directional light
+      DIRECTIONAL = 2,
+
+      /// \brief Spot light
+      SPOT = 3
+    };
+
     //
     /// \class Light Light.hh gz/rendering/Light.hh
     /// \brief Represents a light source in the scene graph

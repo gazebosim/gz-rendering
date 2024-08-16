@@ -1476,6 +1476,29 @@ bool BaseScene::SkyEnabled() const
 }
 
 //////////////////////////////////////////////////
+bool BaseScene::SetShadowTextureSize(LightType _lightType,
+    unsigned int _textureSize)
+{
+  if (static_cast<int>(_lightType) || _textureSize)
+  {
+    gzerr << "Setting shadow texture size not supported by: "
+          << this->Engine()->Name() << std::endl;
+  }
+  return false;
+}
+
+//////////////////////////////////////////////////
+unsigned int BaseScene::ShadowTextureSize(LightType _lightType) const
+{
+  if (static_cast<int>(_lightType))
+  {
+    gzerr << "Shadow texture size not supported by: "
+          << this->Engine()->Name() << std::endl;
+  }
+  return 0;
+}
+
+//////////////////////////////////////////////////
 void BaseScene::SetActiveGlobalIllumination(GlobalIlluminationBasePtr _gi)
 {
   // no op, let derived class implement this.

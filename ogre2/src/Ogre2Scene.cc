@@ -15,6 +15,16 @@
  *
  */
 
+#ifdef __APPLE__
+  #define GL_SILENCE_DEPRECATION
+  #include <OpenGL/gl.h>
+  #include <OpenGL/glext.h>
+#else
+#ifndef _WIN32
+  #include <GL/gl.h>
+#endif
+#endif
+
 #include <gz/common/Console.hh>
 
 #include "gz/rendering/base/SceneExt.hh"
@@ -89,6 +99,15 @@ class gz::rendering::Ogre2ScenePrivate
 
   /// \brief Flag to indicate if sky is enabled or not
   public: bool skyEnabled = false;
+
+  /// \brief Max shadow texture size
+  public: unsigned int maxTexSize = 16384u;
+
+  /// \brief Shadow texture size for directional light
+  public: unsigned int dirTexSize = 2048u;
+
+  /// \brief Shadow texture size for spot and point lights
+  public: unsigned int spotPointTexSize = 2048u;
 
   /// \brief Flag to alert the user its usage of PreRender/PostRender
   /// is incorrect
@@ -651,15 +670,15 @@ void Ogre2Scene::UpdateShadowNode()
 
   // directional lights
   unsigned int atlasId = 0u;
-  unsigned int texSize = 2048u;
-  unsigned int halfTexSize = static_cast<unsigned int>(texSize * 0.5);
+  unsigned int dirTexSize = this->dataPtr->dirTexSize;
+  unsigned int halfTexSize = static_cast<unsigned int>(dirTexSize * 0.5);
   for (unsigned int i = 0; i < dirLightCount; ++i)
   {
     shadowParam.technique = Ogre::SHADOWMAP_PSSM;
     shadowParam.atlasId = atlasId;
     shadowParam.numPssmSplits = 3u;
-    shadowParam.resolution[0].x = texSize;
-    shadowParam.resolution[0].y = texSize;
+    shadowParam.resolution[0].x = dirTexSize;
+    shadowParam.resolution[0].y = dirTexSize;
     shadowParam.resolution[1].x = halfTexSize;
     shadowParam.resolution[1].y = halfTexSize;
     shadowParam.resolution[2].x = halfTexSize;
@@ -667,30 +686,41 @@ void Ogre2Scene::UpdateShadowNode()
     shadowParam.atlasStart[0].x = 0u;
     shadowParam.atlasStart[0].y = 0u;
     shadowParam.atlasStart[1].x = 0u;
-    shadowParam.atlasStart[1].y = texSize;
+    shadowParam.atlasStart[1].y = dirTexSize;
     shadowParam.atlasStart[2].x = halfTexSize;
-    shadowParam.atlasStart[2].y = texSize;
+    shadowParam.atlasStart[2].y = dirTexSize;
     shadowParam.supportedLightTypes = 0u;
     shadowParam.addLightType(Ogre::Light::LT_DIRECTIONAL);
     shadowParams.push_back(shadowParam);
     atlasId++;
   }
 
+  if (engine->GraphicsAPI() == GraphicsAPI::OPENGL)
+  {
+    GLint glMaxTexSize;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &glMaxTexSize);
+
+    // todo: there are issues when setting dirTexSize to a val larger
+    // than 16K
+    this->dataPtr->maxTexSize = std::min(this->dataPtr->maxTexSize,
+        static_cast<unsigned int>(glMaxTexSize));
+  }
+
   // others
-  unsigned int maxTexSize = 8192u;
+  unsigned int spotPointTexSize = this->dataPtr->spotPointTexSize;
   unsigned int rowIdx = 0;
   unsigned int colIdx = 0;
-  unsigned int rowSize = maxTexSize / texSize;
+  unsigned int rowSize = this->dataPtr->maxTexSize / spotPointTexSize;
   unsigned int colSize = rowSize;
 
   for (unsigned int i = 0; i < spotPointLightCount; ++i)
   {
     shadowParam.technique = Ogre::SHADOWMAP_FOCUSED;
     shadowParam.atlasId = atlasId;
-    shadowParam.resolution[0].x = texSize;
-    shadowParam.resolution[0].y = texSize;
-    shadowParam.atlasStart[0].x = colIdx * texSize;
-    shadowParam.atlasStart[0].y = rowIdx * texSize;
+    shadowParam.resolution[0].x = spotPointTexSize;
+    shadowParam.resolution[0].y = spotPointTexSize;
+    shadowParam.atlasStart[0].x = colIdx * spotPointTexSize;
+    shadowParam.atlasStart[0].y = rowIdx * spotPointTexSize;
 
     shadowParam.supportedLightTypes = 0u;
     shadowParam.addLightType(Ogre::Light::LT_DIRECTIONAL);
@@ -1552,6 +1582,64 @@ void Ogre2Scene::SetSkyEnabled(bool _enabled)
 bool Ogre2Scene::SkyEnabled() const
 {
   return this->dataPtr->skyEnabled;
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Scene::SetShadowTextureSize(LightType _lightType,
+    unsigned int _textureSize)
+{
+  // If _lightType is not supported, block with gzerr message
+  if (_lightType != LightType::DIRECTIONAL)
+  {
+    gzerr << "Light type [" << static_cast<int>(_lightType)
+          << "] is not supported." << std::endl;
+    return false;
+  }
+
+  // If _textureSize exceeds max possible tex size, then use default
+  if (_textureSize > this->dataPtr->maxTexSize)
+  {
+    gzerr << "<texture_size> of '" << _textureSize
+          << "' exceeds maximum possible texture size of "
+          << this->dataPtr->maxTexSize
+          << ", using default texture size" << std::endl;
+    return false;
+  }
+
+  // if _textureSize is an invalid texture size, then use default
+  if (_textureSize < 512u || !math::isPowerOfTwo(_textureSize))
+  {
+    gzerr << "<texture_size> of '" << _textureSize
+          << "' is not a valid texture size,"
+          << " using default texture size" << std::endl;
+    return false;
+  }
+
+  // Set shadow texture size as _textureSize if value is valid
+  if (_lightType == LightType::DIRECTIONAL)
+  {
+    this->dataPtr->dirTexSize = _textureSize;
+  }
+  return true;
+}
+
+//////////////////////////////////////////////////
+unsigned int Ogre2Scene::ShadowTextureSize(LightType _lightType) const
+{
+  // todo: return based on light type, currently only dir light is supported
+  switch (_lightType)
+  {
+    case LightType::DIRECTIONAL:
+      return this->dataPtr->dirTexSize;
+    case LightType::SPOT:
+    case LightType::POINT:
+      return this->dataPtr->spotPointTexSize;
+    default:
+    case LightType::EMPTY:
+      gzerr << "Invalid light type [" << static_cast<int>(_lightType) << "]"
+            << std::endl;
+      return 0u;
+  }
 }
 
 //////////////////////////////////////////////////

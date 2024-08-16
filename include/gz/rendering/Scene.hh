@@ -34,6 +34,7 @@
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Storage.hh"
 #include "gz/rendering/Export.hh"
+#include "gz/rendering/Light.hh"
 
 namespace gz
 {
@@ -1269,6 +1270,17 @@ namespace gz
       /// \brief Get whether the sky is enabled in the scene.
       /// \return true to sky is enabled, false otherwise
       public: virtual bool SkyEnabled() const = 0;
+
+      /// \brief Set the shadow texture size for the given light type.
+      /// \param _lightType Light type that creates the shadow
+      /// \param _textureSize Shadow texture size
+      public: virtual bool SetShadowTextureSize(LightType _lightType,
+                  unsigned int _textureSize) = 0;
+
+      /// \brief Get the shadow texture size for the given light type.
+      /// \param _lightType Light type that creates the shadow
+      public: virtual unsigned int ShadowTextureSize(LightType _lightType)
+                  const = 0;
 
       /// \brief Sets the given GI as the current new active GI solution
       /// \param[in] _gi GI solution that should be active. Nullptr to disable

@@ -36,7 +36,11 @@ typedef khronos_intptr_t GLintptr;
   #include <Winsock2.h>
 #endif
 
+#include <dlfcn.h>
+
 # include <sstream>
+
+#include <OgreDynLib.h>
 
 #include <gz/plugin/Register.hh>
 
@@ -65,6 +69,32 @@ class gz::rendering::OgreRenderEnginePrivate
 
 using namespace gz;
 using namespace rendering;
+
+// Unloading the RenderSystem_GL plugin was found to cause a crash when the
+// rendering thread exits. This only happens on Ubuntu 24.04 when running
+// ogre using system debs, see
+// https://github.com/gazebosim/gz-rendering/issues/1007
+// To workaround ths issue, we adapt the code for loading the ogre plugin here.
+// We load the RenderSystem_GL library manually and store it in gz-rendering.
+// On shutdown, ogre root will uninstall this plugin and delete the GL
+// render system objects. However, gz-rendering does not unload this plugin.
+// \todo(iche033) Find a proper way to unload the library without causing a
+// crash.
+typedef void (*DLL_START_PLUGIN)(void);
+DYNLIB_HANDLE glPluginHandle;
+
+void loadGLPlugin(const std::string &_pluginName)
+{
+#ifdef _WIN32
+  glPluginHandle = DYNLIB_LOAD(_pluginName.c_str());
+#else
+  glPluginHandle = dlopen(_pluginName.c_str(), RTLD_LAZY | RTLD_LOCAL);
+#endif
+  DLL_START_PLUGIN pFunc = (DLL_START_PLUGIN)DYNLIB_GETSYM(
+      glPluginHandle, "dllStartPlugin");
+  pFunc();
+  return;
+}
 
 //////////////////////////////////////////////////
 OgreRenderEnginePlugin::OgreRenderEnginePlugin()
@@ -118,9 +148,9 @@ void OgreRenderEngine::Destroy()
 
   if (ogreRoot)
   {
+    // TODO(anyone): do we need to catch segfault on delete?
     try
     {
-      // TODO(anyone): do we need to catch segfault on delete?
       delete this->ogreRoot;
     }
     catch (...)
@@ -458,17 +488,26 @@ void OgreRenderEngine::LoadPlugins()
 
     for (piter = plugins.begin(); piter != plugins.end(); ++piter)
     {
+
+      bool isGLPlugin = std::string(*piter).find("RenderSystem_GL")
+          != std::string::npos;
       try
       {
-        // Load the plugin into OGRE
-        this->ogreRoot->loadPlugin(*piter+extension);
+        // Load the plugin
+        if (isGLPlugin)
+          loadGLPlugin(*piter+extension);
+        else
+          this->ogreRoot->loadPlugin(*piter+extension);
       }
       catch(Ogre::Exception &e)
       {
         try
         {
-          // Load the debug plugin into OGRE
-          this->ogreRoot->loadPlugin(*piter+"_d"+extension);
+          // Load the debug plugin
+          if (isGLPlugin)
+            loadGLPlugin(*piter+"_d"+extension);
+          else
+            this->ogreRoot->loadPlugin(*piter+"_d"+extension);
         }
         catch(Ogre::Exception &ed)
         {

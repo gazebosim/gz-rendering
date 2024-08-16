@@ -1638,7 +1638,7 @@ unsigned int Ogre2Scene::ShadowTextureSize(LightType _lightType) const
     case LightType::EMPTY:
       gzerr << "Invalid light type [" << static_cast<int>(_lightType) << "]"
             << std::endl;
-      return 0;
+      return 0u;
   }
 }
 

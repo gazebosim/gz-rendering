@@ -766,11 +766,17 @@ TEST_F(SceneTest, ShadowTextureSize)
   // Currently only support setting shadow texture size for
   // directional light
   // If set shadow texture size for other light types, it is ignored
+  auto spotLight = scene->CreateSpotLight("spot_light");
+  auto pointLight = scene->CreatePointLight("point_light");
+
   EXPECT_FALSE(scene->SetShadowTextureSize(LightType::POINT, 4096u));
   EXPECT_EQ(scene->ShadowTextureSize(LightType::POINT), 2048u);
 
   EXPECT_FALSE(scene->SetShadowTextureSize(LightType::SPOT, 4096u));
   EXPECT_EQ(scene->ShadowTextureSize(LightType::SPOT), 2048u);
+
+  EXPECT_FALSE(scene->SetShadowTextureSize(LightType::EMPTY, 4096u));
+  EXPECT_EQ(scene->ShadowTextureSize(LightType::EMPTY), 0u);
 
   // If set shadow texture size to a valid value, change it
   EXPECT_TRUE(scene->SetShadowTextureSize(LightType::DIRECTIONAL, 8192u));
@@ -778,5 +784,10 @@ TEST_F(SceneTest, ShadowTextureSize)
 
   // If set shadow texture size to an invalid value, use default
   EXPECT_FALSE(scene->SetShadowTextureSize(LightType::DIRECTIONAL, 1000u));
+  EXPECT_EQ(scene->ShadowTextureSize(LightType::DIRECTIONAL), 8192u);
+
+  // If set shadow texture size to a value larger than maxTexSize,
+  // use default
+  EXPECT_FALSE(scene->SetShadowTextureSize(LightType::DIRECTIONAL, 32768u));
   EXPECT_EQ(scene->ShadowTextureSize(LightType::DIRECTIONAL), 8192u);
 }

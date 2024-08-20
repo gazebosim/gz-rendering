@@ -52,11 +52,6 @@ set(GZ_UTILS_VER ${gz-utils3_VERSION_MAJOR})
 
 #--------------------------------------
 # Find OpenGL
-# See CMP0072 for more details (cmake --help-policy CMP0072)
-if (NOT OpenGL_GL_PREFERENCE)
-  set(OpenGL_GL_PREFERENCE "GLVND")
-endif()
-
 if (APPLE)
   gz_find_package(OpenGL
     REQUIRED_BY ogre ogre2

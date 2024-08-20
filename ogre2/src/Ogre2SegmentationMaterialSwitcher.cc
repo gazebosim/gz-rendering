@@ -187,9 +187,9 @@ math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
   int b = distribution(this->generator);
 
   math::Color color(
-    static_cast<float>(r),
-    static_cast<float>(g),
-    static_cast<float>(b));
+    static_cast<float>(r / 255.0f),
+    static_cast<float>(g / 255.0f),
+    static_cast<float>(b / 255.0f));
 
   // if the label is colored before return the color
   // don't check for taken colors in that case, all items

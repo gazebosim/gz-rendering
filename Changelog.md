@@ -86,11 +86,9 @@
 1. Use HIDE_SYMBOLS_BY_DEFAULT
     * [Pull request #941](https://github.com/gazebosim/gz-rendering/pull/941)
 
-1. Bumps in ionic : ci_matching_branch/bump_ionic_gz-rendering9
-    * [Pull request #936](https://github.com/gazebosim/gz-rendering/pull/936)
-
 1. Bumps in Ionic: gz-rendering9
     * [Pull request #935](https://github.com/gazebosim/gz-rendering/pull/935)
+    * [Pull request #936](https://github.com/gazebosim/gz-rendering/pull/936)
 
 1. Add LookAt function to GizmoVisual class
     * [Pull request #882](https://github.com/gazebosim/gz-rendering/pull/882)

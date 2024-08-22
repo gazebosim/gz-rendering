@@ -2,7 +2,101 @@
 
 ### Gazebo Rendering 9.X
 
-### Gazebo Rendering 9.0.0 (2023-XX-XX)
+### Gazebo Rendering 9.0.0 (2024-09-XX)
+
+1. Remove gl preference in cmake
+    * [Pull request #1041](https://github.com/gazebosim/gz-rendering/pull/1041)
+
+1. Fix segmentation camera color id calculation
+    * [Pull request #1040](https://github.com/gazebosim/gz-rendering/pull/1040)
+
+1. Expose shadow texture size for directional lighting in SDF
+    * [Pull request #1034](https://github.com/gazebosim/gz-rendering/pull/1034)
+
+1. Workaround for ogre crash on shutdown on noble
+    * [Pull request #1033](https://github.com/gazebosim/gz-rendering/pull/1033)
+
+1. Fix overloaded virtual warnings on noble
+    * [Pull request #1036](https://github.com/gazebosim/gz-rendering/pull/1036)
+
+1. Enable 24.04 CI, require cmake 3.22.1
+    * [Pull request #1037](https://github.com/gazebosim/gz-rendering/pull/1037)
+
+1. Hide optix related cmake warnings
+    * [Pull request #1032](https://github.com/gazebosim/gz-rendering/pull/1032)
+
+1. Update troubleshooting link
+    * [Pull request #1030](https://github.com/gazebosim/gz-rendering/pull/1030)
+
+1. Fixed integer underflow in OgreDistortionPass
+    * [Pull request #994](https://github.com/gazebosim/gz-rendering/pull/994)
+
+1. Add gamma correction to simple_demo_qml example
+    * [Pull request #1019](https://github.com/gazebosim/gz-rendering/pull/1019)
+
+1. Change return type of ogre 2 ray query related functions from Ogre::Item to Ogre::MovableObject
+    * [Pull request #1024](https://github.com/gazebosim/gz-rendering/pull/1024)
+
+1. Add projection matrix functions to ogre2 camera classes
+    * [Pull request #1021](https://github.com/gazebosim/gz-rendering/pull/1021)
+
+1. Remove deprecated functions and enums
+    * [Pull request #1031](https://github.com/gazebosim/gz-rendering/pull/1031)
+    * [Pull request #1020](https://github.com/gazebosim/gz-rendering/pull/1020)
+
+1. Optimization: remove extra copy of data buffer in Ogre2GpuRays and Ogre2DepthCamera
+    * [Pull request #1022](https://github.com/gazebosim/gz-rendering/pull/1022)
+
+1. Fix crash when wide angle camera FOV is > 180
+    * [Pull request #1016](https://github.com/gazebosim/gz-rendering/pull/1016)
+
+1. Fix debug builds of gz-rendering-ogre2 plugin
+    * [Pull request #1014](https://github.com/gazebosim/gz-rendering/pull/1014)
+
+1. Fix lidar 1st pass texture resolution calculation for FOV < 90 degrees
+    * [Pull request #1012](https://github.com/gazebosim/gz-rendering/pull/1012)
+
+1. Use single cubemap camera in lidar
+    * [Pull request #1013](https://github.com/gazebosim/gz-rendering/pull/1013)
+
+1. Adding cone primitives.
+    * [Pull request #1003](https://github.com/gazebosim/gz-rendering/pull/1003)
+
+1. Parse correctly OGRE2_RESOURCE_PATH on Windows
+    * [Pull request #996](https://github.com/gazebosim/gz-rendering/pull/996)
+
+1. Find python directly instead of using GzPython
+    * [Pull request #990](https://github.com/gazebosim/gz-rendering/pull/990)
+
+1. Fix simple_demo on Windows
+    * [Pull request #987](https://github.com/gazebosim/gz-rendering/pull/987)
+
+1. Fix unused variable warnings
+    * [Pull request #989](https://github.com/gazebosim/gz-rendering/pull/989)
+
+1. Fix compilation on simple_demo_qml on Windows
+    * [Pull request #986](https://github.com/gazebosim/gz-rendering/pull/986)
+
+1. Work around conda-forge's CDT version of GL
+    * [Pull request #983](https://github.com/gazebosim/gz-rendering/pull/983)
+
+1. Remove HIDE_SYMBOLS_BY_DEFAULT: replace by a default configuration in gz-cmake.
+    * [Pull request #953](https://github.com/gazebosim/gz-rendering/pull/953)
+
+1. Use HIDE_SYMBOLS_BY_DEFAULT
+    * [Pull request #941](https://github.com/gazebosim/gz-rendering/pull/941)
+
+1. Bumps in ionic : ci_matching_branch/bump_ionic_gz-rendering9
+    * [Pull request #936](https://github.com/gazebosim/gz-rendering/pull/936)
+
+1. Bumps in Ionic: gz-rendering9
+    * [Pull request #935](https://github.com/gazebosim/gz-rendering/pull/935)
+
+1. Add LookAt function to GizmoVisual class
+    * [Pull request #882](https://github.com/gazebosim/gz-rendering/pull/882)
+
+1. Add projection matrix set/get functions to Ogre Depth camera
+    * [Pull request #928](https://github.com/gazebosim/gz-rendering/pull/928)
 
 ### Gazebo Rendering 8.X
 

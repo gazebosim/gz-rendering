@@ -95,3 +95,32 @@ TEST_F(TextTest, Text)
   // Clean up
   engine->DestroyScene(scene);
 }
+
+class FontTest : public TextTest, public testing::WithParamInterface<std::string> {};
+
+TEST_P(FontTest, SupportedFont){
+  CHECK_SUPPORTED_ENGINE("ogre");
+
+  ScenePtr scene = engine->CreateScene("scene");
+
+  TextPtr text = scene->CreateText();
+  ASSERT_NE(nullptr, text);
+
+  const auto& font = GetParam();
+  // check setting text properties
+  text->SetFontName(font);
+  EXPECT_EQ(font, text->FontName());
+
+  text->SetTextString("abc def");
+  EXPECT_EQ("abc def", text->TextString());
+
+  // Font searching happens during PreRender.
+  text->PreRender();
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+INSTANTIATE_TEST_SUITE_P(FontTestInstantiation,
+                         FontTest,
+                         testing::Values("Console", "Liberation Sans", "Roboto"));

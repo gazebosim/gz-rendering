@@ -4,6 +4,14 @@
 
 ### Gazebo Rendering 9.0.0 (2024-09-XX)
 
+1. **Baseline:** this includes all changes from 8.2.0 and earlier.
+
+1. Update badges to point to gz-rendering9 branch
+    * [Pull request #1044](https://github.com/gazebosim/gz-rendering/pull/1044)
+
+1. Ionic Changelog
+    * [Pull request #1042](https://github.com/gazebosim/gz-rendering/pull/1042)
+
 1. Remove gl preference in cmake
     * [Pull request #1041](https://github.com/gazebosim/gz-rendering/pull/1041)
 

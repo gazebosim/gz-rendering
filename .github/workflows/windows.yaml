@@ -48,7 +48,7 @@ jobs:
         mv ../tmp/gz-rendering .
 
     - name: Build Dependencies
-      run: pixi run colcon build --merge-install --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF  --event-handlers console_direct+ --packages-up-to ${env:PACKAGE}
+      run: pixi run colcon build --merge-install --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF  --event-handlers console_direct+ --packages-skip ${env:PACKAGE}
 
     - name: Build Package
       run: pixi run colcon build --merge-install --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DSKIP_ogre=ON --event-handlers console_direct+ --packages-select ${env:PACKAGE}

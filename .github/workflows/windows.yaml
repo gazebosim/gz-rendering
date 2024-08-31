@@ -50,10 +50,10 @@ jobs:
       run: vcs import --input https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/${env:PACKAGE}.yaml --skip-existing --repos src
 
     - name: Build Dependencies
-      run: ${env:COLCON_BUILD_CMD} -DBUILD_TESTING=OFF  --packages-skip ${env:PACKAGE}
+      run: pixi run ${env:COLCON_BUILD_CMD} -DBUILD_TESTING=OFF  --packages-skip ${env:PACKAGE}
 
     - name: Build Package
-      run: ${env:COLCON_BUILD_CMD} -DBUILD_TESTING=ON -DSKIP_ogre=ON --packages-select ${env:PACKAGE}
+      run: pixi run ${env:COLCON_BUILD_CMD} -DBUILD_TESTING=ON -DSKIP_ogre=ON --packages-select ${env:PACKAGE}
 
     - name: Test
       run: |

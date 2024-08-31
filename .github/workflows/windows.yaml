@@ -32,6 +32,7 @@ jobs:
         # Set environment variables globally
         pixi shell-hook | Out-String | Invoke-Expression
         ("CMAKE_PREFIX_PATH=${env:CONDA_PREFIX}\Library") >> $env:GITHUB_ENV
+        ("PATH=${env:PATH}") >> $env:GITHUB_ENV
     - name: Install base dependencies
       run: |
         # List adapted from https://github.com/gazebo-tooling/release-tools/blob/f89ac8cafc646260598eb8eb6d94be8093bdc9f7/jenkins-scripts/lib/windows_env_vars.bat#L22
@@ -47,14 +48,10 @@ jobs:
         mv ../tmp/gz-rendering .
 
     - name: Build Dependencies
-      run: |
-        pixi run colcon build --merge-install --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF  --event-handlers console_direct+ --packages-up-to ${env:PACKAGE}
+      run: pixi run colcon build --merge-install --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF  --event-handlers console_direct+ --packages-up-to ${env:PACKAGE}
 
     - name: Build Package
       run: pixi run colcon build --merge-install --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DSKIP_ogre=ON --event-handlers console_direct+ --packages-select ${env:PACKAGE}
 
     - name: Test
-      run: |
-
-        eval "$(pixi shell-hook)"
-        pixi run colcon test --merge-install --event-handlers console_direct+ --packages-select ${env:PACKAGE}
+      run: pixi run colcon test --merge-install --event-handlers console_direct+ --packages-select ${env:PACKAGE}

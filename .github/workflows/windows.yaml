@@ -33,7 +33,7 @@ jobs:
         # Set environment variables globally
         pixi shell-hook | Out-String | Invoke-Expression
         ("CMAKE_PREFIX_PATH=${env:CONDA_PREFIX}\Library") >> $env:GITHUB_ENV
-        ("PATH=${env:PATH}") >> $env:GITHUB_ENV
+        ("PATH=${env:PATH};${env:GITHUB_WORKSPACE}\install\bin") >> $env:GITHUB_ENV
     - name: Install base dependencies
       # List adapted from https://github.com/gazebo-tooling/release-tools/blob/f89ac8cafc646260598eb8eb6d94be8093bdc9f7/jenkins-scripts/lib/windows_env_vars.bat#L22
       run: pixi add assimp dlfcn-win32 eigen ffmpeg freeimage gdal gflags ogre ogre-next spdlog tinyxml2
@@ -56,6 +56,4 @@ jobs:
       run: pixi run ${env:COLCON_BUILD_CMD} -DBUILD_TESTING=ON -DSKIP_ogre=ON --packages-select ${env:PACKAGE}
 
     - name: Test
-      run: |
-        $env:PATH += "${env:GITHUB_WORKSPACE}\install\bin"
-        pixi run colcon test --merge-install --event-handlers console_direct+ --packages-select ${env:PACKAGE}
+      run: pixi run colcon test --merge-install --event-handlers console_direct+ --packages-select ${env:PACKAGE}

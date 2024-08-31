@@ -62,5 +62,5 @@ jobs:
 
     - name: Test
       run: 
-        $env:PATH=${env:GITHUB_WORKSPACE}\install\bin;$env:PATH
+        $env:PATH="${env:GITHUB_WORKSPACE}\install\bin";$env:PATH
         pixi run colcon test --merge-install --event-handlers console_direct+ --packages-select ${env:PACKAGE}

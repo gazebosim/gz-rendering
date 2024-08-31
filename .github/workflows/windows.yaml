@@ -54,4 +54,6 @@ jobs:
       run: pixi run colcon build --merge-install --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DSKIP_ogre=ON --event-handlers console_direct+ --packages-select ${env:PACKAGE}
 
     - name: Test
-      run: pixi run colcon test --merge-install --event-handlers console_direct+ --packages-select ${env:PACKAGE}
+      run: 
+        $env:PATH=${env:GITHUB_WORKSPACE}\install\bin;$env:PATH
+        pixi run colcon test --merge-install --event-handlers console_direct+ --packages-select ${env:PACKAGE}

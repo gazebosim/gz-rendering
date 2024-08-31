@@ -31,7 +31,8 @@ jobs:
       shell: bash
       run: |
         eval "$(pixi shell-hook)"
-        echo CMAKE_PREFIX_PATH=$CONDA_PREFIX\\Library >> $GITHUB_ENV
+        echo CMAKE_PREFIX_PATH="$CONDA_PREFIX\\Library" >> $GITHUB_ENV
+        echo PATH="$PATH" >> $GITHUB_ENV
     - name: Install base dependencies
       run: |
         # List adapted from https://github.com/gazebo-tooling/release-tools/blob/f89ac8cafc646260598eb8eb6d94be8093bdc9f7/jenkins-scripts/lib/windows_env_vars.bat#L22

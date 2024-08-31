@@ -27,12 +27,11 @@ jobs:
       run: |
         pixi init
         pixi add vcstool colcon-common-extensions pkgconfig
-    - name: Setup pixi env variables
-      shell: bash
+    - name: Set up environment variables
       run: |
-        eval "$(pixi shell-hook)"
-        echo CMAKE_PREFIX_PATH="$CONDA_PREFIX\\Library" >> $GITHUB_ENV
-        echo PATH="$PATH" >> $GITHUB_ENV
+        # Set environment variables globally
+        pixi shell-hook | Out-String | Invoke-Expression
+        ("CMAKE_PREFIX_PATH=${env:CONDA_PREFIX}\Library") >> $env:GITHUB_ENV
     - name: Install base dependencies
       run: |
         # List adapted from https://github.com/gazebo-tooling/release-tools/blob/f89ac8cafc646260598eb8eb6d94be8093bdc9f7/jenkins-scripts/lib/windows_env_vars.bat#L22
@@ -55,4 +54,7 @@ jobs:
       run: pixi run colcon build --merge-install --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DSKIP_ogre=ON --event-handlers console_direct+ --packages-select ${env:PACKAGE}
 
     - name: Test
-      run: pixi run colcon test --merge-install --event-handlers console_direct+ --packages-select ${env:PACKAGE}
+      run: |
+
+        eval "$(pixi shell-hook)"
+        pixi run colcon test --merge-install --event-handlers console_direct+ --packages-select ${env:PACKAGE}

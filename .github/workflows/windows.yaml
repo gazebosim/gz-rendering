@@ -31,7 +31,7 @@ jobs:
       shell: bash
       run: |
         eval "$(pixi shell-hook)"
-        echo CMAKE_PREFIX_PATH=$CONDA_PREFIX/Library >> $GITHUB_ENV
+        echo CMAKE_PREFIX_PATH=$CONDA_PREFIX\\Library >> $GITHUB_ENV
     - name: Install base dependencies
       run: |
         # List adapted from https://github.com/gazebo-tooling/release-tools/blob/f89ac8cafc646260598eb8eb6d94be8093bdc9f7/jenkins-scripts/lib/windows_env_vars.bat#L22
@@ -41,7 +41,7 @@ jobs:
       run: |
         mkdir src
         cd src
-        pixi run vcs import --input https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/${env:PACKAGE}.yaml
+        pixi run vcs import --input https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/$PACKAGE.yaml
         rm -rf gz-rendering
         # Move the gz-rendering we checkout earlier and replace the one cloned by vcs
         mv ../tmp/gz-rendering .

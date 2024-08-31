@@ -7,17 +7,18 @@ jobs:
     name: Window CI
     env:
       LIBRARY_NAME: gz-rendering
+      COLCON_BUILD_CMD: 'colcon build --merge-install --event-handlers console_direct+ --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release'
     runs-on: windows-2022
     steps:
 
     - uses: actions/checkout@v4
       with:
-        path: tmp/gz-rendering
+        path: src/gz-rendering
     - name: Determine major version
       shell: bash
       run: |
         curl -LO https://raw.githubusercontent.com/gazebo-tooling/release-tools/master/jenkins-scripts/tools/detect_cmake_major_version.py
-        echo PACKAGE="$LIBRARY_NAME$(python3 detect_cmake_major_version.py tmp/gz-rendering/CMakeLists.txt)" >> $GITHUB_ENV
+        echo PACKAGE="$LIBRARY_NAME$(python3 detect_cmake_major_version.py src/gz-rendering/CMakeLists.txt)" >> $GITHUB_ENV
     - name: setup-pixi
       uses: prefix-dev/setup-pixi@v0.8.1
       with:
@@ -34,18 +35,9 @@ jobs:
         ("CMAKE_PREFIX_PATH=${env:CONDA_PREFIX}\Library") >> $env:GITHUB_ENV
         ("PATH=${env:PATH}") >> $env:GITHUB_ENV
     - name: Install base dependencies
-      run: |
-        # List adapted from https://github.com/gazebo-tooling/release-tools/blob/f89ac8cafc646260598eb8eb6d94be8093bdc9f7/jenkins-scripts/lib/windows_env_vars.bat#L22
-        pixi add assimp dlfcn-win32 eigen ffmpeg freeimage gdal gflags ogre ogre-next spdlog tinyxml2
-    - name: Clone source dependencies
-      shell: bash
-      run: |
-        mkdir src
-        cd src
-        pixi run vcs import --input https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/$PACKAGE.yaml
-        rm -rf gz-rendering
-        # Move the gz-rendering we checkout earlier and replace the one cloned by vcs
-        mv ../tmp/gz-rendering .
+      # List adapted from https://github.com/gazebo-tooling/release-tools/blob/f89ac8cafc646260598eb8eb6d94be8093bdc9f7/jenkins-scripts/lib/windows_env_vars.bat#L22
+      run: pixi add assimp dlfcn-win32 eigen ffmpeg freeimage gdal gflags ogre ogre-next spdlog tinyxml2
+
     - name: Run sccache-cache
       uses: mozilla-actions/sccache-action@v0.0.5
     - name: sscache environment
@@ -54,11 +46,14 @@ jobs:
         echo CMAKE_C_COMPILER_LAUNCHER="$SCCACHE_PATH" >> $GITHUB_ENV
         echo CMAKE_CXX_COMPILER_LAUNCHER="$SCCACHE_PATH" >> $GITHUB_ENV
 
+    - name: Clone source dependencies
+      run: pixi run vcs import src --input https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/$PACKAGE.yaml --skip-existing --repos
+
     - name: Build Dependencies
-      run: pixi run colcon build --merge-install --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF  --event-handlers console_direct+ --packages-skip ${env:PACKAGE}
+      run: pixi run ${env:COLCON_BUILD_CMD} -DBUILD_TESTING=OFF  --packages-skip ${env:PACKAGE}
 
     - name: Build Package
-      run: pixi run colcon build --merge-install --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DSKIP_ogre=ON --event-handlers console_direct+ --packages-select ${env:PACKAGE}
+      run: pixi run ${env:COLCON_BUILD_CMD} -DBUILD_TESTING=ON -DSKIP_ogre=ON --packages-select ${env:PACKAGE}
 
     - name: Test
       run: |

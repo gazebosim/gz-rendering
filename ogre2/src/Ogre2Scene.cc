@@ -20,9 +20,13 @@
   #include <OpenGL/gl.h>
   #include <OpenGL/glext.h>
 #else
-#ifndef _WIN32
+  #ifdef _WIN32
+    // windows.h has to be included *before* GL/gl.h
+    // to avoid redefinition errors.
+    #include <windows.h>
+  #endif
+
   #include <GL/gl.h>
-#endif
 #endif
 
 #include <gz/common/Console.hh>

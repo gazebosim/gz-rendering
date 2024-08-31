@@ -47,7 +47,7 @@ jobs:
         echo CMAKE_CXX_COMPILER_LAUNCHER="$SCCACHE_PATH" >> $GITHUB_ENV
 
     - name: Clone source dependencies
-      run: pixi run vcs import src --input https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/$PACKAGE.yaml --skip-existing --repos
+      run: pixi run vcs import --input https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/$PACKAGE.yaml --skip-existing --repos src
 
     - name: Build Dependencies
       run: pixi run ${env:COLCON_BUILD_CMD} -DBUILD_TESTING=OFF  --packages-skip ${env:PACKAGE}

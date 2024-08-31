@@ -46,6 +46,13 @@ jobs:
         rm -rf gz-rendering
         # Move the gz-rendering we checkout earlier and replace the one cloned by vcs
         mv ../tmp/gz-rendering .
+    - name: Run sccache-cache
+      uses: mozilla-actions/sccache-action@v0.0.5
+    - name: sscache environment
+      shell: bash
+      run: |
+        echo CMAKE_C_COMPILER_LAUNCHER="$SCCACHE_PATH" >> $GITHUB_ENV
+        echo CMAKE_CXX_COMPILER_LAUNCHER="$SCCACHE_PATH" >> $GITHUB_ENV
 
     - name: Build Dependencies
       run: pixi run colcon build --merge-install --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF  --event-handlers console_direct+ --packages-skip ${env:PACKAGE}

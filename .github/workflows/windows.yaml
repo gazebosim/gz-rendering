@@ -6,9 +6,18 @@ jobs:
   build:
     name: Window CI
     env:
-      PACKAGE: gz-rendering9
+      LIBRARY_NAME: gz-rendering
     runs-on: windows-latest
     steps:
+
+    - uses: actions/checkout@v4
+      with:
+        path: tmp/gz-rendering
+    - name: Determine major version
+      shell: bash
+      run: |
+        curl -LO https://raw.githubusercontent.com/gazebo-tooling/release-tools/master/jenkins-scripts/tools/detect_cmake_major_version.py
+        echo PACKAGE="$LIBRARY_NAME$(python3 detect_cmake_major_version tmp/gz-rendering/CMakeLists.txt)"" >> $GITHUB_ENV
     - name: setup-pixi
       uses: prefix-dev/setup-pixi@v0.8.1
       with:
@@ -28,14 +37,14 @@ jobs:
         # List adapted from https://github.com/gazebo-tooling/release-tools/blob/f89ac8cafc646260598eb8eb6d94be8093bdc9f7/jenkins-scripts/lib/windows_env_vars.bat#L22
         pixi add assimp dlfcn-win32 eigen ffmpeg freeimage gdal gflags ogre ogre-next spdlog tinyxml2
     - name: Clone source dependencies
+      shell: bash
       run: |
         mkdir src
         cd src
         pixi run vcs import --input https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/${env:PACKAGE}.yaml
-
-    - uses: actions/checkout@v4
-      with:
-        path: src/gz-rendering
+        rm -rf gz-rendering
+        # Move the gz-rendering we checkout earlier and replace the one cloned by vcs
+        mv ../tmp/gz-rendering .
 
     - name: Build Dependencies
       run: |

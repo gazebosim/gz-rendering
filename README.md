@@ -31,9 +31,9 @@ of libraries designed to rapidly develop robot applications.
 
 [Folder Structure](#folder-structure)
 
-[Code of Conduct](#code-of-conduct)
+[Contributing](#contributing)
 
-[Contributing](#code-of-contributing)
+[Code of Conduct](#code-of-conduct)
 
 [Versioning](#versioning)
 
@@ -80,8 +80,8 @@ Rendering engine plugin implementation code is stored in their own folders
 
 # Contributing
 
-Please see
-[CONTRIBUTING.md](https://gazebosim.org/docs/all/contributing).
+Please see the
+[contribution guide](https://gazebosim.org/docs/all/contributing).
 
 # Code of Conduct
 

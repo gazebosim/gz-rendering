@@ -753,14 +753,10 @@ void Ogre2Material::SetLightMap(const std::string &_name,
   this->dataPtr->lightMapData = _img;
   this->lightMapUvSet = _uvSet;
 
-  // in gz-rendering5 + ogre 2.1, we reserved detail map 0 for light map
-  // and set a blend mode (PBSM_BLEND_OVERLAY AND PBSM_BLEND_MULTIPLY2X
-  // produces better results) to blend with base albedo map. However, this
-  // creates unwanted red highlights with ogre 2.2. So switching to use the
-  // emissive map slot and calling setUseEmissiveAsLightmap(true)
-  // Ogre::PbsTextureTypes type = Ogre::PBSM_DETAIL0;
-  // this->ogreDatablock->setDetailMapBlendMode(0, Ogre::PBSM_BLEND_OVERLAY);
-  Ogre::PbsTextureTypes type = Ogre::PBSM_EMISSIVE;
+  // Apply lightmap by using the detail map slot to store the lightmap texture
+  // and blending it with the diffuse map.
+  Ogre::PbsTextureTypes type = Ogre::PBSM_DETAIL0;
+  this->ogreDatablock->setDetailMapBlendMode(0, Ogre::PBSM_BLEND_OVERLAY);
 
   // lightmap usually uses a different tex coord set
   if (_img == nullptr)
@@ -768,7 +764,6 @@ void Ogre2Material::SetLightMap(const std::string &_name,
   else
     this->SetTextureMapDataImpl(this->lightMapName, _img, type);
   this->ogreDatablock->setTextureUvSource(type, this->lightMapUvSet);
-  this->ogreDatablock->setUseEmissiveAsLightmap(true);
 }
 
 //////////////////////////////////////////////////

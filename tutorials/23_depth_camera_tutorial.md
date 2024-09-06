@@ -2,6 +2,14 @@
 
 This example shows how to use the depth camera.
 
+## Install prerequisites
+
+In order to compile this tutorial, you need to install some prerequisites :
+
+```{.sh}
+sudo apt-get install build-essential freeglut3-dev libglew-dev
+```
+
 ## Compile and run the example
 
 Clone the source code, create a build directory and use `cmake` and `make` to compile the code:

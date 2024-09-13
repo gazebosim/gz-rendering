@@ -135,11 +135,9 @@ sdk 4.0.2, comment out lines 167-206).
 
 # Windows
 
-On Windows, only OGRE 1 is currently supported.
+## Install Prerequisites
 
-## Prerequisites
-
-First, follow the [gz-cmake](https://github.com/gazebosim/gz-cmake) tutorial for installing Conda, Visual Studio, CMake, and other prerequisites, and also for creating a Conda environment.
+First, follow the [source installation](https://gazebosim.org/docs/ionic/install_windows_src/) tutorial until step 5 included for installing Conda, Visual Studio, CMake, etc., prerequisites, and creating a Conda environment.
 
 Navigate to ``condabin`` if necessary to use the ``conda`` command (i.e., if Conda is not in your `PATH` environment variable. You can find the location of ``condabin`` in Anaconda Prompt, ``where conda``).
 
@@ -160,14 +158,9 @@ which version you need.
 
 ## Source Installation
 
-This assumes you have created and activated a Conda environment while installing the Prerequisites.
+This assumes you have created and activated a Conda environment while [installing the Prerequisites](#install-prerequisites).
 
-1. Install dependencies:
-  ```
-  conda install ogre --channel conda-forge
-  ```
-
-2. Install Gazebo dependencies:
+1. Install Gazebo dependencies:
 
   You can view available versions and their dependencies:
   ```
@@ -179,13 +172,13 @@ This assumes you have created and activated a Conda environment while installing
   conda install libgz-cmake<#> libgz-common<#> libgz-math<#> libgz-plugin<#> --channel conda-forge
   ```
 
-3. Navigate to where you would like to build the library, and clone the repository.
+2. Navigate to where you would like to build the library, and clone the repository.
   ```
   # Optionally, append `-b gz-rendering#` (replace # with a number) to check out a specific version
   git clone https://github.com/gazebosim/gz-rendering.git
   ```
 
-4. Configure and build
+3. Configure and build
   ```
   cd gz-rendering
   mkdir build
@@ -194,7 +187,7 @@ This assumes you have created and activated a Conda environment while installing
   cmake --build . --config Release
   ```
 
-5. Optionally, install
+4. Optionally, install
   ```
   cmake --install . --config Release
   ```

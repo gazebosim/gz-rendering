@@ -2,9 +2,9 @@
 
 This example shows how to use the depth camera.
 
-## Install prerequisites
+## Install prerequisites (Ubuntu)
 
-In order to compile this tutorial, you need to install some prerequisites :
+In order to compile this tutorial, you need to install some prerequisites:
 
 ```bash
 sudo apt-get install build-essential freeglut3-dev libglew-dev

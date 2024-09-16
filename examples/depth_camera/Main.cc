@@ -38,8 +38,13 @@
 using namespace gz;
 using namespace rendering;
 
+#if not defined(_WIN32)
 const std::string RESOURCE_PATH =
     common::joinPaths(std::string(PROJECT_BINARY_PATH), "media");
+#else
+const std::string RESOURCE_PATH =
+    common::joinPaths(std::string(PROJECT_BINARY_PATH), "..", "media");
+#endif
 
 void buildScene(ScenePtr _scene)
 {

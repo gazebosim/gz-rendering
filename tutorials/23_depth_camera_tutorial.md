@@ -7,7 +7,11 @@ This example shows how to use the depth camera.
 In order to compile this tutorial, you need to install some prerequisites :
 
 ```bash
+# Linux
 sudo apt-get install build-essential freeglut3-dev libglew-dev
+
+# Windows (via conda)
+conda install glew --channel conda-forge
 ```
 
 ## Compile and run the example
@@ -20,13 +24,20 @@ cd gz-rendering/examples/depth_camera
 mkdir build
 cd build
 cmake ..
-make
+# On Linux
+cmake --build .
+# On Windows
+cmake --build . --config Release
 ```
 
 Execute the example:
 
 ```{.sh}
+# Linux
 ./depth_camera ogre
+
+# Windows
+.\Release\depth_camera.exe ogre
 ```
 
 You'll see:

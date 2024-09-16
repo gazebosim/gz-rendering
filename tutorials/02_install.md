@@ -196,9 +196,11 @@ This assumes you have created and activated a Conda environment while [installin
 
 ## Binary Installation
 
-On macOS, add OSRF packages:
+Install [Homebrew](https://brew.sh/).
+
+Add OSRF packages:
+
   ```
-  ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   brew tap osrf/simulation
   ```
 
@@ -207,7 +209,7 @@ Install Gazebo Rendering:
   brew install gz-rendering<#>
   ```
 
-Be sure to replace `<#>` with a number value, such as 7 or 8, depending on
+Be sure to replace `<#>` with a number value, such as 8 or 9, depending on
 which version you need.
 
 ## Source Installation

@@ -20,7 +20,9 @@ if (NOT APPLE)
   link_directories(${GLEW_LIBRARY_DIRS})
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+if(NOT MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+endif()
 
 configure_file (example_config.hh.in ${PROJECT_BINARY_DIR}/example_config.hh)
 

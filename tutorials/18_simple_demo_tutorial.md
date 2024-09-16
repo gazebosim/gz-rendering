@@ -12,12 +12,19 @@ cd gz-rendering/examples/simple_demo
 mkdir build
 cd build
 cmake ..
-make
+# Linux
+cmake --build .
+# Windows
+cmake --build . --config Release
 ```
 Execute the example:
 
 ```{.sh}
+# Linux
 ./simple_demo
+
+# Windows
+.\Release\simple_demo
 ```
 
 You'll see:

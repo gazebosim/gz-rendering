@@ -168,11 +168,11 @@ TEST_F(WavesTest, Waves)
   (*vsParams)["dir0"].InitializeBuffer(2);
   (*vsParams)["dir0"].UpdateBuffer(dir0);
 
-  float dir1[2] = {-0.7, 0.7};
+  float dir1[2] = {-0.7f, 0.7f};
   (*vsParams)["dir1"].InitializeBuffer(2);
   (*vsParams)["dir1"].UpdateBuffer(dir1);
 
-  float dir2[2] = {0.7, 0.7};
+  float dir2[2] = {0.7f, 0.7f};
   (*vsParams)["dir2"].InitializeBuffer(2);
   (*vsParams)["dir2"].UpdateBuffer(dir2);
 

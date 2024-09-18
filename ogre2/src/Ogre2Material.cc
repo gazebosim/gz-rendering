@@ -1268,7 +1268,6 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
     }
     else
     {
-
       if (_type == Ogre::PBSM_DIFFUSE)
         this->dataPtr->AllocateMipmaps(texture);
 

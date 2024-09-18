@@ -1622,7 +1622,7 @@ void Ogre2MaterialPrivate::PrepareAndUploadNormalMap(Ogre::TextureGpu *_texture,
       dstFormat, numMipmaps,
       rowAlignment );
   void *imgData = OGRE_MALLOC_SIMD( dstSizeBytes, Ogre::MEMCATEGORY_RESOURCE);
-  for (Ogre::uint8 mip = 0; mip<numMipmaps; ++mip)
+  for (Ogre::uint8 mip = 0; mip < numMipmaps; ++mip)
   {
     Ogre::TextureBox srcBox = _image.getData( mip );
     const Ogre::uint32 width = srcBox.width;

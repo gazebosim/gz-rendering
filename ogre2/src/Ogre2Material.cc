@@ -15,6 +15,8 @@
  *
  */
 
+#include <cstddef>
+
 // Note this include is placed in the src file because
 // otherwise ogre produces compile errors
 #ifdef _MSC_VER
@@ -135,10 +137,20 @@ class gz::rendering::Ogre2MaterialPrivate
 
   /// \brief Helper function to convert normal maps to two-component normalized
   /// signed 8-bit format, and generate mip maps
-  /// \param[in/out] _texture Normal map texture
+  /// \param[in] _texture Normal map texture
   /// \param[in/out] _image Normal map image data to be uploaded to the texture
   public: void PrepareAndUploadNormalMap(Ogre::TextureGpu *_texture,
       Ogre::Image2 &_image);
+
+  /// \brief Allocate mimaps for the texture. This should be done when the
+  /// texture's residency status is still OnStorage.
+  /// \param[in] _texture Input texture to allocate mimaps
+  public: void AllocateMipmaps(Ogre::TextureGpu *_texture);
+
+  /// \brief Generate mimaps for the texture. This should be done when the
+  /// texture's residency status is Resident.
+  /// \param[in] _texture Input texture to generate mimpas
+  public: void GenerateMipmaps(Ogre::TextureGpu *_texture);
 };
 
 using namespace gz;
@@ -1256,10 +1268,17 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
     }
     else
     {
+
+      if (_type == Ogre::PBSM_DIFFUSE)
+        this->dataPtr->AllocateMipmaps(texture);
+
       // upload raw color image data to gpu texture
       texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
       texture->waitForData();
       img.uploadTo(texture, 0, 0);
+
+      if (_type == Ogre::PBSM_DIFFUSE)
+        this->dataPtr->GenerateMipmaps(texture);
     }
   }
 
@@ -1583,7 +1602,7 @@ void Ogre2MaterialPrivate::PrepareAndUploadNormalMap(Ogre::TextureGpu *_texture,
 {
   // The code below is adapted from ogre-next v2-3. It replicates the steps that
   // ogre does when it loads a normal map from file.
-  // Here we adapte the code to load a normal map texture from an image in
+  // Here we adapt the code to load a normal map texture from an image in
   // memory
   // \todo(iche033) See if there is a way to reuse these functions
   // from ogre-next without copying the code here.
@@ -1630,27 +1649,33 @@ void Ogre2MaterialPrivate::PrepareAndUploadNormalMap(Ogre::TextureGpu *_texture,
       numMipmaps);
   _texture->setPixelFormat(dstFormat);
 
-  // _image.save(_name + ".png", 0, 1);
-   // std::cerr << "tex format " << texture->getWidth() << " " << texture->getHeight() << ": " << texture->getPixelFormat() << " mip "
-     //      << static_cast<int>(texture->getNumMipmaps()) << std::endl;
-   //std::cerr << "image format " << _image.getWidth() << " " << _image.getHeight() << ": " << _image.getPixelFormat() << std::endl;
-   //std::cerr << " Ogre::PFG_RG8_SNORM " << Ogre::PFG_RG8_SNORM << std::endl;
+  // Step 2: Allocate  mip maps
+  this->AllocateMipmaps(_texture);
 
-  // Step 2: Set mip map count
-  // see GenerateHwMipmaps::_executeStreaming function in
+  _texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+  _texture->waitForData();
+  _image.uploadTo(_texture, 0, 0);
+
+  // Step 3: Generate mip maps
+  this->GenerateMipmaps(_texture);
+}
+
+//////////////////////////////////////////////////
+void Ogre2MaterialPrivate::AllocateMipmaps(Ogre::TextureGpu *_texture)
+{
+  // code adpated from GenerateHwMipmaps::_executeStreaming function in
   // OgreMain/src/OgreTextureFilters.cpp
   Ogre::uint8 maxMipmaps = Ogre::PixelFormatGpuUtils::getMaxMipmapCount(
       _texture->getWidth(),
       _texture->getHeight(),
       _texture->getDepth() );
   _texture->setNumMipmaps(maxMipmaps);
+}
 
-  _texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
-  _texture->waitForData();
-  _image.uploadTo(_texture, 0, 0);
-
-  // Step 3: Generate and copy mip maps
-  // see GenerateHwMipmaps::_executeSerial function in
+//////////////////////////////////////////////////
+void Ogre2MaterialPrivate::GenerateMipmaps(Ogre::TextureGpu *_texture)
+{
+  // code adpated from GenerateHwMipmaps::_executeSerial function in
   // OgreMain/src/OgreTextureFilters.cpp
   Ogre::TextureGpuManager *textureManager = _texture->getTextureManager();
   Ogre::TextureGpu *tempTexture = textureManager->createTexture(

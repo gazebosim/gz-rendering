@@ -135,11 +135,11 @@ class gz::rendering::Ogre2MaterialPrivate
     }
   }
 
-  /// \brief Helper function to convert normal maps to two-component normalized
-  /// signed 8-bit format, and generate mip maps
+  /// \brief Prepare for normal mapping by converting to two-component
+  /// normalized signed 8-bit format
   /// \param[in] _texture Normal map texture
-  /// \param[in/out] _image Normal map image data to be uploaded to the texture
-  public: void PrepareAndUploadNormalMap(Ogre::TextureGpu *_texture,
+  /// \param[in/out] _image Normal map image data
+  public: void PrepareForNormalMapping(Ogre::TextureGpu *_texture,
       Ogre::Image2 &_image);
 
   /// \brief Allocate mimaps for the texture. This should be done when the
@@ -1262,23 +1262,28 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
 
     Ogre::Image2 img;
     img.loadDynamicImage(&data[0], false, texture);
+
+    // Replicates the steps that ogre does when it loads a texture map from
+    // file. For normal maps, it is first converted to a two component signed
+    // 8 bit format. Albedo and normal maps will have mipmaps generated.
+    // \todo(iche033) See if there is a way to reuse these functions
+    // from ogre-next without copying the code here.
+
+    // Step 1: convert to two component signed 8 bit format:
+    // Ogre::PFG_RG8_SNORM format
     if (_type == Ogre::PBSM_NORMAL)
-    {
-      this->dataPtr->PrepareAndUploadNormalMap(texture, img);
-    }
-    else
-    {
-      if (_type == Ogre::PBSM_DIFFUSE)
-        this->dataPtr->AllocateMipmaps(texture);
+      this->dataPtr->PrepareForNormalMapping(texture, img);
 
-      // upload raw color image data to gpu texture
-      texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
-      texture->waitForData();
-      img.uploadTo(texture, 0, 0);
+    if (_type == Ogre::PBSM_DIFFUSE || _type == Ogre::PBSM_NORMAL)
+      this->dataPtr->AllocateMipmaps(texture);
 
-      if (_type == Ogre::PBSM_DIFFUSE)
-        this->dataPtr->GenerateMipmaps(texture);
-    }
+    // Upload raw color image data to gpu texture
+    texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+    texture->waitForData();
+    img.uploadTo(texture, 0, 0);
+
+    if (_type == Ogre::PBSM_DIFFUSE || _type == Ogre::PBSM_NORMAL)
+      this->dataPtr->GenerateMipmaps(texture);
   }
 
   // Now assign it to the material
@@ -1596,20 +1601,11 @@ ShaderParamsPtr Ogre2Material::FragmentShaderParams()
 }
 
 //////////////////////////////////////////////////
-void Ogre2MaterialPrivate::PrepareAndUploadNormalMap(Ogre::TextureGpu *_texture,
+void Ogre2MaterialPrivate::PrepareForNormalMapping(Ogre::TextureGpu *_texture,
     Ogre::Image2 &_image)
 {
-  // The code below is adapted from ogre-next v2-3. It replicates the steps that
-  // ogre does when it loads a normal map from file.
-  // Here we adapt the code to load a normal map texture from an image in
-  // memory
-  // \todo(iche033) See if there is a way to reuse these functions
-  // from ogre-next without copying the code here.
-
-  // Step 1: convert to two component signed 8 bit format:
-  // Ogre::PFG_RG8_SNORM format
-  // see PrepareForNormalMapping::_executeStreaming function in
-  // OgreMain/src/OgreTextureFilters.cpp
+  // code adpated from PrepareForNormalMapping::_executeStreaming function in
+  // OgreMain/src/OgreTextureFilters.cpp (v2-3)
   const Ogre::uint8 numMipmaps = _image.getNumMipmaps();
   const Ogre::PixelFormatGpu dstFormat = Ogre::PFG_RG8_SNORM;
   const Ogre::uint32 rowAlignment = 4u;
@@ -1647,23 +1643,13 @@ void Ogre2MaterialPrivate::PrepareAndUploadNormalMap(Ogre::TextureGpu *_texture,
       _image.getDepthOrSlices(), _image.getTextureType(), dstFormat, false,
       numMipmaps);
   _texture->setPixelFormat(dstFormat);
-
-  // Step 2: Allocate  mip maps
-  this->AllocateMipmaps(_texture);
-
-  _texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
-  _texture->waitForData();
-  _image.uploadTo(_texture, 0, 0);
-
-  // Step 3: Generate mip maps
-  this->GenerateMipmaps(_texture);
 }
 
 //////////////////////////////////////////////////
 void Ogre2MaterialPrivate::AllocateMipmaps(Ogre::TextureGpu *_texture)
 {
   // code adpated from GenerateHwMipmaps::_executeStreaming function in
-  // OgreMain/src/OgreTextureFilters.cpp
+  // OgreMain/src/OgreTextureFilters.cpp (v2-3)
   Ogre::uint8 maxMipmaps = Ogre::PixelFormatGpuUtils::getMaxMipmapCount(
       _texture->getWidth(),
       _texture->getHeight(),
@@ -1675,7 +1661,7 @@ void Ogre2MaterialPrivate::AllocateMipmaps(Ogre::TextureGpu *_texture)
 void Ogre2MaterialPrivate::GenerateMipmaps(Ogre::TextureGpu *_texture)
 {
   // code adpated from GenerateHwMipmaps::_executeSerial function in
-  // OgreMain/src/OgreTextureFilters.cpp
+  // OgreMain/src/OgreTextureFilters.cpp (v2-3)
   Ogre::TextureGpuManager *textureManager = _texture->getTextureManager();
   Ogre::TextureGpu *tempTexture = textureManager->createTexture(
       "___tempMipmapTexture",

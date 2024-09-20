@@ -1274,7 +1274,7 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
     // \todo(iche033) See if there is a way to reuse these functions
     // from ogre-next without copying the code here.
 
-    // Step 1: convert to two component signed 8 bit format:
+    // Normal maps - convert to two component signed 8 bit format:
     // Ogre::PFG_RG8_SNORM format
     if (_type == Ogre::PBSM_NORMAL)
       this->dataPtr->PrepareForNormalMapping(texture, img);

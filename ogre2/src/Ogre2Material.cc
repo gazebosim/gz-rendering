@@ -15,6 +15,8 @@
  *
  */
 
+#include <cstddef>
+
 // Note this include is placed in the src file because
 // otherwise ogre produces compile errors
 #ifdef _MSC_VER
@@ -31,6 +33,8 @@
 #include <OgreMaterialManager.h>
 #include <OgrePixelFormatGpuUtils.h>
 #include <OgreTechnique.h>
+#include <OgreTextureBox.h>
+#include <OgreTextureFilters.h>
 #include <OgreTextureGpuManager.h>
 #include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
@@ -130,6 +134,23 @@ class gz::rendering::Ogre2MaterialPrivate
         return "invalid";
     }
   }
+
+  /// \brief Prepare for normal mapping by converting to two-component
+  /// normalized signed 8-bit format
+  /// \param[in] _texture Normal map texture
+  /// \param[in/out] _image Normal map image data
+  public: void PrepareForNormalMapping(Ogre::TextureGpu *_texture,
+      Ogre::Image2 &_image);
+
+  /// \brief Allocate mimaps for the texture. This should be done when the
+  /// texture's residency status is still OnStorage.
+  /// \param[in] _texture Input texture to allocate mimaps
+  public: void AllocateMipmaps(Ogre::TextureGpu *_texture);
+
+  /// \brief Generate mimaps for the texture. This should be done when the
+  /// texture's residency status is Resident.
+  /// \param[in] _texture Input texture to generate mimpas
+  public: void GenerateMipmaps(Ogre::TextureGpu *_texture);
 };
 
 using namespace gz;
@@ -1220,6 +1241,8 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
       root->getRenderSystem()->getTextureGpuManager();
 
   // create the gpu texture
+  Ogre::uint32 filters = Ogre::TextureFilter::TypeGenerateDefaultMipmaps;
+  filters |= this->ogreDatablock->suggestFiltersForType(_type);
   Ogre::uint32 textureFlags = 0;
   textureFlags |= Ogre::TextureFlags::AutomaticBatching;
   Ogre::TextureGpu *texture = textureMgr->createOrRetrieveTexture(
@@ -1228,7 +1251,7 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
       textureFlags | Ogre::TextureFlags::ManualTexture,
       Ogre::TextureTypes::Type2D,
       Ogre::ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME,
-      0u);
+      filters);
 
   // Has to be loaded
   if (texture->getWidth() == 0)
@@ -1241,13 +1264,31 @@ void Ogre2Material::SetTextureMapDataImpl(const std::string& _name,
     texture->setTextureType(Ogre::TextureTypes::Type2D);
     texture->setNumMipmaps(1u);
     texture->setResolution(_img->Width(), _img->Height());
-    texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
-    texture->waitForData();
 
-    // upload raw color image data to gpu texture
     Ogre::Image2 img;
     img.loadDynamicImage(&data[0], false, texture);
+
+    // Replicates the steps that ogre does when it loads a texture map from
+    // file. For normal maps, it is first converted to a two component signed
+    // 8 bit format. Albedo and normal maps will have mipmaps generated.
+    // \todo(iche033) See if there is a way to reuse these functions
+    // from ogre-next without copying the code here.
+
+    // Normal maps - convert to two component signed 8 bit format:
+    // Ogre::PFG_RG8_SNORM format
+    if (_type == Ogre::PBSM_NORMAL)
+      this->dataPtr->PrepareForNormalMapping(texture, img);
+
+    if (_type == Ogre::PBSM_DIFFUSE || _type == Ogre::PBSM_NORMAL)
+      this->dataPtr->AllocateMipmaps(texture);
+
+    // Upload raw color image data to gpu texture
+    texture->scheduleTransitionTo(Ogre::GpuResidency::Resident);
+    texture->waitForData();
     img.uploadTo(texture, 0, 0);
+
+    if (_type == Ogre::PBSM_DIFFUSE || _type == Ogre::PBSM_NORMAL)
+      this->dataPtr->GenerateMipmaps(texture);
   }
 
   // Now assign it to the material
@@ -1562,4 +1603,90 @@ std::string Ogre2Material::FragmentShader() const
 ShaderParamsPtr Ogre2Material::FragmentShaderParams()
 {
   return this->dataPtr->fragmentShaderParams;
+}
+
+//////////////////////////////////////////////////
+void Ogre2MaterialPrivate::PrepareForNormalMapping(Ogre::TextureGpu *_texture,
+    Ogre::Image2 &_image)
+{
+  // code adpated from PrepareForNormalMapping::_executeStreaming function in
+  // OgreMain/src/OgreTextureFilters.cpp (v2-3)
+  const Ogre::uint8 numMipmaps = _image.getNumMipmaps();
+  const Ogre::PixelFormatGpu dstFormat = Ogre::PFG_RG8_SNORM;
+  const Ogre::uint32 rowAlignment = 4u;
+  const size_t dstSizeBytes = Ogre::PixelFormatGpuUtils::calculateSizeBytes(
+      _image.getWidth(),
+      _image.getHeight(),
+      _image.getDepth(),
+      _image.getNumSlices(),
+      dstFormat, numMipmaps,
+      rowAlignment );
+  void *imgData = OGRE_MALLOC_SIMD( dstSizeBytes, Ogre::MEMCATEGORY_RESOURCE);
+  for (Ogre::uint8 mip = 0; mip < numMipmaps; ++mip)
+  {
+    Ogre::TextureBox srcBox = _image.getData( mip );
+    const Ogre::uint32 width = srcBox.width;
+    const Ogre::uint32 height = srcBox.height;
+
+    Ogre::TextureBox dstBox = srcBox;
+    dstBox.bytesPerPixel =
+        Ogre::PixelFormatGpuUtils::getBytesPerPixel(dstFormat);
+    dstBox.bytesPerRow =
+        Ogre::PixelFormatGpuUtils::getSizeBytes(
+        width, 1u, 1u, 1u, dstFormat, 4u);
+    dstBox.bytesPerImage =
+        Ogre::PixelFormatGpuUtils::getSizeBytes(width, height, 1u, 1u,
+        dstFormat, 4u);
+    dstBox.data = Ogre::PixelFormatGpuUtils::advancePointerToMip(
+        imgData, width, height, srcBox.depth, srcBox.numSlices, mip, dstFormat);
+
+    Ogre::PixelFormatGpuUtils::convertForNormalMapping(
+        srcBox, _image.getPixelFormat(),
+        dstBox, dstFormat);
+  }
+  _image.loadDynamicImage(imgData, _image.getWidth(), _image.getHeight(),
+      _image.getDepthOrSlices(), _image.getTextureType(), dstFormat, false,
+      numMipmaps);
+  _texture->setPixelFormat(dstFormat);
+}
+
+//////////////////////////////////////////////////
+void Ogre2MaterialPrivate::AllocateMipmaps(Ogre::TextureGpu *_texture)
+{
+  // code adpated from GenerateHwMipmaps::_executeStreaming function in
+  // OgreMain/src/OgreTextureFilters.cpp (v2-3)
+  Ogre::uint8 maxMipmaps = Ogre::PixelFormatGpuUtils::getMaxMipmapCount(
+      _texture->getWidth(),
+      _texture->getHeight(),
+      _texture->getDepth() );
+  _texture->setNumMipmaps(maxMipmaps);
+}
+
+//////////////////////////////////////////////////
+void Ogre2MaterialPrivate::GenerateMipmaps(Ogre::TextureGpu *_texture)
+{
+  // code adpated from GenerateHwMipmaps::_executeSerial function in
+  // OgreMain/src/OgreTextureFilters.cpp (v2-3)
+  Ogre::TextureGpuManager *textureManager = _texture->getTextureManager();
+  Ogre::TextureGpu *tempTexture = textureManager->createTexture(
+      "___tempMipmapTexture",
+      Ogre::GpuPageOutStrategy::Discard,
+      Ogre::TextureFlags::RenderToTexture |
+      Ogre::TextureFlags::AllowAutomipmaps |
+      Ogre::TextureFlags::DiscardableContent,
+      _texture->getTextureType());
+  tempTexture->copyParametersFrom(_texture);
+  tempTexture->unsafeScheduleTransitionTo(Ogre::GpuResidency::Resident);
+  Ogre::TextureBox box = _texture->getEmptyBox(0);
+  _texture->copyTo(tempTexture, box, 0, box, 0);
+  tempTexture->_autogenerateMipmaps();
+
+  Ogre::uint8 mipmaps = _texture->getNumMipmaps();
+  for (size_t i = 1u; i < mipmaps; ++i)
+  {
+    box = _texture->getEmptyBox( i );
+    tempTexture->copyTo(_texture, box, i, box, i);
+  }
+  textureManager->destroyTexture(tempTexture);
+  tempTexture = 0;
 }

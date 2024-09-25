@@ -2,9 +2,30 @@
 
 ### Gazebo Rendering 9.X
 
-### Gazebo Rendering 9.0.0 (2024-09-XX)
+### Gazebo Rendering 9.0.0 (2024-09-25)
 
 1. **Baseline:** this includes all changes from 8.2.0 and earlier.
+
+1. Update code for loading normal and albedo maps from image data
+    * [Pull request #1068](https://github.com/gazebosim/gz-rendering/pull/1068)
+
+1. examples/depth_camera: Fixed windows usage
+    * [Pull request #1060](https://github.com/gazebosim/gz-rendering/pull/1060)
+
+1. examples/heightmap: Fixed Windows build
+    * [Pull request #1062](https://github.com/gazebosim/gz-rendering/pull/1062)
+
+1. Add Github Action for Windows and fix build
+    * [Pull request #1049](https://github.com/gazebosim/gz-rendering/pull/1049)
+
+1. Miscellaneous documentation fixes
+    * [Pull request #1051](https://github.com/gazebosim/gz-rendering/pull/1051)
+    * [Pull request #1053](https://github.com/gazebosim/gz-rendering/pull/1053)
+    * [Pull request #1054](https://github.com/gazebosim/gz-rendering/pull/1054)
+    * [Pull request #1055](https://github.com/gazebosim/gz-rendering/pull/1055)
+    * [Pull request #1061](https://github.com/gazebosim/gz-rendering/pull/1061)
+    * [Pull request #1064](https://github.com/gazebosim/gz-rendering/pull/1064)
+    * [Pull request #1069](https://github.com/gazebosim/gz-rendering/pull/1069)
 
 1. Update badges to point to gz-rendering9 branch
     * [Pull request #1044](https://github.com/gazebosim/gz-rendering/pull/1044)

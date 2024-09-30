@@ -154,6 +154,11 @@ set(GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR
 set(GZ_RENDERING_ENGINE_INSTALL_DIR
   ${CMAKE_INSTALL_PREFIX}/${GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR})
 
+#--------------------------------------
+# Find DL if doing relocatable installation
+if (GZ_ENABLE_RELOCATABLE_INSTALL)
+  gz_find_package(DL REQUIRED)
+endif()
 
 #--------------------------------------
 # Find dependencies that we ignore for Visual Studio

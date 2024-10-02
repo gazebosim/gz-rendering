@@ -20,21 +20,22 @@
 #include "CommonRenderingTest.hh"
 
 #include <gz/common/geospatial/ImageHeightmap.hh>
+#include <gz/common/testing/TestPaths.hh>
 
 #include "gz/rendering/Heightmap.hh"
 #include "gz/rendering/Scene.hh"
 
 #include <gz/utils/ExtraTestMacros.hh>
 
+
 using namespace gz;
 using namespace rendering;
 
-class HeightmapTest : public CommonRenderingTest 
+class HeightmapTest : public CommonRenderingTest
 {
   /// \brief Path to test media files.
-  public: const std::string TEST_MEDIA_PATH{
-        common::joinPaths(std::string(PROJECT_SOURCE_PATH),
-        "test", "media")};
+  public: const std::string TEST_MEDIA_PATH =
+        gz::common::testing::TestFile("media");
 };
 
 /////////////////////////////////////////////////

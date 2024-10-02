@@ -15,6 +15,8 @@
  *
 */
 
+#include <iostream>
+
 #include <gz/rendering/config.hh>
 #include <gz/rendering/InstallationDirectories.hh>
 
@@ -26,16 +28,20 @@ namespace rendering
 {
 inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
+#ifdef GZ_RENDERING_BAZEL_BUILD
+std::string getInstallPrefix() { return gz::common::joinPaths(gz::common::cwd(), "rendering"); }
+#endif
+
 std::string getResourcePath()
 {
   return gz::common::joinPaths(
-      getInstallPrefix(), GZ_RENDERING_RELATIVE_RESOURCE_PATH);
+    getInstallPrefix(), GZ_RENDERING_RELATIVE_RESOURCE_PATH);
 }
 
 std::string getEngineInstallDir()
 {
   return gz::common::joinPaths(
-      getInstallPrefix(), GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR);
+    getInstallPrefix(), GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR);
 }
 
 }

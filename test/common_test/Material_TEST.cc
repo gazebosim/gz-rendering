@@ -20,6 +20,7 @@
 
 #include "CommonRenderingTest.hh"
 
+#include <gz/common/testing/TestPaths.hh>
 #include <gz/common/Material.hh>
 
 #include "gz/rendering/Camera.hh"
@@ -34,9 +35,8 @@ using namespace rendering;
 
 class MaterialTest : public CommonRenderingTest
 {
-  public: const std::string TEST_MEDIA_PATH =
-        common::joinPaths(std::string(PROJECT_SOURCE_PATH),
-        "test", "media", "materials", "textures");
+  protected: const std::string TEST_MEDIA_PATH =
+        gz::common::testing::TestFile("media", "materials", "textures");
 };
 
 /////////////////////////////////////////////////

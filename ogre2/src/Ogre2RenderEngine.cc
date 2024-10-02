@@ -36,6 +36,7 @@
 #include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 #include "gz/rendering/ogre2/Ogre2Storage.hh"
+#include "Ogre2StaticPluginLoader.hh"
 
 #include "Ogre2GzHlmsPbsPrivate.hh"
 #include "Ogre2GzHlmsTerraPrivate.hh"
@@ -57,11 +58,16 @@
   #include <EGL/egl.h>
 #endif
 
+
 class GZ_RENDERING_OGRE2_HIDDEN
     gz::rendering::Ogre2RenderEnginePrivate
 {
 #if HAVE_GLX
-  public: GLXFBConfig* dummyFBConfigs = nullptr;
+  public: GLXFBConfig* dummyFBConfigs{nullptr};
+#endif
+
+#if OGRE2_STATIC_LIB
+  public: Ogre2StaticPluginLoader* staticPluginLoader{nullptr};
 #endif
 
   /// \brief The graphics API to use
@@ -143,6 +149,11 @@ Ogre::Window * Ogre2RenderEngine::OgreWindow() const
 //////////////////////////////////////////////////
 Ogre2RenderEngine::~Ogre2RenderEngine()
 {
+  if (this->dataPtr->staticPluginLoader)
+  {
+    delete this->dataPtr->staticPluginLoader;
+    this->dataPtr->staticPluginLoader = nullptr;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -183,6 +194,12 @@ void Ogre2RenderEngine::Destroy()
       gzerr << "Error deleting ogre root " << std::endl;
     }
     this->ogreRoot = nullptr;
+  }
+
+  if (this->dataPtr->staticPluginLoader)
+  {
+    delete this->dataPtr->staticPluginLoader;
+    this->dataPtr->staticPluginLoader = nullptr;
   }
 
   delete this->ogreLogManager;
@@ -552,6 +569,14 @@ void Ogre2RenderEngine::CreateOverlay()
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::LoadPlugins()
 {
+#if OGRE2_STATIC_LIB
+  if (!this->dataPtr->staticPluginLoader) {
+    this->dataPtr->staticPluginLoader = new Ogre2StaticPluginLoader;
+  }
+  this->dataPtr->staticPluginLoader->Install(this->ogreRoot);
+  return;
+#endif
+
   for (auto iter = this->ogrePaths.begin();
        iter != this->ogrePaths.end(); ++iter)
   {
@@ -651,6 +676,7 @@ void Ogre2RenderEngine::CreateRenderSystem()
   const Ogre::RenderSystemList *rsList;
 
   rsList = &(this->ogreRoot->getAvailableRenderers());
+
   std::string targetRenderSysName("OpenGL 3+ Rendering Subsystem");
   if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
   {
@@ -681,6 +707,7 @@ void Ogre2RenderEngine::CreateRenderSystem()
       // doesn't complain about the line being too long
       bContinue =
         renderSys && renderSys->getName().compare(targetRenderSysName) != 0;
+      std::cout << "Found: " << renderSys->getName() << std::endl;
     } while (bContinue);
   }
 
@@ -693,9 +720,11 @@ void Ogre2RenderEngine::CreateRenderSystem()
 
   if (!this->Headless())
   {
-
-    // We operate in windowed mode
-    renderSys->setConfigOption("Full Screen", "No");
+    if (this->dataPtr->graphicsAPI != GraphicsAPI::VULKAN)
+    {
+      // We operate in windowed mode
+      renderSys->setConfigOption("Full Screen", "No");
+    }
 
     if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
     {
@@ -706,19 +735,25 @@ void Ogre2RenderEngine::CreateRenderSystem()
       ///           size of the first window created.
       ///   FBO is the only good option
       renderSys->setConfigOption("RTT Preferred Mode", "FBO");
+
     }
   }
   else
   {
-    try
+    if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
     {
-        // This may fail if Ogre was *only* build with EGL support, but in that
-        // case we can ignore the error
+      // This may fail if Ogre was *only* build with EGL support, but in that
+      // case we can ignore the error
+      try {
         renderSys->setConfigOption( "Interface", "Headless EGL / PBuffer" );
+      }
+      catch ( Ogre::Exception & e) {
+        std::cout << "Couldn't set Interface: " << e.what() << std::endl;
+      }
     }
-    catch( Ogre::Exception & )
+    else if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
     {
-      std::cerr << "Unable to setup EGL (headless mode)" << '\n';
+      renderSys->setConfigOption( "Interface", "null" );
     }
   }
 

@@ -563,14 +563,10 @@ bool RenderEngineManagerPrivate::UnloadEnginePlugin(
   std::string pluginName = it->second;
   this->enginePlugins.erase(it);
 
-#ifndef _WIN32
-  // Unloading the plugin on windows causes tests to crash on exit
-  // see issue #45
   if (!this->pluginLoader.ForgetLibraryOfPlugin(pluginName))
   {
     gzerr << "Failed to unload plugin: " << pluginName << std::endl;
   }
-#endif
 
   std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
   auto engineIt = this->engines.find(_engineName);

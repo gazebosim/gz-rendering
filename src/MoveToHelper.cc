@@ -74,7 +74,7 @@ void MoveToHelper::MoveTo(const CameraPtr &_camera,
   else
     key->Translation(start.Pos());
 
-  if (_target.Rot().IsFinite())
+  if (_target.Rot().IsFinite() && _target.Rot() != math::Quaterniond::Zero)
     key->Rotation(_target.Rot());
   else
     key->Rotation(start.Rot());

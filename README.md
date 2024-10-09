@@ -9,7 +9,7 @@
 
 Build | Status
 -- | --
-Test coverage | [![codecov](https://codecov.io/gh/gazebosim/gz-rendering/branch/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/gz-rendering/branch/main)
+Test coverage | [![codecov](https://codecov.io/gh/gazebosim/gz-rendering/tree/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/gz-rendering/tree/main)
 Ubuntu Noble  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-ci-main-noble-amd64)](https://build.osrfoundation.org/job/gz_rendering-ci-main-noble-amd64)
 Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/gz_rendering-ci-main-homebrew-amd64)
 Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-main-win)](https://build.osrfoundation.org/job/gz_rendering-main-win)
@@ -31,9 +31,9 @@ of libraries designed to rapidly develop robot applications.
 
 [Folder Structure](#folder-structure)
 
-[Code of Conduct](#code-of-conduct)
+[Contributing](#contributing)
 
-[Contributing](#code-of-contributing)
+[Code of Conduct](#code-of-conduct)
 
 [Versioning](#versioning)
 
@@ -80,8 +80,8 @@ Rendering engine plugin implementation code is stored in their own folders
 
 # Contributing
 
-Please see
-[CONTRIBUTING.md](https://gazebosim.org/docs/all/contributing).
+Please see the
+[contribution guide](https://gazebosim.org/docs/all/contributing).
 
 # Code of Conduct
 

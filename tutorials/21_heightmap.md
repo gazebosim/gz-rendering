@@ -6,7 +6,7 @@ It loads 2 different heightmaps (image and Digital Elevation Model (DEM)) with d
 
 ## Compile and run the example
 
-Clone the source code, create a build directory and use `cmake` and `make` to compile the code:
+Clone the source code, create a build directory and use `cmake` to compile the code:
 
 ```{.sh}
 git clone https://github.com/gazebosim/gz-rendering
@@ -14,12 +14,19 @@ cd gz-rendering/examples/heightmap
 mkdir build
 cd build
 cmake ..
-make
+# Linux
+cmake --build .
+# Windows
+cmake --build . --config Release
 ```
 Example 1 (image heightmap):
 
 ```{.sh}
+# Linux
 ./heightmap
+
+# Windows
+.\Release\heightmap.exe
 ```
 
 You'll see:

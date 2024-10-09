@@ -48,5 +48,9 @@ make
 Execute the example:
 
 ```{.sh}
+# Linux (defaults to using ogre1)
 ./simple_demo
+
+# macOS (ogre1 is not supported on macOS, but ogre2 is)
+./simple_demo ogre2
 ```

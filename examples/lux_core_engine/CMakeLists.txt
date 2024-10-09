@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 set(GZ_PLUGIN_VER 2)
 set(GZ_COMMON_VER 5)
 
-find_package(gz-rendering9 REQUIRED)
+find_package(gz-rendering10 REQUIRED)
 find_package(gz-plugin3 REQUIRED COMPONENTS all)
 
 if (NOT DEFINED ENV{LUXCORE_SDK_PATH})

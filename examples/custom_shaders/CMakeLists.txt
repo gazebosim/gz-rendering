@@ -5,7 +5,7 @@ include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}
 )
 
-find_package(gz-rendering9 REQUIRED)
+find_package(gz-rendering10 REQUIRED)
 
 find_package(GLUT REQUIRED)
 include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})

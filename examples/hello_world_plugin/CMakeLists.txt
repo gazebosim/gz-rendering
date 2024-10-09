@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 
-find_package(gz-rendering9 REQUIRED)
-set(GZ_RENDERING_VER ${gz-rendering9_VERSION_MAJOR})
+find_package(gz-rendering10 REQUIRED)
+set(GZ_RENDERING_VER ${gz-rendering10_VERSION_MAJOR})
 
 find_package(gz-plugin3 REQUIRED COMPONENTS all)
 set(GZ_PLUGIN_VER ${gz-plugin3_VERSION_MAJOR})

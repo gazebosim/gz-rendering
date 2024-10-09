@@ -473,6 +473,11 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
   {
     gzerr << "Failed to load plugin [" << _filename <<
              "] : couldn't find shared library." << std::endl;
+    gzdbg << "Searched in:\n";
+    for (const auto &path: systemPaths.FilePaths()){
+      gzdbg << path << "\n";
+    }
+
     return false;
   }
 

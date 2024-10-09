@@ -81,6 +81,11 @@ macro(gz_configure_rendering_test)
       APPEND PROPERTY
         ENVIRONMENT "GZ_ENGINE_BACKEND=${gz_configure_rendering_test_RENDER_ENGINE_BACKEND}")
 
+  set_property(
+      TEST ${test_name}
+      APPEND PROPERTY
+        ENVIRONMENT "GZ_RENDERING_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}")
+
   if(gz_configure_rendering_test_HEADLESS)
     set_property(
         TEST ${test_name}

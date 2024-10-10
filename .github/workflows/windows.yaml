@@ -39,10 +39,10 @@ jobs:
 
     - name: Build Dependencies
       run: |
-        pixi run colcon build --merge-install --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF  --event-handlers console_direct+ --packages-up-to ${env:PACKAGE}
+        pixi run colcon build --merge-install --cmake-args " -GVisual Studio 17 2022" " -A x64" " -DCMAKE_BUILD_TYPE=Release" " -DBUILD_TESTING=OFF" --event-handlers console_direct+ --packages-up-to ${env:PACKAGE}
 
     - name: Build Package
-      run: pixi run colcon build --merge-install --cmake-args -G"Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DSKIP_ogre=ON --event-handlers console_direct+ --packages-select ${env:PACKAGE}
+      run: pixi run colcon build --merge-install --cmake-args " -GVisual Studio 17 2022" " -A x64" " -DCMAKE_BUILD_TYPE=Release" " -DBUILD_TESTING=ON" " -DSKIP_ogre=ON" --event-handlers console_direct+ --packages-select ${env:PACKAGE}
 
     - name: Test
       run: pixi run colcon test --merge-install --event-handlers console_direct+ --packages-select ${env:PACKAGE}

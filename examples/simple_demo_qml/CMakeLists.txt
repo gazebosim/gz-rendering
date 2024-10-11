@@ -8,7 +8,7 @@ set(GZ_CMAKE_VER ${gz-cmake4_VERSION_MAJOR})
 
 #------------------------------------------------------------------------
 # Find gz-rendering
-find_package(gz-rendering9)
+find_package(gz-rendering10)
 
 #======================================
 # Find Qt

@@ -17,6 +17,7 @@
 #ifndef GZ_RENDERING_BASE_BASECAMERA_HH_
 #define GZ_RENDERING_BASE_BASECAMERA_HH_
 
+#include <cmath>
 #include <string>
 
 #include <gz/math/Matrix3.hh>
@@ -709,6 +710,12 @@ namespace gz
     template <class T>
     void BaseCamera<T>::SetFarClipPlane(const double _far)
     {
+      if (_far <= 0 || !std::isfinite(_far))
+      {
+        gzerr << "Far clip distance must be a finite number greater than 0."
+              << std::endl;
+        return;
+      }
       this->farClip = _far;
     }
 
@@ -723,6 +730,12 @@ namespace gz
     template <class T>
     void BaseCamera<T>::SetNearClipPlane(const double _near)
     {
+      if (_near <= 0 || !std::isfinite(_near))
+      {
+        gzerr << "Near clip distance must be a finite number greater than 0."
+              << std::endl;
+        return;
+      }
       this->nearClip = _near;
     }
 

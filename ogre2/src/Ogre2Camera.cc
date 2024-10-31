@@ -403,14 +403,14 @@ void Ogre2Camera::SetProjectionType(CameraProjectionType _type)
 void Ogre2Camera::SetNearClipPlane(const double _near)
 {
   BaseCamera::SetNearClipPlane(_near);
-  this->ogreCamera->setNearClipDistance(_near);
+  this->ogreCamera->setNearClipDistance(this->nearClip);
 }
 
 //////////////////////////////////////////////////
 void Ogre2Camera::SetFarClipPlane(const double _far)
 {
   BaseCamera::SetFarClipPlane(_far);
-  this->ogreCamera->setFarClipDistance(_far);
+  this->ogreCamera->setFarClipDistance(this->farClip);
 }
 
 //////////////////////////////////////////////////

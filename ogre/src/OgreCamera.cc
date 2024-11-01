@@ -340,14 +340,14 @@ void OgreCamera::SetNearClipPlane(const double _near)
 {
   // this->nearClip = _near;
   BaseCamera::SetNearClipPlane(_near);
-  this->ogreCamera->setNearClipDistance(_near);
+  this->ogreCamera->setNearClipDistance(this->nearClip);
 }
 
 //////////////////////////////////////////////////
 void OgreCamera::SetFarClipPlane(const double _far)
 {
   BaseCamera::SetFarClipPlane(_far);
-  this->ogreCamera->setFarClipDistance(_far);
+  this->ogreCamera->setFarClipDistance(this->farClip);
 }
 
 //////////////////////////////////////////////////

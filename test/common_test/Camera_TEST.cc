@@ -61,8 +61,16 @@ TEST_F(CameraTest, ViewProjectionMatrix)
   camera->SetNearClipPlane(0.1);
   EXPECT_DOUBLE_EQ(0.1, camera->NearClipPlane());
 
+  // set invalid clip distance and verify it is not set
+  camera->SetNearClipPlane(0.0);
+  EXPECT_DOUBLE_EQ(0.1, camera->NearClipPlane());
+
   EXPECT_GT(camera->FarClipPlane(), 0);
   camera->SetFarClipPlane(800);
+  EXPECT_DOUBLE_EQ(800, camera->FarClipPlane());
+
+  // set invalid clip distance and verify it is not set
+  camera->SetFarClipPlane(-10.0);
   EXPECT_DOUBLE_EQ(800, camera->FarClipPlane());
 
   EXPECT_NE(projMatrix, camera->ProjectionMatrix());

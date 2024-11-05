@@ -84,6 +84,9 @@ void OgreWireBox::Create()
       this->scene->OgreSceneManager()->createManualObject(this->name);
   }
 
+  if (this->box == math::AxisAlignedBox())
+    return;
+
   this->dataPtr->manualObject->clear();
   this->dataPtr->manualObject->setCastShadows(false);
 
@@ -92,9 +95,6 @@ void OgreWireBox::Create()
       this->dataPtr->material->Name() : "Default/White";
   this->dataPtr->manualObject->begin(materialName,
       Ogre::RenderOperation::OT_LINE_LIST);
-
-  if (this->box == math::AxisAlignedBox())
-    return;
 
   gz::math::Vector3d max = this->box.Max();
   gz::math::Vector3d min = this->box.Min();
@@ -172,6 +172,10 @@ void OgreWireBox::SetMaterial(MaterialPtr _material, bool _unique)
 //////////////////////////////////////////////////
 void OgreWireBox::SetMaterialImpl(OgreMaterialPtr _material)
 {
+  if (!this->dataPtr->manualObject ||
+      this->dataPtr->manualObject->getNumSections() == 0u)
+    return;
+
   std::string materialName = _material->Name();
   Ogre::MaterialPtr ogreMaterial = _material->Material();
   this->dataPtr->manualObject->setMaterialName(0, materialName);

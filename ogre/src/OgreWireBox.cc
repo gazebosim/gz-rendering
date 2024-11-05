@@ -93,6 +93,9 @@ void OgreWireBox::Create()
   this->dataPtr->manualObject->begin(materialName,
       Ogre::RenderOperation::OT_LINE_LIST);
 
+  if (this->box == math::AxisAlignedBox())
+    return;
+
   gz::math::Vector3d max = this->box.Max();
   gz::math::Vector3d min = this->box.Min();
 

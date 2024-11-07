@@ -2,6 +2,53 @@
 
 ### Gazebo Rendering 7.X
 
+### Gazebo Rendering 7.5.0 (2024-11-07)
+
+1. Fix waves 'double' to 'float' truncation warning
+    * [Pull request #1065](https://github.com/gazebosim/gz-rendering/pull/1065)
+
+1. Fixed integer underflow in OgreDistortionPass
+    * [Pull request #994](https://github.com/gazebosim/gz-rendering/pull/994)
+
+1. Parse correctly OGRE2_RESOURCE_PATH on Windows
+    * [Pull request #996](https://github.com/gazebosim/gz-rendering/pull/996)
+
+1. Fix setting normal map when not all submeshes have texcoords (ogre2)
+    * [Pull request #976](https://github.com/gazebosim/gz-rendering/pull/976)
+
+1. Improve Ogre2GpuRays performance
+    * [Pull request #955](https://github.com/gazebosim/gz-rendering/pull/955)
+
+1. Backport ogre2 lidar performance improvement
+    * [Pull request #956](https://github.com/gazebosim/gz-rendering/pull/956)
+
+1. Correctly set position-independent code
+    * [Pull request #950](https://github.com/gazebosim/gz-rendering/pull/950)
+
+1. Update github action workflows
+    * [Pull request #940](https://github.com/gazebosim/gz-rendering/pull/940)
+
+1. Add minor comments to BaseGizmoVisual
+    * [Pull request #881](https://github.com/gazebosim/gz-rendering/pull/881)
+
+1. Update github issue template
+    * [Pull request #939](https://github.com/gazebosim/gz-rendering/pull/939)
+
+1. Update examples to use metal as default graphics API on mac
+    * [Pull request #937](https://github.com/gazebosim/gz-rendering/pull/937)
+
+1. Extend ogre 1.x custom shaders support
+    * [Pull request #908](https://github.com/gazebosim/gz-rendering/pull/908)
+
+1. Fix use of srgb format for texture map data
+    * [Pull request #931](https://github.com/gazebosim/gz-rendering/pull/931)
+
+1. Update ci.yml
+    * [Pull request #925](https://github.com/gazebosim/gz-rendering/pull/925)
+
+1. Fix float comparison warnings in test
+    * [Pull request #929](https://github.com/gazebosim/gz-rendering/pull/929)
+
 ### Gazebo Rendering 7.4.2 (2023-09-26)
 
 1. ogre2: use CMAKE_INSTALL_RPATH

@@ -2,6 +2,44 @@
 
 ### Gazebo Rendering 8.X
 
+### Gazebo Rendering 8.2.1
+
+1. Update code for loading normal and albedo maps from image data
+    * [Pull request #1068](https://github.com/gazebosim/gz-rendering/pull/1068)
+
+1. Check for zero quaternion value in MoveToHelper
+    * [Pull request #1076](https://github.com/gazebosim/gz-rendering/pull/1076)
+
+1. Fix waves 'double' to 'float' truncation warning
+    * [Pull request #1065](https://github.com/gazebosim/gz-rendering/pull/1065)
+
+1. Install Roboto fonts to ogre plugin
+    * [Pull request #1035](https://github.com/gazebosim/gz-rendering/pull/1035)
+
+1. Fixed integer underflow in OgreDistortionPass
+    * [Pull request #994](https://github.com/gazebosim/gz-rendering/pull/994)
+
+1. Add gamma correction to simple_demo_qml example
+    * [Pull request #1019](https://github.com/gazebosim/gz-rendering/pull/1019)
+
+1. Optimization: remove extra copy of data buffer in Ogre2GpuRays and Ogre2DepthCamera
+    * [Pull request #1022](https://github.com/gazebosim/gz-rendering/pull/1022)
+
+1. Fix crash when wide angle camera FOV is > 180
+    * [Pull request #1016](https://github.com/gazebosim/gz-rendering/pull/1016)
+
+1. Fix debug builds of gz-rendering-ogre2 plugin
+    * [Pull request #1014](https://github.com/gazebosim/gz-rendering/pull/1014)
+
+1. Fix lidar 1st pass texture resolution calculation for FOV < 90 degrees
+    * [Pull request #1012](https://github.com/gazebosim/gz-rendering/pull/1012)
+
+1. Use single cubemap camera in lidar
+    * [Pull request #1013](https://github.com/gazebosim/gz-rendering/pull/1013)
+
+1. Parse correctly OGRE2_RESOURCE_PATH on Windows
+    * [Pull request #996](https://github.com/gazebosim/gz-rendering/pull/996)
+
 ### Gazebo Rendering 8.2.0
 
 1. Backport: Adding cone primitives.

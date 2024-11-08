@@ -2,7 +2,7 @@
 
 ### Gazebo Rendering 8.X
 
-### Gazebo Rendering 8.2.1
+### Gazebo Rendering 8.2.1 (2024-11-08)
 
 1. Update code for loading normal and albedo maps from image data
     * [Pull request #1068](https://github.com/gazebosim/gz-rendering/pull/1068)
@@ -40,7 +40,7 @@
 1. Parse correctly OGRE2_RESOURCE_PATH on Windows
     * [Pull request #996](https://github.com/gazebosim/gz-rendering/pull/996)
 
-### Gazebo Rendering 8.2.0
+### Gazebo Rendering 8.2.0 (2024-06-19)
 
 1. Backport: Adding cone primitives.
     * [Pull request #1003](https://github.com/gazebosim/gz-rendering/pull/1003)

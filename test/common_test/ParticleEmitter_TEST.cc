@@ -25,6 +25,8 @@
 #include "gz/rendering/ParticleEmitter.hh"
 #include "gz/rendering/Scene.hh"
 
+#include <gz/common/testing/TestPaths.hh>
+
 using namespace gz;
 using namespace rendering;
 
@@ -33,8 +35,7 @@ class ParticleEmitterTest : public CommonRenderingTest
 {
   /// \brief A directory under test/ with some textures.
   protected: const std::string TEST_MEDIA_PATH =
-      common::joinPaths(std::string(PROJECT_SOURCE_PATH),
-      "test", "media", "materials", "textures");
+        gz::common::testing::TestFile("media", "materials", "textures");
 };
 
 /////////////////////////////////////////////////

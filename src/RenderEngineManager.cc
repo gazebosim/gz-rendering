@@ -456,18 +456,21 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
 
   std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
 #if HAVE_OGRE
+  std::cout << "HAVE_OGRE" << std::endl;
   engineName = "ogre";
   this->defaultEngines[engineName] = libName + engineName;
   if (this->engines.find(libName + engineName) == this->engines.end())
     this->engines[libName + engineName] = nullptr;
 #endif
 #if HAVE_OGRE2
+  std::cout << "HAVE_OGRE2" << std::endl;
   engineName = "ogre2";
   this->defaultEngines[engineName] = libName + engineName;
   if (this->engines.find(libName + engineName) == this->engines.end())
     this->engines[libName + engineName] = nullptr;
 #endif
 #if HAVE_OPTIX
+  std::cout << "HAVE_OPTIX" << std::endl;
   engineName = "optix";
   this->defaultEngines[engineName] = libName + engineName;
   if (this->engines.find(libName + engineName) == this->engines.end())

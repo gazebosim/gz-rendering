@@ -22,6 +22,8 @@
 #include "gz/rendering/ogre2/Ogre2GaussianNoisePass.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 
+#include "spdlog/spdlog.h"
+
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
@@ -183,4 +185,6 @@ void Ogre2GaussianNoisePass::CreateRenderPass()
   nodeDef->mapOutputChannel(1, "rt_input");
 }
 
+#ifndef OGRE2_STATIC_LIB
 GZ_RENDERING_REGISTER_RENDER_PASS(Ogre2GaussianNoisePass, GaussianNoisePass)
+#endif

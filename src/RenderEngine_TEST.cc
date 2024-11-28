@@ -41,7 +41,7 @@ void RenderEngineTest::RenderEngine(const std::string &_renderEngine)
   auto engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    FAIL << "Engine '" << _renderEngine
            << "' is not supported" << std::endl;
     return;
   }

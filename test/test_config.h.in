@@ -5,33 +5,36 @@
 #define PROJECT_BUILD_PATH "${PROJECT_BINARY_DIR}"
 #define IGN_RENDERING_TEST_PLUGIN_PATH "${CMAKE_BINARY_DIR}/lib"
 
-#cmakedefine HAVE_OGRE
-#cmakedefine HAVE_OGRE2
-#cmakedefine HAVE_OPTIX
-
 /// \brief Helper macro to instantiate gtest for different engines
 #define RENDER_ENGINE_VALUES ::testing::ValuesIn(\
     gz::rendering::TestValues())
 
 #include <vector>
 #include <gz/common/Util.hh>
+#include <gz/rendering/config.hh>
 
 /// \todo(anyone) re-enable ogre2 test once ogre 2.2 works on macOS
 #ifdef __APPLE__
 static const std::vector<const char *> kRenderEngineTestValues{"ogre", "optix"};
 #else
-  std::vector<const char *> kRenderEngineTestValues;
-  #ifdef HAVE_OGRE
-  kRenderEngineTestValues.push_back("ogre");
-  #endif
-  #ifdef HAVE_OGRE2
-  kRenderEngineTestValues.push_back("ogre2");
-  #endif
-  #ifdef HAVE_OPTIX
-  kRenderEngineTestValues.push_back("optix");
+  #if defined HAVE_OGRE && defined HAVE_OPTIX && defined HAVE_OGRE2
+  static const std::vector<const char *> kRenderEngineTestValues{"ogre", "ogre2", "optix"};
+  #elif defined HAVE_OGRE && defined HAVE_OPTIX
+  static const std::vector<const char *> kRenderEngineTestValues{"ogre", "optix"};
+  #elif defined HAVE_OGRE && defined HAVE_OGRE2
+  static const std::vector<const char *> kRenderEngineTestValues{"ogre", "ogre2"};
+  #elif defined HAVE_OGRE2 && defined HAVE_OPTIX
+  static const std::vector<const char *> kRenderEngineTestValues{"ogre2", "optix"};
+  #elif defined HAVE_OGRE
+  static const std::vector<const char *> kRenderEngineTestValues{"ogre"};
+  #elif defined HAVE_OGRE2
+  static const std::vector<const char *> kRenderEngineTestValues{"ogre2"};
+  #elif defined HAVE_OPTIX
+  static const std::vector<const char *> kRenderEngineTestValues{"optix"};
+  #else
+  #warning "Can not detect a rendering engine support: ogre | ogre2 | optix"
   #endif
 #endif
-
 
 namespace ignition
 {

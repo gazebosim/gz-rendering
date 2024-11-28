@@ -17,19 +17,19 @@
 #ifdef __APPLE__
 static const std::vector<const char *> kRenderEngineTestValues{"ogre", "optix"};
 #else
-  #if defined HAVE_OGRE && defined HAVE_OPTIX && defined HAVE_OGRE2
+  #if defined(HAVE_OGRE) && defined(HAVE_OPTIX) && defined(HAVE_OGRE2)
   static const std::vector<const char *> kRenderEngineTestValues{"ogre", "ogre2", "optix"};
-  #elif defined HAVE_OGRE && defined HAVE_OPTIX
+  #elif defined(HAVE_OGRE) && defined(HAVE_OPTIX)
   static const std::vector<const char *> kRenderEngineTestValues{"ogre", "optix"};
-  #elif defined HAVE_OGRE && defined HAVE_OGRE2
+  #elif defined(HAVE_OGRE) && defined(HAVE_OGRE2)
   static const std::vector<const char *> kRenderEngineTestValues{"ogre", "ogre2"};
-  #elif defined HAVE_OGRE2 && defined HAVE_OPTIX
+  #elif defined(HAVE_OGRE2) && defined(HAVE_OPTIX)
   static const std::vector<const char *> kRenderEngineTestValues{"ogre2", "optix"};
-  #elif defined HAVE_OGRE
+  #elif defined(HAVE_OGRE)
   static const std::vector<const char *> kRenderEngineTestValues{"ogre"};
-  #elif defined HAVE_OGRE2
+  #elif defined(HAVE_OGRE2)
   static const std::vector<const char *> kRenderEngineTestValues{"ogre2"};
-  #elif defined HAVE_OPTIX
+  #elif defined(HAVE_OPTIX)
   static const std::vector<const char *> kRenderEngineTestValues{"optix"};
   #else
   #warning "Can not detect a rendering engine support: ogre | ogre2 | optix"

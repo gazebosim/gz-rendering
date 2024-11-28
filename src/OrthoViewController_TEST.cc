@@ -49,7 +49,7 @@ void OrthoViewControllerTest::OrthoViewControl(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    FAIL << "Engine '" << _renderEngine
+    FAIL() << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -96,7 +96,7 @@ void OrthoViewControllerTest::Control(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    FAIL << "Engine '" << _renderEngine
+    FAIL() << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }

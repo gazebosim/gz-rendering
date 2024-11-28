@@ -54,7 +54,7 @@ TEST_P(HeightmapTest, IGN_UTILS_TEST_ENABLED_ONLY_ON_LINUX(Heightmap))
   auto engine = rendering::engine(renderEngine);
   if (!engine)
   {
-    FAIL << "Engine '" << renderEngine
+    FAIL() << "Engine '" << renderEngine
            << "' is not supported" << std::endl;
     return;
   }

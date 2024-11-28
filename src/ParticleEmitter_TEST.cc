@@ -62,7 +62,7 @@ bool ParticleEmitterTest::SetUp(const std::string &_renderEngine)
   this->engine = rendering::engine(_renderEngine);
   if (!this->engine)
   {
-    FAIL << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    FAIL() << "Engine '" << _renderEngine << "' is not supported" << std::endl;
     return false;
   }
 

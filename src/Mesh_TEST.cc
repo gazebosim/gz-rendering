@@ -64,7 +64,7 @@ void MeshTest::MeshSubMesh(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    FAIL << "Engine '" << _renderEngine
+    FAIL() << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -134,7 +134,7 @@ void MeshTest::MeshSkeleton(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    FAIL << "Engine '" << _renderEngine
+    FAIL() << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -167,12 +167,12 @@ void MeshTest::MeshSkeleton(const std::string &_renderEngine)
 
     if (!skel || skel->AnimationCount() == 0)
     {
-      FAIL();
+      FAIL()();
     }
   }
   else
   {
-    FAIL();
+    FAIL()();
   }
 
   EXPECT_TRUE(mesh->HasSkeleton());
@@ -237,7 +237,7 @@ void MeshTest::MeshSkeletonAnimation(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    FAIL << "Engine '" << _renderEngine
+    FAIL() << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }
@@ -337,7 +337,7 @@ void MeshTest::MeshClone(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    FAIL << "Engine '" << _renderEngine
+    FAIL() << "Engine '" << _renderEngine
            << "' is not supported" << std::endl;
     return;
   }

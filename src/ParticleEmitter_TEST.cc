@@ -60,7 +60,10 @@ class ParticleEmitterTest : public testing::Test,
 bool ParticleEmitterTest::SetUp(const std::string &_renderEngine)
 {
   this->engine = rendering::engine(_renderEngine);
-    return true;
+  if (!this->engine)
+  {
+    igndbg << "Engine '" << _renderEngine << "' is not supported" << std::endl;
+    return false;
   }
 
   this->scene = this->engine->CreateScene("scene");

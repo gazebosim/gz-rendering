@@ -167,12 +167,12 @@ void MeshTest::MeshSkeleton(const std::string &_renderEngine)
 
     if (!skel || skel->AnimationCount() == 0)
     {
-      FAIL()();
+      FAIL();
     }
   }
   else
   {
-    FAIL()();
+    FAIL();
   }
 
   EXPECT_TRUE(mesh->HasSkeleton());

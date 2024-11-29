@@ -28,6 +28,7 @@
   #include <Winsock2.h>
 #endif
 
+# include <exception>
 # include <sstream>
 
 #include <gz/plugin/Register.hh>
@@ -285,8 +286,9 @@ bool OgreRenderEngine::LoadImpl(
     ignerr << ex.what() << std::endl;
     return false;
   }
-  catch (...)
+  catch (std::exception &ex)
   {
+    ignerr << ex.what() << std::endl;
     ignerr << "Failed to load render-engine" << std::endl;
     return false;
   }
@@ -300,8 +302,14 @@ bool OgreRenderEngine::InitImpl()
     this->InitAttempt();
     return true;
   }
-  catch (...)
+  catch (Ogre::Exception &ex)
   {
+    ignerr << ex.what() << std::endl;
+    return false;
+  }
+  catch (std::exception &ex)
+  {
+    ignerr << ex.what() << std::endl;
     ignerr << "Failed to initialize render-engine" << std::endl;
     return false;
   }
@@ -335,6 +343,7 @@ void OgreRenderEngine::CreateLogger()
 
   // create actual log
   this->ogreLogManager = new Ogre::LogManager();
+  std::cout << "LOGPATH: " << logPath << std::endl;
   this->ogreLogManager->createLog(logPath, true, false, false);
 }
 

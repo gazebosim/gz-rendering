@@ -125,21 +125,17 @@ set(IGNITION_RENDERING_ENGINE_INSTALL_DIR
 )
 
 #--------------------------------------
-# Find dependencies that we ignore for Visual Studio
-if(NOT MSVC)
-  #--------------------------------------
-  # Find CUDA
-  find_package(CUDA)
+# Find CUDA
+find_package(CUDA)
 
-  #--------------------------------------
-  # Find OptiX
-  ign_find_package(OptiX VERSION 3.8.0
-      REQUIRED_BY optix
-      PRIVATE_FOR optix)
+#--------------------------------------
+# Find OptiX
+ign_find_package(OptiX VERSION 3.8.0
+    REQUIRED_BY optix
+    PRIVATE_FOR optix)
 
-  if (OptiX_FOUND AND CUDA_FOUND)
-    set(HAVE_OPTIX TRUE)
-  endif()
+if (OptiX_FOUND AND CUDA_FOUND)
+  set(HAVE_OPTIX TRUE)
 endif()
 
 #####################################

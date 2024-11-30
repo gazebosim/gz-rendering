@@ -335,16 +335,22 @@ void OgreRenderEngine::LoadAttempt()
 void OgreRenderEngine::CreateLogger()
 {
   // create log file path
-  std::string logPath;
-  common::env(IGN_HOMEDIR, logPath);
-  logPath = common::joinPaths(logPath, ".ignition", "rendering");
-  common::createDirectories(logPath);
-  logPath = common::joinPaths(logPath, "ogre.log");
+  std::string logPath = "C:/Windows/Temp/ogre.log";
+  // common::env(IGN_HOMEDIR, logPath);
+  // logPath = common::joinPaths(logPath, ".ignition", "rendering");
+  // common::createDirectories(logPath);
+  // ogPath = common::joinPaths(logPath, "ogre.log");
 
   // create actual log
   this->ogreLogManager = new Ogre::LogManager();
   std::cout << "LOGPATH: " << logPath << std::endl;
-  this->ogreLogManager->createLog(logPath, true, false, false);
+  try {
+    this->ogreLogManager->createLog(logPath, true, false, false);
+  }
+  catch (std::exception &ex)
+  {
+    ignerr << ex.what() << std::endl;
+  }
 }
 
 //////////////////////////////////////////////////

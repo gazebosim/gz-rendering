@@ -335,7 +335,7 @@ void OgreRenderEngine::LoadAttempt()
 void OgreRenderEngine::CreateLogger()
 {
   // create log file path
-  std::string logPath = "C:/Windows/Temp/ogre.log";
+  std::string logPath = "ogre.log";
   // common::env(IGN_HOMEDIR, logPath);
   // logPath = common::joinPaths(logPath, ".ignition", "rendering");
   // common::createDirectories(logPath);

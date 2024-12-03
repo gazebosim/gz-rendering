@@ -42,7 +42,7 @@ void BoundingBoxCameraTest::BoundingBoxCamera(const std::string &_renderEngine)
   if (_renderEngine.compare("optix") == 0 ||
       _renderEngine.compare("ogre") == 0)
   {
-    igndbg << "Engine '" << _renderEngine
+    FAIL() << "Engine '" << _renderEngine
            << "' doesn't support bounding box cameras" << std::endl;
     return;
   }
@@ -51,7 +51,7 @@ void BoundingBoxCameraTest::BoundingBoxCamera(const std::string &_renderEngine)
   RenderEngine *engine = rendering::engine(_renderEngine);
   if (!engine)
   {
-    igndbg << "Engine '" << _renderEngine
+    FAIL() << "Engine '" << _renderEngine
               << "' is not supported" << std::endl;
     return;
   }

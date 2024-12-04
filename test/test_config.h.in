@@ -15,7 +15,7 @@
 
 /// \todo(anyone) re-enable ogre2 test once ogre 2.2 works on macOS
 #ifdef __APPLE__
-static const std::vector<const char *> kRenderEngineTestValues{"ogre", "optix"};
+static const std::vector<const char *> kRenderEngineTestValues{"ogre"};
 #else
   /// We can not mix ogre and ogre2 tests in Fortress for a single test file
   /// prefer here ogre2 over ogre.

@@ -9,10 +9,10 @@ release will remove the deprecated code.
 
 ### Removals
 
-1. The environment variable `GZ_RENDERING_RESOURCE_PATH` is removed. Use
+1. The macro `GZ_RENDERING_RESOURCE_PATH` is removed. Use
 `gz::rendering::getResourcePath()` instead.
 
-1. The environment variable `GZ_RENDERING_ENGINE_INSTALL_DIR` is removed. Use
+1. The macro `GZ_RENDERING_ENGINE_INSTALL_DIR` is removed. Use
 `gz::rendering::getEngineInstallDir()` instead.
 
 1. **Ogre2SelectionBuffer**

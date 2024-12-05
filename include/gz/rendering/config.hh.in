@@ -32,10 +32,6 @@
 
 #define GZ_RENDERING_VERSION_HEADER "Gazebo Rendering, version ${PROJECT_VERSION_FULL}\nCopyright (C) 2014 Open Source Robotics Foundation.\nReleased under the Apache 2.0 License.\n\n"
 
-#define GZ_RENDERING_RESOURCE_PATH _Pragma ("GCC warning \"'GZ_RENDERING_RESOURCE_PATH' macro is deprecated, use gz::rendering::getResourcePath() function instead. \"") "${GZ_RENDERING_RESOURCE_PATH}"
-
-#define GZ_RENDERING_ENGINE_INSTALL_DIR _Pragma ("GCC warning \"'GZ_RENDERING_ENGINE_INSTALL_DIR' macro is deprecated, use gz::rendering::getEngineInstallDir() function instead. \"") "${GZ_RENDERING_ENGINE_INSTALL_DIR}"
-
 #cmakedefine GZ_RENDERING_HAVE_OGRE 1
 #cmakedefine GZ_RENDERING_HAVE_OGRE2 1
 #cmakedefine GZ_RENDERING_HAVE_OPTIX 1

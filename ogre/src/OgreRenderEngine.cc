@@ -331,7 +331,9 @@ void OgreRenderEngine::LoadAttempt()
   std::cout << "CreateRenderSystem success" << std::endl;
   this->ogreRoot->initialise(false);
   this->CreateResources();
+  std::cout << "CreateResources success" << std::endl;
   this->CreateRenderWindow();
+  std::cout << "CreateRenderWindow success" << std::endl;
   this->CheckCapabilities();
   std::cout << "LoadAttempt success" << std::endl;
 }
@@ -650,7 +652,7 @@ void OgreRenderEngine::CreateRenderWindow()
       1, 0);
   if (res.empty())
   {
-    ignerr << "Failed to create dummy render window." << std::endl;
+    std::cout << "Failed to create dummy render window." << std::endl;
   }
 }
 

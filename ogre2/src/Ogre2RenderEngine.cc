@@ -542,19 +542,21 @@ void Ogre2RenderEngine::LoadPlugins()
       // load the plugin
       try
       {
+        std::cerr << "======== try loading plugin " << filename << std::endl;
 #if HAVE_GLX
         // Store the current GLX context in case OGRE plugin init changes it
-        const auto context = glXGetCurrentContext();
-        const auto display = glXGetCurrentDisplay();
-        const auto drawable = glXGetCurrentDrawable();
+        // const auto context = glXGetCurrentContext();
+        // const auto display = glXGetCurrentDisplay();
+        // const auto drawable = glXGetCurrentDrawable();
 #endif
 
         // Load the plugin into OGRE
         this->ogreRoot->loadPlugin(filename);
+        std::cerr << "======== done loading plugin!!  " << filename << std::endl;
 
 #if HAVE_GLX
         // Restore GLX context
-        glXMakeCurrent(display, drawable, context);
+        // glXMakeCurrent(display, drawable, context);
 #endif
       }
       catch(Ogre::Exception &e)

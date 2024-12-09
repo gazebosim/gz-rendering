@@ -473,7 +473,9 @@ void Ogre2RenderEngine::CreateRoot()
 {
   try
   {
+    std::cerr << "CREATE OGRE ROOT " << std::endl;
     this->ogreRoot = new Ogre::Root("", "", "");
+    std::cerr << "CREATE OGRE ROOT SUCCESS " << std::endl;
   }
   catch (Ogre::Exception &ex)
   {
@@ -540,7 +542,7 @@ void Ogre2RenderEngine::LoadPlugins()
       }
 
       // load the plugin
-      try
+      //try
       {
         std::cerr << "======== try loading plugin " << filename << std::endl;
 #if HAVE_GLX
@@ -559,15 +561,15 @@ void Ogre2RenderEngine::LoadPlugins()
         // glXMakeCurrent(display, drawable, context);
 #endif
       }
-      catch(Ogre::Exception &e)
-      {
-        if ((*piter).find("RenderSystem") != std::string::npos)
-        {
-          ignerr << "Unable to load Ogre Plugin[" << *piter
-                 << "]. Rendering will not be possible."
-                 << "Make sure you have installed OGRE properly.\n";
-        }
-      }
+      // catch(Ogre::Exception &e)
+      // {
+      //   if ((*piter).find("RenderSystem") != std::string::npos)
+      //   {
+      //     ignerr << "Unable to load Ogre Plugin[" << *piter
+      //            << "]. Rendering will not be possible."
+      //            << "Make sure you have installed OGRE properly.\n";
+      //   }
+      // }
     }
   }
 }

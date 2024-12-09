@@ -99,6 +99,7 @@ Ogre2RenderEngine::Ogre2RenderEngine() :
 
   std::string ogrePath = std::string(OGRE2_RESOURCE_PATH);
   this->ogrePaths.push_back(ogrePath);
+  std::cerr << "======== OGRE2_RESOURCE_PATH " << ogrePath << std::endl;
 
   const char *env = std::getenv("OGRE2_RESOURCE_PATH");
   if (env)
@@ -521,6 +522,8 @@ void Ogre2RenderEngine::LoadPlugins()
     {
       // check if plugin library exists
       std::string filename = *piter+extension;
+
+      std::cerr << "======== checking ogre plugin filename " << filename << std::endl;
       if (!common::exists(filename))
       {
         filename = filename + "." + std::string(OGRE2_VERSION);

@@ -28,6 +28,7 @@
   #include <Winsock2.h>
 #endif
 
+# include <exception>
 # include <sstream>
 
 #include <gz/plugin/Register.hh>
@@ -285,11 +286,13 @@ bool OgreRenderEngine::LoadImpl(
     ignerr << ex.what() << std::endl;
     return false;
   }
-  catch (...)
+  catch (std::exception &ex)
   {
+    ignerr << ex.what() << std::endl;
     ignerr << "Failed to load render-engine" << std::endl;
     return false;
   }
+  std::cout << "LoadImpl sucess" << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -300,8 +303,14 @@ bool OgreRenderEngine::InitImpl()
     this->InitAttempt();
     return true;
   }
-  catch (...)
+  catch (Ogre::Exception &ex)
   {
+    ignerr << ex.what() << std::endl;
+    return false;
+  }
+  catch (std::exception &ex)
+  {
+    ignerr << ex.what() << std::endl;
     ignerr << "Failed to initialize render-engine" << std::endl;
     return false;
   }
@@ -310,17 +319,21 @@ bool OgreRenderEngine::InitImpl()
 //////////////////////////////////////////////////
 void OgreRenderEngine::LoadAttempt()
 {
+  std::cout << "LoadAttempt init" << std::endl;
   this->CreateLogger();
   if (!this->useCurrentGLContext)
     this->CreateContext();
   this->CreateRoot();
+  std::cout << "CreateRoot success" << std::endl;
   this->CreateOverlay();
   this->LoadPlugins();
   this->CreateRenderSystem();
+  std::cout << "CreateRenderSystem success" << std::endl;
   this->ogreRoot->initialise(false);
   this->CreateResources();
   this->CreateRenderWindow();
   this->CheckCapabilities();
+  std::cout << "LoadAttempt success" << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -329,13 +342,25 @@ void OgreRenderEngine::CreateLogger()
   // create log file path
   std::string logPath;
   common::env(IGN_HOMEDIR, logPath);
+  // #ifdef _WIN32
+  // logPath.append("\\.ignition\\rendering\\ogre.log");
+  // #else
   logPath = common::joinPaths(logPath, ".ignition", "rendering");
   common::createDirectories(logPath);
   logPath = common::joinPaths(logPath, "ogre.log");
+  // #endif
 
   // create actual log
   this->ogreLogManager = new Ogre::LogManager();
-  this->ogreLogManager->createLog(logPath, true, false, false);
+  std::cout << "LOGPATH: " << logPath << std::endl;
+  try {
+    this->ogreLogManager->createLog(logPath, true, false, false);
+  }
+  catch (std::exception &ex)
+  {
+    ignerr << ex.what() << std::endl;
+  }
+  std::cout << "CreateLogger success" << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -564,10 +589,21 @@ void OgreRenderEngine::CreateResources()
   std::string resourcePath = (env) ? std::string(env) :
       IGN_RENDERING_RESOURCE_PATH;
   // install path
+  // #ifdef _WIN32
+  // mediaPath = resourcePath.append("\\ogre\\media" )
+  // #else
   std::string mediaPath = common::joinPaths(resourcePath, "ogre", "media");
+  // #endif
+  std::cout << "MEDIAPATH1: " << mediaPath << std::endl;
   paths.push_back(mediaPath);
+
   // src path
+  // #ifdef _WIN32
+  // mediaPath = resourcePath.append("\\ogre\\src\\media");
+  // #else
   mediaPath = common::joinPaths(resourcePath, "ogre", "src", "media");
+  // #endif
+  std::cout << "MEDIAPATH2: " << mediaPath << std::endl;
   paths.push_back(mediaPath);
 
   for (auto const &p : paths)

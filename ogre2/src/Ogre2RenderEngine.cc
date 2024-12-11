@@ -558,10 +558,15 @@ void Ogre2RenderEngine::LoadPlugins()
       {
         if ((*piter).find("RenderSystem") != std::string::npos)
         {
-          ignerr << "Unable to load Ogre Plugin[" << *piter
+          ignerr << "Unable to load Ogre Plugin[" << filename
                  << "]. Rendering will not be possible."
                  << "Make sure you have installed OGRE properly.\n";
         }
+	ignerr << ex.what() << std::endl;
+      }
+      catch (std::exception &ex) 
+      {
+	std::cerr << ex.what() << std::endl;
       }
     }
   }
@@ -590,6 +595,7 @@ void Ogre2RenderEngine::CreateRenderSystem()
       break;
 
     renderSys = rsList->at(c);
+    std::cout << renderSys->getName() << std::endl;
     c++;
   }
   // cpplint has a false positive when extending a while call to multiple lines

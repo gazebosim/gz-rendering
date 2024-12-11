@@ -554,7 +554,7 @@ void Ogre2RenderEngine::LoadPlugins()
         glXMakeCurrent(display, drawable, context);
 #endif
       }
-      catch(Ogre::Exception &e)
+      catch(Ogre::Exception &ex)
       {
         if ((*piter).find("RenderSystem") != std::string::npos)
         {

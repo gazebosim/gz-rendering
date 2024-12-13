@@ -153,6 +153,10 @@ void Ogre2RenderEngine::Destroy()
     {
     }
     this->ogreRoot = nullptr;
+
+#ifdef _WIN32
+    UnregisterClassA("OgreGLWindow", nullptr);
+#endif
   }
 
   delete this->ogreLogManager;
@@ -564,7 +568,7 @@ void Ogre2RenderEngine::LoadPlugins()
         }
 	ignerr << ex.what() << std::endl;
       }
-      catch (std::exception &ex) 
+      catch (std::exception &ex)
       {
 	std::cerr << ex.what() << std::endl;
       }

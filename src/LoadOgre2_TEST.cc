@@ -31,6 +31,15 @@ TEST(LoadOgre2Test, LoadOgre2)
 {
   // Get engine
   auto engine = rendering::engine("ogre2");
+
+  common::SystemPaths sysPath;
+  auto ogre2log = common::joinPaths(sysPath.LogPath(), "rendering",
+      "ogre2.log");
+  std::ifstream ifs(ogre2log);
+  std::string content((std::istreambuf_iterator<char>(ifs)),
+                      (std::istreambuf_iterator<char>()));
+  std::cerr << content << std::endl;
+
   ASSERT_NE(nullptr, engine) << "Unable to load ogre2 render engine"
                              << std::endl;
 

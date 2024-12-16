@@ -422,20 +422,6 @@ Ogre::MovableObject *Ogre2SelectionBuffer::OnSelectionClick(int _x, int _y)
 }
 
 /////////////////////////////////////////////////
-bool Ogre2SelectionBuffer::ExecuteQuery(const int _x, const int _y,
-    Ogre::Item *&_item, math::Vector3d &_point)
-{
-  Ogre::MovableObject *obj = nullptr;
-  bool out = this->ExecuteQuery(_x, _y, obj, _point);
-
-  Ogre::Item *item = dynamic_cast<Ogre::Item *>(obj);
-  if (item)
-    _item = item;
-
-  return out;
-}
-
-/////////////////////////////////////////////////
 bool Ogre2SelectionBuffer::ExecuteQuery(int _x, int _y,
     Ogre::MovableObject *&_obj, math::Vector3d &_point)
 {

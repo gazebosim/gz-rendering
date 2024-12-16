@@ -12,6 +12,9 @@ release will remove the deprecated code.
 1. The macro `GZ_RENDERING_RESOURCE_PATH` is removed. Use
 `gz::rendering::getResourcePath()` instead.
 
+1. The macro `GZ_RENDERING_ENGINE_INSTALL_DIR` is removed. Use
+`gz::rendering::getEngineInstallDir()` instead.
+
 1. **Ogre2SelectionBuffer**
     + Removed: `bool ExecuteQuery(const int _x, const int _y, Ogre::Item *&_item, math::Vector3d &_point)`
     + Replacement: `bool ExecuteQuery(int _x, int _y, Ogre::MovableObject *&_obj, math::Vector3d &_point)`

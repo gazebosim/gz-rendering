@@ -153,6 +153,10 @@ void Ogre2RenderEngine::Destroy()
     {
     }
     this->ogreRoot = nullptr;
+
+#ifdef _WIN32
+    UnregisterClassA("OgreGLWindow", nullptr);
+#endif
   }
 
   delete this->ogreLogManager;

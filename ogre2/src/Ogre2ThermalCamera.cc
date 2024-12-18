@@ -90,12 +90,12 @@ class Ogre2ThermalCameraMaterialSwitcher : public Ogre::Camera::Listener
   /// \param[in] _resolution Temperature linear resolution
   public: void SetLinearResolution(double _resolution);
 
-  /// \brief Callback when a camara is about to be rendered
+  /// \brief Callback when a camera is about to be rendered
   /// \param[in] _cam Ogre camera pointer which is about to render
   private: virtual void cameraPreRenderScene(
     Ogre::Camera * _cam) override;
 
-  /// \brief Callback when a camera is finisned being rendered
+  /// \brief Callback when a camera is finished being rendered
   /// \param[in] _cam Ogre camera pointer which has already render
   private: virtual void cameraPostRenderScene(
     Ogre::Camera * _cam) override;
@@ -279,38 +279,32 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
       Variant tempAny = ogreVisual->UserData(tempKey);
       if (tempAny.index() != 0 && !std::holds_alternative<std::string>(tempAny))
       {
-        float temp = -1.0;
+        float temp = -1.0f;
         bool foundTemp = true;
-        try
+        if (std::holds_alternative<float>(tempAny))
         {
           temp = std::get<float>(tempAny);
         }
-        catch(...)
+        else if (std::holds_alternative<double>(tempAny))
         {
-          try
-          {
-            temp = static_cast<float>(std::get<double>(tempAny));
-          }
-          catch(...)
-          {
-            try
-            {
-              temp = static_cast<float>(std::get<int>(tempAny));
-            }
-            catch(std::bad_variant_access &e)
-            {
-              gzerr << "Error casting user data: " << e.what() << "\n";
-              temp = -1.0;
-              foundTemp = false;
-            }
-          }
+          temp = static_cast<float>(std::get<double>(tempAny));
+        }
+        else if (std::holds_alternative<int>(tempAny))
+        {
+          temp = static_cast<float>(std::get<int>(tempAny));
+        }
+        else
+        {
+          gzerr << "Error casting user data: temperature\n";
+          temp = -1.0f;
+          foundTemp = false;
         }
 
         // if a non-positive temperature was given, clamp it to 0
         if (foundTemp && temp < 0.0)
         {
           temp = 0.0;
-          gzwarn << "Unable to set negatve temperature for: "
+          gzwarn << "Unable to set negative temperature for: "
               << ogreVisual->Name() << ". Value cannot be lower than absolute "
               << "zero. Clamping temperature to 0 degrees Kelvin."
               << std::endl;
@@ -560,36 +554,30 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
       {
         float temp = -1.0;
         bool foundTemp = true;
-        try
+        if (std::holds_alternative<float>(tempAny))
         {
           temp = std::get<float>(tempAny);
         }
-        catch (...)
+        else if (std::holds_alternative<double>(tempAny))
         {
-          try
-          {
-            temp = static_cast<float>(std::get<double>(tempAny));
-          }
-          catch (...)
-          {
-            try
-            {
-              temp = static_cast<float>(std::get<int>(tempAny));
-            }
-            catch (std::bad_variant_access &e)
-            {
-              gzerr << "Error casting user data: " << e.what() << "\n";
-              temp = -1.0;
-              foundTemp = false;
-            }
-          }
+          temp = static_cast<float>(std::get<double>(tempAny));
+        }
+        else if (std::holds_alternative<int>(tempAny))
+        {
+          temp = static_cast<float>(std::get<int>(tempAny));
+        }
+        else
+        {
+          gzerr << "Error casting user data: temperature\n";
+          temp = -1.0f;
+          foundTemp = false;
         }
 
         // if a non-positive temperature was given, clamp it to 0
         if (foundTemp && temp < 0.0)
         {
           temp = 0.0;
-          gzwarn << "Unable to set negatve temperature for: " << visual->Name()
+          gzwarn << "Unable to set negative temperature for: " << visual->Name()
                   << ". Value cannot be lower than absolute "
                   << "zero. Clamping temperature to 0 degrees Kelvin."
                   << std::endl;
@@ -1068,7 +1056,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
   this->dataPtr->ogreThermalTexture->scheduleTransitionTo(
     Ogre::GpuResidency::Resident);
 
-  // create compositor worksspace
+  // create compositor workspace
   this->dataPtr->ogreCompositorWorkspace =
       ogreCompMgr->addWorkspace(
         this->scene->OgreSceneManager(),
@@ -1078,7 +1066,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
         false);
 
   // add thermal material switcher to render target listener
-  // so we can switch to use heat material when the camera is being udpated
+  // so we can switch to use heat material when the camera is being updated
   Ogre::CompositorNode *node =
       this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
   auto channels = node->getLocalTextures();

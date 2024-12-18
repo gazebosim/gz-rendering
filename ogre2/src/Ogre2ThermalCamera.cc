@@ -250,7 +250,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
   const Ogre::HlmsBlendblock *noBlend =
     hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
 
-  static const std::string tempKey = "temperature";
+  const std::string tempKey = "temperature";
 
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);

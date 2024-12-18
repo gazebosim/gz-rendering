@@ -295,7 +295,7 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
   const Ogre::HlmsBlendblock *noBlend =
     hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
 
-  static const std::string laserRetroKey = "laser_retro";
+  const std::string laserRetroKey = "laser_retro";
 
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);

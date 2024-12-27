@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2024 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,24 +72,7 @@ namespace gz
       /// \brief Destructor
       public: virtual ~FrustumVisual();
 
-      /// \brief Constructor
-      /// \param[in] _near Near plane distance. This is the distance from
-      /// the frustum's vertex to the closest plane
-      /// \param[in] _far Far plane distance. This is the distance from the
-      /// frustum's vertex to the farthest plane.
-      /// \param[in] _fov Field of view. The field of view is the
-      /// angle between the frustum's vertex and the edges of the near or far
-      /// plane. This value represents the horizontal angle.
-      /// \param[in] _aspectRatio The aspect ratio, which is the width divided
-      /// by height of the near or far planes.
-      /// \param[in] _pose Pose of the frustum, which is the vertex (top of
-      /// the pyramid).
-      /*protected: FrustumVisual(double _near,
-                      double _far,
-                      const math::Angle &_fov,
-                      double _aspectRatio,
-                      const gz::math::Pose3d &_pose = gz::math::Pose3d::Zero);*/
-
+      /// \brief Update the Visual
       public: virtual void Update() = 0;
 
       /// \brief Get the near distance. This is the distance from the
@@ -147,16 +130,6 @@ namespace gz
       /// \return Plane of the frustum.
       public: virtual gz::math::Planed Plane(const FrustumVisualPlane _plane) const = 0;
 
-      /// \brief Check if a box lies inside the pyramid frustum.
-      /// \param[in] _b Box to check.
-      /// \return True if the box is inside the pyramid frustum.
-      //public: virtual bool Contains(const gz::math::AxisAlignedBox &_b) const = 0; //TO-DO
-
-      /// \brief Check if a point lies inside the pyramid frustum.
-      /// \param[in] _p Point to check.
-      /// \return True if the point is inside the pyramid frustum.
-      //public: virtual bool Contains(const gz::math::Vector3d &_p) const = 0; //TO-DO
-
       /// \brief Get the pose of the frustum
       /// \return Pose of the frustum
       /// \sa SetPose
@@ -170,9 +143,6 @@ namespace gz
       /// \brief Compute the planes of the frustum. This is called whenever
       /// a property of the frustum is changed.
       private: void ComputePlanes();
-
-      /// \brief Private data pointer
-      //GZ_UTILS_IMPL_PTR(dataPtr)
     };
     }
   }

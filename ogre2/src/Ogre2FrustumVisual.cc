@@ -25,6 +25,11 @@
 #endif
 #endif
 
+#include <array>
+#include <cmath>
+#include <memory>
+#include <string>
+
 #include <gz/common/Console.hh>
 
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"

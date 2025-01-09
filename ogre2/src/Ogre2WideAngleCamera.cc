@@ -161,7 +161,6 @@ class gz::rendering::Ogre2WideAngleCamera::Implementation
   /// changed
   public: bool backgroundMaterialDirty = false;
 
-
   /// \brief Destination image data - used if image format is not rgb
   ///  and needs to be converted to another format.
   public: std::unique_ptr<unsigned char []> dstImgData;

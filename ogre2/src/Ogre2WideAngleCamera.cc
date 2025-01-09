@@ -161,6 +161,11 @@ class gz::rendering::Ogre2WideAngleCamera::Implementation
   /// changed
   public: bool backgroundMaterialDirty = false;
 
+
+  /// \brief Destination image data - used if image format is not rgb
+  ///  and needs to be converted to another format.
+  public: std::unique_ptr<unsigned char []> dstImgData;
+
   explicit Implementation(gz::rendering::Ogre2WideAngleCamera &_owner) :
     workspaceListener(_owner)
   {
@@ -1261,40 +1266,70 @@ void Ogre2WideAngleCamera::PostRender()
   if (this->dataPtr->newImageFrame.ConnectionCount() <= 0u)
     return;
 
+  PixelFormat format = this->ImageFormat();
   const unsigned int width = this->ImageWidth();
   const unsigned int height = this->ImageHeight();
+  unsigned int channelCount = PixelUtil::ChannelCount(format);
+  unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
 
   // blit data from gpu to cpu
-  Ogre::Image2 image;
-  image.convertFromTexture(this->dataPtr->ogreStitchTexture[kStichFinalTexture],
-                           0u, 0u);
-  Ogre::TextureBox box = image.getData(0u);
-
-  // Convert in-place from RGBA32 to RGB24 reusing the same memory region.
-  // The data contained will no longer be meaningful to Image2, but that
-  // class will no longer manipulate that data. We also store it contiguously
-  // (which is what gazebo expects), instead of aligning rows to 4 bytes like
-  // Ogre does. This saves RAM and lots of bandwidth.
-  uint8_t *RESTRICT_ALIAS rgb24 =
-    reinterpret_cast<uint8_t * RESTRICT_ALIAS>(box.data);
-  for (size_t y = 0; y < box.height; ++y)
+  Ogre::TextureGpu *texture =
+      this->dataPtr->ogreStitchTexture[kStichFinalTexture];
+  void *rawData = nullptr;
+  Ogre::Image2 ogreImage;
+  if (format == PF_R8G8B8)
   {
-    uint8_t *RESTRICT_ALIAS rgba32 =
-      reinterpret_cast<uint8_t * RESTRICT_ALIAS>(box.at(0u, y, 0u));
-    for (size_t x = 0; x < box.width; ++x)
-    {
-      *rgb24++ = *rgba32++;
-      *rgb24++ = *rgba32++;
-      *rgb24++ = *rgba32++;
-      ++rgba32;
-    }
-  }
+    ogreImage.convertFromTexture(texture, 0u, 0u);
+    Ogre::TextureBox box = ogreImage.getData(0u);
 
-  PixelFormat format = this->ImageFormat();
-  unsigned int channelCount = PixelUtil::ChannelCount(format);
-  this->dataPtr->newImageFrame(reinterpret_cast<uint8_t *>(box.data), width,
+    // Convert in-place from RGBA32 to RGB24 reusing the same memory region.
+    // The data contained will no longer be meaningful to Image2, but that
+    // class will no longer manipulate that data. We also store it contiguously
+    // (which is what gazebo expects), instead of aligning rows to 4 bytes like
+    // Ogre does. This saves RAM and lots of bandwidth.
+    uint8_t *RESTRICT_ALIAS rgb24 =
+      reinterpret_cast<uint8_t * RESTRICT_ALIAS>(box.data);
+    for (size_t y = 0; y < box.height; ++y)
+    {
+      uint8_t *RESTRICT_ALIAS rgba32 =
+        reinterpret_cast<uint8_t * RESTRICT_ALIAS>(box.at(0u, y, 0u));
+      for (size_t x = 0; x < box.width; ++x)
+      {
+        *rgb24++ = *rgba32++;
+        *rgb24++ = *rgba32++;
+        *rgb24++ = *rgba32++;
+        ++rgba32;
+      }
+    }
+    rawData = box.data;
+  }
+  else
+  {
+    // convert to destination format
+    Ogre::PixelFormatGpu dstOgrePf = Ogre2Conversions::Convert(format);
+    Ogre::TextureBox dstBox(
+      texture->getInternalWidth(), texture->getInternalHeight(),
+      texture->getDepth(), texture->getNumSlices(),
+      static_cast<uint32_t>(
+        Ogre::PixelFormatGpuUtils::getBytesPerPixel(dstOgrePf)),
+      static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
+        texture->getInternalWidth(), 1u, 1u, 1u, dstOgrePf, 1u)),
+      static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
+        texture->getInternalWidth(), texture->getInternalHeight(), 1u, 1u,
+        dstOgrePf, 1u)));
+    if (!this->dataPtr->dstImgData)
+    {
+      this->dataPtr->dstImgData = std::make_unique<unsigned char []>(
+          width * height * channelCount * bytesPerChannel);
+    }
+    dstBox.data = this->dataPtr->dstImgData.get();
+    Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u),
+                                       dstBox, dstOgrePf);
+    rawData = dstBox.data;
+  }
+  this->dataPtr->newImageFrame(reinterpret_cast<uint8_t *>(rawData), width,
                                height, channelCount,
-                               PixelUtil::Name(this->ImageFormat()));
+                               PixelUtil::Name(format));
 
   // Uncomment to debug wide angle cameraoutput
   // gzdbg << "wxh: " << width << " x " << height << std::endl;

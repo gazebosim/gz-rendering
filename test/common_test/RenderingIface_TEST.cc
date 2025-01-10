@@ -122,14 +122,19 @@ TEST(RenderingIfaceTest, RegisterEngine)
   if (count == 0)
     return;
 
-  // unregister existing engine by index
-  RenderEngine *eng = engine(0u);
+  RenderEngine *eng = nullptr;
+  std::string engineToTest = "";
+  if (gz::utils::env(kEngineToTestEnv, engineToTest))
+    eng = engine(engineToTest);
+  else
+    eng = engine(0u);
+
   ASSERT_NE(nullptr, eng);
   auto engineName = eng->Name();
   ASSERT_FALSE(engineName.empty());
 
   EXPECT_TRUE(hasEngine(engineName));
-  EXPECT_NO_THROW(unregisterEngine(0u));
+  EXPECT_NO_THROW(unregisterEngine(engineName));
   EXPECT_FALSE(hasEngine(engineName));
 
   // register engine back with a different name

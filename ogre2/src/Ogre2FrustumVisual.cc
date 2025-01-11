@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Open Source Robotics Foundation
+ * Copyright (C) 2025 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,8 @@ class gz::rendering::Ogre2FrustumVisualPrivate
   public: std::vector<std::shared_ptr<Ogre2DynamicRenderable>> rayLines;
 
   /// \brief Frustum visual type
-  //public: FrustumVisualPlane frustumVisPlane =
-  	  //FrustumVisualPlane::FRUSTUM_PLANE_TOP;
+  //  public: FrustumVisualPlane frustumVisPlane =
+  //    FrustumVisualPlane::FRUSTUM_PLANE_TOP;
 
   /// \brief The visibility of the visual
   public: bool visible = true;
@@ -68,7 +68,8 @@ class gz::rendering::Ogre2FrustumVisualPrivate
   public: std::array<gz::math::Vector3d, 8> points;
 
   /// \brief each edge of the frustum.
-  public: std::array<std::pair<gz::math::Vector3d, gz::math::Vector3d>, 12> edges;
+  public: std::array<std::pair<gz::math::Vector3d,
+    gz::math::Vector3d>, 12> edges;
 };
 
 using namespace gz;
@@ -148,10 +149,9 @@ void Ogre2FrustumVisual::Update()
   #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
     MaterialPtr mat = this->Scene()->Material("Frustum/BlueRay");
   #else
-    //MaterialPtr mat = this->Scene()->Material(rayLineMat); //FIX-ME
     MaterialPtr mat = this->Scene()->Material("Frustum/BlueRay");
   #endif
-  
+
   renderable->SetMaterial(mat, false);
   renderable->SetOperationType(MT_LINE_LIST);
   this->dataPtr->rayLines.push_back(renderable);
@@ -172,9 +172,12 @@ void Ogre2FrustumVisual::Update()
   double farHeight = farWidth / this->aspectRatio;
 
   // Up, right, and forward unit vectors.
-  gz::math::Vector3d forward = this->pose.Rot().RotateVector(gz::math::Vector3d::UnitX);
-  gz::math::Vector3d up = this->pose.Rot().RotateVector(gz::math::Vector3d::UnitZ);
-  gz::math::Vector3d right = this->pose.Rot().RotateVector(-gz::math::Vector3d::UnitY);
+  gz::math::Vector3d forward =
+    this->pose.Rot().RotateVector(gz::math::Vector3d::UnitX);
+  gz::math::Vector3d up =
+    this->pose.Rot().RotateVector(gz::math::Vector3d::UnitZ);
+  gz::math::Vector3d right =
+    this->pose.Rot().RotateVector(-gz::math::Vector3d::UnitY);
 
   // Near plane center
   gz::math::Vector3d nearCenter = this->pose.Pos() + forward * this->near;
@@ -189,10 +192,14 @@ void Ogre2FrustumVisual::Update()
   gz::math::Vector3d rightFarWidth2 = right * (farWidth * 0.5);
 
   // Compute the vertices of the near plane
-  gz::math::Vector3d nearTopLeft = nearCenter + upNearHeight2 - rightNearWidth2;
-  gz::math::Vector3d nearTopRight = nearCenter + upNearHeight2 + rightNearWidth2;
-  gz::math::Vector3d nearBottomLeft = nearCenter - upNearHeight2 - rightNearWidth2;
-  gz::math::Vector3d nearBottomRight = nearCenter - upNearHeight2 + rightNearWidth2;
+  gz::math::Vector3d nearTopLeft =
+    nearCenter + upNearHeight2 - rightNearWidth2;
+  gz::math::Vector3d nearTopRight =
+    nearCenter + upNearHeight2 + rightNearWidth2;
+  gz::math::Vector3d nearBottomLeft =
+    nearCenter - upNearHeight2 - rightNearWidth2;
+  gz::math::Vector3d nearBottomRight =
+    nearCenter - upNearHeight2 + rightNearWidth2;
 
   // Compute the vertices of the far plane
   gz::math::Vector3d farTopLeft = farCenter + upFarHeight2 - rightFarWidth2;
@@ -265,23 +272,35 @@ void Ogre2FrustumVisual::Update()
   // Compute plane offsets
   // Set the planes, where the first value is the plane normal and the
   // second the plane offset
-  gz::math::Vector3d norm = gz::math::Vector3d::Normal(nearTopLeft, nearTopRight, nearBottomLeft);
-  this->planes[FrustumVisualPlane::FRUSTUM_PLANE_NEAR].Set(norm, nearCenter.Dot(norm));
+  gz::math::Vector3d norm = gz::math::Vector3d::Normal(
+    nearTopLeft, nearTopRight, nearBottomLeft);
+  this->planes[FrustumVisualPlane::FRUSTUM_PLANE_NEAR].Set(
+    norm, nearCenter.Dot(norm));
 
-  norm = gz::math::Vector3d::Normal(farTopRight, farTopLeft, farBottomLeft);
-  this->planes[FrustumVisualPlane::FRUSTUM_PLANE_FAR].Set(norm, farCenter.Dot(norm));
+  norm = gz::math::Vector3d::Normal(
+    farTopRight, farTopLeft, farBottomLeft);
+  this->planes[FrustumVisualPlane::FRUSTUM_PLANE_FAR].Set(
+    norm, farCenter.Dot(norm));
 
-  norm = gz::math::Vector3d::Normal(farTopLeft, nearTopLeft, nearBottomLeft);
-  this->planes[FrustumVisualPlane::FRUSTUM_PLANE_LEFT].Set(norm, leftCenter.Dot(norm));
+  norm = gz::math::Vector3d::Normal(
+    farTopLeft, nearTopLeft, nearBottomLeft);
+  this->planes[FrustumVisualPlane::FRUSTUM_PLANE_LEFT].Set(
+    norm, leftCenter.Dot(norm));
 
-  norm = gz::math::Vector3d::Normal(nearTopRight, farTopRight, farBottomRight);
-  this->planes[FrustumVisualPlane::FRUSTUM_PLANE_RIGHT].Set(norm, rightCenter.Dot(norm));
+  norm = gz::math::Vector3d::Normal(
+    nearTopRight, farTopRight, farBottomRight);
+  this->planes[FrustumVisualPlane::FRUSTUM_PLANE_RIGHT].Set(
+    norm, rightCenter.Dot(norm));
 
-  norm = gz::math::Vector3d::Normal(nearTopLeft, farTopLeft, nearTopRight);
-  this->planes[FrustumVisualPlane::FRUSTUM_PLANE_TOP].Set(norm, topCenter.Dot(norm));
+  norm = gz::math::Vector3d::Normal(
+    nearTopLeft, farTopLeft, nearTopRight);
+  this->planes[FrustumVisualPlane::FRUSTUM_PLANE_TOP].Set(
+    norm, topCenter.Dot(norm));
 
-  norm = gz::math::Vector3d::Normal(nearBottomLeft, nearBottomRight, farBottomRight);
-  this->planes[FrustumVisualPlane::FRUSTUM_PLANE_BOTTOM].Set(norm, bottomCenter.Dot(norm));
+  norm = gz::math::Vector3d::Normal(
+    nearBottomLeft, nearBottomRight, farBottomRight);
+  this->planes[FrustumVisualPlane::FRUSTUM_PLANE_BOTTOM].Set(
+    norm, bottomCenter.Dot(norm));
 
   renderable->Update();
   this->SetVisible(this->dataPtr->visible);

@@ -1118,7 +1118,8 @@ namespace gz
       /// ID is already in use, NULL will be returned.
       /// \param[in] _id ID of the new frustum visual
       /// \return The created frustum visual
-      public: virtual FrustumVisualPtr CreateFrustumVisual(unsigned int _id) = 0;
+      public: virtual FrustumVisualPtr CreateFrustumVisual(
+                  unsigned int _id) = 0;
 
       /// \brief Create new frustum visual with the given name. A unique ID
       /// will automatically be assigned to the frustum visual. If the given

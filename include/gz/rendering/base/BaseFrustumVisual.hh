@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Open Source Robotics Foundation
+ * Copyright (C) 2025 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,13 +78,8 @@ namespace gz
       public: virtual void SetAspectRatio(double _aspectRatio) override;
 
       // Documentation inherited
-      public: virtual gz::math::Planed Plane(const FrustumVisualPlane _plane) const override;
-
-      // Documentation inherited
-      //public: virtual bool Contains(const gz::math::AxisAlignedBox &_b) const override;
-
-      // Documentation inherited
-      //public: virtual bool Contains(const gz::math::Vector3d &_p) const override;
+      public: virtual gz::math::Planed Plane(
+                  const FrustumVisualPlane _plane) const override;
 
       // Documentation inherited
       public: virtual gz::math::Pose3d Pose() const override;
@@ -219,7 +214,8 @@ namespace gz
 
     /////////////////////////////////////////////////
     template <class T>
-    gz::math::Planed BaseFrustumVisual<T>::Plane(const FrustumVisualPlane _plane) const
+    gz::math::Planed BaseFrustumVisual<T>::Plane(
+          const FrustumVisualPlane _plane) const
     {
       return this->planes[_plane];
     }
@@ -235,7 +231,7 @@ namespace gz
     template <class T>
     gz::math::Pose3d BaseFrustumVisual<T>::Pose() const
     {
-	    return this->pose;
+      return this->pose;
     }
     /////////////////////////////////////////////////
     template <class T>

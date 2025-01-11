@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Open Source Robotics Foundation
+ * Copyright (C) 2025 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,7 +128,8 @@ namespace gz
       /// \brief Get a plane of the frustum.
       /// \param[in] _plane The plane to return.
       /// \return Plane of the frustum.
-      public: virtual gz::math::Planed Plane(const FrustumVisualPlane _plane) const = 0;
+      public: virtual gz::math::Planed Plane(
+                  const FrustumVisualPlane _plane) const = 0;
 
       /// \brief Get the pose of the frustum
       /// \return Pose of the frustum

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Open Source Robotics Foundation
+ * Copyright (C) 2025 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ class gz::rendering::OgreFrustumVisualPrivate
   public: std::vector<std::shared_ptr<OgreDynamicLines>> rayLines;
 
   /// \brief Frustum visual type
-  //public: FrustumVisualPlane frustumVisPlane =
-  	  //FrustumVisualPlane::FRUSTUM_PLANE_TOP;
+  //  public: FrustumVisualPlane frustumVisPlane =
+  //    FrustumVisualPlane::FRUSTUM_PLANE_TOP;
 
   /// \brief The visibility of the visual
   public: bool visible = true;
@@ -39,7 +39,8 @@ class gz::rendering::OgreFrustumVisualPrivate
   public: std::array<gz::math::Vector3d, 8> points;
 
   /// \brief each edge of the frustum.
-  public: std::array<std::pair<gz::math::Vector3d, gz::math::Vector3d>, 12> edges;
+  public: std::array<std::pair<gz::math::Vector3d,
+    gz::math::Vector3d>, 12> edges;
 };
 
 using namespace gz;
@@ -91,7 +92,7 @@ void OgreFrustumVisual::ClearVisualData()
 //////////////////////////////////////////////////
 void OgreFrustumVisual::Update()
 {
-  //no ops FIX-ME
+  // no ops
 }
 
 //////////////////////////////////////////////////

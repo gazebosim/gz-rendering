@@ -847,8 +847,8 @@ namespace gz
       /// \param[in] _id unique object id.
       /// \param[in] _name unique object name.
       /// \return Pointer to a frustum visual
-      protected: virtual FrustumVisualPtr CreateFrustumVisualImpl(unsigned int _id,
-                     const std::string &_name) = 0;
+      protected: virtual FrustumVisualPtr CreateFrustumVisualImpl(
+                     unsigned int _id, const std::string &_name) = 0;
 
       /// \brief Implementation for creating a heightmap geometry
       /// \param[in] _id Unique object id.

@@ -306,6 +306,18 @@ void RenderEngineManager::UnregisterEngine(const std::string &_name)
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   auto iter = this->dataPtr->engines.find(_name);
 
+  if (iter == this->dataPtr->engines.end())
+  {
+    // Check if the provided name is a name of a default engine, if so,
+    // translate the name to the shared library name
+    auto defaultIt = this->dataPtr->defaultEngines.find(_name);
+    if (defaultIt != this->dataPtr->defaultEngines.end())
+      iter = this->dataPtr->engines.find(defaultIt->second);
+
+    if (iter == this->dataPtr->engines.end())
+      gzerr << "No render-engine registered with name: " << _name << std::endl;
+  }
+
   if (iter != this->dataPtr->engines.end())
   {
     this->dataPtr->UnregisterEngine(iter);

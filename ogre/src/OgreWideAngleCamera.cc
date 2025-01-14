@@ -798,11 +798,11 @@ void OgreWideAngleCamera::PostRender()
   PixelFormat format = this->ImageFormat();
   unsigned int channelCount = PixelUtil::ChannelCount(format);
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
-
+  unsigned int bufferSize = len * channelCount * bytesPerChannel;
   if (!this->dataPtr->wideAngleImage)
-    this->dataPtr->wideAngleImage = new unsigned char[len * channelCount];
+    this->dataPtr->wideAngleImage = new unsigned char[bufferSize];
   if (!this->dataPtr->imageBuffer)
-    this->dataPtr->imageBuffer = new unsigned char[len * channelCount];
+    this->dataPtr->imageBuffer = new unsigned char[bufferSize];
 
   // get image data
   Ogre::RenderTarget *rt =
@@ -813,7 +813,7 @@ void OgreWideAngleCamera::PostRender()
 
   // fill image data
   memcpy(this->dataPtr->wideAngleImage, this->dataPtr->imageBuffer,
-      height*width*channelCount*bytesPerChannel);
+      bufferSize);
 
   this->dataPtr->newImageFrame(
       this->dataPtr->wideAngleImage, width, height, channelCount,

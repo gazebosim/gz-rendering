@@ -69,16 +69,6 @@ namespace gz
       /// point of intersection.
       /// \param[in] _x X coordinate in pixels.
       /// \param[in] _y Y coordinate in pixels.
-      /// \param[out] _item Ogre item at the coordinate.
-      /// \param[out] _point 3D point of intersection with the ogre item's mesh.
-      /// \return True if an ogre item is found, false otherwise
-      public: bool GZ_DEPRECATED(9) ExecuteQuery(const int _x, const int _y,
-          Ogre::Item *&_item, math::Vector3d &_point);
-
-      /// \brief Perform selection operation and get ogre item and
-      /// point of intersection.
-      /// \param[in] _x X coordinate in pixels.
-      /// \param[in] _y Y coordinate in pixels.
       /// \param[out] _obj Ogre movable object at the coordinate.
       /// \param[out] _point 3D point of intersection with the ogre object.
       /// \return True if an ogre object is found, false otherwise

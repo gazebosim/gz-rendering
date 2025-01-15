@@ -6,7 +6,7 @@ jobs:
   build:
     name: Window CI
     env:
-      PACKAGE: gz-rendering9
+      PACKAGE: gz-rendering10
     runs-on: windows-latest
     steps:
     - name: setup-pixi

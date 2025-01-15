@@ -19,7 +19,7 @@
 #define GZ_RENDERING_OGRE2_OGREFRUSTUMVISUAL_HH_
 
 #include <memory>
-#include <vector>
+
 #include "gz/rendering/base/BaseFrustumVisual.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 #include "gz/rendering/ogre2/Ogre2Includes.hh"

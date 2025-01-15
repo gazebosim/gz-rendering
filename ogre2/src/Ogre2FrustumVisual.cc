@@ -29,6 +29,7 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <gz/common/Console.hh>
 
@@ -157,7 +158,7 @@ void Ogre2FrustumVisual::Update()
   this->dataPtr->rayLines.push_back(renderable);
 
   // Tangent of half the field of view.
-  double tanFOV2 = std::tan(this->fov() * 0.5);
+  double tanFOV2 = std::tan(this->hfov() * 0.5);
 
   // Width of near plane
   double nearWidth = 2.0 * tanFOV2 * this->near;

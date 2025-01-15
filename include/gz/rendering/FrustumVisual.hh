@@ -64,7 +64,7 @@ namespace gz
       ///
       /// * near: 0.0
       /// * far: 1.0
-      /// * fov: 0.78539 radians (45 degrees)
+      /// * hfov: 0.78539 radians (45 degrees)
       /// * aspect ratio: 1.0
       /// * pose: Pose3d::Zero
       protected: FrustumVisual();
@@ -78,40 +78,40 @@ namespace gz
       /// \brief Get the near distance. This is the distance from the
       /// frustum's vertex to the closest plane.
       /// \return Near distance.
-      /// \sa SetNear
-      public: virtual double Near() const = 0;
+      /// \sa SetNearClipPlane
+      public: virtual double NearClipPlane() const = 0;
 
       /// \brief Set the near distance. This is the distance from the
       /// frustum's vertex to the closest plane.
       /// \param[in] _near Near distance.
-      /// \sa Near
-      public: virtual void SetNear(double _near) = 0;
+      /// \sa NearClipPlane
+      public: virtual void SetNearClipPlane(double _near) = 0;
 
       /// \brief Get the far distance. This is the distance from the
       /// frustum's vertex to the farthest plane.
       /// \return Far distance.
-      /// \sa SetFar
-      public: virtual double Far() const = 0;
+      /// \sa SetFarClipPlane
+      public: virtual double FarClipPlane() const = 0;
 
       /// \brief Set the far distance. This is the distance from the
       /// frustum's vertex to the farthest plane.
       /// \param[in] _far Far distance.
-      /// \sa Far
-      public: virtual void SetFar(double _far) = 0;
+      /// \sa FarClipPlane
+      public: virtual void SetFarClipPlane(double _far) = 0;
 
       /// \brief Get the horizontal field of view. The field of view is the
       /// angle between the frustum's vertex and the edges of the near or far
       /// plane. This value represents the horizontal angle.
       /// \return The field of view.
-      /// \sa SetFOV
-      public: virtual gz::math::Angle FOV() const = 0;
+      /// \sa SetHFOV
+      public: virtual gz::math::Angle HFOV() const = 0;
 
       /// \brief Set the horizontal field of view. The field of view is the
       /// angle between the frustum's vertex and the edges of the near or far
       /// plane. This value represents the horizontal angle.
-      /// \param[in] _fov The field of view.
-      /// \sa FOV
-      public: virtual void SetFOV(const gz::math::Angle &_fov) = 0;
+      /// \param[in] _hfov The field of view.
+      /// \sa HFOV
+      public: virtual void SetHFOV(const gz::math::Angle &_hfov) = 0;
 
       /// \brief Get the aspect ratio, which is the width divided by height
       /// of the near or far planes.
@@ -130,16 +130,6 @@ namespace gz
       /// \return Plane of the frustum.
       public: virtual gz::math::Planed Plane(
                   const FrustumVisualPlane _plane) const = 0;
-
-      /// \brief Get the pose of the frustum
-      /// \return Pose of the frustum
-      /// \sa SetPose
-      public: virtual gz::math::Pose3d Pose() const = 0;
-
-      /// \brief Set the pose of the frustum
-      /// \param[in] _pose Pose of the frustum, top vertex.
-      /// \sa Pose
-      public: virtual void SetPose(const gz::math::Pose3d &_pose) = 0;
 
       /// \brief Compute the planes of the frustum. This is called whenever
       /// a property of the frustum is changed.

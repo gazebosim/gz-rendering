@@ -15,6 +15,9 @@
  *
  */
 
+#include <array>
+#include <vector>
+
 #include <gz/common/Console.hh>
 #include "gz/rendering/ogre/OgreDynamicLines.hh"
 #include "gz/rendering/ogre/OgreFrustumVisual.hh"

@@ -33,6 +33,7 @@ namespace gz
     class OgreCOMVisual;
     class OgreDepthCamera;
     class OgreDirectionalLight;
+    class OgreFrustumVisual;
     class OgreGeometry;
     class OgreGizmoVisual;
     class OgreGpuRays;
@@ -86,6 +87,7 @@ namespace gz
     typedef shared_ptr<OgreCOMVisual>            OgreCOMVisualPtr;
     typedef shared_ptr<OgreDepthCamera>          OgreDepthCameraPtr;
     typedef shared_ptr<OgreDirectionalLight>     OgreDirectionalLightPtr;
+    typedef shared_ptr<OgreFrustumVisual>        OgreFrustumVisualPtr;
     typedef shared_ptr<OgreGeometry>             OgreGeometryPtr;
     typedef shared_ptr<OgreGeometryStore>        OgreGeometryStorePtr;
     typedef shared_ptr<OgreGizmoVisual>          OgreGizmoVisualPtr;

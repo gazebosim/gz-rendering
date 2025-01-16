@@ -538,6 +538,21 @@ namespace gz
                                             const std::string &_name) override;
 
       // Documentation inherited.
+      public: virtual FrustumVisualPtr CreateFrustumVisual() override;
+
+      // Documentation inherited.
+      public: virtual FrustumVisualPtr CreateFrustumVisual(
+                                            unsigned int _id) override;
+
+      // Documentation inherited.
+      public: virtual FrustumVisualPtr CreateFrustumVisual(
+                                            const std::string &_name) override;
+
+      // Documentation inherited.
+      public: virtual FrustumVisualPtr CreateFrustumVisual(unsigned int _id,
+                                            const std::string &_name) override;
+
+      // Documentation inherited.
       public: virtual HeightmapPtr CreateHeightmap(
           const HeightmapDescriptor &_desc) override;
 
@@ -827,6 +842,13 @@ namespace gz
       /// \return Pointer to a lidar visual
       protected: virtual LidarVisualPtr CreateLidarVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;
+
+      /// \brief Implementation for creating a frustum visual
+      /// \param[in] _id unique object id.
+      /// \param[in] _name unique object name.
+      /// \return Pointer to a frustum visual
+      protected: virtual FrustumVisualPtr CreateFrustumVisualImpl(
+                     unsigned int _id, const std::string &_name) = 0;
 
       /// \brief Implementation for creating a heightmap geometry
       /// \param[in] _id Unique object id.

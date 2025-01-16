@@ -85,10 +85,10 @@ namespace gz
       public: virtual void CreateMaterials();
 
       /// \brief near value
-      protected: double near = 0.0;
+      protected: double nearClip = 0.0;
 
       /// \brief far value
-      protected: double far = 1.0;
+      protected: double farClip = 1.0;
 
       /// \brief fov value
       protected: gz::math::Angle hfov = gz::math::Angle(0.78539);
@@ -150,28 +150,28 @@ namespace gz
     template <class T>
     void BaseFrustumVisual<T>::SetNearClipPlane(double _near)
     {
-      this->near = _near;
+      this->nearClip = _near;
     }
 
     /////////////////////////////////////////////////
     template <class T>
     double BaseFrustumVisual<T>::NearClipPlane() const
     {
-      return this->near;
+      return this->nearClip;
     }
 
     /////////////////////////////////////////////////
     template <class T>
     void BaseFrustumVisual<T>::SetFarClipPlane(double _far)
     {
-      this->far = _far;
+      this->farClip = _far;
     }
 
     /////////////////////////////////////////////////
     template <class T>
     double BaseFrustumVisual<T>::FarClipPlane() const
     {
-      return this->far;
+      return this->farClip;
     }
 
     /////////////////////////////////////////////////

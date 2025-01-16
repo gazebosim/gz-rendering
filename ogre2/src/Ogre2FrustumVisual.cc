@@ -161,13 +161,13 @@ void Ogre2FrustumVisual::Update()
   double tanFOV2 = std::tan(this->hfov() * 0.5);
 
   // Width of near plane
-  double nearWidth = 2.0 * tanFOV2 * this->near;
+  double nearWidth = 2.0 * tanFOV2 * this->nearClip;
 
   // Height of near plane
   double nearHeight = nearWidth / this->aspectRatio;
 
   // Width of far plane
-  double farWidth = 2.0 * tanFOV2 * this->far;
+  double farWidth = 2.0 * tanFOV2 * this->farClip;
 
   // Height of far plane
   double farHeight = farWidth / this->aspectRatio;
@@ -181,10 +181,10 @@ void Ogre2FrustumVisual::Update()
     this->pose.Rot().RotateVector(-gz::math::Vector3d::UnitY);
 
   // Near plane center
-  gz::math::Vector3d nearCenter = this->pose.Pos() + forward * this->near;
+  gz::math::Vector3d nearCenter = this->pose.Pos() + forward * this->nearClip;
 
   // Far plane center
-  gz::math::Vector3d farCenter = this->pose.Pos() + forward * this->far;
+  gz::math::Vector3d farCenter = this->pose.Pos() + forward * this->farClip;
 
   // These four variables are here for convenience.
   gz::math::Vector3d upNearHeight2 = up * (nearHeight * 0.5);
@@ -245,30 +245,30 @@ void Ogre2FrustumVisual::Update()
     (farBottomRight + nearBottomRight + farBottomLeft + nearBottomLeft) / 4.0;
 
   // For creating the frustum visuals
-  renderable->AddPoint(gz::math::Vector3d(this->near, nearWidth, nearHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->near, nearWidth, -nearHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->near, nearWidth, -nearHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->near, -nearWidth, -nearHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->near, -nearWidth, -nearHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->near, -nearWidth, nearHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->near, -nearWidth, nearHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->near, nearWidth, nearHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->far, farWidth, farHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->far, farWidth, -farHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->far, farWidth, -farHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->far, -farWidth, -farHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->far, -farWidth, -farHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->far, -farWidth, farHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->far, -farWidth, farHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->far, farWidth, farHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->near, nearWidth, nearHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->far, farWidth, farHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->near, -nearWidth, nearHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->far, -farWidth, farHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->near, -nearWidth, -nearHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->far, -farWidth, -farHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->near, nearWidth, -nearHeight));
-  renderable->AddPoint(gz::math::Vector3d(this->far, farWidth, -farHeight));
+  renderable->AddPoint(math::Vector3d(this->nearClip, nearWidth, nearHeight));
+  renderable->AddPoint(math::Vector3d(this->nearClip, nearWidth, -nearHeight));
+  renderable->AddPoint(math::Vector3d(this->nearClip, nearWidth, -nearHeight));
+  renderable->AddPoint(math::Vector3d(this->nearClip, -nearWidth, -nearHeight));
+  renderable->AddPoint(math::Vector3d(this->nearClip, -nearWidth, -nearHeight));
+  renderable->AddPoint(math::Vector3d(this->nearClip, -nearWidth, nearHeight));
+  renderable->AddPoint(math::Vector3d(this->nearClip, -nearWidth, nearHeight));
+  renderable->AddPoint(math::Vector3d(this->nearClip, nearWidth, nearHeight));
+  renderable->AddPoint(math::Vector3d(this->farClip, farWidth, farHeight));
+  renderable->AddPoint(math::Vector3d(this->farClip, farWidth, -farHeight));
+  renderable->AddPoint(math::Vector3d(this->farClip, farWidth, -farHeight));
+  renderable->AddPoint(math::Vector3d(this->farClip, -farWidth, -farHeight));
+  renderable->AddPoint(math::Vector3d(this->farClip, -farWidth, -farHeight));
+  renderable->AddPoint(math::Vector3d(this->farClip, -farWidth, farHeight));
+  renderable->AddPoint(math::Vector3d(this->farClip, -farWidth, farHeight));
+  renderable->AddPoint(math::Vector3d(this->farClip, farWidth, farHeight));
+  renderable->AddPoint(math::Vector3d(this->nearClip, nearWidth, nearHeight));
+  renderable->AddPoint(math::Vector3d(this->farClip, farWidth, farHeight));
+  renderable->AddPoint(math::Vector3d(this->nearClip, -nearWidth, nearHeight));
+  renderable->AddPoint(math::Vector3d(this->farClip, -farWidth, farHeight));
+  renderable->AddPoint(math::Vector3d(this->nearClip, -nearWidth, -nearHeight));
+  renderable->AddPoint(math::Vector3d(this->farClip, -farWidth, -farHeight));
+  renderable->AddPoint(math::Vector3d(this->nearClip, nearWidth, -nearHeight));
+  renderable->AddPoint(math::Vector3d(this->farClip, farWidth, -farHeight));
 
   // Compute plane offsets
   // Set the planes, where the first value is the plane normal and the

@@ -81,12 +81,6 @@ namespace gz
       public: virtual gz::math::Planed Plane(
                   const FrustumVisualPlane _plane) const override;
 
-//      // Documentation inherited
-//      public: virtual gz::math::Pose3d Pose() const override;
-//
-//      // Documentation inherited
-//      public: virtual void SetPose(const gz::math::Pose3d &_pose) override;
-
       /// \brief Create predefined materials for lidar visual
       public: virtual void CreateMaterials();
 
@@ -97,7 +91,7 @@ namespace gz
       protected: double far = 1.0;
 
       /// \brief fov value
-      protected: gz::math::Angle hfov = 0.78539;
+      protected: gz::math::Angle hfov = gz::math::Angle(0.78539);
 
       /// \brief aspect ratio value
       protected: double aspectRatio = 1.0;

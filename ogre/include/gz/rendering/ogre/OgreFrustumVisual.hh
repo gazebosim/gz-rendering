@@ -18,8 +18,8 @@
 #ifndef GZ_RENDERING_OGRE_OGREFRUSTUMVISUAL_HH_
 #define GZ_RENDERING_OGRE_OGREFRUSTUMVISUAL_HH_
 
-#include <vector>
 #include <memory>
+
 #include "gz/rendering/base/BaseFrustumVisual.hh"
 #include "gz/rendering/ogre/OgreVisual.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"

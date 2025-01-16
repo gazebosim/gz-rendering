@@ -17,7 +17,7 @@
 #ifndef GZ_RENDERING_BASEFRUSTUMVISUAL_HH_
 #define GZ_RENDERING_BASEFRUSTUMVISUAL_HH_
 
-#include <vector>
+#include <array>
 
 #include "gz/rendering/FrustumVisual.hh"
 #include "gz/rendering/base/BaseObject.hh"
@@ -54,22 +54,22 @@ namespace gz
       public: virtual void Init() override;
 
       // Documentation inherited
-      public: virtual double Near() const override;
+      public: virtual double NearClipPlane() const override;
 
       // Documentation inherited
-      public: virtual void SetNear(double _near) override;
+      public: virtual void SetNearClipPlane(double _near) override;
 
       // Documentation inherited
-      public: virtual double Far() const override;
+      public: virtual double FarClipPlane() const override;
 
       // Documentation inherited
-      public: virtual void SetFar(double _far) override;
+      public: virtual void SetFarClipPlane(double _far) override;
 
       // Documentation inherited
-      public: virtual math::Angle FOV() const override;
+      public: virtual math::Angle HFOV() const override;
 
       // Documentation inherited
-      public: virtual void SetFOV(const math::Angle &_fov) override;
+      public: virtual void SetHFOV(const math::Angle &_hfov) override;
 
       // Documentation inherited
       public: virtual double AspectRatio() const override;
@@ -81,11 +81,11 @@ namespace gz
       public: virtual gz::math::Planed Plane(
                   const FrustumVisualPlane _plane) const override;
 
-      // Documentation inherited
-      public: virtual gz::math::Pose3d Pose() const override;
-
-      // Documentation inherited
-      public: virtual void SetPose(const gz::math::Pose3d &_pose) override;
+//      // Documentation inherited
+//      public: virtual gz::math::Pose3d Pose() const override;
+//
+//      // Documentation inherited
+//      public: virtual void SetPose(const gz::math::Pose3d &_pose) override;
 
       /// \brief Create predefined materials for lidar visual
       public: virtual void CreateMaterials();
@@ -97,7 +97,7 @@ namespace gz
       protected: double far = 1.0;
 
       /// \brief fov value
-      protected: gz::math::Angle fov = 0.78539;
+      protected: gz::math::Angle hfov = 0.78539;
 
       /// \brief aspect ratio value
       protected: double aspectRatio = 1.0;
@@ -154,47 +154,45 @@ namespace gz
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseFrustumVisual<T>::SetNear(
-          double _near)
+    void BaseFrustumVisual<T>::SetNearClipPlane(double _near)
     {
       this->near = _near;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    double BaseFrustumVisual<T>::Near() const
+    double BaseFrustumVisual<T>::NearClipPlane() const
     {
       return this->near;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseFrustumVisual<T>::SetFar(
-                  double _far)
+    void BaseFrustumVisual<T>::SetFarClipPlane(double _far)
     {
       this->far = _far;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    double BaseFrustumVisual<T>::Far() const
+    double BaseFrustumVisual<T>::FarClipPlane() const
     {
       return this->far;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseFrustumVisual<T>::SetFOV(
-          const gz::math::Angle &_fov)
+    void BaseFrustumVisual<T>::SetHFOV(
+          const gz::math::Angle &_hfov)
     {
-      this->fov = _fov;
+      this->hfov = _hfov;
     }
 
     /////////////////////////////////////////////////
     template <class T>
-    gz::math::Angle BaseFrustumVisual<T>::FOV() const
+    gz::math::Angle BaseFrustumVisual<T>::HFOV() const
     {
-      return this->fov;
+      return this->hfov;
     }
 
     /////////////////////////////////////////////////
@@ -222,19 +220,6 @@ namespace gz
 
     /////////////////////////////////////////////////
     template <class T>
-    void BaseFrustumVisual<T>::SetPose(const gz::math::Pose3d &_pose)
-    {
-      this->pose = _pose;
-    }
-
-    /////////////////////////////////////////////////
-    template <class T>
-    gz::math::Pose3d BaseFrustumVisual<T>::Pose() const
-    {
-      return this->pose;
-    }
-    /////////////////////////////////////////////////
-    template <class T>
     void BaseFrustumVisual<T>::CreateMaterials()
     {
       MaterialPtr mtl;
@@ -253,7 +238,6 @@ namespace gz
         mtl->SetMetalness(0.1f);
         mtl->SetReflectivity(0.2);
       }
-      return;
     }
     }
   }

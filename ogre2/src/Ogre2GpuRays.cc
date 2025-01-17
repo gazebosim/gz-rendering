@@ -84,7 +84,7 @@ class GZ_RENDERING_OGRE2_HIDDEN
   private: virtual void passPreExecute(
       Ogre::CompositorPass *_pass) override;
 
-  /// \brief Callback when each pass is finisned executing.
+  /// \brief Callback when each pass is finished executing.
   /// \param[in] _pass Ogre pass which has already executed
   private: virtual void passPosExecute(
       Ogre::CompositorPass *_pass) override;
@@ -156,7 +156,7 @@ class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2GpuRaysPrivate
   /// range data
   public: std::set<unsigned int> cubeFaceIdx;
 
-  /// \brief Main pass definition (used for visibility mask manipuluation).
+  /// \brief Main pass definition (used for visibility mask manipulation).
   public: Ogre::CompositorPassSceneDef *mainPassSceneDef = nullptr;
 
   /// \brief 1st pass compositor workspace. One for each cubemap camera
@@ -327,27 +327,21 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
         // get laser_retro
         Variant tempLaserRetro = ogreVisual->UserData(laserRetroKey);
 
-        try
+        if (std::holds_alternative<float>(tempLaserRetro))
         {
           retroValue = std::get<float>(tempLaserRetro);
         }
-        catch(...)
+        else if (std::holds_alternative<double>(tempLaserRetro))
         {
-          try
-          {
-            retroValue = static_cast<float>(std::get<double>(tempLaserRetro));
-          }
-          catch(...)
-          {
-            try
-            {
-              retroValue = static_cast<float>(std::get<int>(tempLaserRetro));
-            }
-            catch(std::bad_variant_access &e)
-            {
-              gzerr << "Error casting user data: " << e.what() << "\n";
-            }
-          }
+          retroValue = static_cast<float>(std::get<double>(tempLaserRetro));
+        }
+        else if (std::holds_alternative<int>(tempLaserRetro))
+        {
+          retroValue = static_cast<float>(std::get<int>(tempLaserRetro));
+        }
+        else
+        {
+          gzerr << "Error casting user data: laser_retro\n";
         }
       }
 
@@ -448,27 +442,21 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
         // get laser_retro
         Variant tempLaserRetro = visual->UserData(laserRetroKey);
 
-        try
+        if (std::holds_alternative<float>(tempLaserRetro))
         {
           retroValue = std::get<float>(tempLaserRetro);
         }
-        catch (...)
+        else if (std::holds_alternative<double>(tempLaserRetro))
         {
-          try
-          {
-            retroValue = static_cast<float>(std::get<double>(tempLaserRetro));
-          }
-          catch (...)
-          {
-            try
-            {
-              retroValue = static_cast<float>(std::get<int>(tempLaserRetro));
-            }
-            catch (std::bad_variant_access &e)
-            {
-              gzerr << "Error casting user data: " << e.what() << "\n";
-            }
-          }
+          retroValue = static_cast<float>(std::get<double>(tempLaserRetro));
+        }
+        else if (std::holds_alternative<int>(tempLaserRetro))
+        {
+          retroValue = static_cast<float>(std::get<int>(tempLaserRetro));
+        }
+        else
+        {
+          gzerr << "Error casting user data: laser_retro\n";
         }
       }
 

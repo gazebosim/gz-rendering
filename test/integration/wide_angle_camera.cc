@@ -42,6 +42,8 @@ std::mutex g_mutex;
 
 /// \brief WideAngle buffer
 unsigned char *g_buffer = nullptr;
+unsigned char *g_bufferL8 = nullptr;
+unsigned char *g_bufferL16 = nullptr;
 
 /// \brief counter of received wideAngle msgs
 int g_counter = 0;
@@ -63,6 +65,41 @@ void OnNewWideAngleFrame(const unsigned char *_data,
 
 
   EXPECT_EQ("R8G8B8", _format);
+
+  g_counter++;
+  g_mutex.unlock();
+}
+
+//////////////////////////////////////////////////
+/// \brief callback to get the wide angle camera image data
+void OnNewWideAngleFrameMono(const unsigned char *_data,
+                    unsigned int _width, unsigned int _height,
+                    unsigned int _channels,
+                    const std::string &_format)
+{
+  g_mutex.lock();
+
+  unsigned int bytesPerChannel = 0u;
+  unsigned int bufferSize = 0u;
+  if (_format == "L8")
+  {
+    bytesPerChannel = 1u;
+    bufferSize = _width * _height * _channels * bytesPerChannel;
+    if (!g_bufferL8)
+      g_bufferL8 = new unsigned char[bufferSize];
+    memcpy(g_bufferL8, _data, bufferSize);
+  }
+  else if (_format == "L16")
+  {
+    bytesPerChannel = 2u;
+    bufferSize = _width * _height * _channels * bytesPerChannel;
+    if (!g_bufferL16)
+      g_bufferL16 = new unsigned char[bufferSize];
+    memcpy(g_bufferL16, _data, bufferSize);
+  }
+
+  ASSERT_NE(0u, bytesPerChannel);
+  ASSERT_NE(0u, bufferSize);
 
   g_counter++;
   g_mutex.unlock();
@@ -339,6 +376,8 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
   EXPECT_EQ(bSumQ[1][0], bSumQ[0][1]);
 
   // Clean up
+  delete [] g_buffer;
+  g_buffer = nullptr;
   engine->DestroyScene(scene);
 }
 
@@ -459,4 +498,111 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Projection))
   engine->DestroyScene(scene);
 
   ASSERT_EQ(1u, camera.use_count());
+}
+
+//////////////////////////////////////////////////
+TEST_F(WideAngleCameraTest,
+       GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCameraMono))
+{
+  CHECK_UNSUPPORTED_ENGINE("optix");
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  scene->SetAmbientLight(1.0, 1.0, 1.0);
+  scene->SetBackgroundColor(0.2, 0.2, 0.2);
+
+  rendering::VisualPtr root = scene->RootVisual();
+
+  unsigned int width = 20u;
+  unsigned int height = 20u;
+
+  // Create Wide Angle camera
+  auto cameraL8 = scene->CreateWideAngleCamera("WideAngleCameraL8");
+  ASSERT_NE(cameraL8, nullptr);
+  cameraL8->SetImageFormat(PF_L8);
+
+  auto cameraL16 = scene->CreateWideAngleCamera("WideAngleCameraL16");
+  ASSERT_NE(cameraL16, nullptr);
+  cameraL16->SetImageFormat(PF_L16);
+
+  CameraLens lens;
+  lens.SetCustomMappingFunction(1.05, 4.0, AFT_TAN, 1.0, 0.0);
+  lens.SetType(MFT_CUSTOM);
+  lens.SetCutOffAngle(GZ_PI);
+
+  cameraL8->SetLens(lens);
+  cameraL8->SetHFOV(2.6);
+  cameraL8->SetImageWidth(width);
+  cameraL8->SetImageHeight(height);
+  scene->RootVisual()->AddChild(cameraL8);
+
+  cameraL16->SetLens(lens);
+  cameraL16->SetHFOV(2.6);
+  cameraL16->SetImageWidth(width);
+  cameraL16->SetImageHeight(height);
+  scene->RootVisual()->AddChild(cameraL16);
+
+  // create blue material
+  MaterialPtr blue = scene->CreateMaterial();
+  blue->SetAmbient(0.0, 0.0, 0.3);
+  blue->SetDiffuse(0.0, 0.0, 0.8);
+  blue->SetSpecular(0.5, 0.5, 0.5);
+
+  // create box visual in front of cameras
+  VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  box->SetOrigin(0.0, 0.0, 0.0);
+  box->SetLocalPosition(2, 0, 0);
+  box->SetLocalScale(1, 1, 1);
+  box->SetMaterial(blue);
+  root->AddChild(box);
+
+  // Set a callback on the  camera sensor to get a wide angle camera frame
+  gz::common::ConnectionPtr connection =
+      cameraL8->ConnectNewWideAngleFrame(
+          std::bind(OnNewWideAngleFrameMono,
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
+  ASSERT_NE(nullptr, connection);
+  gz::common::ConnectionPtr connection2 =
+      cameraL16->ConnectNewWideAngleFrame(
+          std::bind(OnNewWideAngleFrameMono,
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
+  ASSERT_NE(nullptr, connection2);
+
+  g_counter = 0;
+
+  // Update and verify
+  cameraL8->Update();
+  EXPECT_EQ(1, g_counter);
+
+  cameraL16->Update();
+  EXPECT_EQ(2, g_counter);
+
+  // Verify image format
+  EXPECT_EQ(PF_L8, cameraL8->ImageFormat());
+  EXPECT_EQ(PF_L16, cameraL16->ImageFormat());
+
+  // verify cameras can see the box in the middle and the pixel color value
+  // should be darker than the background (pixel at top center of image)
+  const unsigned int step = width;
+  unsigned int topMid = static_cast<unsigned int>(
+     step / 2.0);
+  unsigned int mid = static_cast<unsigned int>(
+     height / 2.0 * step + step / 2.0);
+  unsigned int topMidValue8 = g_bufferL8[topMid];
+  uint16_t topMidValue16 = reinterpret_cast<uint16_t *>(g_bufferL16)[topMid];
+  unsigned int midValue8 = g_bufferL8[mid];
+  uint16_t midValue16 = reinterpret_cast<uint16_t *>(g_bufferL16)[mid];
+
+  EXPECT_GT(topMidValue8, midValue8);
+  EXPECT_GT(topMidValue16, midValue16);
+
+  // Clean up
+  delete [] g_bufferL8;
+  g_bufferL8 = nullptr;
+  delete [] g_bufferL16;
+  g_bufferL16 = nullptr;
+  engine->DestroyScene(scene);
 }

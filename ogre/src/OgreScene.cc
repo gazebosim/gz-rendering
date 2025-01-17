@@ -781,7 +781,7 @@ OgreSceneExt::OgreSceneExt(Scene *_scene)
 ObjectPtr OgreSceneExt::CreateExt(const std::string &_type,
       const std::string &_name)
 {
-  if (_type == "projector")
+  if (_type == "frustum_visual")
   {
     OgreScene *ogreScene = dynamic_cast<OgreScene *>(this->scene);
     unsigned int objId = ogreScene->CreateObjectId();
@@ -789,14 +789,14 @@ ObjectPtr OgreSceneExt::CreateExt(const std::string &_type,
     if (objName.empty())
     {
       std::stringstream ss;
-      ss << ogreScene->Name() << "::" <<  "Projector";
+      ss << ogreScene->Name() << "::" <<  "FrustumVisual";
       ss << "(" << std::to_string(objId) << ")";
       objName = ss.str();
     }
-    ProjectorPtr projector = ogreScene->CreateProjectorImpl(
+    FrustumVisualPtr frustumVisual = ogreScene->CreateFrustumVisualImpl(
         objId, objName);
-    bool result = ogreScene->Visuals()->Add(projector);
-    return (result) ? projector : nullptr;
+    bool result = ogreScene->Visuals()->Add(frustumVisual);
+    return (result) ? frustumVisual : nullptr;
   }
 
   return ObjectPtr();

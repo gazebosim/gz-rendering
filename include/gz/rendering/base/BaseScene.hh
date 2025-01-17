@@ -538,19 +538,23 @@ namespace gz
                                             const std::string &_name) override;
 
       // Documentation inherited.
-      public: virtual FrustumVisualPtr CreateFrustumVisual() override;
+      // \todo(iche033) commented out for ABI compatibility
+      // public: virtual FrustumVisualPtr CreateFrustumVisual() override;
 
       // Documentation inherited.
-      public: virtual FrustumVisualPtr CreateFrustumVisual(
-                                            unsigned int _id) override;
+      // \todo(iche033) commented out for ABI compatibility
+      // public: virtual FrustumVisualPtr CreateFrustumVisual(
+      //                                     unsigned int _id) override;
 
       // Documentation inherited.
-      public: virtual FrustumVisualPtr CreateFrustumVisual(
-                                            const std::string &_name) override;
+      // \todo(iche033) commented out for ABI compatibility
+      // public: virtual FrustumVisualPtr CreateFrustumVisual(
+      //                                     const std::string &_name) override;
 
       // Documentation inherited.
-      public: virtual FrustumVisualPtr CreateFrustumVisual(unsigned int _id,
-                                            const std::string &_name) override;
+      // \todo(iche033) commented out for ABI compatibility
+      // public: virtual FrustumVisualPtr CreateFrustumVisual(unsigned int _id,
+      //                                     const std::string &_name) override;
 
       // Documentation inherited.
       public: virtual HeightmapPtr CreateHeightmap(
@@ -843,12 +847,23 @@ namespace gz
       protected: virtual LidarVisualPtr CreateLidarVisualImpl(unsigned int _id,
                      const std::string &_name) = 0;
 
+      /// \cond PRIVATE
       /// \brief Implementation for creating a frustum visual
       /// \param[in] _id unique object id.
       /// \param[in] _name unique object name.
       /// \return Pointer to a frustum visual
-      protected: virtual FrustumVisualPtr CreateFrustumVisualImpl(
-                     unsigned int _id, const std::string &_name) = 0;
+      /// \todo(iche033) Commented out for ABI compatibility. Uncomment in
+      /// gz-rendering10
+      /// protected: virtual FrustumVisualPtr CreateFrustumVisualImpl(
+      ///                unsigned int _id, const std::string &_name)
+      ///            {
+      ///              (void)_id;
+      ///              (void)_name;
+      ///              gzerr << "FrustumVisual not supported by: "
+      ///                     << this->Engine()->Name() << std::endl;
+      ///              return FrustumVisualPtr();
+      ///            }
+      /// \endcond
 
       /// \brief Implementation for creating a heightmap geometry
       /// \param[in] _id Unique object id.

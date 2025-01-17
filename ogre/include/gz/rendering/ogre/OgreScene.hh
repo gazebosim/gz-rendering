@@ -181,8 +181,9 @@ namespace gz
                      const std::string &_name) override;
 
       // Documentation inherited
-      protected: virtual FrustumVisualPtr CreateFrustumVisualImpl(
-                     unsigned int _id, const std::string &_name) override;
+      // \todo(iche033) make this virtual in gz-rendering10
+      protected: FrustumVisualPtr CreateFrustumVisualImpl(
+                     unsigned int _id, const std::string &_name);
 
       // Documentation inherited
       protected: virtual WireBoxPtr CreateWireBoxImpl(unsigned int _id,

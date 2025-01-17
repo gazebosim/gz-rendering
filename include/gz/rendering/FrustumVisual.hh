@@ -18,7 +18,6 @@
 #define GZ_RENDERING_FRUSTUMVISUAL_HH_
 
 #include <gz/math/Angle.hh>
-#include <gz/math/AxisAlignedBox.hh>
 #include <gz/math/Plane.hh>
 #include <gz/math/Pose3.hh>
 #include <gz/utils/ImplPtr.hh>
@@ -26,7 +25,6 @@
 #include "gz/rendering/Visual.hh"
 #include "gz/rendering/Object.hh"
 #include "gz/rendering/RenderTypes.hh"
-#include "gz/rendering/Marker.hh"
 
 namespace gz
 {

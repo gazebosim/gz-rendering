@@ -1263,35 +1263,37 @@ LidarVisualPtr BaseScene::CreateLidarVisual(unsigned int _id,
   return (result) ? lidar : nullptr;
 }
 
-//////////////////////////////////////////////////
-FrustumVisualPtr BaseScene::CreateFrustumVisual()
-{
-  unsigned int objId = this->CreateObjectId();
-  return this->CreateFrustumVisual(objId);
-}
-
-//////////////////////////////////////////////////
-FrustumVisualPtr BaseScene::CreateFrustumVisual(unsigned int _id)
-{
-  const std::string objName = this->CreateObjectName(_id, "FrustumVisual");
-  return this->CreateFrustumVisual(_id, objName);
-}
-
-//////////////////////////////////////////////////
-FrustumVisualPtr BaseScene::CreateFrustumVisual(const std::string &_name)
-{
-  unsigned int objId = this->CreateObjectId();
-  return this->CreateFrustumVisual(objId, _name);
-}
-
-//////////////////////////////////////////////////
-FrustumVisualPtr BaseScene::CreateFrustumVisual(unsigned int _id,
-                                            const std::string &_name)
-{
-  FrustumVisualPtr frustum = this->CreateFrustumVisualImpl(_id, _name);
-  bool result = this->RegisterVisual(frustum);
-  return (result) ? frustum : nullptr;
-}
+// \todo(iche033) Commented out for ABI compatibility. Uncomment in
+// gz-rendering10
+// //////////////////////////////////////////////////
+// FrustumVisualPtr BaseScene::CreateFrustumVisual()
+// {
+//   unsigned int objId = this->CreateObjectId();
+//   return this->CreateFrustumVisual(objId);
+// }
+//
+// //////////////////////////////////////////////////
+// FrustumVisualPtr BaseScene::CreateFrustumVisual(unsigned int _id)
+// {
+//   const std::string objName = this->CreateObjectName(_id, "FrustumVisual");
+//   return this->CreateFrustumVisual(_id, objName);
+// }
+//
+// //////////////////////////////////////////////////
+// FrustumVisualPtr BaseScene::CreateFrustumVisual(const std::string &_name)
+// {
+//   unsigned int objId = this->CreateObjectId();
+//   return this->CreateFrustumVisual(objId, _name);
+// }
+//
+// //////////////////////////////////////////////////
+// FrustumVisualPtr BaseScene::CreateFrustumVisual(unsigned int _id,
+//                                             const std::string &_name)
+// {
+//   FrustumVisualPtr frustum = this->CreateFrustumVisualImpl(_id, _name);
+//   bool result = this->RegisterVisual(frustum);
+//   return (result) ? frustum : nullptr;
+// }
 
 //////////////////////////////////////////////////
 WireBoxPtr BaseScene::CreateWireBox()

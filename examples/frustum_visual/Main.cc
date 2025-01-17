@@ -92,7 +92,12 @@ NodePtr createMainNode(ScenePtr _scene)
   root->AddChild(box);
 
   // create frustum visual and attach to main node
-  FrustumVisualPtr frustumVisual = _scene->CreateFrustumVisual();
+  // \todo(iche033) Commented out for ABI compatibility. Uncomment in
+  // gz-rendering10.
+  // \todo(iche033) uncomment and use official API in gz-rendering10
+  // FrustumVisualPtr frustumVisual = scene->CreateFrustumVisual();
+  FrustumVisualPtr frustumVisual = std::dynamic_pointer_cast<FrustumVisual>(
+      _scene->Extension()->CreateExt("frustum_visual"));
   frustumVisual->SetNearClipPlane(1);
   frustumVisual->SetFarClipPlane(5);
   frustumVisual->SetHFOV(0.7);

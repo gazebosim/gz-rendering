@@ -58,10 +58,6 @@ class gz::rendering::Ogre2FrustumVisualPrivate
   /// \brief Frustum Ray DynamicLines Object to display
   public: std::vector<std::shared_ptr<Ogre2DynamicRenderable>> rayLines;
 
-  /// \brief Frustum visual type
-  //  public: FrustumVisualPlane frustumVisPlane =
-  //    FrustumVisualPlane::FRUSTUM_PLANE_TOP;
-
   /// \brief The visibility of the visual
   public: bool visible = true;
 

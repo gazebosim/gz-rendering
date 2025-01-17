@@ -1108,34 +1108,44 @@ namespace gz
       public: virtual LidarVisualPtr CreateLidarVisual(
                   unsigned int _id, const std::string &_name) = 0;
 
+      /// \cond PRIVATE
       /// \brief Create new frusum visual. A unique ID and name will
       /// automatically be assigned to the frustum visual.
       /// \return The created frustum visual
-      public: virtual FrustumVisualPtr CreateFrustumVisual() = 0;
+      /// \todo(iche033) Commented out for ABI compatibility. Uncomment in
+      /// gz-rendering10
+      /// public: virtual FrustumVisualPtr CreateFrustumVisual() = 0;
 
       /// \brief Create new frustum visual with the given ID. A unique name
       /// will automatically be assigned to the frustum visual. If the given
       /// ID is already in use, NULL will be returned.
       /// \param[in] _id ID of the new frustum visual
       /// \return The created frustum visual
-      public: virtual FrustumVisualPtr CreateFrustumVisual(
-                  unsigned int _id) = 0;
+      /// \todo(iche033) Commented out for ABI compatibility. Uncomment in
+      /// gz-rendering10
+      /// public: virtual FrustumVisualPtr CreateFrustumVisual(
+      ///             unsigned int _id) = 0;
 
       /// \brief Create new frustum visual with the given name. A unique ID
       /// will automatically be assigned to the frustum visual. If the given
       /// name is already in use, NULL will be returned.
       /// \param[in] _name Name of the new frustum visual
       /// \return The created frustum visual
-      public: virtual FrustumVisualPtr CreateFrustumVisual(
-                  const std::string &_name) = 0;
+      /// \todo(iche033) Commented out for ABI compatibility. Uncomment in
+      /// gz-rendering10
+      /// public: virtual FrustumVisualPtr CreateFrustumVisual(
+      ///             const std::string &_name) = 0;
 
       /// \brief Create new frustum visual with the given name. If either
       /// the given ID or name is already in use, NULL will be returned.
       /// \param[in] _id ID of the frustum visual.
       /// \param[in] _name Name of the new frustum visual.
       /// \return The created frustum visual
-      public: virtual FrustumVisualPtr CreateFrustumVisual(
-                  unsigned int _id, const std::string &_name) = 0;
+      /// \todo(iche033) Commented out for ABI compatibility. Uncomment in
+      /// gz-rendering10
+      /// public: virtual FrustumVisualPtr CreateFrustumVisual(
+      ///             unsigned int _id, const std::string &_name) = 0;
+      /// \endcond
 
       /// \brief Create new heightmap geomerty. The rendering::Heightmap will be
       /// created from the given HeightmapDescriptor.

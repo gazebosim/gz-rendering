@@ -8,6 +8,7 @@ set(tests
   Camera_TEST
   Capsule_TEST
   COMVisual_TEST
+  FrustumVisual_TEST
   GaussianNoisePass_TEST
   GizmoVisual_TEST
   GlobalIllumination_TEST

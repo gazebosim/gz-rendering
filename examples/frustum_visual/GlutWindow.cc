@@ -29,7 +29,9 @@
   #include <GL/glx.h>
 #endif
 
+#include <iostream>
 #include <mutex>
+#include <vector>
 
 #include <gz/common/Console.hh>
 #include <gz/rendering/Camera.hh>

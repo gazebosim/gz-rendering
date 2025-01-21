@@ -25,6 +25,9 @@
 #endif
 
 #include <iostream>
+#include <map>
+#include <memory>
+#include <string>
 #include <vector>
 
 #include <gz/common/Console.hh>
@@ -69,7 +72,6 @@ void buildScene(ScenePtr _scene)
   camera->SetHFOV(GZ_PI / 2);
   root->AddChild(camera);
 }
-
 
 //////////////////////////////////////////////////
 NodePtr createMainNode(ScenePtr _scene)

@@ -1,6 +1,6 @@
-## Gazebo Rendering
+# Gazebo Rendering
 
-### Gazebo Rendering 8.X
+## Gazebo Rendering 8.X
 
 ### Gazebo Rendering 8.2.2 (2025-01-30)
 

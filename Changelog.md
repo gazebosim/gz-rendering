@@ -1,6 +1,14 @@
-## Gazebo Rendering
+# Gazebo Rendering
 
-### Gazebo Rendering 8.X
+## Gazebo Rendering 8.X
+
+### Gazebo Rendering 8.2.2 (2025-01-30)
+
+1. Fix RenderingIface_TEST for ogre2 when there is no display
+    * [Pull request #1098](https://github.com/gazebosim/gz-rendering/pull/1098)
+
+1. Better approach to use std::variant
+    * [Pull request #1093](https://github.com/gazebosim/gz-rendering/pull/1093)
 
 ### Gazebo Rendering 8.2.1 (2024-11-08)
 

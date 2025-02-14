@@ -22,6 +22,13 @@
 #include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "gz/rendering/ogre2/Export.hh"
 
+#ifdef _MSC_VER
+  #pragma warning(push)
+  // Suppress dll-interface warning. This should no longer be needed in
+  // gz-rendering9 as visibility changed hidden by default.
+  #pragma warning(disable:4251)
+#endif
+
 namespace gz
 {
   namespace rendering
@@ -50,4 +57,9 @@ namespace gz
     }
   }
 }
+
+#ifdef _MSC_VER
+  #pragma warning(pop)
+#endif
+
 #endif

@@ -35,6 +35,9 @@
   #pragma warning(push)
   // Silence deriving from Ogre::RenderTargetListener dll-linkage warnings
   #pragma warning(disable:4275)
+  // Suppress dll-interface warning. This should no longer be needed in
+  // gz-rendering9 as visibility changed hidden by default.
+  #pragma warning(disable:4251)
 #endif
 
 namespace gz

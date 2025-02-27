@@ -95,6 +95,7 @@ namespace gz
       protected: Ogre2ScenePtr scene;
 
       /// \brief Remove internal material cache for a specific material
+      /// \todo(iche033) Deprecate this function in gz-rendering10
       public: void ClearMaterialsCache(const std::string &_name);
 
       /// \brief Pointer to private data class

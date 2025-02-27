@@ -444,6 +444,7 @@ namespace gz
 
       /// \brief Remove internal material cache for a specific material
       /// \param[in] _name Name of the template material to remove.
+      /// \todo(iche033) Deprecate this function in gz-rendering10
       public: void ClearMaterialsCache(const std::string &_name);
 
       /// \brief Create a shared pointer to self

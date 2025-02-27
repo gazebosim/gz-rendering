@@ -57,13 +57,6 @@
 /// \brief Private data for the Ogre2MeshFactory class
 class gz::rendering::Ogre2MeshFactoryPrivate
 {
-  /// \brief Vector with the template materials, we keep the pointer to be
-  /// able to remove it when nobody is using it.
-  /// \todo(iche033) We should no longer need to store the material in a cache
-  /// removal. Ogre2Material::Destroy function checks if materials/ textures
-  /// are in use and will remove internal ogre objects there.
-  /// Remove this variable once ClearMaterialsCache function is removed.
-  public: std::vector<MaterialPtr> materialCache;
 };
 
 /// \brief Private data for the Ogre2SubMeshStoreFactory class
@@ -95,22 +88,9 @@ void Ogre2MeshFactory::Clear()
 }
 
 //////////////////////////////////////////////////
-void Ogre2MeshFactory::ClearMaterialsCache(const std::string &_name)
+void Ogre2MeshFactory::ClearMaterialsCache(const std::string &)
 {
-  auto it = this->dataPtr->materialCache.begin();
-  for (auto &mat : this->dataPtr->materialCache)
-  {
-    std::string matName = mat->Name();
-    std::string textureName = mat->Texture();
-    if (textureName == _name)
-    {
-      this->scene->UnregisterMaterial(matName);
-      break;
-    }
-    ++it;
-  }
-  if (it != this->dataPtr->materialCache.end())
-    this->dataPtr->materialCache.erase(it);
+  // no-op
 }
 
 //////////////////////////////////////////////////
@@ -505,7 +485,6 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
       if (material)
       {
         mat->CopyFrom(*material);
-        this->dataPtr->materialCache.push_back(mat);
       }
       else
       {

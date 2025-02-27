@@ -59,6 +59,10 @@ class gz::rendering::Ogre2MeshFactoryPrivate
 {
   /// \brief Vector with the template materials, we keep the pointer to be
   /// able to remove it when nobody is using it.
+  /// \todo(iche033) We should no longer need to store the material in a cache
+  /// removal. Ogre2Material::Destroy function checks if materials/ textures
+  /// are in use and will remove internal ogre objects there.
+  /// Remove this variable once ClearMaterialsCache function is removed.
   public: std::vector<MaterialPtr> materialCache;
 };
 

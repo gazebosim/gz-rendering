@@ -92,7 +92,7 @@ formats used in gz-common and gz-msgs.
 
 1. `Scene::SetTime` is often unset. Gazebo's `Ogre2` now defaults to 60hz otherwise rendering won't advance forward.
 	+ Mostly affects Particles.
-	+ Also may affect gaussian postprocessing and other filters dependant on time.
+	+ Also may affect gaussian postprocessing and other filters dependent on time.
 	+ Previous behavior was using real time instead of simulation time, which is wrong.
 	+ See https://github.com/gazebosim/gz-rendering/issues/556 for details.
 

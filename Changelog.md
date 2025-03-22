@@ -830,7 +830,7 @@
 1. Increased Marker coverage
     * [Pull request #738](https://github.com/gazebosim/ign-rendering/pull/738)
 
-1. Added shaderType converage
+1. Added shaderType coverage
     * [Pull request #740](https://github.com/gazebosim/ign-rendering/pull/740)
 
 1. Improved grid coverage
@@ -859,7 +859,7 @@
 1. Update Marker test
     * [Pull request #673](https://github.com/gazebosim/gz-rendering/pull/673)
 
-1. Increase TransformControl test converage
+1. Increase TransformControl test coverage
     * [Pull request #668](https://github.com/gazebosim/gz-rendering/pull/668)
 
 1. Enable ogre2 heightmap test

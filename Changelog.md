@@ -859,7 +859,7 @@
 1. Update Marker test
     * [Pull request #673](https://github.com/gazebosim/gz-rendering/pull/673)
 
-1. Increase TransformControl test conerage
+1. Increase TransformControl test coverage
     * [Pull request #668](https://github.com/gazebosim/gz-rendering/pull/668)
 
 1. Enable ogre2 heightmap test

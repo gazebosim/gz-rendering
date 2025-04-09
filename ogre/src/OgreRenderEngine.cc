@@ -802,8 +802,6 @@ void OgreRenderEngine::InitAttempt()
 
   this->initialized = false;
 
-  Ogre::ColourValue ambient;
-
   /// Create a dummy rendering context.
   /// This will allow gz-rendering to run headless. And it also allows OGRE to
   /// initialize properly

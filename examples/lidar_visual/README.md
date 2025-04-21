@@ -1,8 +1,8 @@
 # Lidar Visual Example
 
-Demo of a lidar visualisation using data from a GPU Rays sensor.
+Demo of a lidar visualization using data from a GPU Rays sensor.
 A laser sensor model is used to detect objects in the rendering window
-environment and the collected data is visualised.
+environment and the collected data is visualized.
 
 ## Build
 

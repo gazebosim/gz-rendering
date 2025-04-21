@@ -7,6 +7,14 @@ release will remove the deprecated code.
 
 ## Gazebo Rendering 9.x to 10.x
 
+### Deprecations
+
+1. **Ogre2MeshFactory**
+    + Deprecated: `void ClearMaterialsCache(const std::string &_name)`
+
+1. **Ogre2Scene**
+    + Deprecated: `void ClearMaterialsCache(const std::string &_name)`
+
 ### Removals
 
 1. The macro `GZ_RENDERING_RESOURCE_PATH` is removed. Use
@@ -106,7 +114,7 @@ formats used in gz-common and gz-msgs.
 
 1. `Scene::SetTime` is often unset. Gazebo's `Ogre2` now defaults to 60hz otherwise rendering won't advance forward.
 	+ Mostly affects Particles.
-	+ Also may affect gaussian postprocessing and other filters dependant on time.
+	+ Also may affect gaussian postprocessing and other filters dependent on time.
 	+ Previous behavior was using real time instead of simulation time, which is wrong.
 	+ See https://github.com/gazebosim/gz-rendering/issues/556 for details.
 

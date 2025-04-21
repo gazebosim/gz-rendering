@@ -6,7 +6,7 @@ When the application starts you will see a blank window.
 When you click the `+` or `-` keys you can change the scene.
 By pressing the `Tab` button you will advance to the next render engine.
 
-The following scenes have more primitive objects such as cones or cilinders. Again, you can see the scene with different render engines pressing `Tab`.
+The following scenes have more primitive objects such as cones or cylinders. Again, you can see the scene with different render engines pressing `Tab`.
 Some of the scenes available include:
 
  - Shapes
@@ -15,7 +15,7 @@ Some of the scenes available include:
  - Reflective property
  - Soft shadows
 
-There are some scenes demonstrating reflective materials and mutiple point light shadows but they appear the same in ogre because they are not supported.
+There are some scenes demonstrating reflective materials and multiple point light shadows but they appear the same in ogre because they are not supported.
 
 ## Compile and run the example
 

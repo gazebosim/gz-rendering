@@ -95,7 +95,8 @@ namespace gz
       protected: Ogre2ScenePtr scene;
 
       /// \brief Remove internal material cache for a specific material
-      public: void ClearMaterialsCache(const std::string &_name);
+      public: void GZ_DEPRECATED(10) ClearMaterialsCache(
+                  const std::string &_name);
 
       /// \brief Pointer to private data class
       private: std::unique_ptr<Ogre2MeshFactoryPrivate> dataPtr;

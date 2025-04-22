@@ -456,7 +456,8 @@ namespace gz
 
       /// \brief Remove internal material cache for a specific material
       /// \param[in] _name Name of the template material to remove.
-      public: void ClearMaterialsCache(const std::string &_name);
+      public: void GZ_DEPRECATED(10) ClearMaterialsCache(
+                  const std::string &_name);
 
       /// \brief Create a shared pointer to self
       private: Ogre2ScenePtr SharedThis();

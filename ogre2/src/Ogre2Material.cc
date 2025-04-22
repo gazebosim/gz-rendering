@@ -277,8 +277,6 @@ void Ogre2Material::Destroy()
 
   if (textureToRemove && !textureIsUse)
   {
-    Ogre2ScenePtr s = std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());
-    s->ClearMaterialsCache(this->textureName);
     this->Scene()->UnregisterMaterial(this->name);
     textureManager->destroyTexture(textureToRemove);
   }

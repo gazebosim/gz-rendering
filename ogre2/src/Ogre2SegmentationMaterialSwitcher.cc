@@ -86,11 +86,11 @@ Ogre::Vector4 Ogre2SegmentationMaterialSwitcher::ColorForVisual(
   // get class user data
   Variant labelAny = _visual->UserData("label");
   int label;
-  try
+  if (const int* labelPtr = std::get_if<int>(&labelAny))
   {
-    label = std::get<int>(labelAny);
+    label = *labelPtr;
   }
-  catch (std::bad_variant_access &)
+  else
   {
     // items with no class are considered background
     label = this->segmentationCamera->BackgroundLabel();

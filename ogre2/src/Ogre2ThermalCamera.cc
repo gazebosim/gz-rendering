@@ -281,17 +281,17 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
       {
         float temp = -1.0f;
         bool foundTemp = true;
-        if (std::holds_alternative<float>(tempAny))
+        if (const float* tempPtr = std::get_if<float>(&tempAny))
         {
-          temp = std::get<float>(tempAny);
+          temp = *tempPtr;
         }
-        else if (std::holds_alternative<double>(tempAny))
+        else if (const double* temptPtr = std::get_if<double>(&tempAny))
         {
-          temp = static_cast<float>(std::get<double>(tempAny));
+          temp = static_cast<float>(*tempPtr);
         }
-        else if (std::holds_alternative<int>(tempAny))
+        else if (const int* tempPtr = std::get_if<int>(&tempAny))
         {
-          temp = static_cast<float>(std::get<int>(tempAny));
+          temp = static_cast<float>(*tempPtr);
         }
         else
         {
@@ -554,17 +554,18 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
       {
         float temp = -1.0;
         bool foundTemp = true;
-        if (std::holds_alternative<float>(tempAny))
+        if (const float* tempPtr = std::get_if<float>(&tempAny))
         {
-          temp = std::get<float>(tempAny);
+          temp = *tempPtr;
         }
-        else if (std::holds_alternative<double>(tempAny))
+        else if (const double* tempPtr = std::get_if<double>(&tempAny))
         {
-          temp = static_cast<float>(std::get<double>(tempAny));
+
+          temp = static_cast<float>(*tempPtr);
         }
-        else if (std::holds_alternative<int>(tempAny))
+        else if (const int* tempPtr = std::get_if<int>(&tempAny))
         {
-          temp = static_cast<float>(std::get<int>(tempAny));
+          temp = static_cast<float>(*tempPtr);
         }
         else
         {

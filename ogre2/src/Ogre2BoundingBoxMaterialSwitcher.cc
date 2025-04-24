@@ -115,16 +115,12 @@ void Ogre2BoundingBoxMaterialSwitcher::cameraPreRenderScene(
 
       // get class user data
       Variant labelAny = ogreVisual->UserData(this->labelKey);
-
+      
+      // set default label to background
       int label = this->backgroundLabel;
-      try
-      {
-        label = std::get<int>(labelAny);
-      }
-      catch(std::bad_variant_access &e)
-      {
-        // items with no class are considered background
-        label = this->backgroundLabel;
+      // if not background, then modify to label
+      if (const int* labelPtr = std::get_if<int>(&labelAny)){
+        label = *labelPtr;
       }
 
       // for full bbox, each pixel contains 1 channel for label

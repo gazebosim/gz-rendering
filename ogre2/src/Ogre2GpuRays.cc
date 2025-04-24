@@ -326,23 +326,24 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
       {
         // get laser_retro
         Variant tempLaserRetro = ogreVisual->UserData(laserRetroKey);
-
-        if (std::holds_alternative<float>(tempLaserRetro))
+      
+        if (const auto* retroValuePtr = std::get_if<float>(&tempLaserRetro))
         {
-          retroValue = std::get<float>(tempLaserRetro);
+          retroValue = *retroValuePtr;
         }
-        else if (std::holds_alternative<double>(tempLaserRetro))
+        else if (const auto* retroValuePtr = std::get_if<double>(&tempLaserRetro))
         {
-          retroValue = static_cast<float>(std::get<double>(tempLaserRetro));
+          retroValue = static_cast<float>(*retroValuePtr);
         }
-        else if (std::holds_alternative<int>(tempLaserRetro))
+        else if (const auto* retroValuePtr = std::get_if<int>(&tempLaserRetro))
         {
-          retroValue = static_cast<float>(std::get<int>(tempLaserRetro));
+          retroValue = static_cast<float>(*retroValuePtr);
         }
         else
         {
           gzerr << "Error casting user data: laser_retro\n";
         }
+
       }
 
       // only accept positive laser retro value
@@ -442,17 +443,17 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
         // get laser_retro
         Variant tempLaserRetro = visual->UserData(laserRetroKey);
 
-        if (std::holds_alternative<float>(tempLaserRetro))
+        if (const auto* retroValuePtr = std::get_if<float>(&tempLaserRetro))
         {
-          retroValue = std::get<float>(tempLaserRetro);
+          retroValue = *retroValuePtr;
         }
-        else if (std::holds_alternative<double>(tempLaserRetro))
+        else if (const auto* retroValuePtr = std::get_if<double>(&tempLaserRetro))
         {
-          retroValue = static_cast<float>(std::get<double>(tempLaserRetro));
+          retroValue = static_cast<float>(*retroValuePtr);
         }
-        else if (std::holds_alternative<int>(tempLaserRetro))
+        else if (const auto* retroValuePtr = std::get_if<int>(&tempLaserRetro))
         {
-          retroValue = static_cast<float>(std::get<int>(tempLaserRetro));
+          retroValue = static_cast<float>(*retroValuePtr);
         }
         else
         {

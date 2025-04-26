@@ -326,7 +326,6 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
       {
         // get laser_retro
         Variant tempLaserRetro = ogreVisual->UserData(laserRetroKey);
-      
         if (const float* floatPtr = std::get_if<float>(&tempLaserRetro))
         {
           retroValue = *floatPtr;

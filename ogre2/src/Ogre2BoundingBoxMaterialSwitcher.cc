@@ -115,7 +115,6 @@ void Ogre2BoundingBoxMaterialSwitcher::cameraPreRenderScene(
 
       // get class user data
       Variant labelAny = ogreVisual->UserData(this->labelKey);
-      
       // set default label to background
       int label = this->backgroundLabel;
       // if not background, then modify to label

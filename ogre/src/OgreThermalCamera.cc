@@ -219,17 +219,17 @@ Ogre::Technique *OgreThermalCameraMaterialSwitcher::handleSchemeNotFound(
   if (tempAny.index() != 0)
   {
     float temp = -1.0f;
-    if (const float* tempPtr = std::get_if<float>(&tempAny))
+    if (const float* floatPtr = std::get_if<float>(&tempAny))
     {
-      temp = *tempPtr;
+      temp = *floatPtr;
     }
-    else if (const double* tempPtr = std::get_if<double>(&tempAny))
+    else if (const double* doublePtr = std::get_if<double>(&tempAny))
     {
-      temp = static_cast<float>(*tempPtr);
+      temp = static_cast<float>(*doublePtr);
     }
-    else if (const int* tempPtr = std::get_if<int>(&tempAny))
+    else if (const int* intPtr = std::get_if<int>(&tempAny))
     {
-      temp = static_cast<float>(*tempPtr);
+      temp = static_cast<float>(*intPtr);
     }
     else
     {

@@ -327,17 +327,17 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
         // get laser_retro
         Variant tempLaserRetro = ogreVisual->UserData(laserRetroKey);
       
-        if (const auto* retroValuePtr = std::get_if<float>(&tempLaserRetro))
+        if (const float* floatPtr = std::get_if<float>(&tempLaserRetro))
         {
-          retroValue = *retroValuePtr;
+          retroValue = *floatPtr;
         }
-        else if (const auto* retroValuePtr = std::get_if<double>(&tempLaserRetro))
+        else if (const double* doublePtr = std::get_if<double>(&tempLaserRetro))
         {
-          retroValue = static_cast<float>(*retroValuePtr);
+          retroValue = static_cast<float>(*doublePtr);
         }
-        else if (const auto* retroValuePtr = std::get_if<int>(&tempLaserRetro))
+        else if (const int* intPtr = std::get_if<int>(&tempLaserRetro))
         {
-          retroValue = static_cast<float>(*retroValuePtr);
+          retroValue = static_cast<float>(*intPtr);
         }
         else
         {
@@ -443,17 +443,17 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
         // get laser_retro
         Variant tempLaserRetro = visual->UserData(laserRetroKey);
 
-        if (const auto* retroValuePtr = std::get_if<float>(&tempLaserRetro))
+        if (const float* floatPtr = std::get_if<float>(&tempLaserRetro))
         {
-          retroValue = *retroValuePtr;
+          retroValue = *floatPtr;
         }
-        else if (const auto* retroValuePtr = std::get_if<double>(&tempLaserRetro))
+        else if (const double* doublePtr = std::get_if<double>(&tempLaserRetro))
         {
-          retroValue = static_cast<float>(*retroValuePtr);
+          retroValue = static_cast<float>(*doublePtr);
         }
-        else if (const auto* retroValuePtr = std::get_if<int>(&tempLaserRetro))
+        else if (const int* intPtr = std::get_if<int>(&tempLaserRetro))
         {
-          retroValue = static_cast<float>(*retroValuePtr);
+          retroValue = static_cast<float>(*intPtr);
         }
         else
         {

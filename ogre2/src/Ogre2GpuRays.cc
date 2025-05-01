@@ -15,6 +15,8 @@
  *
 */
 
+#include <variant>
+
 #include <gz/math/Vector2.hh>
 #include <gz/math/Vector3.hh>
 
@@ -342,7 +344,6 @@ void Ogre2LaserRetroMaterialSwitcher::passPreExecute(
         {
           gzerr << "Error casting user data: laser_retro\n";
         }
-
       }
 
       // only accept positive laser retro value

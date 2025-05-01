@@ -14,6 +14,9 @@
  * limitations under the License.
  *
 */
+
+#include <variant>
+
 #include "Ogre2BoundingBoxMaterialSwitcher.hh"
 
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
@@ -118,7 +121,8 @@ void Ogre2BoundingBoxMaterialSwitcher::cameraPreRenderScene(
       // set default label to background
       int label = this->backgroundLabel;
       // if not background, then modify to label
-      if (const int* labelPtr = std::get_if<int>(&labelAny)){
+      if (const int* labelPtr = std::get_if<int>(&labelAny))
+      {
         label = *labelPtr;
       }
 

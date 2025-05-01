@@ -560,7 +560,6 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
         }
         else if (const double* doublePtr = std::get_if<double>(&tempAny))
         {
-
           temp = static_cast<float>(*doublePtr);
         }
         else if (const int* intPtr = std::get_if<int>(&tempAny))

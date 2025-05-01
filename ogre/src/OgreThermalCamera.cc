@@ -24,6 +24,7 @@
 #endif
 
 #include <limits>
+#include <variant>
 
 #include <gz/math/Helpers.hh>
 #include "gz/rendering/ShaderParams.hh"

@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <utility>
 #include <vector>
+#include <variant>
 
 #include <gz/common/Console.hh>
 

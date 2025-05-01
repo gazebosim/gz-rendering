@@ -6,7 +6,7 @@ jobs:
   build:
     name: Window CI
     env:
-      PACKAGE: gz-rendering
+      PACKAGE_WITH_VERSION: gz-rendering10
     runs-on: windows-latest
     steps:
     - name: setup-pixi
@@ -31,7 +31,11 @@ jobs:
       run: |
         mkdir src
         cd src
-        pixi run vcs import --input https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/${env:PACKAGE}.yaml
+        pixi run vcs import --input https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/${env:PACKAGE_WITH_VERSION}.yaml
+
+    - name: Set PACKAGE variable without version
+      shell: bash
+      run: echo "PACKAGE=${PACKAGE_WITH_VERSION//[[:digit:]]/}" >> $GITHUB_ENV
 
     - uses: actions/checkout@v4
       with:

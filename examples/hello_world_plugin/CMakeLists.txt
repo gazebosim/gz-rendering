@@ -1,19 +1,16 @@
 cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 
-find_package(gz-rendering10 REQUIRED)
-set(GZ_RENDERING_VER ${gz-rendering10_VERSION_MAJOR})
+find_package(gz-rendering REQUIRED)
 
-find_package(gz-plugin3 REQUIRED COMPONENTS all)
-set(GZ_PLUGIN_VER ${gz-plugin3_VERSION_MAJOR})
+find_package(gz-plugin REQUIRED COMPONENTS all)
 
-find_package(gz-common6 REQUIRED)
-set(GZ_COMMON_VER ${gz-common6_VERSION_MAJOR})
+find_package(gz-common REQUIRED)
 
 add_library(HelloWorldPlugin SHARED HelloWorldPlugin.cc)
 target_link_libraries(HelloWorldPlugin
   PUBLIC
-    gz-rendering${GZ_RENDERING_VER}::gz-rendering${GZ_RENDERING_VER}
-    gz-common${GZ_COMMON_VER}::gz-common${GZ_COMMON_VER}
+    gz-rendering::gz-rendering
+    gz-common::gz-common
   PRIVATE
-    gz-plugin${GZ_PLUGIN_VER}::register
+    gz-plugin::register
 )

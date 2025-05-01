@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 set(GZ_PLUGIN_VER 2)
 set(GZ_COMMON_VER 5)
 
-find_package(gz-rendering10 REQUIRED)
-find_package(gz-plugin3 REQUIRED COMPONENTS all)
+find_package(gz-rendering REQUIRED)
+find_package(gz-plugin REQUIRED COMPONENTS all)
 
 if (NOT DEFINED ENV{LUXCORE_SDK_PATH})
   message(FATAL_ERROR "Must define LUXCORE_SDK_PATH")
@@ -30,11 +30,11 @@ add_library(LuxCoreEngine SHARED
 
 target_link_libraries(LuxCoreEngine
   PUBLIC
-    ${gz-common${GZ_COMMON_VER}_LIBRARIES}
+    ${gz-common_LIBRARIES}
     ${GZ-RENDERING_LIBRARIES}
     ${LUXCORE_LIBRARY}
   PRIVATE
-    gz-plugin${GZ_PLUGIN_VER}::register
+    gz-plugin::register
 )
 
 find_package(GLUT REQUIRED)

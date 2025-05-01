@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 project(gz-rendering-segmentation-camera)
-find_package(gz-rendering10 REQUIRED)
+find_package(gz-rendering REQUIRED)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}

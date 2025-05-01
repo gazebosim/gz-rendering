@@ -25,8 +25,8 @@ foreach(test ${tests})
     TYPE ${TEST_TYPE}
     SOURCE ${test}
     LIB_DEPS
-      gz-plugin${GZ_PLUGIN_VER}::loader
-      gz-common${GZ_COMMON_VER}::gz-common${GZ_COMMON_VER}
+      gz-plugin::loader
+      gz-common::gz-common
       ${PROJECT_LIBRARY_TARGET_NAME}
   )
 endforeach()

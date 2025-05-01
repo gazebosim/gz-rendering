@@ -3,12 +3,11 @@ project(gz-rendering-simple-demo-qml)
 
 #------------------------------------------------------------------------
 # Find gz-cmake
-find_package(gz-cmake4 REQUIRED)
-set(GZ_CMAKE_VER ${gz-cmake4_VERSION_MAJOR})
+find_package(gz-cmake REQUIRED)
 
 #------------------------------------------------------------------------
 # Find gz-rendering
-find_package(gz-rendering10)
+find_package(gz-rendering)
 
 #======================================
 # Find Qt

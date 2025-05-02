@@ -33,9 +33,9 @@ set_property(
 
 target_link_libraries(${optix_target}
   PUBLIC
-    ${gz-common${GZ_COMMON_VER}_LIBRARIES}
+    ${gz-common_LIBRARIES}
   PRIVATE
-    gz-plugin${GZ_PLUGIN_VER}::register
+    gz-plugin::register
     optix::optix
     optix::optixu
     optix::optix_prime)

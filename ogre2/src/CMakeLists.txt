@@ -54,10 +54,10 @@ target_include_directories(${ogre2_target}
 
 target_link_libraries(${ogre2_target}
   PUBLIC
-    ${gz-common${GZ_COMMON_VER}_LIBRARIES}
-    gz-math${GZ_MATH_VER}::eigen3
+    ${gz-common_LIBRARIES}
+    gz-math::eigen3
   PRIVATE
-    gz-plugin${GZ_PLUGIN_VER}::register
+    gz-plugin::register
     ${OPENGL_LIBRARIES}
     terra
     GzOGRE2::GzOGRE2)

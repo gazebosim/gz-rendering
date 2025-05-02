@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 project(gz-rendering-ogre2-demo)
 
-find_package(gz-rendering10)
+find_package(gz-rendering)
 
 include_directories(SYSTEM
   ${PROJECT_BINARY_DIR}

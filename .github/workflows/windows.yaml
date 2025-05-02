@@ -26,7 +26,7 @@ jobs:
     - name: Install base dependencies
       run: |
         # List adapted from https://github.com/gazebo-tooling/release-tools/blob/f89ac8cafc646260598eb8eb6d94be8093bdc9f7/jenkins-scripts/lib/windows_env_vars.bat#L22
-        pixi add assimp dlfcn-win32 eigen ffmpeg freeimage gdal gflags ogre ogre-next spdlog tinyxml2
+        pixi add assimp cli11 dlfcn-win32 eigen ffmpeg freeimage gdal gflags ogre ogre-next spdlog tinyxml2
     - name: Clone source dependencies
       run: |
         mkdir src

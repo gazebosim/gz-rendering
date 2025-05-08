@@ -124,7 +124,7 @@ fragment float4 main_metal
   // simulate temp variations
   float delta = (1.0 - dNorm) * heatRange;
   temp = temp - heatRange / 2.0 + delta;
-  clamp(temp, p.min, p.max);
+  temp = clamp(temp, p.min, p.max);
 
   // apply resolution factor
   temp /= p.resolution;

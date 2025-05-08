@@ -117,7 +117,7 @@ void main()
   // simulate temp variations
   float delta = (1.0 - dNorm) * heatRange;
   temp = temp - heatRange / 2.0 + delta;
-  clamp(temp, min, max);
+  temp = clamp(temp, min, max);
 
   // apply resolution factor
   temp /= resolution;

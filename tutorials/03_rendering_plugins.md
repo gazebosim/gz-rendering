@@ -9,7 +9,7 @@ It allows users to select from multiple supported rendering engines based on the
 Its plugin interface loads rendering engines at runtime.
 It is also possible to integrate your own selected rendering engine by writing a compatible plugin interface.
 
-#### How to Write Your Own Rendering Engine Plugin
+### How to Write Your Own Rendering Engine Plugin
 
 A mocked example of a custom rendering engine plugin can be found [here](https://github.com/gazebosim/gz-rendering/tree/gz-rendering9/examples/hello_world_plugin).  In order
 to make your own custom rendering engine, this example is a good starting point.  There are a few key things which will need to be done in order for a custom rendering engine to function:
@@ -20,7 +20,7 @@ to make your own custom rendering engine, this example is a good starting point.
 
 Finally, for your custom rendering engine to actually have any functionality and at minimum, display something in a window, you will need to implement your own `Scene` and `Camera` classes, which inherit from and implement the pure virtual functions of [`gz::rendering::Scene`](https://github.com/gazebosim/gz-rendering/blob/gz-rendering9/include/gz/rendering/Scene.hh) and  [`gz::rendering::Camera`](https://github.com/gazebosim/gz-rendering/blob/gz-rendering9/include/gz/rendering/Camera.hh), respectively.  The mocked example simply returns `nullptr` for its `CreateSceneImpl(...)` function, so it may be useful to look at the current `Scene` implementations for the other rendering engines within `gz::rendering` such as [`OGRE`](https://github.com/gazebosim/gz-rendering/blob/gz-rendering9/ogre/src/OgreScene.cc) or [`OGRE2`](https://github.com/gazebosim/gz-rendering/blob/gz-rendering9/ogre2/src/Ogre2Scene.cc).  Likewise, it may be helpful to look at the `Camera` implementations from [`OGRE`](https://github.com/gazebosim/gz-rendering/blob/gz-rendering9/ogre/src/OgreCamera.cc) and [`OGRE2`](https://github.com/gazebosim/gz-rendering/blob/gz-rendering9/ogre2/src/Ogre2Camera.cc)
 
-#### Building and Running Your Rendering Engine Plugin with Gazebo
+### Building and Running Your Rendering Engine Plugin with Gazebo
 
 Once you have your own rendering plugin written, you can build it similarly to how the example is built.  It may be helpful to look at the [`CMakeLists.txt`](https://github.com/gazebosim/gz-rendering/tree/gz-rendering9/examples/hello_world_plugin) from the example as it contains the boilerplate code needed to get a custom rendering engine plugin built.
 

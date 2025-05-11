@@ -527,6 +527,15 @@ void OgreThermalCamera::PreRender()
   BaseCamera::PreRender();
   if (!this->dataPtr->ogreThermalTexture)
     this->CreateThermalTexture();
+
+  // ensure that certain shader constants are up-to-date so that changes that
+  // users can make to the settings show up in the thermal result immediately
+  Ogre::Pass *pass =
+      this->dataPtr->thermalMaterial->getTechnique(0)->getPass(0);
+  auto params = pass->getFragmentProgramParameters();
+  params->setNamedConstant("max", this->maxTemp);
+  params->setNamedConstant("min", this->minTemp);
+  params->setNamedConstant("resolution", this->resolution);
 }
 
 //////////////////////////////////////////////////

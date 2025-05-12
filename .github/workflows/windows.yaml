@@ -6,7 +6,7 @@ jobs:
   build:
     name: Window CI
     env:
-      PACKAGE: gz-rendering10
+      PACKAGE_WITH_VERSION: gz-rendering10
     runs-on: windows-latest
     steps:
     - name: setup-pixi
@@ -26,12 +26,16 @@ jobs:
     - name: Install base dependencies
       run: |
         # List adapted from https://github.com/gazebo-tooling/release-tools/blob/f89ac8cafc646260598eb8eb6d94be8093bdc9f7/jenkins-scripts/lib/windows_env_vars.bat#L22
-        pixi add assimp dlfcn-win32 eigen ffmpeg freeimage gdal gflags ogre ogre-next spdlog tinyxml2
+        pixi add assimp cli11 dlfcn-win32 eigen ffmpeg freeimage gdal gflags ogre ogre-next spdlog tinyxml2
     - name: Clone source dependencies
       run: |
         mkdir src
         cd src
-        pixi run vcs import --input https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/${env:PACKAGE}.yaml
+        pixi run vcs import --input https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/${env:PACKAGE_WITH_VERSION}.yaml
+
+    - name: Set PACKAGE variable without version
+      shell: bash
+      run: echo "PACKAGE=${PACKAGE_WITH_VERSION//[[:digit:]]/}" >> $GITHUB_ENV
 
     - uses: actions/checkout@v4
       with:

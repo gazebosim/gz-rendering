@@ -21,7 +21,7 @@ gz_add_get_install_prefix_impl(GET_INSTALL_PREFIX_FUNCTION gz::rendering::getIns
 
 # Include the interface directories that we always need.
 #gz_target_interface_include_directories(${PROJECT_LIBRARY_TARGET_NAME}
-#  gz-math${GZ_MATH_VER})
+#  gz-math)
 
 set_property(
   SOURCE RenderEngineManager.cc
@@ -38,10 +38,10 @@ set_property(
 
 target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PUBLIC
-  gz-common${GZ_COMMON_VER}::requested
-  gz-utils${GZ_UTILS_VER}::gz-utils${GZ_UTILS_VER}
+  gz-common::requested
+  gz-utils::gz-utils
   PRIVATE
-  gz-plugin${GZ_PLUGIN_VER}::loader
+  gz-plugin::loader
 )
 if (UNIX AND NOT APPLE)
   target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE X11)

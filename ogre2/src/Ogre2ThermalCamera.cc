@@ -1120,6 +1120,21 @@ void Ogre2ThermalCamera::PreRender()
   if (!this->dataPtr->ogreThermalTexture)
     this->CreateThermalTexture();
 
+  // ensure that certain shader constants are up-to-date so that changes that
+  // users can make to the settings show up in the thermal result immediately
+  Ogre::Pass *pass =
+      this->dataPtr->thermalMaterial->getTechnique(0)->getPass(0);
+  Ogre::GpuProgramParametersSharedPtr psParams =
+      pass->getFragmentProgramParameters();
+  psParams->setNamedConstant("max",
+      static_cast<float>(this->maxTemp));
+  psParams->setNamedConstant("min",
+      static_cast<float>(this->minTemp));
+  psParams->setNamedConstant("resolution",
+      static_cast<float>(this->resolution));
+
+  this->dataPtr->thermalMaterialSwitcher->SetLinearResolution(this->resolution);
+
   // todo(iche033) Override BaseCamera::SetProjectionMatrix() function in
   // main / gz-rendering9 instead of checking and setting the custom
   // projection matrix here

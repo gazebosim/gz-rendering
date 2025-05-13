@@ -217,7 +217,9 @@ TEST_F(ThermalCameraTest,
 }
 
 //////////////////////////////////////////////////
-TEST_F(ThermalCameraTest, ThermalCameraBoxesHeatSignature)
+// Test dsiabled on win: https://github.com/gazebosim/gz-rendering/issues/1109
+TEST_F(ThermalCameraTest,
+       GZ_UTILS_TEST_DISABLED_ON_WIN32(ThermalCameraBoxesHeatSignature))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");  // Optix does not support thermal
   CHECK_SUPPORTED_ENGINE("ogre2");  // Only OGRE2 supports heat signatures

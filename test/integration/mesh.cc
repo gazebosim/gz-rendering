@@ -42,6 +42,11 @@ class MeshTest: public CommonRenderingTest
 /////////////////////////////////////////////////
 TEST_F(MeshTest, NormalMapWithoutTexCoord)
 {
+#if defined _WIN32
+  // https://github.com/gazebosim/gz-rendering/issues/1117
+  CHECK_UNSUPPORTED_ENGINE("ogre");
+#endif
+
   // Create a mesh with 2 submeshes - one with red texture and the other with
   // green texture. Add texcoords to the red submesh but not the green submesh.
   // Verify that we can set normal map to the red submesh and the two

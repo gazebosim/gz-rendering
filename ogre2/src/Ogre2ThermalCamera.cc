@@ -1123,9 +1123,9 @@ void Ogre2ThermalCamera::PreRender()
   // ensure that certain shader constants are up-to-date so that changes that
   // users can make to the settings show up in the thermal result immediately
   Ogre::Pass *pass =
-    this->dataPtr->thermalMaterial->getTechnique(0)->getPass(0);
+      this->dataPtr->thermalMaterial->getTechnique(0)->getPass(0);
   Ogre::GpuProgramParametersSharedPtr psParams =
-    pass->getFragmentProgramParameters();
+      pass->getFragmentProgramParameters();
   psParams->setNamedConstant("max",
       static_cast<float>(this->maxTemp));
   psParams->setNamedConstant("min",

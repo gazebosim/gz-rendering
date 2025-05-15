@@ -687,6 +687,7 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
     // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
     params["externalWindowHandle"] = _handle;
+    params["hidden"] = "true";
 #else
     params["parentWindowHandle"] = _handle;
 #endif

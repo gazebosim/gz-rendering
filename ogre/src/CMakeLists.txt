@@ -55,18 +55,9 @@ if(WIN32)
     $<TARGET_FILE:${ogre_target}> ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
-set (versioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
-set (unversioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_NO_VERSION_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
-
 if (WIN32)
   # disable MSVC inherit via dominance warning
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4250")
-  INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy
-  ${GZ_RENDERING_ENGINE_INSTALL_DIR}\/${versioned}
-  ${GZ_RENDERING_ENGINE_INSTALL_DIR}\/${unversioned})")
-else()
-  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink ${versioned} ${unversioned})
-  INSTALL(FILES ${PROJECT_BINARY_DIR}/${unversioned} DESTINATION ${GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR})
 endif()
 
 add_subdirectory(media)

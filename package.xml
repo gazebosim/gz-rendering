@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
-  <name>gz-rendering10</name>
+  <name>gz-rendering</name>
   <version>10.0.0</version>
   <description>Gazebo Rendering: Rendering library for robot applications</description>
   <maintainer email="ichen@openrobotics.org">Ian Chen</maintainer>
@@ -10,13 +10,13 @@
 
   <buildtool_depend>cmake</buildtool_depend>
 
-  <build_depend>gz-cmake4</build_depend>
+  <build_depend>gz-cmake</build_depend>
 
   <depend>glut</depend>
-  <depend>gz-common6</depend>
-  <depend>gz-math8</depend>
-  <depend>gz-plugin3</depend>
-  <depend>gz-utils3</depend>
+  <depend>gz-common</depend>
+  <depend>gz-math</depend>
+  <depend>gz-plugin</depend>
+  <depend>gz-utils</depend>
   <depend>libfreeimage-dev</depend>
   <depend>libglew-dev</depend>
   <depend>libogre-dev</depend>

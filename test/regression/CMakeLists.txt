@@ -4,8 +4,8 @@ gz_rendering_test(
   TYPE ${TEST_TYPE}
   SOURCE reload_engine
   LIB_DEPS
-    gz-plugin${GZ_PLUGIN_VER}::loader
-    gz-common${GZ_COMMON_VER}::gz-common${GZ_COMMON_VER}
+    gz-plugin::loader
+    gz-common::gz-common
     ${PROJECT_LIBRARY_TARGET_NAME}
 )
 

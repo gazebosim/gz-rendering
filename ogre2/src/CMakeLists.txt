@@ -17,7 +17,7 @@ set(engine_name "ogre2")
 gz_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre2_target)
 
 set(OGRE2_RESOURCE_PATH_STR "${OGRE2_RESOURCE_PATH}")
-# On non-Windows, we need to convert the CMake list delimited (;) to the 
+# On non-Windows, we need to convert the CMake list delimited (;) to the
 # list delimiter used in list of paths in code (:)
 # On Windows, the list delimiter in code is already ;, not need to change it to :
 if(NOT WIN32)
@@ -54,10 +54,10 @@ target_include_directories(${ogre2_target}
 
 target_link_libraries(${ogre2_target}
   PUBLIC
-    ${gz-common${GZ_COMMON_VER}_LIBRARIES}
-    gz-math${GZ_MATH_VER}::eigen3
+    ${gz-common_LIBRARIES}
+    gz-math::eigen3
   PRIVATE
-    gz-plugin${GZ_PLUGIN_VER}::register
+    gz-plugin::register
     ${OPENGL_LIBRARIES}
     terra
     GzOGRE2::GzOGRE2)
@@ -76,22 +76,12 @@ endif()
 # https://github.com/OGRECave/ogre-next/blob/003f51a0a90d1cf93fbea3c7302565b07c4f87b0/OgreMain/include/OgrePlatform.h#L350-L372
 # target_compile_definitions(${ogre2_target} PRIVATE $<$<CONFIG:Debug>:DEBUG=1 _DEBUG=1>)
 
-
-set (versioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
-set (unversioned ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME_NO_VERSION_LOWER}-${engine_name}${CMAKE_SHARED_LIBRARY_SUFFIX})
-
 # Note that plugins are currently being installed in 2 places: /lib and the engine-plugins dir
 install(TARGETS ${ogre2_target} DESTINATION ${GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR})
 
 if (WIN32)
   # disable MSVC inherit via dominance warning
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4250")
-  INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy
-  ${GZ_RENDERING_ENGINE_INSTALL_DIR}\/${versioned}
-  ${GZ_RENDERING_ENGINE_INSTALL_DIR}\/${unversioned})")
-else()
-  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink ${versioned} ${unversioned})
-  INSTALL(FILES ${PROJECT_BINARY_DIR}/${unversioned} DESTINATION ${GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR})
 endif()
 
 if (NOT (APPLE OR WIN32))

@@ -3,14 +3,13 @@ cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
 #============================================================================
 # Initialize the project
 #============================================================================
-project(gz-rendering10 VERSION 10.0.0)
+project(gz-rendering VERSION 10.0.0)
 
 #============================================================================
 # Find gz-cmake
 #============================================================================
 # If you get an error at this line, you need to install gz-cmake
-find_package(gz-cmake4 REQUIRED)
-set(GZ_CMAKE_VER ${gz-cmake4_VERSION_MAJOR})
+find_package(gz-cmake REQUIRED)
 
 #============================================================================
 # Set up the project
@@ -31,24 +30,20 @@ option(USE_UNOFFICIAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the bui
 
 #--------------------------------------
 # Find gz-math
-gz_find_package(gz-math8 REQUIRED COMPONENTS eigen3)
-set(GZ_MATH_VER ${gz-math8_VERSION_MAJOR})
+gz_find_package(gz-math REQUIRED COMPONENTS eigen3)
 
 #--------------------------------------
 # Find gz-common
-gz_find_package(gz-common6 REQUIRED
+gz_find_package(gz-common REQUIRED
   COMPONENTS graphics events geospatial)
-set(GZ_COMMON_VER ${gz-common6_VERSION_MAJOR})
 
 #--------------------------------------
 # Find gz-plugin
-gz_find_package(gz-plugin3 REQUIRED COMPONENTS all)
-set(GZ_PLUGIN_VER ${gz-plugin3_VERSION_MAJOR})
+gz_find_package(gz-plugin REQUIRED COMPONENTS all)
 
 #--------------------------------------
 # Find gz-utils
-gz_find_package(gz-utils3 REQUIRED)
-set(GZ_UTILS_VER ${gz-utils3_VERSION_MAJOR})
+gz_find_package(gz-utils REQUIRED)
 
 #--------------------------------------
 # Find OpenGL

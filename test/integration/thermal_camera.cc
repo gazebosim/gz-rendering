@@ -19,6 +19,8 @@
 
 #include "CommonRenderingTest.hh"
 
+#include <vector>
+
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Event.hh>
 
@@ -215,7 +217,9 @@ TEST_F(ThermalCameraTest,
 }
 
 //////////////////////////////////////////////////
-TEST_F(ThermalCameraTest, ThermalCameraBoxesHeatSignature)
+// Test dsiabled on win: https://github.com/gazebosim/gz-rendering/issues/1109
+TEST_F(ThermalCameraTest,
+       GZ_UTILS_TEST_DISABLED_ON_WIN32(ThermalCameraBoxesHeatSignature))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");  // Optix does not support thermal
   CHECK_SUPPORTED_ENGINE("ogre2");  // Only OGRE2 supports heat signatures
@@ -698,6 +702,120 @@ TEST_F(ThermalCameraTest, ThermalCameraParticles)
     // Clean up
     connection.reset();
     delete [] thermalData;
+  }
+
+  engine->DestroyScene(scene);
+}
+
+//////////////////////////////////////////////////
+TEST_F(ThermalCameraTest, ThermalCameraMinTemperatureIsClamped)
+{
+  const unsigned int imgWidth = 50;
+  const unsigned int imgHeight = 50;
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+
+  {
+    // Create thermal camera
+    auto thermalCamera = scene->CreateThermalCamera("ThermalCamera");
+    ASSERT_NE(thermalCamera, nullptr);
+
+    // Configure thermal camera
+    thermalCamera->SetImageWidth(imgWidth);
+    EXPECT_EQ(thermalCamera->ImageWidth(), imgWidth);
+    thermalCamera->SetImageHeight(imgHeight);
+    EXPECT_EQ(thermalCamera->ImageHeight(), imgHeight);
+
+    scene->RootVisual()->AddChild(thermalCamera);
+
+    // Set a callback on the camera sensor to get a thermal camera frame
+    std::vector<uint16_t> thermalData(imgHeight * imgWidth);
+    gz::common::ConnectionPtr connection =
+      thermalCamera->ConnectNewThermalFrame(
+          std::bind(&::OnNewThermalFrame, thermalData.data(),
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+            std::placeholders::_4, std::placeholders::_5));
+    EXPECT_NE(nullptr, connection);
+
+    const float linearResolution = 0.01f;
+    thermalCamera->SetLinearResolution(linearResolution);
+    EXPECT_FLOAT_EQ(linearResolution, thermalCamera->LinearResolution());
+
+    // set a minimum temperature and a smaller ambient temperature
+    const float minTemp = 100.0f;
+    const float ambientTemp = 50.0f;
+    thermalCamera->SetMinTemperature(minTemp);
+    EXPECT_FLOAT_EQ(minTemp, thermalCamera->MinTemperature());
+    thermalCamera->SetAmbientTemperature(ambientTemp);
+    EXPECT_FLOAT_EQ(ambientTemp, thermalCamera->AmbientTemperature());
+
+    // Update once to create image
+    thermalCamera->Update();
+
+    for (const uint16_t value : thermalData) {
+      const float temp = static_cast<float>(value) * linearResolution;
+      EXPECT_NEAR(temp, minTemp, linearResolution);
+    }
+
+    // Clean up
+    connection.reset();
+  }
+
+  engine->DestroyScene(scene);
+}
+
+//////////////////////////////////////////////////
+TEST_F(ThermalCameraTest, ThermalCameraMaxTemperatureIsClamped)
+{
+  const unsigned int imgWidth = 50;
+  const unsigned int imgHeight = 50;
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+
+  {
+    // Create thermal camera
+    auto thermalCamera = scene->CreateThermalCamera("ThermalCamera");
+    ASSERT_NE(thermalCamera, nullptr);
+
+    // Configure thermal camera
+    thermalCamera->SetImageWidth(imgWidth);
+    EXPECT_EQ(thermalCamera->ImageWidth(), imgWidth);
+    thermalCamera->SetImageHeight(imgHeight);
+    EXPECT_EQ(thermalCamera->ImageHeight(), imgHeight);
+
+    scene->RootVisual()->AddChild(thermalCamera);
+
+    // Set a callback on the camera sensor to get a thermal camera frame
+    std::vector<uint16_t> thermalData(imgHeight * imgWidth);
+    gz::common::ConnectionPtr connection =
+      thermalCamera->ConnectNewThermalFrame(
+          std::bind(&::OnNewThermalFrame, thermalData.data(),
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+            std::placeholders::_4, std::placeholders::_5));
+    EXPECT_NE(nullptr, connection);
+
+    const float linearResolution = 0.01f;
+    thermalCamera->SetLinearResolution(linearResolution);
+    EXPECT_FLOAT_EQ(linearResolution, thermalCamera->LinearResolution());
+
+    // set a maximum temperature and a greater ambient temperature
+    const float maxTemp = 500.0f;
+    const float ambientTemp = 550.0f;
+    thermalCamera->SetMaxTemperature(maxTemp);
+    EXPECT_FLOAT_EQ(maxTemp, thermalCamera->MaxTemperature());
+    thermalCamera->SetAmbientTemperature(ambientTemp);
+    EXPECT_FLOAT_EQ(ambientTemp, thermalCamera->AmbientTemperature());
+
+    // Update once to create image
+    thermalCamera->Update();
+
+    for (const uint16_t value : thermalData) {
+      const float temp = static_cast<float>(value) * linearResolution;
+      EXPECT_NEAR(temp, maxTemp, linearResolution);
+    }
+
+    // Clean up
+    connection.reset();
   }
 
   engine->DestroyScene(scene);

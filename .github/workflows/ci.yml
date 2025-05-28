@@ -33,3 +33,7 @@ jobs:
         with:
           cppcheck-enabled: true
           cpplint-enabled: true
+<<<<<<< HEAD
+=======
+          doxygen-enabled: true
+>>>>>>> 1d049edf (Enable doxygen CI check on noble (#1129))

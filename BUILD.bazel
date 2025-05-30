@@ -72,6 +72,8 @@ cc_library(
         "@gz-common//graphics",
         "@gz-math",
         "@gz-plugin//:loader",
+        "@gz-utils//:ImplPtr",
+        "@gz-utils//:SuppressWarning",
     ],
 )
 

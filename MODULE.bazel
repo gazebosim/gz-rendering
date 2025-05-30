@@ -12,6 +12,7 @@ bazel_dep(name = "rules_gazebo", version = "0.0.3")
 bazel_dep(name = "gz-common")
 bazel_dep(name = "gz-math")
 bazel_dep(name = "gz-plugin")
+bazel_dep(name = "gz-utils")
 
 archive_override(
     module_name = "gz-common",

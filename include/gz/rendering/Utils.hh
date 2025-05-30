@@ -87,9 +87,11 @@ namespace gz
       const float _offset = 0.0);
 
     /// \brief Get the screen scaling factor.
-    /// \return The screen scaling factor.
+    /// This function is deprecated and always returns a value of 1.0, it will
+    /// be removed in the next release.
+    /// \return Always returns a scaling factor of 1.0
     GZ_RENDERING_VISIBLE
-    float screenScalingFactor();
+    float GZ_DEPRECATED(9) screenScalingFactor();
 
     /// \brief Transform a bounding box.
     /// \param[in] _box The bounding box.

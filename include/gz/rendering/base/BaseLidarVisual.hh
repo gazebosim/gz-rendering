@@ -19,6 +19,8 @@
 
 #include <vector>
 
+#include <gz/common/Console.hh>
+
 #include "gz/rendering/LidarVisual.hh"
 #include "gz/rendering/base/BaseObject.hh"
 #include "gz/rendering/base/BaseRenderTypes.hh"

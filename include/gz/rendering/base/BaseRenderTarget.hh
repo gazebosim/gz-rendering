@@ -20,6 +20,8 @@
 #include <string>
 #include <vector>
 
+#include <gz/common/Console.hh>
+
 #include "gz/rendering/RenderPass.hh"
 #include "gz/rendering/RenderTarget.hh"
 #include "gz/rendering/Scene.hh"

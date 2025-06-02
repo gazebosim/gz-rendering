@@ -102,7 +102,7 @@ float screenScalingFactor()
 {
   // The scaling factor seems to cause issues with mouse picking:
   // https://github.com/gazebosim/gz-sim/issues/147. The code to compute
-  // the scaling factor was removed in 
+  // the scaling factor was removed in
   // https://github.com/gazebosim/gz-rendering/pull/647.
   return 1.0;
 }

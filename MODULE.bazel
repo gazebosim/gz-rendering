@@ -1,0 +1,39 @@
+## MODULE.bazel
+module(
+    name = "gz-rendering",
+    repo_name = "org_gazebosim_gz-rendering",
+)
+
+bazel_dep(name = "googletest", version = "1.15.2")
+bazel_dep(name = "rules_license", version = "1.0.0")
+
+# Gazebo Dependencies
+bazel_dep(name = "rules_gazebo", version = "0.0.3")
+bazel_dep(name = "gz-common")
+bazel_dep(name = "gz-math")
+bazel_dep(name = "gz-plugin")
+bazel_dep(name = "gz-utils")
+
+archive_override(
+    module_name = "gz-common",
+    strip_prefix = "gz-common-gz-common6",
+    urls = ["https://github.com/gazebosim/gz-common/archive/refs/heads/gz-common6.tar.gz"],
+)
+
+archive_override(
+    module_name = "gz-math",
+    strip_prefix = "gz-math-gz-math8",
+    urls = ["https://github.com/gazebosim/gz-math/archive/refs/heads/gz-math8.tar.gz"],
+)
+
+archive_override(
+    module_name = "gz-plugin",
+    strip_prefix = "gz-plugin-gz-plugin3",
+    urls = ["https://github.com/gazebosim/gz-plugin/archive/refs/heads/gz-plugin3.tar.gz"],
+)
+
+archive_override(
+    module_name = "gz-utils",
+    strip_prefix = "gz-utils-gz-utils3",
+    urls = ["https://github.com/gazebosim/gz-utils/archive/refs/heads/gz-utils3.tar.gz"],
+)

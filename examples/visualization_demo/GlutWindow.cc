@@ -23,7 +23,7 @@
   #define NOMINMAX
   // Must include this before GL/gl.h
   #include <windows.h>
-  #include <GL/glew.h
+  #include <GL/glew.h>
   // OpenGL utilities header file
   #include <GL/glu.h>
   // OpenGL utilities header file

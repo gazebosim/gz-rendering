@@ -61,16 +61,18 @@ void Ogre2Camera::Destroy()
   this->RemoveAllRenderPasses();
   this->DestroyRenderTexture();
 
-  Ogre::SceneManager *ogreSceneManager;
-  ogreSceneManager = this->scene->OgreSceneManager();
+  Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
     gzerr << "Scene manager cannot be obtained" << std::endl;
   }
-  if (ogreSceneManager->findCameraNoThrow(this->name) != nullptr)
+  else
   {
-    ogreSceneManager->destroyCamera(this->ogreCamera);
-    this->ogreCamera = nullptr;
+    if (ogreSceneManager->findCameraNoThrow(this->name) != nullptr)
+    {
+      ogreSceneManager->destroyCamera(this->ogreCamera);
+      this->ogreCamera = nullptr;
+    }
   }
 
   if (this->selectionBuffer)

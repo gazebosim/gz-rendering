@@ -44,27 +44,27 @@ LuxCoreEngineMeshFactory::Create(const MeshDescriptor &_desc,
 
   struct Coordinate
   {
-    float x, y;
+    float x{}, y{};
 
     Coordinate(float x, float y) : x(x), y(y) {}
-    Coordinate() {}
+    Coordinate() = default;
   };
 
   struct Vertex
   {
-    float x, y, z;
+    float x{}, y{}, z{};
 
     Vertex(float x, float y, float z) : x(x), y(y), z(z) {}
-    Vertex() {}
+    Vertex() = default;
   };
 
   struct VertexTriangle
   {
-    unsigned int v1, v2, v3;
+    unsigned int v1{}, v2{}, v3{};
 
     VertexTriangle(unsigned int v1, unsigned int v2, unsigned int v3)
         : v1(v1), v2(v2), v3(v3) {}
-    VertexTriangle() {}
+    VertexTriangle() = default;
   };
 
   if (_desc.meshName == "unit_box")

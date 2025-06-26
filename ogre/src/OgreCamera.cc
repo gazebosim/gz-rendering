@@ -164,11 +164,11 @@ void OgreCamera::SyncOgreCameraAspectRatio()
 void OgreCamera::CreateCamera()
 {
   // create ogre camera object
-  Ogre::SceneManager *ogreSceneManager;
-  ogreSceneManager = this->scene->OgreSceneManager();
+  Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
   if (ogreSceneManager == nullptr)
   {
     gzerr << "Scene manager cannot be obtained" << std::endl;
+    return;
   }
 
   this->ogreCamera = ogreSceneManager->createCamera(this->name);

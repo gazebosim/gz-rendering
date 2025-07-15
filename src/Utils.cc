@@ -15,11 +15,6 @@
  *
 */
 
-#ifdef __linux__
-#include <X11/Xlib.h>
-#include <X11/Xresource.h>
-#endif
-
 #include "gz/math/Plane.hh"
 #include "gz/math/Vector2.hh"
 #include "gz/math/Vector3.hh"
@@ -105,65 +100,11 @@ math::Vector3d screenToPlane(
 /////////////////////////////////////////////////
 float screenScalingFactor()
 {
-  // todo(anyone) set device pixel ratio for high dpi displays on Windows
-  float ratio = 1.0;
-
-  // the scaling factor seems to cause issues with mouse picking.
-  // see https://github.com/gazebosim/gz-sim/issues/147
-#if 0
-  auto closeDisplay = [](Display * display)
-  {
-    if (display)
-      XCloseDisplay(display);
-  };
-  auto display =
-    std::unique_ptr<Display, decltype(closeDisplay)>(
-      XOpenDisplay(nullptr), closeDisplay);
-  char *resourceString = XResourceManagerString(display.get());
-
-  if (resourceString)
-  {
-    char *type = nullptr;
-    float dpiDesktop = 0.0;
-
-    // Need to initialize the DB before calling Xrm* functions
-    XrmInitialize();
-
-    XrmValue value;
-    XrmDatabase db = XrmGetStringDatabase(resourceString);
-
-    // Debug:
-    // printf("Entire DB:\n%s\n", resourceString);
-
-    if (XrmGetResource(db, "Xft.dpi", "String", &type, &value) == True)
-    {
-      if (value.addr)
-        dpiDesktop = atof(value.addr);
-    }
-
-    // To get the ratio we need the DPI as reported by the Xrmdatabase,
-    // which takes into account desktop scaling, and the DPI computed by the
-    // actual display resolution.
-    //
-    // dpiRes = N pixels / (M millimeters / (25.4 millimeters / 1 inch))
-    //        = N pixels / (M inch / 25.4)
-    //        = (N * 25.4 pixels) / M inch
-    //
-    // We can use either the width or height in the following line. The zero
-    // values in DisplayHeight and DisplayHeightMM is the screen number. A
-    // value of zero uses the default screen.
-    float yDpiRes = (DisplayHeight(display.get(), 0) * 25.4) /
-      DisplayHeightMM(display.get(), 0);
-
-    if (!math::equal(dpiDesktop, 0.0f) && !math::equal(yDpiRes, 0.0f))
-      ratio = dpiDesktop / yDpiRes;
-
-    // Debug:
-    // printf("DPI Desktop: %f, DPI XY: [%f, %f], Ratio XY: [%f, %f]\n",
-    // dpiDesktop, xDpiRes, yDpiRes, xRatio, yRatio);
-  }
-#endif
-  return ratio;
+  // The scaling factor seems to cause issues with mouse picking:
+  // https://github.com/gazebosim/gz-sim/issues/147. The code to compute
+  // the scaling factor was removed in
+  // https://github.com/gazebosim/gz-rendering/pull/647.
+  return 1.0;
 }
 
 /////////////////////////////////////////////////

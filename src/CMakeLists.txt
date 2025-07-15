@@ -43,9 +43,6 @@ target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME}
   PRIVATE
   gz-plugin::loader
 )
-if (UNIX AND NOT APPLE)
-  target_link_libraries(${PROJECT_LIBRARY_TARGET_NAME} PRIVATE X11)
-endif()
 
 # Build the unit tests.
 gz_build_tests(TYPE UNIT

@@ -20,6 +20,9 @@
 #include <map>
 #include <string>
 #include <unordered_map>
+
+#include <gz/common/Console.hh>
+
 #include "gz/rendering/Mesh.hh"
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/Storage.hh"

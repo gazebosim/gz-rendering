@@ -24,6 +24,7 @@
 #endif
 
 #include <limits>
+#include <variant>
 
 #include <gz/math/Helpers.hh>
 #include "gz/rendering/ShaderParams.hh"
@@ -218,29 +219,23 @@ Ogre::Technique *OgreThermalCameraMaterialSwitcher::handleSchemeNotFound(
   Variant tempAny = ogreVisual->UserData(tempKey);
   if (tempAny.index() != 0)
   {
-    float temp = -1;
-    try
+    float temp = -1.0f;
+    if (const float* floatPtr = std::get_if<float>(&tempAny))
     {
-      temp = std::get<float>(tempAny);
+      temp = *floatPtr;
     }
-    catch(...)
+    else if (const double* doublePtr = std::get_if<double>(&tempAny))
     {
-      try
-      {
-        temp = static_cast<float>(std::get<double>(tempAny));
-      }
-      catch(...)
-      {
-        try
-        {
-          temp = static_cast<float>(std::get<int>(tempAny));
-        }
-        catch(std::bad_variant_access &e)
-        {
-          gzerr << "Error casting user data: " << e.what() << "\n";
-          temp = -1.0;
-        }
-      }
+      temp = static_cast<float>(*doublePtr);
+    }
+    else if (const int* intPtr = std::get_if<int>(&tempAny))
+    {
+      temp = static_cast<float>(*intPtr);
+    }
+    else
+    {
+      gzerr << "Error casting user data: variant containers unexpected type\n";
+      temp = -1.0;
     }
 
     // only accept positive temperature (in kelvin)

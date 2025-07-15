@@ -17,6 +17,7 @@
 #ifndef GZ_RENDERING_NATIVEWINDOW_HH_
 #define GZ_RENDERING_NATIVEWINDOW_HH_
 
+#include <cstdint>
 #include <map>
 #include <string>
 #include "gz/rendering/config.hh"

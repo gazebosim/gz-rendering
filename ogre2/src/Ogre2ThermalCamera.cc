@@ -281,17 +281,17 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
       {
         float temp = -1.0f;
         bool foundTemp = true;
-        if (std::holds_alternative<float>(tempAny))
+        if (const float* floatPtr = std::get_if<float>(&tempAny))
         {
-          temp = std::get<float>(tempAny);
+          temp = *floatPtr;
         }
-        else if (std::holds_alternative<double>(tempAny))
+        else if (const double* doublePtr = std::get_if<double>(&tempAny))
         {
-          temp = static_cast<float>(std::get<double>(tempAny));
+          temp = static_cast<float>(*doublePtr);
         }
-        else if (std::holds_alternative<int>(tempAny))
+        else if (const int* intPtr = std::get_if<int>(&tempAny))
         {
-          temp = static_cast<float>(std::get<int>(tempAny));
+          temp = static_cast<float>(*intPtr);
         }
         else
         {
@@ -554,17 +554,17 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
       {
         float temp = -1.0;
         bool foundTemp = true;
-        if (std::holds_alternative<float>(tempAny))
+        if (const float* floatPtr = std::get_if<float>(&tempAny))
         {
-          temp = std::get<float>(tempAny);
+          temp = *floatPtr;
         }
-        else if (std::holds_alternative<double>(tempAny))
+        else if (const double* doublePtr = std::get_if<double>(&tempAny))
         {
-          temp = static_cast<float>(std::get<double>(tempAny));
+          temp = static_cast<float>(*doublePtr);
         }
-        else if (std::holds_alternative<int>(tempAny))
+        else if (const int* intPtr = std::get_if<int>(&tempAny))
         {
-          temp = static_cast<float>(std::get<int>(tempAny));
+          temp = static_cast<float>(*intPtr);
         }
         else
         {
@@ -1119,6 +1119,21 @@ void Ogre2ThermalCamera::PreRender()
 {
   if (!this->dataPtr->ogreThermalTexture)
     this->CreateThermalTexture();
+
+  // ensure that certain shader constants are up-to-date so that changes that
+  // users can make to the settings show up in the thermal result immediately
+  Ogre::Pass *pass =
+      this->dataPtr->thermalMaterial->getTechnique(0)->getPass(0);
+  Ogre::GpuProgramParametersSharedPtr psParams =
+      pass->getFragmentProgramParameters();
+  psParams->setNamedConstant("max",
+      static_cast<float>(this->maxTemp));
+  psParams->setNamedConstant("min",
+      static_cast<float>(this->minTemp));
+  psParams->setNamedConstant("resolution",
+      static_cast<float>(this->resolution));
+
+  this->dataPtr->thermalMaterialSwitcher->SetLinearResolution(this->resolution);
 }
 
 //////////////////////////////////////////////////

@@ -87,7 +87,9 @@ namespace gz
       const float _offset = 0.0);
 
     /// \brief Get the screen scaling factor.
-    /// \return The screen scaling factor.
+    /// This function always returns a value of 1.0 and will be marked as
+    /// deprecated in the next release.
+    /// \return Always returns a scaling factor of 1.0
     GZ_RENDERING_VISIBLE
     float screenScalingFactor();
 

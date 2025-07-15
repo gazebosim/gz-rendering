@@ -231,6 +231,26 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
         continue;
       }
 
+      // todo(iche033) use SubMesh::HasValidIndices() when gz-common 6.0.3
+      // is released
+      bool validIndices = true;
+      for (unsigned int j = 0u; j < s->IndexCount(); ++j)
+      {
+        int index = s->Index(j);
+        if (index > 0 && static_cast<unsigned int>(index) >= s->VertexCount())
+        {
+          validIndices = false;
+          break;
+        }
+      }
+      if (!validIndices)
+      {
+        gzwarn << "Mesh[" << _desc.mesh->Name() << "] submesh[" << s->Name()
+               << "] has invalid indices. Skipping submesh creation."
+               << std::endl;
+        continue;
+      }
+
       Ogre::SubMesh *ogreSubMesh;
       Ogre::VertexData *vertexData;
       Ogre::VertexDeclaration* vertexDecl;

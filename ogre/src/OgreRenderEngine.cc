@@ -526,7 +526,6 @@ void OgreRenderEngine::LoadPlugins()
 //////////////////////////////////////////////////
 void OgreRenderEngine::CreateRenderSystem()
 {
-  Ogre::RenderSystem *renderSys;
   const Ogre::RenderSystemList *rsList;
 
   // Set parameters of render system (window size, etc.)
@@ -538,7 +537,7 @@ void OgreRenderEngine::CreateRenderSystem()
 
   int c = 0;
 
-  renderSys = nullptr;
+  Ogre::RenderSystem *renderSys = nullptr;
 
   do
   {
@@ -559,6 +558,7 @@ void OgreRenderEngine::CreateRenderSystem()
     gzerr << "unable to find OpenGL rendering system. OGRE is probably "
             "installed incorrectly. Double check the OGRE cmake output, "
             "and make sure OpenGL is enabled." << std::endl;
+    return;
   }
 
   // We operate in windowed mode
@@ -687,6 +687,7 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
     // Mac and Windows *must* use externalWindow handle.
 #if defined(__APPLE__) || defined(_MSC_VER)
     params["externalWindowHandle"] = _handle;
+    params["hidden"] = "true";
 #else
     params["parentWindowHandle"] = _handle;
 #endif

@@ -26,7 +26,7 @@
 1. Added missing includes
     * [Pull request #1128](https://github.com/gazebosim/gz-rendering/pull/1128)
 
-1.  Add sanity check for valid submesh indices
+1. Add sanity check for valid submesh indices
     * [Pull request #1123](https://github.com/gazebosim/gz-rendering/pull/1123)
 
 1. Remove unused variable in OgreRenderingEngine.cc

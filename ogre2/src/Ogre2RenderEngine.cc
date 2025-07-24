@@ -1453,3 +1453,5 @@ Ogre2RenderEngine *Ogre2RenderEngine::Instance()
 // Register this plugin
 GZ_ADD_PLUGIN(rendering::Ogre2RenderEnginePlugin,
               rendering::RenderEnginePlugin)
+GZ_ADD_PLUGIN_ALIAS(rendering::Ogre2RenderEnginePlugin,
+                    "gz::rendering::ogre2::Plugin")

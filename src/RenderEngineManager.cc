@@ -467,7 +467,7 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
 
   // TODO(anyone): Find a cleaner way to get the default engine .so library name
   // cppcheck-suppress unreadVariable
-  const std::string_view libNamePrefix = "gz-rendering-";
+  const std::string libNamePrefix = "gz-rendering-";
 
   // Register Ogre
   const std::string ogreEngineName = "ogre";

@@ -48,6 +48,11 @@ class gz::rendering::RenderEngineManagerPrivate
   /// \brief EngineMap iterator.
   typedef EngineMap::iterator EngineIter;
 
+  /// \brief Expected filename prefix for plugin to be loaded from the static
+  /// registry.
+  public: static constexpr std::string_view kStaticPluginFilenamePrefix =
+      "static://";
+
   /// \brief Get a pointer to the render engine from an EngineMap iterator.
   /// \param[in] _iter EngineMap iterator
   /// \param[in] _path Another search path for rendering engine plugin.
@@ -77,6 +82,11 @@ class gz::rendering::RenderEngineManagerPrivate
   /// \return True if the plugin is loaded successfully
   public: bool LoadEnginePlugin(const std::string &_filename,
               const std::string &_path);
+
+  /// \brief Load a render engine plugin from the static plugin registry.
+  /// \param[in] _filename Filename of plugin
+  /// \return True if the plugin is loaded successfully
+  public: bool LoadStaticEnginePlugin(const std::string &_filename);
 
   /// \brief Unload a render engine plugin.
   /// \param[in] _engineName Name of engine associated with this plugin
@@ -431,32 +441,67 @@ bool RenderEngineManagerPrivate::UnloadEngine(EngineIter _iter)
 //////////////////////////////////////////////////
 void RenderEngineManagerPrivate::RegisterDefaultEngines()
 {
-  // TODO(anyone): Find a cleaner way to get the default engine library name
 
+  auto registerStaticOrSolibPlugin = [this](const std::string& _engineName,
+      const std::string& _staticFilename, const std::string& _solibFilename)
+  {
+    std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
+    // Check static plugin registry if the plugin was statically linked in.
+    constexpr size_t prefixLen = kStaticPluginFilenamePrefix.size();
+    const std::string staticPluginAlias = _staticFilename.substr(prefixLen);
+    if (!this->pluginLoader.PluginsWithAlias(staticPluginAlias).empty())
+    {
+      this->defaultEngines[_engineName] = _staticFilename;
+      if (this->engines.find(_staticFilename) == this->engines.end())
+        this->engines[_staticFilename] = nullptr;
+      return;
+    }
+    // Else if a .so lib plugin file is expected, register that as the default.
+    if (!_solibFilename.empty())
+    {
+      this->defaultEngines[_engineName] = _solibFilename;
+      if (this->engines.find(_solibFilename) == this->engines.end())
+        this->engines[_solibFilename] = nullptr;
+    }
+  };
+
+  // TODO(anyone): Find a cleaner way to get the default engine .so library name
   // cppcheck-suppress unreadVariable
-  std::string libName = "gz-rendering-";
+  const std::string_view libNamePrefix = "gz-rendering-";
 
-  // cppcheck-suppress unusedVariable
-  std::string engineName;
-
-  std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
+  // Register Ogre
+  const std::string ogreEngineName = "ogre";
+  const std::string ogreStaticFilename = "static://gz::rendering::ogre::Plugin";
 #if GZ_RENDERING_HAVE_OGRE
-  engineName = "ogre";
-  this->defaultEngines[engineName] = libName + engineName;
-  if (this->engines.find(libName + engineName) == this->engines.end())
-    this->engines[libName + engineName] = nullptr;
+  registerStaticOrSolibPlugin(ogreEngineName, ogreStaticFilename,
+      libNamePrefix + ogreEngineName);
+#else
+  registerStaticOrSolibPlugin(ogreEngineName, ogreStaticFilename,
+      /*_solibFilename=*/"");
 #endif
+
+  // Register Ogre2
+  const std::string ogre2EngineName = "ogre2";
+  const std::string ogre2StaticFilename =
+      "static://gz::rendering::ogre2::Plugin";
 #if GZ_RENDERING_HAVE_OGRE2
-  engineName = "ogre2";
-  this->defaultEngines[engineName] = libName + engineName;
-  if (this->engines.find(libName + engineName) == this->engines.end())
-    this->engines[libName + engineName] = nullptr;
+  registerStaticOrSolibPlugin(ogre2EngineName, ogre2StaticFilename,
+      libNamePrefix + ogre2EngineName);
+#else
+  registerStaticOrSolibPlugin(ogre2EngineName, ogre2StaticFilename,
+      /*_solibFilename=*/"");
 #endif
+
+  // Register Optix
+  const std::string optixEngineName = "optix";
+  const std::string optixStaticFilename =
+      "static://gz::rendering::optix::Plugin";
 #if GZ_RENDERING_HAVE_OPTIX
-  engineName = "optix";
-  this->defaultEngines[engineName] = libName + engineName;
-  if (this->engines.find(libName + engineName) == this->engines.end())
-    this->engines[libName + engineName] = nullptr;
+  registerStaticOrSolibPlugin(optixEngineName, optixStaticFilename,
+      libNamePrefix + optixEngineName);
+#else
+  registerStaticOrSolibPlugin(optixEngineName, optixStaticFilename,
+      /*_solibFilename=*/"");
 #endif
 }
 
@@ -465,6 +510,12 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
     const std::string &_filename, const std::string &_path)
 {
   gzmsg << "Loading plugin [" << _filename << "]" << std::endl;
+
+  constexpr size_t prefixLen = kStaticPluginFilenamePrefix.size();
+  if (_filename.substr(0, prefixLen) == kStaticPluginFilenamePrefix)
+  {
+    return this->LoadStaticEnginePlugin(_filename);
+  }
 
   gz::common::SystemPaths systemPaths;
   systemPaths.SetPluginPathEnv(this->pluginPathEnv);
@@ -561,9 +612,51 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
 }
 
 //////////////////////////////////////////////////
+bool RenderEngineManagerPrivate::LoadStaticEnginePlugin(
+    const std::string &_filename)
+{
+  constexpr size_t prefixLen = kStaticPluginFilenamePrefix.size();
+  const std::string filenameWoPrefix = _filename.substr(prefixLen);
+
+  gzmsg << "Loading plugin [" << filenameWoPrefix << "] from static registry"
+        << std::endl;
+
+  auto plugin = this->pluginLoader.Instantiate(filenameWoPrefix);
+  if (!plugin)
+  {
+    gzerr << "Failed to load static render engine plugin [" << filenameWoPrefix
+          << "]. Static plugin registry does not contain this plugin."
+          << std::endl;
+    return false;
+  }
+
+  auto renderPlugin = plugin->QueryInterface<rendering::RenderEnginePlugin>();
+  if (!renderPlugin)
+  {
+    gzerr << "Failed to find RenderEnginePlugin interface in static render "
+          << "engine plugin [" << _filename << "]" << std::endl;
+    return false;
+  }
+
+  // Instantiate the engine
+  {
+    std::lock_guard<std::recursive_mutex> lock(this->enginesMutex);
+    this->engines[_filename] = renderPlugin->Engine();
+  }
+
+  return true;
+}
+
+//////////////////////////////////////////////////
 bool RenderEngineManagerPrivate::UnloadEnginePlugin(
     const std::string &_engineName)
 {
+  const size_t prefix_len = kStaticPluginFilenamePrefix.length();
+  if (_engineName.substr(0, prefix_len) == kStaticPluginFilenamePrefix)
+  {
+    return true;
+  }
+
   auto it = this->enginePlugins.find(_engineName);
   if (it == this->enginePlugins.end())
   {

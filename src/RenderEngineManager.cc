@@ -15,8 +15,10 @@
  *
  */
 
+#include <cstddef>
 #include <map>
 #include <mutex>
+#include <string>
 
 #include <gz/common/Console.hh>
 #include <gz/common/SystemPaths.hh>

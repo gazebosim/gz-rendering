@@ -15,6 +15,9 @@
  *
  */
 
+#include <memory>
+#include <string>
+
 #include <gtest/gtest.h>
 
 #include <gz/common/Console.hh>

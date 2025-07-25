@@ -4,6 +4,9 @@
 
 ### Gazebo Rendering 9.3.0 (2025-07-25)
 
+1. Guard against bad memory access in RenderPassSystem
+    * [Pull request #1153](https://github.com/gazebosim/gz-rendering/pull/1153)
+
 1. Enable loading a render engine plugin from the static plugin registry
     * [Pull request #1152](https://github.com/gazebosim/gz-rendering/pull/1152)
 

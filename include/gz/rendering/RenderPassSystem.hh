@@ -81,7 +81,9 @@ namespace gz
 
       /// \brief A map of render pass type id name to its factory class
       GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
-      private: static std::map<std::string, RenderPassFactory *> renderPassMap;
+      private: typedef std::map<std::string, RenderPassFactory *>
+          RenderPassMap;
+      private: static RenderPassMap &GetRenderPassMap();
 
       /// \internal
       /// \brief Pointer to private data class

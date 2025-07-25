@@ -83,7 +83,7 @@ namespace gz
       GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       private: typedef std::map<std::string, RenderPassFactory *>
           RenderPassMap;
-      private: static RenderPassMap& GetRenderPassMap();
+      private: static RenderPassMap &GetRenderPassMap();
 
       /// \internal
       /// \brief Pointer to private data class

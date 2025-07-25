@@ -63,7 +63,7 @@ void RenderPassSystem::Register(const std::string &_name,
 }
 
 //////////////////////////////////////////////////
-RenderPassSystem::RenderPassMap& RenderPassSystem::GetRenderPassMap()
+RenderPassSystem::RenderPassMap &RenderPassSystem::GetRenderPassMap()
 {
   static RenderPassMap renderPassMap;
   return renderPassMap;

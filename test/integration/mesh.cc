@@ -179,10 +179,12 @@ TEST_F(MeshTest, NormalMapWithoutTexCoord)
       unsigned int g = data[idx + 1];
       unsigned int b = data[idx + 2];
 
+      std::cerr << "[" << r << ", " << g << ", " << b << "]";
       // color should be a shade of red (submesh0) or green (submesh1)
       EXPECT_TRUE(r > 0u || g > 0u);
       EXPECT_EQ(b, 0u);
     }
+    std::cerr << std::endl;
   }
 
   // Clean up

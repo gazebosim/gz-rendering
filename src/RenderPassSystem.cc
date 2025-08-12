@@ -27,8 +27,6 @@ class gz::rendering::RenderPassSystemPrivate
 {
 };
 
-std::map<std::string, RenderPassFactory *> RenderPassSystem::renderPassMap;
-
 //////////////////////////////////////////////////
 // RenderPassSystem
 //////////////////////////////////////////////////
@@ -44,8 +42,8 @@ RenderPassSystem::~RenderPassSystem() = default;
 RenderPassPtr RenderPassSystem::CreateImpl(const std::string &_type)
 {
   RenderPassPtr pass;
-  auto it = renderPassMap.find(_type);
-  if (it != renderPassMap.end())
+  auto it = GetRenderPassMap().find(_type);
+  if (it != GetRenderPassMap().end())
   {
     pass.reset(it->second->New());
   }
@@ -61,5 +59,12 @@ RenderPassPtr RenderPassSystem::CreateImpl(const std::string &_type)
 void RenderPassSystem::Register(const std::string &_name,
     RenderPassFactory *_factory)
 {
-  renderPassMap[_name] = _factory;
+  GetRenderPassMap()[_name] = _factory;
+}
+
+//////////////////////////////////////////////////
+RenderPassSystem::RenderPassMap &RenderPassSystem::GetRenderPassMap()
+{
+  static RenderPassMap renderPassMap;
+  return renderPassMap;
 }

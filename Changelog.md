@@ -6,44 +6,17 @@
 
 1. **Baseline:** this includes all changes from 9.3.0 and earlier.
 
-1. CppCheck fixes
-    * [Pull request #1148](https://github.com/gazebosim/gz-rendering/pull/1148)
-
 1. Enable doxygen CI check on noble
     * [Pull request #1129](https://github.com/gazebosim/gz-rendering/pull/1129)
 
 1. Remove symlinks of versioned to unversioned engine libraries
     * [Pull request #1142](https://github.com/gazebosim/gz-rendering/pull/1142)
 
-1. Fix user settings of thermal camera being ignored
-    * [Pull request #1138](https://github.com/gazebosim/gz-rendering/pull/1138)
-
-1. Disable a couple of tests on windows
-    * [Pull request #1126](https://github.com/gazebosim/gz-rendering/pull/1126)
-
 1. Fix clamp of temperature in thermal camera output
     * [Pull request #1136](https://github.com/gazebosim/gz-rendering/pull/1136)
 
 1. Bump gz-cmake and others in jetty
     * [Pull request #1131](https://github.com/gazebosim/gz-rendering/pull/1131)
-
-1. Add sanity check for valid submesh indices
-    * [Pull request #1123](https://github.com/gazebosim/gz-rendering/pull/1123)
-
-1. Remove unused variable in OgreRenderingEngine.cc
-    * [Pull request #1119](https://github.com/gazebosim/gz-rendering/pull/1119)
-
-1. Remove ClearMaterialsCache call when a material is destroyed in ogre2
-    * [Pull request #1110](https://github.com/gazebosim/gz-rendering/pull/1110)
-
-1. Visualize Frustum
-    * [Pull request #1095](https://github.com/gazebosim/gz-rendering/pull/1095)
-
-1. Fix RenderingIface_TEST for ogre2 when there is no display
-    * [Pull request #1098](https://github.com/gazebosim/gz-rendering/pull/1098)
-
-1. Better approach to use std::variant
-    * [Pull request #1093](https://github.com/gazebosim/gz-rendering/pull/1093)
 
 1. Remove deprecations: tock
     * [Pull request #1091](https://github.com/gazebosim/gz-rendering/pull/1091)
@@ -53,18 +26,6 @@
 
 1. Bump main to rendering 10.0.0~pre1
     * [Pull request #1079](https://github.com/gazebosim/gz-rendering/pull/1079)
-
-1. Update code for loading normal and albedo maps from image data
-    * [Pull request #1068](https://github.com/gazebosim/gz-rendering/pull/1068)
-
-1. Check for zero quaternion value in MoveToHelper
-    * [Pull request #1076](https://github.com/gazebosim/gz-rendering/pull/1076)
-
-1. Fix waves 'double' to 'float' truncation warning
-    * [Pull request #1065](https://github.com/gazebosim/gz-rendering/pull/1065)
-
-1. Install Roboto fonts to ogre plugin
-    * [Pull request #1035](https://github.com/gazebosim/gz-rendering/pull/1035)
 
 ### Gazebo Rendering 9.X
 

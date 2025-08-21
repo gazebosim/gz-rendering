@@ -2,7 +2,30 @@
 
 ### Gazebo Rendering 10.X
 
-### Gazebo Rendering 10.0.0 (20XX-XX-XX)
+### Gazebo Rendering 10.0.0 (2025-09-XX)
+
+1. **Baseline:** this includes all changes from 9.3.0 and earlier.
+
+1. Enable doxygen CI check on noble
+    * [Pull request #1129](https://github.com/gazebosim/gz-rendering/pull/1129)
+
+1. Remove symlinks of versioned to unversioned engine libraries
+    * [Pull request #1142](https://github.com/gazebosim/gz-rendering/pull/1142)
+
+1. Fix clamp of temperature in thermal camera output
+    * [Pull request #1136](https://github.com/gazebosim/gz-rendering/pull/1136)
+
+1. Bump gz-cmake and others in jetty
+    * [Pull request #1131](https://github.com/gazebosim/gz-rendering/pull/1131)
+
+1. Remove deprecations: tock
+    * [Pull request #1091](https://github.com/gazebosim/gz-rendering/pull/1091)
+
+1. Add release dates to Changelog
+    * [Pull request #1086](https://github.com/gazebosim/gz-rendering/pull/1086)
+
+1. Bump main to rendering 10.0.0~pre1
+    * [Pull request #1079](https://github.com/gazebosim/gz-rendering/pull/1079)
 
 ### Gazebo Rendering 9.X
 

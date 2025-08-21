@@ -61,7 +61,7 @@ namespace gz
       /// making the emitter appear more dense. Decreasing the ratio decreases
       /// the scatter of the particles, making it appear less dense. This value
       /// should be > 0.
-      // private: float particleScatterRatio = 0.65f;
+      private: float particleScatterRatio = 0.65f;
     };
     }
   }

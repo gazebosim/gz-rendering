@@ -55,6 +55,8 @@
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
 #include <OgreTechnique.h>
+#include <ctime>
+
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif
@@ -214,6 +216,10 @@ class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2GpuRaysPrivate
 
   /// \brief Pointer to the particle target definition in the workspace
   public: Ogre::CompositorTargetDef *particleTargetDef{nullptr};
+
+  /// \brief Parameter for profiling LiDAR round trip
+  public: std::chrono::time_point<std::chrono::high_resolution_clock> 
+          renderStartTime;
 };
 
 using namespace gz;
@@ -1248,6 +1254,7 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
+  this->dataPtr->renderStartTime = std::chrono::high_resolution_clock::now();
   this->scene->StartRendering(this->dataPtr->ogreCamera);
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -1310,6 +1317,17 @@ void Ogre2GpuRays::PostRender()
   // blit data from gpu to cpu
   Ogre::Image2 image;
   image.convertFromTexture(this->dataPtr->secondPassTexture, 0u, 0u);
+  //auto time = std::time(NULL);
+  auto time_point2 = std::chrono::high_resolution_clock::now();
+
+  // Calculate the duration between the two time points
+  auto duration = time_point2 - this->dataPtr->renderStartTime;
+
+  // Cast the duration to milliseconds and get the count
+  auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+
+  std::cout << "LiDAR took " << milliseconds << "ms to render\n"; 
+
   Ogre::TextureBox box = image.getData(0u);
   float *bufferTmp = static_cast<float *>(box.data);
 

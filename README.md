@@ -9,10 +9,10 @@
 
 Build | Status
 -- | --
-Test coverage | [![codecov](https://codecov.io/gh/gazebosim/gz-rendering/tree/main/graph/badge.svg)](https://codecov.io/gh/gazebosim/gz-rendering/tree/main)
-Ubuntu Noble  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-ci-main-noble-amd64)](https://build.osrfoundation.org/job/gz_rendering-ci-main-noble-amd64)
-Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-ci-main-homebrew-amd64)](https://build.osrfoundation.org/job/gz_rendering-ci-main-homebrew-amd64)
-Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-main-clowin)](https://build.osrfoundation.org/job/gz_rendering-main-clowin)
+Test coverage | [![codecov](https://codecov.io/gh/gazebosim/gz-rendering/tree/gz-rendering10/graph/badge.svg)](https://codecov.io/gh/gazebosim/gz-rendering/tree/gz-rendering10)
+Ubuntu Noble  | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-ci-gz-rendering10-noble-amd64)](https://build.osrfoundation.org/job/gz_rendering-ci-gz-rendering10-noble-amd64)
+Homebrew      | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-ci-gz-rendering10-homebrew-amd64)](https://build.osrfoundation.org/job/gz_rendering-ci-gz-rendering10-homebrew-amd64)
+Windows       | [![Build Status](https://build.osrfoundation.org/buildStatus/icon?job=gz_rendering-10-cnlwin)](https://build.osrfoundation.org/job/gz_rendering-10-cnlwin)
 
 Gazebo Rendering is a C++ library designed to provide an abstraction
 for different rendering engines. It offers unified APIs for creating
@@ -47,12 +47,12 @@ of libraries designed to rapidly develop robot applications.
 
 # Install
 
-See the [installation tutorial](https://gazebosim.org/api/rendering/9/installation.html).
+See the [installation tutorial](https://gazebosim.org/api/rendering/10/installation.html).
 
 # Usage
 
 The Gazebo Rendering API can be found in the documentation. See the
-[installation tutorial](https://gazebosim.org/api/rendering/9/installation.html)
+[installation tutorial](https://gazebosim.org/api/rendering/10/installation.html)
 on how to build the documentation files using Doxygen.
 
 You can also take a look at the sample applications in the `examples` folder.

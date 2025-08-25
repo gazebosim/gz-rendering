@@ -82,7 +82,7 @@ depth camera to a memory reserved in a globally scoped `Image`.
 
 \snippet examples/depth_camera/GlutWindow.cc convert depth to image
 
-The other option is the [ConnectNewRgbPointCloud](https://github.com/gazebosim/gz-rendering/blob/main/include/gz/rendering/DepthCamera.hh#L58) call that receives colored point cloud data on callback.
+The other option is the [ConnectNewRgbPointCloud](https://github.com/gazebosim/gz-rendering/blob/gz-rendering10/include/gz/rendering/DepthCamera.hh#L58) call that receives colored point cloud data on callback.
 
 The reason for setting the camera image format to `PixelFormat::PF_FLOAT32_RGBA`
 is to ensure that when the `Image` is created it reserves a buffer of the

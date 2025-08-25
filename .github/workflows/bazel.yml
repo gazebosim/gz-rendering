@@ -1,9 +1,14 @@
 name: Bazel CI
 on:
   push:
-    branches: [gz-rendering9, main]
+    branches:
+      - 'gz-rendering[1-9]?[0-9]'
+      - 'main'
   pull_request:
-    branches: [gz-rendering9, main]
+    branches:
+      - 'gz-rendering[1-9]?[0-9]'
+      - 'main'
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

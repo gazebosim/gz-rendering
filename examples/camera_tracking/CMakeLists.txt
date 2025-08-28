@@ -3,8 +3,7 @@ project(gz-rendering-camera-tracking)
 find_package(gz-rendering REQUIRED)
 
 find_package(GLUT REQUIRED)
-include_directories(SYSTEM ${GLUT_INCLUDE_DIRS})
-link_directories(${GLUT_LIBRARY_DIRS})
+include_directories(SYSTEM ${GLUT_INCLUDE_DIR})
 
 find_package(OpenGL REQUIRED)
 include_directories(SYSTEM ${OpenGL_INCLUDE_DIRS})
@@ -21,7 +20,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 add_executable(camera_tracking Main.cc GlutWindow.cc)
 
 target_link_libraries(camera_tracking
-  ${GLUT_LIBRARIES}
+  ${GLUT_glut_LIBRARY}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${GZ-RENDERING_LIBRARIES}

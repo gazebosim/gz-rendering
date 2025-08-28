@@ -2,6 +2,11 @@
 
 This tutorial will show you how to use the Gazebo Rendering library to create an actor animation.
 
+## Install prerequisites
+
+In order to compile the example in this tutorial, make sure to install the
+dependencies listed in \subpage installation tutorial.
+
 ## Compile and run the example
 
 Clone the source code, Create a build directory and use `cmake` and `make` to compile the code:

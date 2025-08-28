@@ -17,6 +17,11 @@ Some of the scenes available include:
 
 There are some scenes demonstrating reflective materials and multiple point light shadows but they appear the same in ogre because they are not supported.
 
+## Install prerequisites
+
+In order to compile the example in this tutorial, make sure to install the
+dependencies listed in \subpage installation tutorial.
+
 ## Compile and run the example
 
 Clone the source code, create a build directory and use `cmake` and `make` to compile the code:

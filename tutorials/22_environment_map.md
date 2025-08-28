@@ -6,6 +6,11 @@ An environment map, also known as a reflection map, is an efficient way to
 create reflective surfaces using a precomputed texture. The environment
 map texture used by gz rendering needs to be the form of a cube map.
 
+## Install prerequisites
+
+In order to compile the example in this tutorial, make sure to install the
+dependencies listed in \subpage installation tutorial.
+
 ## Example mesh with Environment map
 
 An example of a mesh with an environment map can be found in the `ogre2_demo`,

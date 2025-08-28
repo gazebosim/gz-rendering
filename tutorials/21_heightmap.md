@@ -4,6 +4,11 @@ This example shows how to add a heightmap to the scene.
 
 It loads 2 different heightmaps (image and Digital Elevation Model (DEM)) with different parameters.
 
+## Install prerequisites
+
+In order to compile the example in this tutorial, make sure to install the
+dependencies listed in \subpage installation tutorial.
+
 ## Compile and run the example
 
 Clone the source code, create a build directory and use `cmake` to compile the code:

@@ -2,6 +2,11 @@
 
 This example shows how use custom shaders in gz-rendering to change the appearance of objects in the scene. It demonstrates two uses of shaders: The first is setting shaders for a camera and the other is setting shaders for an object in the scene.
 
+## Install prerequisites
+
+In order to compile the example in this tutorial, make sure to install the
+dependencies listed in \subpage installation tutorial.
+
 ## Compile and run the example
 
 Clone the source code, create a build directory and use `cmake` and `make` to compile the code:

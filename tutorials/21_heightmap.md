@@ -7,7 +7,7 @@ It loads 2 different heightmaps (image and Digital Elevation Model (DEM)) with d
 ## Install prerequisites
 
 In order to compile the example in this tutorial, make sure to install the
-dependencies listed in \subpage installation tutorial.
+dependencies listed in the \subpage installation tutorial.
 
 ## Compile and run the example
 

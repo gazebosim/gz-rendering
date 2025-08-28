@@ -9,7 +9,7 @@ map texture used by gz rendering needs to be the form of a cube map.
 ## Install prerequisites
 
 In order to compile the example in this tutorial, make sure to install the
-dependencies listed in \subpage installation tutorial.
+dependencies listed in the \subpage installation tutorial.
 
 ## Example mesh with Environment map
 

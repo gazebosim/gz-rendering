@@ -5,7 +5,7 @@ This example shows a camera tracking a moving target. You can use the keyboard t
 ## Install prerequisites
 
 In order to compile the example in this tutorial, make sure to install the
-dependencies listed in \subpage installation tutorial.
+dependencies listed in the \subpage installation tutorial.
 
 ## Compile and run the example
 

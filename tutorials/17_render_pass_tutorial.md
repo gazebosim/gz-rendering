@@ -2,6 +2,11 @@
 
 This example demonstrates the use of the render pass system for adding Gaussian noise post-processing effect to a camera.
 
+## Install prerequisites
+
+In order to compile the example in this tutorial, make sure to install the
+dependencies listed in the \subpage installation tutorial.
+
 ## Compile and run the example
 
 Clone the source code, create a build directory and use `cmake` and `make` to compile the code:

@@ -441,6 +441,11 @@ namespace gz
 
       this->SetMaterialImpl(_material);
 
+      // If the same material is being set, return early and don't try
+      // to destroy the material
+      if (!_unique && _material == origMaterial)
+        return;
+
       if (origMaterial && origUnique)
         this->Scene()->DestroyMaterial(origMaterial);
 

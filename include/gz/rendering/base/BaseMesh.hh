@@ -305,6 +305,13 @@ namespace gz
         subMesh->SetMaterial(_material, false);
       }
 
+      // If the same material is being set, return early and don't try
+      // to destroy the material. We still need call SetMaterial on the
+      // submeshes in case the user changed some material properties
+      // before setting it back.
+      if (!_unique && _material == this->material)
+        return;
+
       if (this->material && this->ownsMaterial)
         this->Scene()->DestroyMaterial(this->material);
 
@@ -437,6 +444,13 @@ namespace gz
       bool origUnique = this->ownsMaterial;
 
       this->SetMaterialImpl(_material);
+
+      // If the same material is being set, return early and don't try
+      // to destroy the material. We still need to call SetMaterialImpl
+      // above in case the user changed some material properties
+      // before setting it back.
+      if (!_unique && _material == origMaterial)
+        return;
 
       if (origMaterial && origUnique)
         this->Scene()->DestroyMaterial(origMaterial);

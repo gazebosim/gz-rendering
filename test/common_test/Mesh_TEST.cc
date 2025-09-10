@@ -314,6 +314,11 @@ TEST_F(MeshTest, MeshClone)
         false);
   }
 
+  // Setting the same material but do not clone
+  MaterialPtr newMatClone = clonedMesh->Material();
+  clonedMesh->SetMaterial(newMatClone, false);
+  EXPECT_EQ(newMatClone, clonedMesh->Material());
+
   // Clean up
   engine->DestroyScene(scene);
 }

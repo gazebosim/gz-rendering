@@ -24,6 +24,7 @@
 
 #include <gz/common/SingletonT.hh>
 
+#include "gz/rendering/config.hh"
 #include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/RenderEnginePlugin.hh"
 #include "gz/rendering/base/BaseRenderEngine.hh"
@@ -37,10 +38,12 @@ namespace Ogre
   class LogManager;
   class Root;
   class Window;
+#ifdef GZ_RENDERING_HAVE_OGRE2_OVERLAY
   namespace v1
   {
     class OverlaySystem;
   }
+#endif
 
   class HlmsPbsTerraShadows;
   class CompositorWorkspaceListener;
@@ -161,8 +164,10 @@ namespace gz
       /// \brief Create ogre root
       private: void CreateRoot();
 
+#ifdef GZ_RENDERING_HAVE_OGRE2_OVERLAY
       /// \brief Create ogre overlay component
       private: void CreateOverlay();
+#endif
 
       /// \brief Create ogre plugins.
       private: void LoadPlugins();
@@ -187,10 +192,12 @@ namespace gz
       /// \return Ogre HLMS customizations
       public: Ogre2GzHlmsSphericalClipMinDistance &SphericalClipMinDistance();
 
+#ifdef GZ_RENDERING_HAVE_OGRE2_OVERLAY
       /// \internal
       /// \brief Get a pointer to the Ogre overlay system.
       /// \return Pointer to the ogre overlay system.
       public: Ogre::v1::OverlaySystem *OverlaySystem() const;
+#endif
 
       /// \internal
       /// \brief Sets the current rendering mode. See GzOgreRenderingMode
@@ -221,8 +228,10 @@ namespace gz
       /// \return a pointer to the render engine
       public: static Ogre2RenderEngine *Instance();
 
+#ifdef GZ_RENDERING_HAVE_OGRE2_OVERLAY
       /// \brief Pointer to the ogre's overlay system
       private: Ogre::v1::OverlaySystem *ogreOverlaySystem = nullptr;
+#endif
 
       /// \brief List of scenes managed by the render engine
       private: Ogre2SceneStorePtr scenes;

@@ -24,6 +24,7 @@ gz_configure_project(VERSION_SUFFIX)
 # Set project-specific options
 #============================================================================
 option(USE_UNOFFICIAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the build" OFF)
+option(USE_OGRE2_OVERLAY "Enable OGRE2 Overlay support" ON)
 
 #============================================================================
 # Search for project-specific dependencies
@@ -102,21 +103,32 @@ endif()
 # Find OGRE2: first try to find OGRE2 built with PlanarReflections support and
 # fallback to look for OGRE2 without it. Both seems to works for gz-rendering.
 # See https://github.com/gazebosim/gz-rendering/issues/597
+
+# Build the list of OGRE2 components based on the options
+set(OGRE2_COMPONENTS HlmsPbs HlmsUnlit PlanarReflections)
+if(USE_OGRE2_OVERLAY)
+  list(APPEND OGRE2_COMPONENTS Overlay)
+endif()
+
 gz_find_package(GzOGRE2 VERSION 2.3.1
-    COMPONENTS HlmsPbs HlmsUnlit Overlay PlanarReflections
+    COMPONENTS ${OGRE2_COMPONENTS}
     PRIVATE_FOR ogre2
     QUIET)
 
 if ("${OGRE2-PlanarReflections}" STREQUAL "OGRE2-PlanarReflections-NOTFOUND")
   message(STATUS "PlanarReflections component was not found. Try looking without it:")
   gz_find_package(GzOGRE2 VERSION 2.3.1
-    COMPONENTS HlmsPbs HlmsUnlit Overlay
+    COMPONENTS ${OGRE2_COMPONENTS}
     REQUIRED_BY ogre2
     PRIVATE_FOR ogre2)
 endif()
 
 if (OGRE2_FOUND)
   set(GZ_RENDERING_HAVE_OGRE2 TRUE)
+
+  if(NOT USE_OGRE2_OVERLAY)
+    message(STATUS "OGRE2 Overlay support disabled by configuration")
+  endif()
 endif()
 
 #--------------------------------------

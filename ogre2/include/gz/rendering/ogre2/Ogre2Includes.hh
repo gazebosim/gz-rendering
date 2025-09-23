@@ -17,6 +17,8 @@
 #ifndef GZ_RENDERING_OGRE2_OGRE2INCLUDES_HH_
 #define GZ_RENDERING_OGRE2_OGRE2INCLUDES_HH_
 
+#include "gz/rendering/config.hh"
+
 // This disables warning messages for OGRE
 #ifndef _MSC_VER
   #pragma GCC system_header
@@ -96,12 +98,14 @@
 #include <Compositor/Pass/PassScene/OgreCompositorPassScene.h>
 #include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
 
+#ifdef GZ_RENDERING_HAVE_OGRE2_OVERLAY
 #include <Overlay/OgreOverlayPrerequisites.h>
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlayElement.h>
 #include <Overlay/OgreOverlayContainer.h>
 #include <Overlay/OgreFontManager.h>
 #include <Overlay/OgreOverlaySystem.h>
+#endif
 
 // TODO(anyone): enable when ogre 2.1 fully supports paging
 // and terrain components

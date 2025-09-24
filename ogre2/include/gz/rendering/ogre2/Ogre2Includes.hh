@@ -17,8 +17,6 @@
 #ifndef GZ_RENDERING_OGRE2_OGRE2INCLUDES_HH_
 #define GZ_RENDERING_OGRE2_OGRE2INCLUDES_HH_
 
-#include "gz/rendering/config.hh"
-
 // This disables warning messages for OGRE
 #ifndef _MSC_VER
   #pragma GCC system_header

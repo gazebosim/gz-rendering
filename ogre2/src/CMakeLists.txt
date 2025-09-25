@@ -34,6 +34,12 @@ set_property(
 target_compile_definitions(${ogre2_target}
   PRIVATE OGRE_IGNORE_UNKNOWN_DEBUG)
 
+# Add overlay support definition if enabled
+if(USE_OGRE2_OVERLAY)
+  target_compile_definitions(${ogre2_target}
+    PRIVATE GZ_RENDERING_HAVE_OGRE2_OVERLAY=1)
+endif()
+
 # Add OGRE2_LIBRARY_DIRS to INSTALL_RPATH
 # Append to a copy of CMAKE_INSTALL_RPATH since that is the default
 set(ogre2_target_install_rpath ${CMAKE_INSTALL_RPATH})

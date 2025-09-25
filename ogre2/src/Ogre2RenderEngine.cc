@@ -28,6 +28,7 @@
 
 #include <gz/plugin/Register.hh>
 
+#include "gz/rendering/config.hh"
 #include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/RenderEngineManager.hh"

@@ -2,7 +2,7 @@
 
 ### Gazebo Rendering 10.X
 
-### Gazebo Rendering 10.0.0 (2025-09-XX)
+### Gazebo Rendering 10.0.0 (2025-09-30)
 
 1. **Baseline:** this includes all changes from 9.3.0 and earlier.
 

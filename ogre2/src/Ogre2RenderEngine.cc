@@ -28,6 +28,7 @@
 
 #include <gz/plugin/Register.hh>
 
+#include "gz/rendering/config.hh"
 #include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/RenderEngineManager.hh"
@@ -190,8 +191,10 @@ void Ogre2RenderEngine::Destroy()
     this->scenes->RemoveAll();
   }
 
+#ifdef GZ_RENDERING_HAVE_OGRE2_OVERLAY
   delete this->ogreOverlaySystem;
   this->ogreOverlaySystem = nullptr;
+#endif
 
   this->dataPtr->hlmsPbsTerraShadows.reset();
 
@@ -501,7 +504,9 @@ void Ogre2RenderEngine::LoadAttempt()
   }
 
   this->CreateRoot();
+#ifdef GZ_RENDERING_HAVE_OGRE2_OVERLAY
   this->CreateOverlay();
+#endif
   this->LoadPlugins();
   this->CreateRenderSystem();
   this->ogreRoot->initialise(false);
@@ -636,11 +641,13 @@ void Ogre2RenderEngine::CreateRoot()
   }
 }
 
+#ifdef GZ_RENDERING_HAVE_OGRE2_OVERLAY
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::CreateOverlay()
 {
   this->ogreOverlaySystem = new Ogre::v1::OverlaySystem();
 }
+#endif
 
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::LoadPlugins()
@@ -1416,11 +1423,13 @@ SphericalClipMinDistance()
   return this->dataPtr->sphericalClipMinDistance;
 }
 
+#ifdef GZ_RENDERING_HAVE_OGRE2_OVERLAY
 /////////////////////////////////////////////////
 Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
 {
   return this->ogreOverlaySystem;
 }
+#endif
 
 /////////////////////////////////////////////////
 void Ogre2RenderEngine::SetGzOgreRenderingMode(

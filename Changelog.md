@@ -2,6 +2,12 @@
 
 ### Gazebo Rendering 9.X
 
+1. Conditional OGRE2 Overlay Support
+  * By default, OGRE2 overlay support is enabled, but it can be disabled using the
+    CMake option `USE_OGRE2_OVERLAY=OFF`. This is useful for builds using libc++
+    version 19 or greater than are broken, see (<https://github.com/OGRECave/ogre-next/issues/541>).
+   * [Pull request]()
+
 ### Gazebo Rendering 9.4.0 (2025-09-05)
 
 1. Add bazel build for ogre2 engine

@@ -31,6 +31,7 @@
 
 #include <gz/common/Console.hh>
 
+#include "gz/rendering/config.hh"
 #include "gz/rendering/base/SceneExt.hh"
 #include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/RenderTypes.hh"
@@ -83,8 +84,10 @@
 #include <OgrePlatformInformation.h>
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
+#ifdef GZ_RENDERING_HAVE_OGRE2_OVERLAY
 #include <Overlay/OgreOverlayManager.h>
 #include <Overlay/OgreOverlaySystem.h>
+#endif
 #if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 1
 #include <OgreHlms.h>
 #include <OgreHlmsManager.h>
@@ -501,11 +504,13 @@ void Ogre2Scene::Destroy()
 
   BaseScene::Destroy();
 
+#ifdef GZ_RENDERING_HAVE_OGRE2_OVERLAY
   if (this->ogreSceneManager)
   {
     this->ogreSceneManager->removeRenderQueueListener(
         Ogre2RenderEngine::Instance()->OverlaySystem());
   }
+#endif
 
   if (this->dataPtr->activeGi)
   {
@@ -1477,12 +1482,14 @@ void Ogre2Scene::CreateContext()
   this->ogreSceneManager = root->createSceneManager(Ogre::ST_GENERIC,
                                                     numThreads);
 
+#ifdef GZ_RENDERING_HAVE_OGRE2_OVERLAY
   this->ogreSceneManager->addRenderQueueListener(
       Ogre2RenderEngine::Instance()->OverlaySystem());
 
   this->ogreSceneManager->getRenderQueue()->setSortRenderQueue(
       Ogre::v1::OverlayManager::getSingleton().mDefaultRenderQueueId,
       Ogre::RenderQueue::StableSort);
+#endif
 
   // Set sane defaults for proper shadow mapping
   this->ogreSceneManager->setShadowDirectionalLightExtrusionDistance(500.0f);

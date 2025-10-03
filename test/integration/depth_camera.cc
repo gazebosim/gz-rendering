@@ -410,7 +410,8 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
       // all points should have the same depth value
       EXPECT_FLOAT_EQ(expectedRange, scan[mid]);
       EXPECT_FLOAT_EQ(expectedRange, scan[left]);
-      EXPECT_FLOAT_EQ(expectedRange, scan[right]);
+      // Used a slightly higher tol for ogre1.x on arm-based mac
+      EXPECT_NEAR(expectedRange, scan[right], 1e-6);
     }
     // Verify Point Cloud XYZ
     {

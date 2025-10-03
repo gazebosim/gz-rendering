@@ -190,9 +190,6 @@ void Ogre2RenderEngine::Destroy()
     this->scenes->RemoveAll();
   }
 
-  delete this->ogreOverlaySystem;
-  this->ogreOverlaySystem = nullptr;
-
   this->dataPtr->hlmsPbsTerraShadows.reset();
 
   if (this->ogreRoot)
@@ -501,7 +498,6 @@ void Ogre2RenderEngine::LoadAttempt()
   }
 
   this->CreateRoot();
-  this->CreateOverlay();
   this->LoadPlugins();
   this->CreateRenderSystem();
   this->ogreRoot->initialise(false);
@@ -634,12 +630,6 @@ void Ogre2RenderEngine::CreateRoot()
   {
     gzerr << "Unable to create Ogre root" << std::endl;
   }
-}
-
-//////////////////////////////////////////////////
-void Ogre2RenderEngine::CreateOverlay()
-{
-  this->ogreOverlaySystem = new Ogre::v1::OverlaySystem();
 }
 
 //////////////////////////////////////////////////
@@ -1414,12 +1404,6 @@ Ogre2GzHlmsSphericalClipMinDistance& Ogre2RenderEngine::
 SphericalClipMinDistance()
 {
   return this->dataPtr->sphericalClipMinDistance;
-}
-
-/////////////////////////////////////////////////
-Ogre::v1::OverlaySystem *Ogre2RenderEngine::OverlaySystem() const
-{
-  return this->ogreOverlaySystem;
 }
 
 /////////////////////////////////////////////////

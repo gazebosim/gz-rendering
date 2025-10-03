@@ -98,14 +98,14 @@ endif()
 # fallback to look for OGRE2 without it. Both seems to works for gz-rendering.
 # See https://github.com/gazebosim/gz-rendering/issues/597
 gz_find_package(GzOGRE2 VERSION 2.3.1
-    COMPONENTS HlmsPbs HlmsUnlit Overlay PlanarReflections
+    COMPONENTS HlmsPbs HlmsUnlit PlanarReflections
     PRIVATE_FOR ogre2
     QUIET)
 
 if ("${OGRE2-PlanarReflections}" STREQUAL "OGRE2-PlanarReflections-NOTFOUND")
   message(STATUS "PlanarReflections component was not found. Try looking without it:")
   gz_find_package(GzOGRE2 VERSION 2.3.1
-    COMPONENTS HlmsPbs HlmsUnlit Overlay
+    COMPONENTS HlmsPbs HlmsUnlit
     REQUIRED_BY ogre2
     PRIVATE_FOR ogre2)
 endif()

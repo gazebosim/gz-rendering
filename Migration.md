@@ -5,6 +5,19 @@ Deprecated code produces compile-time warnings. These warning serve as
 notification to users that their code should be upgraded. The next major
 release will remove the deprecated code.
 
+## Gazebo Rendering 10.x to 11.x
+
+### Removals
+
+The dependency on ogre2's Overlay component is removed, mainly due to:
+https://github.com/OGRECave/ogre-next/issues/541.
+The `Ogre::v1::OverlaySystem` was not used internally and the
+relevant API was always marked as internal so it is removed in
+gz-rendering11 instead of going through the tick-tock deprecation cycle.
+
+1. **Ogre2RenderEngine**
+    + Removed: `Ogre::v1::OverlaySystem *OverlaySystem() const`
+
 ## Gazebo Rendering 9.x to 10.x
 
 ### Deprecations

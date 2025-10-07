@@ -184,11 +184,157 @@ void HeightmapTest::TransparencyOverHeightmap(const std::string &_renderEngine)
   uint8_t g = imgData[idx+1];
   uint8_t b = imgData[idx+2];
 
+<<<<<<< HEAD
   // rgb value at the image pos of box should be a blend of green (box) and
   // blue (heightmap) and no red (background)
   EXPECT_EQ(0u, r);
   EXPECT_LT(0u, g);
   EXPECT_LT(0u, b);
+=======
+  g_pointCloudCounter = 0u;
+  depthCamera->Update();
+  EXPECT_EQ(1u, g_pointCloudCounter);
+
+  {
+    int numErrors = 0;
+    int numLargeErrors = 0;
+    int accumError = 0;
+
+    const unsigned char *normalData =
+      static_cast<unsigned char *>(normalCamImage.Data());
+    const float *depthData = pointCloudData;
+    const unsigned int height = camera->ImageHeight();
+    const unsigned int width = camera->ImageWidth();
+    const unsigned int channelCount = 4;
+    const unsigned int step = width * channelCount;
+    const unsigned int normalChannelCount = 3;
+    const unsigned int normalStep = width * normalChannelCount;
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      for (unsigned int j = 0; j < width; ++j)
+      {
+        const unsigned int idx = i * step + j * channelCount;
+        const unsigned int normalIdx = i * normalStep + j * normalChannelCount;
+
+        const uint32_t *depthrgba =
+          reinterpret_cast<const uint32_t *>(&depthData[idx + 3]);
+
+        const uint8_t depthr = *depthrgba >> 24 & 0xFF;
+        const uint8_t depthg = *depthrgba >> 16 & 0xFF;
+        const uint8_t depthb = *depthrgba >> 8 & 0xFF;
+        // const uint8_t deptha = *depthrgba >> 0 & 0xFF;
+
+        const uint8_t largeError = 5u;
+
+        if (abs(depthr - normalData[normalIdx + 0]) > largeError ||
+            abs(depthg - normalData[normalIdx + 1]) > largeError ||
+            abs(depthb - normalData[normalIdx + 2]) > largeError)
+        {
+          const uint8_t error = 10u;
+          EXPECT_NEAR(depthr, normalData[normalIdx + 0], error);
+          EXPECT_NEAR(depthg, normalData[normalIdx + 1], error);
+          EXPECT_NEAR(depthb, normalData[normalIdx + 2], error);
+          ++numLargeErrors;
+        }
+        else
+        {
+          const uint8_t error = 4u;
+          EXPECT_NEAR(depthr, normalData[normalIdx + 0], error);
+          EXPECT_NEAR(depthg, normalData[normalIdx + 1], error);
+          EXPECT_NEAR(depthb, normalData[normalIdx + 2], error);
+          // EXPECT_EQ(deptha, normalData[normalIdx + 3]);
+        }
+
+        if (depthr != normalData[normalIdx + 0] ||
+            depthg != normalData[normalIdx + 1] ||
+            depthb != normalData[normalIdx + 2])
+        {
+          accumError += abs(depthr - normalData[normalIdx + 0]);
+          accumError += abs(depthg - normalData[normalIdx + 1]);
+          accumError += abs(depthb - normalData[normalIdx + 2]);
+          ++numErrors;
+        }
+
+        /// Background is red
+        const bool isBackgroundNormal = normalData[normalIdx + 0] == 255u &&
+                                        normalData[normalIdx + 1] == 0u &&
+                                        normalData[normalIdx + 2] == 0u;
+        const bool isBackgroundDepth =
+          depthr == 255u && depthg == 0u && depthb == 0u;
+
+        EXPECT_EQ(isBackgroundNormal, isBackgroundDepth);
+
+        if (isBackgroundDepth)
+        {
+          EXPECT_FALSE(std::isnan(depthData[idx + 0]));
+          EXPECT_FALSE(std::isnan(depthData[idx + 1]));
+          EXPECT_FALSE(std::isnan(depthData[idx + 2]));
+
+          EXPECT_TRUE(std::isinf(depthData[idx + 0]));
+          EXPECT_TRUE(std::isinf(depthData[idx + 1]));
+          EXPECT_TRUE(std::isinf(depthData[idx + 2]));
+
+          // The sky should only be visible in the top part of the picture
+          EXPECT_TRUE(i < height / 4);
+        }
+        else
+        {
+          EXPECT_FALSE(std::isnan(depthData[idx + 0]));
+          EXPECT_FALSE(std::isnan(depthData[idx + 1]));
+          EXPECT_FALSE(std::isnan(depthData[idx + 2]));
+
+          EXPECT_FALSE(std::isinf(depthData[idx + 0]));
+          EXPECT_FALSE(std::isinf(depthData[idx + 1]));
+          EXPECT_FALSE(std::isinf(depthData[idx + 2]));
+        }
+      }
+    }
+
+    // Expect less than 15 pixels in 10k to be different due to GPU &
+    // floating point differences when optimizing shaders
+    EXPECT_LE(numErrors, width * height * 15 / 10000);
+    // Expect less than an accumulated deviation of 25 per channel (RGB)
+    EXPECT_LE(accumError, 25 * 3);
+    // Expect very few "large" errors.
+    EXPECT_LE(numLargeErrors, width * height * 5 / 10000);
+
+    if (this->HasFailure())
+    {
+      std::string base64Encoded;
+
+      {
+        // Output reference
+        base64Encoded.clear();
+        const uint32_t header[3] = {
+          width, height, static_cast<uint32_t>(normalCamImage.Format())
+        };
+
+        Base64Encode(header, sizeof(header), base64Encoded);
+        Base64Encode(normalData, width * height * normalChannelCount,
+                     base64Encoded);
+        std::cout << "Reference Camera Output:" << std::endl;
+        std::cout << base64Encoded << std::endl;
+      }
+
+      {
+        // Output value
+        base64Encoded.clear();
+        const uint32_t header[3] = { width, height,
+                                     static_cast<uint32_t>(PF_FLOAT32_RGBA) };
+
+        std::cout << "Depth Camera Output:" << std::endl;
+        Base64Encode(header, sizeof(header), base64Encoded);
+        Base64Encode(pointCloudData, width * height * sizeof(float) * 4u,
+                     base64Encoded);
+
+        std::cout << base64Encoded << std::endl;
+      }
+    }
+  }
+
+  // cleanup
+  connection.reset();
+>>>>>>> 7900fc1b (Increase tol for heightmap test (#1179))
 
   // Clean up
   engine->DestroyScene(scene);

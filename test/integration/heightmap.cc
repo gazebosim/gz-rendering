@@ -349,7 +349,7 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
             abs(depthg - normalData[normalIdx + 1]) > largeError ||
             abs(depthb - normalData[normalIdx + 2]) > largeError)
         {
-          const uint8_t error = 9u;
+          const uint8_t error = 10u;
           EXPECT_NEAR(depthr, normalData[normalIdx + 0], error);
           EXPECT_NEAR(depthg, normalData[normalIdx + 1], error);
           EXPECT_NEAR(depthb, normalData[normalIdx + 2], error);

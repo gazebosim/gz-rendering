@@ -83,8 +83,6 @@
 #include <OgrePlatformInformation.h>
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
-#include <Overlay/OgreOverlayManager.h>
-#include <Overlay/OgreOverlaySystem.h>
 #if OGRE_VERSION_MAJOR == 2 && OGRE_VERSION_MINOR == 1
 #include <OgreHlms.h>
 #include <OgreHlmsManager.h>
@@ -500,12 +498,6 @@ void Ogre2Scene::Destroy()
   this->ogreSceneManager->destroyAllItems();
 
   BaseScene::Destroy();
-
-  if (this->ogreSceneManager)
-  {
-    this->ogreSceneManager->removeRenderQueueListener(
-        Ogre2RenderEngine::Instance()->OverlaySystem());
-  }
 
   if (this->dataPtr->activeGi)
   {
@@ -1476,13 +1468,6 @@ void Ogre2Scene::CreateContext()
   // Create the SceneManager, in this case a generic one
   this->ogreSceneManager = root->createSceneManager(Ogre::ST_GENERIC,
                                                     numThreads);
-
-  this->ogreSceneManager->addRenderQueueListener(
-      Ogre2RenderEngine::Instance()->OverlaySystem());
-
-  this->ogreSceneManager->getRenderQueue()->setSortRenderQueue(
-      Ogre::v1::OverlayManager::getSingleton().mDefaultRenderQueueId,
-      Ogre::RenderQueue::StableSort);
 
   // Set sane defaults for proper shadow mapping
   this->ogreSceneManager->setShadowDirectionalLightExtrusionDistance(500.0f);

@@ -96,13 +96,6 @@
 #include <Compositor/Pass/PassScene/OgreCompositorPassScene.h>
 #include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
 
-#include <Overlay/OgreOverlayPrerequisites.h>
-#include <Overlay/OgreOverlayManager.h>
-#include <Overlay/OgreOverlayElement.h>
-#include <Overlay/OgreOverlayContainer.h>
-#include <Overlay/OgreFontManager.h>
-#include <Overlay/OgreOverlaySystem.h>
-
 // TODO(anyone): enable when ogre 2.1 fully supports paging
 // and terrain components
 // #include <Paging/OgrePageManager.h>

@@ -22,6 +22,7 @@
 #include <gz/common/Image.hh>
 #include <gz/common/Filesystem.hh>
 #include <gz/common/geospatial/ImageHeightmap.hh>
+#include <gz/common/testing/TestPaths.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
 #include "gz/rendering/GpuRays.hh"
@@ -55,9 +56,7 @@ void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
 class GpuRaysTest: public CommonRenderingTest
 {
   /// \brief Path to test media files.
-  public: const std::string TEST_MEDIA_PATH{
-        common::joinPaths(std::string(PROJECT_SOURCE_PATH),
-        "test", "media")};
+  public: const std::string TEST_MEDIA_PATH{common::testing::TestFile("media")};
 };
 
 /////////////////////////////////////////////////
@@ -887,7 +886,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
 }
 
 /////////////////////////////////////////////////
-TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DISABLED_Heightmap))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");
 #ifdef __APPLE__

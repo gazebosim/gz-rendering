@@ -67,3 +67,30 @@ cc_test(
         "@nvidia_driver//:nvidia_opengl_libs",
     ],
 )
+
+cc_test(
+    name = "INTEGRATION_gpu_rays",
+    srcs = ["integration/gpu_rays.cc"],
+    data = ["ogre2_rendersystems/RenderSystem_GL3Plus.so"],
+    env = {
+        "GZ_BAZEL": "1",
+        "GZ_ENGINE_TO_TEST": "ogre2",
+        "GZ_ENGINE_HEADLESS": "1",
+        "OGRE2_RESOURCE_PATH": "test/ogre2_rendersystems",
+    },
+    linkopts = [
+        "-Wl,--export-dynamic-symbol",
+        "-Wl,_Z*Ogre*Singleton*",
+    ],
+    deps = [
+        ":common",
+        "//:gz-rendering",
+        "//ogre2:gz-rendering-ogre2-engine-static",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@gz-utils//:ExtraTestMacros",
+        "@nvidia_driver//:nvidia_egl_libs",
+        "@nvidia_driver//:nvidia_opengl_libs",
+        "@gz-common//testing",
+    ],
+)

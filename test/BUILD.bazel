@@ -6,6 +6,19 @@ package(
     ],
 )
 
+cc_library(
+    name = "common",
+    testonly = True,
+    hdrs = ["common_test/CommonRenderingTest.hh"],
+    includes = ["common_test"],
+    deps = [
+        "//:gz-rendering",
+        "@googletest//:gtest",
+        "@gz-common",
+        "@gz-utils//:Environment",
+    ],
+)
+
 cc_test(
     name = "INTEGRATION_load_static_render_engine_plugin",
     srcs = ["integration/load_static_render_engine_plugin.cc"],
@@ -17,5 +30,40 @@ cc_test(
         "@gz-common",
         "@gz-plugin//:loader",
         "@gz-plugin//:register",
+    ],
+)
+
+# Install Ogre2 GL3+ RenderSystem plugin for tests at a known location.
+genrule(
+    name = "install_ogre2_gl3plus_plugin",
+    testonly = True,
+    srcs = ["@ogre-next//:RenderSystem_GL3Plus.so"],
+    outs = ["ogre2_rendersystems/RenderSystem_GL3Plus.so"],
+    cmd = "cp $(SRCS) $(OUTS)",
+)
+
+cc_test(
+    name = "INTEGRATION_depth_camera",
+    srcs = ["integration/depth_camera.cc"],
+    data = ["ogre2_rendersystems/RenderSystem_GL3Plus.so"],
+    env = {
+        "GZ_BAZEL": "1",
+        "GZ_ENGINE_TO_TEST": "ogre2",
+        "GZ_ENGINE_HEADLESS": "1",
+        "OGRE2_RESOURCE_PATH": "test/ogre2_rendersystems",
+    },
+    linkopts = [
+        "-Wl,--export-dynamic-symbol",
+        "-Wl,_Z*Ogre*Singleton*",
+    ],
+    deps = [
+        ":common",
+        "//:gz-rendering",
+        "//ogre2:gz-rendering-ogre2-engine-static",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+        "@gz-utils//:ExtraTestMacros",
+        "@nvidia_driver//:nvidia_egl_libs",
+        "@nvidia_driver//:nvidia_opengl_libs",
     ],
 )

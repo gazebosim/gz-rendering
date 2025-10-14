@@ -8,6 +8,7 @@ bazel_dep(name = "bazel_skylib", version = "1.7.1")
 bazel_dep(name = "egl-registry", version = "0.0.0-20250527")
 bazel_dep(name = "googletest", version = "1.15.2")
 bazel_dep(name = "ogre-next", version = "2.3.3")
+bazel_dep(name = "libx11", version = "1.8.12.bcr.2")
 bazel_dep(name = "rules_cc", version = "0.1.1")
 bazel_dep(name = "rules_license", version = "1.0.0")
 
@@ -41,3 +42,13 @@ archive_override(
     strip_prefix = "gz-utils-gz-utils3",
     urls = ["https://github.com/gazebosim/gz-utils/archive/refs/heads/gz-utils3.tar.gz"],
 )
+
+nvidia_driver_ext = use_extension(
+    "//bazel/nvidia_opengl:extensions.bzl",
+    "nvidia_driver_ext",
+)
+nvidia_driver_ext.nvidia_driver(
+    name = "nvidia_driver",
+    driver_version = "550.163.01",
+)
+use_repo(nvidia_driver_ext, "nvidia_driver")

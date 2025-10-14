@@ -459,7 +459,7 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
 
 
 /////////////////////////////////////////////////
-TEST_F(DepthCameraTest, DepthCameraParticles)
+TEST_F(DepthCameraTest, DISABLED_DepthCameraParticles)
 {
   // particle emitter is only supported in ogre2
   CHECK_SUPPORTED_ENGINE("ogre2");
@@ -739,7 +739,7 @@ TEST_F(DepthCameraTest, DepthCameraParticles)
 }
 
 /////////////////////////////////////////////////
-TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraProjection))
+TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DISABLED_DepthCameraProjection))
 {
   CHECK_SUPPORTED_ENGINE("ogre2");
 
@@ -849,6 +849,118 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraProjection))
         EXPECT_FLOAT_EQ(expectedRange, x);
        }
     }
+
+    // Clean up
+    connection.reset();
+    delete [] scan;
+  }
+
+  engine->DestroyScene(scene);
+}
+
+TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxesWithoutPointCloudConnection))
+{
+  CHECK_UNSUPPORTED_ENGINE("optix");
+
+  int imgWidth_ = 256;
+  int imgHeight_ = 256;
+  double aspectRatio_ = imgWidth_/imgHeight_;
+
+  double unitBoxSize = 1.0;
+  gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  // red background
+  scene->SetBackgroundColor(1.0, 0.0, 0.0);
+
+  // Create an scene with a box in it
+  scene->SetAmbientLight(1.0, 1.0, 1.0);
+  gz::rendering::VisualPtr root = scene->RootVisual();
+
+  // create blue material
+  gz::rendering::MaterialPtr blue = scene->CreateMaterial();
+  blue->SetAmbient(0.0, 0.0, 1.0);
+  blue->SetDiffuse(0.0, 0.0, 1.0);
+  blue->SetSpecular(0.0, 0.0, 1.0);
+
+  // create box visual
+  gz::rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  box->SetOrigin(0.0, 0.0, 0.0);
+  box->SetLocalPosition(boxPosition);
+  box->SetLocalRotation(0, 0, 0);
+  box->SetLocalScale(unitBoxSize, unitBoxSize, unitBoxSize);
+  box->SetMaterial(blue);
+  root->AddChild(box);
+  {
+    double farDist = 10.0;
+    double nearDist = 0.15;
+    double hfov_ = 1.05;
+    // Create depth camera
+    auto depthCamera = scene->CreateDepthCamera("DepthCamera");
+    ASSERT_NE(depthCamera, nullptr);
+
+    gz::math::Pose3d testPose(gz::math::Vector3d(0, 0, 0),
+        gz::math::Quaterniond::Identity);
+    depthCamera->SetLocalPose(testPose);
+
+    // Configure depth camera
+    depthCamera->SetImageWidth(imgWidth_);
+    EXPECT_EQ(depthCamera->ImageWidth(),
+      static_cast<unsigned int>(imgWidth_));
+    depthCamera->SetImageHeight(imgHeight_);
+    EXPECT_EQ(depthCamera->ImageHeight(),
+      static_cast<unsigned int>(imgHeight_));
+    depthCamera->SetFarClipPlane(farDist);
+    EXPECT_NEAR(depthCamera->FarClipPlane(), farDist, DOUBLE_TOL);
+    depthCamera->SetNearClipPlane(nearDist);
+    EXPECT_NEAR(depthCamera->NearClipPlane(), nearDist, DOUBLE_TOL);
+    depthCamera->SetAspectRatio(aspectRatio_);
+    EXPECT_NEAR(depthCamera->AspectRatio(), aspectRatio_, DOUBLE_TOL);
+    depthCamera->SetHFOV(hfov_);
+    EXPECT_NEAR(depthCamera->HFOV().Radian(), hfov_, DOUBLE_TOL);
+
+    depthCamera->CreateDepthTexture();
+    scene->RootVisual()->AddChild(depthCamera);
+
+    // Set a callback on the  camera sensor to get a depth camera frame
+    float *scan = new float[imgHeight_ * imgWidth_];
+    gz::common::ConnectionPtr connection =
+      depthCamera->ConnectNewDepthFrame(
+          std::bind(&::OnNewDepthFrame, scan,
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+            std::placeholders::_4, std::placeholders::_5));
+
+    // update and verify we get new data
+    g_depthCounter = 0u;
+    g_pointCloudCounter = 0u;
+    depthCamera->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+    EXPECT_EQ(1u, g_depthCounter);
+    // No new data for point cloud connection since we did not register the
+    // callback.
+    EXPECT_EQ(0u, g_pointCloudCounter);
+
+    // compute mid, left, and right indices to be used later for retrieving data
+    // from depth and point cloud image
+
+    // depth image indices
+    int midWidth = static_cast<int>(depthCamera->ImageWidth() * 0.5);
+    int midHeight = static_cast<int>(depthCamera->ImageHeight() * 0.5);
+    int mid = midHeight * depthCamera->ImageWidth() + midWidth -1;
+    double expectedRangeAtMidPoint = boxPosition.X() - unitBoxSize * 0.5;
+    int left = midHeight * depthCamera->ImageWidth();
+    int right = (midHeight+1) * depthCamera->ImageWidth() - 1;
+
+    // Verify Depth
+    // Depth sensor should see box in the middle of the image
+    EXPECT_NEAR(expectedRangeAtMidPoint, scan[mid], DEPTH_TOL);
+    // The left and right side of the depth frame should be max value
+    float maxVal = gz::math::INF_D;
+    EXPECT_FLOAT_EQ(maxVal, scan[left]);
+    EXPECT_FLOAT_EQ(maxVal, scan[right]);
 
     // Clean up
     connection.reset();

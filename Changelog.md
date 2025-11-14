@@ -2,6 +2,38 @@
 
 ## Gazebo Rendering 8.X
 
+### Gazebo Rendering 8.2.3 (2025-11-14)
+
+1. Increase tolerance for heightmap test
+    * [Pull request #1179](https://github.com/gazebosim/gz-rendering/pull/1179)
+
+1. Increase depth camera integration test error tolerance for ogre 1.x on arm based mac
+    * [Pull request #1180](https://github.com/gazebosim/gz-rendering/pull/1180)
+
+1. Prevent material destruction if setting the same material to a submesh
+    * [Pull request #1168](https://github.com/gazebosim/gz-rendering/pull/1168)
+
+1. CppCheck fixes
+    * [Pull request #1148](https://github.com/gazebosim/gz-rendering/pull/1148)
+
+1. Disable a couple of tests on windows (#1126)
+    * [Pull request #1147](https://github.com/gazebosim/gz-rendering/pull/1147)
+
+1. Fix user settings of thermal camera being ignored
+    * [Pull request #1138](https://github.com/gazebosim/gz-rendering/pull/1138)
+
+1. Fix clamp of temperature in thermal camera output
+    * [Pull request #1133](https://github.com/gazebosim/gz-rendering/pull/1133)
+
+1.  Add sanity check for valid submesh indices (#1123)
+    * [Pull request #1125](https://github.com/gazebosim/gz-rendering/pull/1125)
+
+1. Remove unused variable in OgreRenderingEngine.cc (#1119)
+    * [Pull request #1120](https://github.com/gazebosim/gz-rendering/pull/1120)
+
+1. Remove ClearMaterialsCache call when a material is destroyed in ogre2
+    * [Pull request #1110](https://github.com/gazebosim/gz-rendering/pull/1110)
+
 ### Gazebo Rendering 8.2.2 (2025-01-30)
 
 1. Fix RenderingIface_TEST for ogre2 when there is no display

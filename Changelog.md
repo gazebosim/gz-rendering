@@ -2,11 +2,22 @@
 
 ### Gazebo Rendering 9.X
 
+### Gazebo Rendering 9.5.0 (2025-11-14)
+
+1. Increase tolerance for heightmap test
+    * [Pull request #1179](https://github.com/gazebosim/gz-rendering/pull/1179)
+
+1. Increase depth camera integration test error tolerance for ogre 1.x on arm based mac
+    * [Pull request #1180](https://github.com/gazebosim/gz-rendering/pull/1180)
+
 1. Conditional OGRE2 Overlay Support
   * By default, OGRE2 overlay support is enabled, but it can be disabled using the
     CMake option `USE_OGRE2_OVERLAY=OFF`. This is useful for builds using libc++
     version 19 or greater than are broken, see (<https://github.com/OGRECave/ogre-next/issues/541>).
-   * [Pull request]()
+    * [Pull request #1177](https://github.com/gazebosim/gz-rendering/pull/1177)
+
+1. Prevent material destruction if setting the same material to a submesh
+    * [Pull request #1168](https://github.com/gazebosim/gz-rendering/pull/1168)
 
 ### Gazebo Rendering 9.4.0 (2025-09-05)
 

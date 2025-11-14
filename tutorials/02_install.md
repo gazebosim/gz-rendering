@@ -40,7 +40,7 @@ Be sure to replace `<#>` with a number value, such as `7` or `8`, depending on w
 
 ### Prerequisites
 
-Ubuntu Focal 20.04 or above:
+Ubuntu Noble 24.04 or above:
 
 Install dependencies:
 ```
@@ -53,7 +53,6 @@ sudo apt install -y \
     pkg-config \
     git \
     libglew-dev  \
-    libfreeimage-dev \
     freeglut3-dev \
     libxmu-dev \
     libxi-dev \
@@ -62,6 +61,8 @@ sudo apt install -y \
     libgz-common7-dev \
     libgz-plugin4-dev
 ```
+
+Note that `freeglut3-dev` is necessary for running demos in the examples directory.
 
 ### Supported Rendering Engines
 

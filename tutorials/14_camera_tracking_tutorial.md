@@ -2,6 +2,11 @@
 
 This example shows a camera tracking a moving target. You can use the keyboard to move the target being tracked, toggle between different tracking modes, and adjust the tracking offsets.
 
+## Install prerequisites
+
+In order to compile the example in this tutorial, make sure to install the
+dependencies listed in the \subpage installation tutorial.
+
 ## Compile and run the example
 
 Clone the source code, create a build directory and use `cmake` and `make` to compile the code:

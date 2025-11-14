@@ -81,6 +81,11 @@ TEST_F(MeshTest, MeshSubMesh)
   submesh->SetMaterial(matClone, true);
   EXPECT_NE(matClone, submesh->Material());
 
+  // Setting the same material but do not clone
+  MaterialPtr newMatClone = submesh->Material();
+  submesh->SetMaterial(newMatClone, false);
+  EXPECT_EQ(newMatClone, submesh->Material());
+
   // Clean up
   engine->DestroyScene(scene);
 }
@@ -308,6 +313,11 @@ TEST_F(MeshTest, MeshClone)
     compareMaterials(clonedSubMesh->Material(), originalSubMesh->Material(),
         false);
   }
+
+  // Setting the same material but do not clone
+  MaterialPtr newMatClone = clonedMesh->Material();
+  clonedMesh->SetMaterial(newMatClone, false);
+  EXPECT_EQ(newMatClone, clonedMesh->Material());
 
   // Clean up
   engine->DestroyScene(scene);

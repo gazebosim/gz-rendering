@@ -2,9 +2,18 @@
 
 ### Gazebo Rendering 10.X
 
-### Gazebo Rendering 10.0.0 (2025-09-XX)
+### Gazebo Rendering 10.0.0 (2025-09-30)
 
 1. **Baseline:** this includes all changes from 9.3.0 and earlier.
+
+1. Prevent material destruction if setting the same material to a submesh
+    * [Pull request #1168](https://github.com/gazebosim/gz-rendering/pull/1168)
+
+1. Add a note about glut dependency in installation tutorial
+    * [Pull request #1163](https://github.com/gazebosim/gz-rendering/pull/1163)
+
+1. [Bazel] Update bazel module to use jetty release branches
+    * [Pull request #1161](https://github.com/gazebosim/gz-rendering/pull/1161)
 
 1. Enable doxygen CI check on noble
     * [Pull request #1129](https://github.com/gazebosim/gz-rendering/pull/1129)

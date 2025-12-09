@@ -196,6 +196,12 @@ if(NOT MSVC)
   endif()
 endif()
 
+  if (NOT FreeImage_FOUND)
+    message(STATUS "Skipping component [optix] due to missing FreeImage")
+    set(INTERNAL_SKIP_optix true)
+    set(GZ_RENDERING_HAVE_OPTIX FALSE)
+  endif()
+
 #####################################
 # Define compile-time default variables
 if(MSVC)

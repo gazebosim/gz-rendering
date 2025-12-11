@@ -175,7 +175,7 @@ if(NOT MSVC)
   #--------------------------------------
   # Find FreeImage
   gz_find_package(FreeImage VERSION 3.9
-    OPTIONAL_BY optix
+    QUIET
     PRIVATE_FOR optix)
 
   #--------------------------------------

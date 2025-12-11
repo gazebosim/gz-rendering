@@ -53,7 +53,6 @@ sudo apt install -y \
     pkg-config \
     git \
     libglew-dev  \
-    libfreeimage-dev \
     freeglut3-dev \
     libxmu-dev \
     libxi-dev \

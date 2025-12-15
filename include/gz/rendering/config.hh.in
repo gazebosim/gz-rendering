@@ -34,7 +34,6 @@
 
 #cmakedefine GZ_RENDERING_HAVE_OGRE 1
 #cmakedefine GZ_RENDERING_HAVE_OGRE2 1
-#cmakedefine GZ_RENDERING_HAVE_OPTIX 1
 #cmakedefine GZ_RENDERING_HAVE_VULKAN 1
 
 // \todo(anyone) remove on tock
@@ -43,9 +42,6 @@
 #endif
 #ifndef HAVE_OGRE2
 #define HAVE_OGRE2 GZ_RENDERING_HAVE_OGRE2
-#endif
-#ifndef HAVE_OPTIX
-#define HAVE_OPTIX GZ_RENDERING_HAVE_OPTIX
 #endif
 
 #endif

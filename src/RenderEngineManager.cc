@@ -34,7 +34,7 @@
 struct EngineInfo
 {
   /// \brief The name of the engine's shared library, default engines can also
-  /// be specified with their regular name (ogre, optix, etc.).
+  /// be specified with their regular name (ogre, ogre2, etc.).
   std::string name;
 
   /// \brief The pointer to the render engine.
@@ -491,18 +491,6 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
       libNamePrefix + ogre2EngineName);
 #else
   registerStaticOrSolibPlugin(ogre2EngineName, ogre2StaticFilename,
-      /*_solibFilename=*/"");
-#endif
-
-  // Register Optix
-  const std::string optixEngineName = "optix";
-  const std::string optixStaticFilename =
-      "static://gz::rendering::optix::Plugin";
-#if GZ_RENDERING_HAVE_OPTIX
-  registerStaticOrSolibPlugin(optixEngineName, optixStaticFilename,
-      libNamePrefix + optixEngineName);
-#else
-  registerStaticOrSolibPlugin(optixEngineName, optixStaticFilename,
       /*_solibFilename=*/"");
 #endif
 }

@@ -108,8 +108,6 @@ void OnNewWideAngleFrameMono(const unsigned char *_data,
 //////////////////////////////////////////////////
 TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(1.0, 1.0, 1.0);
@@ -384,8 +382,6 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
 //////////////////////////////////////////////////
 TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Projection))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(1.0, 1.0, 1.0);
@@ -504,8 +500,6 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Projection))
 TEST_F(WideAngleCameraTest,
        GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCameraMono))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(1.0, 1.0, 1.0);

@@ -156,33 +156,6 @@ if (GZ_ENABLE_RELOCATABLE_INSTALL)
   gz_find_package(DL REQUIRED)
 endif()
 
-#--------------------------------------
-# Find dependencies that we ignore for Visual Studio
-if(NOT MSVC)
-  #--------------------------------------
-  # Find FreeImage
-  gz_find_package(FreeImage VERSION 3.9
-    REQUIRED_BY optix
-    PRIVATE_FOR optix)
-
-  #--------------------------------------
-  # Find CUDA
-  # Module is being removed in CMake and needs a non trivial
-  # migration https://cmake.org/cmake/help/latest/policy/CMP0146.html
-  if(POLICY CMP0146)
-    cmake_policy(SET CMP0146 OLD)
-  endif()
-  find_package(CUDA QUIET)
-
-  #--------------------------------------
-  # Find OptiX
-  gz_find_package(OptiX QUIET VERSION 3.8.0)
-
-  if (OptiX_FOUND AND CUDA_FOUND)
-    set(GZ_RENDERING_HAVE_OPTIX TRUE)
-  endif()
-endif()
-
 #####################################
 # Define compile-time default variables
 if(MSVC)
@@ -198,10 +171,6 @@ set(GZ_RENDERING_RELATIVE_RESOURCE_PATH ${GZ_DATA_INSTALL_DIR})
 #============================================================================
 if (GZ_RENDERING_HAVE_OGRE)
   list(APPEND RENDERING_COMPONENTS ogre)
-endif()
-
-if (GZ_RENDERING_HAVE_OPTIX)
-  list(APPEND RENDERING_COMPONENTS optix)
 endif()
 
 if (GZ_RENDERING_HAVE_OGRE2)

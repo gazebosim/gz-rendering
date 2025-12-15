@@ -67,7 +67,6 @@ class ThermalCameraTest: public CommonRenderingTest
 TEST_F(ThermalCameraTest,
        GZ_UTILS_TEST_DISABLED_ON_WIN32(ThermalCameraBoxesUniform))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
   int imgWidth = 50;
   int imgHeight = 50;
   double aspectRatio = imgWidth/imgHeight;
@@ -221,7 +220,6 @@ TEST_F(ThermalCameraTest,
 TEST_F(ThermalCameraTest,
        GZ_UTILS_TEST_DISABLED_ON_WIN32(ThermalCameraBoxesHeatSignature))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");  // Optix does not support thermal
   CHECK_SUPPORTED_ENGINE("ogre2");  // Only OGRE2 supports heat signatures
 
   int imgWidth = 50;

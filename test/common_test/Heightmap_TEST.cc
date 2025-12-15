@@ -29,7 +29,7 @@
 using namespace gz;
 using namespace rendering;
 
-class HeightmapTest : public CommonRenderingTest 
+class HeightmapTest : public CommonRenderingTest
 {
   /// \brief Path to test media files.
   public: const std::string TEST_MEDIA_PATH{
@@ -41,8 +41,6 @@ class HeightmapTest : public CommonRenderingTest
 // ogre1 not supported on Windows
 TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   auto scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 

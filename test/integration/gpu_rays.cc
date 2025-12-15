@@ -64,8 +64,6 @@ class GpuRaysTest: public CommonRenderingTest
 /// \brief Test GPU rays configuraions
 TEST_F(GpuRaysTest, Configure)
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -140,8 +138,6 @@ TEST_F(GpuRaysTest, Configure)
 /// \brief Test detection of different boxes
 TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CreateRemove))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   #ifdef __APPLE__
     GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
@@ -191,8 +187,6 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CreateRemove))
 /// \brief Test detection of different boxes
 TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   #ifdef __APPLE__
     GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
@@ -366,7 +360,6 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 /// \brief Test GPU rays vertical component
 TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__
     GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
@@ -692,7 +685,6 @@ TEST_F(GpuRaysTest, RaysParticles)
 /// \brief Test single ray box intersection
 TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(SingleRay))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__
     GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
@@ -780,7 +772,6 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(SingleRay))
 /////////////////////////////////////////////////
 TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
 #ifdef __APPLE__
   GTEST_SKIP() << "Unsupported on apple, see issue #35.";
 #endif
@@ -889,7 +880,6 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
 /////////////////////////////////////////////////
 TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
 #ifdef __APPLE__
   GTEST_SKIP() << "Unsupported on apple, see issue #35.";
 #endif

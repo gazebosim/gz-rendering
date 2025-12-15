@@ -90,27 +90,6 @@ Install OGRE-Next 2.3 debs
 sudo apt install libogre-next-dev
 ```
 
-**OptiX (experimental)**
-
-Download and install by following instructions on NVIDIA website
-
-CUDA: http://docs.nvidia.com/cuda
-
-OptiX: https://developer.nvidia.com/optix
-
-Update `LD_LIBRARY_PATH` and add an `OPTIX_INSTALL_DIR` environment variables
-so that gz-rendering can find Optix, e.g. if you installed version 4.0.2 in HOME/optix:
-```
-export LD_LIBRARY_PATH=${HOME}/optix/NVIDIA-OptiX-SDK-4.0.2-linux64/lib64:${LD_LIBRARY_PATH}
-export OPTIX_INSTALL_DIR=${HOME}/optix/NVIDIA-OptiX-SDK-4.0.2-linux64
-```
-
-Note: If you encounter errors about different exception specifiers in optix math
-when building Gazebo Rendering OptiX plugin, edit
-`[optix_install_dir]/include/optixu/optixu_math_namespace.h` and comment
-out the section that defines `fminf`, fmaxf, and `copysignf` (for optix
-sdk 4.0.2, comment out lines 167-206).
-
 ### Build from Source
 
 1. Clone the repository
@@ -273,7 +252,7 @@ Most tests can be run against multiple render engine configurations (if availabl
 To control the testing configuration, use the following environment variables:
 
   ```
-  # Specify the rendering engine to use (ogre, ogre2, optix)
+  # Specify the rendering engine to use (ogre, ogre2)
   GZ_ENGINE_TO_TEST=ogre2
 
   # Specify the ogre2 backend to use (vulkan, gl3plus, metal (macOS))

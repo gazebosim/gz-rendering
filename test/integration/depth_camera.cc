@@ -68,8 +68,6 @@ class DepthCameraTest: public CommonRenderingTest
 /////////////////////////////////////////////////
 TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   int imgWidth_ = 256;
   int imgHeight_ = 256;
   double aspectRatio_ = imgWidth_/imgHeight_;

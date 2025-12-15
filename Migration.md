@@ -9,6 +9,15 @@ release will remove the deprecated code.
 
 ### Removals
 
+The optix plugin has been removed due to years of inactivity. The plugin was
+last tested with Optix SDK version 4.0.2, and there are no known plans on
+upgrading it to support the latest version of Optix. The optix plugin was
+never built and tested on the CIs so it was unclear if it was still working,
+hence the decision was to remove the plugin directly without going through
+a deprecation cycle.
+* Issue: https://github.com/gazebosim/gz-rendering/issues/1203
+* Pull request: https://github.com/gazebosim/gz-rendering/issues/1204
+
 The dependency on ogre2's Overlay component is removed, mainly due to:
 https://github.com/OGRECave/ogre-next/issues/541.
 The `Ogre::v1::OverlaySystem` was not used internally and the

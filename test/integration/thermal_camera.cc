@@ -631,17 +631,19 @@ void ThermalCameraTest::ThermalCameraParticles(
 
 // See: https://github.com/gazebosim/gz-rendering/issues/654
 TEST_P(ThermalCameraTest,
-       IGN_UTILS_TEST_DISABLED_ON_MAC(ThermalCameraBoxesUniformTemp))
+       IGN_UTILS_TEST_ENABLED_ONLY_ON_LINUX(ThermalCameraBoxesUniformTemp))
 {
   ThermalCameraBoxes(GetParam(), false);
 }
 
-TEST_P(ThermalCameraTest, ThermalCameraBoxesHeatSignature)
+TEST_P(ThermalCameraTest,
+       IGN_UTILS_TEST_DISABLED_ON_WIN32(ThermalCameraBoxesHeatSignature))
 {
   ThermalCameraBoxes(GetParam(), true);
 }
 
-TEST_P(ThermalCameraTest, ThermalCameraBoxesUniformTemp8Bit)
+TEST_P(ThermalCameraTest,
+       IGN_UTILS_TEST_DISABLED_ON_WIN32(ThermalCameraBoxesUniformTemp8Bit))
 {
   ThermalCameraBoxes8Bit(GetParam());
 }

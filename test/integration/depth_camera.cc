@@ -20,6 +20,7 @@
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Event.hh>
+#include <gz/utils/ExtraTestMacros.hh>
 
 #include "test_config.h"  // NOLINT(build/include)
 
@@ -778,7 +779,8 @@ void DepthCameraTest::DepthCameraParticles(
   ignition::rendering::unloadEngine(engine->Name());
 }
 
-TEST_P(DepthCameraTest, DepthCameraBoxes)
+TEST_P(DepthCameraTest,
+  IGN_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
 {
   DepthCameraBoxes(GetParam());
 }

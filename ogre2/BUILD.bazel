@@ -1,4 +1,5 @@
 # Bazel targets for Ogre2 render engine plugin.
+load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@rules_gazebo//gazebo:headers.bzl", "gz_export_header")
 load("//bazel:gz_rendering_engine_libraries.bzl", "gz_rendering_engine_libraries")
 

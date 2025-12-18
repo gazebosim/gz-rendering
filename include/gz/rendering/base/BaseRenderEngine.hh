@@ -111,6 +111,24 @@ namespace gz
       // Documentation Inherited
       public: virtual RenderPassSystemPtr RenderPassSystem() const override;
 
+      // Documentation Inherited
+      public: virtual std::string Vendor() const override
+      {
+        return "";
+      }
+
+      // Documentation Inherited
+      public: virtual std::string DeviceName() const override
+      {
+        return "";
+      }
+
+      // Documentation Inherited
+      public: virtual std::string GraphicsApi() const override
+      {
+        return "";
+      }
+
       protected: virtual void PrepareScene(ScenePtr _scene);
 
       protected: virtual unsigned int NextSceneId();

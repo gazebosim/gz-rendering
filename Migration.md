@@ -7,6 +7,13 @@ release will remove the deprecated code.
 
 ## Gazebo Rendering 9.x to 10.x
 
+### Additions
+
+1. **RenderEngine**
+    + Added: `std::string Vendor() const` - Get GPU vendor name (e.g., "NVIDIA", "AMD", "Intel")
+    + Added: `std::string DeviceName() const` - Get GPU device name
+    + Added: `std::string GraphicsApi() const` - Get graphics API and driver version information
+
 ### Deprecations
 
 1. **Ogre2MeshFactory**

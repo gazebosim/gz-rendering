@@ -25,7 +25,7 @@
 using namespace gz;
 using namespace rendering;
 
-class RenderEngineTest : public CommonRenderingTest 
+class RenderEngineTest : public CommonRenderingTest
 {
 };
 
@@ -114,4 +114,32 @@ TEST_F(RenderEngineTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RenderEngine))
 
   engine->DestroyScenes();
   EXPECT_EQ(engine->SceneCount(), 0u);
+}
+
+/////////////////////////////////////////////////
+TEST_F(RenderEngineTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(GpuInfo))
+{
+  // Test GPU information methods
+  // These methods should return non-empty strings when the engine is
+  // initialized. The exact values depend on the hardware and drivers.
+
+  std::string vendor = engine->Vendor();
+  std::string deviceName = engine->DeviceName();
+  std::string graphicsApi = engine->GraphicsApi();
+
+  // Verify that GPU info is available when engine is initialized
+  EXPECT_FALSE(vendor.empty());
+  EXPECT_FALSE(deviceName.empty());
+  EXPECT_FALSE(graphicsApi.empty());
+
+  // Verify that the information is consistent across multiple calls
+  // (testing caching)
+  EXPECT_EQ(vendor, engine->Vendor());
+  EXPECT_EQ(deviceName, engine->DeviceName());
+  EXPECT_EQ(graphicsApi, engine->GraphicsApi());
+
+  // Log the GPU info for debugging purposes
+  gzdbg << "GPU Vendor: " << vendor << std::endl;
+  gzdbg << "GPU Device: " << deviceName << std::endl;
+  gzdbg << "Graphics API: " << graphicsApi << std::endl;
 }

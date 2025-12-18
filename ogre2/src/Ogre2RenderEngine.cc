@@ -107,6 +107,18 @@ class GZ_RENDERING_OGRE2_HIDDEN
   /// \brief Custom Terra modifications
   public: Ogre::Ogre2GzHlmsTerra *gzHlmsTerra{nullptr};
 
+  /// \brief Cached GPU vendor name
+  public: mutable std::string vendor;
+
+  /// \brief Cached GPU device name
+  public: mutable std::string deviceName;
+
+  /// \brief Cached graphics API and driver version
+  public: mutable std::string graphicsApi;
+
+  /// \brief Flag for one-time GPU info initialization
+  public: mutable bool gpuInfoInitialized{false};
+
 #ifdef OGRE_BUILD_RENDERSYSTEM_VULKAN
   /// \brief Needed to receive an external Vulkan device from Qt
   /// and inject it into OgreNext.
@@ -1448,6 +1460,93 @@ Ogre::CompositorWorkspaceListener *Ogre2RenderEngine::TerraWorkspaceListener()
 Ogre2RenderEngine *Ogre2RenderEngine::Instance()
 {
   return gz::common::SingletonT<Ogre2RenderEngine>::Instance();
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderEngine::ParseGpuInfo() const
+{
+  if (this->dataPtr->gpuInfoInitialized)
+    return;
+
+  // Query GPU info directly from Ogre RenderSystem
+  if (!this->ogreRoot)
+    return;
+
+  Ogre::RenderSystem *renderSys = this->ogreRoot->getRenderSystem();
+  if (!renderSys)
+    return;
+
+  const Ogre::RenderSystemCapabilities *caps = renderSys->getCapabilities();
+  if (!caps)
+    return;
+
+  // Get GPU info from RenderSystemCapabilities
+  // Convert Ogre::GPUVendor enum to string
+  switch (caps->getVendor())
+  {
+    case Ogre::GPU_NVIDIA:
+      this->dataPtr->vendor = "NVIDIA";
+      break;
+    case Ogre::GPU_AMD:
+      this->dataPtr->vendor = "AMD";
+      break;
+    case Ogre::GPU_INTEL:
+      this->dataPtr->vendor = "Intel";
+      break;
+    case Ogre::GPU_APPLE:
+      this->dataPtr->vendor = "Apple";
+      break;
+    case Ogre::GPU_QUALCOMM:
+      this->dataPtr->vendor = "Qualcomm";
+      break;
+    case Ogre::GPU_ARM:
+      this->dataPtr->vendor = "ARM";
+      break;
+    default:
+      this->dataPtr->vendor = "Unknown";
+      break;
+  }
+
+  // Get device name
+  this->dataPtr->deviceName = caps->getDeviceName();
+
+  // Get driver version
+  this->dataPtr->graphicsApi = caps->getDriverVersion().toString();
+
+  // Get render system name for additional context
+  const Ogre::String &rsName = renderSys->getName();
+  if (!this->dataPtr->graphicsApi.empty())
+  {
+    // Prepend render system name to driver version
+    this->dataPtr->graphicsApi = rsName + " " + this->dataPtr->graphicsApi;
+  }
+  else
+  {
+    this->dataPtr->graphicsApi = rsName;
+  }
+
+  this->dataPtr->gpuInfoInitialized = true;
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2RenderEngine::Vendor() const
+{
+  this->ParseGpuInfo();
+  return this->dataPtr->vendor;
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2RenderEngine::DeviceName() const
+{
+  this->ParseGpuInfo();
+  return this->dataPtr->deviceName;
+}
+
+//////////////////////////////////////////////////
+std::string Ogre2RenderEngine::GraphicsApi() const
+{
+  this->ParseGpuInfo();
+  return this->dataPtr->graphicsApi;
 }
 
 // Register this plugin

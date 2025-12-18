@@ -198,6 +198,44 @@ namespace gz
 
       /// \brief Get the render pass system for this engine.
       public: virtual RenderPassSystemPtr RenderPassSystem() const = 0;
+
+      /// \brief Get the GPU vendor name from the underlying graphics API.
+      ///
+      /// This method queries the render engine for GPU hardware vendor
+      /// information. The format and availability of this information depends
+      /// on the graphics API (OpenGL, Vulkan, etc.) and driver implementation.
+      /// The information is cached after the first query for performance.
+      ///
+      /// \return GPU vendor name (e.g., "NVIDIA", "AMD", "Intel", "Apple"),
+      ///         or empty string if the engine is not initialized or
+      ///         information is unavailable.
+      /// \sa DeviceName(), GraphicsApi()
+      public: virtual std::string Vendor() const = 0;
+
+      /// \brief Get the GPU device name from the underlying graphics API.
+      ///
+      /// This method queries the render engine for the specific GPU device
+      /// model. The format depends on the graphics API and vendor driver.
+      /// The information is cached after the first query.
+      ///
+      /// \return GPU device name (e.g.,
+      ///         "NVIDIA GeForce RTX 4060 Ti/PCIe/SSE2"), or empty string if
+      ///         the engine is not initialized or information is unavailable.
+      /// \sa Vendor(), GraphicsApi()
+      public: virtual std::string DeviceName() const = 0;
+
+      /// \brief Get the graphics API and driver version information.
+      ///
+      /// This method queries the render engine for the rendering system name
+      /// and driver version. The format includes the render system name
+      /// followed by the version
+      /// (e.g., "OpenGL 3+ Rendering Subsystem 4.5.0.0").
+      /// The information is cached after the first query.
+      ///
+      /// \return Graphics API and driver version string, or empty string if
+      ///         the engine is not initialized or information is unavailable.
+      /// \sa Vendor(), DeviceName()
+      public: virtual std::string GraphicsApi() const = 0;
     };
     }
   }

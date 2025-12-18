@@ -116,6 +116,18 @@ namespace gz
       /// \return a pointer to the render engine
       public: static OgreRenderEngine *Instance();
 
+      // Documentation inherited
+      public: virtual std::string Vendor() const override;
+
+      // Documentation inherited
+      public: virtual std::string DeviceName() const override;
+
+      // Documentation inherited
+      public: virtual std::string GraphicsApi() const override;
+
+      /// \brief Parse GPU information from Ogre RenderSystem (internal)
+      private: void ParseGpuInfo() const;
+
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                   const std::string &_name) override;
 

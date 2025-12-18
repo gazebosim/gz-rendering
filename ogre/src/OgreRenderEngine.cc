@@ -65,6 +65,18 @@ class gz::rendering::OgreRenderEnginePrivate
 
   /// \brief A list of supported fsaa levels
   public: std::vector<unsigned int> fsaaLevels;
+
+  /// \brief Cached GPU vendor name
+  public: mutable std::string vendor;
+
+  /// \brief Cached GPU device name
+  public: mutable std::string deviceName;
+
+  /// \brief Cached graphics API and driver version
+  public: mutable std::string graphicsApi;
+
+  /// \brief Flag for one-time GPU info initialization
+  public: mutable bool gpuInfoInitialized{false};
 };
 
 using namespace gz;
@@ -873,6 +885,93 @@ Ogre::OverlaySystem *OgreRenderEngine::OverlaySystem() const
 OgreRenderEngine *OgreRenderEngine::Instance()
 {
   return gz::common::SingletonT<OgreRenderEngine>::Instance();
+}
+
+//////////////////////////////////////////////////
+void OgreRenderEngine::ParseGpuInfo() const
+{
+  if (this->dataPtr->gpuInfoInitialized)
+    return;
+
+  // Query GPU info directly from Ogre RenderSystem
+  if (!this->ogreRoot)
+    return;
+
+  Ogre::RenderSystem *renderSys = this->ogreRoot->getRenderSystem();
+  if (!renderSys)
+    return;
+
+  const Ogre::RenderSystemCapabilities *caps = renderSys->getCapabilities();
+  if (!caps)
+    return;
+
+  // Get GPU info from RenderSystemCapabilities
+  // Convert Ogre::GPUVendor enum to string
+  switch (caps->getVendor())
+  {
+    case Ogre::GPU_NVIDIA:
+      this->dataPtr->vendor = "NVIDIA";
+      break;
+    case Ogre::GPU_AMD:
+      this->dataPtr->vendor = "AMD";
+      break;
+    case Ogre::GPU_INTEL:
+      this->dataPtr->vendor = "Intel";
+      break;
+#if OGRE_VERSION >= ((1 << 16) | (11 << 8) | 0)
+    case Ogre::GPU_APPLE:
+      this->dataPtr->vendor = "Apple";
+      break;
+#endif
+    default:
+      this->dataPtr->vendor = "Unknown";
+      break;
+  }
+
+  // Get device name
+  this->dataPtr->deviceName = caps->getDeviceName();
+
+  // Get driver version
+  Ogre::DriverVersion driverVersion = caps->getDriverVersion();
+  this->dataPtr->graphicsApi = std::to_string(driverVersion.major) + "." +
+                                std::to_string(driverVersion.minor) + "." +
+                                std::to_string(driverVersion.release) + "." +
+                                std::to_string(driverVersion.build);
+
+  // Get render system name for additional context
+  const Ogre::String &rsName = renderSys->getName();
+  if (!this->dataPtr->graphicsApi.empty())
+  {
+    // Prepend render system name to driver version
+    this->dataPtr->graphicsApi = rsName + " " + this->dataPtr->graphicsApi;
+  }
+  else
+  {
+    this->dataPtr->graphicsApi = rsName;
+  }
+
+  this->dataPtr->gpuInfoInitialized = true;
+}
+
+//////////////////////////////////////////////////
+std::string OgreRenderEngine::Vendor() const
+{
+  this->ParseGpuInfo();
+  return this->dataPtr->vendor;
+}
+
+//////////////////////////////////////////////////
+std::string OgreRenderEngine::DeviceName() const
+{
+  this->ParseGpuInfo();
+  return this->dataPtr->deviceName;
+}
+
+//////////////////////////////////////////////////
+std::string OgreRenderEngine::GraphicsApi() const
+{
+  this->ParseGpuInfo();
+  return this->dataPtr->graphicsApi;
 }
 
 // Register this plugin

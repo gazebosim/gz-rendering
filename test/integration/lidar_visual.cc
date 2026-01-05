@@ -57,8 +57,6 @@ class LidarVisualTest: public CommonRenderingTest
 /// \brief Test LidarVisual configuraions
 TEST_F(LidarVisualTest, Configure)
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -135,7 +133,6 @@ TEST_F(LidarVisualTest, Configure)
 /// \brief Test detection of different boxes
 TEST_F(LidarVisualTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__
     GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
@@ -361,7 +358,6 @@ TEST_F(LidarVisualTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 /// \brief Test GPU rays vertical component
 TEST_F(LidarVisualTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__
     GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif

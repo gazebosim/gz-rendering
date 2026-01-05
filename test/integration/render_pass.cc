@@ -863,7 +863,6 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
 /////////////////////////////////////////////////
 TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
   CHECK_RENDERPASS_SUPPORTED();
 
   TestLensFlare(this->engine, false);
@@ -872,7 +871,6 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
 /////////////////////////////////////////////////
 TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlareWideAnglePass))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
   CHECK_RENDERPASS_SUPPORTED();
 
   TestLensFlare(this->engine, true);

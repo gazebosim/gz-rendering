@@ -124,9 +124,6 @@ TEST_F(SceneTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(AddRemoveVisuals))
 /////////////////////////////////////////////////
 TEST_F(SceneTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(VisualAt))
 {
-  // Optix doesn't support RayQuery
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
 #ifdef __APPLE__
   GTEST_SKIP() << "Test is flaky on macOS, see issue #170.";
 #endif

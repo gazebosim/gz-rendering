@@ -33,7 +33,6 @@
 
 #include <gz/utils/ExtraTestMacros.hh>
 
-#define DOUBLE_TOL 1e-6
 static unsigned int g_pointCloudCounter = 0;
 
 /////////////////////////////////////////////////
@@ -42,9 +41,12 @@ static void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
                                unsigned int _channels,
                                const std::string & /*_format*/)
 {
-  float f;
-  int size = _width * _height * _channels;
-  memcpy(_scanDest, _scan, size * sizeof(f));
+  EXPECT_EQ(100u, _width);
+  EXPECT_EQ(100u, _height);
+  EXPECT_EQ(4u, _channels);
+
+  const auto size = _width * _height * _channels;
+  memcpy(_scanDest, _scan, size * sizeof(float));
   g_pointCloudCounter++;
 }
 
@@ -53,9 +55,12 @@ static void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
                               unsigned int _channels,
                               const std::string & /*_format*/)
 {
-  float f;
-  int size = _width * _height * _channels;
-  memcpy(_scanDest, _scan, size * sizeof(f));
+  EXPECT_EQ(20u, _width);
+  EXPECT_EQ(1u, _height);
+  EXPECT_EQ(3u, _channels);
+
+  const auto size = _width * _height * _channels;
+  memcpy(_scanDest, _scan, size * sizeof(float));
 }
 
 using namespace gz;

@@ -160,7 +160,7 @@ namespace gz
       this->CreateRotationVisual();
       this->CreateScaleVisual();
 
-      for (auto v : this->visuals)
+      for (auto &v : this->visuals)
         v.second->SetVisible(false);
     }
 
@@ -208,7 +208,7 @@ namespace gz
       this->handles[TransformAxis::TA_SCALE_Z]->SetMaterial(
           this->materials[AM_HANDLE], false);
 
-      for (auto v : this->visuals)
+      for (auto &v : this->visuals)
         v.second->SetVisible(false);
     }
 
@@ -356,7 +356,7 @@ namespace gz
     template <class T>
     TransformAxis BaseGizmoVisual<T>::AxisById(unsigned int _id) const
     {
-      for (auto v : this->visuals)
+      for (auto &v : this->visuals)
       {
         // each axis visual has a child handle so also check children for
         // matching id

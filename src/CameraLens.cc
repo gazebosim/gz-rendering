@@ -77,7 +77,7 @@ class gz::rendering::CameraLens::Implementation
                       return t;
                       })));
 
-              for (auto item : variants)
+              for (const auto &item : variants)
               {
                 if (std::get<0>(item) == _fun)
                 {

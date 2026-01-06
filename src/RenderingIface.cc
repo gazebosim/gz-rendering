@@ -143,28 +143,28 @@ ScenePtr sceneFromFirstRenderEngine()
       << "Using engine [" << engineName << "]" << std::endl;
   }
 
-  auto engine = gz::rendering::engine(engineName);
-  if (!engine)
+  auto engineptr = gz::rendering::engine(engineName);
+  if (!engineptr)
   {
-    gzerr << "Internal error: failed to load engine [" << engineName
+    gzerr << "Internal error: failed to load engineptr [" << engineName
       << "]." << std::endl;
     return nullptr;
   }
 
-  if (engine->SceneCount() == 0)
+  if (engineptr->SceneCount() == 0)
   {
     gzdbg << "No scene has been created yet" << std::endl;
     return nullptr;
   }
 
-  auto scene = engine->SceneByIndex(0);
+  auto scene = engineptr->SceneByIndex(0);
   if (nullptr == scene)
   {
     gzerr << "Internal error: scene is null." << std::endl;
     return nullptr;
   }
 
-  if (engine->SceneCount() > 1)
+  if (engineptr->SceneCount() > 1)
   {
     gzwarn << "More than one scene is available. "
       << "Using scene [" << scene->Name() << "]" << std::endl;

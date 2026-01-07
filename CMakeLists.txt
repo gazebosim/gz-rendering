@@ -9,7 +9,7 @@ project(gz-rendering VERSION 10.0.0)
 # Find gz-cmake
 #============================================================================
 # If you get an error at this line, you need to install gz-cmake
-find_package(gz-cmake REQUIRED)
+find_package(gz-cmake 5 REQUIRED)
 
 #============================================================================
 # Set up the project
@@ -31,20 +31,20 @@ option(USE_OGRE2_OVERLAY "Enable OGRE2 Overlay support" ON)
 
 #--------------------------------------
 # Find gz-math
-gz_find_package(gz-math REQUIRED COMPONENTS eigen3)
+gz_find_package(gz-math VERSION 9 REQUIRED COMPONENTS eigen3)
 
 #--------------------------------------
 # Find gz-common
-gz_find_package(gz-common REQUIRED
+gz_find_package(gz-common VERSION 7 REQUIRED
   COMPONENTS graphics events geospatial)
 
 #--------------------------------------
 # Find gz-plugin
-gz_find_package(gz-plugin REQUIRED COMPONENTS all)
+gz_find_package(gz-plugin VERSION 4 REQUIRED COMPONENTS all)
 
 #--------------------------------------
 # Find gz-utils
-gz_find_package(gz-utils REQUIRED)
+gz_find_package(gz-utils VERSION 4 REQUIRED)
 
 #--------------------------------------
 # Find OpenGL

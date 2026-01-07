@@ -363,7 +363,7 @@ int main(int _argc, char **_argv)
   std::vector<CameraPtr> cameras;
 
   std::map<std::string, std::string> params;
-  if (engineName.compare("ogre2") == 0
+  if (engineName == "ogre2"
       && graphicsApi == GraphicsAPI::VULKAN)
   {
     params["vulkan"] = "1";

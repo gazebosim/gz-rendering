@@ -171,9 +171,9 @@ void Ogre2Projector::UpdateCameraListener()
     this->dataPtr->decalNode->getCreator()->setDecalsEmissive(
         this->dataPtr->decal->getEmissiveTexture());
 
-    for (auto &ogreCamIt : this->dataPtr->camerasWithListener)
+    for (const auto &ogreCamIt : this->dataPtr->camerasWithListener)
     {
-      Ogre::IdString camName = ogreCamIt.second;
+      const Ogre::IdString &camName = ogreCamIt.second;
       // instead of getting the camera pointer through ogreCamIt.first,
       // find camera pointer again to make sure the camera still exists
       // because there is a chance that we are holding onto a dangling pointer

@@ -103,7 +103,7 @@ TEST_F(HeightmapTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   EXPECT_EQ(4u, heightmap->Descriptor().Sampling());
 
   EXPECT_EQ(3u, heightmap->Descriptor().TextureCount());
-  for (auto i = 0u; i < heightmap->Descriptor().TextureCount(); ++i)
+  for (uint64_t i = 0u; i < heightmap->Descriptor().TextureCount(); ++i)
   {
     auto texture = heightmap->Descriptor().TextureByIndex(i);
     ASSERT_NE(nullptr, texture);

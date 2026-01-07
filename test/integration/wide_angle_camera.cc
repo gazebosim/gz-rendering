@@ -72,47 +72,6 @@ void OnNewWideAngleFrame(const unsigned char *_data,
 }
 
 //////////////////////////////////////////////////
-<<<<<<< HEAD
-=======
-/// \brief callback to get the wide angle camera image data
-void OnNewWideAngleFrameMono(const unsigned char *_data,
-                    unsigned int _width, unsigned int _height,
-                    unsigned int _channels,
-                    const std::string &_format)
-{
-  EXPECT_EQ(20u, _width);
-  EXPECT_EQ(20u, _height);
-  EXPECT_EQ(1u, _channels);
-
-  std::lock_guard<std::mutex> lock(g_mutex);
-
-  unsigned int bytesPerChannel = 0u;
-  unsigned int bufferSize = 0u;
-  if (_format == "L8")
-  {
-    bytesPerChannel = 1u;
-    bufferSize = _width * _height * _channels * bytesPerChannel;
-    if (!g_bufferL8)
-      g_bufferL8 = new unsigned char[bufferSize];
-    memcpy(g_bufferL8, _data, bufferSize);
-  }
-  else if (_format == "L16")
-  {
-    bytesPerChannel = 2u;
-    bufferSize = _width * _height * _channels * bytesPerChannel;
-    if (!g_bufferL16)
-      g_bufferL16 = new unsigned char[bufferSize];
-    memcpy(g_bufferL16, _data, bufferSize);
-  }
-
-  ASSERT_NE(0u, bytesPerChannel);
-  ASSERT_NE(0u, bufferSize);
-
-  g_counter++;
-}
-
-//////////////////////////////////////////////////
->>>>>>> 7ac8abc9 (Code cleanup (#1217))
 TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
 {
   CHECK_UNSUPPORTED_ENGINE("optix");

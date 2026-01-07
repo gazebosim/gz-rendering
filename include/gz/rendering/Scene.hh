@@ -1045,7 +1045,7 @@ namespace gz
       /// \return The created sphere
       public: virtual GeometryPtr CreateSphere() = 0;
 
-      /// \brief Create new mesh geomerty. The rendering::Mesh will be created
+      /// \brief Create new mesh geometry. The rendering::Mesh will be created
       /// from a common::Mesh retrieved from common::MeshManager using the given
       /// mesh name. If no mesh exists by this name, NULL will be returned. All
       /// sub-meshes will be loaded into the created mesh, uncentered.
@@ -1053,7 +1053,7 @@ namespace gz
       /// \return The created mesh
       public: virtual MeshPtr CreateMesh(const std::string &_meshName) = 0;
 
-      /// \brief Create new mesh geomerty. The rendering::Mesh will be created
+      /// \brief Create new mesh geometry. The rendering::Mesh will be created
       /// from the given common::Mesh. All sub-meshes will be loaded into this
       /// created mesh, uncentered.
       /// \param[in] _mesh Reference mesh
@@ -1107,7 +1107,40 @@ namespace gz
       public: virtual LidarVisualPtr CreateLidarVisual(
                   unsigned int _id, const std::string &_name) = 0;
 
+<<<<<<< HEAD
       /// \brief Create new heightmap geomerty. The rendering::Heightmap will be
+=======
+      /// \brief Create new frusum visual. A unique ID and name will
+      /// automatically be assigned to the frustum visual.
+      /// \return The created frustum visual
+      public: virtual FrustumVisualPtr CreateFrustumVisual() = 0;
+
+      /// \brief Create new frustum visual with the given ID. A unique name
+      /// will automatically be assigned to the frustum visual. If the given
+      /// ID is already in use, NULL will be returned.
+      /// \param[in] _id ID of the new frustum visual
+      /// \return The created frustum visual
+      public: virtual FrustumVisualPtr CreateFrustumVisual(
+                  unsigned int _id) = 0;
+
+      /// \brief Create new frustum visual with the given name. A unique ID
+      /// will automatically be assigned to the frustum visual. If the given
+      /// name is already in use, NULL will be returned.
+      /// \param[in] _name Name of the new frustum visual
+      /// \return The created frustum visual
+      public: virtual FrustumVisualPtr CreateFrustumVisual(
+                  const std::string &_name) = 0;
+
+      /// \brief Create new frustum visual with the given name. If either
+      /// the given ID or name is already in use, NULL will be returned.
+      /// \param[in] _id ID of the frustum visual.
+      /// \param[in] _name Name of the new frustum visual.
+      /// \return The created frustum visual
+      public: virtual FrustumVisualPtr CreateFrustumVisual(
+                  unsigned int _id, const std::string &_name) = 0;
+
+      /// \brief Create new heightmap geometry. The rendering::Heightmap will be
+>>>>>>> 7ac8abc9 (Code cleanup (#1217))
       /// created from the given HeightmapDescriptor.
       /// \param[in] _desc Data about the heightmap
       /// \return The created heightmap
@@ -1403,11 +1436,11 @@ namespace gz
       /// behavior.
       public: virtual void Destroy() = 0;
 
-      /// \brief Get scene extention APIs
+      /// \brief Get scene extension APIs
       /// This provides new Scene APIs that are experimental
       public: SceneExt *Extension() const;
 
-      /// \brief Set the scene extention API
+      /// \brief Set the scene extension API
       /// This is called by underlying render engines
       protected: void SetExtension(SceneExt *_ext);
     };

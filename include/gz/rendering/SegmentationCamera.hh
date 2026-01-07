@@ -109,7 +109,7 @@ namespace gz
       /// \brief Convert the colored map stored in the internal buffer to label
       /// IDs map, so users get both the colored map and the corresponding IDs
       /// map. This function must be called before the next render loop and
-      /// the colored map mode must be enabeled
+      /// the colored map mode must be enabled
       /// \param[out] _labelBuffer A buffer that is populated with  the label
       /// IDs map data. This output buffer must be allocated with the same size
       /// before calling

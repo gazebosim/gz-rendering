@@ -617,10 +617,9 @@ void OgreSubMeshStoreFactory::PopulateGivenNames()
   const Ogre::MeshPtr ogreMesh = this->ogreEntity->getMesh();
   const Ogre::Mesh::SubMeshNameMap &ogreMap = ogreMesh->getSubMeshNameMap();
 
-  for (auto pair : ogreMap)
+  for (const auto &pair : ogreMap)
   {
-    std::string name = pair.first;
     unsigned int index = pair.second;
-    this->names[index] = name;
+    this->names[index] = pair.first;
   }
 }

@@ -251,7 +251,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
   }
 
   // Sort the ogre objects by name
-  // The algorithm of handeling multi-link models depends on a sorted objects
+  // The algorithm of handling multi-link models depends on a sorted objects
   // by name, so all links that belongs to the same object come in order
   std::sort(ogreObjects.begin(), ogreObjects.end(),
     [] (Ogre::MovableObject * object1, Ogre::MovableObject * object2) {
@@ -270,7 +270,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
   const Ogre::HlmsBlendblock *noBlend =
     hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
 
-  for (auto object : ogreObjects)
+  for (auto *object : ogreObjects)
   {
     Ogre::Item *item = static_cast<Ogre::Item *>(object);
 
@@ -429,7 +429,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
   }
 
   // Restore Items with low level materials
-  for (auto subItemMat : this->materialMap)
+  for (auto &subItemMat : this->materialMap)
   {
     subItemMat.first->setMaterial(subItemMat.second);
   }

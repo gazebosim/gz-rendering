@@ -33,8 +33,7 @@
 
 #include <gz/utils/ExtraTestMacros.hh>
 
-#define DEPTH_TOL 1e-4
-#define DOUBLE_TOL 1e-6
+constexpr double DOUBLE_TOL = 1e-6;
 
 unsigned int g_thermalCounter = 0;
 
@@ -49,9 +48,8 @@ void OnNewThermalFrame(uint16_t *_scanDest, const uint16_t *_scan,
   EXPECT_EQ(50u, _height);
   EXPECT_EQ(1u, _channels);
 
-  uint16_t u;
-  int size =  _width * _height * _channels;
-  memcpy(_scanDest, _scan, size * sizeof(u));
+  const auto size =  _width * _height * _channels;
+  memcpy(_scanDest, _scan, size * sizeof(uint16_t));
 }
 
 //////////////////////////////////////////////////

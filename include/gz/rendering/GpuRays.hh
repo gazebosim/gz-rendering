@@ -70,7 +70,7 @@ namespace gz
       ///             Index 0: depth value
       ///             Index 1: retro value
       ///             Index 2: 0. Not used
-      ///   _width:   Width of image, i.e. number of data in the horizonal scan
+      ///   _width:   Width of image, i.e. number of data in the horizontal scan
       ///   _height:  Height o image, i.e. number of scans in vertical direction
       ///   _channels: Number of channels, i.e. 3 floats per gpu rays reading
       ///   _format:  Pixel format of the image frame.

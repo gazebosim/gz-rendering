@@ -659,13 +659,14 @@ uint8_t Ogre2RenderTarget::TargetFSAA(uint8_t _fsaa)
     {
       std::ostringstream os;
       os << "[ ";
-      for (auto &&level : fsaaLevels)
+      for (auto &level : fsaaLevels)
       {
         os << level << " ";
       }
       os << "]";
 
-      gzwarn << "Anti-aliasing level of '" << _fsaa << "' "
+      // we need cast to avoid overload confusion with unsigned char type
+      gzwarn << "Anti-aliasing level of '" << static_cast<int>(_fsaa) << "' "
               << "is not supported; valid FSAA levels are: " << os.str()
               << ". Setting to 1" << std::endl;
       ogre2FSAAWarn = true;

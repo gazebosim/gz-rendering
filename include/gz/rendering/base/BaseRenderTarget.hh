@@ -316,7 +316,7 @@ namespace gz
     RenderPassPtr BaseRenderTarget<T>::RenderPassByIndex(unsigned int _index)
         const
     {
-      if (_index > this->renderPasses.size())
+      if (_index >= this->renderPasses.size())
       {
         gzerr << "RenderPass index out of range: " << _index << std::endl;
         return RenderPassPtr();

@@ -504,7 +504,7 @@ void OgreRenderEngine::CreateRenderSystem()
   // (it thinks the while loop is empty), so we must put the whole while
   // statement on one line and add NOLINT at the end so that cpplint doesn't
   // complain about the line being too long
-  while (renderSys && renderSys->getName().compare("OpenGL Rendering Subsystem") != 0); // NOLINT
+  while (renderSys && renderSys->getName() != "OpenGL Rendering Subsystem"); // NOLINT
 
   if (renderSys == nullptr)
   {
@@ -644,7 +644,6 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
     const unsigned int _width, const unsigned int _height,
     const double _ratio, const unsigned int _antiAliasing)
 {
-  Ogre::StringVector paramsVector;
   Ogre::NameValuePairList params;
   Ogre::RenderWindow *window = nullptr;
 

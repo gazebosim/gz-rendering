@@ -188,7 +188,7 @@ namespace gz
       /// \brief Quantity of horizontal rays
       protected: int hSamples = 0;
 
-      /// \brief Quantity of verical rays
+      /// \brief Quantity of vertical rays
       protected: int vSamples = 0;
 
       /// \brief Resolution of horizontal rays

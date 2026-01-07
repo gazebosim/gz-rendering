@@ -28,11 +28,10 @@
 
 #include <gz/utils/ExtraTestMacros.hh>
 
-#define LASER_TOL 2e-4
-#define DOUBLE_TOL 1e-6
+constexpr double LASER_TOL = 2e-4;
 
 // vertical range values seem to be less accurate
-#define VERTICAL_LASER_TOL 1e-3
+constexpr double VERTICAL_LASER_TOL = 1e-3;
 
 using namespace gz;
 using namespace rendering;
@@ -43,9 +42,8 @@ void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
                   unsigned int _channels,
                   const std::string &/*_format*/)
 {
-  float f;
-  int size =  _width * _height * _channels;
-  memcpy(_scanDest, _scan, size * sizeof(f));
+  const auto size = _width * _height * _channels;
+  memcpy(_scanDest, _scan, size * sizeof(float));
 }
 
 /////////////////////////////////////////////////

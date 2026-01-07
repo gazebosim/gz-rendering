@@ -64,7 +64,7 @@ namespace gz
       public: virtual const math::Vector3d &Target() const;
 
       /// \brief Set zoom amount
-      /// \param[in] _value Camera zoon value, e.g. mouse scroll delta
+      /// \param[in] _value Camera zoom value, e.g. mouse scroll delta
       public: virtual void Zoom(const double _value);
 
       /// \brief Set camera pan (translational movement) around target point.

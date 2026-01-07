@@ -49,7 +49,7 @@ namespace gz
       public: virtual const CameraLens &Lens() const = 0;
 
       /// \brief Project 3D world coordinates to screen coordinates
-      /// \param[in] _pt 3D world coodinates
+      /// \param[in] _pt 3D world coordinates
       /// \return Screen coordinates. Z is the distance of point from camera
       /// optical center.
       public: virtual math::Vector3d Project3d(const math::Vector3d &_pt) const

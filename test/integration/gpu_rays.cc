@@ -29,13 +29,10 @@
 #include "gz/rendering/Heightmap.hh"
 #include "gz/rendering/Scene.hh"
 
-#define LASER_TOL 2e-4
-#define DOUBLE_TOL 1e-6
+constexpr double LASER_TOL = 2e-4;
 
 // vertical range values seem to be less accurate
-#define VERTICAL_LASER_TOL 1e-3
-
-#define WAIT_TIME 0.02
+constexpr double VERTICAL_LASER_TOL = 1e-3;
 
 using namespace gz;
 using namespace rendering;
@@ -46,9 +43,8 @@ void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
                   unsigned int _channels,
                   const std::string &/*_format*/)
 {
-  float f;
-  int size =  _width * _height * _channels;
-  memcpy(_scanDest, _scan, size * sizeof(f));
+  const auto size = _width * _height * _channels;
+  memcpy(_scanDest, _scan, size * sizeof(float));
 }
 
 /////////////////////////////////////////////////
@@ -955,7 +951,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
       "textures", "flat_normal.png");
 
   auto data = std::make_shared<common::ImageHeightmap>();
-  data->Load(heightImage);
+  EXPECT_EQ(0, data->Load(heightImage));
 
   EXPECT_EQ(heightImage, data->Filename());
 

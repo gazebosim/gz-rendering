@@ -129,7 +129,7 @@ namespace gz
       public: virtual TextHorizontalAlign HorizontalAlignment() const = 0;
 
       /// \brief Get the vertical alignment of the text
-      /// \return Text verical alignment
+      /// \return Text vertical alignment
       public: virtual TextVerticalAlign VerticalAlignment() const = 0;
 
       /// \brief Set the baseline height of the text
@@ -142,7 +142,7 @@ namespace gz
       /// \sa SetBaseline()
       public: virtual float Baseline() const = 0;
 
-      /// \brief True = text always is displayed ontop.
+      /// \brief True = text always is displayed on top.
       /// \param[in] _onTop Set to true to render the text on top of
       /// all other drawables.
       /// \sa ShowOnTop()

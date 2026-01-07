@@ -558,11 +558,12 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
   if (ogreMesh->getNumSubMeshes() == 0u)
   {
-    std::string msg = "Unable to load mesh: '" + _desc.meshName + "'";
+    std::stringstream ss;
+    ss << "Unable to load mesh: '" << _desc.meshName << "'";
     if (!_desc.subMeshName.empty())
-      msg += ", submesh: '" + _desc.subMeshName + "'";
-    msg += ". Mesh will be empty.";
-    gzwarn << msg << std::endl;
+      ss << ", submesh: '" << _desc.subMeshName << "'";
+    ss << ". Mesh will be empty." << std::endl;
+    gzwarn << ss.str();
   }
 
   return true;
@@ -686,10 +687,9 @@ void Ogre2SubMeshStoreFactory::PopulateGivenNames()
 {
   const Ogre::MeshPtr ogreMesh = this->ogreItem->getMesh();
 
-  for (auto pair : ogreMesh->getSubMeshNameMap())
+  for (const auto &pair : ogreMesh->getSubMeshNameMap())
   {
-    std::string name = pair.first;
     unsigned int index = pair.second;
-    this->names[index] = name;
+    this->names[index] = pair.first;
   }
 }

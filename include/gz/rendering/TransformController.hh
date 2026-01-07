@@ -193,7 +193,7 @@ namespace gz
       /// \return 3d axis vector
       public: static math::Vector3d ToAxis(TransformAxis _axis);
 
-      /// \brief Helper function to create a plane for transfomation.
+      /// \brief Helper function to create a plane for transformation.
       /// The plane is chosen based on the current transform mode and the
       /// transform axis specified.
       /// \param[in] _axis Transformation axis used to identify the plane for

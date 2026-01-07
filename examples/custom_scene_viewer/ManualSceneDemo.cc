@@ -153,7 +153,7 @@ CameraPtr ManualSceneDemo::CurrentCamera()
 //////////////////////////////////////////////////
 void ManualSceneDemo::Run()
 {
-  for (auto builder : this->builders)
+  for (auto &builder : this->builders)
   {
     builder->SetScenes(this->scenes);
     builder->SetCameras(this->cameras);
@@ -199,7 +199,7 @@ int main(int _argc, char** _argv)
   }
 
   std::map<std::string, std::string> params;
-  if (ogreEngineName.compare("ogre2") == 0
+  if (ogreEngineName == "ogre2"
       && graphicsApi == GraphicsAPI::METAL)
   {
     params["metal"] = "1";

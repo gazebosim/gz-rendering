@@ -209,13 +209,13 @@ int main(int _argc, char** _argv)
   std::vector<VisualPtr> visuals;
   ic::SkeletonPtr skel = nullptr;
 
-  for (auto engineName : engineNames)
+  for (const auto &engineName : engineNames)
   {
     std::cout << "Starting engine [" << engineName << "]" << std::endl;
     try
     {
       std::map<std::string, std::string> params;
-      if (engineName.compare("ogre2") == 0
+      if (engineName == "ogre2"
           && graphicsApi == GraphicsAPI::METAL)
       {
         params["metal"] = "1";

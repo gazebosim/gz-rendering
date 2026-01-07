@@ -43,7 +43,7 @@ const char *PixelUtil::names[PF_COUNT] =
 //////////////////////////////////////////////////
 const unsigned char PixelUtil::channelCounts[PF_COUNT] =
     {
-      // UKNOWN
+      // UNKNOWN
       0,
       // L8
       1,

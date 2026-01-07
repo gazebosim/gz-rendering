@@ -996,7 +996,7 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
       this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
   auto channelsTex = node->getLocalTextures();
 
-  for (auto c : channelsTex)
+  for (const auto &c : channelsTex)
   {
     if (c->getPixelFormat() == Ogre::PFG_R8_UNORM)
     {
@@ -1133,7 +1133,7 @@ void Ogre2DepthCamera::PreRender()
         this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
     auto channelsTex = node->getLocalTextures();
 
-    for (auto c : channelsTex)
+    for (const auto &c : channelsTex)
     {
       if (c->getPixelFormat() == Ogre::PFG_RGB8_UNORM)
       {

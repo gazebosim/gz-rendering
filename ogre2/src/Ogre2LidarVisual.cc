@@ -110,31 +110,31 @@ void Ogre2LidarVisual::PreRender()
 void Ogre2LidarVisual::Destroy()
 {
   BaseLidarVisual::Destroy();
-  for (auto ray : this->dataPtr->noHitRayStrips)
+  for (auto &ray : this->dataPtr->noHitRayStrips)
   {
     ray->Clear();
     ray.reset();
   }
 
-  for (auto ray : this->dataPtr->rayStrips)
+  for (auto &ray : this->dataPtr->rayStrips)
   {
     ray->Clear();
     ray.reset();
   }
 
-  for (auto ray : this->dataPtr->rayLines)
+  for (auto &ray : this->dataPtr->rayLines)
   {
     ray->Clear();
     ray.reset();
   }
 
-  for (auto ray : this->dataPtr->deadZoneRayFans)
+  for (auto &ray : this->dataPtr->deadZoneRayFans)
   {
     ray->Clear();
     ray.reset();
   }
 
-  for (auto ray : this->dataPtr->points)
+  for (auto &ray : this->dataPtr->points)
   {
     ray->Clear();
     ray.reset();

@@ -979,7 +979,7 @@ namespace gz
 
       private: virtual void CreateMaterials();
 
-      /// \brief Helper function to recursively destory nodes while checking
+      /// \brief Helper function to recursively destroy nodes while checking
       /// for loops.
       /// \param[in] _node Node to be destroyed
       /// \param[in] _nodeId Holds all node ids that have been visited in the

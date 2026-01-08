@@ -53,7 +53,11 @@ void OnNewWideAngleFrame(const unsigned char *_data,
                     unsigned int _channels,
                     const std::string &_format)
 {
-  g_mutex.lock();
+  EXPECT_EQ(320u, _width);
+  EXPECT_EQ(240u, _height);
+  EXPECT_EQ(3u, _channels);
+
+  std::lock_guard<std::mutex> lock(g_mutex);
   auto bufferSize = _width * _height * _channels;
 
   if (!g_buffer)
@@ -65,7 +69,6 @@ void OnNewWideAngleFrame(const unsigned char *_data,
   EXPECT_EQ("R8G8B8", _format);
 
   g_counter++;
-  g_mutex.unlock();
 }
 
 //////////////////////////////////////////////////

@@ -77,7 +77,7 @@ namespace gz
       // Documentation inherited.
       public: virtual void SetHeatSourceTemperatureRange(float _range) override;
 
-      // Documentation inherted.
+      // Documentation inherited.
       public: virtual gz::common::ConnectionPtr ConnectNewThermalFrame(
           std::function<void(const uint16_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;

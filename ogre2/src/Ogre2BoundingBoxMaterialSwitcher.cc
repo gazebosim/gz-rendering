@@ -170,7 +170,7 @@ void Ogre2BoundingBoxMaterialSwitcher::cameraPostRenderScene(
     Ogre::Camera * /*_cam*/)
 {
   // restore the original material
-  for (auto it : this->datablockMap)
+  for (auto &it : this->datablockMap)
   {
     Ogre::SubItem *subItem = it.first;
     subItem->setDatablock(it.second);

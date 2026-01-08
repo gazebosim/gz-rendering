@@ -698,7 +698,7 @@ void Ogre2BoundingBoxCameraPrivate::MeshVertices(
 {
   auto viewMatrix = this->ogreCamera->getViewMatrix();
 
-  for (auto ogreId : _ogreIds)
+  for (const auto &ogreId : _ogreIds)
   {
     Ogre::Item *item = this->ogreIdToItem[ogreId];
     Ogre::MeshPtr mesh = item->getMesh();
@@ -1138,7 +1138,7 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
   }
 
   // Set boxes label
-  for (auto box : this->dataPtr->boundingboxes)
+  for (auto &box : this->dataPtr->boundingboxes)
   {
     uint32_t ogreId = box.first;
     uint32_t label = this->dataPtr->visibleBoxesLabel[ogreId];

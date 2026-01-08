@@ -55,7 +55,7 @@ void SceneBuilder::SetCameras(const CameraList &_cameras)
 //////////////////////////////////////////////////
 void SceneBuilder::BuildScenes()
 {
-  for (auto scene : this->scenes)
+  for (auto &scene : this->scenes)
   {
     this->ClearScene(scene);
     this->BuildScene(scene);
@@ -65,7 +65,7 @@ void SceneBuilder::BuildScenes()
 //////////////////////////////////////////////////
 void SceneBuilder::ResetCameras()
 {
-  for (auto camera : this->cameras)
+  for (auto &camera : this->cameras)
   {
     this->ResetCamera(camera);
   }
@@ -74,7 +74,7 @@ void SceneBuilder::ResetCameras()
 //////////////////////////////////////////////////
 void SceneBuilder::UpdateScenes()
 {
-  for (auto scene : this->scenes)
+  for (auto &scene : this->scenes)
   {
     this->UpdateScene(scene);
   }
@@ -110,7 +110,7 @@ void SceneBuilder::UpdateScene(ScenePtr)
 //////////////////////////////////////////////////
 void SceneBuilder::RegisterMaterials()
 {
-  for (auto scene : this->scenes)
+  for (auto &scene : this->scenes)
   {
     this->RegisterMaterials(scene);
   }
@@ -138,7 +138,6 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
     mat->SetShininess(50);
     mat->SetReflectivity(0);
   }
-
 
   if (!_scene->MaterialRegistered("Green"))
   {
@@ -170,14 +169,15 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
     mat->SetReflectivity(0);
   }
 
-  std::vector<std::string> baseNames;
-  baseNames.push_back("Blue");
-  baseNames.push_back("Green");
-  baseNames.push_back("Red");
-  baseNames.push_back("White");
-  baseNames.push_back("Yellow");
+  std::vector<std::string> baseNames = {
+    "Blue",
+    "Green",
+    "Red",
+    "White",
+    "Yellow"
+  };
 
-  for (auto baseName : baseNames)
+  for (const auto &baseName : baseNames)
   {
     std::string parentName = baseName;
     std::string childName = "Texture" + baseName;
@@ -189,7 +189,7 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
     }
   }
 
-  for (auto baseName : baseNames)
+  for (const auto &baseName : baseNames)
   {
     std::string parentName = "Texture" + baseName;
     std::string childName = "Normal" + baseName;
@@ -202,7 +202,7 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
     }
   }
 
-  for (auto baseName : baseNames)
+  for (const auto &baseName : baseNames)
   {
     std::string parentName = "Texture" + baseName;
     std::string childName = "Reflect" + baseName;
@@ -214,7 +214,7 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
     }
   }
 
-  for (auto baseName : baseNames)
+  for (const auto &baseName : baseNames)
   {
     std::string parentName = "Normal" + baseName;
     std::string childName = "NormalReflect" + baseName;
@@ -226,7 +226,7 @@ void SceneBuilder::RegisterMaterials(ScenePtr _scene)
     }
   }
 
-  for (auto baseName : baseNames)
+  for (const auto &baseName : baseNames)
   {
     std::string parentName = baseName;
     std::string childName = "Trans" + baseName;

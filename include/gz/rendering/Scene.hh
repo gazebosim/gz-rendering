@@ -1045,7 +1045,7 @@ namespace gz
       /// \return The created sphere
       public: virtual GeometryPtr CreateSphere() = 0;
 
-      /// \brief Create new mesh geomerty. The rendering::Mesh will be created
+      /// \brief Create new mesh geometry. The rendering::Mesh will be created
       /// from a common::Mesh retrieved from common::MeshManager using the given
       /// mesh name. If no mesh exists by this name, NULL will be returned. All
       /// sub-meshes will be loaded into the created mesh, uncentered.
@@ -1053,7 +1053,7 @@ namespace gz
       /// \return The created mesh
       public: virtual MeshPtr CreateMesh(const std::string &_meshName) = 0;
 
-      /// \brief Create new mesh geomerty. The rendering::Mesh will be created
+      /// \brief Create new mesh geometry. The rendering::Mesh will be created
       /// from the given common::Mesh. All sub-meshes will be loaded into this
       /// created mesh, uncentered.
       /// \param[in] _mesh Reference mesh
@@ -1403,11 +1403,11 @@ namespace gz
       /// behavior.
       public: virtual void Destroy() = 0;
 
-      /// \brief Get scene extention APIs
+      /// \brief Get scene extension APIs
       /// This provides new Scene APIs that are experimental
       public: SceneExt *Extension() const;
 
-      /// \brief Set the scene extention API
+      /// \brief Set the scene extension API
       /// This is called by underlying render engines
       protected: void SetExtension(SceneExt *_ext);
     };

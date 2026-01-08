@@ -100,7 +100,7 @@ void Ogre2Heightmap::Init()
     this->descriptor.SetName(this->Name());
 
   // Add paths
-  for (auto i = 0u; i < this->descriptor.TextureCount(); ++i)
+  for (uint64_t i = 0u; i < this->descriptor.TextureCount(); ++i)
   {
     auto texture = this->descriptor.TextureByIndex(i);
     Ogre2RenderEngine::Instance()->AddResourcePath(texture->Diffuse());

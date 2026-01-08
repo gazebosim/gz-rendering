@@ -168,7 +168,7 @@ void Ogre2ParticleEmitter::SetEmitterSize(const gz::math::Vector3d &_size)
         };
 
       // Set all parameters.
-      for (auto[param, value] : allParamsToSet)
+      for (const auto &[param, value] : allParamsToSet)
       {
         // We skip EM_POINT.
         if (!this->dataPtr->emitter->setParameter(param,  value))
@@ -320,7 +320,7 @@ void Ogre2ParticleEmitter::SetColorRange(
     };
 
   // Set all parameters.
-  for (auto[param, value] : allParamsToSet)
+  for (const auto &[param, value] : allParamsToSet)
   {
     if (!this->dataPtr->colorInterpolatorAffector->setParameter(param,  value))
     {
@@ -357,7 +357,7 @@ void Ogre2ParticleEmitter::SetScaleRate(double _scaleRate)
     };
 
   // Set all parameters.
-  for (auto[param, value] : allParamsToSet)
+  for (const auto &[param, value] : allParamsToSet)
   {
     if (!this->dataPtr->scalerAffector->setParameter(param,  value))
     {
@@ -411,7 +411,7 @@ void Ogre2ParticleEmitter::SetColorRangeImage(const std::string &_image)
     };
 
   // Set all parameters.
-  for (auto[param, value] : allParamsToSet)
+  for (const auto &[param, value] : allParamsToSet)
   {
     if (!this->dataPtr->colorImageAffector->setParameter(param,  value))
     {
@@ -482,8 +482,8 @@ void Ogre2ParticleEmitter::CreateParticleSystem()
 
   this->dataPtr->ps->setVisibilityFlags(kParticleVisibilityFlags);
 
-  GZ_ASSERT(kOgreEmitterTypes.size() == EmitterType::EM_NUM_EMITTERS,
-             "The nummer of supported emitters does not match the number of "
+  static_assert(kOgreEmitterTypes.size() == EmitterType::EM_NUM_EMITTERS,
+             "The number of supported emitters does not match the number of "
              "Ogre emitter types.");
 
   // Instantiate particle emitter and their default parameters.

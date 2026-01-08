@@ -171,7 +171,7 @@ int main(int _argc, char** _argv)
   try
   {
     std::map<std::string, std::string> params;
-    if (engineName.compare("ogre2") == 0
+    if (engineName == "ogre2"
         && graphicsApi == GraphicsAPI::METAL)
     {
       params["metal"] = "1";

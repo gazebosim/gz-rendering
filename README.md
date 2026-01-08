@@ -41,7 +41,7 @@ of libraries designed to rapidly develop robot applications.
 
 # Features
 
-* Support for rendering engines including OGRE and OptiX (experimental)
+* Support for rendering engines including OGRE and OGRE-Next
 * Plugin-based architecture. Multiple rendering engine plugins can be loaded at run time.
 * Object-oriented scene management.
 
@@ -75,8 +75,6 @@ Rendering engine plugin implementation code is stored in their own folders
 * `ogre` : OGRE 1.x rendering engine plugin
 
 * `ogre2` : OGRE-Next 2.x rendering engine plugin
-
-* `optix` : OptiX rendering engine plugin
 
 # Contributing
 

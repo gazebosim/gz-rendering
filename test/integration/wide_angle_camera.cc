@@ -55,7 +55,11 @@ void OnNewWideAngleFrame(const unsigned char *_data,
                     unsigned int _channels,
                     const std::string &_format)
 {
-  g_mutex.lock();
+  EXPECT_EQ(320u, _width);
+  EXPECT_EQ(240u, _height);
+  EXPECT_EQ(3u, _channels);
+
+  std::lock_guard<std::mutex> lock(g_mutex);
   auto bufferSize = _width * _height * _channels;
 
   if (!g_buffer)
@@ -67,7 +71,6 @@ void OnNewWideAngleFrame(const unsigned char *_data,
   EXPECT_EQ("R8G8B8", _format);
 
   g_counter++;
-  g_mutex.unlock();
 }
 
 //////////////////////////////////////////////////
@@ -77,7 +80,11 @@ void OnNewWideAngleFrameMono(const unsigned char *_data,
                     unsigned int _channels,
                     const std::string &_format)
 {
-  g_mutex.lock();
+  EXPECT_EQ(20u, _width);
+  EXPECT_EQ(20u, _height);
+  EXPECT_EQ(1u, _channels);
+
+  std::lock_guard<std::mutex> lock(g_mutex);
 
   unsigned int bytesPerChannel = 0u;
   unsigned int bufferSize = 0u;
@@ -102,14 +109,11 @@ void OnNewWideAngleFrameMono(const unsigned char *_data,
   ASSERT_NE(0u, bufferSize);
 
   g_counter++;
-  g_mutex.unlock();
 }
 
 //////////////////////////////////////////////////
 TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(1.0, 1.0, 1.0);
@@ -384,8 +388,6 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
 //////////////////////////////////////////////////
 TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Projection))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(1.0, 1.0, 1.0);
@@ -504,8 +506,6 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Projection))
 TEST_F(WideAngleCameraTest,
        GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCameraMono))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
   scene->SetAmbientLight(1.0, 1.0, 1.0);

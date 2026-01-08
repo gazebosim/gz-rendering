@@ -183,7 +183,7 @@ int main(int _argc, char **_argv)
 
   engineNames.push_back("LuxCoreEngine");
 
-  for (auto engineName : engineNames)
+  for (const auto &engineName : engineNames)
   {
     try
     {
@@ -194,7 +194,7 @@ int main(int _argc, char **_argv)
       {
         cameras.push_back(camera);
       }
-    } catch (std::exception &ex) {
+    } catch (const std::exception &ex) {
       std::cout << ex.what() << std::endl;
     }
   }

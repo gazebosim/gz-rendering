@@ -33,8 +33,7 @@
 
 #include <gz/utils/ExtraTestMacros.hh>
 
-#define DEPTH_TOL 1e-4
-#define DOUBLE_TOL 1e-6
+constexpr double DOUBLE_TOL = 1e-6;
 
 unsigned int g_thermalCounter = 0;
 
@@ -49,9 +48,8 @@ void OnNewThermalFrame(uint16_t *_scanDest, const uint16_t *_scan,
   EXPECT_EQ(50u, _height);
   EXPECT_EQ(1u, _channels);
 
-  uint16_t u;
-  int size =  _width * _height * _channels;
-  memcpy(_scanDest, _scan, size * sizeof(u));
+  const auto size =  _width * _height * _channels;
+  memcpy(_scanDest, _scan, size * sizeof(uint16_t));
 }
 
 //////////////////////////////////////////////////
@@ -67,7 +65,6 @@ class ThermalCameraTest: public CommonRenderingTest
 TEST_F(ThermalCameraTest,
        GZ_UTILS_TEST_DISABLED_ON_WIN32(ThermalCameraBoxesUniform))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
   int imgWidth = 50;
   int imgHeight = 50;
   double aspectRatio = imgWidth/imgHeight;
@@ -221,7 +218,6 @@ TEST_F(ThermalCameraTest,
 TEST_F(ThermalCameraTest,
        GZ_UTILS_TEST_DISABLED_ON_WIN32(ThermalCameraBoxesHeatSignature))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");  // Optix does not support thermal
   CHECK_SUPPORTED_ENGINE("ogre2");  // Only OGRE2 supports heat signatures
 
   int imgWidth = 50;

@@ -48,10 +48,10 @@ endif()
 #
 # <TARGET>: The executable to create a test from. The same executable may be
 #           used for multiple tests with differing engines/backends
-# 
+#
 # [RENDER_ENGINE]: Required. Set the render engine to be used by the test (eg "ogre", "ogre2")
 #
-# [RENDER_ENGINE_BACKEND]: Set the render engine backend 
+# [RENDER_ENGINE_BACKEND]: Set the render engine backend
 #                          to be used by the test (eg "metal", "vulkan")
 #
 # [HEADLESS]: Optional.  Enable headless rendering if the engine/backend supports it
@@ -69,7 +69,7 @@ macro(gz_configure_rendering_test)
 
   set(test_name ${gz_configure_rendering_test_TARGET}_${gz_configure_rendering_test_RENDER_ENGINE}_${gz_configure_rendering_test_RENDER_ENGINE_BACKEND})
 
-  add_test(NAME ${test_name} 
+  add_test(NAME ${test_name}
     COMMAND ${gz_configure_rendering_test_TARGET} --gtest_output=xml:${CMAKE_BINARY_DIR}/test_results/${test_name}.xml)
   set_tests_properties(${test_name} PROPERTIES TIMEOUT 240)
 
@@ -108,11 +108,11 @@ endmacro()
 # Set up a rendering test to match Gazebo test conventions.
 # This will automatically add corresponding engine/backend tests for the platform
 #
-# <TYPE>: The type of test ("UNIT", "INTEGRATION") 
-# 
-# <SOURCE>: The source file of the test to build 
+# <TYPE>: The type of test ("UNIT", "INTEGRATION")
 #
-# [LIB_DEPS]: Additional optional library dependencies 
+# <SOURCE>: The source file of the test to build
+#
+# [LIB_DEPS]: Additional optional library dependencies
 macro(gz_rendering_test)
   set(options)
   set(oneValueArgs TYPE SOURCE)
@@ -169,11 +169,5 @@ macro(gz_rendering_test)
       #     HEADLESS)
       # endif()
     endif()
-  endif()
-  if (GZ_RENDERING_HAVE_OPTIX)
-    gz_configure_rendering_test(
-      TARGET ${TEST_NAME}
-      RENDER_ENGINE "optix"
-    )
   endif()
 endmacro()

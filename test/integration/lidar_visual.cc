@@ -28,11 +28,10 @@
 
 #include <gz/utils/ExtraTestMacros.hh>
 
-#define LASER_TOL 2e-4
-#define DOUBLE_TOL 1e-6
+constexpr double LASER_TOL = 2e-4;
 
 // vertical range values seem to be less accurate
-#define VERTICAL_LASER_TOL 1e-3
+constexpr double VERTICAL_LASER_TOL = 1e-3;
 
 using namespace gz;
 using namespace rendering;
@@ -43,9 +42,8 @@ void OnNewGpuRaysFrame(float *_scanDest, const float *_scan,
                   unsigned int _channels,
                   const std::string &/*_format*/)
 {
-  float f;
-  int size =  _width * _height * _channels;
-  memcpy(_scanDest, _scan, size * sizeof(f));
+  const auto size = _width * _height * _channels;
+  memcpy(_scanDest, _scan, size * sizeof(float));
 }
 
 /////////////////////////////////////////////////
@@ -57,8 +55,6 @@ class LidarVisualTest: public CommonRenderingTest
 /// \brief Test LidarVisual configuraions
 TEST_F(LidarVisualTest, Configure)
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -135,7 +131,6 @@ TEST_F(LidarVisualTest, Configure)
 /// \brief Test detection of different boxes
 TEST_F(LidarVisualTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__
     GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
@@ -361,7 +356,6 @@ TEST_F(LidarVisualTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 /// \brief Test GPU rays vertical component
 TEST_F(LidarVisualTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
   #ifdef __APPLE__
     GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif

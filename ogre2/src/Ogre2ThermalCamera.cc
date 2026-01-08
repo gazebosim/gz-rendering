@@ -657,7 +657,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene(
   }
 
   // Restore Items with low level materials
-  for (auto subItemMat : this->materialMap)
+  for (auto &subItemMat : this->materialMap)
   {
     subItemMat.first->setMaterial(subItemMat.second);
   }
@@ -673,7 +673,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene(
   }
 
   // restore item to use pbs hlms material
-  for (auto it : this->itemDatablockMap)
+  for (auto &it : this->itemDatablockMap)
   {
     Ogre::SubItem *subItem = it.first;
     subItem->setDatablock(it.second);
@@ -1070,7 +1070,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
   Ogre::CompositorNode *node =
       this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
   auto channels = node->getLocalTextures();
-  for (auto c : channels)
+  for (const auto &c : channels)
   {
     if (c->getPixelFormat() == Ogre::PFG_RGBA8_UNORM)
     {

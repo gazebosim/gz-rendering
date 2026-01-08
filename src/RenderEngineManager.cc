@@ -34,7 +34,7 @@
 struct EngineInfo
 {
   /// \brief The name of the engine's shared library, default engines can also
-  /// be specified with their regular name (ogre, optix, etc.).
+  /// be specified with their regular name (ogre, ogre2, etc.).
   std::string name;
 
   /// \brief The pointer to the render engine.
@@ -188,7 +188,7 @@ std::vector<std::string> RenderEngineManager::LoadedEngines() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   std::vector<std::string> engines;
-  for (auto [name, engine] :  // NOLINT(whitespace/braces)
+  for (const auto &[name, engine] :  // NOLINT(whitespace/braces)
       this->dataPtr->engines)
   {
     std::string n = name;
@@ -493,18 +493,6 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
   registerStaticOrSolibPlugin(ogre2EngineName, ogre2StaticFilename,
       /*_solibFilename=*/"");
 #endif
-
-  // Register Optix
-  const std::string optixEngineName = "optix";
-  const std::string optixStaticFilename =
-      "static://gz::rendering::optix::Plugin";
-#if GZ_RENDERING_HAVE_OPTIX
-  registerStaticOrSolibPlugin(optixEngineName, optixStaticFilename,
-      libNamePrefix + optixEngineName);
-#else
-  registerStaticOrSolibPlugin(optixEngineName, optixStaticFilename,
-      /*_solibFilename=*/"");
-#endif
 }
 
 //////////////////////////////////////////////////
@@ -560,7 +548,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
     error << "Found no render engine plugins in ["
           << _filename << "], available interfaces are:"
           << std::endl;
-    for (auto pluginName : pluginNames)
+    for (const auto &pluginName : pluginNames)
     {
       error << "- " << pluginName << std::endl;
     }
@@ -575,7 +563,7 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
     warn << "Found multiple render engine plugins in ["
           << _filename << "]:"
           << std::endl;
-    for (auto pluginName : engineNames)
+    for (const auto &pluginName : engineNames)
     {
       warn << "- " << pluginName << std::endl;
     }

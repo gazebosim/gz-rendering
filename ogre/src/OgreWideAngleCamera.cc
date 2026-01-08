@@ -165,12 +165,12 @@ void OgreWideAngleCamera::PreRender()
 
   this->UpdateRenderPassChain();
 
-  for (auto pass : this->dataPtr->renderPasses)
+  for (auto &pass : this->dataPtr->renderPasses)
   {
     pass->PreRender(
       std::dynamic_pointer_cast<Camera>(this->shared_from_this()));
   }
-  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  for (auto &pass : this->dataPtr->finalStitchRenderPasses)
   {
     pass->PreRender(
       std::dynamic_pointer_cast<Camera>(this->shared_from_this()));
@@ -304,11 +304,11 @@ void OgreWideAngleCamera::RemoveRenderPass(const RenderPassPtr &_pass)
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::RemoveAllRenderPasses()
 {
-  for (auto pass : this->dataPtr->renderPasses)
+  for (auto &pass : this->dataPtr->renderPasses)
   {
     pass->Destroy();
   }
-  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  for (auto &pass : this->dataPtr->finalStitchRenderPasses)
   {
     pass->Destroy();
   }
@@ -542,14 +542,14 @@ void OgreWideAngleCamera::UpdateRenderPassChain()
   if (!this->dataPtr->renderPassDirty)
     return;
 
-  for (auto pass : this->dataPtr->renderPasses)
+  for (auto &pass : this->dataPtr->renderPasses)
   {
     OgreRenderPass *ogreRenderPass =
         dynamic_cast<OgreRenderPass *>(pass.get());
     ogreRenderPass->SetCameras(this->dataPtr->envCameras);
     ogreRenderPass->CreateRenderPass();
   }
-  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  for (auto &pass : this->dataPtr->finalStitchRenderPasses)
   {
     OgreRenderPass *ogreRenderPass =
         dynamic_cast<OgreRenderPass *>(pass.get());
@@ -782,11 +782,11 @@ void OgreWideAngleCamera::PostRender()
   if (this->dataPtr->newImageFrame.ConnectionCount() <= 0u)
     return;
 
-  for (auto pass : this->dataPtr->renderPasses)
+  for (auto &pass : this->dataPtr->renderPasses)
   {
     pass->PostRender();
   }
-  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  for (auto &pass : this->dataPtr->finalStitchRenderPasses)
   {
     pass->PostRender();
   }

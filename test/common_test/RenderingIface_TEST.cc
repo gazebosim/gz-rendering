@@ -66,7 +66,6 @@ TEST(RenderingIfaceTest, HasEngine)
 
   EXPECT_EQ(kHaveOgre, rendering::hasEngine("ogre"));
   EXPECT_EQ(kHaveOgre2, rendering::hasEngine("ogre2"));
-  EXPECT_EQ(kHaveOptix, rendering::hasEngine("optix"));
 }
 
 /////////////////////////////////////////////////
@@ -80,7 +79,6 @@ TEST(RenderingIfaceTest, GetEngine)
   EXPECT_TRUE(loadedEngines().empty());
   EXPECT_FALSE(isEngineLoaded("ogre"));
   EXPECT_FALSE(isEngineLoaded("ogre2"));
-  EXPECT_FALSE(isEngineLoaded("optix"));
   EXPECT_FALSE(isEngineLoaded("no_such_engine"));
   EXPECT_EQ(nullptr, sceneFromFirstRenderEngine());
 

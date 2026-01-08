@@ -274,13 +274,10 @@ void Ogre2GlobalIlluminationVct::Build()
         for (size_t k = 0; k < ARRAY_PACKED_REALS; ++k)
         {
           // objData.mOwner is guaranteed by Ogre to not be a nullptr
-          if (objData.mOwner[k]->getVisible())
+          auto item = dynamic_cast<Ogre::Item *>(objData.mOwner[k]);
+          if (item && item->getVisible())
           {
-            auto item = dynamic_cast<Ogre::Item *>(objData.mOwner[k]);
-            if (item)
-            {
-              voxelizer->addItem(item, false);
-            }
+            voxelizer->addItem(item, false);
           }
         }
 

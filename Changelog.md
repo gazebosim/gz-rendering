@@ -2,6 +2,44 @@
 
 ### Gazebo Rendering 10.X
 
+### Gazebo Rendering 10.0.1 (2026-01-20)
+
+1. Fix item visibility check when building GI Vct
+    * [Pull request #1216](https://github.com/gazebosim/gz-rendering/pull/1216)
+
+1. Find jetty packages with explicit version
+    * [Pull request #1221](https://github.com/gazebosim/gz-rendering/pull/1221)
+
+1. Code cleanup
+    * [Pull request #1217](https://github.com/gazebosim/gz-rendering/pull/1217)
+
+1. [bazel/infra] Disable windows CI
+    * [Pull request #1208](https://github.com/gazebosim/gz-rendering/pull/1208)
+
+1. [bazel/infra] Add manual BCR release workflow
+    * [Pull request #1206](https://github.com/gazebosim/gz-rendering/pull/1206)
+
+1. Fix/optix warning
+    * [Pull request #1199](https://github.com/gazebosim/gz-rendering/pull/1199)
+
+1. Bazel updates: prep for BCR release automation
+    * [Pull request #1196](https://github.com/gazebosim/gz-rendering/pull/1196)
+
+1. [bazel] Bump ogre-next dep version
+    * [Pull request #1191](https://github.com/gazebosim/gz-rendering/pull/1191)
+
+1. Add bazel build for ogre2 engine
+    * [Pull request #1157](https://github.com/gazebosim/gz-rendering/pull/1157)
+
+1. Increase tol for heightmap test
+    * [Pull request #1179](https://github.com/gazebosim/gz-rendering/pull/1179)
+
+1. Exclude OGRE2 Overlay using a CMake argument (gz-rendering10)
+    * [Pull request #1178](https://github.com/gazebosim/gz-rendering/pull/1178)
+
+1. Increase depth camera integration test error tol for ogre 1.x on arm based mac
+    * [Pull request #1180](https://github.com/gazebosim/gz-rendering/pull/1180)
+
 ### Gazebo Rendering 10.0.0 (2025-09-30)
 
 1. **Baseline:** this includes all changes from 9.3.0 and earlier.

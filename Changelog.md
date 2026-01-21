@@ -13,23 +13,15 @@
 1. Code cleanup
     * [Pull request #1217](https://github.com/gazebosim/gz-rendering/pull/1217)
 
-1. [bazel/infra] Disable windows CI
-    * [Pull request #1208](https://github.com/gazebosim/gz-rendering/pull/1208)
-
-1. [bazel/infra] Add manual BCR release workflow
+1. Bazel updates
+    * [Pull request #1157](https://github.com/gazebosim/gz-rendering/pull/1157)
+    * [Pull request #1191](https://github.com/gazebosim/gz-rendering/pull/1191)
+    * [Pull request #1196](https://github.com/gazebosim/gz-rendering/pull/1196)
     * [Pull request #1206](https://github.com/gazebosim/gz-rendering/pull/1206)
+    * [Pull request #1208](https://github.com/gazebosim/gz-rendering/pull/1208)
 
 1. Fix/optix warning
     * [Pull request #1199](https://github.com/gazebosim/gz-rendering/pull/1199)
-
-1. Bazel updates: prep for BCR release automation
-    * [Pull request #1196](https://github.com/gazebosim/gz-rendering/pull/1196)
-
-1. [bazel] Bump ogre-next dep version
-    * [Pull request #1191](https://github.com/gazebosim/gz-rendering/pull/1191)
-
-1. Add bazel build for ogre2 engine
-    * [Pull request #1157](https://github.com/gazebosim/gz-rendering/pull/1157)
 
 1. Increase tol for heightmap test
     * [Pull request #1179](https://github.com/gazebosim/gz-rendering/pull/1179)

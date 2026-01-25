@@ -225,8 +225,6 @@ void Ogre2Marker::SetMaterial(MaterialPtr _material, bool _unique)
     return;
   }
 
-  std::string materialName = derived->Name();
-
   derived->SetReceiveShadows(false);
   derived->SetCastShadows(false);
   derived->SetLightingEnabled(false);

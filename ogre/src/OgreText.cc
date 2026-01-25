@@ -70,7 +70,7 @@ class gz::rendering::OgreMovableText
   /// \param[in] _height Baseline height
   public: void SetBaseline(const float _baseline);
 
-  /// \brief True = text always is displayed ontop.
+  /// \brief True = text always is displayed on top.
   /// \param[in] _show Set to true to render the text on top of
   /// all other drawables.
   public: void SetShowOnTop(const bool _onTop);
@@ -95,8 +95,8 @@ class gz::rendering::OgreMovableText
   public: void Update();
 
   /// \brief Set font name implementation.
-  /// \param-in] _font Name of font
-  public: void SetFontNameImpl(const std::string &_font);
+  /// \param-in] _newFontName Name of font
+  public: void SetFontNameImpl(const std::string &_newFontName);
 
   /// \internal
   /// \brief Method to allow a caller to abstractly iterate over the
@@ -111,7 +111,7 @@ class gz::rendering::OgreMovableText
   protected: void getWorldTransforms(Ogre::Matrix4 *_xform) const override;
 
   /// \internal
-  /// \brief Get the bounding radiu (from MovableObject)
+  /// \brief Get the bounding radius (from MovableObject)
   protected: float getBoundingRadius() const override;
 
   /// \internal
@@ -212,7 +212,7 @@ class gz::rendering::OgreMovableText
 /// \brief Private data for the OgreText class.
 class gz::rendering::OgreTextPrivate
 {
-  /// \brief Text materal
+  /// \brief Text material
   public: OgreMaterialPtr material;
 
   /// Pointer to ogre movable text object
@@ -420,7 +420,6 @@ void OgreMovableText::SetupGeometry()
   size_t offset = 0;
   float maxSquaredRadius = 0.0f;
   bool first = true;
-  std::string::iterator i;
   bool newLine = true;
   float len = 0.0f;
 
@@ -499,19 +498,19 @@ void OgreMovableText::SetupGeometry()
   {
     // Raise the first line of the caption
     top += this->charHeight;
-    for (i = this->text.begin(); i != this->text.end(); ++i)
+    for (auto it = this->text.begin(); it != this->text.end(); ++it)
     {
-      if (*i == '\n')
+      if (*it == '\n')
         top += this->charHeight * 2.0;
     }
   }
 
-  for (i = this->text.begin(); i != this->text.end(); ++i)
+  for (auto it = this->text.begin(); it != this->text.end(); ++it)
   {
     if (newLine)
     {
       len = 0.0;
-      for (std::string::iterator j = i; j != this->text.end(); ++j)
+      for (std::string::iterator j = it; j != this->text.end(); ++j)
       {
         Ogre::Font::CodePoint character = *j;
         if (character == '\n')
@@ -534,7 +533,7 @@ void OgreMovableText::SetupGeometry()
       newLine = false;
     }
 
-    Ogre::Font::CodePoint character = (*i);
+    Ogre::Font::CodePoint character = (*it);
     if (character == '\n')
     {
       left = 0.0;
@@ -559,7 +558,7 @@ void OgreMovableText::SetupGeometry()
     float horizHeight = this->font->getGlyphAspectRatio(character) *
                          this->viewportAspectCoef;
 
-    auto &uvRect = this->font->getGlyphTexCoords(character);
+    const auto &uvRect = this->font->getGlyphTexCoords(character);
 
     // each vert is (x, y, z, u, v)
     //------------------------------------------------------------------------
@@ -737,7 +736,6 @@ void OgreMovableText::UpdateColors()
   Ogre::RGBA clr;
   Ogre::HardwareVertexBufferSharedPtr vbuf;
   Ogre::RGBA *pDest{nullptr};
-  unsigned int i;
 
   GZ_ASSERT(this->font, "font class member is null");
 #if OGRE_VERSION_LT_1_11_0
@@ -757,7 +755,7 @@ void OgreMovableText::UpdateColors()
   pDest = static_cast<Ogre::RGBA*>(
       vbuf->lock(Ogre::HardwareBuffer::HBL_DISCARD));
 
-  for (i = 0; i < this->renderOp.vertexData->vertexCount; ++i)
+  for (Ogre::uint32 i = 0; i < this->renderOp.vertexData->vertexCount; ++i)
   {
     *pDest++ = clr;
   }

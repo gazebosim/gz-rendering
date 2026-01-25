@@ -45,11 +45,11 @@ namespace gz
       public: explicit OrthoViewController(const CameraPtr &_camera);
 
       /// \brief Destructor.
-      public: virtual ~OrthoViewController();
+      public: ~OrthoViewController() override;
 
       /// \brief Set the camera that will be controlled by this view controller.
       /// \param[in] _camera Camera to control
-      public: virtual void SetCamera(const CameraPtr &_camera);
+      public: void SetCamera(const CameraPtr &_camera) override;
 
       /// \brief Get the camera that is controlled by this view controller.
       /// \return Camera being controlled
@@ -57,7 +57,7 @@ namespace gz
 
       /// \brief Set target point for pan, zoom, oribit
       /// \param[in] _target Target point in world coordinates
-      public: virtual void SetTarget(const math::Vector3d &_target);
+      public: void SetTarget(const math::Vector3d &_target) override;
 
       /// \brief Get target point for pan, zoom, oribit
       /// \return target point in world coordinates
@@ -65,15 +65,15 @@ namespace gz
 
       /// \brief Set zoom amount
       /// \param[in] _value Camera zoom value, e.g. mouse scroll delta
-      public: virtual void Zoom(const double _value);
+      public: void Zoom(const double _value) override;
 
       /// \brief Set camera pan (translational movement) around target point.
       /// \param[in] _value Pan amount in image plane, e.g. mouse drag delta.
-      public: virtual void Pan(const math::Vector2d &_value);
+      public: void Pan(const math::Vector2d &_value) override;
 
       /// \brief Set camera orbit (rotational movement) around target point.
-      /// \param[in] _value robit amount in image plane, e.g. mouse drag delta
-      public: virtual void Orbit(const math::Vector2d &_value);
+      /// \param[in] _value orbit amount in image plane, e.g. mouse drag delta
+      public: void Orbit(const math::Vector2d &_value) override;
 
       /// \brief Resize and update the camera projection matrix
       /// \param[in] _width Image width

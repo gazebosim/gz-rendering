@@ -37,15 +37,15 @@ namespace gz
     {
       protected: BaseDepthCamera();
 
-      public: virtual ~BaseDepthCamera();
+      public: ~BaseDepthCamera() override;
 
-      public: virtual void CreateDepthTexture();
+      public: void CreateDepthTexture() override;
 
-      public: virtual const float *DepthData() const;
+      public: const float *DepthData() const override;
 
-      public: virtual gz::common::ConnectionPtr ConnectNewDepthFrame(
+      public: gz::common::ConnectionPtr ConnectNewDepthFrame(
           std::function<void(const float *, unsigned int, unsigned int,
-          unsigned int, const std::string &)>  _subscriber);
+          unsigned int, const std::string &)>  _subscriber) override;
 
       public: virtual gz::common::ConnectionPtr ConnectNewRGBPointCloud(
           std::function<void(const float *, unsigned int, unsigned int,

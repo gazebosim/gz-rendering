@@ -18,6 +18,7 @@
 #ifndef GZ_RENDERING_OGRE2_OGRE2GPURAYS_HH_
 #define GZ_RENDERING_OGRE2_OGRE2GPURAYS_HH_
 
+#include <functional>
 #include <string>
 #include <memory>
 

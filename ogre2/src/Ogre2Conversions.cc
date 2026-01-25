@@ -30,7 +30,7 @@ using namespace rendering;
 //////////////////////////////////////////////////
 const Ogre::PixelFormatGpu Ogre2Conversions::ogrePixelFormats[PF_COUNT] =
     {
-      // UKNOWN
+      // UNKNOWN
       Ogre::PFG_UNKNOWN,
       // L8
       Ogre::PFG_R8_UNORM,

@@ -38,11 +38,11 @@ namespace gz
     {
       protected: OgreGeometry();
 
-      public: virtual ~OgreGeometry();
+      public: ~OgreGeometry() override;
 
-      public: virtual bool HasParent() const;
+      public: bool HasParent() const override;
 
-      public: virtual VisualPtr Parent() const;
+      public: VisualPtr Parent() const override;
 
       public: virtual Ogre::MovableObject *OgreObject() const = 0;
 

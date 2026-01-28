@@ -151,7 +151,7 @@ class gz::rendering::Ogre2BoundingBoxCameraPrivate
       parentNameToBoxes;
 
   /// \brief Keep track of the visible bounding boxes (used in filtering)
-  /// Key: parent name, value: vector of ogre ids of it's childern
+  /// Key: parent name, value: vector of ogre ids of it's children
   public: std::map<std::string, std::vector<uint32_t>> parentNameToOgreIds;
 
   /// \brief The ogre item's 3d vertices from the vao(used in multi-link models)
@@ -506,7 +506,7 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
       Ogre::GpuResidency::Resident);
 
   // Switch material to OGRE Ids map to use it to get the visible bboxes
-  // or to check visiblity in full bboxes
+  // or to check visibility in full bboxes
   this->dataPtr->ogreCamera->addListener(this->dataPtr->materialSwitcher.get());
 
   // workspace
@@ -738,7 +738,7 @@ void Ogre2BoundingBoxCameraPrivate::MeshVertices(
           // Convert to world coordinates
           vec = (oreintation * (vec * scale)) + position;
 
-          // Convert to camera view coordiantes
+          // Convert to camera view coordinates
           Ogre::Vector4 vec4(vec.x, vec.y, vec.z, 1);
           vec4 = viewMatrix * vec4;
 
@@ -1201,7 +1201,7 @@ void Ogre2BoundingBoxCamera::MeshMinimalBox(
         Ogre::Vector4 vec4(vec.x, vec.y, vec.z, 1);
         vec4 =  _projMatrix * _viewMatrix * vec4;
 
-        // homogenous
+        // homogeneous
         vec.x = vec4.x / vec4.w;
         vec.y = vec4.y / vec4.w;
         vec.z = vec4.z;
@@ -1403,6 +1403,7 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(unsigned char *_data,
     uint32_t height = this->ImageHeight();
 
     std::vector<math::Vector2i> projVertices;
+    projVertices.reserve(clippedVertices.size());
     for (auto &vertex : clippedVertices)
     {
       // convert from [-1, 1] range to [0, 1] range & to the screen range
@@ -1418,7 +1419,7 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(unsigned char *_data,
           static_cast<int>(vertex.Y())));
     }
 
-    for (unsigned int endPt = 0; endPt < projVertices.size(); endPt += 2)
+    for (size_t endPt = 0; endPt < projVertices.size(); endPt += 2)
     {
       this->DrawLine(_data, projVertices[endPt], projVertices[endPt + 1],
           _color);
@@ -1486,7 +1487,7 @@ void Ogre2BoundingBoxCamera::ConvertToScreenCoord(
   _maxVertex.x = (_maxVertex.x + 1.0) / 2 * width;
   _maxVertex.y = (1.0 - _maxVertex.y) / 2 * height;
 
-  // clip outside screen boundries
+  // clip outside screen boundaries
   _minVertex.x = std::max<float>(0.0, _minVertex.x);
   _minVertex.y = std::max<float>(0.0, _minVertex.y);
   _maxVertex.x = std::min<float>(_maxVertex.x, width - 1.0);

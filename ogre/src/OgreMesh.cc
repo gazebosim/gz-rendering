@@ -64,8 +64,8 @@ void OgreMesh::Destroy()
   this->ogreEntity = nullptr;
 
   auto &meshManager = Ogre::MeshManager::getSingleton();
-  auto iend = meshManager.getResourceIterator().end();
-  for (auto i = meshManager.getResourceIterator().begin(); i != iend;)
+  const auto iend = meshManager.getResourceIterator().end();
+  for (auto i = meshManager.getResourceIterator().begin(); i != iend; ++i)
   {
     // A use count of 3 means that only RGM and RM have references
     // RGM has one (this one) and RM has 2 (by name and by handle)
@@ -78,7 +78,6 @@ void OgreMesh::Destroy()
         break;
       }
     }
-    i++;
   }
 }
 

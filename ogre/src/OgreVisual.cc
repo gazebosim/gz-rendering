@@ -55,8 +55,7 @@ void OgreVisual::SetWireframe(bool _show)
     return;
 
   this->dataPtr->wireframe = _show;
-  for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects();
-      i++)
+  for (size_t i = 0; i < this->ogreNode->numAttachedObjects(); ++i)
   {
     Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
     Ogre::Entity *entity = dynamic_cast<Ogre::Entity *>(obj);
@@ -64,26 +63,24 @@ void OgreVisual::SetWireframe(bool _show)
     if (!entity)
       continue;
 
-    for (unsigned int j = 0; j < entity->getNumSubEntities(); j++)
+    for (size_t j = 0; j < entity->getNumSubEntities(); ++j)
     {
       Ogre::SubEntity *subEntity = entity->getSubEntity(j);
       Ogre::MaterialPtr entityMaterial = subEntity->getMaterial();
       if (entityMaterial.isNull())
         continue;
 
-      unsigned int techniqueCount, passCount;
-      Ogre::Technique *technique;
-      Ogre::Pass *pass;
-
-      for (techniqueCount = 0;
+      for (size_t techniqueCount = 0;
            techniqueCount < entityMaterial->getNumTechniques();
            ++techniqueCount)
       {
-        technique = entityMaterial->getTechnique(techniqueCount);
+        Ogre::Technique *technique =
+            entityMaterial->getTechnique(techniqueCount);
 
-        for (passCount = 0; passCount < technique->getNumPasses(); passCount++)
+        for (size_t passCount = 0;
+             passCount < technique->getNumPasses(); ++passCount)
         {
-          pass = technique->getPass(passCount);
+          Ogre::Pass *pass = technique->getPass(passCount);
           if (_show)
             pass->setPolygonMode(Ogre::PM_WIREFRAME);
           else
@@ -117,7 +114,7 @@ void OgreVisual::SetVisibilityFlags(uint32_t _flags)
   if (!this->ogreNode)
     return;
 
-  for (unsigned int i = 0; i < this->ogreNode->numAttachedObjects(); ++i)
+  for (size_t i = 0; i < this->ogreNode->numAttachedObjects(); ++i)
     this->ogreNode->getAttachedObject(i)->setVisibilityFlags(_flags);
 }
 
@@ -230,7 +227,7 @@ void OgreVisual::BoundsHelper(gz::math::AxisAlignedBox &_box,
 
   gz::math::Vector3d scale = this->WorldScale();
 
-  for (int i = 0; i < this->ogreNode->numAttachedObjects(); i++)
+  for (size_t i = 0; i < this->ogreNode->numAttachedObjects(); i++)
   {
     Ogre::MovableObject *obj = this->ogreNode->getAttachedObject(i);
 

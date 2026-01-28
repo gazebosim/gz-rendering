@@ -32,36 +32,36 @@ namespace gz
     {
       protected: BaseLight();
 
-      public: virtual ~BaseLight();
+      public: ~BaseLight() override;
 
       // Documentation inherited
-      public: virtual void SetDiffuseColor(double _r, double _g, double _b,
-                  double _a = 1.0);
+      public: void SetDiffuseColor(double _r, double _g, double _b,
+                  double _a = 1.0) override;
 
       // Documentation inherited.
-      public: virtual void SetDiffuseColor(const math::Color &_color) = 0;
+      public: void SetDiffuseColor(const math::Color &_color) override = 0;
 
       // Documentation inherited.
-      public: virtual void SetSpecularColor(double _r, double _g, double _b,
-                  double _a = 1.0);
+      public: void SetSpecularColor(double _r, double _g, double _b,
+                  double _a = 1.0) override;
 
       // Documentation inherited.
-      public: virtual void SetSpecularColor(const math::Color &_color) = 0;
+      public: void SetSpecularColor(const math::Color &_color) override = 0;
 
       // Documentation inherited.
-      public: virtual void SetAttenuationConstant(double _value) = 0;
+      public: void SetAttenuationConstant(double _value) override = 0;
 
       // Documentation inherited.
-      public: virtual void SetAttenuationLinear(double _value) = 0;
+      public: void SetAttenuationLinear(double _value) override = 0;
 
       // Documentation inherited.
-      public: virtual void SetAttenuationQuadratic(double _value) = 0;
+      public: void SetAttenuationQuadratic(double _value) override = 0;
 
       // Documentation inherited.
-      public: virtual void SetAttenuationRange(double _range) = 0;
+      public: void SetAttenuationRange(double _range) override = 0;
 
       // Documentation inherited.
-      public: virtual void SetCastShadows(bool _castShadows) = 0;
+      public: void SetCastShadows(bool _castShadows) override = 0;
 
       // Documentation inherited.
       protected: virtual void Reset();
@@ -74,13 +74,13 @@ namespace gz
     {
       protected: BaseDirectionalLight();
 
-      public: virtual ~BaseDirectionalLight();
+      public: ~BaseDirectionalLight() override;
 
-      public: virtual void SetDirection(double _x, double _y, double _z);
+      public: void SetDirection(double _x, double _y, double _z) override;
 
-      public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
+      public: void SetDirection(const math::Vector3d &_dir) override = 0;
 
-      protected: virtual void Reset();
+      protected: void Reset() override;
     };
 
     template <class T>
@@ -100,23 +100,23 @@ namespace gz
     {
       protected: BaseSpotLight();
 
-      public: virtual ~BaseSpotLight();
+      public: ~BaseSpotLight() override;
 
-      public: virtual void SetDirection(double _x, double _y, double _z);
+      public: void SetDirection(double _x, double _y, double _z) override;
 
-      public: virtual void SetDirection(const math::Vector3d &_dir) = 0;
+      public: void SetDirection(const math::Vector3d &_dir) override = 0;
 
-      public: virtual void SetInnerAngle(double _radians);
+      public: void SetInnerAngle(double _radians) override;
 
-      public: virtual void SetInnerAngle(const math::Angle &_angle) = 0;
+      public: void SetInnerAngle(const math::Angle &_angle) override = 0;
 
-      public: virtual void SetOuterAngle(double _radians);
+      public: void SetOuterAngle(double _radians) override;
 
-      public: virtual void SetOuterAngle(const math::Angle &_angle) = 0;
+      public: void SetOuterAngle(const math::Angle &_angle) override = 0;
 
-      public: virtual void SetFalloff(double _falloff) = 0;
+      public: void SetFalloff(double _falloff) override = 0;
 
-      protected: virtual void Reset();
+      protected: void Reset() override;
     };
 
     //////////////////////////////////////////////////

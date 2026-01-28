@@ -36,19 +36,19 @@ namespace gz
       protected: BaseWireBox();
 
       /// \brief Destructor
-      public: virtual ~BaseWireBox();
+      public: ~BaseWireBox() override;
 
       // Documentation inherited.
-      public: virtual void PreRender();
+      public: void PreRender() override;
 
       // Documentation inherited.
-      public: virtual void Destroy();
+      public: void Destroy() override;
 
       // Documentation inherited.
-      public: virtual void SetBox(const gz::math::AxisAlignedBox &_box);
+      public: void SetBox(const gz::math::AxisAlignedBox &_box) override;
 
       // Documentation inherited.
-      public: virtual gz::math::AxisAlignedBox Box() const;
+      public: gz::math::AxisAlignedBox Box() const override;
 
       // \brief Underlying axis aligned box that the wire box reflects.
       protected: gz::math::AxisAlignedBox box;

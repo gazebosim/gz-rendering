@@ -160,7 +160,7 @@ namespace gz
 
       // Documentation inherited.
       public: virtual void SetFollowTarget(const NodePtr &_target,
-                  const math::Vector3d &_Offset, const bool _worldFrame)
+                  const math::Vector3d &_offset, const bool _worldFrame)
                   override;
 
       // Documentation inherited.
@@ -680,9 +680,9 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseCamera<T>::SetAspectRatio(const double _aspect)
+    void BaseCamera<T>::SetAspectRatio(const double _ratio)
     {
-      this->aspect = _aspect;
+      this->aspect = _ratio;
     }
 
     //////////////////////////////////////////////////

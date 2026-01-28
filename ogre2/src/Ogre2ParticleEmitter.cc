@@ -487,6 +487,8 @@ void Ogre2ParticleEmitter::CreateParticleSystem()
              "The number of supported emitters does not match the number of "
              "Ogre emitter types.");
 
+  GZ_ASSERT(this->type < kOgreEmitterTypes.size(), "Unknown emitter type");
+
   // Instantiate particle emitter and their default parameters.
   // Emitter type is point unless otherwise specified.
   this->dataPtr->emitter =

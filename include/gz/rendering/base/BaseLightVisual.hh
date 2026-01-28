@@ -58,7 +58,7 @@ namespace gz
       public: virtual double InnerAngle() override;
 
       // Documentation inherited
-      public: virtual void SetOuterAngle(double _innerAngle) override;
+      public: virtual void SetOuterAngle(double _outerAngle) override;
 
       // Documentation inherited
       public: virtual double OuterAngle() override;

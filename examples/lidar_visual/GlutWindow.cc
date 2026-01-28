@@ -460,7 +460,7 @@ void run(std::vector<ir::CameraPtr> _cameras,
   initContext();
   printUsage();
   g_lidarData.clear();
-  for (int pt =0; pt < _pts.size(); pt++)
+  for (size_t pt =0; pt < _pts.size(); pt++)
   {
     g_lidarData.push_back(_pts[pt]);
   }

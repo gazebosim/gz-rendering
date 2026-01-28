@@ -1076,7 +1076,7 @@ void Ogre2DepthCamera::PreRender()
     colorPasses[0]->mExecutionMask =
       (this->dataPtr->newRgbPointCloud.ConnectionCount() > 0u) ?
       ~this->dataPtr->kDepthExecutionMask :this->dataPtr->kDepthExecutionMask;
-    for (unsigned int i = 1; i < colorPasses.size(); ++i)
+    for (size_t i = 1; i < colorPasses.size(); ++i)
     {
       colorPasses[i]->mExecutionMask =
           (this->dataPtr->newRgbPointCloud.ConnectionCount() > 0u) ?

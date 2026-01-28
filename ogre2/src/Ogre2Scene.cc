@@ -1440,7 +1440,7 @@ GlobalIlluminationCiVctPtr Ogre2Scene::CreateGlobalIlluminationCiVctImpl(
 bool Ogre2Scene::InitObject(Ogre2ObjectPtr _object, unsigned int _id,
     const std::string &_name)
 {
-  // assign needed varibles
+  // assign needed variables
   _object->id = _id;
   _object->name = _name;
   _object->scene = this->SharedThis();

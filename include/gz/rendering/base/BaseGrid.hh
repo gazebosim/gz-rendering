@@ -37,31 +37,31 @@ namespace gz
       protected: BaseGrid();
 
       /// \brief Destructor
-      public: virtual ~BaseGrid();
+      public: ~BaseGrid() override;
 
       // Documentation inherited.
-      public: virtual void PreRender();
+      public: void PreRender() override;
 
       // Documentation inherited.
-      public: virtual void Destroy();
+      public: void Destroy() override;
 
       // Documentation inherited.
-      public: virtual unsigned int CellCount() const;
+      public: unsigned int CellCount() const override;
 
       // Documentation inherited.
-      public: virtual void SetCellCount(const unsigned int _count);
+      public: void SetCellCount(const unsigned int _count) override;
 
       // Documentation inherited.
-      public: virtual double CellLength() const;
+      public: double CellLength() const override;
 
       // Documentation inherited.
-      public: virtual void SetCellLength(const double _len);
+      public: void SetCellLength(const double _len) override;
 
       // Documentation inherited.
-      public: virtual unsigned int VerticalCellCount() const;
+      public: unsigned int VerticalCellCount() const override;
 
       // Documentation inherited.
-      public: virtual void SetVerticalCellCount(const unsigned int _count);
+      public: void SetVerticalCellCount(const unsigned int _count) override;
 
       /// \brief Number of cells in grid
       protected: unsigned int cellCount = 10u;

@@ -565,16 +565,16 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetReceiveShadows(const bool _receive)
+    void BaseMaterial<T>::SetReceiveShadows(const bool _receiveShadows)
     {
-      this->receiveShadows = _receive;
+      this->receiveShadows = _receiveShadows;
     }
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseMaterial<T>::SetRenderOrder(const float _renderorder)
+    void BaseMaterial<T>::SetRenderOrder(const float _renderOrder)
     {
-      this->renderOrder = _renderorder;
+      this->renderOrder = _renderOrder;
     }
 
     //////////////////////////////////////////////////

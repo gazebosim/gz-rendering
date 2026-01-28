@@ -68,8 +68,8 @@ void OgreMaterial::Destroy()
   }
 #endif
   auto &textureManager = Ogre::TextureManager::getSingleton();
-  auto iend = textureManager.getResourceIterator().end();
-  for (auto i = textureManager.getResourceIterator().begin(); i != iend;)
+  const auto iend = textureManager.getResourceIterator().end();
+  for (auto i = textureManager.getResourceIterator().begin(); i != iend; ++i)
   {
     // A use count of 4 means that only RGM, RM and MeshManager have
     // references RGM has one (this one) and RM has 2 (by name and by handle)
@@ -91,7 +91,6 @@ void OgreMaterial::Destroy()
         break;
       }
     }
-    ++i;
   }
 }
 

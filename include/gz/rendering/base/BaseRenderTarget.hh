@@ -40,7 +40,7 @@ namespace gz
     {
       public: BaseRenderTarget();
 
-      public: virtual ~BaseRenderTarget();
+      public: ~BaseRenderTarget() override;
 
       // Documentation inherited.
       public: virtual void PreRender(const CameraPtr &_camera) override;
@@ -115,7 +115,7 @@ namespace gz
     {
       public: BaseRenderTexture();
 
-      public: virtual ~BaseRenderTexture();
+      public: ~BaseRenderTexture() override;
 
       // Documentation inherited.
       public: virtual unsigned int GLId() const override;
@@ -131,20 +131,20 @@ namespace gz
     {
       public: BaseRenderWindow();
 
-      public: virtual ~BaseRenderWindow();
+      public: ~BaseRenderWindow() override;
 
-      public: virtual std::string Handle() const;
+      public: std::string Handle() const override;
 
-      public: virtual void SetHandle(const std::string &_handle);
+      public: void SetHandle(const std::string &_handle) override;
 
-      public: virtual double DevicePixelRatio() const;
+      public: double DevicePixelRatio() const override;
 
-      public: virtual void SetDevicePixelRatio(const double _ratio);
+      public: void SetDevicePixelRatio(const double _ratio) override;
 
-      public: virtual void OnResize(const unsigned int _width,
-                  const unsigned int _height);
+      public: void OnResize(const unsigned int _width,
+                  const unsigned int _height) override;
 
-      public: virtual void OnMove();
+      public: void OnMove() override;
 
       protected: std::string handle;
 

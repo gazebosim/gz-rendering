@@ -803,7 +803,7 @@ void Ogre2Material::ClearLightMap()
   this->dataPtr->lightMapData = nullptr;
   this->lightMapUvSet = 0u;
 
-  // in ogre 2.2, we swtiched to use the emissive map slot for light map
+  // in ogre 2.2, we switched to use the emissive map slot for light map
   if (this->ogreDatablock->getUseEmissiveAsLightmap())
     this->ogreDatablock->setTexture(Ogre::PBSM_EMISSIVE, this->lightMapName);
   this->ogreDatablock->setUseEmissiveAsLightmap(false);
@@ -1127,7 +1127,6 @@ void Ogre2Material::SetTextureMapImpl(const std::string &_texture,
     // check for 8 bit pixel
     if (img.BPP() == 8u)
     {
-      std::string parentPath = common::parentPath(_texture);
       // set a custom name for the rgb texture by appending gz_ prefix
       std::string rgbTexName = "gz_" + baseName;
       baseName = rgbTexName;
@@ -1329,7 +1328,7 @@ void Ogre2Material::Init()
 
   if (!this->ogreHlmsPbs)
   {
-    gzerr << "Ogre HLMS PBS not ready. Is Ogre2 Render Engine initiallized?"
+    gzerr << "Ogre HLMS PBS not ready. Is Ogre2 Render Engine initialized?"
            << std::endl;
     return;
   }
@@ -1396,7 +1395,7 @@ Ogre::HlmsUnlitDatablock *Ogre2Material::UnlitDatablock()
     if (!ogreHlmsUnlit)
     {
       gzerr << "Ogre HLMS UNLIT not ready. Is Ogre2 Render Engine "
-             << "initiallized?" << std::endl;
+             << "initialized?" << std::endl;
       return nullptr;
     }
 
@@ -1607,7 +1606,7 @@ ShaderParamsPtr Ogre2Material::FragmentShaderParams()
 void Ogre2MaterialPrivate::PrepareForNormalMapping(Ogre::TextureGpu *_texture,
     Ogre::Image2 &_image)
 {
-  // code adpated from PrepareForNormalMapping::_executeStreaming function in
+  // code adapted from PrepareForNormalMapping::_executeStreaming function in
   // OgreMain/src/OgreTextureFilters.cpp (v2-3)
   const Ogre::uint8 numMipmaps = _image.getNumMipmaps();
   const Ogre::PixelFormatGpu dstFormat = Ogre::PFG_RG8_SNORM;
@@ -1651,7 +1650,7 @@ void Ogre2MaterialPrivate::PrepareForNormalMapping(Ogre::TextureGpu *_texture,
 //////////////////////////////////////////////////
 void Ogre2MaterialPrivate::AllocateMipmaps(Ogre::TextureGpu *_texture)
 {
-  // code adpated from GenerateHwMipmaps::_executeStreaming function in
+  // code adapted from GenerateHwMipmaps::_executeStreaming function in
   // OgreMain/src/OgreTextureFilters.cpp (v2-3)
   Ogre::uint8 maxMipmaps = Ogre::PixelFormatGpuUtils::getMaxMipmapCount(
       _texture->getWidth(),
@@ -1663,7 +1662,7 @@ void Ogre2MaterialPrivate::AllocateMipmaps(Ogre::TextureGpu *_texture)
 //////////////////////////////////////////////////
 void Ogre2MaterialPrivate::GenerateMipmaps(Ogre::TextureGpu *_texture)
 {
-  // code adpated from GenerateHwMipmaps::_executeSerial function in
+  // code adapted from GenerateHwMipmaps::_executeSerial function in
   // OgreMain/src/OgreTextureFilters.cpp (v2-3)
   Ogre::TextureGpuManager *textureManager = _texture->getTextureManager();
   Ogre::TextureGpu *tempTexture = textureManager->createTexture(

@@ -54,7 +54,7 @@ namespace gz
       public: virtual const float *Data() const override;
 
       // Documentation inherited.
-      public: virtual void Copy(float *_data) override;
+      public: virtual void Copy(float *_dataDest) override;
 
       // Documentation inherited.
       public: virtual void SetClamp(bool _enable) override;
@@ -146,7 +146,7 @@ namespace gz
       public: virtual double HorizontalResolution() const override;
 
       // Documentation inherited.
-      public: virtual void SetVerticalResolution(double resolution) override;
+      public: virtual void SetVerticalResolution(double _resolution) override;
 
       // Documentation inherited.
       public: virtual double VerticalResolution() const override;

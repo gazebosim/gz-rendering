@@ -45,22 +45,22 @@ namespace gz
       protected: OgreGrid();
 
       /// \brief Destructor
-      public: virtual ~OgreGrid();
+      public: ~OgreGrid() override;
 
       // Documentation inherited.
-      public: virtual void Init();
+      public: void Init() override;
 
       // Documentation inherited.
-      public: virtual Ogre::MovableObject *OgreObject() const;
+      public: Ogre::MovableObject *OgreObject() const override;
 
       // Documentation inherited.
-      public: virtual void PreRender();
+      public: void PreRender() override;
 
       // Documentation inherited.
-      public: virtual MaterialPtr Material() const;
+      public: MaterialPtr Material() const override;
 
       // Documentation inherited.
-      public: virtual void SetMaterial(MaterialPtr _material, bool _unique);
+      public: void SetMaterial(MaterialPtr _material, bool _unique) override;
 
       /// \brief Set material to grid geometry.
       /// \param[in] _material Ogre material.

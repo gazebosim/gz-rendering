@@ -104,7 +104,7 @@ namespace gz
 
       // Documentation inherited
       public: bool SetShadowTextureSize(LightType _lightType,
-            unsigned int _textureSize);
+            unsigned int _textureSize) override;
 
       // Documentation inherited
       public: unsigned int ShadowTextureSize(LightType _lightType) const
@@ -421,7 +421,7 @@ namespace gz
       /// \param[in] _compositorManager ogre compositor manager
       /// \param[in] _shadowNodeName Name of the shadow node definition
       /// \param[in] _shadowParams Parameters containing the shadow type,
-      /// texure resolution and position on the texture atlas.
+      /// texture resolution and position on the texture atlas.
       private: void CreateShadowNodeWithSettings(
           Ogre::CompositorManager2 *_compositorManager,
           const std::string &_shadowNodeName,

@@ -71,11 +71,11 @@ namespace gz
 
       /// \brief Get the name of the render engine loaded by this plugin.
       /// \return Name of render engine
-      public: std::string Name() const;
+      public: std::string Name() const override;
 
       /// \brief Get a pointer to the render engine loaded by this plugin.
       /// \return Render engine instance
-      public: RenderEngine *Engine() const;
+      public: RenderEngine *Engine() const override;
     };
 
     /// \brief Ogre2 render engine class. A singleton class that manages the
@@ -181,7 +181,7 @@ namespace gz
       /// \brief Create the resources needed by ogre
       private: void CreateResources();
 
-      /// \brief Attempt to initialize engine and catch exeption if they occur
+      /// \brief Attempt to initialize engine and catch exception if they occur
       private: void InitAttempt();
 
       /// \brief Get a list of all supported FSAA levels for this render system

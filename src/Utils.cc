@@ -76,7 +76,7 @@ math::Vector3d screenToPlane(
     const math::Vector2i &_screenPos,
     const CameraPtr &_camera,
     const RayQueryPtr &_rayQuery,
-    const float offset)
+    const float _offset)
 {
   // Normalize point on the image
   double width = _camera->ImageWidth();
@@ -89,7 +89,7 @@ math::Vector3d screenToPlane(
   _rayQuery->SetFromCamera(
       _camera, math::Vector2d(nx, ny));
 
-  gz::math::Planed plane(gz::math::Vector3d(0, 0, 1), offset);
+  gz::math::Planed plane(gz::math::Vector3d(0, 0, 1), _offset);
 
   math::Vector3d origin = _rayQuery->Origin();
   math::Vector3d direction = _rayQuery->Direction();
@@ -128,42 +128,43 @@ gz::math::Matrix3d projectionToCameraIntrinsic(
 
 /////////////////////////////////////////////////
 gz::math::AxisAlignedBox transformAxisAlignedBox(
-    const gz::math::AxisAlignedBox &_bbox,
+    const gz::math::AxisAlignedBox &_box,
     const gz::math::Pose3d &_pose)
 {
-  auto center = _bbox.Center();
+  auto center = _box.Center();
 
   // Get the 8 corners of the bounding box.
   std::vector<gz::math::Vector3d> vertices;
-  vertices.push_back(center + gz::math::Vector3d(-_bbox.XLength()/2.0,
-                                                       _bbox.YLength()/2.0,
-                                                       _bbox.ZLength()/2.0));
-  vertices.push_back(center + gz::math::Vector3d(_bbox.XLength()/2.0,
-                                                       _bbox.YLength()/2.0,
-                                                       _bbox.ZLength()/2.0));
-  vertices.push_back(center + gz::math::Vector3d(-_bbox.XLength()/2.0,
-                                                       -_bbox.YLength()/2.0,
-                                                       _bbox.ZLength()/2.0));
-  vertices.push_back(center + gz::math::Vector3d(_bbox.XLength()/2.0,
-                                                       -_bbox.YLength()/2.0,
-                                                       _bbox.ZLength()/2.0));
+  vertices.reserve(8);
+  vertices.push_back(center + gz::math::Vector3d(-_box.XLength()/2.0,
+                                                 _box.YLength()/2.0,
+                                                 _box.ZLength()/2.0));
+  vertices.push_back(center + gz::math::Vector3d(_box.XLength()/2.0,
+                                                 _box.YLength()/2.0,
+                                                 _box.ZLength()/2.0));
+  vertices.push_back(center + gz::math::Vector3d(-_box.XLength()/2.0,
+                                                 -_box.YLength()/2.0,
+                                                 _box.ZLength()/2.0));
+  vertices.push_back(center + gz::math::Vector3d(_box.XLength()/2.0,
+                                                 -_box.YLength()/2.0,
+                                                 _box.ZLength()/2.0));
 
-  vertices.push_back(center + gz::math::Vector3d(-_bbox.XLength()/2.0,
-                                                       _bbox.YLength()/2.0,
-                                                       -_bbox.ZLength()/2.0));
-  vertices.push_back(center + gz::math::Vector3d(_bbox.XLength()/2.0,
-                                                       _bbox.YLength()/2.0,
-                                                       -_bbox.ZLength()/2.0));
-  vertices.push_back(center + gz::math::Vector3d(-_bbox.XLength()/2.0,
-                                                       -_bbox.YLength()/2.0,
-                                                       -_bbox.ZLength()/2.0));
-  vertices.push_back(center + gz::math::Vector3d(_bbox.XLength()/2.0,
-                                                       -_bbox.YLength()/2.0,
-                                                       -_bbox.ZLength()/2.0));
+  vertices.push_back(center + gz::math::Vector3d(-_box.XLength()/2.0,
+                                                 _box.YLength()/2.0,
+                                                 -_box.ZLength()/2.0));
+  vertices.push_back(center + gz::math::Vector3d(_box.XLength()/2.0,
+                                                 _box.YLength()/2.0,
+                                                 -_box.ZLength()/2.0));
+  vertices.push_back(center + gz::math::Vector3d(-_box.XLength()/2.0,
+                                                 -_box.YLength()/2.0,
+                                                 -_box.ZLength()/2.0));
+  vertices.push_back(center + gz::math::Vector3d(_box.XLength()/2.0,
+                                                 -_box.YLength()/2.0,
+                                                 -_box.ZLength()/2.0));
 
 
   // Transform corners.
-  for (unsigned int i = 0; i < vertices.size(); ++i)
+  for (size_t i = 0; i < vertices.size(); ++i)
   {
     auto &v = vertices[i];
     v = _pose.Rot() * v + _pose.Pos();
@@ -173,7 +174,7 @@ gz::math::AxisAlignedBox transformAxisAlignedBox(
   gz::math::Vector3d max = vertices[0];
 
   // find min / max of vertices
-  for (unsigned int i = 1; i < vertices.size(); ++i)
+  for (size_t i = 1; i < vertices.size(); ++i)
   {
     auto &v = vertices[i];
 

@@ -28,7 +28,7 @@
 class gz::rendering::TransformControllerPrivate
 {
   /// \brief Gizmo visual that provides translation, rotation, and scale
-  /// tandles for transformation
+  /// handles for transformation
   public: GizmoVisualPtr gizmoVisual;
 
   /// \brief Node to be transformed
@@ -50,7 +50,7 @@ class gz::rendering::TransformControllerPrivate
   /// \brief Current active axis of transformation
   public: gz::math::Vector3d axis;
 
-  /// \brief Flag to indicate that transfomation is in progress.
+  /// \brief Flag to indicate that transformation is in progress.
   public: bool active = false;
 
   /// \brief Initial pose of the node being transformed.

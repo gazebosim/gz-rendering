@@ -137,7 +137,7 @@ void Ogre2BoundingBoxMaterialSwitcher::cameraPreRenderScene(
       // Material color
       auto customParameter = Ogre::Vector4(ogreId2, ogreId1, labelColor, 1.0);
 
-      // Multi-links models handeling
+      // Multi-links models handling
       auto itemName = visual->Name();
       std::string parentName = this->TopLevelModelVisual(visual)->Name();
 

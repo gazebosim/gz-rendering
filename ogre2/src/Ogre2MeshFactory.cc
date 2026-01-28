@@ -182,15 +182,13 @@ bool Ogre2MeshFactory::IsLoaded(const MeshDescriptor &_desc)
 bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
 {
   Ogre::v1::MeshPtr ogreMesh;
-  std::string name;
-  std::string group;
 
   Ogre2RenderEngine::Instance()->AddResourcePath(_desc.mesh->Path());
 
   try
   {
-    name = this->MeshName(_desc);
-    group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+    const auto &name = this->MeshName(_desc);
+    const auto &group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
     ogreMesh = Ogre::v1::MeshManager::getSingleton().createManual(name, group);
 
     // load skeleton

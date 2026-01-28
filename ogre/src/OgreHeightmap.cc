@@ -1098,9 +1098,8 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
   // Create the blend maps
   std::vector<Ogre::TerrainLayerBlendMap *> blendMaps;
   std::vector<float*> pBlend;
-  unsigned int i{0u};
 
-  for (i = 0; i < this->descriptor.BlendCount(); ++i)
+  for (uint64_t i = 0; i < this->descriptor.BlendCount(); ++i)
   {
     blendMaps.push_back(_terrain->getLayerBlendMap(i+1));
     pBlend.push_back(blendMaps[i]->getBlendPointer());
@@ -1117,7 +1116,7 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
       blendMaps[0]->convertImageToTerrainSpace(x, y, &tx, &ty);
       height = _terrain->getHeightAtTerrainPosition(tx, ty);
 
-      for (i = 0; i < this->descriptor.BlendCount(); ++i)
+      for (uint64_t i = 0; i < this->descriptor.BlendCount(); ++i)
       {
         auto blend = this->descriptor.BlendByIndex(i);
         val = (height - blend->MinHeight()) / blend->FadeDistance();

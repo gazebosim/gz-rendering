@@ -37,25 +37,25 @@ namespace gz
     {
       protected: BaseGeometry();
 
-      public: virtual ~BaseGeometry();
+      public: ~BaseGeometry() override;
 
-      public: virtual VisualPtr Parent() const override = 0;
+      public: VisualPtr Parent() const override = 0;
 
-      public: virtual void RemoveParent() override;
+      public: void RemoveParent() override;
 
       // Documentation inherited
-      public: virtual void SetMaterial(const std::string &_material,
+      public: void SetMaterial(const std::string &_name,
                   bool _unique = true) override;
 
       // Documentation inherited
-      public: virtual void SetMaterial(MaterialPtr _material,
+      public: void SetMaterial(MaterialPtr _material,
                   bool _unique = true) override = 0;
 
       // Documentation inherited
-      public: virtual GeometryPtr Clone() const override;
+      public: GeometryPtr Clone() const override;
 
       // Documentation inherited
-      public: virtual void Destroy() override;
+      public: void Destroy() override;
     };
 
     //////////////////////////////////////////////////

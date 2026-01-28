@@ -41,28 +41,28 @@ namespace gz
       protected: BaseGaussianNoisePass();
 
       /// \brief Destructor
-      public: virtual ~BaseGaussianNoisePass();
+      public: ~BaseGaussianNoisePass() override;
 
       // Documentation inherited.
-      public: double Mean() const;
+      public: double Mean() const override;
 
       // Documentation inherited.
-      public: double StdDev() const;
+      public: double StdDev() const override;
 
       // Documentation inherited.
-      public: double Bias() const;
+      public: double Bias() const override;
 
       // Documentation inherited.
-      public: void SetMean(double _mean);
+      public: void SetMean(double _mean) override;
 
       // Documentation inherited.
-      public: void SetStdDev(double _stdDev);
+      public: void SetStdDev(double _stdDev) override;
 
       // Documentation inherited.
-      public: void SetBiasMean(double _biasMean);
+      public: void SetBiasMean(double _biasMean) override;
 
       // Documentation inherited.
-      public: void SetBiasStdDev(double _biasStdDev);
+      public: void SetBiasStdDev(double _biasStdDev) override;
 
       // Sample the bias from bias mean and bias standard deviation
       protected: void SampleBias();

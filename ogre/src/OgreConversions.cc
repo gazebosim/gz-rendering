@@ -22,7 +22,7 @@ using namespace rendering;
 //////////////////////////////////////////////////
 const Ogre::PixelFormat OgreConversions::ogrePixelFormats[PF_COUNT] =
     {
-      // UKNOWN
+      // UNKNOWN
       Ogre::PF_UNKNOWN,
       // L8
       Ogre::PF_L8,

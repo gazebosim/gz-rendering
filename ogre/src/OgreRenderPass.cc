@@ -52,5 +52,5 @@ void OgreRenderPass::Destroy()
 //////////////////////////////////////////////////
 void OgreRenderPass::CreateRenderPass()
 {
-  // To be overriden by derived render pass classes
+  // To be overridden by derived render pass classes
 }

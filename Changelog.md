@@ -1,5 +1,46 @@
 ## Ignition Rendering
 
+### Ignition Rendering 6.6.4 (2026-01-29)
+
+1. Fortress: disable Ubuntu Focal CI
+    * [Pull request #1228](https://github.com/gazebosim/gz-rendering/pull/1228)
+
+1. Disable test from #1109 for Windows
+    * [Pull request #1205](https://github.com/gazebosim/gz-rendering/pull/1205)
+
+1. Port fix for destroying windows for ogre2.2
+    * [Pull request #1092](https://github.com/gazebosim/gz-rendering/pull/1092)
+
+1. Fail test if no scene can be created (gz-rendering6)
+    * [Pull request #1090](https://github.com/gazebosim/gz-rendering/pull/1090)
+
+1. Fix test_config.h to include real engines found (gz-rendering6)
+    * [Pull request #1089](https://github.com/gazebosim/gz-rendering/pull/1089)
+
+1. Disable tests that have segfaults on Mac (rendering6)
+    * [Pull request #1028](https://github.com/gazebosim/gz-rendering/pull/1028)
+
+1. Disable Unit test that have segfaults on Mac
+    * [Pull request #1023](https://github.com/gazebosim/gz-rendering/pull/1023)
+
+1. Fix the Fortress + Jammy build
+    * [Pull request #1017](https://github.com/gazebosim/gz-rendering/pull/1017)
+
+1. Fix crash when visualizing Lidars with points
+    * [Pull request #1008](https://github.com/gazebosim/gz-rendering/pull/1008)
+
+1. Fixed integer underflow in OgreDistortionPass
+    * [Pull request #994](https://github.com/gazebosim/gz-rendering/pull/994)
+
+1. Backport lidar particle detection optimization
+    * [Pull request #978](https://github.com/gazebosim/gz-rendering/pull/978)
+
+1. Skip particle passes in Ogre2DepthCamera if there are no particles in the scene
+    * [Pull request #971](https://github.com/gazebosim/gz-rendering/pull/971)
+
+1. Optimize Ogre2DepthCamera performance by skipping color target passes when there are no connections
+    * [Pull request #965](https://github.com/gazebosim/gz-rendering/pull/965)
+
 ### Ignition Rendering 6.6.3 (2024-01-19)
 
 1. Backport ogre2 lidar performance improvement

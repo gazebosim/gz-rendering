@@ -53,7 +53,7 @@ namespace gz
       /// we handle the decal's visibility in each of these cameras' view
       private: void UpdateCameraListener();
 
-      /// \brief Only the ogre scene can instanstiate this class
+      /// \brief Only the ogre scene can instantiate this class
       private: friend class OgreScene;
 
       /// \cond warning

@@ -107,7 +107,7 @@ Ogre2RayQuery::~Ogre2RayQuery()
 void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
     const math::Vector2d &_coord)
 {
-  // convert to nomalized screen pos for ogre
+  // convert to normalized screen pos for ogre
   math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
 
   Ogre2CameraPtr camera = std::dynamic_pointer_cast<Ogre2Camera>(_camera);
@@ -160,7 +160,7 @@ void Ogre2RayQuery::SetFromCamera(const WideAngleCameraPtr &_camera,
                                   uint32_t _faceIdx,
                                   const math::Vector2d &_coord)
 {
-  // convert to nomalized screen pos for ogre
+  // convert to normalized screen pos for ogre
   math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
 
   Ogre2WideAngleCameraPtr camera =
@@ -327,7 +327,7 @@ class GZ_RENDERING_OGRE2_HIDDEN ThreadedTriRay final
   }
 
   // Documentation inherited
-  public: void execute(size_t threadId, size_t numThreads) override;
+  public: void execute(size_t _threadId, size_t _numThreads) override;
 
   /// \brief To be run after parallel execution is done. It will iterate
   /// through the results of every thread and return the closest match
@@ -367,7 +367,7 @@ void ThreadedTriRay::execute(size_t _threadId, size_t _numThreads)
       std::string meshName = ogreItem->getMesh()->getName();
       size_t idx = meshName.find("::");
       if (idx != std::string::npos)
-        meshName = meshName.substr(0, idx);
+        meshName.resize(idx);
 
       const common::Mesh *mesh =
         common::MeshManager::Instance()->MeshByName(meshName);

@@ -876,13 +876,13 @@ void Ogre2GpuRays::CreateSampleTexture()
   int index = 0;
   for (unsigned int i = 0; i < this->dataPtr->h2nd; ++i)
   {
+    const math::Quaterniond pitch(math::Vector3d(1, 0, 0), -v);
     double h = min;
     for (unsigned int j = 0; j < this->dataPtr->w2nd; ++j)
     {
       // set up dir vector to sample from a standard Y up cubemap
       math::Vector3d ray(0, 0, 1);
-      ray.Normalize();
-      math::Quaterniond pitch(math::Vector3d(1, 0, 0), -v);
+
       math::Quaterniond yaw(math::Vector3d(0, 1, 0), -h);
       math::Vector3d dir = yaw * pitch * ray;
       unsigned int faceIdx;

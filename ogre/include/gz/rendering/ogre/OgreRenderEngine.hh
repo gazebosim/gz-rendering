@@ -58,11 +58,11 @@ namespace gz
 
       /// \brief Get the name of the render engine loaded by this plugin.
       /// \return Name of render engine
-      public: std::string Name() const;
+      public: std::string Name() const override;
 
       /// \brief Get a pointer to the render engine loaded by this plugin.
       /// \return Render engine instance
-      public: RenderEngine *Engine() const;
+      public: RenderEngine *Engine() const override;
     };
 
     class GZ_RENDERING_OGRE_VISIBLE OgreRenderEngine :

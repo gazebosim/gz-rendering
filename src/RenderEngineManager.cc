@@ -180,12 +180,11 @@ std::vector<std::string> RenderEngineManager::LoadedEngines() const
 {
   std::lock_guard<std::recursive_mutex> lock(this->dataPtr->enginesMutex);
   std::vector<std::string> engines;
-  for (const auto &[name, engine] :  // NOLINT(whitespace/braces)
-      this->dataPtr->engines)
+  for (const auto &[name, engine] : this->dataPtr->engines)
   {
-    std::string n = name;
     if (nullptr != engine)
     {
+      std::string n = name;
       // gz-rendering3 changed loaded engine names to the actual lib name.
       // For backward compatibility, return engine name if it is one of the
       // default engines

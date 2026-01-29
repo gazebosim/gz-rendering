@@ -364,7 +364,7 @@ void keyboardCB(unsigned char _key, int, int)
     g_followOffset.Z() -= 0.1;
   }
 
-  for (unsigned int i = 0; i < g_cameras.size(); ++i)
+  for (size_t i = 0; i < g_cameras.size(); ++i)
   {
     auto cam = g_cameras[i];
     auto node = g_nodes[i];

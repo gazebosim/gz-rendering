@@ -965,7 +965,7 @@ void Ogre2RenderEngine::RegisterHlms()
       &this->dataPtr->sphericalClipMinDistance);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
 
-    // disable writting debug output to disk
+    // disable writing debug output to disk
     hlmsUnlit->setDebugOutputPath(false, false);
     hlmsUnlit->setListener(hlmsUnlit);
 
@@ -1010,7 +1010,7 @@ void Ogre2RenderEngine::RegisterHlms()
                                      this->dataPtr->hlmsPbsTerraShadows.get());
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
 
-    // disable writting debug output to disk
+    // disable writing debug output to disk
     hlmsPbs->setDebugOutputPath(false, false);
     hlmsPbs->setListener(hlmsPbs);
 
@@ -1045,7 +1045,7 @@ void Ogre2RenderEngine::RegisterHlms()
       &this->dataPtr->sphericalClipMinDistance);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsTerra);
 
-    // disable writting debug output to disk
+    // disable writing debug output to disk
     hlmsTerra->setDebugOutputPath(false, false);
     hlmsTerra->setListener(hlmsTerra);
 

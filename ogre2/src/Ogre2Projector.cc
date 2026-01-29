@@ -87,7 +87,7 @@ class gz::rendering::Ogre2Projector::Implementation
   /// \brief Decal - Texture projected onto a surface
   public: Ogre::Decal *decal{nullptr};
 
-  /// \brief Indicate whether the projector is intialized or not
+  /// \brief Indicate whether the projector is initialized or not
   public: bool initialized{false};
 
   /// \brief A map of cameras (<Camera ptr, name>) that the listener has been

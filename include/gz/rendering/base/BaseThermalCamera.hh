@@ -66,7 +66,7 @@ namespace gz
       public: virtual float MaxTemperature() const override;
 
       // Documentation inherited.
-      public: virtual void SetLinearResolution(float _max) override;
+      public: virtual void SetLinearResolution(float _resolution) override;
 
       // Documentation inherited.
       public: virtual float LinearResolution() const override;

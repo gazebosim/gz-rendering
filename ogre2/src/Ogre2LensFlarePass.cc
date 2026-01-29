@@ -178,7 +178,7 @@ void Ogre2LensFlarePass::PostRender()
   Ogre2WideAngleCameraPtr wideAngleCamera =
     std::dynamic_pointer_cast<Ogre2WideAngleCamera>(
       this->dataPtr->currentCamera);
-  // WideAngleCamera is supposed to rendered 6 times. Nothin more, nothing less.
+  // WideAngleCamera is supposed to rendered 6 times.
   // Normal cameras are supposed to be rendered 1 time.
   GZ_ASSERT((!wideAngleCamera && this->dataPtr->currentFaceIdx == 1u) ||
               (wideAngleCamera && this->WideAngleCameraAfterStitching() &&

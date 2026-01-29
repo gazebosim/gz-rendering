@@ -86,11 +86,11 @@ namespace gz
       /// when the requested scheme is not found
       /// \param[in] _schemeIndex Index of scheme requested
       /// \param[in] _schemeName Name of scheme requested
-      /// \param[in] _originalMaterial Orignal material that does not contain
+      /// \param[in] _originalMaterial Original material that does not contain
       /// the requested scheme
       /// \param[in] _lodIndex The material level-of-detail
       /// \param[in] _rend Pointer to the Ogre::Renderable object requesting
-      /// the use of the techinique
+      /// the use of the technique
       /// \return The Ogre material technique to use when scheme is not found.
       public: virtual Ogre::Technique *handleSchemeNotFound(
                   uint16_t _schemeIndex, const Ogre::String &_schemeName,

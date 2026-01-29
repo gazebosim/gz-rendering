@@ -201,7 +201,7 @@ math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
   if (_isMultiLink)
     return color;
 
-  // loop recursivly till finding a unique color
+  // loop recursively till finding a unique color
   if (this->IsTakenColor(color))
       return this->LabelToColor(_label);
 

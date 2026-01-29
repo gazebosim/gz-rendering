@@ -26,7 +26,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    /// \brief Ogre2.x implementation of the sensor classs
+    /// \brief Ogre2.x implementation of the sensor class
     class GZ_RENDERING_OGRE2_VISIBLE Ogre2Sensor :
       public BaseSensor<Ogre2Node>
     {

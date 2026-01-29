@@ -109,7 +109,7 @@ class gz::rendering::Ogre2WideAngleCamera::Implementation
   public: Ogre::TextureGpu *ogreTmpTextures[2]{};
 
   /// \brief Output texture with the the toutput for stitches
-  /// [kStichTmpTexture] = Temp 2D texture for ping poing effects
+  /// [kStichTmpTexture] = Temp 2D texture for ping point effects
   /// [kStichFinalTexture] = Output texture with the final output
   public: Ogre::TextureGpu *ogreStitchTexture[kNumStichTextures] =
   { nullptr, nullptr };
@@ -164,6 +164,10 @@ class gz::rendering::Ogre2WideAngleCamera::Implementation
   explicit Implementation(gz::rendering::Ogre2WideAngleCamera &_owner) :
     workspaceListener(_owner)
   {
+    for (unsigned int i = 0; i < 6; ++i)
+    {
+      this->ogreCompositorWorkspace[i] = nullptr;
+    }
   }
   // clang-format on
 };
@@ -179,10 +183,6 @@ static constexpr uint32_t kWideAngleCameraQuadPassId = 1276661u;
 Ogre2WideAngleCamera::Ogre2WideAngleCamera() :
   dataPtr(utils::MakeUniqueImpl<Implementation>(*this))
 {
-  for (unsigned int i = 0; i < 6; ++i)
-  {
-    this->dataPtr->ogreCompositorWorkspace[i] = nullptr;
-  }
 }
 
 //////////////////////////////////////////////////

@@ -98,7 +98,7 @@ namespace gz
       /// \brief Create the particle system
       private: void CreateParticleSystem();
 
-      /// \brief Only the ogre scene can instanstiate this class
+      /// \brief Only the ogre scene can instantiate this class
       private: friend class Ogre2Scene;
 
       /// \brief Private data class

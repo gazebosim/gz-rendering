@@ -181,7 +181,7 @@ void OgreDistortionPass::CreateRenderPass()
 
   // initialize distortion map
   this->dataPtr->distortionMap.resize(imageSize);
-  for (unsigned int i = 0; i < this->dataPtr->distortionMap.size(); ++i)
+  for (size_t i = 0; i < this->dataPtr->distortionMap.size(); ++i)
   {
     this->dataPtr->distortionMap[i] = -1;
   }

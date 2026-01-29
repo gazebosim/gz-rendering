@@ -38,43 +38,43 @@ namespace gz
       protected: BaseDistortionPass();
 
       /// \brief Destructor
-      public: virtual ~BaseDistortionPass();
+      public: ~BaseDistortionPass() override;
 
       // Documentation inherited.
-      public: double K1() const;
+      public: double K1() const override;
 
       // Documentation inherited.
-      public: double K2() const;
+      public: double K2() const override;
 
       // Documentation inherited.
-      public: double K3() const;
+      public: double K3() const override;
 
       // Documentation inherited.
-      public: double P1() const;
+      public: double P1() const override;
 
       // Documentation inherited.
-      public: double P2() const;
+      public: double P2() const override;
 
       // Documentation inherited.
-      public: math::Vector2d Center() const;
+      public: math::Vector2d Center() const override;
 
       // Documentation inherited.
-      public: void SetK1(double _k1);
+      public: void SetK1(double _k1) override;
 
       // Documentation inherited.
-      public: void SetK2(double _k2);
+      public: void SetK2(double _k2) override;
 
       // Documentation inherited.
-      public: void SetK3(double _k3);
+      public: void SetK3(double _k3) override;
 
       // Documentation inherited.
-      public: void SetP1(double _p1);
+      public: void SetP1(double _p1) override;
 
       // Documentation inherited.
-      public: void SetP2(double _p2);
+      public: void SetP2(double _p2) override;
 
       // Documentation inherited.
-      public: void SetCenter(const math::Vector2d &_center);
+      public: void SetCenter(const math::Vector2d &_center) override;
 
       /// \brief Radial distortion coefficient k1.
       public: double k1 = 0;

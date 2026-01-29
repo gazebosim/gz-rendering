@@ -15,6 +15,7 @@
  *
  */
 
+#include <algorithm>
 #include <cmath>
 
 #include <gz/common/Console.hh>
@@ -43,8 +44,8 @@ class gz::rendering::OrbitViewControllerPrivate
 using namespace gz;
 using namespace rendering;
 
-static const float PITCH_LIMIT_LOW = -static_cast<float>(GZ_PI)*0.5f + 0.001f;
-static const float PITCH_LIMIT_HIGH = static_cast<float>(GZ_PI)*0.5f - 0.001f;
+static constexpr double PITCH_LIMIT_LOW = -GZ_PI*0.5 + 0.001;
+static constexpr double PITCH_LIMIT_HIGH = GZ_PI*0.5 - 0.001;
 
 //////////////////////////////////////////////////
 OrbitViewController::OrbitViewController()
@@ -225,10 +226,5 @@ double OrbitViewControllerPrivate::NormalizeYaw(double _yaw)
 //////////////////////////////////////////////////
 double OrbitViewControllerPrivate::NormalizePitch(double _pitch)
 {
-  if (_pitch < PITCH_LIMIT_LOW)
-    _pitch = PITCH_LIMIT_LOW;
-  else if (_pitch > PITCH_LIMIT_HIGH)
-    _pitch = PITCH_LIMIT_HIGH;
-
-  return _pitch;
+  return std::clamp(_pitch, PITCH_LIMIT_LOW, PITCH_LIMIT_HIGH);
 }

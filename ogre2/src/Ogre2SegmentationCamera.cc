@@ -18,6 +18,8 @@
 #include <string>
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
+
 #include <gz/math/Color.hh>
 #include <gz/math/Matrix4.hh>
 
@@ -163,6 +165,7 @@ void Ogre2SegmentationCamera::Destroy()
 /////////////////////////////////////////////////
 void Ogre2SegmentationCamera::PreRender()
 {
+  GZ_PROFILE("Ogre2SegmentationCamera::PreRender");
   if (!this->dataPtr->ogreSegmentationTexture)
     this->CreateSegmentationTexture();
 }
@@ -200,6 +203,7 @@ void Ogre2SegmentationCamera::CreateCamera()
 /////////////////////////////////////////////////
 void Ogre2SegmentationCamera::CreateSegmentationTexture()
 {
+  GZ_PROFILE("Ogre2SegmentationCamera::CreateSegmentationTexture");
   // Camera Parameters
   this->ogreCamera->setNearClipDistance(this->NearClipPlane());
   this->ogreCamera->setFarClipDistance(this->FarClipPlane());
@@ -254,6 +258,7 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
 /////////////////////////////////////////////////
 void Ogre2SegmentationCamera::PostRender()
 {
+  GZ_PROFILE("Ogre2SegmentationCamera::PostRender");
   // return if no one is listening to the new frame
   if (this->dataPtr->newSegmentationFrame.ConnectionCount() == 0)
     return;
@@ -314,6 +319,7 @@ gz::common::ConnectionPtr
 /////////////////////////////////////////////////
 void Ogre2SegmentationCamera::Render()
 {
+  GZ_PROFILE("Ogre2ThermalCamera::Render");
   // update the compositors
   this->scene->StartRendering(this->ogreCamera);
 
@@ -357,6 +363,7 @@ void Ogre2SegmentationCamera::SetBackgroundLabel(int _label)
 void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
   uint8_t * _labelBuffer) const
 {
+  GZ_PROFILE("Ogre2SegmentationCamera::LabelMapFromColoredBuffer");
   if (!this->isColoredMap)
     return;
 

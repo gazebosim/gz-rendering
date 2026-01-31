@@ -26,6 +26,7 @@
 #endif
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2DynamicRenderable.hh"
@@ -204,6 +205,7 @@ void Ogre2LidarVisual::SetPoints(const std::vector<double> &_points)
 //////////////////////////////////////////////////
 void Ogre2LidarVisual::Update()
 {
+  GZ_PROFILE("Ogre2LidarVisual::Update");
   if (this->lidarVisualType == LidarVisualType::LVT_NONE)
   {
     this->ClearVisualData();

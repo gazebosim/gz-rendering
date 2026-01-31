@@ -16,6 +16,7 @@
  */
 #include "gz/rendering/ogre/OgreLensFlarePass.hh"
 
+#include <gz/common/Profiler.hh>
 #include <gz/common/Util.hh>
 
 #include "gz/rendering/RayQuery.hh"
@@ -184,6 +185,7 @@ void OgreLensFlarePass::CreateRenderPass()
 //////////////////////////////////////////////////
 void OgreLensFlarePass::PreRender(const CameraPtr &_camera)
 {
+  GZ_PROFILE("OgreLensFlarePass::PreRender");
   if (!this->dataPtr->lensFlareInstance[0])
     return;
 
@@ -221,6 +223,7 @@ void OgreLensFlarePass::PreRender(const CameraPtr &_camera)
 //////////////////////////////////////////////////
 void OgreLensFlarePass::PostRender()
 {
+  GZ_PROFILE("OgreLensFlarePass::PostRender");
   if (!this->enabled || this->light == nullptr)
     return;
 
@@ -277,6 +280,7 @@ uint32_t OgreLensFlarePass::OcclusionSteps() const
 double OgreLensFlarePass::OcclusionScale(const math::Vector3d &_imgPos,
                                          uint32_t _faceIdx)
 {
+  GZ_PROFILE("OgreLensFlarePass::OcclusionScale");
   if (std::abs(this->dataPtr->occlusionSteps) <= 1e-7)
   {
     return this->dataPtr->scale;
@@ -357,6 +361,7 @@ double OgreLensFlarePass::OcclusionScale(const math::Vector3d &_imgPos,
 void OgreLensFlareCompositorListenerPrivate::notifyMaterialRender(
   unsigned int _passId, Ogre::MaterialPtr &_mat)
 {
+  GZ_PROFILE("OgreLensFlareCompositorListenerPrivate::notifyMaterialRender");
   if (!this->owner.enabled)
     return;
 

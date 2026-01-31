@@ -28,6 +28,8 @@
 #include <gz/math/Helpers.hh>
 #include <gz/math/Matrix4.hh>
 
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2DepthCamera.hh"
@@ -182,6 +184,7 @@ using namespace rendering;
 //////////////////////////////////////////////////
 void Ogre2DepthGaussianNoisePass::PreRender(const CameraPtr &/*_camera*/)
 {
+  GZ_PROFILE("Ogre2DepthGaussianNoisePass::PreRender");
   // This function is similar to Ogre2GaussianNoisePass but duplicated here
   // for Ogre2DepthCamera
 
@@ -434,6 +437,7 @@ void Ogre2DepthCamera::CreateRenderTexture()
 /////////////////////////////////////////////////////////
 void Ogre2DepthCamera::CreateDepthTexture()
 {
+  GZ_PROFILE("Ogre2DepthCamera::CreateDepthTexture");
   // set aspect ratio and fov
   const double aspectRatio = this->AspectRatio();
   const double angle = this->HFOV().Radian();
@@ -1029,6 +1033,7 @@ void Ogre2DepthCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::Render()
 {
+  GZ_PROFILE("Ogre2DepthCamera::Render");
   // Our shaders rely on clamped values so enable it for this sensor
   //
   // TODO(anyone): Matias N. Goldberg (dark_sylinc) insists this is a hack
@@ -1057,6 +1062,7 @@ void Ogre2DepthCamera::Render()
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::PreRender()
 {
+  GZ_PROFILE("Ogre2DepthCamera::PreRender");
   if (!this->dataPtr->ogreDepthTexture[0])
     this->CreateDepthTexture();
 
@@ -1155,6 +1161,7 @@ void Ogre2DepthCamera::PreRender()
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::PostRender()
 {
+  GZ_PROFILE("Ogre2DepthCamera::PostRender");
   unsigned int width = this->ImageWidth();
   unsigned int height = this->ImageHeight();
 

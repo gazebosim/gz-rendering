@@ -19,6 +19,7 @@
 #include <gz/common/Mesh.hh>
 #include <gz/common/MeshManager.hh>
 #include <gz/common/SubMesh.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
@@ -107,6 +108,7 @@ Ogre2RayQuery::~Ogre2RayQuery()
 void Ogre2RayQuery::SetFromCamera(const CameraPtr &_camera,
     const math::Vector2d &_coord)
 {
+  GZ_PROFILE("Ogre2RayQuery::SetFromCamera");
   // convert to normalized screen pos for ogre
   math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
 
@@ -160,6 +162,7 @@ void Ogre2RayQuery::SetFromCamera(const WideAngleCameraPtr &_camera,
                                   uint32_t _faceIdx,
                                   const math::Vector2d &_coord)
 {
+  GZ_PROFILE("Ogre2RayQuery::SetFromCamera_2");
   // convert to normalized screen pos for ogre
   math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
 
@@ -220,6 +223,7 @@ bool Ogre2RayQuery::UsesGpu() const
 //////////////////////////////////////////////////
 RayQueryResult Ogre2RayQuery::ClosestPoint(bool _forceSceneUpdate)
 {
+  GZ_PROFILE("Ogre2RayQuery::ClosestPoint");
   if (!this->UsesGpu())
   {
     // use legacy method for backward compatibility if no camera is set or
@@ -242,6 +246,7 @@ RayQueryResult Ogre2RayQuery::ClosestPoint(bool _forceSceneUpdate)
 //////////////////////////////////////////////////
 RayQueryResult Ogre2RayQuery::ClosestPointBySelectionBuffer()
 {
+  GZ_PROFILE("Ogre2RayQuery::ClosestPointBySelectionBuffer");
   // update selection buffer dimension in case window is resized
   this->dataPtr->camera->SelectionBuffer()->SetDimensions(
     this->dataPtr->camera->ImageWidth(), this->dataPtr->camera->ImageHeight());
@@ -333,6 +338,7 @@ class GZ_RENDERING_OGRE2_HIDDEN ThreadedTriRay final
 //////////////////////////////////////////////////
 void ThreadedTriRay::execute(size_t _threadId, size_t _numThreads)
 {
+  GZ_PROFILE("ThreadedTriRay::execute");
   const unsigned int numThreads = static_cast<unsigned int>(_numThreads);
   const unsigned int threadId = static_cast<unsigned int>(_threadId);
 
@@ -492,6 +498,7 @@ void ThreadedTriRay::execute(size_t _threadId, size_t _numThreads)
 //////////////////////////////////////////////////
 RayQueryResult ThreadedTriRay::CollapseCollectedResults()
 {
+  GZ_PROFILE("ThreadedTriRay::CollapseCollectedResults");
   RayQueryResult result;
   for (const RayQueryResult &entry : this->collectedResults)
   {
@@ -509,6 +516,7 @@ RayQueryResult ThreadedTriRay::CollapseCollectedResults()
 //////////////////////////////////////////////////
 RayQueryResult Ogre2RayQuery::ClosestPointByIntersection(bool _forceSceneUpdate)
 {
+  GZ_PROFILE("Ogre2RayQuery::ClosestPointByIntersection");
   RayQueryResult result;
   Ogre2ScenePtr ogreScene =
       std::dynamic_pointer_cast<Ogre2Scene>(this->Scene());

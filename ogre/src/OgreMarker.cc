@@ -16,6 +16,7 @@
  */
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre/OgreCapsule.hh"
 #include "gz/rendering/ogre/OgreDynamicLines.hh"
@@ -54,6 +55,7 @@ OgreMarker::~OgreMarker()
 //////////////////////////////////////////////////
 void OgreMarker::PreRender()
 {
+  GZ_PROFILE("OgreMarker::PreRender");
   if (this->markerType == MarkerType::MT_POINTS &&
       this->dataPtr->dynamicRenderable &&
       this->dataPtr->dynamicRenderable->PointCount() > 0u)

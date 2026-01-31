@@ -16,6 +16,7 @@
  */
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2Geometry.hh"
@@ -58,6 +59,7 @@ Ogre2Visual::~Ogre2Visual()
 //////////////////////////////////////////////////
 void Ogre2Visual::SetWireframe(bool _show)
 {
+  GZ_PROFILE("Ogre2Visual::SetWireframe");
   if (this->dataPtr->wireframe == _show)
     return;
 
@@ -238,6 +240,7 @@ void Ogre2Visual::BoundsHelper(gz::math::AxisAlignedBox &_box,
 void Ogre2Visual::BoundsHelper(gz::math::AxisAlignedBox &_box,
     bool _local, const gz::math::Pose3d &_pose) const
 {
+  GZ_PROFILE("Ogre2Visual::BoundsHelper");
   if (!this->ogreNode)
     return;
 

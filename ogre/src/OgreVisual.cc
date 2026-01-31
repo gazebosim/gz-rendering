@@ -16,6 +16,7 @@
  */
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre/OgreVisual.hh"
 #include "gz/rendering/ogre/OgreWireBox.hh"
@@ -48,6 +49,7 @@ OgreVisual::~OgreVisual()
 //////////////////////////////////////////////////
 void OgreVisual::SetWireframe(bool _show)
 {
+  GZ_PROFILE("OgreVisual::SetWireframe");
   if (this->dataPtr->wireframe == _show)
     return;
 
@@ -127,6 +129,7 @@ GeometryStorePtr OgreVisual::Geometries() const
 //////////////////////////////////////////////////
 bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 {
+  GZ_PROFILE("OgreVisual::AttachGeometry");
   if (!_geometry)
   {
     gzerr << "Cannot attach null geometry." << std::endl;
@@ -169,6 +172,7 @@ bool OgreVisual::AttachGeometry(GeometryPtr _geometry)
 //////////////////////////////////////////////////
 bool OgreVisual::DetachGeometry(GeometryPtr _geometry)
 {
+  GZ_PROFILE("OgreVisual::DetachGeometry");
   if (!this->ogreNode)
   {
     gzerr << "Cannot detach geometry, null Ogre node." << std::endl;
@@ -219,6 +223,7 @@ void OgreVisual::BoundsHelper(gz::math::AxisAlignedBox &_box,
 void OgreVisual::BoundsHelper(gz::math::AxisAlignedBox &_box,
     bool _local, const gz::math::Pose3d &_pose) const
 {
+  GZ_PROFILE("OgreVisual::BoundsHelper");
   if (!this->ogreNode)
     return;
 

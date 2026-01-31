@@ -26,6 +26,7 @@
 #endif
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre2/Ogre2Capsule.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
@@ -82,6 +83,7 @@ Ogre2Marker::~Ogre2Marker()
 //////////////////////////////////////////////////
 void Ogre2Marker::PreRender()
 {
+  GZ_PROFILE("Ogre2Marker::PreRender");
   if (this->markerType == MarkerType::MT_POINTS &&
       this->dataPtr->dynamicRenderable &&
       this->dataPtr->dynamicRenderable->PointCount() > 0u)

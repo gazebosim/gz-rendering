@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre/OgreCOMVisual.hh"
 #include "gz/rendering/ogre/OgreDynamicLines.hh"
@@ -49,6 +50,7 @@ OgreCOMVisual::~OgreCOMVisual()
 //////////////////////////////////////////////////
 void OgreCOMVisual::PreRender()
 {
+  GZ_PROFILE("OgreCOMVisual::PreRender");
   if (this->HasParent() && this->parentName.empty())
     this->parentName = this->Parent()->Name();
 
@@ -78,6 +80,7 @@ Ogre::MovableObject *OgreCOMVisual::OgreObject() const
 //////////////////////////////////////////////////
 void OgreCOMVisual::CreateVisual()
 {
+  GZ_PROFILE("OgreCOMVisual::CreateVisual");
   if (!this->dataPtr->crossLines)
   {
     this->dataPtr->crossLines = std::shared_ptr<OgreDynamicLines>(

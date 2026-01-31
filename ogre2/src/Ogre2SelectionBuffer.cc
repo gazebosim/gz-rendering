@@ -19,6 +19,8 @@
 #include <gz/math/Color.hh>
 
 #include "gz/common/Console.hh"
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2Heightmap.hh"
@@ -173,6 +175,7 @@ Ogre2SelectionBuffer::~Ogre2SelectionBuffer()
 /////////////////////////////////////////////////
 void Ogre2SelectionBuffer::Update()
 {
+  GZ_PROFILE("Ogre2SelectionBuffer::Update");
   if (!this->dataPtr->renderTexture)
     return;
 
@@ -205,6 +208,7 @@ void Ogre2SelectionBuffer::Update()
 /////////////////////////////////////////////////
 void Ogre2SelectionBuffer::DeleteRTTBuffer()
 {
+  GZ_PROFILE("Ogre2SelectionBuffer::DeleteRTTBuffer");
   if (this->dataPtr->ogreCompositorWorkspace)
   {
     // TODO(ahcorde): Remove the workspace. Potential leak here
@@ -236,6 +240,7 @@ void Ogre2SelectionBuffer::DeleteRTTBuffer()
 /////////////////////////////////////////////////
 void Ogre2SelectionBuffer::CreateRTTBuffer()
 {
+  GZ_PROFILE("Ogre2SelectionBuffer::CreateRTTBuffer");
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
 
@@ -425,6 +430,7 @@ Ogre::MovableObject *Ogre2SelectionBuffer::OnSelectionClick(int _x, int _y)
 bool Ogre2SelectionBuffer::ExecuteQuery(int _x, int _y,
     Ogre::MovableObject *&_obj, math::Vector3d &_point)
 {
+  GZ_PROFILE("Ogre2SelectionBuffer::ExecuteQuery");
   if (!this->dataPtr->renderTexture)
     return false;
 

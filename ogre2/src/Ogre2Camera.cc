@@ -15,6 +15,8 @@
  *
  */
 
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
@@ -156,6 +158,7 @@ void Ogre2Camera::SetMaterial(const MaterialPtr &_material)
 //////////////////////////////////////////////////
 void Ogre2Camera::Render()
 {
+  GZ_PROFILE("Ogre2Camera::Render");
   this->renderTexture->Render();
 }
 
@@ -302,6 +305,7 @@ Ogre2SelectionBuffer *Ogre2Camera::SelectionBuffer() const
 //////////////////////////////////////////////////
 VisualPtr Ogre2Camera::VisualAt(const math::Vector2i &_mousePos)
 {
+  GZ_PROFILE("Ogre2Camera::VisualAt");
   VisualPtr result;
 
   if (!this->selectionBuffer)

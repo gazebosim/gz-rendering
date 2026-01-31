@@ -26,6 +26,8 @@
 #pragma warning(pop)
 #endif
 
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2Includes.hh"
 #include "gz/rendering/ogre2/Ogre2Material.hh"
@@ -435,6 +437,7 @@ void Ogre2ParticleEmitter::Init()
 //////////////////////////////////////////////////
 void Ogre2ParticleEmitter::PreRender()
 {
+  GZ_PROFILE("Ogre2ParticleEmitter::PreRender");
   // recreate the particle system if needed
   // currently this is needed when user changes type or particle size
   if (this->dataPtr->emitterDirty)

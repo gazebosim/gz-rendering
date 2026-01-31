@@ -16,6 +16,7 @@
  */
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 #include "gz/rendering/ogre/OgreDynamicLines.hh"
 #include "gz/rendering/ogre/OgreLidarVisual.hh"
 #include "gz/rendering/ogre/OgreScene.hh"
@@ -154,6 +155,7 @@ void OgreLidarVisual::ClearVisualData()
 //////////////////////////////////////////////////
 void OgreLidarVisual::SetPoints(const std::vector<double> &_points)
 {
+  GZ_PROFILE("OgreLidarVisual::SetPoints");
   this->dataPtr->lidarPoints = _points;
   this->dataPtr->pointColors.clear();
   for (size_t i = 0u; i < this->dataPtr->lidarPoints.size(); ++i)
@@ -167,6 +169,7 @@ void OgreLidarVisual::SetPoints(const std::vector<double> &_points)
 void OgreLidarVisual::SetPoints(const std::vector<double> &_points,
                         const std::vector<gz::math::Color> &_colors)
 {
+  GZ_PROFILE("OgreLidarVisual::SetPoints_2");
   if (_points.size() != _colors.size())
   {
     gzerr << "Unequal size of point and color vector."
@@ -181,6 +184,7 @@ void OgreLidarVisual::SetPoints(const std::vector<double> &_points,
 //////////////////////////////////////////////////
 void OgreLidarVisual::Update()
 {
+  GZ_PROFILE("OgreLidarVisual::Update");
   if (this->lidarVisualType == LidarVisualType::LVT_NONE)
   {
     this->ClearVisualData();

@@ -16,6 +16,7 @@
  */
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/base/SceneExt.hh"
 
@@ -192,6 +193,7 @@ void OgreScene::SetAmbientLight(const math::Color &_color)
 //////////////////////////////////////////////////
 void OgreScene::SetBackgroundColor(const math::Color &_color)
 {
+  GZ_PROFILE("OgreScene::SetBackgroundColor");
   this->backgroundColor = _color;
 
   // TODO(anyone): clean up code
@@ -209,6 +211,7 @@ void OgreScene::SetBackgroundColor(const math::Color &_color)
 void OgreScene::SetGradientBackgroundColor(
     const std::array<math::Color, 4> &_colors)
 {
+  GZ_PROFILE("OgreScene::SetGradientBackgroundColor");
   ColoredRectangle2D* rect = nullptr;
   Ogre::SceneNode *backgroundNodePtr = nullptr;
 
@@ -292,6 +295,7 @@ void OgreScene::RemoveGradientBackgroundColor()
 //////////////////////////////////////////////////
 void OgreScene::PreRender()
 {
+  GZ_PROFILE("OgreScene::PreRender");
   BaseScene::PreRender();
   OgreRTShaderSystem::Instance()->Update();
 }

@@ -44,6 +44,7 @@
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Image.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/ShaderParams.hh"
@@ -354,6 +355,7 @@ void Ogre2Material::SetTransparency(const double _transparency)
 //////////////////////////////////////////////////
 void Ogre2Material::UpdateTransparency()
 {
+  GZ_PROFILE("Ogre2Material::UpdateTransparency");
   Ogre::HlmsPbsDatablock::TransparencyModes mode;
   double opacity = (1.0 - this->transparency) * this->diffuse.A();
   if (math::equal(opacity, 1.0))
@@ -836,12 +838,14 @@ float Ogre2Material::Metalness() const
 //////////////////////////////////////////////////
 void Ogre2Material::PreRender()
 {
+  GZ_PROFILE("Ogre2Material::PreRender");
   this->UpdateShaderParams();
 }
 
 //////////////////////////////////////////////////
 void Ogre2Material::UpdateShaderParams()
 {
+  GZ_PROFILE("Ogre2Material::UpdateShaderParams");
   if (this->dataPtr->vertexShaderParams &&
       this->dataPtr->vertexShaderParams->IsDirty())
   {
@@ -872,6 +876,7 @@ void Ogre2Material::UpdateShaderParams()
 void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
     Ogre::GpuProgramParametersSharedPtr _ogreParams)
 {
+  GZ_PROFILE("Ogre2Material::UpdateShaderParams_2");
   for (const auto &name_param : *_params)
   {
     auto *constantDef =
@@ -1415,6 +1420,7 @@ Ogre::HlmsUnlitDatablock *Ogre2Material::UnlitDatablock()
 void Ogre2Material::FillUnlitDatablock(Ogre::HlmsUnlitDatablock *_datablock)
     const
 {
+  GZ_PROFILE("Ogre2Material::FillUnlitDatablock");
   if (!this->textureName.empty())
   {
     std::string baseName = common::basename(this->textureName);

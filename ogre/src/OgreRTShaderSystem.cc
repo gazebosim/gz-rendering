@@ -26,6 +26,7 @@
 
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
+#include <gz/common/Profiler.hh>
 #include <gz/common/Util.hh>
 
 #include "gz/rendering/InstallationDirectories.hh"
@@ -192,6 +193,7 @@ void OgreRTShaderSystem::AddScene(OgreScenePtr _scene)
 //////////////////////////////////////////////////
 void OgreRTShaderSystem::RemoveScene(OgreScenePtr _scene)
 {
+  GZ_PROFILE("OgreRTShaderSystem::RemoveScene");
   if (!this->dataPtr->initialized)
     return;
 
@@ -243,6 +245,7 @@ void OgreRTShaderSystem::AttachEntity(OgreSubMesh *_subMesh)
 //////////////////////////////////////////////////
 void OgreRTShaderSystem::DetachEntity(OgreSubMesh *_subMesh)
 {
+  GZ_PROFILE("OgreRTShaderSystem::DetachEntity");
   if (!this->dataPtr->initialized)
     return;
 
@@ -296,6 +299,7 @@ void OgreRTShaderSystem::UpdateShaders()
 //////////////////////////////////////////////////
 void OgreRTShaderSystem::RemoveShaders(OgreSubMesh *_subMesh)
 {
+  GZ_PROFILE("OgreRTShaderSystem::RemoveShaders");
   if (!this->dataPtr->initialized)
     return;
 
@@ -362,6 +366,7 @@ void OgreRTShaderSystem::RemoveShaders(OgreSubMesh *_subMesh)
 //////////////////////////////////////////////////
 void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
 {
+  GZ_PROFILE("OgreRTShaderSystem::GenerateShaders");
   if (!this->dataPtr->initialized)
   {
     return;
@@ -485,6 +490,7 @@ void OgreRTShaderSystem::GenerateShaders(OgreSubMesh *subMesh)
 bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
     std::string &cachePath)
 {
+  GZ_PROFILE("OgreRTShaderSystem::Paths");
   const char *env = std::getenv("GZ_RENDERING_RESOURCE_PATH");
 
   std::string resourcePath = (env) ? std::string(env) :
@@ -544,6 +550,7 @@ bool OgreRTShaderSystem::Paths(std::string &coreLibsPath,
 //////////////////////////////////////////////////
 void OgreRTShaderSystem::RemoveShadows(OgreScenePtr _scene)
 {
+  GZ_PROFILE("OgreRTShaderSystem::RemoveShadows");
   if (!this->dataPtr->initialized || !this->dataPtr->shadowsApplied)
     return;
 
@@ -570,6 +577,7 @@ void OgreRTShaderSystem::RemoveShadows(OgreScenePtr _scene)
 //////////////////////////////////////////////////
 void OgreRTShaderSystem::ApplyShadows(OgreScenePtr _scene)
 {
+  GZ_PROFILE("OgreRTShaderSystem::ApplyShadows");
   if (!this->dataPtr->initialized || this->dataPtr->shadowsApplied)
     return;
 
@@ -687,6 +695,7 @@ Ogre::PSSMShadowCameraSetup
 /////////////////////////////////////////////////
 void OgreRTShaderSystem::Update()
 {
+  GZ_PROFILE("OgreRTShaderSystem::Update");
   if (!this->dataPtr->initialized)
     return;
 

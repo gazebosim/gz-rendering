@@ -26,6 +26,7 @@
 #include <OgreSceneManager.h>
 #include <OgreSceneNode.h>
 
+#include <gz/common/Profiler.hh>
 #include "gz/rendering/ogre/OgreCamera.hh"
 #include "gz/rendering/ogre/OgreConversions.hh"
 #include "gz/rendering/ogre/OgreDepthCamera.hh"
@@ -234,6 +235,7 @@ OgreProjector::~OgreProjector()
 /////////////////////////////////////////////////
 void OgreProjector::PreRender()
 {
+  GZ_PROFILE("OgreWireBox::PreRender");
   if (this->dataPtr->initialized)
   {
     this->UpdateCameraListener();
@@ -360,6 +362,7 @@ void OgreProjectorListener::SetEnabled(bool _enabled)
 /////////////////////////////////////////////////
 void OgreProjectorListener::CreateSceneNode()
 {
+  GZ_PROFILE("OgreProjectorListener::CreateSceneNode");
   if (this->filterNode)
   {
     this->filterNode->detachObject(this->filterFrustum.get());
@@ -413,6 +416,7 @@ void OgreProjectorListener::SetFrustumClipDistance(double _near,
 /////////////////////////////////////////////////
 std::unordered_set<std::string> OgreProjectorListener::FindVisibleMaterials()
 {
+  GZ_PROFILE("OgreProjectorListener::FindVisibleMaterials");
   std::unordered_set<std::string> newVisibleMaterials;
   Ogre::PlaneBoundedVolumeList volumeList;
 
@@ -453,6 +457,7 @@ void OgreProjectorListener::AddDecalToVisibleMaterials()
 void OgreProjectorListener::RemoveDecalFromInvisibleMaterials(
     std::unordered_set<std::string> &_matSet)
 {
+  GZ_PROFILE("OgreProjectorListener::RemoveDecalFromInvisibleMaterials");
   std::string invisibleMaterial;
   std::unordered_set<std::string>::iterator visibleMaterial;
 
@@ -484,6 +489,7 @@ void OgreProjectorListener::RemoveDecalFromInvisibleMaterials(
 void OgreProjectorListener::AddDecalToMaterials(
     std::unordered_set<std::string> &_matSet)
 {
+  GZ_PROFILE("OgreProjectorListener::AddDecalToMaterials");
   this->RemoveDecalFromInvisibleMaterials(_matSet);
 
   if (!_matSet.empty())
@@ -503,6 +509,7 @@ void OgreProjectorListener::AddDecalToMaterials(
 void OgreProjectorListener::AddDecalToMaterial(
     const std::string &_matName)
 {
+  GZ_PROFILE("OgreProjectorListener::AddDecalToMaterial");
   if (this->projectorTargets.find(_matName) != this->projectorTargets.end())
   {
     return;
@@ -544,6 +551,7 @@ void OgreProjectorListener::AddDecalToMaterial(
 /////////////////////////////////////////////////
 void OgreProjectorListener::RemoveDecalFromMaterials()
 {
+  GZ_PROFILE("OgreProjectorListener::RemoveDecalFromMaterials");
   for (auto it = this->projectorTargets.begin();
       it != this->projectorTargets.end(); ++it)
   {
@@ -558,6 +566,7 @@ void OgreProjectorListener::RemoveDecalFromMaterials()
 void OgreProjectorListener::RemoveDecalFromMaterial(
     const std::string &_matName)
 {
+  GZ_PROFILE("OgreProjectorListener::RemoveDecalFromMaterial");
   auto projectorTargetIt = this->projectorTargets.find(_matName);
   if (projectorTargetIt != this->projectorTargets.end())
   {
@@ -570,6 +579,7 @@ void OgreProjectorListener::RemoveDecalFromMaterial(
 /////////////////////////////////////////////////
 void OgreProjector::UpdateCameraListener()
 {
+  GZ_PROFILE("OgreProjector::UpdateCameraListener");
   // if projector does not have custom visibility flags
   // project the texture onto entity's original material. It'll be visible
   // to all cameras
@@ -659,6 +669,7 @@ void OgreProjectorListener::UpdateVisibleMaterials()
 void OgreProjectorListener::preRenderTargetUpdate(
     const Ogre::RenderTargetEvent &_evt)
 {
+  GZ_PROFILE("OgreProjectorListener::preRenderTargetUpdate");
   if (this->defaultScheme.empty())
   {
     this->defaultScheme =
@@ -692,6 +703,7 @@ Ogre::Technique *OgreProjectorListener::handleSchemeNotFound(
     Ogre::Material *_originalMaterial, uint16_t /*_lodIndex*/,
     const Ogre::Renderable *_rend)
 {
+  GZ_PROFILE("OgreProjectorListener::handleSchemeNotFound");
   if (_schemeName != "projector")
     return nullptr;
 

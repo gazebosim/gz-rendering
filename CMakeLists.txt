@@ -24,6 +24,14 @@ gz_configure_project(VERSION_SUFFIX pre1)
 #============================================================================
 option(USE_UNOFFICIAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the build" OFF)
 
+option(ENABLE_PROFILER "Enable Gazebo Profiler" FALSE)
+
+if(ENABLE_PROFILER)
+  add_definitions("-DGZ_PROFILER_ENABLE=1")
+else()
+  add_definitions("-DGZ_PROFILER_ENABLE=0")
+endif()
+
 #============================================================================
 # Search for project-specific dependencies
 #============================================================================
@@ -35,7 +43,7 @@ gz_find_package(gz-math REQUIRED COMPONENTS eigen3)
 #--------------------------------------
 # Find gz-common
 gz_find_package(gz-common REQUIRED
-  COMPONENTS graphics events geospatial)
+  COMPONENTS graphics events profiler geospatial)
 
 #--------------------------------------
 # Find gz-plugin

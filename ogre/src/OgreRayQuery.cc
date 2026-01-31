@@ -18,6 +18,7 @@
 #include <typeinfo>
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/OgreCamera.hh"
@@ -53,6 +54,7 @@ OgreRayQuery::~OgreRayQuery()
 void OgreRayQuery::SetFromCamera(const CameraPtr &_camera,
     const math::Vector2d &_coord)
 {
+  GZ_PROFILE("OgreRayQuery::SetFromCamera");
   // convert to nomalized screen pos for ogre
   math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
 
@@ -76,6 +78,7 @@ void OgreRayQuery::SetFromCamera(const WideAngleCameraPtr &_camera,
                                  uint32_t _faceIdx,
                                  const math::Vector2d &_coord)
 {
+  GZ_PROFILE("OgreRayQuery::SetFromCamera_2");
   // convert to nomalized screen pos for ogre
   math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
 
@@ -116,6 +119,7 @@ void OgreRayQuery::SetFromCamera(const WideAngleCameraPtr &_camera,
 //////////////////////////////////////////////////
 RayQueryResult OgreRayQuery::ClosestPoint(bool /*_forceSceneUpdate*/) // NOLINT
 {
+  GZ_PROFILE("OgreRayQuery::ClosestPoint");
   RayQueryResult result;
   OgreScenePtr ogreScene = std::dynamic_pointer_cast<OgreScene>(this->Scene());
   if (!ogreScene)
@@ -213,6 +217,7 @@ void OgreRayQuery::MeshInformation(const Ogre::Mesh *_mesh,
                                    const math::Quaterniond &_orient,
                                    const math::Vector3d &_scale)
 {
+  GZ_PROFILE("OgreRayQuery::MeshInformation");
   bool added_shared = false;
   size_t current_offset = 0;
   size_t next_offset = 0;

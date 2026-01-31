@@ -34,6 +34,7 @@
 
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/Material.hh"
 
@@ -71,6 +72,7 @@ OgreRenderTarget::~OgreRenderTarget()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Copy(Image &_image) const
 {
+  GZ_PROFILE("OgreRenderTarget::Copy");
   if (nullptr == this->RenderTarget())
     return;
 
@@ -150,6 +152,7 @@ void OgreRenderTarget::SetAntiAliasing(unsigned int _aa)
 //////////////////////////////////////////////////
 void OgreRenderTarget::PreRender()
 {
+  GZ_PROFILE("OgreRenderTarget::PreRender");
   BaseRenderTarget::PreRender();
   this->UpdateBackgroundColor();
 
@@ -170,6 +173,7 @@ void OgreRenderTarget::PostRender()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Render()
 {
+  GZ_PROFILE("OgreRenderTarget::Render");
   if (nullptr == this->RenderTarget())
     return;
 
@@ -205,6 +209,7 @@ void OgreRenderTarget::RebuildImpl()
 //////////////////////////////////////////////////
 void OgreRenderTarget::RebuildViewport()
 {
+  GZ_PROFILE("OgreRenderTarget::RebuildViewport");
   if (nullptr == this->RenderTarget())
     return;
 
@@ -235,6 +240,7 @@ void OgreRenderTarget::SetMaterial(MaterialPtr _material)
 //////////////////////////////////////////////////
 void OgreRenderTarget::RebuildMaterial()
 {
+  GZ_PROFILE("OgreRenderTarget::RebuildMaterial");
   if (this->material && this->RenderTarget())
   {
     OgreMaterial *ogreMaterial = dynamic_cast<OgreMaterial*>(
@@ -250,6 +256,7 @@ void OgreRenderTarget::RebuildMaterial()
 //////////////////////////////////////////////////
 void OgreRenderTarget::UpdateRenderPassChain()
 {
+  GZ_PROFILE("OgreRenderTarget::UpdateRenderPassChain");
   if (!this->renderPassDirty)
     return;
 
@@ -359,6 +366,7 @@ void OgreRenderTexture::RebuildTarget()
 //////////////////////////////////////////////////
 void OgreRenderTexture::DestroyTarget()
 {
+  GZ_PROFILE("OgreRenderTexture::DestroyTarget");
   if (nullptr == this->ogreTexture)
     return;
 
@@ -384,6 +392,7 @@ void OgreRenderTexture::DestroyTarget()
 //////////////////////////////////////////////////
 void OgreRenderTexture::BuildTarget()
 {
+  GZ_PROFILE("OgreRenderTexture::BuildTarget");
   Ogre::TextureManager &manager = Ogre::TextureManager::getSingleton();
   Ogre::PixelFormat ogreFormat;
   if ((this->format == PF_BAYER_RGGB8) ||
@@ -440,18 +449,21 @@ unsigned int OgreRenderTexture::GLId() const
 //////////////////////////////////////////////////
 void OgreRenderTexture::PreRender()
 {
+  GZ_PROFILE("OgreRenderTexture::PreRender");
   OgreRenderTarget::PreRender();
 }
 
 //////////////////////////////////////////////////
 void OgreRenderTexture::PostRender()
 {
+  GZ_PROFILE("OgreRenderTexture::PostRender");
   OgreRenderTarget::PostRender();
 }
 
 //////////////////////////////////////////////////
 void OgreRenderTexture::Buffer(float *_buffer)
 {
+  GZ_PROFILE("OgreRenderTexture::Buffer");
   Ogre::RenderTarget *ogreRenderTarget = this->RenderTarget();
 
   if (nullptr == ogreRenderTarget)

@@ -30,6 +30,7 @@
 #endif
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/base/SceneExt.hh"
 #include "gz/rendering/GraphicsAPI.hh"
@@ -229,6 +230,7 @@ void Ogre2Scene::SetBackgroundColor(const math::Color &_color)
 //////////////////////////////////////////////////
 void Ogre2Scene::PreRender()
 {
+  GZ_PROFILE("Ogre2Scene::PreRender");
   GZ_ASSERT((this->LegacyAutoGpuFlush() ||
               this->dataPtr->frameUpdateStarted == false),
              "Scene::PreRender called again before calling Scene::PostRender. "
@@ -282,6 +284,7 @@ void Ogre2Scene::PreRender()
 //////////////////////////////////////////////////
 void Ogre2Scene::PostRender()
 {
+  GZ_PROFILE("Ogre2Scene::PostRender");
   GZ_ASSERT((this->LegacyAutoGpuFlush() ||
               this->dataPtr->frameUpdateStarted == true),
              "Scene::PostRender called again before calling Scene::PreRender. "
@@ -317,6 +320,7 @@ void Ogre2Scene::PostRender()
 //////////////////////////////////////////////////
 void Ogre2Scene::StartForcedRender()
 {
+  GZ_PROFILE("Ogre2Scene::StartForcedRender");
   if (this->LegacyAutoGpuFlush() || !this->dataPtr->frameUpdateStarted)
   {
     this->ogreSceneManager->updateSceneGraph();
@@ -326,6 +330,7 @@ void Ogre2Scene::StartForcedRender()
 //////////////////////////////////////////////////
 void Ogre2Scene::EndForcedRender()
 {
+  GZ_PROFILE("Ogre2Scene::EndForcedRender");
   this->dataPtr->currNumCameraPasses = 0u;
   this->FlushGpuCommandsOnly();
 
@@ -346,6 +351,7 @@ void Ogre2Scene::EndForcedRender()
 //////////////////////////////////////////////////
 void Ogre2Scene::StartRendering(Ogre::Camera *_camera)
 {
+  GZ_PROFILE("Ogre2Scene::StartRendering");
   if (_camera)
     this->UpdateAllHeightmaps(_camera);
 
@@ -392,6 +398,7 @@ void Ogre2Scene::StartRendering(Ogre::Camera *_camera)
 void Ogre2Scene::FlushGpuCommandsAndStartNewFrame(uint8_t _numPasses,
                                                   bool _startNewFrame)
 {
+  GZ_PROFILE("Ogre2Scene::FlushGpuCommandsAndStartNewFrame");
   this->dataPtr->currNumCameraPasses += _numPasses;
 
   if (this->dataPtr->currNumCameraPasses >= dataPtr->cameraPassCountPerGpuFlush
@@ -409,6 +416,7 @@ void Ogre2Scene::FlushGpuCommandsAndStartNewFrame(uint8_t _numPasses,
 //////////////////////////////////////////////////
 void Ogre2Scene::FlushGpuCommandsOnly()
 {
+  GZ_PROFILE("Ogre2Scene::FlushGpuCommandsOnly");
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
@@ -436,6 +444,7 @@ void Ogre2Scene::FlushGpuCommandsOnly()
 //////////////////////////////////////////////////
 void Ogre2Scene::EndFrame()
 {
+  GZ_PROFILE("Ogre2Scene::EndFrame");
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
 
@@ -532,6 +541,7 @@ bool Ogre2Scene::InitImpl()
 //////////////////////////////////////////////////
 void Ogre2Scene::UpdateAllHeightmaps(Ogre::Camera *_camera)
 {
+  GZ_PROFILE("Ogre2Scene::UpdateAllHeightmaps");
   auto engine = Ogre2RenderEngine::Instance();
   Ogre::HlmsPbsTerraShadows *pbsTerraShadows = engine->HlmsPbsTerraShadows();
 
@@ -622,6 +632,7 @@ void Ogre2Scene::UpdateAllHeightmaps(Ogre::Camera *_camera)
 //////////////////////////////////////////////////
 void Ogre2Scene::UpdateShadowNode()
 {
+  GZ_PROFILE("Ogre2Scene::UpdateShadowNode");
   if (!this->ShadowsDirty())
     return;
 
@@ -756,6 +767,7 @@ void Ogre2Scene::CreateShadowNodeWithSettings(
     const std::string &_shadowNodeName,
     const Ogre::ShadowNodeHelper::ShadowParamVec &_shadowParams)
 {
+  GZ_PROFILE("Ogre2Scene::CreateShadowNodeWithSettings");
   Ogre::uint32 pointLightCubemapResolution = 1024u;
   Ogre::Real pssmLambda = 0.95f;
   Ogre::Real splitPadding = 1.0f;

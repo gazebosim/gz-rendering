@@ -15,6 +15,8 @@
  *
  */
 
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/ogre2/Ogre2NativeWindow.hh"
 
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
@@ -138,6 +140,7 @@ void Ogre2NativeWindow::RequestResolution(uint32_t _width, uint32_t _height)
 //////////////////////////////////////////////////
 void Ogre2NativeWindow::Draw(CameraPtr _camera)
 {
+  GZ_PROFILE("Ogre2NativeWindow::Draw");
   Ogre2Camera *camera = dynamic_cast<Ogre2Camera *>(_camera.get());
 
   if (!camera)

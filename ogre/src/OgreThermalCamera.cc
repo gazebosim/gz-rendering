@@ -26,6 +26,7 @@
 #include <limits>
 #include <variant>
 
+#include <gz/common/Profiler.hh>
 #include <gz/math/Helpers.hh>
 #include "gz/rendering/ShaderParams.hh"
 #include "gz/rendering/ogre/OgreThermalCamera.hh"
@@ -185,6 +186,7 @@ Ogre::Technique *OgreThermalCameraMaterialSwitcher::handleSchemeNotFound(
     Ogre::Material * /*_originalMaterial*/, uint16_t /*_lodIndex*/,
     const Ogre::Renderable *_rend)
 {
+  GZ_PROFILE("OgreThermalCameraMaterialSwitcher::handleSchemeNotFound");
   if (_schemeName != this->schemeName)
     return nullptr;
 
@@ -391,6 +393,7 @@ void OgreThermalCamera::CreateCamera()
 /////////////////////////////////////////////////
 void OgreThermalCamera::CreateThermalTexture()
 {
+  GZ_PROFILE("OgreThermalCamera::CreateThermalTexture");
   if (this->ogreCamera == nullptr)
   {
     gzerr << "Ogre camera cannot be created" << std::endl;
@@ -519,6 +522,7 @@ void OgreThermalCamera::DestroyRenderTexture()
 //////////////////////////////////////////////////
 void OgreThermalCamera::PreRender()
 {
+  GZ_PROFILE("OgreThermalCamera::PreRender");
   BaseCamera::PreRender();
   if (!this->dataPtr->ogreThermalTexture)
     this->CreateThermalTexture();
@@ -527,6 +531,7 @@ void OgreThermalCamera::PreRender()
 //////////////////////////////////////////////////
 void OgreThermalCamera::Render()
 {
+  GZ_PROFILE("OgreThermalCamera::Render");
   // render heat source
   Ogre::RenderTarget *heatRt =
       this->dataPtr->ogreHeatSourceTexture->getBuffer()->getRenderTarget();
@@ -541,6 +546,7 @@ void OgreThermalCamera::Render()
 //////////////////////////////////////////////////
 void OgreThermalCamera::PostRender()
 {
+  GZ_PROFILE("OgreThermalCamera::PostRender");
   if (this->dataPtr->newThermalFrame.ConnectionCount() <= 0u)
     return;
 

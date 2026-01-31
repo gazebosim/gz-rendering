@@ -32,6 +32,7 @@
 #include <vector>
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2DynamicRenderable.hh"
@@ -131,6 +132,7 @@ void Ogre2FrustumVisual::ClearVisualData()
 //////////////////////////////////////////////////
 void Ogre2FrustumVisual::Update()
 {
+  GZ_PROFILE("Ogre2FrustumVisual::Update");
   std::shared_ptr<Ogre2DynamicRenderable> renderable =
                   std::shared_ptr<Ogre2DynamicRenderable>(
                               new Ogre2DynamicRenderable(this->Scene()));

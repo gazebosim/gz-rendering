@@ -20,8 +20,9 @@
   #include <windows.h>
 #endif
 
-#include <gz/common/Util.hh>
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
+#include <gz/common/Util.hh>
 
 #include "gz/rendering/ogre/OgreMaterial.hh"
 #include "gz/rendering/ogre/OgreScene.hh"
@@ -343,6 +344,7 @@ void OgreMovableText::UpdateFont()
 //////////////////////////////////////////////////
 void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
 {
+  GZ_PROFILE("OgreMovableText::SetFontNameImpl");
   if ((Ogre::MaterialManager::getSingletonPtr()->resourceExists(
           this->mName + "Material")))
   {
@@ -402,6 +404,7 @@ void OgreMovableText::SetFontNameImpl(const std::string &_newFontName)
 //////////////////////////////////////////////////
 void OgreMovableText::SetupGeometry()
 {
+  GZ_PROFILE("OgreMovableText::SetupGeometry");
   GZ_ASSERT(this->font, "font class member is null");
 #if OGRE_VERSION_LT_1_11_0
   GZ_ASSERT(!this->ogreMaterial.isNull(), "ogreMaterial class member is null");
@@ -784,6 +787,7 @@ void OgreMovableText::UpdateMaterial()
 //////////////////////////////////////////////////
 void OgreMovableText::Update()
 {
+  GZ_PROFILE("OgreMovableText::Update");
   if (this->fontDirty)
     this->UpdateFont();
   if (this->textDirty)
@@ -810,6 +814,7 @@ const Ogre::String &OgreMovableText::getMovableType() const
 //////////////////////////////////////////////////
 void OgreMovableText::getWorldTransforms(Ogre::Matrix4 *_xform) const
 {
+  GZ_PROFILE("OgreMovableText::getWorldTransforms");
   if (this->isVisible() && this->camera)
   {
     Ogre::Matrix3 rot3x3, scale3x3 = Ogre::Matrix3::IDENTITY;
@@ -924,6 +929,7 @@ void OgreText::Init()
 //////////////////////////////////////////////////
 void OgreText::PreRender()
 {
+  GZ_PROFILE("OgreText::PreRender");
   this->dataPtr->ogreObj->Update();
 }
 

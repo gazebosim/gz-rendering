@@ -23,6 +23,7 @@
 #include <gz/common/Skeleton.hh>
 #include <gz/common/SkeletonAnimation.hh>
 #include <gz/common/SubMesh.hh>
+#include <gz/common/Profiler.hh>
 
 #include <gz/math/Matrix4.hh>
 
@@ -96,6 +97,7 @@ void Ogre2MeshFactory::ClearMaterialsCache(const std::string &)
 //////////////////////////////////////////////////
 Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
 {
+  GZ_PROFILE("Ogre2MeshFactory::Create");
   // create ogre entity
   Ogre2MeshPtr mesh(new Ogre2Mesh);
   MeshDescriptor normDesc = _desc;
@@ -125,6 +127,7 @@ Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
 //////////////////////////////////////////////////
 Ogre::Item *Ogre2MeshFactory::OgreItem(const MeshDescriptor &_desc)
 {
+  GZ_PROFILE("Ogre2MeshFactory::OgreItem");
   if (!this->Load(_desc))
   {
     return nullptr;
@@ -181,6 +184,7 @@ bool Ogre2MeshFactory::IsLoaded(const MeshDescriptor &_desc)
 //////////////////////////////////////////////////
 bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
 {
+  GZ_PROFILE("Ogre2MeshFactory::LoadImpl");
   Ogre::v1::MeshPtr ogreMesh;
 
   Ogre2RenderEngine::Instance()->AddResourcePath(_desc.mesh->Path());

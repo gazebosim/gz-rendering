@@ -21,6 +21,7 @@
 #include <gz/math/Vector3.hh>
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 #include <gz/math/Helpers.hh>
 
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
@@ -1248,6 +1249,7 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Render()
 {
+  GZ_PROFILE("Ogre2GpuRays::Render");
   this->scene->StartRendering(this->dataPtr->ogreCamera);
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -1272,6 +1274,7 @@ void Ogre2GpuRays::Render()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::PreRender()
 {
+  GZ_PROFILE("Ogre2GpuRays::PreRender");
   if (!this->dataPtr->cubeUVTexture)
     this->CreateGpuRaysTextures();
 
@@ -1300,6 +1303,7 @@ void Ogre2GpuRays::PreRender()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::PostRender()
 {
+  GZ_PROFILE("Ogre2GpuRays::PostRender");
   unsigned int width = this->dataPtr->w2nd;
   unsigned int height = this->dataPtr->h2nd;
 

@@ -27,6 +27,8 @@
 #endif
 
 #include "gz/common/Console.hh"
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2DynamicRenderable.hh"
 #include "gz/rendering/ogre2/Ogre2Material.hh"
@@ -213,6 +215,7 @@ void Ogre2DynamicRenderable::CreateDynamicMesh()
 //////////////////////////////////////////////////
 void Ogre2DynamicRenderable::UpdateBuffer()
 {
+  GZ_PROFILE("Ogre2DynamicRenderable::UpdateBuffer");
   if (!this->dataPtr->dirty)
     return;
 
@@ -573,6 +576,7 @@ void Ogre2DynamicRenderable::SetMaterial(MaterialPtr _material, bool _unique)
 void Ogre2DynamicRenderable::GenerateNormals(Ogre::OperationType _opType,
   const std::vector<math::Vector3d> &_vertices, float *_vbuffer)
 {
+  GZ_PROFILE("Ogre2DynamicRenderable::GenerateNormals");
   unsigned int vertexCount = _vertices.size();
   // Each vertex occupies 6 elements in the vbuffer float array:
   // vbuffer[i]   : position x

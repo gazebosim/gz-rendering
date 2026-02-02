@@ -17,6 +17,7 @@
 
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"
@@ -105,6 +106,7 @@ OgreGaussianNoisePass::~OgreGaussianNoisePass()
 //////////////////////////////////////////////////
 void OgreGaussianNoisePass::PreRender()
 {
+  GZ_PROFILE("OgreGaussianNoisePass::PreRender");
   if (!this->gaussianNoiseInstance[0])
     return;
 
@@ -121,6 +123,7 @@ void OgreGaussianNoisePass::PreRender()
 //////////////////////////////////////////////////
 void OgreGaussianNoisePass::CreateRenderPass()
 {
+  GZ_PROFILE("OgreGaussianNoisePass::CreateRenderPass");
   if (!this->ogreCamera[0])
   {
     gzerr << "No camera set for applying Gaussian Noise Pass" << std::endl;

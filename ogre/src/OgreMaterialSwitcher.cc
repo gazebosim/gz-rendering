@@ -16,6 +16,8 @@
 */
 
 #include "gz/common/Console.hh"
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/OgreMaterialSwitcher.hh"
 #include "gz/rendering/RenderTypes.hh"
@@ -42,6 +44,7 @@ Ogre::Technique *OgreMaterialSwitcher::handleSchemeNotFound(
     Ogre::Material *_originalMaterial, uint16_t /*_lodIndex*/,
     const Ogre::Renderable *_rend)
 {
+  GZ_PROFILE("OgreMaterialSwitcher::handleSchemeNotFound");
   // selection buffer: check scheme name against the one specified in
   // OgreSelectionBuffer::CreateRTTBuffer. Only proceed if this is a callback
   // from the selection camera.

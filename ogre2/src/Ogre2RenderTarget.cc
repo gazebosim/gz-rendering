@@ -16,6 +16,7 @@
  */
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/Material.hh"
 
@@ -131,6 +132,7 @@ Ogre2RenderTarget::~Ogre2RenderTarget()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::BuildCompositor()
 {
+  GZ_PROFILE("Ogre2RenderTarget::BuildCompositor");
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();
@@ -370,6 +372,7 @@ void Ogre2RenderTarget::RebuildCompositor()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Copy(Image &_image) const
 {
+  GZ_PROFILE("Ogre2RenderTarget::Copy");
   // TODO(anyone) handle Bayer conversions
 
   if (_image.Width() != this->width || _image.Height() != this->height)
@@ -492,6 +495,7 @@ void Ogre2RenderTarget::SetAntiAliasing(unsigned int _aa)
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::PreRender()
 {
+  GZ_PROFILE("Ogre2RenderTarget::PreRender");
   BaseRenderTarget::PreRender();
   this->UpdateBackgroundColor();
 
@@ -511,6 +515,7 @@ void Ogre2RenderTarget::PostRender()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Render()
 {
+  GZ_PROFILE("Ogre2RenderTarget::Render");
   this->scene->StartRendering(this->ogreCamera);
 
   this->ogreCompositorWorkspace->_validateFinalTarget();
@@ -613,6 +618,7 @@ void Ogre2RenderTarget::MetalIdImpl(void *_textureIdPtr) const
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::PrepareForExternalSampling()
 {
+  GZ_PROFILE("Ogre2RenderTarget::PrepareForExternalSampling");
   if (!this->dataPtr->ogreTexture[0])
     return;
 
@@ -777,6 +783,7 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
     bool _recreateNodes, Ogre::TextureGpu *(*_ogreTextures)[2],
     bool _isRenderWindow)
 {
+  GZ_PROFILE("Ogre2RenderTarget::UpdateRenderPassChain");
   if (!_workspace || _workspaceDefName.empty() ||
       _baseNode.empty() || _finalNode.empty() || _renderPasses.empty())
     return;
@@ -1040,12 +1047,14 @@ void Ogre2RenderTexture::MetalId(void *_textureIdPtr) const
 //////////////////////////////////////////////////
 void Ogre2RenderTexture::PreRender()
 {
+  GZ_PROFILE("Ogre2RenderTexture::PreRender");
   Ogre2RenderTarget::PreRender();
 }
 
 //////////////////////////////////////////////////
 void Ogre2RenderTexture::PostRender()
 {
+  GZ_PROFILE("Ogre2RenderTexture::PostRender");
   Ogre2RenderTarget::PostRender();
 }
 

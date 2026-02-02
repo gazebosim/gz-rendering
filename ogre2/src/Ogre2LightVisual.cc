@@ -14,6 +14,9 @@
  * limitations under the License.
  *
  */
+
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/ogre2/Ogre2LightVisual.hh"
 #include "gz/rendering/ogre2/Ogre2Material.hh"
 #include "gz/rendering/ogre2/Ogre2DynamicRenderable.hh"
@@ -52,6 +55,7 @@ Ogre2LightVisual::~Ogre2LightVisual()
 //////////////////////////////////////////////////
 void Ogre2LightVisual::PreRender()
 {
+  GZ_PROFILE("Ogre2LightVisual::PreRender");
   if (this->dirtyLightVisual)
   {
     this->CreateVisual();

@@ -23,6 +23,7 @@
 #include <gz/common/Skeleton.hh>
 #include <gz/common/SkeletonAnimation.hh>
 #include <gz/common/SubMesh.hh>
+#include <gz/common/Profiler.hh>
 
 #include <gz/math/Matrix4.hh>
 
@@ -51,6 +52,7 @@ OgreMeshFactory::~OgreMeshFactory()
 //////////////////////////////////////////////////
 OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
 {
+  GZ_PROFILE("OgreMeshFactory::Create");
   // create ogre entity
   OgreMeshPtr mesh(new OgreMesh);
   MeshDescriptor normDesc = _desc;
@@ -85,6 +87,7 @@ Ogre::Entity *OgreMeshFactory::OgreEntity(const MeshDescriptor &_desc)
 //////////////////////////////////////////////////
 bool OgreMeshFactory::Load(const MeshDescriptor &_desc)
 {
+  GZ_PROFILE("OgreMeshFactory::Load");
   if (!this->Validate(_desc))
   {
     return false;
@@ -108,6 +111,7 @@ bool OgreMeshFactory::IsLoaded(const MeshDescriptor &_desc)
 //////////////////////////////////////////////////
 void OgreMeshFactory::ClearMaterialsCache(const std::string &_name)
 {
+  GZ_PROFILE("OgreMeshFactory::ClearMaterialsCache");
   auto it = this->materialCache.begin();
   for (auto &mat : this->materialCache)
   {
@@ -127,6 +131,7 @@ void OgreMeshFactory::ClearMaterialsCache(const std::string &_name)
 //////////////////////////////////////////////////
 bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 {
+  GZ_PROFILE("OgreMeshFactory::LoadImpl");
   Ogre::MeshPtr ogreMesh;
 
   OgreRenderEngine::Instance()->AddResourcePath(_desc.mesh->Path());
@@ -554,6 +559,7 @@ OgreSubMeshStoreFactory::~OgreSubMeshStoreFactory()
 //////////////////////////////////////////////////
 OgreSubMeshStorePtr OgreSubMeshStoreFactory::Create()
 {
+  GZ_PROFILE("OgreSubMeshStoreFactory::Create");
   OgreSubMeshStorePtr subMeshes(new OgreSubMeshStore);
   const auto count = this->ogreEntity->getNumSubEntities();
 
@@ -569,6 +575,7 @@ OgreSubMeshStorePtr OgreSubMeshStoreFactory::Create()
 //////////////////////////////////////////////////
 OgreSubMeshPtr OgreSubMeshStoreFactory::CreateSubMesh(unsigned int _index)
 {
+  GZ_PROFILE("OgreSubMeshStoreFactory::CreateSubMesh");
   OgreSubMeshPtr subMesh(new OgreSubMesh);
 
   subMesh->id = _index;

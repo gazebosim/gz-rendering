@@ -19,6 +19,7 @@
 #include <gz/math/Color.hh>
 
 #include "gz/common/Console.hh"
+#include <gz/common/Profiler.hh>
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/OgreMaterialSwitcher.hh"
@@ -90,6 +91,7 @@ OgreSelectionBuffer::~OgreSelectionBuffer()
 /////////////////////////////////////////////////
 void OgreSelectionBuffer::Update()
 {
+  GZ_PROFILE("OgreSelectionBuffer::Update");
   if (!this->dataPtr->renderTexture)
     return;
 
@@ -133,6 +135,7 @@ void OgreSelectionBuffer::DeleteRTTBuffer()
 /////////////////////////////////////////////////
 void OgreSelectionBuffer::CreateRTTBuffer()
 {
+  GZ_PROFILE("OgreSelectionBuffer::CreateRTTBuffer");
   try
   {
     // 1x1 pixel buffer
@@ -179,6 +182,7 @@ void OgreSelectionBuffer::CreateRTTBuffer()
 /////////////////////////////////////////////////
 Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(const int _x, const int _y)
 {
+  GZ_PROFILE("OgreSelectionBuffer::OnSelectionClick");
   if (!this->dataPtr->renderTexture)
     return nullptr;
 
@@ -258,6 +262,7 @@ Ogre::Entity *OgreSelectionBuffer::OnSelectionClick(const int _x, const int _y)
 /////////////////////////////////////////////////
 void OgreSelectionBuffer::CreateRTTOverlays()
 {
+  GZ_PROFILE("OgreSelectionBuffer::CreateRTTOverlays");
   Ogre::OverlayManager *mgr = Ogre::OverlayManager::getSingletonPtr();
 
   if (mgr && mgr->getByName("SelectionDebugOverlay"))

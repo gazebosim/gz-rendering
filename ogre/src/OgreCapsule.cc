@@ -19,6 +19,7 @@
 
 #include <gz/common/Mesh.hh>
 #include <gz/common/MeshManager.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre/OgreCapsule.hh"
 #include "gz/rendering/ogre/OgreMaterial.hh"
@@ -59,6 +60,7 @@ Ogre::MovableObject *OgreCapsule::OgreObject() const
 //////////////////////////////////////////////////
 void OgreCapsule::PreRender()
 {
+  GZ_PROFILE("OgreCapsule::PreRender");
   if (this->capsuleDirty)
   {
     this->Update();
@@ -91,6 +93,7 @@ void OgreCapsule::Destroy()
 //////////////////////////////////////////////////
 void OgreCapsule::Update()
 {
+  GZ_PROFILE("OgreCapsule::Update");
   common::MeshManager *meshMgr = common::MeshManager::Instance();
   std::string capsuleMeshName = this->Name() + "_capsule_mesh"
     + "_" + std::to_string(this->radius)

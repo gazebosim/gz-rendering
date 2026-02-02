@@ -16,6 +16,7 @@
 */
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre2/Ogre2Grid.hh"
 #include "gz/rendering/ogre2/Ogre2Material.hh"
@@ -49,6 +50,7 @@ Ogre2Grid::~Ogre2Grid()
 //////////////////////////////////////////////////
 void Ogre2Grid::PreRender()
 {
+  GZ_PROFILE("Ogre2Grid::PreRender");
   BaseGrid::PreRender();
 
   if (this->gridDirty)

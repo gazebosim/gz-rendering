@@ -19,6 +19,8 @@
 
 #include "Ogre2BoundingBoxMaterialSwitcher.hh"
 
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 
@@ -78,6 +80,7 @@ Ogre2BoundingBoxMaterialSwitcher::~Ogre2BoundingBoxMaterialSwitcher()
 VisualPtr Ogre2BoundingBoxMaterialSwitcher::TopLevelModelVisual(
     VisualPtr _visual) const
 {
+  GZ_PROFILE("Ogre2BoundingBoxMaterialSwitcher::TopLevelModelVisual");
   if (!_visual)
     return _visual;
   VisualPtr p = _visual;
@@ -90,6 +93,7 @@ VisualPtr Ogre2BoundingBoxMaterialSwitcher::TopLevelModelVisual(
 void Ogre2BoundingBoxMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  GZ_PROFILE("Ogre2BoundingBoxMaterialSwitcher::cameraPreRenderScene");
   this->datablockMap.clear();
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
@@ -168,6 +172,7 @@ void Ogre2BoundingBoxMaterialSwitcher::cameraPreRenderScene(
 void Ogre2BoundingBoxMaterialSwitcher::cameraPostRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  GZ_PROFILE("Ogre2BoundingBoxMaterialSwitcher::cameraPostRenderScene");
   // restore the original material
   for (auto &it : this->datablockMap)
   {

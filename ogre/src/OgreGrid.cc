@@ -16,6 +16,7 @@
 */
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre/OgreGrid.hh"
 #include "gz/rendering/ogre/OgreMaterial.hh"
@@ -47,6 +48,7 @@ OgreGrid::~OgreGrid()
 //////////////////////////////////////////////////
 void OgreGrid::PreRender()
 {
+  GZ_PROFILE("OgreGrid::PreRender");
   if (this->gridDirty)
   {
     this->Create();

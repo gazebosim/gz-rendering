@@ -23,6 +23,7 @@
 #include <variant>
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre2/Ogre2Heightmap.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -84,6 +85,7 @@ bool Ogre2SegmentationMaterialSwitcher::IsTakenColor(const math::Color &_color)
 Ogre::Vector4 Ogre2SegmentationMaterialSwitcher::ColorForVisual(
   const VisualPtr &_visual, std::string &_prevParentName)
 {
+  GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::ColorForVisual");
   // get class user data
   Variant labelAny = _visual->UserData("label");
   int label;
@@ -175,6 +177,7 @@ Ogre::Vector4 Ogre2SegmentationMaterialSwitcher::ColorForVisual(
 math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
   bool _isMultiLink)
 {
+  GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::LabelToColor");
   if (_label == this->segmentationCamera->BackgroundLabel())
     return this->segmentationCamera->BackgroundColor();
 
@@ -219,6 +222,7 @@ math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
 VisualPtr Ogre2SegmentationMaterialSwitcher::TopLevelModelVisual(
     VisualPtr _visual) const
 {
+  GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::TopLevelModelVisual");
   if (!_visual)
     return _visual;
   VisualPtr p = _visual;
@@ -231,6 +235,7 @@ VisualPtr Ogre2SegmentationMaterialSwitcher::TopLevelModelVisual(
 void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene");
   this->colorToLabel.clear();
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
@@ -394,6 +399,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
 void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene");
   auto engine = Ogre2RenderEngine::Instance();
   Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
 

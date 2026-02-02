@@ -17,6 +17,7 @@
 
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/ogre2/Ogre2GaussianNoisePass.hh"
@@ -62,6 +63,7 @@ Ogre2GaussianNoisePass::~Ogre2GaussianNoisePass()
 //////////////////////////////////////////////////
 void Ogre2GaussianNoisePass::PreRender(const CameraPtr &/*_camera*/)
 {
+  GZ_PROFILE("Ogre2GaussianNoisePass::PreRender");
   if (!this->dataPtr->gaussianNoiseMat)
     return;
 

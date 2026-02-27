@@ -17,6 +17,7 @@
 
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/ShaderParams.hh"
@@ -68,8 +69,8 @@ void OgreMaterial::Destroy()
   }
 #endif
   auto &textureManager = Ogre::TextureManager::getSingleton();
-  auto iend = textureManager.getResourceIterator().end();
-  for (auto i = textureManager.getResourceIterator().begin(); i != iend;)
+  const auto iend = textureManager.getResourceIterator().end();
+  for (auto i = textureManager.getResourceIterator().begin(); i != iend; ++i)
   {
     // A use count of 4 means that only RGM, RM and MeshManager have
     // references RGM has one (this one) and RM has 2 (by name and by handle)
@@ -91,7 +92,6 @@ void OgreMaterial::Destroy()
         break;
       }
     }
-    ++i;
   }
 }
 
@@ -294,6 +294,7 @@ std::string OgreMaterial::Texture() const
 void OgreMaterial::SetTexture(const std::string &_name,
                               const std::shared_ptr<const common::Image> &_img)
 {
+  GZ_PROFILE("OgreMaterial::SetTexture");
   if (_name.empty())
   {
     this->ClearTexture();
@@ -379,12 +380,14 @@ void OgreMaterial::SetShaderType(enum ShaderType _type)
 //////////////////////////////////////////////////
 void OgreMaterial::PreRender()
 {
+  GZ_PROFILE("OgreMaterial::PreRender");
   this->UpdateShaderParams();
 }
 
 //////////////////////////////////////////////////
 void OgreMaterial::UpdateShaderParams()
 {
+  GZ_PROFILE("OgreMaterial::UpdateShaderParams");
   if (this->vertexShaderParams && this->vertexShaderParams->IsDirty())
   {
     Ogre::GpuProgramParametersSharedPtr ogreParams;
@@ -405,6 +408,7 @@ void OgreMaterial::UpdateShaderParams()
 void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
     Ogre::GpuProgramParametersSharedPtr _ogreParams)
 {
+  GZ_PROFILE("OgreMaterial::UpdateShaderParams_2");
   for (const auto &name_param : *_params)
   {
     auto *constantDef =
@@ -544,6 +548,7 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
 //////////////////////////////////////////////////
 void OgreMaterial::SetVertexShader(const std::string &_path)
 {
+  GZ_PROFILE("OgreMaterial::SetVertexShader");
   if (_path.empty())
     return;
 
@@ -593,6 +598,7 @@ ShaderParamsPtr OgreMaterial::VertexShaderParams()
 //////////////////////////////////////////////////
 void OgreMaterial::SetFragmentShader(const std::string &_path)
 {
+  GZ_PROFILE("OgreMaterial::SetFragmentShader");
   if (_path.empty())
     return;
 
@@ -679,6 +685,7 @@ void OgreMaterial::LoadOneImage(const std::string &_name, Ogre::Image &_image)
 //////////////////////////////////////////////////
 void OgreMaterial::SetTextureImpl(const std::string &_texture)
 {
+  GZ_PROFILE("OgreMaterial::SetTextureImpl");
   if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(
       this->ogreGroup, _texture))
   {
@@ -694,6 +701,7 @@ void OgreMaterial::SetTextureImpl(const std::string &_texture)
 void OgreMaterial::SetTextureDataImpl(const std::string &_texture,
   const std::shared_ptr<const common::Image> &_img)
 {
+  GZ_PROFILE("OgreMaterial::SetTextureDataImpl");
   // Create the texture only if it was not created already
   if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(
       this->ogreGroup, _texture))
@@ -772,6 +780,7 @@ Ogre::TexturePtr OgreMaterial::CreateTexture(const std::string &_name)
 //////////////////////////////////////////////////
 void OgreMaterial::UpdateTransparency()
 {
+  GZ_PROFILE("OgreMaterial::UpdateTransparency");
   Ogre::ColourValue color = this->ogrePass->getAmbient();
   double alpha = (1 - this->transparency) * color.a;
 
@@ -802,6 +811,7 @@ void OgreMaterial::UpdateTransparency()
 void OgreMaterial::SetAlphaFromTexture(bool _enabled,
   double _alpha, bool _twoSided)
 {
+  GZ_PROFILE("OgreMaterial::SetAlphaFromTexture");
   // TODO(anyone) Implement alpha testing for shadow caster pass
   BaseMaterial::SetAlphaFromTexture(_enabled, _alpha, _twoSided);
   this->UpdateTransparency();
@@ -811,6 +821,7 @@ void OgreMaterial::SetAlphaFromTexture(bool _enabled,
 void OgreMaterial::SetDepthMaterial(const double _far,
   const double _near)
 {
+  GZ_PROFILE("OgreMaterial::SetDepthMaterial");
   // Configure Ogre Pass settings for Depth
   this->ogrePass->setDepthCheckEnabled(false);
   this->ogrePass->setDepthWriteEnabled(false);
@@ -848,6 +859,7 @@ void OgreMaterial::SetDepthMaterial(const double _far,
 //////////////////////////////////////////////////
 void OgreMaterial::UpdateColorOperation()
 {
+  GZ_PROFILE("OgreMaterial::UpdateColorOperation");
   Ogre::LayerBlendOperationEx operation;
   Ogre::LayerBlendSource source1;
   Ogre::LayerBlendSource source2;

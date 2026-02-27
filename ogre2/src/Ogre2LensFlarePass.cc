@@ -16,6 +16,7 @@
  */
 #include "gz/rendering/ogre2/Ogre2LensFlarePass.hh"
 
+#include <gz/common/Profiler.hh>
 #include <gz/common/Util.hh>
 
 #include "gz/rendering/RayQuery.hh"
@@ -147,6 +148,7 @@ void Ogre2LensFlarePass::Init(ScenePtr _scene)
 //////////////////////////////////////////////////
 void Ogre2LensFlarePass::PreRender(const CameraPtr &_camera)
 {
+  GZ_PROFILE("Ogre2LensFlarePass::PreRender");
   if (!this->enabled || this->light == nullptr)
     return;
 
@@ -172,13 +174,14 @@ void Ogre2LensFlarePass::PreRender(const CameraPtr &_camera)
 //////////////////////////////////////////////////
 void Ogre2LensFlarePass::PostRender()
 {
+  GZ_PROFILE("Ogre2LensFlarePass::PostRender");
   if (!this->enabled || this->light == nullptr)
     return;
 
   Ogre2WideAngleCameraPtr wideAngleCamera =
     std::dynamic_pointer_cast<Ogre2WideAngleCamera>(
       this->dataPtr->currentCamera);
-  // WideAngleCamera is supposed to rendered 6 times. Nothin more, nothing less.
+  // WideAngleCamera is supposed to rendered 6 times.
   // Normal cameras are supposed to be rendered 1 time.
   GZ_ASSERT((!wideAngleCamera && this->dataPtr->currentFaceIdx == 1u) ||
               (wideAngleCamera && this->WideAngleCameraAfterStitching() &&
@@ -240,6 +243,7 @@ void Ogre2LensFlarePass::WorkspaceRemoved(Ogre::CompositorWorkspace *_workspace)
 double Ogre2LensFlarePass::OcclusionScale(const math::Vector3d &_imgPos,
                                           uint32_t _faceIdx)
 {
+  GZ_PROFILE("Ogre2LensFlarePass::OcclusionScale");
   if (std::abs(this->dataPtr->occlusionSteps) <= 1e-7)
   {
     return this->dataPtr->scale;
@@ -320,6 +324,7 @@ double Ogre2LensFlarePass::OcclusionScale(const math::Vector3d &_imgPos,
 void Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute(
   Ogre::CompositorPass *_pass)
 {
+  GZ_PROFILE("Ogre2LensFlarePassWorkspaceListenerPrivate::passPreExecute");
   if (!this->owner.enabled)
     return;
 

@@ -17,6 +17,7 @@
 
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"
@@ -122,6 +123,7 @@ OgreDistortionPass::~OgreDistortionPass()
 //////////////////////////////////////////////////
 void OgreDistortionPass::PreRender()
 {
+  GZ_PROFILE("OgreDistortionPass::PreRender");
   if (!this->dataPtr->distortionInstance)
     return;
   if (this->enabled != this->dataPtr->distortionInstance->getEnabled())
@@ -131,6 +133,7 @@ void OgreDistortionPass::PreRender()
 //////////////////////////////////////////////////
 void OgreDistortionPass::CreateRenderPass()
 {
+  GZ_PROFILE("OgreDistortionPass::CreateRenderPass");
   if (!this->ogreCamera[0])
   {
     gzerr << "No camera set for applying Distortion Pass" << std::endl;
@@ -181,7 +184,7 @@ void OgreDistortionPass::CreateRenderPass()
 
   // initialize distortion map
   this->dataPtr->distortionMap.resize(imageSize);
-  for (unsigned int i = 0; i < this->dataPtr->distortionMap.size(); ++i)
+  for (size_t i = 0; i < this->dataPtr->distortionMap.size(); ++i)
   {
     this->dataPtr->distortionMap[i] = -1;
   }
@@ -470,6 +473,7 @@ gz::math::Vector2d OgreDistortionPass::Distort(
     const gz::math::Vector2d &_center, double _k1, double _k2, double _k3,
     double _p1, double _p2, unsigned int _width, double _f)
 {
+  GZ_PROFILE("OgreDistortionPass::Distort");
   // apply Brown's distortion model, see
   // http://en.wikipedia.org/wiki/Distortion_%28optics%29#Software_correction
 
@@ -512,6 +516,7 @@ gz::math::Vector2d
 //////////////////////////////////////////////////
 void OgreDistortionPass::CalculateAndApplyDistortionScale()
 {
+  GZ_PROFILE("OgreDistortionPass::CalculateAndApplyDistortionScale");
   if (this->dataPtr->distortionMaterial.isNull())
     return;
 

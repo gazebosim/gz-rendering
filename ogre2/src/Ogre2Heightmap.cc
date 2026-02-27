@@ -18,6 +18,7 @@
 #include <chrono>
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 #include <gz/common/Util.hh>
 
 #include "gz/rendering/ogre2/Ogre2Heightmap.hh"
@@ -88,6 +89,7 @@ void Ogre2Heightmap::Destroy()
 //////////////////////////////////////////////////
 void Ogre2Heightmap::Init()
 {
+  GZ_PROFILE("Ogre2Heightmap::Init");
   Ogre2Object::Init();
 
   if (this->descriptor.Data() == nullptr)
@@ -100,7 +102,7 @@ void Ogre2Heightmap::Init()
     this->descriptor.SetName(this->Name());
 
   // Add paths
-  for (auto i = 0u; i < this->descriptor.TextureCount(); ++i)
+  for (uint64_t i = 0u; i < this->descriptor.TextureCount(); ++i)
   {
     auto texture = this->descriptor.TextureByIndex(i);
     Ogre2RenderEngine::Instance()->AddResourcePath(texture->Diffuse());
@@ -401,6 +403,7 @@ void Ogre2Heightmap::PreRender()
 ///////////////////////////////////////////////////
 void Ogre2Heightmap::UpdateForRender(Ogre::Camera *_activeCamera)
 {
+  GZ_PROFILE("Ogre2Heightmap::UpdateForRender");
   if (this->dataPtr->skirtMinHeight >= 0)
   {
     this->dataPtr->terra->setCustomSkirtMinHeight(

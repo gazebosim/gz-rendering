@@ -16,6 +16,8 @@
 */
 
 #include "gz/common/Console.hh"
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/ogre/OgreDynamicRenderable.hh"
 
 using namespace gz;
@@ -139,6 +141,7 @@ MarkerType OgreDynamicRenderable::OperationType() const
 void OgreDynamicRenderable::PrepareHardwareBuffers(size_t vertexCount,
                                                size_t indexCount)
 {
+  GZ_PROFILE("OgreDynamicRenderable::PrepareHardwareBuffers");
   // Prepare vertex buffer
   size_t newVertCapacity = this->vertexBufferCapacity;
 

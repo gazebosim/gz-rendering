@@ -72,6 +72,7 @@ cc_library(
         "@gz-common//events",
         "@gz-common//geospatial",
         "@gz-common//graphics",
+        "@gz-common//profiler",
         "@gz-math",
         "@gz-plugin//:loader",
         "@gz-utils//:ImplPtr",

@@ -15,6 +15,7 @@
  *
 */
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre/OgreWireBox.hh"
 #include "gz/rendering/ogre/OgreMaterial.hh"
@@ -56,6 +57,7 @@ OgreWireBox::~OgreWireBox()
 //////////////////////////////////////////////////
 void OgreWireBox::PreRender()
 {
+  GZ_PROFILE("OgreWireBox::PreRender");
   if (this->wireBoxDirty)
   {
     this->Create();

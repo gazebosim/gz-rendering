@@ -263,15 +263,15 @@ int main(int _argc, char** _argv)
     const std::string type3d = "3D";
     const std::string type2dVisible = "2D_visible";
     const std::string type2dFull = "2D_full";
-    if (type2dVisible.compare(_argv[1]) == 0)
+    if (type2dVisible == _argv[1])
     {
       bboxType = BoundingBoxType::BBT_VISIBLEBOX2D;
     }
-    else if (type2dFull.compare(_argv[1]) == 0)
+    else if (type2dFull == _argv[1])
     {
       bboxType = BoundingBoxType::BBT_FULLBOX2D;
     }
-    else if (type3d.compare(_argv[1]) != 0)
+    else if (type3d != _argv[1])
     {
       gzerr << "Invalid bounding box type given. Valid options are: "
             << type3d << ", " << type2dVisible << ", or "
@@ -298,7 +298,7 @@ int main(int _argc, char** _argv)
     try
     {
       std::map<std::string, std::string> params;
-      if (engineName.compare("ogre2") == 0
+      if (engineName == "ogre2"
           && graphicsApi == GraphicsAPI::METAL)
       {
         params["metal"] = "1";

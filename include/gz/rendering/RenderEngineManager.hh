@@ -55,7 +55,7 @@ namespace gz
       /// \return the number of available render-engines
       public: unsigned int EngineCount() const;
 
-      /// \brief Determine if a render-engine with the given name is avaiable.
+      /// \brief Determine if a render-engine with the given name is available.
       /// It also checks the list of default engines supplied by gz-rendering.
       /// \param[in] _name Name of the desired render-engine
       /// \return True if the specified render-engine is available

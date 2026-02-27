@@ -15,6 +15,8 @@
  *
  */
 
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/ogre2/Ogre2COMVisual.hh"
 #include "gz/rendering/ogre2/Ogre2DynamicRenderable.hh"
 #include "gz/rendering/ogre2/Ogre2Material.hh"
@@ -56,6 +58,7 @@ Ogre2COMVisual::~Ogre2COMVisual()
 //////////////////////////////////////////////////
 void Ogre2COMVisual::PreRender()
 {
+  GZ_PROFILE("Ogre2COMVisual::PreRender");
   if (this->HasParent() && this->parentName.empty())
     this->parentName = this->Parent()->Name();
 

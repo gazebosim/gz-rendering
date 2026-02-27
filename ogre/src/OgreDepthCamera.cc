@@ -22,6 +22,8 @@
   #endif
   #include <windows.h>
 #endif
+#include <gz/common/Profiler.hh>
+
 #include <gz/math/Helpers.hh>
 #include <gz/math/Matrix4.hh>
 
@@ -196,6 +198,7 @@ void OgreDepthCamera::CreateCamera()
 /////////////////////////////////////////////////
 void OgreDepthCamera::CreatePointCloudTexture()
 {
+  GZ_PROFILE("OgreDepthCamera::CreatePointCloudTexture");
   if (this->dataPtr->pcdTexture || this->dataPtr->colorTexture)
     return;
 
@@ -265,6 +268,7 @@ void OgreDepthCamera::DestroyPointCloudTexture()
 /////////////////////////////////////////////////
 void OgreDepthCamera::CreateDepthTexture()
 {
+  GZ_PROFILE("OgreDepthCamera::CreateDepthTexture");
   if (this->ogreCamera == nullptr)
   {
     gzerr << "Ogre camera cannot be created" << std::endl;
@@ -317,6 +321,7 @@ void OgreDepthCamera::SetProjectionMatrix(const math::Matrix4d &_matrix) {
 //////////////////////////////////////////////////
 void OgreDepthCamera::PreRender()
 {
+  GZ_PROFILE("OgreDepthCamera::PreRender");
   if (!this->depthTexture)
     this->CreateDepthTexture();
   if (!this->dataPtr->pcdTexture || !this->dataPtr->colorTexture)
@@ -326,6 +331,7 @@ void OgreDepthCamera::PreRender()
 //////////////////////////////////////////////////
 void OgreDepthCamera::Render()
 {
+  GZ_PROFILE("OgreDepthCamera::Render");
   Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
   Ogre::ShadowTechnique shadowTech = sceneMgr->getShadowTechnique();
 
@@ -359,6 +365,7 @@ void OgreDepthCamera::UpdateRenderTarget(OgreRenderTexturePtr _target,
     Ogre::Material *_material, const std::string &_matName)
 
 {
+  GZ_PROFILE("OgreDepthCamera::UpdateRenderTarget");
   Ogre::RenderTarget *target = _target->RenderTarget();
   std::string matName = _matName;
 
@@ -429,6 +436,7 @@ void OgreDepthCamera::UpdateRenderTarget(OgreRenderTexturePtr _target,
 //////////////////////////////////////////////////
 void OgreDepthCamera::PostRender()
 {
+  GZ_PROFILE("OgreDepthCamera::PostRender");
   unsigned int width = this->ImageWidth();
   unsigned int height = this->ImageHeight();
   unsigned int len = width * height;

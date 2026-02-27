@@ -16,6 +16,7 @@
  */
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre/OgreConversions.hh"
 #include "gz/rendering/ogre/OgreMesh.hh"
@@ -64,8 +65,8 @@ void OgreMesh::Destroy()
   this->ogreEntity = nullptr;
 
   auto &meshManager = Ogre::MeshManager::getSingleton();
-  auto iend = meshManager.getResourceIterator().end();
-  for (auto i = meshManager.getResourceIterator().begin(); i != iend;)
+  const auto iend = meshManager.getResourceIterator().end();
+  for (auto i = meshManager.getResourceIterator().begin(); i != iend; ++i)
   {
     // A use count of 3 means that only RGM and RM have references
     // RGM has one (this one) and RM has 2 (by name and by handle)
@@ -78,7 +79,6 @@ void OgreMesh::Destroy()
         break;
       }
     }
-    i++;
   }
 }
 
@@ -92,6 +92,7 @@ bool OgreMesh::HasSkeleton() const
 std::map<std::string, math::Matrix4d>
         OgreMesh::SkeletonLocalTransforms() const
 {
+  GZ_PROFILE("OgreMesh::SkeletonLocalTransforms");
   std::map<std::string, math::Matrix4d> mapTfs;
   if (this->ogreEntity->hasSkeleton())
   {
@@ -119,6 +120,7 @@ std::map<std::string, math::Matrix4d>
 void OgreMesh::SetSkeletonLocalTransforms(
           const std::map<std::string, math::Matrix4d> &_tfs)
 {
+  GZ_PROFILE("OgreMesh::SetSkeletonLocalTransforms");
   if (!this->ogreEntity->hasSkeleton())
   {
     return;
@@ -142,6 +144,7 @@ void OgreMesh::SetSkeletonLocalTransforms(
 void OgreMesh::SetSkeletonAnimationEnabled(const std::string &_name,
     bool _enabled, bool _loop, float _weight)
 {
+  GZ_PROFILE("OgreMesh::SetSkeletonAnimationEnabled");
   if (!this->ogreEntity->hasAnimationState(_name))
   {
     gzerr << "Skeleton animation name not found: " << _name << std::endl;
@@ -248,6 +251,7 @@ bool OgreMesh::SkeletonAnimationEnabled(const std::string &_name) const
 void OgreMesh::UpdateSkeletonAnimation(
     std::chrono::steady_clock::duration _time)
 {
+  GZ_PROFILE("OgreMesh::UpdateSkeletonAnimation");
   Ogre::AnimationStateSet *animationStateSet =
       this->ogreEntity->getAllAnimationStates();
 

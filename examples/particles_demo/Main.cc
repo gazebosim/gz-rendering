@@ -187,12 +187,12 @@ int main(int _argc, char** _argv)
 
   engineNames.push_back(ogreEngineName);
 
-  for (auto engineName : engineNames)
+  for (const auto &engineName : engineNames)
   {
     try
     {
       std::map<std::string, std::string> params;
-      if (engineName.compare("ogre2") == 0
+      if (engineName == "ogre2"
           && graphicsApi == GraphicsAPI::METAL)
       {
         params["metal"] = "1";
@@ -206,7 +206,6 @@ int main(int _argc, char** _argv)
     }
     catch (...)
     {
-      // std::cout << ex.what() << std::endl;
       std::cerr << "Error starting up: " << engineName << std::endl;
     }
   }

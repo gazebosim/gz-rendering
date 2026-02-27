@@ -15,6 +15,8 @@
  *
  */
 
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/ogre2/Ogre2GlobalIlluminationCiVct.hh"
 
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
@@ -325,6 +327,7 @@ void Ogre2GlobalIlluminationCiVct::NewSettings(uint32_t _bounceCount,
 //////////////////////////////////////////////////
 void Ogre2GlobalIlluminationCiVct::Reset()
 {
+  GZ_PROFILE("Ogre2GlobalIlluminationCiVct::Reset");
   if (this->Enabled())
   {
     this->scene->SetActiveGlobalIllumination(nullptr);
@@ -388,6 +391,7 @@ bool Ogre2GlobalIlluminationCiVct::HighQuality() const
 //////////////////////////////////////////////////
 void Ogre2GlobalIlluminationCiVct::Build()
 {
+  GZ_PROFILE("Ogre2GlobalIlluminationCiVct::Build");
   Ogre::SceneManager *sceneManager = this->scene->OgreSceneManager();
   sceneManager->updateSceneGraph();
 
@@ -538,6 +542,7 @@ Ogre::HlmsPbs *Ogre2GlobalIlluminationCiVct::HlmsPbs() const
 //////////////////////////////////////////////////
 void Ogre2GlobalIlluminationCiVct::SyncModeVisualizationMode()
 {
+  GZ_PROFILE("Ogre2GlobalIlluminationCiVct::SyncModeVisualizationMode");
   if (this->dataPtr->cascadedVoxelizer->getNumCascades() > 0u)
   {
     if (this->dataPtr->debugVisualizationMode <= DVM_Emissive)

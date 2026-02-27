@@ -32,10 +32,11 @@
 #endif
 #endif
 
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/CameraLens.hh"
 
 #include "gz/rendering/ogre/OgreWideAngleCamera.hh"
-
 #include "gz/rendering/ogre/OgreConversions.hh"
 #include "gz/rendering/ogre/OgreRenderEngine.hh"
 #include "gz/rendering/ogre/OgreRenderPass.hh"
@@ -159,18 +160,19 @@ void OgreWideAngleCamera::DestroyRenderTexture()
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::PreRender()
 {
+  GZ_PROFILE("OgreWireBox::PreRender");
   BaseCamera::PreRender();
   if (!this->dataPtr->ogreRenderTexture)
     this->CreateWideAngleTexture();
 
   this->UpdateRenderPassChain();
 
-  for (auto pass : this->dataPtr->renderPasses)
+  for (auto &pass : this->dataPtr->renderPasses)
   {
     pass->PreRender(
       std::dynamic_pointer_cast<Camera>(this->shared_from_this()));
   }
-  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  for (auto &pass : this->dataPtr->finalStitchRenderPasses)
   {
     pass->PreRender(
       std::dynamic_pointer_cast<Camera>(this->shared_from_this()));
@@ -304,11 +306,11 @@ void OgreWideAngleCamera::RemoveRenderPass(const RenderPassPtr &_pass)
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::RemoveAllRenderPasses()
 {
-  for (auto pass : this->dataPtr->renderPasses)
+  for (auto &pass : this->dataPtr->renderPasses)
   {
     pass->Destroy();
   }
-  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  for (auto &pass : this->dataPtr->finalStitchRenderPasses)
   {
     pass->Destroy();
   }
@@ -397,6 +399,7 @@ void OgreWideAngleCamera::CreateEnvCameras()
 //////////////////////////////////////////////////
 bool OgreWideAngleCamera::SetBackgroundColor(const math::Color &_color)
 {
+  GZ_PROFILE("OgreWideAngleCamera::SetBackgroundColor");
   bool retVal = true;
   Ogre::ColourValue clr = OgreConversions::Convert(_color);
   if (this->dataPtr->ogreCamera->getViewport())
@@ -424,6 +427,7 @@ bool OgreWideAngleCamera::SetBackgroundColor(const math::Color &_color)
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::CreateWideAngleTexture()
 {
+  GZ_PROFILE("OgreWideAngleCamera::CreateWideAngleTexture");
   if (this->dataPtr->ogreCamera == nullptr)
   {
     gzerr << "Ogre camera cannot be created" << std::endl;
@@ -539,17 +543,18 @@ void OgreWideAngleCamera::CreateWideAngleTexture()
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::UpdateRenderPassChain()
 {
+  GZ_PROFILE("OgreWideAngleCamera::UpdateRenderPassChain");
   if (!this->dataPtr->renderPassDirty)
     return;
 
-  for (auto pass : this->dataPtr->renderPasses)
+  for (auto &pass : this->dataPtr->renderPasses)
   {
     OgreRenderPass *ogreRenderPass =
         dynamic_cast<OgreRenderPass *>(pass.get());
     ogreRenderPass->SetCameras(this->dataPtr->envCameras);
     ogreRenderPass->CreateRenderPass();
   }
-  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  for (auto &pass : this->dataPtr->finalStitchRenderPasses)
   {
     OgreRenderPass *ogreRenderPass =
         dynamic_cast<OgreRenderPass *>(pass.get());
@@ -562,6 +567,7 @@ void OgreWideAngleCamera::UpdateRenderPassChain()
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::Render()
 {
+  GZ_PROFILE("OgreWideAngleCamera::Render");
   for (unsigned int i = 0u; i < this->dataPtr->kEnvCameraCount; ++i)
   {
     this->dataPtr->envRenderTargets[i]->update();
@@ -579,6 +585,7 @@ void OgreWideAngleCamera::Render()
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::Copy(Image &_image) const
 {
+  GZ_PROFILE("OgreWideAngleCamera::Copy");
   const unsigned int width = this->ImageWidth();
   const unsigned int height = this->ImageHeight();
 
@@ -601,6 +608,7 @@ void OgreWideAngleCamera::Copy(Image &_image) const
 void OgreWideAngleCamera::notifyMaterialRender(Ogre::uint32 /*_pass_id*/,
                                            Ogre::MaterialPtr &_material)
 {
+  GZ_PROFILE("OgreWideAngleCamera::notifyMaterialRender");
   if (_material.isNull())
     return;
 
@@ -628,6 +636,7 @@ void OgreWideAngleCamera::notifyMaterialRender(Ogre::uint32 /*_pass_id*/,
 void OgreWideAngleCamera::SetUniformVariables(Ogre::Pass *_pass,
     float _ratio, float _hfov)
 {
+  GZ_PROFILE("OgreWideAngleCamera::SetUniformVariables");
   Ogre::GpuProgramParametersSharedPtr uniforms =
     _pass->getFragmentProgramParameters();
 
@@ -673,6 +682,7 @@ void OgreWideAngleCamera::SetUniformVariables(Ogre::Pass *_pass,
 math::Vector3d OgreWideAngleCamera::Project3d(
     const math::Vector3d &_pt) const
 {
+  GZ_PROFILE("OgreWideAngleCamera::Project3d");
   // project onto cubemap face then onto
   gz::math::Vector3d screenPos;
   // loop through all env cameras can find the one that sees the 3d world point
@@ -779,14 +789,15 @@ std::vector<Ogre::Camera *> OgreWideAngleCamera::OgreEnvCameras() const
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::PostRender()
 {
+  GZ_PROFILE("OgreWideAngleCamera::PostRender");
   if (this->dataPtr->newImageFrame.ConnectionCount() <= 0u)
     return;
 
-  for (auto pass : this->dataPtr->renderPasses)
+  for (auto &pass : this->dataPtr->renderPasses)
   {
     pass->PostRender();
   }
-  for (auto pass : this->dataPtr->finalStitchRenderPasses)
+  for (auto &pass : this->dataPtr->finalStitchRenderPasses)
   {
     pass->PostRender();
   }

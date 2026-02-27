@@ -147,7 +147,7 @@ namespace gz
       /// allowing the camera and the scene itself to prepare for rendering.
       public: virtual void Render() = 0;
 
-      /// \brief Preforms any necessary final rendering work. Once rendering is
+      /// \brief Performs any necessary final rendering work. Once rendering is
       /// complete the camera will alert any listeners of the new frame event.
       /// This function should only be called after a call to Render has
       /// successfully been executed.

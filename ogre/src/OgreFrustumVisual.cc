@@ -33,13 +33,6 @@ class gz::rendering::OgreFrustumVisualPrivate
 
   /// \brief The visibility of the visual
   public: bool visible = true;
-
-  /// \brief Each corner of the frustum.
-  public: std::array<gz::math::Vector3d, 8> points;
-
-  /// \brief each edge of the frustum.
-  public: std::array<std::pair<gz::math::Vector3d,
-    gz::math::Vector3d>, 12> edges;
 };
 
 using namespace gz;

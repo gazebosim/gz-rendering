@@ -16,6 +16,7 @@
  */
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre/OgreCamera.hh"
 #include "gz/rendering/ogre/OgreNode.hh"
@@ -177,6 +178,7 @@ NodeStorePtr OgreNode::Children() const
 //////////////////////////////////////////////////
 bool OgreNode::AttachChild(NodePtr _child)
 {
+  GZ_PROFILE("OgreNode::AttachChild");
   if (nullptr == this->ogreNode)
     return false;
 
@@ -197,6 +199,7 @@ bool OgreNode::AttachChild(NodePtr _child)
 //////////////////////////////////////////////////
 bool OgreNode::DetachChild(NodePtr _child)
 {
+  GZ_PROFILE("OgreNode::DetachChild");
   if (nullptr == this->ogreNode)
     return false;
 

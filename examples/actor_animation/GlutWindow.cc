@@ -250,13 +250,13 @@ void updatePose(double _time)
   for (auto &v : g_visuals)
   {
   //! [update pose]
-    std::map<std::string, gz::math::Matrix4d> animFrames;
-    animFrames = g_skelAnim->PoseAt(_time, true);
+    std::map<std::string, gz::math::Matrix4d> animFrames =
+            g_skelAnim->PoseAt(_time, true);
     std::map<std::string, gz::math::Matrix4d> skinFrames;
-    for (auto pair : animFrames)
+    for (const auto &pair : animFrames)
     {
-      std::string animNodeName = pair.first;
-      auto animTf = pair.second;
+      const auto &animNodeName = pair.first;
+      const auto &animTf = pair.second;
 
       std::string skinName =
           g_skel->NodeNameAnimToSkin(g_animIdx, animNodeName);

@@ -188,12 +188,12 @@ int main(int _argc, char** _argv)
   std::vector<CameraPtr> cameras;
 
   engineNames.push_back(ogreEngineName);
-  for (auto engineName : engineNames)
+  for (const auto &engineName : engineNames)
   {
     try
     {
       std::map<std::string, std::string> params;
-      if (engineName.compare("ogre2") == 0
+      if (engineName == "ogre2"
           && graphicsApi == GraphicsAPI::METAL)
       {
         params["metal"] = "1";

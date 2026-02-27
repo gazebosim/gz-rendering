@@ -17,6 +17,8 @@
 
 #include <string>
 
+#include <gz/common/Profiler.hh>
+
 #include <gz/math/Rand.hh>
 
 #include "gz/rendering/ogre2/Ogre2Includes.hh"
@@ -42,6 +44,7 @@ Ogre2ParticleNoiseListener::Ogre2ParticleNoiseListener(
 void Ogre2ParticleNoiseListener::cameraPreRenderScene(
     Ogre::Camera * _cam)
 {
+  GZ_PROFILE("Ogre2ParticleNoiseListener::cameraPreRenderScene");
   // the code here is responsible for setting the depth variation of readings
   // returned by sensor in areas where particles are. It does so by adding
   // noise with high std dev values.
@@ -122,6 +125,7 @@ void Ogre2ParticleNoiseListener::SetupMaterial(Ogre::Pass *_pass,
                                                Ogre2ScenePtr _scene,
                                                Ogre::Camera *_cam)
 {
+  GZ_PROFILE("Ogre2ParticleNoiseListener::SetupMaterial");
   // the code here is responsible for setting the depth variation of readings
   // returned by sensor in areas where particles are. It does so by adding
   // noise with high std dev values.

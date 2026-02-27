@@ -15,6 +15,8 @@
  *
  */
 
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/ogre/OgreLightVisual.hh"
 #include "gz/rendering/ogre/OgreDynamicLines.hh"
 
@@ -45,6 +47,7 @@ OgreLightVisual::~OgreLightVisual()
 //////////////////////////////////////////////////
 void OgreLightVisual::PreRender()
 {
+  GZ_PROFILE("OgreLightVisual::PreRender");
   if (this->dirtyLightVisual)
   {
     this->CreateVisual();

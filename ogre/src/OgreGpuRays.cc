@@ -17,6 +17,7 @@
 
 #include <gz/common/Mesh.hh>
 #include <gz/common/SubMesh.hh>
+#include <gz/common/Profiler.hh>
 
 #include <gz/math/Color.hh>
 #include <gz/math/Helpers.hh>
@@ -419,6 +420,7 @@ void OgreGpuRays::ConfigureCameras()
 /////////////////////////////////////////////////////////
 void OgreGpuRays::CreateGpuRaysTextures()
 {
+  GZ_PROFILE("OgreGpuRays::CreateGpuRaysTextures");
   this->ConfigureCameras();
 
   this->CreateOrthoCam();
@@ -552,6 +554,7 @@ void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
                    Ogre::Material *_material, Ogre::Camera *_cam,
                    const bool _updateTex)
 {
+  GZ_PROFILE("OgreGpuRays::UpdateRenderTarget");
   Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
   Ogre::RenderSystem *renderSys = sceneMgr->getDestinationRenderSystem();
   // Get pointer to the material pass
@@ -620,6 +623,7 @@ void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
 //////////////////////////////////////////////////
 void OgreGpuRays::Render()
 {
+  GZ_PROFILE("OgreGpuRays::Render");
   Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
 
   sceneMgr->_suppressRenderStateChanges(true);
@@ -663,6 +667,7 @@ void OgreGpuRays::Render()
 //////////////////////////////////////////////////
 void OgreGpuRays::PreRender()
 {
+  GZ_PROFILE("OgreGpuRays::PreRender");
   if (this->dataPtr->textureCount == 0)
     this->CreateGpuRaysTextures();
 }
@@ -670,6 +675,7 @@ void OgreGpuRays::PreRender()
 //////////////////////////////////////////////////
 void OgreGpuRays::PostRender()
 {
+  GZ_PROFILE("OgreGpuRays::PostRender");
   for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
   {
     auto rt =
@@ -718,6 +724,7 @@ const float* OgreGpuRays::Data() const
 //////////////////////////////////////////////////
 void OgreGpuRays::Copy(float *_dataDest)
 {
+  GZ_PROFILE("OgreGpuRays::Copy");
   auto rt = this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget();
   const Ogre::Viewport *secondPassViewport = rt->getViewport(0);
   unsigned int width = secondPassViewport->getActualWidth();
@@ -732,6 +739,7 @@ void OgreGpuRays::Copy(float *_dataDest)
 /////////////////////////////////////////////////
 void OgreGpuRays::CreateOrthoCam()
 {
+  GZ_PROFILE("OgreGpuRays::CreateOrthoCam");
   // create ogre camera object
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
@@ -812,6 +820,7 @@ void OgreGpuRays::SetRangeCount(
 /////////////////////////////////////////////////
 void OgreGpuRays::CreateMesh()
 {
+  GZ_PROFILE("OgreGpuRays::CreateMesh");
   std::string meshName = this->Name() + "_undistortion_mesh";
 
   common::Mesh *mesh = new common::Mesh();
@@ -925,6 +934,7 @@ void OgreGpuRays::CreateMesh()
 /////////////////////////////////////////////////
 void OgreGpuRays::CreateCanvas()
 {
+  GZ_PROFILE("OgreGpuRays::CreateCanvas");
   this->CreateMesh();
 
   this->dataPtr->visual = this->scene->CreateVisual(
@@ -962,6 +972,7 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
       const Ogre::Pass* /*pass*/, const Ogre::AutoParamDataSource* /*source*/,
       const Ogre::LightList* /*lights*/, bool /*supp*/)
 {
+  GZ_PROFILE("OgreGpuRays::notifyRenderSingleObject");
   // TODO(anyone): this function sets the retro for each obj
   // but currently just sets it to 0
 

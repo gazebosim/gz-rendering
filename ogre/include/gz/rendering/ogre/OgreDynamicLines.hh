@@ -47,7 +47,7 @@ namespace gz
                   MarkerType _opType = MT_LINE_STRIP);
 
       /// \brief Destructor
-      public: virtual ~OgreDynamicLines();
+      public: ~OgreDynamicLines() override;
 
       /// \brief Add a point to the point list
       /// \param[in] _pt gz::math::Vector3d point
@@ -96,11 +96,11 @@ namespace gz
 
       /// \brief Implementation DynamicRenderable,
       /// creates a simple vertex-only decl
-      private: virtual void CreateVertexDeclaration();
+      private: void CreateVertexDeclaration() override;
 
       /// \brief Implementation DynamicRenderable, pushes point
       /// list out to hardware memory
-      private: virtual void FillHardwareBuffers();
+      private: void FillHardwareBuffers() override;
 
       /// \brief private implementation
       private: std::unique_ptr<OgreDynamicLinesPrivate> dataPtr;

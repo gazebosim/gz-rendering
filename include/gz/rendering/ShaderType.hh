@@ -65,7 +65,7 @@ namespace gz
       /// ST_UNKNOWN will be returned, otherwise input will be returned
       /// unchanged.
       /// \param[in] _type Shader type to be sanitized
-      /// \return The santized shader type
+      /// \return The sanitized shader type
       public: static ShaderType Sanitize(ShaderType _type);
 
       /// \brief Get human-readable name for shader type value.

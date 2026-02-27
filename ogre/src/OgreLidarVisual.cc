@@ -16,6 +16,7 @@
  */
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 #include "gz/rendering/ogre/OgreDynamicLines.hh"
 #include "gz/rendering/ogre/OgreLidarVisual.hh"
 #include "gz/rendering/ogre/OgreScene.hh"
@@ -85,31 +86,31 @@ void OgreLidarVisual::PreRender()
 void OgreLidarVisual::Destroy()
 {
   BaseLidarVisual::Destroy();
-  for (auto ray : this->dataPtr->noHitRayStrips)
+  for (auto &ray : this->dataPtr->noHitRayStrips)
   {
     ray->Clear();
     ray.reset();
   }
 
-  for (auto ray : this->dataPtr->rayStrips)
+  for (auto &ray : this->dataPtr->rayStrips)
   {
     ray->Clear();
     ray.reset();
   }
 
-  for (auto ray : this->dataPtr->rayLines)
+  for (auto &ray : this->dataPtr->rayLines)
   {
     ray->Clear();
     ray.reset();
   }
 
-  for (auto ray : this->dataPtr->deadZoneRayFans)
+  for (auto &ray : this->dataPtr->deadZoneRayFans)
   {
     ray->Clear();
     ray.reset();
   }
 
-  for (auto ray : this->dataPtr->points)
+  for (auto &ray : this->dataPtr->points)
   {
     ray->Clear();
     ray.reset();
@@ -154,9 +155,10 @@ void OgreLidarVisual::ClearVisualData()
 //////////////////////////////////////////////////
 void OgreLidarVisual::SetPoints(const std::vector<double> &_points)
 {
+  GZ_PROFILE("OgreLidarVisual::SetPoints");
   this->dataPtr->lidarPoints = _points;
   this->dataPtr->pointColors.clear();
-  for (unsigned int i = 0u; i < this->dataPtr->lidarPoints.size(); ++i)
+  for (size_t i = 0u; i < this->dataPtr->lidarPoints.size(); ++i)
   {
     this->dataPtr->pointColors.push_back(gz::math::Color::Blue);
   }
@@ -167,6 +169,7 @@ void OgreLidarVisual::SetPoints(const std::vector<double> &_points)
 void OgreLidarVisual::SetPoints(const std::vector<double> &_points,
                         const std::vector<gz::math::Color> &_colors)
 {
+  GZ_PROFILE("OgreLidarVisual::SetPoints_2");
   if (_points.size() != _colors.size())
   {
     gzerr << "Unequal size of point and color vector."
@@ -181,6 +184,7 @@ void OgreLidarVisual::SetPoints(const std::vector<double> &_points,
 //////////////////////////////////////////////////
 void OgreLidarVisual::Update()
 {
+  GZ_PROFILE("OgreLidarVisual::Update");
   if (this->lidarVisualType == LidarVisualType::LVT_NONE)
   {
     this->ClearVisualData();

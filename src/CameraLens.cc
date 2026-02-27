@@ -77,7 +77,7 @@ class gz::rendering::CameraLens::Implementation
                       return t;
                       })));
 
-              for (auto item : variants)
+              for (const auto &item : variants)
               {
                 if (std::get<0>(item) == _fun)
                 {
@@ -114,11 +114,16 @@ class gz::rendering::CameraLens::Implementation
               return std::get<2>(value)(_f);
             }
 
+            /// \brief Copy constructor
+            public: MapFunctionEnum(const MapFunctionEnum &) = delete;
+
             /// \brief Assignment operator
             /// \param[in] _fun Rvalue
             /// \return Reference to (*this)
             public: MapFunctionEnum &operator=(const MapFunctionEnum &_fun)
             {
+              // from https://github.com/gazebosim/gz-rendering/pull/1227
+              // "`variants` is tmp variable and shouldn't be copied"
               this->value = _fun.value;
               return *this;
             }

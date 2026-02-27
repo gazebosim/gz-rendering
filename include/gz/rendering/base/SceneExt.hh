@@ -42,7 +42,7 @@ namespace gz
       }
 
       /// \brief Destructor
-      public: ~SceneExt() = default;
+      public: virtual ~SceneExt() = default;
 
       /// \brief Generic create function
       /// \param[in] _type Type of object to create

@@ -18,6 +18,7 @@
 #include <chrono>
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 #include <gz/common/Util.hh>
 
 #include "gz/rendering/ogre/OgreCamera.hh"
@@ -446,7 +447,7 @@ void OgreHeightmap::Init()
     this->descriptor.SetName(this->Name());
 
   // Add paths
-  for (auto i = 0u; i < this->descriptor.TextureCount(); ++i)
+  for (uint64_t i = 0u; i < this->descriptor.TextureCount(); ++i)
   {
     auto texture = this->descriptor.TextureByIndex(i);
     OgreRenderEngine::Instance()->AddResourcePath(texture->Diffuse());
@@ -706,6 +707,7 @@ void OgreHeightmap::Init()
 //////////////////////////////////////////////////
 void OgreHeightmap::PreRender()
 {
+  GZ_PROFILE("OgreHeightmap::PreRender");
   if (nullptr == this->dataPtr->terrainGroup)
   {
     return;
@@ -837,6 +839,7 @@ void OgreHeightmap::ConfigureTerrainDefaults()
 bool OgreHeightmap::PrepareTerrain(
     const std::string &_terrainDirPath)
 {
+  GZ_PROFILE("OgreHeightmap::PrepareTerrain");
   // Compute the original heightmap's image.
   auto heightmapHash = common::sha1<std::vector<float>>(this->dataPtr->heights);
 
@@ -876,6 +879,7 @@ bool OgreHeightmap::PrepareTerrain(
 void OgreHeightmap::UpdateTerrainHash(const std::string &_hash,
     const std::string &_terrainDir)
 {
+  GZ_PROFILE("OgreHeightmap::UpdateTerrainHash");
   // Create the subdirectories if they do not exist
   common::createDirectories(_terrainDir);
 
@@ -903,6 +907,7 @@ void OgreHeightmap::UpdateTerrainHash(const std::string &_hash,
 void OgreHeightmap::SplitHeights(const std::vector<float> &_heightmap,
     int _n, std::vector<std::vector<float>> &_v)
 {
+  GZ_PROFILE("OgreHeightmap::SplitHeights");
   // We support splitting the terrain in 4 or 16 pieces
   if (_n != 4 && _n != 16)
   {
@@ -953,6 +958,7 @@ void OgreHeightmap::SplitHeights(const std::vector<float> &_heightmap,
 /////////////////////////////////////////////////
 void OgreHeightmap::DefineTerrain(int _x, int _y)
 {
+  GZ_PROFILE("OgreHeightmap::DefineTerrain");
   Ogre::String filename = this->dataPtr->terrainGroup->generateFilename(_x, _y);
 
   bool resourceExists =
@@ -1035,6 +1041,7 @@ void OgreHeightmap::CreateMaterial()
 /////////////////////////////////////////////////
 void OgreHeightmap::SetupShadows(bool _enableShadows)
 {
+  GZ_PROFILE("OgreHeightmap::SetupShadows");
   auto matGen = this->dataPtr->terrainGlobals->getDefaultMaterialGenerator();
 
   // Assume we get a shader model 2 material profile
@@ -1073,6 +1080,7 @@ void OgreHeightmap::SetupShadows(bool _enableShadows)
 /////////////////////////////////////////////////
 bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
 {
+  GZ_PROFILE("OgreHeightmap::InitBlendMaps");
   if (nullptr == _terrain)
   {
     gzerr << "Invalid terrain\n";
@@ -1098,9 +1106,8 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
   // Create the blend maps
   std::vector<Ogre::TerrainLayerBlendMap *> blendMaps;
   std::vector<float*> pBlend;
-  unsigned int i{0u};
 
-  for (i = 0; i < this->descriptor.BlendCount(); ++i)
+  for (uint64_t i = 0; i < this->descriptor.BlendCount(); ++i)
   {
     blendMaps.push_back(_terrain->getLayerBlendMap(i+1));
     pBlend.push_back(blendMaps[i]->getBlendPointer());
@@ -1117,7 +1124,7 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
       blendMaps[0]->convertImageToTerrainSpace(x, y, &tx, &ty);
       height = _terrain->getHeightAtTerrainPosition(tx, ty);
 
-      for (i = 0; i < this->descriptor.BlendCount(); ++i)
+      for (uint64_t i = 0; i < this->descriptor.BlendCount(); ++i)
       {
         auto blend = this->descriptor.BlendByIndex(i);
         val = (height - blend->MinHeight()) / blend->FadeDistance();
@@ -2723,6 +2730,7 @@ bool TerrainMaterial::Profile::isVertexCompressionSupported() const
 Ogre::MaterialPtr TerrainMaterial::Profile::generate(
     const Ogre::Terrain *_terrain)
 {
+  GZ_PROFILE("TerrainMaterial::Profile::generate");
   const Ogre::String& matName = _terrain->getMaterialName();
 
   Ogre::MaterialPtr mat =
@@ -2840,6 +2848,7 @@ void TerrainMaterial::Profile::updateParamsForCompositeMap(
 //////////////////////////////////////////////////
 void TerrainMaterial::Profile::requestOptions(Ogre::Terrain *_terrain)
 {
+  GZ_PROFILE("TerrainMaterial::Profile::requestOptions");
   _terrain->_setMorphRequired(true);
   // enable global normal map
   _terrain->_setNormalMapRequired(true);

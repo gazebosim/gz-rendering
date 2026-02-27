@@ -26,6 +26,7 @@
 #include <OgreSceneManager.h>
 #include <OgreSceneNode.h>
 
+#include <gz/common/Profiler.hh>
 #include "gz/rendering/ogre/OgreCamera.hh"
 #include "gz/rendering/ogre/OgreConversions.hh"
 #include "gz/rendering/ogre/OgreDepthCamera.hh"
@@ -194,7 +195,7 @@ namespace gz
       private: std::unordered_map<std::string, Ogre::Material *> matClones;
 
       /// \brief A set of visible materials in the frustum. Used when decal
-      /// has custom visiblility flags
+      /// has custom visibility flags
       private: std::unordered_set<std::string> visibleMaterials;
     };
     }
@@ -207,7 +208,7 @@ class gz::rendering::OgreProjector::Implementation
   /// \brief The projection frame listener.
   public: OgreProjectorListener projector;
 
-  /// \brief Indicate whether the projector is intialized or not
+  /// \brief Indicate whether the projector is initialized or not
   public: bool initialized{false};
 
   /// \brief A map of cameras (<Camera ptr, name>) that the listener has been
@@ -234,6 +235,7 @@ OgreProjector::~OgreProjector()
 /////////////////////////////////////////////////
 void OgreProjector::PreRender()
 {
+  GZ_PROFILE("OgreWireBox::PreRender");
   if (this->dataPtr->initialized)
   {
     this->UpdateCameraListener();
@@ -360,6 +362,7 @@ void OgreProjectorListener::SetEnabled(bool _enabled)
 /////////////////////////////////////////////////
 void OgreProjectorListener::CreateSceneNode()
 {
+  GZ_PROFILE("OgreProjectorListener::CreateSceneNode");
   if (this->filterNode)
   {
     this->filterNode->detachObject(this->filterFrustum.get());
@@ -413,6 +416,7 @@ void OgreProjectorListener::SetFrustumClipDistance(double _near,
 /////////////////////////////////////////////////
 std::unordered_set<std::string> OgreProjectorListener::FindVisibleMaterials()
 {
+  GZ_PROFILE("OgreProjectorListener::FindVisibleMaterials");
   std::unordered_set<std::string> newVisibleMaterials;
   Ogre::PlaneBoundedVolumeList volumeList;
 
@@ -430,7 +434,7 @@ std::unordered_set<std::string> OgreProjectorListener::FindVisibleMaterials()
         entity->getUserObjectBindings().getUserAny().getType() ==
         typeid(unsigned int))
     {
-      for (unsigned int i = 0; i < entity->getNumSubEntities(); i++)
+      for (size_t i = 0; i < entity->getNumSubEntities(); i++)
       {
         newVisibleMaterials.insert(
           entity->getSubEntity(i)->getMaterialName());
@@ -453,6 +457,7 @@ void OgreProjectorListener::AddDecalToVisibleMaterials()
 void OgreProjectorListener::RemoveDecalFromInvisibleMaterials(
     std::unordered_set<std::string> &_matSet)
 {
+  GZ_PROFILE("OgreProjectorListener::RemoveDecalFromInvisibleMaterials");
   std::string invisibleMaterial;
   std::unordered_set<std::string>::iterator visibleMaterial;
 
@@ -484,6 +489,7 @@ void OgreProjectorListener::RemoveDecalFromInvisibleMaterials(
 void OgreProjectorListener::AddDecalToMaterials(
     std::unordered_set<std::string> &_matSet)
 {
+  GZ_PROFILE("OgreProjectorListener::AddDecalToMaterials");
   this->RemoveDecalFromInvisibleMaterials(_matSet);
 
   if (!_matSet.empty())
@@ -503,6 +509,7 @@ void OgreProjectorListener::AddDecalToMaterials(
 void OgreProjectorListener::AddDecalToMaterial(
     const std::string &_matName)
 {
+  GZ_PROFILE("OgreProjectorListener::AddDecalToMaterial");
   if (this->projectorTargets.find(_matName) != this->projectorTargets.end())
   {
     return;
@@ -544,6 +551,7 @@ void OgreProjectorListener::AddDecalToMaterial(
 /////////////////////////////////////////////////
 void OgreProjectorListener::RemoveDecalFromMaterials()
 {
+  GZ_PROFILE("OgreProjectorListener::RemoveDecalFromMaterials");
   for (auto it = this->projectorTargets.begin();
       it != this->projectorTargets.end(); ++it)
   {
@@ -558,6 +566,7 @@ void OgreProjectorListener::RemoveDecalFromMaterials()
 void OgreProjectorListener::RemoveDecalFromMaterial(
     const std::string &_matName)
 {
+  GZ_PROFILE("OgreProjectorListener::RemoveDecalFromMaterial");
   auto projectorTargetIt = this->projectorTargets.find(_matName);
   if (projectorTargetIt != this->projectorTargets.end())
   {
@@ -570,20 +579,21 @@ void OgreProjectorListener::RemoveDecalFromMaterial(
 /////////////////////////////////////////////////
 void OgreProjector::UpdateCameraListener()
 {
+  GZ_PROFILE("OgreProjector::UpdateCameraListener");
   // if projector does not have custom visibility flags
   // project the texture onto entity's original material. It'll be visible
   // to all cameras
   if (this->VisibilityFlags() == GZ_VISIBILITY_ALL)
   {
-    for (auto &ogreCamIt : this->dataPtr->camerasWithListener)
+    for (const auto &ogreCamIt : this->dataPtr->camerasWithListener)
     {
-      Ogre::String camName = ogreCamIt.second;
+      const Ogre::String &camName = ogreCamIt.second;
       // instead of getting the camera pointer through ogreCamIt.first,
       // find camera pointer again to make sure the camera still exists
       // because there is a chance that we are holding onto a dangling pointer
       // if that camera was deleted already
       auto ogreCam = this->scene->OgreSceneManager()->getCamera(camName);
-          ogreCam->getViewport()->getTarget()->removeListener(
+      ogreCam->getViewport()->getTarget()->removeListener(
           &this->dataPtr->projector);
     }
     this->dataPtr->camerasWithListener.clear();
@@ -659,6 +669,7 @@ void OgreProjectorListener::UpdateVisibleMaterials()
 void OgreProjectorListener::preRenderTargetUpdate(
     const Ogre::RenderTargetEvent &_evt)
 {
+  GZ_PROFILE("OgreProjectorListener::preRenderTargetUpdate");
   if (this->defaultScheme.empty())
   {
     this->defaultScheme =
@@ -692,6 +703,7 @@ Ogre::Technique *OgreProjectorListener::handleSchemeNotFound(
     Ogre::Material *_originalMaterial, uint16_t /*_lodIndex*/,
     const Ogre::Renderable *_rend)
 {
+  GZ_PROFILE("OgreProjectorListener::handleSchemeNotFound");
   if (_schemeName != "projector")
     return nullptr;
 
@@ -701,7 +713,7 @@ Ogre::Technique *OgreProjectorListener::handleSchemeNotFound(
   std::string projectedMaterialName =
       _originalMaterial->getName() + "_" + this->nodeName;
 
-  // check if the material for the current entity is visble in the frustum
+  // check if the material for the current entity is visible in the frustum
   if (this->visibleMaterials.find(_originalMaterial->getName())
       == this->visibleMaterials.end())
   {
@@ -721,7 +733,7 @@ Ogre::Technique *OgreProjectorListener::handleSchemeNotFound(
   if (it != this->matClones.end())
   {
     clone = it->second;
-    // if the clnoe material is in the view, that means it has the projected
+    // if the clone material is in the view, that means it has the projected
     // texture already
     if (this->projectorTargets.find(projectedMaterialName) !=
         this->projectorTargets.end())

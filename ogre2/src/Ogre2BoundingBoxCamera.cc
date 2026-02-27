@@ -27,6 +27,7 @@
 #endif
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include <gz/math/Color.hh>
 #include <gz/math/Vector4.hh>
@@ -151,7 +152,7 @@ class gz::rendering::Ogre2BoundingBoxCameraPrivate
       parentNameToBoxes;
 
   /// \brief Keep track of the visible bounding boxes (used in filtering)
-  /// Key: parent name, value: vector of ogre ids of it's childern
+  /// Key: parent name, value: vector of ogre ids of it's children
   public: std::map<std::string, std::vector<uint32_t>> parentNameToOgreIds;
 
   /// \brief The ogre item's 3d vertices from the vao(used in multi-link models)
@@ -212,6 +213,7 @@ std::pair<math::Vector2d, math::Vector2d>
 Ogre2BoundingBoxCameraPrivate::ClipToViewPort(const math::Vector4d &_bounds,
     const math::Vector2d &_p0, const math::Vector2d &_p1) const
 {
+  GZ_PROFILE("Ogre2BoundingBoxCameraPrivate::ClipToViewPort");
   const auto xmin = _bounds[0];
   const auto ymin = _bounds[1];
   const auto xmax = _bounds[2];
@@ -462,6 +464,7 @@ void Ogre2BoundingBoxCamera::Destroy()
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::PreRender()
 {
+  GZ_PROFILE("Ogre2BoundingBoxCamera::PreRender");
   if (!this->dataPtr->ogreRenderTexture)
     this->CreateBoundingBoxTexture();
 
@@ -471,6 +474,7 @@ void Ogre2BoundingBoxCamera::PreRender()
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
 {
+  GZ_PROFILE("Ogre2BoundingBoxCamera::CreateBoundingBoxTexture");
   // Camera Parameters
   this->dataPtr->ogreCamera->setNearClipDistance(this->NearClipPlane());
   this->dataPtr->ogreCamera->setFarClipDistance(this->FarClipPlane());
@@ -506,7 +510,7 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
       Ogre::GpuResidency::Resident);
 
   // Switch material to OGRE Ids map to use it to get the visible bboxes
-  // or to check visiblity in full bboxes
+  // or to check visibility in full bboxes
   this->dataPtr->ogreCamera->addListener(this->dataPtr->materialSwitcher.get());
 
   // workspace
@@ -545,6 +549,7 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::Render()
 {
+  GZ_PROFILE("Ogre2BoundingBoxCamera::Render");
   if (!this->scene)
   {
     gzerr << "Null scene." << std::endl;
@@ -574,6 +579,7 @@ void Ogre2BoundingBoxCamera::Render()
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::PostRender()
 {
+  GZ_PROFILE("Ogre2BoundingBoxCamera::PostRender");
   // return if no one is listening to the new frame
   if (this->dataPtr->newBoundingBoxes.ConnectionCount() == 0)
     return;
@@ -642,6 +648,7 @@ void Ogre2BoundingBoxCamera::PostRender()
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::MarkVisibleBoxes()
 {
+  GZ_PROFILE("Ogre2BoundingBoxCamera::MarkVisibleBoxes");
   if (!this->dataPtr->buffer)
   {
     gzerr << "Null buffer" << std::endl;
@@ -681,9 +688,10 @@ void Ogre2BoundingBoxCameraPrivate::MeshVertices(
     const std::vector<uint32_t> &_ogreIds,
     std::vector<math::Vector3d> &_vertices)
 {
+  GZ_PROFILE("Ogre2BoundingBoxCameraPrivate::MeshVertices");
   auto viewMatrix = this->ogreCamera->getViewMatrix();
 
-  for (auto ogreId : _ogreIds)
+  for (const auto &ogreId : _ogreIds)
   {
     Ogre::Item *item = this->ogreIdToItem[ogreId];
     Ogre::MeshPtr mesh = item->getMesh();
@@ -738,7 +746,7 @@ void Ogre2BoundingBoxCameraPrivate::MeshVertices(
           // Convert to world coordinates
           vec = (oreintation * (vec * scale)) + position;
 
-          // Convert to camera view coordiantes
+          // Convert to camera view coordinates
           Ogre::Vector4 vec4(vec.x, vec.y, vec.z, 1);
           vec4 = viewMatrix * vec4;
 
@@ -762,6 +770,7 @@ void Ogre2BoundingBoxCameraPrivate::MeshVertices(
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::MergeMultiLinksModels3D()
 {
+  GZ_PROFILE("Ogre2BoundingBoxCamera::MergeMultiLinksModels3D");
   // Combine the boxes with the same parent name together to merge them
   for (const auto &box : this->dataPtr->boundingboxes)
   {
@@ -812,6 +821,7 @@ void Ogre2BoundingBoxCamera::MergeMultiLinksModels3D()
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::MergeMultiLinksModels2D()
 {
+  GZ_PROFILE("Ogre2BoundingBoxCamera::MergeMultiLinksModels2D");
   // Combine the boxes with the same parent name together to merge them
   for (const auto &box : this->dataPtr->boundingboxes)
   {
@@ -872,6 +882,7 @@ BoundingBox Ogre2BoundingBoxCameraPrivate::MergeBoxes2D(
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::BoundingBoxes3D()
 {
+  GZ_PROFILE("Ogre2BoundingBoxCamera::BoundingBoxes3D");
   auto viewMatrix = this->dataPtr->ogreCamera->getViewMatrix();
 
   // used to filter the hidden boxes
@@ -957,6 +968,7 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
 {
+  GZ_PROFILE("Ogre2BoundingBoxCamera::VisibleBoundingBoxes");
   if (!this->dataPtr->buffer)
   {
     gzerr << "Null buffer" << std::endl;
@@ -1045,6 +1057,7 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::FullBoundingBoxes()
 {
+  GZ_PROFILE("Ogre2BoundingBoxCamera::FullBoundingBoxes");
   // used to filter the hidden boxes
   this->MarkVisibleBoxes();
 
@@ -1123,7 +1136,7 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
   }
 
   // Set boxes label
-  for (auto box : this->dataPtr->boundingboxes)
+  for (auto &box : this->dataPtr->boundingboxes)
   {
     uint32_t ogreId = box.first;
     uint32_t label = this->dataPtr->visibleBoxesLabel[ogreId];
@@ -1147,6 +1160,7 @@ void Ogre2BoundingBoxCamera::MeshMinimalBox(
   const Ogre::Vector3 &_scale
   )
 {
+  GZ_PROFILE("Ogre2BoundingBoxCamera::MeshMinimalBox");
   _minVertex.x = std::numeric_limits<float>::max();
   _minVertex.y = std::numeric_limits<float>::max();
   _minVertex.z = std::numeric_limits<float>::max();
@@ -1201,7 +1215,7 @@ void Ogre2BoundingBoxCamera::MeshMinimalBox(
         Ogre::Vector4 vec4(vec.x, vec.y, vec.z, 1);
         vec4 =  _projMatrix * _viewMatrix * vec4;
 
-        // homogenous
+        // homogeneous
         vec.x = vec4.x / vec4.w;
         vec.y = vec4.y / vec4.w;
         vec.z = vec4.z;
@@ -1227,6 +1241,7 @@ void Ogre2BoundingBoxCamera::DrawLine(unsigned char *_data,
   const math::Vector2i &_point1, const math::Vector2i &_point2,
   const math::Color &_color) const
 {
+  GZ_PROFILE("Ogre2BoundingBoxCamera::DrawLine");
   int x0, y0, x1, y1;
 
   // Check if the line is close to a vertical or horizontal line
@@ -1329,6 +1344,7 @@ void Ogre2BoundingBoxCamera::DrawLine(unsigned char *_data,
 void Ogre2BoundingBoxCamera::DrawBoundingBox(unsigned char *_data,
     const math::Color &_color, const BoundingBox &_box) const
 {
+  GZ_PROFILE("Ogre2BoundingBoxCamera::DrawBoundingBox");
   // 3D box
   if (this->Type() == BoundingBoxType::BBT_BOX3D)
   {
@@ -1403,6 +1419,7 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(unsigned char *_data,
     uint32_t height = this->ImageHeight();
 
     std::vector<math::Vector2i> projVertices;
+    projVertices.reserve(clippedVertices.size());
     for (auto &vertex : clippedVertices)
     {
       // convert from [-1, 1] range to [0, 1] range & to the screen range
@@ -1418,7 +1435,7 @@ void Ogre2BoundingBoxCamera::DrawBoundingBox(unsigned char *_data,
           static_cast<int>(vertex.Y())));
     }
 
-    for (unsigned int endPt = 0; endPt < projVertices.size(); endPt += 2)
+    for (size_t endPt = 0; endPt < projVertices.size(); endPt += 2)
     {
       this->DrawLine(_data, projVertices[endPt], projVertices[endPt + 1],
           _color);
@@ -1486,7 +1503,7 @@ void Ogre2BoundingBoxCamera::ConvertToScreenCoord(
   _maxVertex.x = (_maxVertex.x + 1.0) / 2 * width;
   _maxVertex.y = (1.0 - _maxVertex.y) / 2 * height;
 
-  // clip outside screen boundries
+  // clip outside screen boundaries
   _minVertex.x = std::max<float>(0.0, _minVertex.x);
   _minVertex.y = std::max<float>(0.0, _minVertex.y);
   _maxVertex.x = std::min<float>(_maxVertex.x, width - 1.0);

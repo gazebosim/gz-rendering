@@ -37,13 +37,13 @@ namespace gz
       protected: BaseText();
 
       /// \brief Destructor
-      public: virtual ~BaseText();
+      public: ~BaseText() override;
 
       // Documentation inherited.
-      public: virtual void PreRender() override;
+      public: void PreRender() override;
 
       // Documentation inherited.
-      public: virtual void Destroy() override;
+      public: void Destroy() override;
 
       // Documentation inherited.
       public: void SetFontName(const std::string &_font) override;
@@ -52,53 +52,54 @@ namespace gz
       public: std::string FontName() const override;
 
       // Documentation inherited.
-      public: virtual void SetTextString(const std::string &_text) override;
+      public: void SetTextString(const std::string &_text) override;
 
       // Documentation inherited.
-      public: virtual std::string TextString() const override;
+      public: std::string TextString() const override;
 
       // Documentation inherited.
-      public: virtual void SetColor(const gz::math::Color &_color)
-          override;
+      public: void SetColor(const gz::math::Color &_color) override;
 
       // Documentation inherited.
-      public: virtual gz::math::Color Color() const override;
+      public: gz::math::Color Color() const override;
 
       // Documentation inherited.
-      public: virtual void SetCharHeight(const float _height) override;
+      public: void SetCharHeight(const float _height) override;
 
       // Documentation inherited.
-      public: virtual float CharHeight() const override;
+      public: float CharHeight() const override;
 
       // Documentation inherited.
-      public: virtual void SetSpaceWidth(const float _width) override;
+      public: void SetSpaceWidth(const float _width) override;
 
       // Documentation inherited.
-      public: virtual float SpaceWidth() const override;
+      public: float SpaceWidth() const override;
 
       // Documentation inherited.
-      public: virtual void SetTextAlignment(const TextHorizontalAlign &_hAlign,
+      public: void SetTextAlignment(
+                  const TextHorizontalAlign &_hAlign,
                   const TextVerticalAlign &_vAlign) override;
-      // Documentation inherited.
-      public: virtual TextHorizontalAlign HorizontalAlignment() const override;
 
       // Documentation inherited.
-      public: virtual TextVerticalAlign VerticalAlignment() const override;
+      public: TextHorizontalAlign HorizontalAlignment() const override;
 
       // Documentation inherited.
-      public: virtual void SetBaseline(const float _baseline) override;
+      public: TextVerticalAlign VerticalAlignment() const override;
 
       // Documentation inherited.
-      public: virtual float Baseline() const override;
+      public: void SetBaseline(const float _baseline) override;
+
+      // Documentation inherited.
+      public: float Baseline() const override;
 
       // Documentation inherited.
       public: void SetShowOnTop(const bool _onTop) override;
 
       // Documentation inherited.
-      public: virtual bool ShowOnTop() const override;
+      public: bool ShowOnTop() const override;
 
       // Documentation inherited.
-      public: virtual gz::math::AxisAlignedBox AABB() const override;
+      public: gz::math::AxisAlignedBox AABB() const override;
 
       /// \brief Font name, such as "Liberation Sans"
       protected: std::string fontName = "Liberation Sans";
@@ -238,11 +239,11 @@ namespace gz
 
     //////////////////////////////////////////////////
     template <class T>
-    void BaseText<T>::SetTextAlignment(const TextHorizontalAlign &_horzAlign,
-                                       const TextVerticalAlign &_vertAlign)
+    void BaseText<T>::SetTextAlignment(const TextHorizontalAlign &_hAlign,
+                                       const TextVerticalAlign &_vAlign)
     {
-      this->horizontalAlign = _horzAlign;
-      this->verticalAlign = _vertAlign;
+      this->horizontalAlign = _hAlign;
+      this->verticalAlign = _vAlign;
       this->textDirty = true;
     }
 

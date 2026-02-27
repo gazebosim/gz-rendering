@@ -26,6 +26,7 @@
 #endif
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2DynamicRenderable.hh"
@@ -110,31 +111,31 @@ void Ogre2LidarVisual::PreRender()
 void Ogre2LidarVisual::Destroy()
 {
   BaseLidarVisual::Destroy();
-  for (auto ray : this->dataPtr->noHitRayStrips)
+  for (auto &ray : this->dataPtr->noHitRayStrips)
   {
     ray->Clear();
     ray.reset();
   }
 
-  for (auto ray : this->dataPtr->rayStrips)
+  for (auto &ray : this->dataPtr->rayStrips)
   {
     ray->Clear();
     ray.reset();
   }
 
-  for (auto ray : this->dataPtr->rayLines)
+  for (auto &ray : this->dataPtr->rayLines)
   {
     ray->Clear();
     ray.reset();
   }
 
-  for (auto ray : this->dataPtr->deadZoneRayFans)
+  for (auto &ray : this->dataPtr->deadZoneRayFans)
   {
     ray->Clear();
     ray.reset();
   }
 
-  for (auto ray : this->dataPtr->points)
+  for (auto &ray : this->dataPtr->points)
   {
     ray->Clear();
     ray.reset();
@@ -204,6 +205,7 @@ void Ogre2LidarVisual::SetPoints(const std::vector<double> &_points)
 //////////////////////////////////////////////////
 void Ogre2LidarVisual::Update()
 {
+  GZ_PROFILE("Ogre2LidarVisual::Update");
   if (this->lidarVisualType == LidarVisualType::LVT_NONE)
   {
     this->ClearVisualData();

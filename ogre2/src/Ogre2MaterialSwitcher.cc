@@ -16,6 +16,7 @@
 */
 
 #include "gz/common/Console.hh"
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre2/Ogre2Heightmap.hh"
 #include "gz/rendering/ogre2/Ogre2MaterialSwitcher.hh"
@@ -58,6 +59,7 @@ Ogre2MaterialSwitcher::~Ogre2MaterialSwitcher()
 void Ogre2MaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_evt*/)
 {
+  GZ_PROFILE("Ogre2MaterialSwitcher::cameraPreRenderScene");
   auto engine = Ogre2RenderEngine::Instance();
   engine->SetGzOgreRenderingMode(GORM_SOLID_COLOR);
 
@@ -183,6 +185,7 @@ void Ogre2MaterialSwitcher::cameraPreRenderScene(
 void Ogre2MaterialSwitcher::cameraPostRenderScene(
     Ogre::Camera * /*_evt*/)
 {
+  GZ_PROFILE("Ogre2MaterialSwitcher::cameraPostRenderScene");
   auto engine = Ogre2RenderEngine::Instance();
   Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
 

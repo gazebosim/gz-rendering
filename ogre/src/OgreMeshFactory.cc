@@ -23,6 +23,7 @@
 #include <gz/common/Skeleton.hh>
 #include <gz/common/SkeletonAnimation.hh>
 #include <gz/common/SubMesh.hh>
+#include <gz/common/Profiler.hh>
 
 #include <gz/math/Matrix4.hh>
 
@@ -51,6 +52,7 @@ OgreMeshFactory::~OgreMeshFactory()
 //////////////////////////////////////////////////
 OgreMeshPtr OgreMeshFactory::Create(const MeshDescriptor &_desc)
 {
+  GZ_PROFILE("OgreMeshFactory::Create");
   // create ogre entity
   OgreMeshPtr mesh(new OgreMesh);
   MeshDescriptor normDesc = _desc;
@@ -85,6 +87,7 @@ Ogre::Entity *OgreMeshFactory::OgreEntity(const MeshDescriptor &_desc)
 //////////////////////////////////////////////////
 bool OgreMeshFactory::Load(const MeshDescriptor &_desc)
 {
+  GZ_PROFILE("OgreMeshFactory::Load");
   if (!this->Validate(_desc))
   {
     return false;
@@ -108,6 +111,7 @@ bool OgreMeshFactory::IsLoaded(const MeshDescriptor &_desc)
 //////////////////////////////////////////////////
 void OgreMeshFactory::ClearMaterialsCache(const std::string &_name)
 {
+  GZ_PROFILE("OgreMeshFactory::ClearMaterialsCache");
   auto it = this->materialCache.begin();
   for (auto &mat : this->materialCache)
   {
@@ -127,16 +131,15 @@ void OgreMeshFactory::ClearMaterialsCache(const std::string &_name)
 //////////////////////////////////////////////////
 bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
 {
+  GZ_PROFILE("OgreMeshFactory::LoadImpl");
   Ogre::MeshPtr ogreMesh;
-  std::string name;
-  std::string group;
 
   OgreRenderEngine::Instance()->AddResourcePath(_desc.mesh->Path());
 
   try
   {
-    name = this->MeshName(_desc);
-    group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+    const auto &name = this->MeshName(_desc);
+    const auto &group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
     ogreMesh = Ogre::MeshManager::getSingleton().createManual(name, group);
 
     // load skeleton
@@ -556,10 +559,11 @@ OgreSubMeshStoreFactory::~OgreSubMeshStoreFactory()
 //////////////////////////////////////////////////
 OgreSubMeshStorePtr OgreSubMeshStoreFactory::Create()
 {
+  GZ_PROFILE("OgreSubMeshStoreFactory::Create");
   OgreSubMeshStorePtr subMeshes(new OgreSubMeshStore);
-  unsigned int count = this->ogreEntity->getNumSubEntities();
+  const auto count = this->ogreEntity->getNumSubEntities();
 
-  for (unsigned int i = 0; i < count; ++i)
+  for (size_t i = 0; i < count; ++i)
   {
     OgreSubMeshPtr subMesh = this->CreateSubMesh(i);
     subMeshes->Add(subMesh);
@@ -571,6 +575,7 @@ OgreSubMeshStorePtr OgreSubMeshStoreFactory::Create()
 //////////////////////////////////////////////////
 OgreSubMeshPtr OgreSubMeshStoreFactory::CreateSubMesh(unsigned int _index)
 {
+  GZ_PROFILE("OgreSubMeshStoreFactory::CreateSubMesh");
   OgreSubMeshPtr subMesh(new OgreSubMesh);
 
   subMesh->id = _index;
@@ -602,10 +607,10 @@ void OgreSubMeshStoreFactory::CreateNameList()
 //////////////////////////////////////////////////
 void OgreSubMeshStoreFactory::PopulateDefaultNames()
 {
-  unsigned int count = this->ogreEntity->getNumSubEntities();
+  const auto count = this->ogreEntity->getNumSubEntities();
   this->names.reserve(count);
 
-  for (unsigned int i = 0; i < count; ++i)
+  for (size_t i = 0; i < count; ++i)
   {
     this->names.push_back("SubMesh(" + std::to_string(i) + ")");
   }
@@ -617,10 +622,9 @@ void OgreSubMeshStoreFactory::PopulateGivenNames()
   const Ogre::MeshPtr ogreMesh = this->ogreEntity->getMesh();
   const Ogre::Mesh::SubMeshNameMap &ogreMap = ogreMesh->getSubMeshNameMap();
 
-  for (auto pair : ogreMap)
+  for (const auto &pair : ogreMap)
   {
-    std::string name = pair.first;
     unsigned int index = pair.second;
-    this->names[index] = name;
+    this->names[index] = pair.first;
   }
 }

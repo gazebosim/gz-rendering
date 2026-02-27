@@ -33,8 +33,6 @@ class RayQueryTest : public CommonRenderingTest
 /////////////////////////////////////////////////
 TEST_F(RayQueryTest, RayQuery)
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   ScenePtr scene = engine->CreateScene("scene");
 
   RayQueryPtr rayQuery = scene->CreateRayQuery();

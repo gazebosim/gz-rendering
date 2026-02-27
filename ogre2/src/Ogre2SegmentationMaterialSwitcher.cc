@@ -23,6 +23,7 @@
 #include <variant>
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre2/Ogre2Heightmap.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -84,6 +85,7 @@ bool Ogre2SegmentationMaterialSwitcher::IsTakenColor(const math::Color &_color)
 Ogre::Vector4 Ogre2SegmentationMaterialSwitcher::ColorForVisual(
   const VisualPtr &_visual, std::string &_prevParentName)
 {
+  GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::ColorForVisual");
   // get class user data
   Variant labelAny = _visual->UserData("label");
   int label;
@@ -175,6 +177,7 @@ Ogre::Vector4 Ogre2SegmentationMaterialSwitcher::ColorForVisual(
 math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
   bool _isMultiLink)
 {
+  GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::LabelToColor");
   if (_label == this->segmentationCamera->BackgroundLabel())
     return this->segmentationCamera->BackgroundColor();
 
@@ -202,7 +205,7 @@ math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
   if (_isMultiLink)
     return color;
 
-  // loop recursivly till finding a unique color
+  // loop recursively till finding a unique color
   if (this->IsTakenColor(color))
       return this->LabelToColor(_label);
 
@@ -219,6 +222,7 @@ math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
 VisualPtr Ogre2SegmentationMaterialSwitcher::TopLevelModelVisual(
     VisualPtr _visual) const
 {
+  GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::TopLevelModelVisual");
   if (!_visual)
     return _visual;
   VisualPtr p = _visual;
@@ -231,6 +235,7 @@ VisualPtr Ogre2SegmentationMaterialSwitcher::TopLevelModelVisual(
 void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene");
   this->colorToLabel.clear();
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
@@ -252,7 +257,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
   }
 
   // Sort the ogre objects by name
-  // The algorithm of handeling multi-link models depends on a sorted objects
+  // The algorithm of handling multi-link models depends on a sorted objects
   // by name, so all links that belongs to the same object come in order
   std::sort(ogreObjects.begin(), ogreObjects.end(),
     [] (Ogre::MovableObject * object1, Ogre::MovableObject * object2) {
@@ -271,7 +276,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
   const Ogre::HlmsBlendblock *noBlend =
     hlmsManager->getBlendblock(Ogre::HlmsBlendblock());
 
-  for (auto object : ogreObjects)
+  for (auto *object : ogreObjects)
   {
     Ogre::Item *item = static_cast<Ogre::Item *>(object);
 
@@ -394,6 +399,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
 void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene");
   auto engine = Ogre2RenderEngine::Instance();
   Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
 
@@ -430,7 +436,7 @@ void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
   }
 
   // Restore Items with low level materials
-  for (auto subItemMat : this->materialMap)
+  for (auto &subItemMat : this->materialMap)
   {
     subItemMat.first->setMaterial(subItemMat.second);
   }

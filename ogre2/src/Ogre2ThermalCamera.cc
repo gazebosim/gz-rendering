@@ -42,6 +42,8 @@
 
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
+#include <gz/common/Profiler.hh>
+
 #include <gz/math/Helpers.hh>
 #include <gz/math/Matrix4.hh>
 
@@ -232,6 +234,7 @@ void Ogre2ThermalCameraMaterialSwitcher::SetLinearResolution(double _resolution)
 void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  GZ_PROFILE("Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene");
   auto engine = Ogre2RenderEngine::Instance();
   engine->SetGzOgreRenderingMode(GORM_SOLID_THERMAL_COLOR_TEXTURED);
 
@@ -620,6 +623,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
 void Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  GZ_PROFILE("Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene");
   auto engine = Ogre2RenderEngine::Instance();
   Ogre::HlmsManager *hlmsManager = engine->OgreRoot()->getHlmsManager();
 
@@ -657,7 +661,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene(
   }
 
   // Restore Items with low level materials
-  for (auto subItemMat : this->materialMap)
+  for (auto &subItemMat : this->materialMap)
   {
     subItemMat.first->setMaterial(subItemMat.second);
   }
@@ -673,7 +677,7 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPostRenderScene(
   }
 
   // restore item to use pbs hlms material
-  for (auto it : this->itemDatablockMap)
+  for (auto &it : this->itemDatablockMap)
   {
     Ogre::SubItem *subItem = it.first;
     subItem->setDatablock(it.second);
@@ -821,6 +825,7 @@ void Ogre2ThermalCamera::CreateRenderTexture()
 /////////////////////////////////////////////////////////
 void Ogre2ThermalCamera::CreateThermalTexture()
 {
+  GZ_PROFILE("Ogre2ThermalCamera::CreateThermalTexture");
   // set aspect ratio and fov
   const double aspectRatio = this->AspectRatio();
   const double angle = this->HFOV().Radian();
@@ -1070,7 +1075,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
   Ogre::CompositorNode *node =
       this->dataPtr->ogreCompositorWorkspace->getNodeSequence()[0];
   auto channels = node->getLocalTextures();
-  for (auto c : channels)
+  for (const auto &c : channels)
   {
     if (c->getPixelFormat() == Ogre::PFG_RGBA8_UNORM)
     {
@@ -1089,6 +1094,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
 //////////////////////////////////////////////////
 void Ogre2ThermalCamera::Render()
 {
+  GZ_PROFILE("Ogre2ThermalCamera::Render");
   // Our shaders rely on clamped values so enable it for this sensor
   //
   // TODO(anyone): Matias N. Goldberg (dark_sylinc) insists this is a hack
@@ -1117,6 +1123,7 @@ void Ogre2ThermalCamera::Render()
 //////////////////////////////////////////////////
 void Ogre2ThermalCamera::PreRender()
 {
+  GZ_PROFILE("Ogre2ThermalCamera::PreRender");
   if (!this->dataPtr->ogreThermalTexture)
     this->CreateThermalTexture();
 
@@ -1139,6 +1146,7 @@ void Ogre2ThermalCamera::PreRender()
 //////////////////////////////////////////////////
 void Ogre2ThermalCamera::PostRender()
 {
+  GZ_PROFILE("Ogre2ThermalCamera::PostRender");
   if (this->dataPtr->newThermalFrame.ConnectionCount() <= 0u)
     return;
 

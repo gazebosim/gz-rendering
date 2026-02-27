@@ -25,15 +25,13 @@ using namespace gz;
 using namespace rendering;
 using namespace std::chrono_literals;
 
-class MarkerTest : public CommonRenderingTest 
+class MarkerTest : public CommonRenderingTest
 {
 };
 
 /////////////////////////////////////////////////
 TEST_F(MarkerTest, Marker)
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   ScenePtr scene = engine->CreateScene("scene");
 
   MarkerPtr marker = scene->CreateMarker();

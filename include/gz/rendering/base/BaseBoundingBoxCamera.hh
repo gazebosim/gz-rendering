@@ -41,24 +41,25 @@ namespace gz
       protected: BaseBoundingBoxCamera();
 
       /// \brief Destructor
-      public: virtual ~BaseBoundingBoxCamera();
+      public: ~BaseBoundingBoxCamera() override;
 
       // Documentation inherited
-      public: virtual const std::vector<BoundingBox> &BoundingBoxData() const;
+      public: const std::vector<BoundingBox> &BoundingBoxData() const override;
 
       // Documentation inherited
-      public: virtual gz::common::ConnectionPtr ConnectNewBoundingBoxes(
-        std::function<void(const std::vector<BoundingBox> &)> _subscriber) = 0;
+      public: gz::common::ConnectionPtr ConnectNewBoundingBoxes(
+        std::function<void(const std::vector<BoundingBox> &)> _subscriber)
+        override = 0;
 
       // Documentation inherited
-      public: virtual void SetBoundingBoxType(BoundingBoxType _type);
+      public: void SetBoundingBoxType(BoundingBoxType _type) override;
 
       // Documentation inherited
-      public: virtual BoundingBoxType Type() const;
+      public: BoundingBoxType Type() const override;
 
       // Documentation inherited
-      public: virtual void DrawBoundingBox(unsigned char *_data,
-        const math::Color &_color, const BoundingBox &_box) const = 0;
+      public: void DrawBoundingBox(unsigned char *_data,
+        const math::Color &_color, const BoundingBox &_box) const override = 0;
 
       /// \brief The bounding box type
       protected: BoundingBoxType type = BoundingBoxType::BBT_FULLBOX2D;

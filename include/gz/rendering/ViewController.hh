@@ -41,12 +41,12 @@ namespace gz
       /// \param[in] _camera Camera to control
       public: virtual void SetCamera(const CameraPtr &_camera) = 0;
 
-      /// \brief Set target point for pan, zoom, oribit
+      /// \brief Set target point for pan, zoom, orbit
       /// \param[in] _target Target point in world coordinates
       public: virtual void SetTarget(const math::Vector3d &_target) = 0;
 
       /// \brief Set zoom amount
-      /// \param[in] _value Camera zoon value, e.g. mouse scroll delta
+      /// \param[in] _value Camera zoom value, e.g. mouse scroll delta
       public: virtual void Zoom(const double _value) = 0;
 
       /// \brief Set camera pan (translational movement) around target point.
@@ -54,7 +54,7 @@ namespace gz
       public: virtual void Pan(const math::Vector2d &_value) = 0;
 
       /// \brief Set camera orbit (rotational movement) around target point.
-      /// \param[in] _value robit amount in image plane, e.g. mouse drag delta
+      /// \param[in] _value orbit amount in image plane, e.g. mouse drag delta
       public: virtual void Orbit(const math::Vector2d &_value) = 0;
     };
     }

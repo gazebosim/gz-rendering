@@ -48,11 +48,15 @@ int g_counter = 0;
 /// \brief callback to get the segmentation buffer
 void OnNewSegmentationFrame(const uint8_t *_data,
                     unsigned int _width, unsigned int _height,
-                    unsigned int /*_channels*/,
+                    unsigned int _channels,
                     const std::string &/*_format*/)
 {
-  g_mutex.lock();
-  auto bufferSize = _width * _height * 3;
+  EXPECT_EQ(320u, _width);
+  EXPECT_EQ(240u, _height);
+  EXPECT_EQ(3u, _channels);
+
+  std::lock_guard<std::mutex> lock(g_mutex);
+  const auto bufferSize = _width * _height * 3;
 
   if (!g_buffer)
     g_buffer = new uint8_t[bufferSize];
@@ -60,7 +64,6 @@ void OnNewSegmentationFrame(const uint8_t *_data,
   memcpy(g_buffer, _data, bufferSize);
 
   g_counter++;
-  g_mutex.unlock();
 }
 
 //////////////////////////////////////////////////

@@ -37,36 +37,36 @@ namespace gz
     {
       protected: OgreLight();
 
-      public: virtual ~OgreLight();
+      public: ~OgreLight() override;
 
       public: virtual math::Color DiffuseColor() const override;
 
-      public: virtual void SetDiffuseColor(const math::Color &_color) override;
+      public: void SetDiffuseColor(const math::Color &_color) override;
 
       public: virtual math::Color SpecularColor() const override;
 
-      public: virtual void SetSpecularColor(
+      public: void SetSpecularColor(
         const math::Color &_color) override;
 
       public: virtual double AttenuationConstant() const override;
 
-      public: virtual void SetAttenuationConstant(double _value) override;
+      public: void SetAttenuationConstant(double _value) override;
 
       public: virtual double AttenuationLinear() const override;
 
-      public: virtual void SetAttenuationLinear(double _value) override;
+      public: void SetAttenuationLinear(double _value) override;
 
       public: virtual double AttenuationQuadratic() const override;
 
-      public: virtual void SetAttenuationQuadratic(double _value) override;
+      public: void SetAttenuationQuadratic(double _value) override;
 
       public: virtual double AttenuationRange() const override;
 
-      public: virtual void SetAttenuationRange(double _range) override;
+      public: void SetAttenuationRange(double _range) override;
 
       public: virtual bool CastShadows() const override;
 
-      public: virtual void SetCastShadows(bool _castShadows) override;
+      public: void SetCastShadows(bool _castShadows) override;
 
       // Documentation Inherited
       public: virtual double Intensity() const override;
@@ -102,11 +102,11 @@ namespace gz
     {
       protected: OgreDirectionalLight();
 
-      public: virtual ~OgreDirectionalLight();
+      public: ~OgreDirectionalLight() override;
 
-      public: virtual math::Vector3d Direction() const;
+      public: math::Vector3d Direction() const override;
 
-      public: virtual void SetDirection(const math::Vector3d &_dir);
+      public: void SetDirection(const math::Vector3d &_dir) override;
 
       private: friend class OgreScene;
     };
@@ -126,23 +126,23 @@ namespace gz
     {
       protected: OgreSpotLight();
 
-      public: virtual ~OgreSpotLight();
+      public: ~OgreSpotLight() override;
 
-      public: virtual math::Vector3d Direction() const;
+      public: math::Vector3d Direction() const override;
 
-      public: virtual void SetDirection(const math::Vector3d &_dir);
+      public: void SetDirection(const math::Vector3d &_dir) override;
 
-      public: virtual math::Angle InnerAngle() const;
+      public: math::Angle InnerAngle() const override;
 
-      public: virtual void SetInnerAngle(const math::Angle &_angle);
+      public: void SetInnerAngle(const math::Angle &_angle) override;
 
-      public: virtual math::Angle OuterAngle() const;
+      public: math::Angle OuterAngle() const override;
 
-      public: virtual void SetOuterAngle(const math::Angle &_angle);
+      public: void SetOuterAngle(const math::Angle &_angle) override;
 
-      public: virtual double Falloff() const;
+      public: double Falloff() const override;
 
-      public: virtual void SetFalloff(double _falloff);
+      public: void SetFalloff(double _falloff) override;
 
       private: friend class OgreScene;
     };

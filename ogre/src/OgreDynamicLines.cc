@@ -21,6 +21,7 @@
 #include <gz/math/Color.hh>
 
 #include "gz/common/Console.hh"
+#include <gz/common/Profiler.hh>
 #include "gz/rendering/ogre/OgreDynamicLines.hh"
 
 using namespace gz;
@@ -129,6 +130,7 @@ void OgreDynamicLines::Clear()
 /////////////////////////////////////////////////
 void OgreDynamicLines::Update()
 {
+  GZ_PROFILE("OgreDynamicLines::Update");
   if (this->dataPtr->dirty && this->dataPtr->points.size() > 1)
     this->FillHardwareBuffers();
 }
@@ -146,6 +148,7 @@ void OgreDynamicLines::CreateVertexDeclaration()
 /////////////////////////////////////////////////
 void OgreDynamicLines::FillHardwareBuffers()
 {
+  GZ_PROFILE("OgreDynamicLines::FillHardwareBuffers");
   int size = this->dataPtr->points.size();
   this->PrepareHardwareBuffers(size, 0);
 

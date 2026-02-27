@@ -18,6 +18,7 @@
 #include <typeinfo>
 
 #include <gz/common/Console.hh>
+#include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/OgreCamera.hh"
@@ -53,6 +54,7 @@ OgreRayQuery::~OgreRayQuery()
 void OgreRayQuery::SetFromCamera(const CameraPtr &_camera,
     const math::Vector2d &_coord)
 {
+  GZ_PROFILE("OgreRayQuery::SetFromCamera");
   // convert to nomalized screen pos for ogre
   math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
 
@@ -76,6 +78,7 @@ void OgreRayQuery::SetFromCamera(const WideAngleCameraPtr &_camera,
                                  uint32_t _faceIdx,
                                  const math::Vector2d &_coord)
 {
+  GZ_PROFILE("OgreRayQuery::SetFromCamera_2");
   // convert to nomalized screen pos for ogre
   math::Vector2d screenPos((_coord.X() + 1.0) / 2.0, (_coord.Y() - 1.0) / -2.0);
 
@@ -116,6 +119,7 @@ void OgreRayQuery::SetFromCamera(const WideAngleCameraPtr &_camera,
 //////////////////////////////////////////////////
 RayQueryResult OgreRayQuery::ClosestPoint(bool /*_forceSceneUpdate*/) // NOLINT
 {
+  GZ_PROFILE("OgreRayQuery::ClosestPoint");
   RayQueryResult result;
   OgreScenePtr ogreScene = std::dynamic_pointer_cast<OgreScene>(this->Scene());
   if (!ogreScene)
@@ -167,7 +171,7 @@ RayQueryResult OgreRayQuery::ClosestPoint(bool /*_forceSceneUpdate*/) // NOLINT
             OgreConversions::Convert(
             ogreEntity->getParentNode()->_getDerivedScale()));
 
-        for (unsigned int i = 0; i < indexCount; i += 3)
+        for (size_t i = 0; i < indexCount; i += 3)
         {
           // when indices size is not divisible by 3
           if (i+2 >= indexCount)
@@ -213,6 +217,7 @@ void OgreRayQuery::MeshInformation(const Ogre::Mesh *_mesh,
                                    const math::Quaterniond &_orient,
                                    const math::Vector3d &_scale)
 {
+  GZ_PROFILE("OgreRayQuery::MeshInformation");
   bool added_shared = false;
   size_t current_offset = 0;
   size_t next_offset = 0;
@@ -221,7 +226,7 @@ void OgreRayQuery::MeshInformation(const Ogre::Mesh *_mesh,
   _vertex_count = _index_count = 0;
 
   // Calculate how many vertices and indices we're going to need
-  for (uint16_t i = 0; i < _mesh->getNumSubMeshes(); ++i)
+  for (size_t i = 0; i < _mesh->getNumSubMeshes(); ++i)
   {
     Ogre::SubMesh* submesh = _mesh->getSubMesh(i);
 
@@ -250,7 +255,7 @@ void OgreRayQuery::MeshInformation(const Ogre::Mesh *_mesh,
   added_shared = false;
 
   // Run through the submeshes again, adding the data into the arrays
-  for (uint16_t i = 0; i < _mesh->getNumSubMeshes(); ++i)
+  for (size_t i = 0; i < _mesh->getNumSubMeshes(); ++i)
   {
     Ogre::SubMesh* submesh = _mesh->getSubMesh(i);
 

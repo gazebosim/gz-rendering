@@ -65,12 +65,12 @@ namespace gz
 
         /// \brief Equality operator
         /// \param[in] _iter Another iterator
-        /// \return True if input interator equal to this one, false otherwise.
+        /// \return True if input iterator equal to this one, false otherwise.
         public: bool operator==(const Iterator &_iter);
 
         /// \brief Inequality operator
         /// \param[in] _iter Another iterator
-        /// \return True if input interator is equal to this one,
+        /// \return True if input iterator is equal to this one,
         /// false otherwise
         public: bool operator!=(const Iterator &_iter);
 

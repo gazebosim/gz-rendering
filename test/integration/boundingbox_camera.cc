@@ -44,13 +44,8 @@ std::vector<BoundingBox> g_boxes;
 /// \brief callback to receive boxes from the camera
 void OnNewBoundingBoxes(const std::vector<BoundingBox> &boxes)
 {
-  g_mutex.lock();
-  g_boxes.clear();
-
-  for (auto box : boxes)
-    g_boxes.push_back(box);
-
-  g_mutex.unlock();
+  std::lock_guard<std::mutex> lock(g_mutex);
+  g_boxes = boxes;
 }
 
 /// \brief Build the scene with 2 boxes besides
@@ -258,7 +253,7 @@ TEST_F(BoundingBoxCameraTest, OccludedBoxes)
   unsigned int occludedLabel = 1;
   unsigned int frontLabel = 2;
 
-  // hard-coded comparasion with acceptable error
+  // hard-coded comparison with acceptable error
   EXPECT_NEAR(occludedBox.Center().X(), 98, marginError);
   EXPECT_NEAR(occludedBox.Center().Y(), 119, marginError);
   EXPECT_NEAR(occludedBox.Size().X(), 15, marginError);

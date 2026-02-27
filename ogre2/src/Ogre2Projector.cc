@@ -25,6 +25,8 @@
 #include <OgreSceneNode.h>
 #include <OgreTextureGpuManager.h>
 
+#include <gz/common/Profiler.hh>
+
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2DepthCamera.hh"
 #include "gz/rendering/ogre2/Ogre2Projector.hh"
@@ -87,7 +89,7 @@ class gz::rendering::Ogre2Projector::Implementation
   /// \brief Decal - Texture projected onto a surface
   public: Ogre::Decal *decal{nullptr};
 
-  /// \brief Indicate whether the projector is intialized or not
+  /// \brief Indicate whether the projector is initialized or not
   public: bool initialized{false};
 
   /// \brief A map of cameras (<Camera ptr, name>) that the listener has been
@@ -148,6 +150,7 @@ Ogre2Projector::~Ogre2Projector()
 /////////////////////////////////////////////////
 void Ogre2Projector::PreRender()
 {
+  GZ_PROFILE("Ogre2Projector::PreRender");
   if (!this->dataPtr->initialized)
   {
     this->CreateProjector();
@@ -161,6 +164,7 @@ void Ogre2Projector::PreRender()
 /////////////////////////////////////////////////
 void Ogre2Projector::UpdateCameraListener()
 {
+  GZ_PROFILE("Ogre2Projector::UpdateCameraListener");
   // if a custom visibility flag is set, we will need to use a listener
   // for toggling the visibility of the decal
   if ((this->VisibilityFlags() & GZ_VISIBILITY_ALL) == GZ_VISIBILITY_ALL)
@@ -171,9 +175,9 @@ void Ogre2Projector::UpdateCameraListener()
     this->dataPtr->decalNode->getCreator()->setDecalsEmissive(
         this->dataPtr->decal->getEmissiveTexture());
 
-    for (auto &ogreCamIt : this->dataPtr->camerasWithListener)
+    for (const auto &ogreCamIt : this->dataPtr->camerasWithListener)
     {
-      Ogre::IdString camName = ogreCamIt.second;
+      const Ogre::IdString &camName = ogreCamIt.second;
       // instead of getting the camera pointer through ogreCamIt.first,
       // find camera pointer again to make sure the camera still exists
       // because there is a chance that we are holding onto a dangling pointer
@@ -233,6 +237,7 @@ void Ogre2Projector::UpdateCameraListener()
 /////////////////////////////////////////////////
 void Ogre2Projector::CreateProjector()
 {
+  GZ_PROFILE("Ogre2Projector::CreateProjector");
   this->dataPtr->decalNode = this->ogreNode->createChildSceneNode();
   this->dataPtr->decalNode->roll(Ogre::Degree(90));
   this->dataPtr->decalNode->yaw(Ogre::Degree(180));
@@ -329,6 +334,7 @@ Ogre2ProjectorCameraListener::Ogre2ProjectorCameraListener(
 void Ogre2ProjectorCameraListener::cameraPreRenderScene(
     Ogre::Camera *_cam)
 {
+  GZ_PROFILE("Ogre2ProjectorCameraListener::cameraPreRenderScene");
   uint32_t mask = _cam->getLastViewport()->getVisibilityMask();
   if (this->visibilityFlags & mask && this->decalNode && this->decal)
   {
@@ -344,6 +350,7 @@ void Ogre2ProjectorCameraListener::cameraPreRenderScene(
 void Ogre2ProjectorCameraListener::cameraPostRenderScene(
     Ogre::Camera * /*_cam*/)
 {
+  GZ_PROFILE("Ogre2ProjectorCameraListener::cameraPostRenderScene");
   if (this->decalNode)
     this->decalNode->setVisible(false);
 }

@@ -32,7 +32,7 @@
 
 #include <gz/utils/ExtraTestMacros.hh>
 
-#define DOUBLE_TOL 1e-6
+constexpr double DOUBLE_TOL = 1e-6;
 unsigned int g_pointCloudCounter = 0;
 
 /////////////////////////////////////////////////
@@ -41,9 +41,12 @@ void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
                   unsigned int _channels,
                   const std::string &/*_format*/)
 {
-  float f;
-  int size =  _width * _height * _channels;
-  memcpy(_scanDest, _scan, size * sizeof(f));
+  EXPECT_EQ(10u, _width);
+  EXPECT_EQ(10u, _height);
+  EXPECT_EQ(4u, _channels);
+
+  const auto size = _width * _height * _channels;
+  memcpy(_scanDest, _scan, size * sizeof(float));
   g_pointCloudCounter++;
 }
 using namespace gz;
@@ -863,7 +866,6 @@ static void TestLensFlare(gz::rendering::RenderEngine *_engine,
 /////////////////////////////////////////////////
 TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
   CHECK_RENDERPASS_SUPPORTED();
 
   TestLensFlare(this->engine, false);
@@ -872,7 +874,6 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlarePass))
 /////////////////////////////////////////////////
 TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlareWideAnglePass))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
   CHECK_RENDERPASS_SUPPORTED();
 
   TestLensFlare(this->engine, true);

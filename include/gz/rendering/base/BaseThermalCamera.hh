@@ -66,7 +66,7 @@ namespace gz
       public: virtual float MaxTemperature() const override;
 
       // Documentation inherited.
-      public: virtual void SetLinearResolution(float _max) override;
+      public: virtual void SetLinearResolution(float _resolution) override;
 
       // Documentation inherited.
       public: virtual float LinearResolution() const override;
@@ -77,7 +77,7 @@ namespace gz
       // Documentation inherited.
       public: virtual void SetHeatSourceTemperatureRange(float _range) override;
 
-      // Documentation inherted.
+      // Documentation inherited.
       public: virtual gz::common::ConnectionPtr ConnectNewThermalFrame(
           std::function<void(const uint16_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber) override;

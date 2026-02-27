@@ -164,8 +164,6 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Track))
 /////////////////////////////////////////////////
 TEST_F(CameraTest, GZ_UTILS_TEST_ENABLED_ONLY_ON_LINUX(VisualAt))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
-
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
 
@@ -513,7 +511,6 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
 /////////////////////////////////////////////////
 TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ShaderSelection))
 {
-  CHECK_UNSUPPORTED_ENGINE("optix");
   // This test checks that custom shaders are being rendering correctly in
   // camera view. It also verifies that visual selection is working and the
   // visual's material remains the same after selection.

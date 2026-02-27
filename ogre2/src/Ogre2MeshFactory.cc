@@ -23,6 +23,7 @@
 #include <gz/common/Skeleton.hh>
 #include <gz/common/SkeletonAnimation.hh>
 #include <gz/common/SubMesh.hh>
+#include <gz/common/Profiler.hh>
 
 #include <gz/math/Matrix4.hh>
 
@@ -96,6 +97,7 @@ void Ogre2MeshFactory::ClearMaterialsCache(const std::string &)
 //////////////////////////////////////////////////
 Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
 {
+  GZ_PROFILE("Ogre2MeshFactory::Create");
   // create ogre entity
   Ogre2MeshPtr mesh(new Ogre2Mesh);
   MeshDescriptor normDesc = _desc;
@@ -125,6 +127,7 @@ Ogre2MeshPtr Ogre2MeshFactory::Create(const MeshDescriptor &_desc)
 //////////////////////////////////////////////////
 Ogre::Item *Ogre2MeshFactory::OgreItem(const MeshDescriptor &_desc)
 {
+  GZ_PROFILE("Ogre2MeshFactory::OgreItem");
   if (!this->Load(_desc))
   {
     return nullptr;
@@ -181,16 +184,15 @@ bool Ogre2MeshFactory::IsLoaded(const MeshDescriptor &_desc)
 //////////////////////////////////////////////////
 bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
 {
+  GZ_PROFILE("Ogre2MeshFactory::LoadImpl");
   Ogre::v1::MeshPtr ogreMesh;
-  std::string name;
-  std::string group;
 
   Ogre2RenderEngine::Instance()->AddResourcePath(_desc.mesh->Path());
 
   try
   {
-    name = this->MeshName(_desc);
-    group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
+    const auto &name = this->MeshName(_desc);
+    const auto &group = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
     ogreMesh = Ogre::v1::MeshManager::getSingleton().createManual(name, group);
 
     // load skeleton
@@ -558,11 +560,12 @@ bool Ogre2MeshFactory::LoadImpl(const MeshDescriptor &_desc)
 
   if (ogreMesh->getNumSubMeshes() == 0u)
   {
-    std::string msg = "Unable to load mesh: '" + _desc.meshName + "'";
+    std::stringstream ss;
+    ss << "Unable to load mesh: '" << _desc.meshName << "'";
     if (!_desc.subMeshName.empty())
-      msg += ", submesh: '" + _desc.subMeshName + "'";
-    msg += ". Mesh will be empty.";
-    gzwarn << msg << std::endl;
+      ss << ", submesh: '" << _desc.subMeshName << "'";
+    ss << ". Mesh will be empty." << std::endl;
+    gzwarn << ss.str();
   }
 
   return true;
@@ -686,10 +689,9 @@ void Ogre2SubMeshStoreFactory::PopulateGivenNames()
 {
   const Ogre::MeshPtr ogreMesh = this->ogreItem->getMesh();
 
-  for (auto pair : ogreMesh->getSubMeshNameMap())
+  for (const auto &pair : ogreMesh->getSubMeshNameMap())
   {
-    std::string name = pair.first;
     unsigned int index = pair.second;
-    this->names[index] = name;
+    this->names[index] = pair.first;
   }
 }

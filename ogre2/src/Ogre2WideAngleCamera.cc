@@ -23,6 +23,7 @@
 #include "gz/rendering/ogre2/Ogre2RenderPass.hh"
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 
+#include <gz/common/Profiler.hh>
 #include "gz/common/Util.hh"
 
 #ifdef _MSC_VER
@@ -109,7 +110,7 @@ class gz::rendering::Ogre2WideAngleCamera::Implementation
   public: Ogre::TextureGpu *ogreTmpTextures[2]{};
 
   /// \brief Output texture with the the toutput for stitches
-  /// [kStichTmpTexture] = Temp 2D texture for ping poing effects
+  /// [kStichTmpTexture] = Temp 2D texture for ping point effects
   /// [kStichFinalTexture] = Output texture with the final output
   public: Ogre::TextureGpu *ogreStitchTexture[kNumStichTextures] =
   { nullptr, nullptr };
@@ -168,6 +169,10 @@ class gz::rendering::Ogre2WideAngleCamera::Implementation
   explicit Implementation(gz::rendering::Ogre2WideAngleCamera &_owner) :
     workspaceListener(_owner)
   {
+    for (unsigned int i = 0; i < 6; ++i)
+    {
+      this->ogreCompositorWorkspace[i] = nullptr;
+    }
   }
   // clang-format on
 };
@@ -183,10 +188,6 @@ static constexpr uint32_t kWideAngleCameraQuadPassId = 1276661u;
 Ogre2WideAngleCamera::Ogre2WideAngleCamera() :
   dataPtr(utils::MakeUniqueImpl<Implementation>(*this))
 {
-  for (unsigned int i = 0; i < 6; ++i)
-  {
-    this->dataPtr->ogreCompositorWorkspace[i] = nullptr;
-  }
 }
 
 //////////////////////////////////////////////////
@@ -229,6 +230,7 @@ void Ogre2WideAngleCamera::DestroyRenderTexture()
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::PreRender()
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::PreRender");
   BaseCamera::PreRender();
 
   if (this->dataPtr->backgroundMaterialDirty)
@@ -454,6 +456,7 @@ std::string Ogre2WideAngleCamera::WorkspaceFinalPassDefinitionName() const
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::CreateStitchWorkspaceDefinition()
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::CreateStitchWorkspaceDefinition");
   using namespace Ogre;
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -495,6 +498,7 @@ void Ogre2WideAngleCamera::CreateStitchWorkspaceDefinition()
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::CreateStitchWorkspace()
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::CreateStitchWorkspace");
   this->CreateStitchWorkspaceDefinition();
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -535,6 +539,7 @@ void Ogre2WideAngleCamera::CreateStitchWorkspace()
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::DestroyStitchWorkspace()
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::DestroyStitchWorkspace");
   if (this->dataPtr->ogreCompositorFinalPass)
   {
     auto engine = Ogre2RenderEngine::Instance();
@@ -635,6 +640,7 @@ std::string Ogre2WideAngleCamera::WorkspaceDefinitionName(
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::CreateWorkspaceDefinition(bool _withMsaa)
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::CreateWorkspaceDefinition");
   using namespace Ogre;
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -701,6 +707,7 @@ void Ogre2WideAngleCamera::CreateWorkspaceDefinition(bool _withMsaa)
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::CreateFacesWorkspaces(bool _withMsaa)
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::CreateFacesWorkspaces");
   this->CreateWorkspaceDefinition(_withMsaa);
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -738,6 +745,7 @@ void Ogre2WideAngleCamera::CreateFacesWorkspaces(bool _withMsaa)
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::DestroyFacesWorkspaces()
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::DestroyFacesWorkspaces");
   using namespace Ogre;
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
@@ -769,6 +777,7 @@ void Ogre2WideAngleCamera::DestroyFacesWorkspaces()
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::UpdateRenderPasses()
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::UpdateRenderPasses");
   using namespace Ogre;
   bool updateConnection = false;
 
@@ -937,6 +946,7 @@ void Ogre2WideAngleCamera::UpdateRenderPasses()
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::CreateWideAngleTexture()
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::CreateWideAngleTexture");
   if (this->dataPtr->ogreCamera == nullptr)
   {
     gzerr << "Ogre camera cannot be created" << std::endl;
@@ -1021,6 +1031,7 @@ void Ogre2WideAngleCamera::CreateWideAngleTexture()
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::Render()
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::Render");
   // make sure we do not alter the reserved visibility flags
   const uint32_t currVisibilityMask = this->VisibilityMask() &
     Ogre::VisibilityFlags::RESERVED_VISIBILITY_FLAGS;
@@ -1075,6 +1086,7 @@ void Ogre2WideAngleCamera::Render()
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::Copy(Image &_image) const
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::Copy");
   if (_image.Width() != this->ImageWidth() ||
       _image.Height() != this->ImageHeight())
   {
@@ -1117,6 +1129,7 @@ void Ogre2WideAngleCamera::Copy(Image &_image) const
 //////////////////////////////////////////////////
 math::Vector3d Ogre2WideAngleCamera::Project3d(const math::Vector3d &_pt) const
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::Project3d");
   using namespace Ogre;
 
   this->dataPtr->ogreCamera->setAspectRatio(1.0f);
@@ -1233,6 +1246,7 @@ math::Vector3d Ogre2WideAngleCamera::Project3d(const math::Vector3d &_pt) const
 Ogre::Ray Ogre2WideAngleCamera::CameraToViewportRay(
   const math::Vector2d &_screenPos, uint32_t _faceIdx)
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::CameraToViewportRay");
   this->dataPtr->ogreCamera->setAspectRatio(1.0f);
   this->dataPtr->ogreCamera->setFOVy(Ogre::Degree(90));
   const Ogre::Quaternion oldCameraOrientation(
@@ -1253,6 +1267,7 @@ Ogre::Ray Ogre2WideAngleCamera::CameraToViewportRay(
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::PostRender()
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::PostRender");
   for (RenderPassPtr &pass : this->dataPtr->renderPasses)
   {
     pass->PostRender();
@@ -1375,6 +1390,7 @@ void Ogre2WideAngleCamera::PrepareForCubemapFacePass(
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::PrepareForFinalPass(Ogre::Pass *_pass)
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::PrepareForFinalPass");
   const double ratio = static_cast<double>(this->ImageWidth()) /
                        static_cast<double>(this->ImageHeight());
   const double vfov = 2.0 * atan(tan(this->HFOV().Radian() / 2.0) / ratio);
@@ -1425,6 +1441,7 @@ void Ogre2WideAngleCamera::PrepareForFinalPass(Ogre::Pass *_pass)
 void Ogre2WideAngleCameraWorkspaceListenerPrivate::passPreExecute(
   Ogre::CompositorPass *_pass)
 {
+  GZ_PROFILE("Ogre2WideAngleCameraWorkspaceListenerPrivate::passPreExecute");
   const uint32_t identifier = _pass->getDefinition()->mIdentifier;
   if (identifier == kWideAngleCameraCubemapPassId)
   {
@@ -1460,6 +1477,7 @@ MaterialPtr Ogre2WideAngleCamera::BackgroundMaterial() const
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::UpdateBackgroundMaterial()
 {
+  GZ_PROFILE("Ogre2WideAngleCamera::UpdateBackgroundMaterial");
   if (!this->dataPtr->backgroundMaterialDirty)
     return;
 

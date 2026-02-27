@@ -196,10 +196,10 @@ void Ogre2RenderEngine::Destroy()
   {
     // Clean up any textures that may still be in flight.
     Ogre::TextureGpuManager *mgr =
-    this->ogreRoot->getRenderSystem()->getTextureGpuManager();
+        this->ogreRoot->getRenderSystem()->getTextureGpuManager();
 
     auto entries = mgr->getEntries();
-    for (auto& [name, entry] : entries)
+    for (const auto& [name, entry] : entries)
     {
       if (entry.resourceGroup == "General" && !entry.destroyRequested)
         mgr->destroyTexture(entry.texture);
@@ -751,10 +751,6 @@ void Ogre2RenderEngine::LoadPlugins()
 //////////////////////////////////////////////////
 void Ogre2RenderEngine::CreateRenderSystem()
 {
-  Ogre::RenderSystem *renderSys;
-  const Ogre::RenderSystemList *rsList;
-
-  rsList = &(this->ogreRoot->getAvailableRenderers());
   std::string targetRenderSysName("OpenGL 3+ Rendering Subsystem");
   if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
   {
@@ -765,27 +761,12 @@ void Ogre2RenderEngine::CreateRenderSystem()
     targetRenderSysName = "Metal Rendering Subsystem";
   }
 
-  int c = 0;
-
-  renderSys = nullptr;
-
+  Ogre::RenderSystem *renderSys = nullptr;
+  for (auto *render : this->ogreRoot->getAvailableRenderers())
   {
-    bool bContinue = false;
-    do
-    {
-      if (c == static_cast<int>(rsList->size()))
-        break;
-
-      renderSys = rsList->at(c);
-      c++;
-
-      // cpplint has a false positive when extending a while call to multiple
-      // lines (it thinks the while loop is empty), so we must put the whole
-      // while statement on one line and add NOLINT at the end so that cpplint
-      // doesn't complain about the line being too long
-      bContinue =
-        renderSys && renderSys->getName().compare(targetRenderSysName) != 0;
-    } while (bContinue);
+    renderSys = render;
+    if (renderSys && renderSys->getName() == targetRenderSysName)
+      break;
   }
 
   if (renderSys == nullptr)
@@ -961,7 +942,7 @@ void Ogre2RenderEngine::RegisterHlms()
       &this->dataPtr->sphericalClipMinDistance);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsUnlit);
 
-    // disable writting debug output to disk
+    // disable writing debug output to disk
     hlmsUnlit->setDebugOutputPath(false, false);
     hlmsUnlit->setListener(hlmsUnlit);
 
@@ -1006,7 +987,7 @@ void Ogre2RenderEngine::RegisterHlms()
                                      this->dataPtr->hlmsPbsTerraShadows.get());
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsPbs);
 
-    // disable writting debug output to disk
+    // disable writing debug output to disk
     hlmsPbs->setDebugOutputPath(false, false);
     hlmsPbs->setListener(hlmsPbs);
 
@@ -1041,7 +1022,7 @@ void Ogre2RenderEngine::RegisterHlms()
       &this->dataPtr->sphericalClipMinDistance);
     Ogre::Root::getSingleton().getHlmsManager()->registerHlms(hlmsTerra);
 
-    // disable writting debug output to disk
+    // disable writing debug output to disk
     hlmsTerra->setDebugOutputPath(false, false);
     hlmsTerra->setListener(hlmsTerra);
 

@@ -17,7 +17,6 @@
   <depend>gz-math</depend>
   <depend>gz-plugin</depend>
   <depend>gz-utils</depend>
-  <depend>libfreeimage-dev</depend>
   <depend>libglew-dev</depend>
   <depend>libogre-dev</depend>
   <depend>libogre-next-2.3-dev</depend>

@@ -143,6 +143,7 @@ void Ogre2FrustumVisual::Update()
     this->ogreNode->attachObject(renderable->OgreObject());
 
     #if (!(OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7)))
+    // the Materials are assigned here to avoid repetitive search for materials
     Ogre::MaterialPtr rayLineMat =
                     Ogre::MaterialManager::getSingleton().getByName(
                                                       "Frustum/BlueRay");

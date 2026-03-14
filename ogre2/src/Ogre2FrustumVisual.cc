@@ -134,7 +134,7 @@ void Ogre2FrustumVisual::Update()
 {
   GZ_PROFILE("Ogre2FrustumVisual::Update");
   std::shared_ptr<Ogre2DynamicRenderable> renderable;
-  
+
   // check if the renderable exists
   if (this->dataPtr->rayLines.empty())
   {

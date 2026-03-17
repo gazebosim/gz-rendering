@@ -1,11 +1,11 @@
 freeglut3-dev
 libglew-dev
-libgz-cmake-dev
-libgz-common-dev
-libgz-math-dev
-libgz-math-eigen3-dev
-libgz-plugin-dev
-libgz-utils-dev
+libgz-rotary-cmake-dev
+libgz-rotary-common-dev
+libgz-rotary-math-dev
+libgz-rotary-math-eigen3-dev
+libgz-rotary-plugin-dev
+libgz-rotary-utils-dev
 libogre-1.9-dev
 libxi-dev
 libxmu-dev

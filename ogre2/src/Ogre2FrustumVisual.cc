@@ -131,9 +131,7 @@ void Ogre2FrustumVisual::ClearVisualData()
 //////////////////////////////////////////////////
 void Ogre2FrustumVisual::Update()
 {
-
   std::shared_ptr<Ogre2DynamicRenderable> renderable;
-  
   // check if the renderable exists
   if (this->dataPtr->rayLines.empty())
   {

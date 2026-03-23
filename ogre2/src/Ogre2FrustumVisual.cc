@@ -131,27 +131,37 @@ void Ogre2FrustumVisual::ClearVisualData()
 //////////////////////////////////////////////////
 void Ogre2FrustumVisual::Update()
 {
-  std::shared_ptr<Ogre2DynamicRenderable> renderable =
-                  std::shared_ptr<Ogre2DynamicRenderable>(
+  std::shared_ptr<Ogre2DynamicRenderable> renderable;
+  // check if the renderable exists
+  if (this->dataPtr->rayLines.empty())
+  {
+    renderable = std::shared_ptr<Ogre2DynamicRenderable>(
                               new Ogre2DynamicRenderable(this->Scene()));
-  this->ogreNode->attachObject(renderable->OgreObject());
+    this->ogreNode->attachObject(renderable->OgreObject());
 
-  #if (!(OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7)))
-  // the Materials are assigned here to avoid repetitive search for materials
-  Ogre::MaterialPtr rayLineMat =
-                  Ogre::MaterialManager::getSingleton().getByName(
-                                                    "Frustum/BlueRay");
-  #endif
+    #if (!(OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7)))
+    // the Materials are assigned here to avoid repetitive search for materials
+    Ogre::MaterialPtr rayLineMat =
+                    Ogre::MaterialManager::getSingleton().getByName(
+                                                      "Frustum/BlueRay");
+    #endif
 
-  #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
-    MaterialPtr mat = this->Scene()->Material("Frustum/BlueRay");
-  #else
-    MaterialPtr mat = this->Scene()->Material("Frustum/BlueRay");
-  #endif
+    #if (OGRE_VERSION <= ((1 << 16) | (10 << 8) | 7))
+      MaterialPtr mat = this->Scene()->Material("Frustum/BlueRay");
+    #else
+      MaterialPtr mat = this->Scene()->Material("Frustum/BlueRay");
+    #endif
 
-  renderable->SetMaterial(mat, false);
-  renderable->SetOperationType(MT_LINE_LIST);
-  this->dataPtr->rayLines.push_back(renderable);
+    renderable->SetMaterial(mat, false);
+    renderable->SetOperationType(MT_LINE_LIST);
+    this->dataPtr->rayLines.push_back(renderable);
+  }
+  else
+  {
+    // clear the existing renderable
+    renderable = this->dataPtr->rayLines.front();
+    renderable->Clear();
+  }
 
   // Tangent of half the field of view.
   double tanFOV2 = std::tan(this->hfov() * 0.5);

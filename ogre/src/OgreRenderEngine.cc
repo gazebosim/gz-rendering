@@ -132,33 +132,41 @@ OgreRenderEngine::~OgreRenderEngine()
 //////////////////////////////////////////////////
 void OgreRenderEngine::Destroy()
 {
+  gzdbg << "[OgreDebug] Destroy: start" << std::endl;
   BaseRenderEngine::Destroy();
 
   if (this->scenes)
   {
+    gzdbg << "[OgreDebug] Destroy: RemoveAll scenes" << std::endl;
     this->scenes->RemoveAll();
   }
 
 #if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
+  gzdbg << "[OgreDebug] Destroy: delete ogreOverlaySystem" << std::endl;
   delete this->ogreOverlaySystem;
   this->ogreOverlaySystem = nullptr;
 #endif
 
+  gzdbg << "[OgreDebug] Destroy: OgreRTShaderSystem::Fini" << std::endl;
   OgreRTShaderSystem::Instance()->Fini();
 
   if (ogreRoot)
   {
+    gzdbg << "[OgreDebug] Destroy: about to delete ogreRoot" << std::endl;
     // TODO(anyone): do we need to catch segfault on delete?
     try
     {
       delete this->ogreRoot;
+      gzdbg << "[OgreDebug] Destroy: ogreRoot deleted OK" << std::endl;
     }
     catch (...)
     {
+      gzerr << "[OgreDebug] Destroy: EXCEPTION deleting ogreRoot" << std::endl;
     }
     this->ogreRoot = nullptr;
   }
 
+  gzdbg << "[OgreDebug] Destroy: delete ogreLogManager" << std::endl;
   delete this->ogreLogManager;
   this->ogreLogManager = nullptr;
 
@@ -315,6 +323,7 @@ SceneStorePtr OgreRenderEngine::Scenes() const
 bool OgreRenderEngine::LoadImpl(
     const std::map<std::string, std::string> &_params)
 {
+  gzdbg << "[OgreDebug] LoadImpl: start" << std::endl;
   // parse params
   auto it = _params.find("useCurrentGLContext");
   if (it != _params.end())
@@ -323,16 +332,24 @@ bool OgreRenderEngine::LoadImpl(
   try
   {
     this->LoadAttempt();
+    gzdbg << "[OgreDebug] LoadImpl: LoadAttempt succeeded" << std::endl;
     return true;
   }
   catch (Ogre::Exception &ex)
   {
-    gzerr << ex.what() << std::endl;
+    gzerr << "[OgreDebug] LoadImpl: Ogre exception: " << ex.what()
+          << std::endl;
+    return false;
+  }
+  catch (std::exception &ex)
+  {
+    gzerr << "[OgreDebug] LoadImpl: std exception: " << ex.what()
+          << std::endl;
     return false;
   }
   catch (...)
   {
-    gzerr << "Failed to load render-engine" << std::endl;
+    gzerr << "[OgreDebug] LoadImpl: unknown exception" << std::endl;
     return false;
   }
 }
@@ -340,14 +357,21 @@ bool OgreRenderEngine::LoadImpl(
 //////////////////////////////////////////////////
 bool OgreRenderEngine::InitImpl()
 {
+  gzdbg << "[OgreDebug] InitImpl: start" << std::endl;
   try
   {
     this->InitAttempt();
+    gzdbg << "[OgreDebug] InitImpl: InitAttempt succeeded" << std::endl;
     return true;
+  }
+  catch (std::exception &ex)
+  {
+    gzerr << "[OgreDebug] InitImpl: exception: " << ex.what() << std::endl;
+    return false;
   }
   catch (...)
   {
-    gzerr << "Failed to initialize render-engine" << std::endl;
+    gzerr << "[OgreDebug] InitImpl: unknown exception" << std::endl;
     return false;
   }
 }
@@ -355,17 +379,31 @@ bool OgreRenderEngine::InitImpl()
 //////////////////////////////////////////////////
 void OgreRenderEngine::LoadAttempt()
 {
+  gzdbg << "[OgreDebug] LoadAttempt: CreateLogger" << std::endl;
   this->CreateLogger();
   if (!this->useCurrentGLContext)
+  {
+    gzdbg << "[OgreDebug] LoadAttempt: CreateContext" << std::endl;
     this->CreateContext();
+  }
+  gzdbg << "[OgreDebug] LoadAttempt: CreateRoot" << std::endl;
   this->CreateRoot();
+  gzdbg << "[OgreDebug] LoadAttempt: CreateOverlay" << std::endl;
   this->CreateOverlay();
+  gzdbg << "[OgreDebug] LoadAttempt: LoadPlugins" << std::endl;
   this->LoadPlugins();
+  gzdbg << "[OgreDebug] LoadAttempt: CreateRenderSystem" << std::endl;
   this->CreateRenderSystem();
+  gzdbg << "[OgreDebug] LoadAttempt: ogreRoot->initialise" << std::endl;
   this->ogreRoot->initialise(false);
+  gzdbg << "[OgreDebug] LoadAttempt: CreateResources" << std::endl;
   this->CreateResources();
+  gzdbg << "[OgreDebug] LoadAttempt: CreateRenderWindow" << std::endl;
   this->CreateRenderWindow();
+  gzdbg << "[OgreDebug] LoadAttempt: CheckCapabilities" << std::endl;
   this->CheckCapabilities();
+  gzdbg << "[OgreDebug] LoadAttempt: complete. renderPathType="
+        << this->renderPathType << std::endl;
 }
 
 //////////////////////////////////////////////////
@@ -463,8 +501,13 @@ void OgreRenderEngine::LoadPlugins()
        iter != this->ogrePaths.end(); ++iter)
   {
     std::string path(*iter);
+    gzdbg << "[OgreDebug] LoadPlugins: checking path: " << path << std::endl;
     if (!common::isDirectory(path))
+    {
+      gzdbg << "[OgreDebug] LoadPlugins: path is not a directory, skipping"
+            << std::endl;
       continue;
+    }
 
     std::vector<std::string> plugins;
     std::vector<std::string>::iterator piter;
@@ -493,16 +536,24 @@ void OgreRenderEngine::LoadPlugins()
           != std::string::npos;
       try
       {
+        gzdbg << "[OgreDebug] LoadPlugins: loading " << *piter+extension
+              << " (isGL=" << isGLPlugin << ")" << std::endl;
         // Load the plugin
         if (isGLPlugin)
           loadGLPlugin(*piter+extension);
         else
           this->ogreRoot->loadPlugin(*piter+extension);
+        gzdbg << "[OgreDebug] LoadPlugins: loaded OK: " << *piter+extension
+              << std::endl;
       }
       catch(Ogre::Exception &e)
       {
+        gzdbg << "[OgreDebug] LoadPlugins: failed to load " << *piter+extension
+              << ": " << e.what() << std::endl;
         try
         {
+          gzdbg << "[OgreDebug] LoadPlugins: trying debug version: "
+                << *piter+"_d"+extension << std::endl;
           // Load the debug plugin
           if (isGLPlugin)
             loadGLPlugin(*piter+"_d"+extension);
@@ -535,6 +586,14 @@ void OgreRenderEngine::CreateRenderSystem()
   rsList = &(this->ogreRoot->getAvailableRenderers());
 #endif
 
+  gzdbg << "[OgreDebug] CreateRenderSystem: " << rsList->size()
+        << " render systems available:" << std::endl;
+  for (size_t i = 0; i < rsList->size(); ++i)
+  {
+    gzdbg << "[OgreDebug]   [" << i << "] " << rsList->at(i)->getName()
+          << std::endl;
+  }
+
   int c = 0;
 
   Ogre::RenderSystem *renderSys = nullptr;
@@ -560,6 +619,8 @@ void OgreRenderEngine::CreateRenderSystem()
             "and make sure OpenGL is enabled." << std::endl;
     return;
   }
+  gzdbg << "[OgreDebug] CreateRenderSystem: selected '"
+        << renderSys->getName() << "'" << std::endl;
 
   // We operate in windowed mode
   renderSys->setConfigOption("Full Screen", "No");
@@ -813,6 +874,11 @@ void OgreRenderEngine::CheckCapabilities()
 
   this->renderPathType = OgreRenderEngine::NONE;
 
+  gzdbg << "[OgreDebug] CheckCapabilities: hasFBO=" << hasFBO
+        << " hasGLSL=" << hasGLSL
+        << " hasVertexPrograms=" << hasVertexPrograms
+        << " hasFragmentPrograms=" << hasFragmentPrograms << std::endl;
+
   if (hasFBO && hasGLSL && hasVertexPrograms && hasFragmentPrograms)
   {
     this->renderPathType = OgreRenderEngine::FORWARD;
@@ -821,6 +887,8 @@ void OgreRenderEngine::CheckCapabilities()
   {
     this->renderPathType = OgreRenderEngine::VERTEX;
   }
+  gzdbg << "[OgreDebug] CheckCapabilities: renderPathType="
+        << this->renderPathType << std::endl;
 }
 
 //////////////////////////////////////////////////

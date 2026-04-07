@@ -5,6 +5,7 @@ on:
     branches:
       - 'gz-rendering[1-9]?[0-9]'
       - 'main'
+      - 'iche033/skip_gl3plus_macos'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

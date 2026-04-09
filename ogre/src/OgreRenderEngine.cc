@@ -28,12 +28,8 @@
   #include <Winsock2.h>
 #endif
 
-<<<<<<< HEAD
-=======
 #include <dlfcn.h>
-
 # include <filesystem>
->>>>>>> 2aa3ab03 (Deduplicate OGRE_RESOURCE_PATH in OGRE1 constructor (#1254))
 # include <sstream>
 
 #include <gz/plugin/Register.hh>

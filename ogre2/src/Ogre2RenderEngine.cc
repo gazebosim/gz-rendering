@@ -668,7 +668,13 @@ void Ogre2RenderEngine::LoadPlugins()
     std::string extension = ".so";
 #endif
     std::string p = common::joinPaths(path, "RenderSystem_GL3Plus");
+#ifdef __APPLE__
+    // On macOS, Metal is the primary render system.  GL3Plus may not be
+    // available (e.g. ogre-next built without it), so mark it optional.
+    plugins.push_back({ p, true });
+#else
     plugins.push_back({ p, false });
+#endif
     p = common::joinPaths(path, "Plugin_ParticleFX");
     plugins.push_back({ p, false });
 

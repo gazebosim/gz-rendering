@@ -28,7 +28,6 @@
   #include <Winsock2.h>
 #endif
 
-#include <dlfcn.h>
 # include <filesystem>
 # include <sstream>
 

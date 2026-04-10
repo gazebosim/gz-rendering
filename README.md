@@ -1,3 +1,5 @@
+DONTMERGE
+
 # Gazebo Rendering: Rendering library for robot applications
 
 **Maintainer:** ichen [AT] openrobotics [DOT] org

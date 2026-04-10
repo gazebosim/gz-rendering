@@ -31,7 +31,7 @@ class TextTest : public CommonRenderingTest
 /////////////////////////////////////////////////
 TEST_F(TextTest, Text)
 {
-  CHECK_SUPPORTED_ENGINE("ogre");
+  CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
 
   ScenePtr scene = engine->CreateScene("scene");
 
@@ -99,7 +99,7 @@ TEST_F(TextTest, Text)
 class FontTest : public TextTest, public testing::WithParamInterface<std::string> {};
 
 TEST_P(FontTest, SupportedFont){
-  CHECK_SUPPORTED_ENGINE("ogre");
+  CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
 
   ScenePtr scene = engine->CreateScene("scene");
 

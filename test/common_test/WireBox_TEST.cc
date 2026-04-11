@@ -32,7 +32,7 @@ class WireBoxTest : public CommonRenderingTest
 /////////////////////////////////////////////////
 TEST_F(WireBoxTest, WireBox)
 {
-  CHECK_UNSUPPORTED_ENGINE("ogre", "ogre2");
+  CHECK_UNSUPPORTED_ENGINE("ogre");
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);

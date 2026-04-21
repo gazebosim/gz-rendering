@@ -75,7 +75,7 @@ endif()
 # Find OGRE
 list(APPEND gz_ogre_components "RTShaderSystem" "Terrain" "Overlay" "Paging")
 
-gz_find_package(GzOGRE VERSION 1.9.0
+gz_find_package(GzOGRE VERSION 1.12.10
   COMPONENTS ${gz_ogre_components}
   REQUIRED_BY ogre
   PRIVATE_FOR ogre)
@@ -121,6 +121,10 @@ endif()
 if (OGRE2_FOUND)
   set(GZ_RENDERING_HAVE_OGRE2 TRUE)
 endif()
+
+# FORCE NOT Boost_FOUND
+set(OGRE2_FOUND FALSE)
+set(GZ_RENDERING_HAVE_OGRE2 FALSE)
 
 #--------------------------------------
 # Find Vulkan

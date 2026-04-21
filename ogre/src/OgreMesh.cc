@@ -155,10 +155,8 @@ void OgreMesh::SetSkeletonAnimationEnabled(const std::string &_name,
   if (_enabled)
   {
     Ogre::SkeletonInstance *skel = this->ogreEntity->getSkeleton();
-    Ogre::Skeleton::BoneIterator iter = skel->getBoneIterator();
-    while (iter.hasMoreElements())
+    for (Ogre::Bone* bone : skel->getBones())
     {
-      Ogre::Bone* bone = iter.getNext();
       bone->setManuallyControlled(false);
     }
   }
@@ -192,10 +190,8 @@ std::unordered_map<std::string, float> OgreMesh::SkeletonWeights() const
     if (!anim->hasBlendMask())
       anim->createBlendMask(skel->getNumBones());
 
-    Ogre::Skeleton::BoneIterator iter = skel->getBoneIterator();
-    while (iter.hasMoreElements())
+    for (Ogre::Bone* bone : skel->getBones())
     {
-      Ogre::Bone* bone = iter.getNext();
       mapWeights[bone->getName()] =
           anim->getBlendMaskEntry(bone->getHandle());
     }

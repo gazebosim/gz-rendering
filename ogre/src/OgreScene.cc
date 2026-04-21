@@ -718,7 +718,7 @@ bool OgreScene::InitObject(OgreObjectPtr _object, unsigned int _id,
 void OgreScene::CreateContext()
 {
   Ogre::Root *root = OgreRenderEngine::Instance()->OgreRoot();
-  this->ogreSceneManager = root->createSceneManager(Ogre::ST_GENERIC);
+  this->ogreSceneManager = root->createSceneManager("DefaultSceneManager");
 
 #if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
   this->ogreSceneManager->addRenderQueueListener(

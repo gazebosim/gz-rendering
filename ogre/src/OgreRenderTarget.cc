@@ -15,23 +15,6 @@
  *
  */
 
-#ifndef _WIN32
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wunused-parameter"
-#else
-# pragma warning(push)
-# pragma warning(disable: 4005)
-# pragma warning(disable: 4275)
-#endif
-// leave this out of OgreIncludes as it conflicts with other files requiring
-// gl.h
-#include <OgreGLFBORenderTexture.h>
-#ifndef _WIN32
-# pragma GCC diagnostic pop
-#else
-# pragma warning(pop)
-#endif
-
 
 #include <gz/common/Console.hh>
 #include <gz/common/Profiler.hh>
@@ -440,10 +423,10 @@ unsigned int OgreRenderTexture::GLId() const
   if (!this->ogreTexture)
     return 0u;
 
-  GLuint texId;
+  unsigned int texId = 0u;
   this->ogreTexture->getCustomAttribute("GLID", &texId);
 
-  return static_cast<unsigned int>(texId);
+  return texId;
 }
 
 //////////////////////////////////////////////////

@@ -88,8 +88,7 @@ namespace gz
             setTexture(distortionTexture);
 
         // @todo Explore more efficent implementations as it is run every frame
-        Ogre::GpuProgramParametersSharedPtr params =
-            _mat->getTechnique(0)->getPass(_passId)
+        auto params = _mat->getTechnique(0)->getPass(_passId)
                      ->getFragmentProgramParameters();
         params->setNamedConstant("scale",
             Ogre::Vector3(

@@ -85,7 +85,7 @@ namespace gz
           Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
             decl->getVertexSize(this->kColorBinding),
             mRenderOp.vertexData->vertexCount,
-            Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+            Ogre::HardwareBuffer::HBU_GPU_ONLY);
 
         // Bind buffer
         bind->setBinding(this->kColorBinding, vbuf);

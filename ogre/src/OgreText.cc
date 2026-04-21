@@ -473,7 +473,7 @@ void OgreMovableText::SetupGeometry()
   ptbuf = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
             decl->getVertexSize(POS_TEX_BINDING),
             this->renderOp.vertexData->vertexCount,
-            Ogre::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
+            Ogre::HardwareBuffer::HBU_CPU_TO_GPU);
 
   bind->setBinding(POS_TEX_BINDING, ptbuf);
 
@@ -484,7 +484,7 @@ void OgreMovableText::SetupGeometry()
   cbuf = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
            decl->getVertexSize(COLOUR_BINDING),
            this->renderOp.vertexData->vertexCount,
-           Ogre::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
+           Ogre::HardwareBuffer::HBU_CPU_TO_GPU);
 
   bind->setBinding(COLOUR_BINDING, cbuf);
 

@@ -226,6 +226,11 @@ namespace gz
       GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: Ogre::MaterialPtr ogreMaterial;
 
+      /// \brief True if this instance created the underlying OGRE material
+      /// (vs. retrieved an already-existing one via createOrRetrieve).
+      /// Only the creator should remove it from the ResourceManager on Destroy.
+      protected: bool ogreMaterialOwner = false;
+
       protected: Ogre::Technique *ogreTechnique = nullptr;
 
       protected: Ogre::Pass *ogrePass = nullptr;

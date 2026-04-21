@@ -64,7 +64,8 @@ void OgreMaterial::Destroy()
 #else
   if (this->ogreMaterial)
   {
-    matManager.remove(this->ogreMaterial->getName());
+    if (this->ogreMaterialOwner)
+      matManager.remove(this->ogreMaterial->getName());
     this->ogreMaterial.reset();
   }
 #endif
@@ -880,15 +881,30 @@ void OgreMaterial::Init()
   BaseMaterial::Init();
   this->ogreGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
   Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
-  this->ogreMaterial = matManager.create(this->name, this->ogreGroup);
+  auto result = matManager.createOrRetrieve(this->name, this->ogreGroup);
+  this->ogreMaterial =
+      Ogre::static_pointer_cast<Ogre::Material>(result.first);
+  this->ogreMaterialOwner = result.second;
   this->ogreTechnique = this->ogreMaterial->getTechnique(0);
   this->ogrePass = this->ogreTechnique->getPass(0);
-  this->ogreTexState = this->ogrePass->createTextureUnitState();
-  this->ogreTexState->setBlank();
-  this->Reset();
-
-  // TODO(anyone): provide function interface
-  this->ogreMaterial->setTextureAnisotropy(8);
+  if (this->ogreMaterialOwner)
+  {
+    this->ogreTexState = this->ogrePass->createTextureUnitState();
+    this->ogreTexState->setBlank();
+    this->Reset();
+    // TODO(anyone): provide function interface
+    this->ogreMaterial->setTextureAnisotropy(8);
+  }
+  else
+  {
+    if (this->ogrePass->getNumTextureUnitStates() > 0)
+      this->ogreTexState = this->ogrePass->getTextureUnitState(0);
+    else
+    {
+      this->ogreTexState = this->ogrePass->createTextureUnitState();
+      this->ogreTexState->setBlank();
+    }
+  }
 }
 
 //////////////////////////////////////////////////

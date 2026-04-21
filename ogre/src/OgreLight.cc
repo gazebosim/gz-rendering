@@ -207,13 +207,14 @@ OgreDirectionalLight::~OgreDirectionalLight()
 //////////////////////////////////////////////////
 math::Vector3d OgreDirectionalLight::Direction() const
 {
-  return OgreConversions::Convert(this->ogreLight->getDirection());
+  return OgreConversions::Convert(this->ogreLight->getDerivedDirection());
 }
 
 //////////////////////////////////////////////////
 void OgreDirectionalLight::SetDirection(const math::Vector3d &_dir)
 {
-  this->ogreLight->setDirection(OgreConversions::Convert(_dir));
+  this->ogreNode->setDirection(OgreConversions::Convert(_dir),
+      Ogre::Node::TS_WORLD);
 }
 
 //////////////////////////////////////////////////
@@ -245,13 +246,14 @@ OgreSpotLight::~OgreSpotLight()
 //////////////////////////////////////////////////
 math::Vector3d OgreSpotLight::Direction() const
 {
-  return OgreConversions::Convert(this->ogreLight->getDirection());
+  return OgreConversions::Convert(this->ogreLight->getDerivedDirection());
 }
 
 //////////////////////////////////////////////////
 void OgreSpotLight::SetDirection(const math::Vector3d &_dir)
 {
-  this->ogreLight->setDirection(OgreConversions::Convert(_dir));
+  this->ogreNode->setDirection(OgreConversions::Convert(_dir),
+      Ogre::Node::TS_WORLD);
 }
 
 //////////////////////////////////////////////////

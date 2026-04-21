@@ -219,7 +219,7 @@ namespace gz
       /// \param[in] _params Gazebo Rendering params
       /// \param[out] _ogreParams ogre type for holding params
       protected: void UpdateShaderParams(ConstShaderParamsPtr _params,
-        Ogre::GpuProgramParametersSharedPtr _ogreParams);
+        const Ogre::GpuProgramParametersPtr& _ogreParams);
 
       protected: virtual void Init() override;
 

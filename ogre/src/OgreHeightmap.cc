@@ -186,7 +186,7 @@ class GzTerrainMatGen : public Ogre::TerrainMaterialGeneratorA
 
       protected: virtual void updateVpParams(const SM2Profile *_prof,
                      const Ogre::Terrain *_terrain, TechniqueType _tt,
-                     const Ogre::GpuProgramParametersSharedPtr &_params);
+                     const Ogre::GpuProgramParametersPtr &_params);
 
       private: Ogre::String GetChannel(Ogre::uint _idx);
 
@@ -1508,7 +1508,7 @@ GzTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFragmentProgram(
 
   this->defaultFpParams(_prof, _terrain, _tt, ret);
 
-  Ogre::GpuProgramParametersSharedPtr params = ret->getDefaultParameters();
+  auto params = ret->getDefaultParameters();
   params->setIgnoreMissingParams(false);
 
   Ogre::uint maxLayers = _prof->getMaxLayers(_terrain);
@@ -1892,7 +1892,7 @@ void GzTerrainMatGen::SM2Profile::ShaderHelperGLSL::defaultVpParams(
     const SM2Profile *_prof, const Ogre::Terrain *_terrain,
     TechniqueType _tt, const Ogre::HighLevelGpuProgramPtr &_prog)
 {
-  Ogre::GpuProgramParametersSharedPtr params = _prog->getDefaultParameters();
+  auto params = _prog->getDefaultParameters();
   params->setIgnoreMissingParams(true);
 
   params->setNamedAutoConstant("worldMatrix",
@@ -2621,7 +2621,7 @@ void GzTerrainMatGen::SM2Profile::ShaderHelperGLSL::updateVpParams(
 #else
     TechniqueType /*_tt*/,
 #endif
-    const Ogre::GpuProgramParametersSharedPtr &_params)
+    const Ogre::GpuProgramParametersPtr &_params)
 {
   _params->setIgnoreMissingParams(true);
   Ogre::uint maxLayers = _prof->getMaxLayers(_terrain);
@@ -2768,9 +2768,8 @@ Ogre::MaterialPtr TerrainMaterial::Profile::generate(
       if (!pass->hasFragmentProgram())
         continue;
 
-      Ogre::GpuProgramParametersSharedPtr params =
-          pass->getFragmentProgramParameters();
-      if (params.isNull())
+      auto params = pass->getFragmentProgramParameters();
+      if (!params)
         continue;
 
       // set up shadow split points in a way that is consistent with the

@@ -166,16 +166,16 @@ void Ogre2FrustumVisual::Update()
   // Tangent of half the field of view.
   double tanFOV2 = std::tan(this->hfov() * 0.5);
 
-  // Width of near plane
-  double nearWidth = 2.0 * tanFOV2 * this->nearClip;
+  // Half-width of near plane (distance from optical axis to plane edge).
+  double nearWidth = tanFOV2 * this->nearClip;
 
-  // Height of near plane
+  // Half-height of near plane.
   double nearHeight = nearWidth / this->aspectRatio;
 
-  // Width of far plane
-  double farWidth = 2.0 * tanFOV2 * this->farClip;
+  // Half-width of far plane.
+  double farWidth = tanFOV2 * this->farClip;
 
-  // Height of far plane
+  // Half-height of far plane.
   double farHeight = farWidth / this->aspectRatio;
 
   // Up, right, and forward unit vectors.
@@ -192,11 +192,11 @@ void Ogre2FrustumVisual::Update()
   // Far plane center
   gz::math::Vector3d farCenter = this->pose.Pos() + forward * this->farClip;
 
-  // These four variables are here for convenience.
-  gz::math::Vector3d upNearHeight2 = up * (nearHeight * 0.5);
-  gz::math::Vector3d rightNearWidth2 = right * (nearWidth * 0.5);
-  gz::math::Vector3d upFarHeight2 = up * (farHeight * 0.5);
-  gz::math::Vector3d rightFarWidth2 = right * (farWidth * 0.5);
+  // Half-extent vectors used to offset each plane center to a corner.
+  gz::math::Vector3d upNearHeight2 = up * nearHeight;
+  gz::math::Vector3d rightNearWidth2 = right * nearWidth;
+  gz::math::Vector3d upFarHeight2 = up * farHeight;
+  gz::math::Vector3d rightFarWidth2 = right * farWidth;
 
   // Compute the vertices of the near plane
   gz::math::Vector3d nearTopLeft =

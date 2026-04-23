@@ -1050,7 +1050,12 @@ void OgreHeightmap::SetupShadows(bool _enableShadows)
   matProfile = static_cast<GzTerrainMatGen::SM2Profile *>(
       matGen->getActiveProfile());
 #else
-  matProfile = static_cast<Ogre::TerrainMaterialGeneratorA::SM2Profile *>(
+  // Since OGRE 1.11 the custom GzTerrainMatGen path is disabled and
+  // CreateMaterial() installs our TerrainMaterial generator whose Profile is
+  // not an SM2Profile. Use dynamic_cast so the nullptr guard below skips the
+  // SM2Profile-only setters and avoids writing past the real Profile object
+  // (the static_cast path led to heap corruption during loadAllTerrains).
+  matProfile = dynamic_cast<Ogre::TerrainMaterialGeneratorA::SM2Profile *>(
       matGen->getActiveProfile());
 #endif
 

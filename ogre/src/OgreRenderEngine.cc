@@ -674,8 +674,11 @@ void OgreRenderEngine::CreateResources()
   {
     try
     {
+      // Fonts are organised in subdirectories (e.g. roboto/, liberation-sans/)
+      // so the Fonts resource group needs a recursive scan.
+      bool recursive = (aiter->second == "Fonts");
       Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-          aiter->first, "FileSystem", aiter->second);
+          aiter->first, "FileSystem", aiter->second, recursive);
     }
     catch(Ogre::Exception &/*_e*/)
     {

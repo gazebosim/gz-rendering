@@ -557,16 +557,28 @@ void OgreMaterial::SetVertexShader(const std::string &_path)
     return;
   }
 
-  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(_path,
-  "FileSystem", "General", false);
+  std::string shaderDir = common::parentPath(_path);
+  std::string shaderFile = common::basename(_path);
+  if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+          shaderDir, this->ogreGroup))
+  {
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        shaderDir, "FileSystem", this->ogreGroup);
+  }
 
+  const std::string programName = "__gz_rendering_vertex__" + _path;
   Ogre::HighLevelGpuProgramPtr vertexShader =
-    Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
-        "__gz_rendering_vertex__" + _path,
-        this->ogreGroup,
-        "glsl", Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
+    Ogre::HighLevelGpuProgramManager::getSingletonPtr()->getByName(
+        programName, this->ogreGroup);
+  if (!vertexShader)
+  {
+    vertexShader =
+      Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
+          programName, this->ogreGroup,
+          "glsl", Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
+  }
 
-  vertexShader->setSourceFile(_path);
+  vertexShader->setSourceFile(shaderFile);
   vertexShader->load();
 
   assert(vertexShader->isLoaded());
@@ -607,16 +619,28 @@ void OgreMaterial::SetFragmentShader(const std::string &_path)
     return;
   }
 
-  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(_path,
-  "FileSystem", "General", false);
+  std::string shaderDir = common::parentPath(_path);
+  std::string shaderFile = common::basename(_path);
+  if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+          shaderDir, this->ogreGroup))
+  {
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        shaderDir, "FileSystem", this->ogreGroup);
+  }
 
+  const std::string programName = "__gz_rendering_fragment__" + _path;
   Ogre::HighLevelGpuProgramPtr fragmentShader =
-    Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
-        "__gz_rendering_fragment__" + _path,
-        this->ogreGroup,
-        "glsl", Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
+    Ogre::HighLevelGpuProgramManager::getSingleton().getByName(
+        programName, this->ogreGroup);
+  if (!fragmentShader)
+  {
+    fragmentShader =
+      Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
+          programName, this->ogreGroup,
+          "glsl", Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
+  }
 
-  fragmentShader->setSourceFile(_path);
+  fragmentShader->setSourceFile(shaderFile);
   fragmentShader->load();
 
   assert(fragmentShader->isLoaded());
@@ -701,9 +725,12 @@ void OgreMaterial::SetTextureDataImpl(const std::string &_texture,
   const std::shared_ptr<const common::Image> &_img)
 {
   GZ_PROFILE("OgreMaterial::SetTextureDataImpl");
-  // Create the texture only if it was not created already
-  if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(
-      this->ogreGroup, _texture))
+  // Create the texture only if it was not created already.
+  // Check both the TextureManager (actual objects) and the ResourceGroupManager
+  // (file-system locations) — OGRE 1.12 throws on duplicate creates.
+  if (!Ogre::TextureManager::getSingleton().getByName(_texture) &&
+      !Ogre::ResourceGroupManager::getSingleton().resourceExists(
+          this->ogreGroup, _texture))
   {
     auto ogreTexture =
     Ogre::TextureManager::getSingleton().createManual(
@@ -768,11 +795,15 @@ Ogre::TexturePtr OgreMaterial::CreateTexture(const std::string &_name)
     return texture;
   }
 
-  texture = Ogre::TextureManager::getSingleton().createManual(_name,
-      this->ogreGroup, Ogre::TEX_TYPE_2D, image.getWidth(),
-      image.getHeight(), 0, Ogre::PF_X8R8G8B8);
-
-  texture->loadImage(image);
+  auto &texManager = Ogre::TextureManager::getSingleton();
+  texture = texManager.getByName(_name, this->ogreGroup);
+  if (!texture)
+  {
+    texture = texManager.createManual(_name, this->ogreGroup,
+        Ogre::TEX_TYPE_2D, image.getWidth(), image.getHeight(),
+        0, Ogre::PF_X8R8G8B8);
+    texture->loadImage(image);
+  }
   return texture;
 }
 

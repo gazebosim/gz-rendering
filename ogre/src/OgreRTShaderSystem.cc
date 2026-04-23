@@ -351,8 +351,12 @@ void OgreRTShaderSystem::RemoveShaders(OgreSubMesh *_subMesh)
         }
       }
 
-      this->dataPtr->shaderGenerator->removeShaderBasedTechnique(srcTechnique,
-          s->Name() + Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+      if (srcTechnique)
+      {
+        this->dataPtr->shaderGenerator->removeShaderBasedTechnique(
+            srcTechnique,
+            s->Name() + Ogre::RTShader::ShaderGenerator::DEFAULT_SCHEME_NAME);
+      }
 #endif
     }
     catch(const Ogre::Exception &e)

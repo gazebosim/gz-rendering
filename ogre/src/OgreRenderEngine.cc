@@ -670,6 +670,22 @@ void OgreRenderEngine::CreateResources()
         std::make_pair(p + "/fonts", "Fonts"));
   }
 
+  // OGRE 1.12+ requires the ShadowVolume programs for stencil shadow support.
+  // These are shipped with the OGRE package media; add them if found.
+  const std::vector<std::string> ogreMediaCandidates = {
+    "/usr/share/OGRE/Media",
+    "/usr/local/share/OGRE/Media",
+  };
+  for (const auto &ogreMedia : ogreMediaCandidates)
+  {
+    std::string shadowVolumePath = common::joinPaths(ogreMedia, "ShadowVolume");
+    if (common::isDirectory(shadowVolumePath))
+    {
+      archNames.push_back(std::make_pair(shadowVolumePath, "General"));
+      break;
+    }
+  }
+
   for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
   {
     try

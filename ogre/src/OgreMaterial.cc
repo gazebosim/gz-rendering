@@ -355,8 +355,12 @@ void OgreMaterial::SetNormalMap(const std::string &_name,
 
   this->normalMapName = _name;
   this->normalMapData = _img;
-  // TODO(anyone): implement
-  // this->SetNormalMapImpl(texture);
+
+  // Load the normal-map image into OGRE's TextureManager so the RTSS
+  // NormalMapLighting SRS can bind it by name later. Do not touch
+  // this->ogreTexState — that slot is the diffuse texture.
+  if (_img)
+    this->CreateOgreTextureFromImage(_name, _img);
 }
 
 //////////////////////////////////////////////////
@@ -725,43 +729,53 @@ void OgreMaterial::SetTextureDataImpl(const std::string &_texture,
   const std::shared_ptr<const common::Image> &_img)
 {
   GZ_PROFILE("OgreMaterial::SetTextureDataImpl");
+  this->CreateOgreTextureFromImage(_texture, _img);
+  this->ogreTexState->setTextureName(_texture);
+  this->UpdateColorOperation();
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::CreateOgreTextureFromImage(const std::string &_name,
+  const std::shared_ptr<const common::Image> &_img)
+{
+  GZ_PROFILE("OgreMaterial::CreateOgreTextureFromImage");
+  if (!_img)
+    return;
+
   // Create the texture only if it was not created already.
   // Check both the TextureManager (actual objects) and the ResourceGroupManager
   // (file-system locations) — OGRE 1.12 throws on duplicate creates.
-  if (!Ogre::TextureManager::getSingleton().getByName(_texture) &&
-      !Ogre::ResourceGroupManager::getSingleton().resourceExists(
-          this->ogreGroup, _texture))
-  {
-    auto ogreTexture =
+  if (Ogre::TextureManager::getSingleton().getByName(_name) ||
+      Ogre::ResourceGroupManager::getSingleton().resourceExists(
+          this->ogreGroup, _name))
+    return;
+
+  auto ogreTexture =
     Ogre::TextureManager::getSingleton().createManual(
-        _texture,
+        _name,
         "General",
         Ogre::TEX_TYPE_2D,
         _img->Width(),
         _img->Height(),
         0,
         Ogre::PF_R8G8B8A8);
-    Ogre::HardwarePixelBufferSharedPtr pixelBuffer = ogreTexture->getBuffer();
-    pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
-    const Ogre::PixelBox &pixelBox = pixelBuffer->getCurrentLock();
+  Ogre::HardwarePixelBufferSharedPtr pixelBuffer = ogreTexture->getBuffer();
+  pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
+  const Ogre::PixelBox &pixelBox = pixelBuffer->getCurrentLock();
 
-    auto data = _img->RGBAData();
-    // TODO(anyone) Why we need to switch red and blue again for OGRE1?
-    for (unsigned int r = 0; r < _img->Height(); ++r)
+  auto data = _img->RGBAData();
+  // TODO(anyone) Why we need to switch red and blue again for OGRE1?
+  for (unsigned int r = 0; r < _img->Height(); ++r)
+  {
+    for (unsigned int c = 0; c < _img->Width(); ++c)
     {
-      for (unsigned int c = 0; c < _img->Width(); ++c)
-      {
-        int pixIdx = (r * _img->Width() + c) * 4;
-        std::swap(data[pixIdx], data[pixIdx + 2]);
-      }
+      int pixIdx = (r * _img->Width() + c) * 4;
+      std::swap(data[pixIdx], data[pixIdx + 2]);
     }
-
-    memcpy(pixelBox.data, &data[0], data.size());
-    pixelBuffer->unlock();
   }
 
-  this->ogreTexState->setTextureName(_texture);
-  this->UpdateColorOperation();
+  memcpy(pixelBox.data, &data[0], data.size());
+  pixelBuffer->unlock();
 }
 
 //////////////////////////////////////////////////

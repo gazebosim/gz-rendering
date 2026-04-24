@@ -20,12 +20,23 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <cstring>
+
 #include <OgreEntity.h>
+#include <OgreGpuProgramParams.h>
+#include <OgreHardwarePixelBuffer.h>
+#include <OgreHighLevelGpuProgramManager.h>
+#include <OgreMaterialManager.h>
 #include <OgrePass.h>
 #include <OgreRenderTargetListener.h>
 #include <OgreSceneManager.h>
 #include <OgreSceneNode.h>
+#include <OgreTechnique.h>
+#include <OgreTextureManager.h>
+#include <RTShaderSystem/OgreShaderGenerator.h>
 
+#include <gz/common/Filesystem.hh>
+#include <gz/common/Image.hh>
 #include <gz/common/Profiler.hh>
 #include "gz/rendering/ogre/OgreCamera.hh"
 #include "gz/rendering/ogre/OgreConversions.hh"
@@ -37,6 +48,42 @@
 
 using namespace gz;
 using namespace rendering;
+
+namespace
+{
+  /// \brief Load a PNG (or any gz-common-decodable image) from disk and
+  /// upload it to an OGRE texture under the given alias name. OGRE 1.12 ships
+  /// without a PNG codec, so we must decode via gz-common and push raw RGBA.
+  /// \param[in] _alias Unique OGRE texture name to register.
+  /// \param[in] _path Absolute path to the image file.
+  /// \return True on success, false if the file can't be decoded.
+  bool LoadImageAsOgreTexture(const std::string &_alias,
+      const std::string &_path)
+  {
+    if (Ogre::TextureManager::getSingleton().getByName(_alias,
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME))
+    {
+      return true;
+    }
+
+    common::Image img;
+    if (img.Load(_path) != 0 || img.Width() == 0 || img.Height() == 0)
+      return false;
+
+    auto ogreTexture = Ogre::TextureManager::getSingleton().createManual(
+        _alias,
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+        Ogre::TEX_TYPE_2D,
+        img.Width(), img.Height(), 0, Ogre::PF_BYTE_RGBA);
+    auto pixelBuffer = ogreTexture->getBuffer();
+    pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
+    const auto &pixelBox = pixelBuffer->getCurrentLock();
+    auto data = img.RGBAData();
+    std::memcpy(pixelBox.data, data.data(), data.size());
+    pixelBuffer->unlock();
+    return true;
+  }
+}
 
 namespace gz
 {
@@ -119,6 +166,13 @@ namespace gz
       /// \param[in] _matSet Name of material
       private: void AddDecalToMaterial(const std::string &_matName);
 
+      /// \brief Attach the hand-written projector GLSL programs to a decal
+      /// pass. The programs are created once per process and reused. Sets
+      /// the required auto-constants and texture sampler bindings.
+      /// \param[in] _pass Decal pass freshly populated with the decal +
+      /// filter texture units.
+      private: void BindProjectorShader(Ogre::Pass *_pass);
+
       /// \brief Remove decal from an entity  material
       /// \param[in] _matSet Name of material
       private: void RemoveDecalFromMaterial(const std::string &_matName);
@@ -140,6 +194,15 @@ namespace gz
                   uint16_t _schemeIndex, const Ogre::String &_schemeName,
                   Ogre::Material *_originalMaterial, uint16_t _lodIndex,
                   const Ogre::Renderable *_rend);
+
+      /// \brief Return the "projector" scheme technique on the given clone
+      /// material, falling back to technique 0 if none is found. The projector
+      /// scheme technique is the RTSS-generated shader-based variant that GL3+
+      /// core can actually execute.
+      /// \param[in] _clone Clone material that has been through
+      /// AddDecalToMaterial.
+      private: Ogre::Technique *ProjectorSchemeTechnique(
+                  Ogre::Material *_clone) const;
 
       /// \brief Enabled state of projector listener
       public: bool enabled{false};
@@ -521,31 +584,156 @@ void OgreProjectorListener::AddDecalToMaterial(
 
   pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
   pass->setDepthBias(1);
+  pass->setDepthWriteEnabled(false);
+
+  // Wire a hand-written GLSL projector shader pair onto this decal pass. The
+  // RTSS-generated FFP_GenerateTexCoord_Projection path is broken for this
+  // case under OGRE 1.12 + GL3+: the auto-constants get bound but the
+  // generated FS samples zero, so the wall ends up rendered black. Bypass
+  // RTSS entirely for the decal pass.
+  this->BindProjectorShader(pass);
   pass->setLightingEnabled(false);
 
-  if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(
-      Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-      this->textureName ))
-  {
-    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-        this->textureName, "FileSystem",
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-  }
+  // OGRE 1.12 dropped the FreeImage-based PNG codec; loading textures by
+  // file name directly results in "Can not find codec for 'png' format"
+  // and a blank sampler. Pre-decode both the decal and filter textures via
+  // gz-common and upload them as manual textures, then attach by alias.
+  const std::string decalAlias =
+      "__gz_proj_decal_" + this->nodeName;
+  const std::string filterAlias =
+      "__gz_proj_filter_" + this->nodeName;
+  LoadImageAsOgreTexture(decalAlias, this->textureName);
 
-  Ogre::TextureUnitState *texState =
-      pass->createTextureUnitState(this->textureName);
+  std::string filterPath = "projection_filter.png";
+  // projection_filter.png lives in ogre/media/materials/textures, registered
+  // as a resource location by OgreRenderEngine. Resolve to an absolute path
+  // via the resource group manager so gz-common can decode it.
+  {
+    auto &rgm = Ogre::ResourceGroupManager::getSingleton();
+    if (rgm.resourceExistsInAnyGroup(filterPath))
+    {
+      auto group = rgm.findGroupContainingResource(filterPath);
+      auto archives = rgm.listResourceLocations(group);
+      for (const auto &loc : *archives)
+      {
+        std::string candidate = loc + "/" + filterPath;
+        if (common::isFile(candidate))
+        {
+          filterPath = candidate;
+          break;
+        }
+      }
+    }
+  }
+  LoadImageAsOgreTexture(filterAlias, filterPath);
+
+  Ogre::TextureUnitState *texState = pass->createTextureUnitState(decalAlias);
   texState->setProjectiveTexturing(true, this->frustum.get());
   texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
   texState->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
   texState->setTextureBorderColour(Ogre::ColourValue(0.0, 0.0, 0.0, 0.0));
-  texState->setColourOperation(Ogre::LBO_ALPHA_BLEND);
 
-  texState = pass->createTextureUnitState("projection_filter.png");
+  texState = pass->createTextureUnitState(filterAlias);
   texState->setProjectiveTexturing(true, this->filterFrustum.get());
   texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
   texState->setTextureFiltering(Ogre::TFO_NONE);
 
   this->projectorTargets[_matName] = pass;
+
+  // Under OGRE 1.12 + GL3+ core, the inherited Default scheme technique has
+  // no GPU programs. Ask the RTSS to synthesize a shader-based technique
+  // (for the wall pass only — the decal pass above already carries its own
+  // hand-written GLSL programs) in the "projector" scheme so the viewport's
+  // scheme switch resolves to a fully compiled technique. Without this the
+  // listener returns an unloaded FF technique and GL3+ silently renders
+  // nothing.
+  auto *shaderGenerator =
+      Ogre::RTShader::ShaderGenerator::getSingletonPtr();
+  if (shaderGenerator)
+  {
+    try
+    {
+      shaderGenerator->createShaderBasedTechnique(
+          *mat,
+          Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
+          "projector");
+      shaderGenerator->validateMaterial("projector", _matName,
+          mat->getGroup());
+    }
+    catch (const Ogre::Exception &)
+    {
+      // Non-fatal; fall back to whatever the clone already has.
+    }
+  }
+  mat->load();
+}
+
+/////////////////////////////////////////////////
+void OgreProjectorListener::BindProjectorShader(Ogre::Pass *_pass)
+{
+  static const std::string vpName = "__gz_ProjectorDecalVS";
+  static const std::string fpName = "__gz_ProjectorDecalFS";
+  auto &hmgr = Ogre::HighLevelGpuProgramManager::getSingleton();
+  if (!hmgr.getByName(vpName,
+          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME))
+  {
+    auto vp = hmgr.createProgram(vpName,
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+        "glsl", Ogre::GPT_VERTEX_PROGRAM);
+    vp->setSource(
+        "#version 130\n"
+        "uniform mat4 worldviewproj_matrix;\n"
+        "uniform mat4 world_matrix;\n"
+        "uniform mat4 texture_viewproj_matrix0;\n"
+        "uniform mat4 texture_viewproj_matrix1;\n"
+        "in vec4 vertex;\n"
+        "out vec4 vDecalCoord;\n"
+        "out vec4 vFilterCoord;\n"
+        "void main() {\n"
+        "  gl_Position = worldviewproj_matrix * vertex;\n"
+        "  vec4 worldPos = world_matrix * vertex;\n"
+        "  vDecalCoord  = texture_viewproj_matrix0 * worldPos;\n"
+        "  vFilterCoord = texture_viewproj_matrix1 * worldPos;\n"
+        "}\n");
+    vp->load();
+
+    auto fp = hmgr.createProgram(fpName,
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+        "glsl", Ogre::GPT_FRAGMENT_PROGRAM);
+    fp->setSource(
+        "#version 130\n"
+        "uniform sampler2D decalSampler;\n"
+        "uniform sampler2D filterSampler;\n"
+        "in vec4 vDecalCoord;\n"
+        "in vec4 vFilterCoord;\n"
+        "out vec4 oColor;\n"
+        "void main() {\n"
+        // Reject fragments behind the projector (w <= 0).
+        "  if (vDecalCoord.w <= 0.0 || vFilterCoord.w <= 0.0) discard;\n"
+        "  vec4 dtex = textureProj(decalSampler, vDecalCoord);\n"
+        "  vec4 ftex = textureProj(filterSampler, vFilterCoord);\n"
+        "  float alpha = dtex.a * ftex.a;\n"
+        "  oColor = vec4(dtex.rgb, alpha);\n"
+        "}\n");
+    fp->load();
+  }
+
+  _pass->setVertexProgram(vpName);
+  _pass->setFragmentProgram(fpName);
+
+  auto vparams = _pass->getVertexProgramParameters();
+  vparams->setNamedAutoConstant("worldviewproj_matrix",
+      Ogre::GpuProgramParameters::ACT_WORLDVIEWPROJ_MATRIX);
+  vparams->setNamedAutoConstant("world_matrix",
+      Ogre::GpuProgramParameters::ACT_WORLD_MATRIX);
+  vparams->setNamedAutoConstant("texture_viewproj_matrix0",
+      Ogre::GpuProgramParameters::ACT_TEXTURE_VIEWPROJ_MATRIX, 0u);
+  vparams->setNamedAutoConstant("texture_viewproj_matrix1",
+      Ogre::GpuProgramParameters::ACT_TEXTURE_VIEWPROJ_MATRIX, 1u);
+
+  auto fparams = _pass->getFragmentProgramParameters();
+  fparams->setNamedConstant("decalSampler", 0);
+  fparams->setNamedConstant("filterSampler", 1);
 }
 
 /////////////////////////////////////////////////
@@ -738,7 +926,7 @@ Ogre::Technique *OgreProjectorListener::handleSchemeNotFound(
     if (this->projectorTargets.find(projectedMaterialName) !=
         this->projectorTargets.end())
     {
-      return clone->getTechnique(0u);
+      return this->ProjectorSchemeTechnique(clone);
     }
   }
   // if clone is not available, clone it and add the projected texture to the
@@ -750,5 +938,22 @@ Ogre::Technique *OgreProjectorListener::handleSchemeNotFound(
   }
 
   this->AddDecalToMaterial(clone->getName());
-  return clone->getTechnique(0u);
+  return this->ProjectorSchemeTechnique(clone);
+}
+
+/////////////////////////////////////////////////
+Ogre::Technique *OgreProjectorListener::ProjectorSchemeTechnique(
+    Ogre::Material *_clone) const
+{
+  // Prefer the RTSS-generated "projector" scheme technique set up in
+  // AddDecalToMaterial. Under GL3+ core this is the only technique that has
+  // GPU programs and can be executed; the inherited Default-scheme technique
+  // is fixed-function only.
+  for (size_t i = 0; i < _clone->getNumTechniques(); ++i)
+  {
+    Ogre::Technique *t = _clone->getTechnique(i);
+    if (t->getSchemeName() == "projector" && t->isSupported())
+      return t;
+  }
+  return _clone->getTechnique(0u);
 }

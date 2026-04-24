@@ -67,7 +67,8 @@ namespace gz
     /// \brief Depth camera used to render depth data into an image buffer
     class GZ_RENDERING_OGRE_VISIBLE OgreDepthCamera :
       public virtual BaseDepthCamera<OgreSensor>,
-      public virtual OgreObjectInterface
+      public virtual OgreObjectInterface,
+      public Ogre::RenderObjectListener
     {
       /// \brief Constructor
       protected: OgreDepthCamera();
@@ -118,6 +119,17 @@ namespace gz
 
       /// \brief Implementation of the render call
       public: virtual void Render() override;
+
+      /// \brief Implementation of Ogre::RenderObjectListener, used to push
+      /// the per-object world matrix to the fixed-function GL state so the
+      /// depth-encoding shaders (which use gl_ModelViewMatrix/ftransform)
+      /// see the correct modelview matrix under OGRE 1.12, whose
+      /// SceneManager no longer calls RenderSystem::_setWorldMatrix per
+      /// renderable.
+      public: virtual void notifyRenderSingleObject(Ogre::Renderable *_rend,
+                  const Ogre::Pass *_pass,
+                  const Ogre::AutoParamDataSource *_source,
+                  const Ogre::LightList *_lights, bool _suppressRSChanges);
 
       /// \brief Set the far clip distance
       /// \param[in] _far far clip distance

@@ -670,20 +670,28 @@ void OgreRenderEngine::CreateResources()
         std::make_pair(p + "/fonts", "Fonts"));
   }
 
-  // OGRE 1.12+ requires the ShadowVolume programs for stencil shadow support.
-  // These are shipped with the OGRE package media; add them if found.
+  // OGRE 1.12+ requires the ShadowVolume programs for stencil shadow support
+  // and the Terrain helpers (TerrainTransforms.glsl, TerrainHelpers.glsl) for
+  // the stock TerrainMaterialGeneratorA shaders. These are shipped with the
+  // OGRE package media; add them if found.
   const std::vector<std::string> ogreMediaCandidates = {
     "/usr/share/OGRE/Media",
     "/usr/local/share/OGRE/Media",
   };
   for (const auto &ogreMedia : ogreMediaCandidates)
   {
-    std::string shadowVolumePath = common::joinPaths(ogreMedia, "ShadowVolume");
-    if (common::isDirectory(shadowVolumePath))
+    bool found = false;
+    for (const char *sub : {"ShadowVolume", "Terrain"})
     {
-      archNames.push_back(std::make_pair(shadowVolumePath, "General"));
-      break;
+      std::string path = common::joinPaths(ogreMedia, sub);
+      if (common::isDirectory(path))
+      {
+        archNames.push_back(std::make_pair(path, "General"));
+        found = true;
+      }
     }
+    if (found)
+      break;
   }
 
   for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)

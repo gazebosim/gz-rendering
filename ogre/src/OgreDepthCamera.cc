@@ -338,6 +338,7 @@ void OgreDepthCamera::Render()
   // point cloud xyz and depth
   sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   sceneMgr->_suppressRenderStateChanges(true);
+  sceneMgr->addRenderObjectListener(this);
 
   this->dataPtr->pcdTexture->SetAutoUpdated(false);
   OgreMaterialPtr ogreMat =
@@ -346,6 +347,7 @@ void OgreDepthCamera::Render()
       ogreMat->Material().get(), ogreMat->Material()->getName());
   this->dataPtr->pcdTexture->RenderTarget()->update(false);
 
+  sceneMgr->removeRenderObjectListener(this);
   sceneMgr->_suppressRenderStateChanges(false);
   sceneMgr->setShadowTechnique(shadowTech);
 
@@ -431,6 +433,27 @@ void OgreDepthCamera::UpdateRenderTarget(OgreRenderTexturePtr _target,
     renderSys->bindGpuProgramParameters(Ogre::GPT_FRAGMENT_PROGRAM,
     pass->getFragmentProgramParameters(), 1);
   }
+}
+
+//////////////////////////////////////////////////
+void OgreDepthCamera::notifyRenderSingleObject(Ogre::Renderable *_rend,
+    const Ogre::Pass * /*_pass*/,
+    const Ogre::AutoParamDataSource * /*_source*/,
+    const Ogre::LightList * /*_lights*/, bool /*_suppressRSChanges*/)
+{
+  GZ_PROFILE("OgreDepthCamera::notifyRenderSingleObject");
+  // OGRE 1.12's SceneManager no longer calls RenderSystem::_setWorldMatrix
+  // per renderable, so gl_ModelViewMatrix / ftransform() would otherwise see a
+  // stale (or identity) world matrix. Push the renderable's world transform
+  // into the GL fixed-function state here so the legacy GLSL depth shaders
+  // resolve correct eye-space positions.
+  Ogre::Matrix4 xform[OGRE_MAX_NUM_BONES];
+  const unsigned short count = _rend->getNumWorldTransforms();
+  _rend->getWorldTransforms(xform);
+  Ogre::RenderSystem *renderSys =
+      this->scene->OgreSceneManager()->getDestinationRenderSystem();
+  if (count > 0)
+    renderSys->_setWorldMatrix(xform[0]);
 }
 
 //////////////////////////////////////////////////

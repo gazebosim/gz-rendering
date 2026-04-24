@@ -750,6 +750,9 @@ void OgreMaterial::CreateOgreTextureFromImage(const std::string &_name,
           this->ogreGroup, _name))
     return;
 
+  // OGRE's PF_R8G8B8A8 is a packed word 0xRRGGBBAA — on little-endian that is
+  // memory bytes {A, B, G, R}. RGBAData() is byte-order {R, G, B, A}, so
+  // upload via PF_BYTE_RGBA (aliases to PF_A8B8G8R8 on LE, memory {R,G,B,A}).
   auto ogreTexture =
     Ogre::TextureManager::getSingleton().createManual(
         _name,
@@ -758,22 +761,12 @@ void OgreMaterial::CreateOgreTextureFromImage(const std::string &_name,
         _img->Width(),
         _img->Height(),
         0,
-        Ogre::PF_R8G8B8A8);
+        Ogre::PF_BYTE_RGBA);
   Ogre::HardwarePixelBufferSharedPtr pixelBuffer = ogreTexture->getBuffer();
   pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
   const Ogre::PixelBox &pixelBox = pixelBuffer->getCurrentLock();
 
   auto data = _img->RGBAData();
-  // TODO(anyone) Why we need to switch red and blue again for OGRE1?
-  for (unsigned int r = 0; r < _img->Height(); ++r)
-  {
-    for (unsigned int c = 0; c < _img->Width(); ++c)
-    {
-      int pixIdx = (r * _img->Width() + c) * 4;
-      std::swap(data[pixIdx], data[pixIdx + 2]);
-    }
-  }
-
   memcpy(pixelBox.data, &data[0], data.size());
   pixelBuffer->unlock();
 }

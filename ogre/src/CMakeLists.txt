@@ -36,6 +36,18 @@ set_property(
   OGRE_RESOURCE_PATH="${OGRE_RESOURCE_PATH}"
 )
 
+# OGRE_MEDIA_DIR is set by upstream OGREConfig.cmake (loaded transitively by
+# gz_find_package(GzOGRE)). Plumb it through so OgreRenderEngine can register
+# the ShadowVolume / Terrain media that ship with the OGRE package, regardless
+# of platform (Linux distros, macOS Homebrew, Windows vcpkg, Conda, NixOS).
+if(DEFINED OGRE_MEDIA_DIR AND NOT "${OGRE_MEDIA_DIR}" STREQUAL "")
+  set_property(
+    SOURCE OgreRenderEngine.cc
+    APPEND PROPERTY COMPILE_DEFINITIONS
+    OGRE_MEDIA_PATH="${OGRE_MEDIA_DIR}"
+  )
+endif()
+
 target_link_libraries(${ogre_target}
   PUBLIC
     ${gz-common_LIBRARIES}

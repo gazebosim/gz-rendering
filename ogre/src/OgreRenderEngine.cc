@@ -506,6 +506,17 @@ void OgreRenderEngine::LoadPlugins()
     plugins.push_back(path+"/Plugin_BSPSceneManager");
     plugins.push_back(path+"/Plugin_OctreeSceneManager");
 
+    // OGRE 1.12 ships image codecs as separate plugins. Without one of these
+    // loaded, ImageCodec only knows astc/bsp/dds/ktx/mesh/pkm and any
+    // PNG/JPG texture (e.g. the diffuse/normal maps fed to the stock
+    // TerrainMaterialGeneratorA SM2Profile by the heightmap layers) is
+    // rejected with "Can not find codec for 'png' format". STBI is the
+    // lighter dependency; FreeImage is tried as a fallback. Both load
+    // attempts are wrapped in the per-plugin try/catch below, so a missing
+    // .so on a stripped install is a no-op rather than a hard failure.
+    plugins.push_back(path+"/Codec_STBI");
+    plugins.push_back(path+"/Codec_FreeImage");
+
 #ifdef HAVE_OCULUS
     plugins.push_back(path+"/Plugin_CgProgramManager");
 #endif
@@ -673,26 +684,19 @@ void OgreRenderEngine::CreateResources()
   // OGRE 1.12+ requires the ShadowVolume programs for stencil shadow support
   // and the Terrain helpers (TerrainTransforms.glsl, TerrainHelpers.glsl) for
   // the stock TerrainMaterialGeneratorA shaders. These are shipped with the
-  // OGRE package media; add them if found.
-  const std::vector<std::string> ogreMediaCandidates = {
-    "/usr/share/OGRE/Media",
-    "/usr/local/share/OGRE/Media",
-  };
-  for (const auto &ogreMedia : ogreMediaCandidates)
+  // OGRE package media; locate them via OGRE_MEDIA_DIR (exported by
+  // OGREConfig.cmake) so we work on any platform OGRE supports — Linux distros,
+  // macOS Homebrew, Windows vcpkg, Conda, NixOS — instead of guessing Linux
+  // FHS paths.
+#ifdef OGRE_MEDIA_PATH
+  const std::string ogreMedia = OGRE_MEDIA_PATH;
+  for (const char *sub : {"ShadowVolume", "Terrain"})
   {
-    bool found = false;
-    for (const char *sub : {"ShadowVolume", "Terrain"})
-    {
-      std::string path = common::joinPaths(ogreMedia, sub);
-      if (common::isDirectory(path))
-      {
-        archNames.push_back(std::make_pair(path, "General"));
-        found = true;
-      }
-    }
-    if (found)
-      break;
+    std::string path = common::joinPaths(ogreMedia, sub);
+    if (common::isDirectory(path))
+      archNames.push_back(std::make_pair(path, "General"));
   }
+#endif
 
   for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
   {

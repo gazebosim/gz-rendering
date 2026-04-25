@@ -79,7 +79,34 @@ namespace
     pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
     const auto &pixelBox = pixelBuffer->getCurrentLock();
     auto data = img.RGBAData();
-    std::memcpy(pixelBox.data, data.data(), data.size());
+    // Same heap-overflow class fixed in OgreMaterial::CreateOgreTextureFromImage:
+    // gz-common's RGBAData() returns 2x the bytes for 16-bit-per-channel
+    // sources (e.g. an embedded 16-bit PNG used as a projector texture).
+    // PF_BYTE_RGBA expects 8 bits/channel; a naive memcpy(data.size())
+    // overflows the OGRE pixel buffer and corrupts the heap.
+    const size_t bytes8 = static_cast<size_t>(img.Width()) *
+                          static_cast<size_t>(img.Height()) * 4u;
+    if (data.size() == bytes8)
+    {
+      std::memcpy(pixelBox.data, data.data(), bytes8);
+    }
+    else if (data.size() == bytes8 * 2u)
+    {
+      // 16-bit per channel: stbi keeps native uint16_t order, so on
+      // little-endian hosts the high (most-significant) byte is at offset 1.
+      auto *dst = static_cast<unsigned char *>(pixelBox.data);
+      const auto *src = data.data();
+      for (size_t i = 0; i < bytes8; ++i)
+        dst[i] = src[i * 2u + 1u];
+    }
+    else
+    {
+      gzwarn << "Skipping projector texture upload for '" << _alias
+             << "': RGBAData size " << data.size() << " does not match "
+             << img.Width() << "x" << img.Height()
+             << " 8-bit RGBA (" << bytes8 << ") or 16-bit RGBA ("
+             << (bytes8 * 2u) << ")" << std::endl;
+    }
     pixelBuffer->unlock();
     return true;
   }
@@ -580,6 +607,16 @@ void OgreProjectorListener::AddDecalToMaterial(
 
   Ogre::MaterialPtr mat = static_cast<Ogre::MaterialPtr>(
     Ogre::MaterialManager::getSingleton().getByName(_matName));
+  // OGRE 1.12's MaterialManager::getByName returns a null MaterialPtr on miss
+  // instead of throwing — and this code path is reached from the scheme
+  // listener with a name that has been trimmed (the "_MissingTech_" prefix
+  // stripped), so the lookup *can* legitimately fail. Don't dereference null.
+  if (!mat)
+  {
+    gzerr << "OgreProjector: cannot add decal — material '" << _matName
+          << "' not found in MaterialManager" << std::endl;
+    return;
+  }
   Ogre::Pass *pass = mat->getTechnique(0)->createPass();
 
   pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);

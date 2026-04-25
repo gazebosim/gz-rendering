@@ -528,8 +528,12 @@ bool RenderEngineManagerPrivate::LoadEnginePlugin(
     return false;
   }
 
-  // Load plugin
-  auto pluginNames = this->pluginLoader.LoadLib(pathToLib);
+  // Load plugin with RTLD_NODELETE so the library and its transitive
+  // dependencies remain mapped after unloadEngine.  This avoids exhausting
+  // the glibc static-TLS surplus across repeated load/unload cycles when a
+  // transitive dependency uses thread-local storage (e.g. libgomp).  See
+  // https://github.com/gazebosim/gz-rendering/issues/1265
+  auto pluginNames = this->pluginLoader.LoadLib(pathToLib, /*_noDelete=*/true);
   if (pluginNames.empty())
   {
     gzerr << "Failed to load plugin [" << _filename <<

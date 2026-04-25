@@ -447,13 +447,31 @@ void OgreDepthCamera::notifyRenderSingleObject(Ogre::Renderable *_rend,
   // stale (or identity) world matrix. Push the renderable's world transform
   // into the GL fixed-function state here so the legacy GLSL depth shaders
   // resolve correct eye-space positions.
-  Ogre::Matrix4 xform[OGRE_MAX_NUM_BONES];
+  //
+  // Renderable::getWorldTransforms writes getNumWorldTransforms() matrices
+  // into the buffer with no size argument, so the count must be checked
+  // *before* the call to avoid a stack write past the array for software-
+  // skinned renderables (where getNumWorldTransforms() can exceed
+  // OGRE_MAX_NUM_BONES).
+  // TODO: depth shaders only consume xform[0], so skinned visuals still
+  // render at their root-bone transform. Fixing that requires plumbing the
+  // bone-matrix array into the GLSL programs.
   const unsigned short count = _rend->getNumWorldTransforms();
+  if (count == 0)
+    return;
+  if (count > OGRE_MAX_NUM_BONES)
+  {
+    gzwarn << "OgreDepthCamera: renderable reports " << count
+           << " world transforms (>" << OGRE_MAX_NUM_BONES
+           << "); skipping world-matrix push to avoid stack overflow"
+           << std::endl;
+    return;
+  }
+  Ogre::Matrix4 xform[OGRE_MAX_NUM_BONES];
   _rend->getWorldTransforms(xform);
   Ogre::RenderSystem *renderSys =
       this->scene->OgreSceneManager()->getDestinationRenderSystem();
-  if (count > 0)
-    renderSys->_setWorldMatrix(xform[0]);
+  renderSys->_setWorldMatrix(xform[0]);
 }
 
 //////////////////////////////////////////////////

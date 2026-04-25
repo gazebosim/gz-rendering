@@ -1044,11 +1044,29 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
   // view*world instead of the stale value left by OGRE 1.12's SceneManager
   // (which no longer calls RenderSystem::_setWorldMatrix per object). Place
   // this LAST so nothing above perturbs the GL MODELVIEW stack.
-  Ogre::Matrix4 xform[OGRE_MAX_NUM_BONES];
+  //
+  // Renderable::getWorldTransforms writes getNumWorldTransforms() matrices
+  // into the buffer with no size argument, so the count must be checked
+  // *before* the call to avoid a stack write past the array for software-
+  // skinned renderables (where getNumWorldTransforms() can exceed
+  // OGRE_MAX_NUM_BONES).
+  // TODO: laser shaders only consume xform[0], so skinned visuals still
+  // render at their root-bone transform. Fixing that requires plumbing the
+  // bone-matrix array into the GLSL programs.
   const unsigned short count = _rend->getNumWorldTransforms();
+  if (count == 0)
+    return;
+  if (count > OGRE_MAX_NUM_BONES)
+  {
+    gzwarn << "OgreGpuRays: renderable reports " << count
+           << " world transforms (>" << OGRE_MAX_NUM_BONES
+           << "); skipping world-matrix push to avoid stack overflow"
+           << std::endl;
+    return;
+  }
+  Ogre::Matrix4 xform[OGRE_MAX_NUM_BONES];
   _rend->getWorldTransforms(xform);
-  if (count > 0)
-    renderSys->_setWorldMatrix(xform[0]);
+  renderSys->_setWorldMatrix(xform[0]);
 }
 
 //////////////////////////////////////////////////

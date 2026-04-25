@@ -17,6 +17,7 @@
 
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
+#include <gz/common/Image.hh>
 #include <gz/common/Profiler.hh>
 
 #include "gz/rendering/InstallationDirectories.hh"
@@ -713,14 +714,62 @@ void OgreMaterial::LoadOneImage(const std::string &_name, Ogre::Image &_image)
 void OgreMaterial::SetTextureImpl(const std::string &_texture)
 {
   GZ_PROFILE("OgreMaterial::SetTextureImpl");
-  if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(
-      this->ogreGroup, _texture))
+
+  // OGRE 1.12 resolves textures through a resource group, indexed by basename:
+  // addResourceLocation expects a directory and setTextureName expects the
+  // name as it appears within that directory. Passing the full file path to
+  // both (the previous behaviour) registered a no-op location and then asked
+  // OGRE to look up an absolute path that was never indexed, leaving every
+  // mesh texture blank. Mirror commit 526304ef (the same fix for
+  // SetVertexShader / SetFragmentShader) and split _texture into parent
+  // dir + basename.
+  const std::string textureFile = common::basename(_texture);
+  bool createdManual = false;
+
+  // Path 1: gz-common pre-decode + manual upload.
+  // OGRE 1.12 on Ubuntu Noble ships without PNG/JPG codecs ("Can not find
+  // codec for 'png' format" in Ogre.log). Decoding through gz-common's image
+  // codecs and uploading raw RGBA bypasses the gap. This is the same
+  // workaround commit 12065492 introduced for projector decals.
+  if (!_texture.empty() && common::exists(_texture) &&
+      !Ogre::TextureManager::getSingleton().getByName(textureFile,
+          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME))
   {
-    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-        _texture, "FileSystem", this->ogreGroup);
+    common::Image img;
+    if (img.Load(_texture) == 0 && img.Width() > 0 && img.Height() > 0)
+    {
+      auto ogreTexture = Ogre::TextureManager::getSingleton().createManual(
+          textureFile,
+          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+          Ogre::TEX_TYPE_2D,
+          img.Width(), img.Height(), 0, Ogre::PF_BYTE_RGBA);
+      auto pixelBuffer = ogreTexture->getBuffer();
+      pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
+      const auto &pixelBox = pixelBuffer->getCurrentLock();
+      auto data = img.RGBAData();
+      std::memcpy(pixelBox.data, data.data(), data.size());
+      pixelBuffer->unlock();
+      createdManual = true;
+    }
   }
 
-  this->ogreTexState->setTextureName(_texture);
+  // Path 2: fall back to resource-group lookup for codecs OGRE handles
+  // natively (DDS, KTX, etc.) when pre-decode wasn't possible.
+  if (!createdManual)
+  {
+    const std::string textureDir = common::parentPath(_texture);
+    if (!textureDir.empty() && textureDir != _texture)
+    {
+      if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+              textureDir, this->ogreGroup))
+      {
+        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+            textureDir, "FileSystem", this->ogreGroup);
+      }
+    }
+  }
+
+  this->ogreTexState->setTextureName(textureFile);
   this->UpdateColorOperation();
 }
 

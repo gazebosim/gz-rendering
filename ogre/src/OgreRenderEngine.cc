@@ -38,6 +38,7 @@ typedef khronos_intptr_t GLintptr;
 
 #include <dlfcn.h>
 
+# include <filesystem>
 # include <sstream>
 
 #include <OgreDynLib.h>
@@ -121,7 +122,30 @@ OgreRenderEngine::OgreRenderEngine() :
 
   const char *env = std::getenv("OGRE_RESOURCE_PATH");
   if (env)
-    this->ogrePaths.push_back(std::string(env));
+  {
+    std::string envPath(env);
+    // Avoid loading plugins twice when the OGRE_RESOURCE_PATH env var points
+    // to the same directory as the compile-time OGRE_RESOURCE_PATH. Loading
+    // RenderSystem_GL.dll twice creates two GL render system instances that
+    // cause a crash when the OGRE root is destroyed
+    // (https://github.com/gazebosim/gz-rendering/issues/1107).
+    bool duplicate = false;
+    try
+    {
+      duplicate = std::filesystem::equivalent(
+          std::filesystem::path(envPath),
+          std::filesystem::path(OGRE_RESOURCE_PATH));
+    }
+    catch (const std::filesystem::filesystem_error &)
+    {
+      // equivalent() throws if either path does not exist. Fall back to a
+      // textual comparison in that case so we still catch the common
+      // "same dir, different slash style" scenario on Windows.
+      duplicate = (envPath == std::string(OGRE_RESOURCE_PATH));
+    }
+    if (!duplicate)
+      this->ogrePaths.push_back(envPath);
+  }
 }
 
 //////////////////////////////////////////////////

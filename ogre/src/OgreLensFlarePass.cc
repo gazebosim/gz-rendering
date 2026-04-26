@@ -34,7 +34,11 @@
 #include <OgreGpuProgram.h>
 #include <OgrePass.h>
 #include <OgreTechnique.h>
+#ifdef OGRE_VERSION_LT_1_12_0
 #include <OgreVector3.h>
+#else
+#include <OgreVector.h>
+#endif
 #ifdef _MSC_VER
 #  pragma warning(pop)
 #endif

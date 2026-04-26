@@ -43,7 +43,11 @@
 #include <OgreRoot.h>
 #include <OgreSceneManager.h>
 #include <OgreSceneNode.h>
+#ifdef OGRE_VERSION_LT_1_12_0
 #include <OgreVector3.h>
+#else
+#include <OgreVector.h>
+#endif
 #include <OgreManualObject.h>
 #include <OgreMaterialManager.h>
 #include <OgreMatrix4.h>

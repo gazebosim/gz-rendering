@@ -1508,7 +1508,7 @@ GzTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFragmentProgram(
 
   this->defaultFpParams(_prof, _terrain, _tt, ret);
 
-  Ogre::GpuProgramParametersSharedPtr params = ret->getDefaultParameters();
+  auto params = ret->getDefaultParameters();
   params->setIgnoreMissingParams(false);
 
   Ogre::uint maxLayers = _prof->getMaxLayers(_terrain);
@@ -1892,7 +1892,7 @@ void GzTerrainMatGen::SM2Profile::ShaderHelperGLSL::defaultVpParams(
     const SM2Profile *_prof, const Ogre::Terrain *_terrain,
     TechniqueType _tt, const Ogre::HighLevelGpuProgramPtr &_prog)
 {
-  Ogre::GpuProgramParametersSharedPtr params = _prog->getDefaultParameters();
+  auto params = _prog->getDefaultParameters();
   params->setIgnoreMissingParams(true);
 
   params->setNamedAutoConstant("worldMatrix",
@@ -2768,9 +2768,12 @@ Ogre::MaterialPtr TerrainMaterial::Profile::generate(
       if (!pass->hasFragmentProgram())
         continue;
 
-      Ogre::GpuProgramParametersSharedPtr params =
-          pass->getFragmentProgramParameters();
+      auto params = pass->getFragmentProgramParameters();
+#if OGRE_VERSION_LT_1_11_0
       if (params.isNull())
+#else
+      if (!params)
+#endif
         continue;
 
       // set up shadow split points in a way that is consistent with the

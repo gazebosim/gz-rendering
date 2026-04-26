@@ -612,7 +612,8 @@ void OgreRTShaderSystem::ApplyShadows(OgreScenePtr _scene)
   sceneMgr->setShadowTextureCasterMaterial("PSSM/shadow_caster");
 #else
   Ogre::MaterialPtr mat =
-    Ogre::MaterialManager::getSingleton().getByName("PSSM/shadow_caster");
+    Ogre::MaterialManager::getSingleton().getByName(
+      "PSSM/shadow_caster", Ogre::RGN_DEFAULT);
   sceneMgr->setShadowTextureCasterMaterial(mat);
 #endif
 

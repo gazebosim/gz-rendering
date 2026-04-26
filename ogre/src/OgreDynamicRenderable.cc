@@ -19,6 +19,7 @@
 #include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre/OgreDynamicRenderable.hh"
+#include "OgreCompat.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -175,13 +176,13 @@ void OgreDynamicRenderable::PrepareHardwareBuffers(size_t vertexCount,
       Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
         this->mRenderOp.vertexData->vertexDeclaration->getVertexSize(0),
         this->vertexBufferCapacity,
-        Ogre::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
+        Ogre::HBU_CPU_TO_GPU);
 
     Ogre::HardwareVertexBufferSharedPtr cbuf =
       Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
         Ogre::VertexElement::getTypeSize(Ogre::VET_COLOUR),
         this->vertexBufferCapacity,
-        Ogre::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
+        Ogre::HBU_CPU_TO_GPU);
 
     // TODO(anyone): Custom HBU_?
 
@@ -231,7 +232,7 @@ void OgreDynamicRenderable::PrepareHardwareBuffers(size_t vertexCount,
         Ogre::HardwareBufferManager::getSingleton().createIndexBuffer(
           Ogre::HardwareIndexBuffer::IT_16BIT,
           this->indexBufferCapacity,
-          Ogre::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
+          Ogre::HBU_CPU_TO_GPU);
       // TODO(anyone): Custom HBU_?
     }
 

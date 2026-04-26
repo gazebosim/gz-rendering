@@ -29,6 +29,7 @@
 
 #include "gz/rendering/ogre/OgreConversions.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"
+#include "OgreCompat.hh"
 #include "gz/rendering/ogre/OgreMesh.hh"
 #include "gz/rendering/ogre/OgreMeshFactory.hh"
 #include "gz/rendering/ogre/OgreRenderEngine.hh"
@@ -335,7 +336,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
       vBuf = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
                  vertexDecl->getVertexSize(0),
                  vertexData->vertexCount,
-                 Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY,
+                 Ogre::HBU_GPU_ONLY,
                  false);
 
       if (subMesh.TexCoordCountBySet(0) > 0)
@@ -343,7 +344,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
         texBuf = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
             vertexDecl->getVertexSize(1),
             vertexData->vertexCount,
-            Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY,
+            Ogre::HBU_GPU_ONLY,
             false);
       }
 
@@ -396,7 +397,7 @@ bool OgreMeshFactory::LoadImpl(const MeshDescriptor &_desc)
         Ogre::HardwareBufferManager::getSingleton().createIndexBuffer(
             Ogre::HardwareIndexBuffer::IT_32BIT,
             ogreSubMesh->indexData->indexCount,
-            Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY,
+            Ogre::HBU_GPU_ONLY,
             false);
 
       iBuf = ogreSubMesh->indexData->indexBuffer;

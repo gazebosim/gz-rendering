@@ -390,15 +390,13 @@ void OgreMaterial::UpdateShaderParams()
   GZ_PROFILE("OgreMaterial::UpdateShaderParams");
   if (this->vertexShaderParams && this->vertexShaderParams->IsDirty())
   {
-    Ogre::GpuProgramParametersSharedPtr ogreParams;
-    ogreParams = this->ogrePass->getVertexProgramParameters();
+    auto ogreParams = this->ogrePass->getVertexProgramParameters();
     this->UpdateShaderParams(this->vertexShaderParams, ogreParams);
     this->vertexShaderParams->ClearDirty();
   }
   if (this->fragmentShaderParams && this->fragmentShaderParams->IsDirty())
   {
-    Ogre::GpuProgramParametersSharedPtr ogreParams;
-    ogreParams = this->ogrePass->getFragmentProgramParameters();
+    auto ogreParams = this->ogrePass->getFragmentProgramParameters();
     this->UpdateShaderParams(this->fragmentShaderParams, ogreParams);
     this->fragmentShaderParams->ClearDirty();
   }

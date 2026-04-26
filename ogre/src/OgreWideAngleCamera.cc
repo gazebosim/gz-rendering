@@ -637,8 +637,7 @@ void OgreWideAngleCamera::SetUniformVariables(Ogre::Pass *_pass,
     float _ratio, float _hfov)
 {
   GZ_PROFILE("OgreWideAngleCamera::SetUniformVariables");
-  Ogre::GpuProgramParametersSharedPtr uniforms =
-    _pass->getFragmentProgramParameters();
+  auto uniforms = _pass->getFragmentProgramParameters();
 
   uniforms->setNamedConstant("c1", static_cast<Ogre::Real>(
     this->Lens().C1()));
@@ -672,8 +671,7 @@ void OgreWideAngleCamera::SetUniformVariables(Ogre::Pass *_pass,
   uniforms->setNamedConstant("cutOffAngle",
     static_cast<Ogre::Real>(this->Lens().CutOffAngle()));
 
-  Ogre::GpuProgramParametersSharedPtr uniformsVs =
-    _pass->getVertexProgramParameters();
+  auto uniformsVs = _pass->getVertexProgramParameters();
 
   uniformsVs->setNamedConstant("ratio", static_cast<Ogre::Real>(_ratio));
 }

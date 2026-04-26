@@ -67,8 +67,7 @@ namespace gz
         GZ_ASSERT(technique, "Null OGRE material technique");
         Ogre::Pass *pass = technique->getPass(_passId);
         GZ_ASSERT(pass, "Null OGRE material pass");
-        Ogre::GpuProgramParametersSharedPtr params =
-            pass->getFragmentProgramParameters();
+        auto params = pass->getFragmentProgramParameters();
 #if OGRE_VERSION_LT_1_11_0
         GZ_ASSERT(!params.isNull(), "Null OGRE material GPU parameters");
 #else

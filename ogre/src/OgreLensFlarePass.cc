@@ -379,8 +379,7 @@ void OgreLensFlareCompositorListenerPrivate::notifyMaterialRender(
   GZ_ASSERT(technique, "Null OGRE material technique");
   Ogre::Pass *pass = technique->getPass(static_cast<uint16_t>(_passId));
   GZ_ASSERT(pass, "Null OGRE material pass");
-  Ogre::GpuProgramParametersSharedPtr params =
-    pass->getFragmentProgramParameters();
+  auto params = pass->getFragmentProgramParameters();
 
   const Ogre::Camera *camera;
 
@@ -428,7 +427,7 @@ void OgreLensFlareCompositorListenerPrivate::notifyMaterialRender(
 
   ++this->owner.dataPtr->currentFaceIdx;
 
-  GpuProgramParametersSharedPtr psParams = pass->getFragmentProgramParameters();
+  auto psParams = pass->getFragmentProgramParameters();
 
   psParams->setNamedConstant("vpAspectRatio", camera->getAspectRatio());
   psParams->setNamedConstant("lightPos", lightPos);

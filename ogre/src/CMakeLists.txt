@@ -15,11 +15,17 @@ set(engine_name "ogre")
 
 gz_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre_target)
 
+if(OGRE_VERSION VERSION_LESS 1.10.0)
+  add_definitions(-DOGRE_VERSION_LT_1_10_0)
+endif()
 if(OGRE_VERSION VERSION_LESS 1.11.0)
   add_definitions(-DOGRE_VERSION_LT_1_11_0)
 endif()
 if(OGRE_VERSION VERSION_LESS 1.12.0)
   add_definitions(-DOGRE_VERSION_LT_1_12_0)
+endif()
+if(OGRE_VERSION VERSION_LESS 1.12.9)
+  add_definitions(-DOGRE_VERSION_LT_1_12_9)
 endif()
 
 find_package(OpenGL)

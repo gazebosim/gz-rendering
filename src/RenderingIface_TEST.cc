@@ -24,6 +24,7 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/RenderingIface.hh"
+#include <gz/utils/ExtraTestMacros.hh>
 
 using namespace gz;
 using namespace rendering;
@@ -46,7 +47,7 @@ unsigned int defaultEnginesForTest()
 }
 
 /////////////////////////////////////////////////
-TEST(RenderingIfaceTest, GetEngine)
+TEST(RenderingIfaceTest, IGN_UTILS_TEST_DISABLED_ON_WIN32(GetEngine))
 {
 #ifdef __APPLE__                                                                              
   std::cerr << "Skipping test for apple, see issue #847." << std::endl;                       

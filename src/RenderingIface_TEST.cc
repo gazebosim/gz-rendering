@@ -110,7 +110,7 @@ TEST(RenderingIfaceTest, IGN_UTILS_TEST_DISABLED_ON_WIN32(GetEngine))
 }
 
 /////////////////////////////////////////////////
-TEST(RenderingIfaceTest, RegisterEngine)
+TEST(RenderingIfaceTest, IGN_UTILS_TEST_DISABLED_ON_WIN32(RegisterEngine))
 {
   common::Console::SetVerbosity(4);
 

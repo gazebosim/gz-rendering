@@ -1228,6 +1228,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   // Hide window if dimensions are less than or equal to one.
   params["border"] = "none";
+  params["hidden"] = "true";
 
   std::ostringstream stream;
   stream << "OgreWindow(0)" << "_" << _handle;
@@ -1305,10 +1306,15 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 
   if (this->window)
   {
-    this->window->_setVisible(true);
+    // Only show and reposition the window if it was not created as a
+    // hidden dummy window (e.g. for render-to-texture initialization).
+    if (_width > 1u && _height > 1u)
+    {
+      this->window->_setVisible(true);
 
-    // Windows needs to reposition the render window to 0,0.
-    this->window->reposition(0, 0);
+      // Windows needs to reposition the render window to 0,0.
+      this->window->reposition(0, 0);
+    }
   }
   return stream.str();
 }

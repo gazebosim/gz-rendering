@@ -1,0 +1,100 @@
+# Bazel targets for Ogre Next render engine plugin.
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@rules_gazebo//gazebo:headers.bzl", "gz_export_header")
+load("//bazel:gz_rendering_engine_libraries.bzl", "gz_rendering_engine_libraries")
+
+gz_export_header(
+    name = "Export",
+    out = "include/gz/rendering/ogre_next/Export.hh",
+    export_base = "GZ_RENDERING_OGRE_NEXT",
+    lib_name = "gz-rendering",
+)
+
+filegroup(
+    name = "ogre_media",
+    srcs = glob(["src/media/**"]),
+)
+
+cc_library(
+    name = "terra",
+    srcs = glob([
+        "src/terrain/Terra/src/*.cpp",
+        "src/terrain/Terra/src/Hlms/*.cpp",
+        "src/terrain/Terra/src/Hlms/*.cpp.inc",
+        "src/terrain/Terra/src/Hlms/PbsListener/*.cpp",
+    ]),
+    hdrs = glob([
+        "src/terrain/Terra/include/Terra/*.h",
+        "src/terrain/Terra/include/Terra/Hlms/*.h",
+        "src/terrain/Terra/include/Terra/Hlms/PbsListener/*.h",
+    ]),
+    copts = [
+        "-Wno-ctad-maybe-unsupported",
+        "-Wno-unused-value",
+        "-Wno-non-virtual-dtor",
+        "-fexceptions",
+    ],
+    includes = ["src/terrain/Terra/include"],
+    deps = [
+        "@ogre-next//:hlms_pbs",
+        "@ogre-next//:ogre-main",
+    ],
+)
+
+# Targets including this under `deps` (for static linking) or under `data` (for
+# external library) should also include data deps on the Ogre-Next RenderSystem
+# libraries and Plugin libraries that need to be supported. e.g.
+# ```
+# cc_library(
+#     name = "my_gz_sim_server_with_ogre_next_rendering",
+#     srcs = my_sources_list,
+#     data = [
+#         "@ogre-next//:RenderSystem_GL3Plus.so",
+#     ],
+#     deps = [
+#         "@gz-sim",
+#         "@gz-sim//:gz-sim-sensors-system-static",
+#         "@gz-rendering//ogre_next:gz-rendering-ogre_next-engine-static",
+#     ]
+# )
+# ```
+#
+# Also, the `OGRE_NEXT_RESOURCE_PATH` env variable must be set from the runfiles
+# path.
+gz_rendering_engine_libraries(
+    srcs = glob([
+        "include/gz/rendering/ogre_next/*.hh",
+        "src/*.cc",
+        "src/*.hh",
+    ]) + [
+        "include/gz/rendering/ogre_next/Export.hh",
+    ],
+    copts = [
+        "-Wno-ctad-maybe-unsupported",
+        "-Wno-unused-value",
+        "-Wno-non-virtual-dtor",
+        "-fexceptions",
+    ],
+    data = [":ogre_media"],
+    includes = ["include"],
+    local_defines = [
+        "HAVE_EGL=1",
+        "OGRE_NEXT_RESOURCE_PATH='\"unused\"'",
+        "OGRE_NEXT_VERSION='\"unused\"'",
+    ],
+    so_lib_name = "libgz-rendering-ogre_next.so",
+    static_lib_name = "gz-rendering-ogre_next-engine-static",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":terra",
+        "//:gz-rendering",
+        "@egl-registry//:EGL_headers",
+        "@gz-common",
+        "@gz-math//eigen3",
+        "@gz-plugin//:register",
+        "@ogre-next//:hlms_pbs",
+        "@ogre-next//:hlms_unlit",
+        "@ogre-next//:ogre-main",
+        "@ogre-next//:overlay",
+    ],
+)

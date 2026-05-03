@@ -124,13 +124,13 @@ namespace gz
       /// has a performance impact. How much of an impact will depend on the
       /// rendering backend being used.
       /// \remark Performance impact of switching staticness depends on
-      /// on engine. In ogre2 it isn't expensive but it isn't
+      /// on engine. In ogre_next it isn't expensive but it isn't
       /// free either. Try to minimize transitions.
       /// Raytracing engines may rely on this information for their
       /// BVH structures
       /// TODO(anyone): Staticness should be ideally be supplied
       /// during construction for maximum performance
-      /// \remark ogre2 specific: OgreNext keeps 2 lists of objects.
+      /// \remark ogre_next specific: OgreNext keeps 2 lists of objects.
       /// Dynamic and Static. Every frame OgreNext iterates through all nodes &
       /// items in the dynamic lists and forcefully updates them (regardless of
       /// whether they have actually changed).

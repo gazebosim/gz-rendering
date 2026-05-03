@@ -35,8 +35,10 @@ static bool kHaveOgre = false;
 #endif
 
 #if GZ_RENDERING_HAVE_OGRE2
+static bool kHaveOgreNext = true;
 static bool kHaveOgre2 = true;
 #else
+static bool kHaveOgreNext = false;
 static bool kHaveOgre2 = false;
 #endif
 
@@ -53,6 +55,7 @@ unsigned int defaultEnginesForTest()
 {
   unsigned int count = 0u;
   count += kHaveOgre;
+  count += kHaveOgreNext;
   count += kHaveOgre2;
   count += kHaveOptix;
   return count;
@@ -65,6 +68,7 @@ TEST(RenderingIfaceTest, HasEngine)
   EXPECT_EQ(count, engineCount());
 
   EXPECT_EQ(kHaveOgre, rendering::hasEngine("ogre"));
+  EXPECT_EQ(kHaveOgreNext, rendering::hasEngine("ogre_next"));
   EXPECT_EQ(kHaveOgre2, rendering::hasEngine("ogre2"));
 }
 

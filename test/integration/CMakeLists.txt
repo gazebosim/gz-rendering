@@ -37,6 +37,10 @@ if (UNIX AND NOT APPLE)
   add_test(NAME INTEGRATION_versioned_symbols
     COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash $<TARGET_FILE:${PROJECT_LIBRARY_TARGET_NAME}>)
 
+  set(components ${RENDERING_COMPONENTS})
+  if (GZ_RENDERING_HAVE_OGRE2)
+    set(components "${RENDERING_COMPONENTS} ogre2")
+  endif()
   foreach(comp ${RENDERING_COMPONENTS})
    set(comp_target_name "${PROJECT_LIBRARY_TARGET_NAME}-${comp}")
    add_test(NAME "INTEGRATION_versioned_symbols_${comp}"

@@ -35,7 +35,7 @@ namespace gz
     /// This class is the base of them all for (most) shared settings
     class GZ_RENDERING_VISIBLE GlobalIlluminationBase
     {
-      private: friend class Ogre2Scene;
+      private: friend class OgreNextScene;
 
       /// \brief Bitmask of which objects are considered by GI bounces.
       /// Note that *all* objects can receive indirect illumination.

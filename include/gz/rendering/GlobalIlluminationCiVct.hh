@@ -276,7 +276,7 @@ namespace gz
     public: virtual bool Anisotropic() const = 0;
 
     /// \brief True for high quality (slower). VRAM consumption
-    /// stays the same. Ogre2 will use 6 cones instead of 4
+    /// stays the same. Ogre Next will use 6 cones instead of 4
     /// \param[in] _highQuality Quality setting
     public: virtual void SetHighQuality(bool _highQuality) = 0;
 

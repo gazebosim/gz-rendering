@@ -27,6 +27,7 @@
 #include "gz/rendering/ogre/OgreMaterial.hh"
 #include "gz/rendering/ogre/OgreScene.hh"
 #include "gz/rendering/ogre/OgreText.hh"
+#include "OgreCompat.hh"
 
 #define POS_TEX_BINDING    0
 #define COLOUR_BINDING     1
@@ -473,7 +474,7 @@ void OgreMovableText::SetupGeometry()
   ptbuf = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
             decl->getVertexSize(POS_TEX_BINDING),
             this->renderOp.vertexData->vertexCount,
-            Ogre::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
+            Ogre::HBU_CPU_TO_GPU);
 
   bind->setBinding(POS_TEX_BINDING, ptbuf);
 
@@ -484,7 +485,7 @@ void OgreMovableText::SetupGeometry()
   cbuf = Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
            decl->getVertexSize(COLOUR_BINDING),
            this->renderOp.vertexData->vertexCount,
-           Ogre::HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
+           Ogre::HBU_CPU_TO_GPU);
 
   bind->setBinding(COLOUR_BINDING, cbuf);
 

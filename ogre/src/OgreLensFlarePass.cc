@@ -34,7 +34,11 @@
 #include <OgreGpuProgram.h>
 #include <OgrePass.h>
 #include <OgreTechnique.h>
+#ifdef OGRE_VERSION_LT_1_12_0
 #include <OgreVector3.h>
+#else
+#include <OgreVector.h>
+#endif
 #ifdef _MSC_VER
 #  pragma warning(pop)
 #endif
@@ -375,8 +379,7 @@ void OgreLensFlareCompositorListenerPrivate::notifyMaterialRender(
   GZ_ASSERT(technique, "Null OGRE material technique");
   Ogre::Pass *pass = technique->getPass(static_cast<uint16_t>(_passId));
   GZ_ASSERT(pass, "Null OGRE material pass");
-  Ogre::GpuProgramParametersSharedPtr params =
-    pass->getFragmentProgramParameters();
+  auto params = pass->getFragmentProgramParameters();
 
   const Ogre::Camera *camera;
 
@@ -424,7 +427,7 @@ void OgreLensFlareCompositorListenerPrivate::notifyMaterialRender(
 
   ++this->owner.dataPtr->currentFaceIdx;
 
-  GpuProgramParametersSharedPtr psParams = pass->getFragmentProgramParameters();
+  auto psParams = pass->getFragmentProgramParameters();
 
   psParams->setNamedConstant("vpAspectRatio", camera->getAspectRatio());
   psParams->setNamedConstant("lightPos", lightPos);

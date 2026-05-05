@@ -33,6 +33,7 @@
 #include "gz/rendering/ogre/OgreGrid.hh"
 #include "gz/rendering/ogre/OgreHeightmap.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"
+#include "OgreCompat.hh"
 #include "gz/rendering/ogre/OgreInertiaVisual.hh"
 #include "gz/rendering/ogre/OgreJointVisual.hh"
 #include "gz/rendering/ogre/OgreLidarVisual.hh"
@@ -85,7 +86,7 @@ namespace gz
           Ogre::HardwareBufferManager::getSingleton().createVertexBuffer(
             decl->getVertexSize(this->kColorBinding),
             mRenderOp.vertexData->vertexCount,
-            Ogre::HardwareBuffer::HBU_STATIC_WRITE_ONLY);
+            Ogre::HBU_GPU_ONLY);
 
         // Bind buffer
         bind->setBinding(this->kColorBinding, vbuf);
@@ -718,7 +719,7 @@ bool OgreScene::InitObject(OgreObjectPtr _object, unsigned int _id,
 void OgreScene::CreateContext()
 {
   Ogre::Root *root = OgreRenderEngine::Instance()->OgreRoot();
-  this->ogreSceneManager = root->createSceneManager(Ogre::ST_GENERIC);
+  this->ogreSceneManager = root->createSceneManager("DefaultSceneManager");
 
 #if (OGRE_VERSION >= ((1 << 16) | (9 << 8) | 0))
   this->ogreSceneManager->addRenderQueueListener(

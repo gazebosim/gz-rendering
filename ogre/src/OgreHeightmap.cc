@@ -1050,7 +1050,12 @@ void OgreHeightmap::SetupShadows(bool _enableShadows)
   matProfile = static_cast<GzTerrainMatGen::SM2Profile *>(
       matGen->getActiveProfile());
 #else
-  matProfile = static_cast<Ogre::TerrainMaterialGeneratorA::SM2Profile *>(
+  // Since OGRE 1.11 the custom GzTerrainMatGen path is disabled and
+  // CreateMaterial() installs our TerrainMaterial generator whose Profile is
+  // not an SM2Profile. Use dynamic_cast so the nullptr guard below skips the
+  // SM2Profile-only setters and avoids writing past the real Profile object
+  // (the static_cast path led to heap corruption during loadAllTerrains).
+  matProfile = dynamic_cast<Ogre::TerrainMaterialGeneratorA::SM2Profile *>(
       matGen->getActiveProfile());
 #endif
 
@@ -1508,7 +1513,7 @@ GzTerrainMatGen::SM2Profile::ShaderHelperGLSL::generateFragmentProgram(
 
   this->defaultFpParams(_prof, _terrain, _tt, ret);
 
-  Ogre::GpuProgramParametersSharedPtr params = ret->getDefaultParameters();
+  auto params = ret->getDefaultParameters();
   params->setIgnoreMissingParams(false);
 
   Ogre::uint maxLayers = _prof->getMaxLayers(_terrain);
@@ -1892,7 +1897,7 @@ void GzTerrainMatGen::SM2Profile::ShaderHelperGLSL::defaultVpParams(
     const SM2Profile *_prof, const Ogre::Terrain *_terrain,
     TechniqueType _tt, const Ogre::HighLevelGpuProgramPtr &_prog)
 {
-  Ogre::GpuProgramParametersSharedPtr params = _prog->getDefaultParameters();
+  auto params = _prog->getDefaultParameters();
   params->setIgnoreMissingParams(true);
 
   params->setNamedAutoConstant("worldMatrix",
@@ -2768,9 +2773,12 @@ Ogre::MaterialPtr TerrainMaterial::Profile::generate(
       if (!pass->hasFragmentProgram())
         continue;
 
-      Ogre::GpuProgramParametersSharedPtr params =
-          pass->getFragmentProgramParameters();
+      auto params = pass->getFragmentProgramParameters();
+#if OGRE_VERSION_LT_1_11_0
       if (params.isNull())
+#else
+      if (!params)
+#endif
         continue;
 
       // set up shadow split points in a way that is consistent with the

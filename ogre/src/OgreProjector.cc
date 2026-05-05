@@ -79,9 +79,10 @@ namespace
     pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
     const auto &pixelBox = pixelBuffer->getCurrentLock();
     auto data = img.RGBAData();
-    // Same heap-overflow class fixed in OgreMaterial::CreateOgreTextureFromImage:
-    // gz-common's RGBAData() returns 2x the bytes for 16-bit-per-channel
-    // sources (e.g. an embedded 16-bit PNG used as a projector texture).
+    // Same heap-overflow class fixed in
+    // OgreMaterial::CreateOgreTextureFromImage: gz-common's RGBAData()
+    // returns 2x the bytes for 16-bit-per-channel sources (e.g. an embedded
+    // 16-bit PNG used as a projector texture).
     // PF_BYTE_RGBA expects 8 bits/channel; a naive memcpy(data.size())
     // overflows the OGRE pixel buffer and corrupts the heap.
     const size_t bytes8 = static_cast<size_t>(img.Width()) *

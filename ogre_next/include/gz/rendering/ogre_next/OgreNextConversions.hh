@@ -110,7 +110,8 @@ namespace gz
       public: static Ogre::PixelFormatGpu Convert(PixelFormat _format);
 
       /// \brief A list of ogre pixel formats
-      private: static const Ogre::PixelFormatGpu ogrePixelFormats[PF_COUNT];
+      private: GZ_RENDERING_OGRE_NEXT_HIDDEN static const Ogre::PixelFormatGpu
+          ogrePixelFormats[PF_COUNT];
     };
     /// \}
     }

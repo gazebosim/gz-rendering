@@ -674,18 +674,35 @@ void OgreRenderEngine::CreateResources()
   // and the Terrain helpers (TerrainTransforms.glsl, TerrainHelpers.glsl) for
   // the stock TerrainMaterialGeneratorA shaders. These are shipped with the
   // OGRE package media; locate them via OGRE_MEDIA_DIR (exported by
-  // OGREConfig.cmake) so we work on any platform OGRE supports — Linux distros,
-  // macOS Homebrew, Windows vcpkg, Conda, NixOS — instead of guessing Linux
-  // FHS paths.
+  // OGREConfig.cmake) when available, falling back to the Linux FHS paths.
+  //
+  // TODO(gz-cmake): on Debian/Ubuntu, FindGzOGRE.cmake resolves OGRE via
+  // pkg-config, which has no `media` variable, so OGRE_MEDIA_DIR is never set
+  // and OGRE_MEDIA_PATH stays undefined here. The proper fix is to teach
+  // FindGzOGRE.cmake to also call find_package(OGRE CONFIG QUIET) and pick up
+  // OGREConfig.cmake's OGRE_MEDIA_DIR; until that lands the FHS fallback below
+  // covers the standard libogre-1.12* package layout.
+  std::vector<std::string> ogreMediaCandidates;
 #ifdef OGRE_MEDIA_PATH
-  const std::string ogreMedia = OGRE_MEDIA_PATH;
-  for (const char *sub : {"ShadowVolume", "Terrain"})
-  {
-    std::string path = common::joinPaths(ogreMedia, sub);
-    if (common::isDirectory(path))
-      archNames.push_back(std::make_pair(path, "General"));
-  }
+  ogreMediaCandidates.emplace_back(OGRE_MEDIA_PATH);
 #endif
+  ogreMediaCandidates.emplace_back("/usr/share/OGRE/Media");
+  ogreMediaCandidates.emplace_back("/usr/local/share/OGRE/Media");
+  for (const auto &ogreMedia : ogreMediaCandidates)
+  {
+    bool found = false;
+    for (const char *sub : {"ShadowVolume", "Terrain"})
+    {
+      std::string path = common::joinPaths(ogreMedia, sub);
+      if (common::isDirectory(path))
+      {
+        archNames.push_back(std::make_pair(path, "General"));
+        found = true;
+      }
+    }
+    if (found)
+      break;
+  }
 
   for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
   {

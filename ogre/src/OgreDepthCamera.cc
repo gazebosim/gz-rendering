@@ -22,6 +22,8 @@
   #endif
   #include <windows.h>
 #endif
+#include <cstdint>
+
 #include <gz/common/Profiler.hh>
 
 #include <gz/math/Helpers.hh>
@@ -453,10 +455,11 @@ void OgreDepthCamera::notifyRenderSingleObject(Ogre::Renderable *_rend,
   // *before* the call to avoid a stack write past the array for software-
   // skinned renderables (where getNumWorldTransforms() can exceed
   // OGRE_MAX_NUM_BONES).
-  // TODO: depth shaders only consume xform[0], so skinned visuals still
+  // TODO(anyone): depth shaders only consume xform[0], so skinned visuals
+  // still
   // render at their root-bone transform. Fixing that requires plumbing the
   // bone-matrix array into the GLSL programs.
-  const unsigned short count = _rend->getNumWorldTransforms();
+  const uint16_t count = _rend->getNumWorldTransforms();
   if (count == 0)
     return;
   if (count > OGRE_MAX_NUM_BONES)

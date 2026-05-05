@@ -63,12 +63,15 @@ function(gz_add_ogre_next_plugin use_ogre2_definitions)
   endif()
 
   set(OGRE_NEXT_RESOURCE_PATH_STR "${OGRE_NEXT_RESOURCE_PATH}")
+  if (NOT OGRE_NEXT_RESOURCE_PATH_STR)
+    set(OGRE_NEXT_RESOURCE_PATH_STR "${OGRE2_RESOURCE_PATH}")
+  endif()
   # On non-Windows, we need to convert the CMake list delimited (;) to the
   # list delimiter used in list of paths in code (:)
   # On Windows, the list delimiter in code is already ;, not need to change it to :
   if(NOT WIN32)
     string(REPLACE ";" ":" OGRE_NEXT_RESOURCE_PATH_STR
-      "${OGRE_NEXT_RESOURCE_PATH}"
+      "${OGRE_NEXT_RESOURCE_PATH_STR}"
     )
   endif()
 

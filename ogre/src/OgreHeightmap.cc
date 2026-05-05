@@ -1043,9 +1043,19 @@ void OgreHeightmap::SetupShadows(bool _enableShadows)
   // Assume we get a shader model 2 material profile. dynamic_cast guards the
   // case where CreateMaterial installed our custom TerrainMaterial generator
   // (when a material name was supplied) whose Profile is not an SM2Profile.
+  Ogre::TerrainMaterialGenerator::Profile *activeProfile =
+      matGen.isNull() ? nullptr : matGen->getActiveProfile();
+  gzerr << "[DEBUG-CI] OgreHeightmap::SetupShadows: matGen="
+        << (matGen.isNull() ? "<null>" : "set")
+        << " activeProfile="
+        << (activeProfile ? activeProfile->getName() : std::string("<null>"))
+        << std::endl;
   Ogre::TerrainMaterialGeneratorA::SM2Profile *matProfile =
       dynamic_cast<Ogre::TerrainMaterialGeneratorA::SM2Profile *>(
-          matGen->getActiveProfile());
+          activeProfile);
+  gzerr << "[DEBUG-CI] OgreHeightmap::SetupShadows: SM2Profile cast = "
+        << (matProfile ? "ok" : "null (custom or non-SM2 profile)")
+        << std::endl;
 
   if (nullptr == matProfile)
   {

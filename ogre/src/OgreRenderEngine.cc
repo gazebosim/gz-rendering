@@ -392,6 +392,23 @@ void OgreRenderEngine::LoadAttempt()
   this->CheckCapabilities();
 }
 
+namespace
+{
+  // [DEBUG-CI] Forward OGRE log messages to gzerr so shader-compile and
+  // resource errors are visible in the Jenkins console (the OGRE log file
+  // lives on the build agent and is not captured as a test artifact).
+  class CIDebugLogListener : public Ogre::LogListener
+  {
+    public: void messageLogged(const Ogre::String &_msg,
+        Ogre::LogMessageLevel _lml, bool /*_maskDebug*/,
+        const Ogre::String &/*_logName*/, bool &/*_skipMessage*/) override
+    {
+      if (_lml >= Ogre::LML_NORMAL)
+        gzerr << "[DEBUG-CI][ogre] " << _msg << std::endl;
+    }
+  };
+}
+
 //////////////////////////////////////////////////
 void OgreRenderEngine::CreateLogger()
 {
@@ -404,7 +421,13 @@ void OgreRenderEngine::CreateLogger()
 
   // create actual log
   this->ogreLogManager = new Ogre::LogManager();
-  this->ogreLogManager->createLog(logPath, true, false, false);
+  Ogre::Log *ogreLog =
+      this->ogreLogManager->createLog(logPath, true, false, false);
+
+  // [DEBUG-CI] tee OGRE log to gzerr; intentionally leaked for the debug run.
+  static CIDebugLogListener *debugListener = new CIDebugLogListener();
+  if (ogreLog)
+    ogreLog->addListener(debugListener);
 }
 
 //////////////////////////////////////////////////
@@ -685,16 +708,25 @@ void OgreRenderEngine::CreateResources()
   std::vector<std::string> ogreMediaCandidates;
 #ifdef OGRE_MEDIA_PATH
   ogreMediaCandidates.emplace_back(OGRE_MEDIA_PATH);
+  gzerr << "[DEBUG-CI] OGRE_MEDIA_PATH defined: " << OGRE_MEDIA_PATH
+        << std::endl;
+#else
+  gzerr << "[DEBUG-CI] OGRE_MEDIA_PATH undefined at compile time" << std::endl;
 #endif
   ogreMediaCandidates.emplace_back("/usr/share/OGRE/Media");
   ogreMediaCandidates.emplace_back("/usr/local/share/OGRE/Media");
   for (const auto &ogreMedia : ogreMediaCandidates)
   {
+    gzerr << "[DEBUG-CI] checking OGRE media candidate: " << ogreMedia
+          << std::endl;
     bool found = false;
     for (const char *sub : {"ShadowVolume", "Terrain"})
     {
       std::string path = common::joinPaths(ogreMedia, sub);
-      if (common::isDirectory(path))
+      const bool isDir = common::isDirectory(path);
+      gzerr << "[DEBUG-CI]   sub=" << sub << " path=" << path
+            << " isDirectory=" << (isDir ? "yes" : "no") << std::endl;
+      if (isDir)
       {
         archNames.push_back(std::make_pair(path, "General"));
         found = true;
@@ -702,6 +734,14 @@ void OgreRenderEngine::CreateResources()
     }
     if (found)
       break;
+  }
+
+  gzerr << "[DEBUG-CI] final archNames (" << archNames.size() << " entries):"
+        << std::endl;
+  for (const auto &an : archNames)
+  {
+    gzerr << "[DEBUG-CI]   group=" << an.second << " path=" << an.first
+          << std::endl;
   }
 
   for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
@@ -714,10 +754,13 @@ void OgreRenderEngine::CreateResources()
       Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
           aiter->first, "FileSystem", aiter->second, recursive);
     }
-    catch(Ogre::Exception &/*_e*/)
+    catch(Ogre::Exception &_e)
     {
       gzerr << "Unable to load Ogre Resources. Make sure the resources "
           "path in the world file is set correctly." << std::endl;
+      gzerr << "[DEBUG-CI] addResourceLocation failed for "
+            << aiter->first << " (group=" << aiter->second << "): "
+            << _e.getFullDescription() << std::endl;
     }
   }
 }

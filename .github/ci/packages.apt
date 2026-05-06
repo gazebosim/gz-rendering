@@ -1,5 +1,7 @@
 freeglut3-dev
+libgl1-mesa-dev
 libglew-dev
+libglu1-mesa-dev
 libgz-rotary-cmake-dev
 libgz-rotary-common-dev
 libgz-rotary-math-dev

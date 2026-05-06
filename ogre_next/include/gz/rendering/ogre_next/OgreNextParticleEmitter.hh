@@ -91,8 +91,7 @@ namespace gz
       public: virtual void PreRender() override;
 
       /// \brief Particle system visibility flags
-      public: GZ_RENDERING_OGRE_NEXT_HIDDEN static const uint32_t
-          kParticleVisibilityFlags;
+      public: static const uint32_t kParticleVisibilityFlags;
 
       // Documentation inherited.
       protected: virtual void Init() override;

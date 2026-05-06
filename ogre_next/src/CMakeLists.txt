@@ -98,6 +98,9 @@ function(gz_add_ogre_next_plugin use_ogre2_definitions)
   # Append to a copy of CMAKE_INSTALL_RPATH since that is the default
   set(ogre_next_target_install_rpath ${CMAKE_INSTALL_RPATH})
   list(APPEND ogre_next_target_install_rpath ${OGRE_NEXT_LIBRARY_DIRS})
+  if (NOT OGRE_NEXT_LIBRARY_DIRS)
+    list(APPEND ogre_next_target_install_rpath ${OGRE2_LIBRARY_DIRS})
+  endif()
   set_property(
     TARGET ${ogre_next_target}
     PROPERTY INSTALL_RPATH

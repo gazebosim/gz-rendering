@@ -148,20 +148,6 @@ function(gz_add_ogre_next_plugin use_ogre2_definitions)
     DESTINATION ${GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR}
   )
 
-  if (WIN32)
-    # disable MSVC inherit via dominance warning
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4250")
-  endif()
-
-  if (NOT (APPLE OR WIN32))
-    option(USE_GLX "Use GLX to create OpenGL contexts." ON)
-  else()
-    option(USE_GLX "Use GLX to create OpenGL contexts." OFF)
-  endif()
-  if (USE_GLX)
-    add_definitions(-DHAVE_GLX=1)
-  endif()
-
   # Build the unit tests
   gz_build_tests(TYPE UNIT
                  SOURCES ${gtest_sources}
@@ -173,6 +159,20 @@ function(gz_add_ogre_next_plugin use_ogre2_definitions)
   )
 
 endfunction()
+
+if (WIN32)
+  # disable MSVC inherit via dominance warning
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4250")
+endif()
+
+if (NOT (APPLE OR WIN32))
+  option(USE_GLX "Use GLX to create OpenGL contexts." ON)
+else()
+  option(USE_GLX "Use GLX to create OpenGL contexts." OFF)
+endif()
+if (USE_GLX)
+  add_definitions(-DHAVE_GLX=1)
+endif()
 
 if (GZ_RENDERING_HAVE_OGRE_NEXT OR GZ_RENDERING_HAVE_OGRE2)
   gz_add_ogre_next_plugin(false) # add ogre_next plugin

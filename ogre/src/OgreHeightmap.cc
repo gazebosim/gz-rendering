@@ -626,13 +626,29 @@ void OgreHeightmap::Init()
 
     // The worldSize decides how big each splat of textures will be.
     // A smaller value will increase the resolution
+    //
+    // OGRE's FileSystemArchive indexes files by basename. The
+    // TextureManager::load() lookup performed by stock
+    // TerrainMaterialGeneratorA's SM2Profile then asks for a resource by the
+    // exact name we push here -- if we push the absolute file path it never
+    // matches an archive entry, the SM2Profile prepare step logs "Cannot
+    // locate resource <abs path> in resource group General" and the texture
+    // unit becomes blank. Push the basename so the lookup hits the parent
+    // directory archive that AddResourcePath above just registered.
     for (unsigned int i = 0; i < this->descriptor.TextureCount(); ++i)
     {
       auto texture = this->descriptor.TextureByIndex(i);
 
+      const std::string diffuseName = common::basename(texture->Diffuse());
+      const std::string normalName = common::basename(texture->Normal());
+
       defaultimp.layerList[i].worldSize = texture->Size();
-      defaultimp.layerList[i].textureNames.push_back(texture->Diffuse());
-      defaultimp.layerList[i].textureNames.push_back(texture->Normal());
+      defaultimp.layerList[i].textureNames.push_back(diffuseName);
+      defaultimp.layerList[i].textureNames.push_back(normalName);
+
+      gzerr << "[DEBUG-CI] OgreHeightmap layer " << i
+            << " diffuse=" << diffuseName
+            << " normal=" << normalName << std::endl;
     }
   }
 

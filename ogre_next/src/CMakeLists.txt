@@ -39,6 +39,15 @@ function(gz_add_ogre_next_plugin use_ogre2_definitions)
     unset(lib_name)
     unset(export_base)
     unset(include_dir)
+    # Set shared library flags for gz-rendering-ogre2 target
+    if (BUILD_SHARED_LIBS)
+      # By default CMake will define <target_name>_EXPORTS for a shared library
+      # Note: There are some situations when it is not the case,
+      # but for this target it should be the case
+      # Add property to define gz_rendering_ogre_next_EXPORTS
+      set_target_properties(${ogre_next_target} PROPERTIES
+        DEFINE_SYMBOL gz_rendering_ogre_next_EXPORTS)
+    endif()
     # Include ogre_next definitions
     target_include_directories(${ogre_next_target}
       PUBLIC

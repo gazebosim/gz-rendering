@@ -24,6 +24,7 @@
   <depend>libvulkan-dev</depend>
   <depend>libxi-dev</depend>
   <depend>libxmu-dev</depend>
+  <depend>opengl</depend>
   <depend>uuid</depend>
 
   <test_depend>xvfb</test_depend>

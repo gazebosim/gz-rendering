@@ -1,5 +1,7 @@
 freeglut3-dev
+libgl1-mesa-dev
 libglew-dev
+libglu1-mesa-dev
 libgz-cmake5-dev
 libgz-common7-dev
 libgz-math9-dev

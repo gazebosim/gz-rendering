@@ -3,20 +3,6 @@
 # will be generated
 function(gz_add_ogre_next_plugin use_ogre2_definitions)
 
-  # Collect source files into the "sources" variable and unit test files into the
-  # "gtest_sources" variable.
-  gz_get_libsources_and_unittests(sources gtest_sources)
-
-  if (MSVC)
-    # Warning #4251 is the "dll-interface" warning that tells you when types used
-    # by a class are not being exported. These generated source files have private
-    # members that don't get exported, so they trigger this warning. However, the
-    # warning is not important since those members do not need to be interfaced
-    # with.
-    set_source_files_properties(${sources} ${gtest_sources} COMPILE_FLAGS "/wd4251")
-    set_source_files_properties(${sources} ${gtest_sources} COMPILE_FLAGS "/D_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS")
-  endif()
-
   set(engine_name "ogre_next")
   if (use_ogre2_definitions)
     set(engine_name "ogre2")
@@ -159,6 +145,20 @@ function(gz_add_ogre_next_plugin use_ogre2_definitions)
   )
 
 endfunction()
+
+# Collect source files into the "sources" variable and unit test files into the
+# "gtest_sources" variable.
+gz_get_libsources_and_unittests(sources gtest_sources)
+
+if (MSVC)
+  # Warning #4251 is the "dll-interface" warning that tells you when types used
+  # by a class are not being exported. These generated source files have private
+  # members that don't get exported, so they trigger this warning. However, the
+  # warning is not important since those members do not need to be interfaced
+  # with.
+  set_source_files_properties(${sources} ${gtest_sources} COMPILE_FLAGS "/wd4251")
+  set_source_files_properties(${sources} ${gtest_sources} COMPILE_FLAGS "/D_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS")
+endif()
 
 if (WIN32)
   # disable MSVC inherit via dominance warning

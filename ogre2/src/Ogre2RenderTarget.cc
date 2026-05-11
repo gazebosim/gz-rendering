@@ -180,6 +180,7 @@ void Ogre2RenderTarget::BuildCompositor()
             nodeDef->addTextureDefinition("rt_fsaa");
 
         msaaDef->fsaa = std::to_string(fsaa);
+        msaaDef->format = this->dataPtr->ogreTexture[0]->getPixelFormat();
 
         rtvDef->colourAttachments[0].textureName = "rt_fsaa";
         rtvDef->colourAttachments[0].resolveTextureName = "rt0";
@@ -585,7 +586,10 @@ void Ogre2RenderTarget::BuildTargetImpl()
 
     this->dataPtr->ogreTexture[i]->setResolution(this->width, this->height);
     this->dataPtr->ogreTexture[i]->setNumMipmaps(1u);
-    this->dataPtr->ogreTexture[i]->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+    Ogre::PixelFormatGpu pf = Ogre::PFG_RGBA8_UNORM_SRGB;
+    if (this->format == PF_L16)
+      pf = Ogre::PFG_R16_UNORM;
+    this->dataPtr->ogreTexture[i]->setPixelFormat(pf);
 
     this->dataPtr->ogreTexture[i]->scheduleTransitionTo(
           Ogre::GpuResidency::Resident);

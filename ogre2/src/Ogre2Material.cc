@@ -978,8 +978,12 @@ void Ogre2Material::UpdateShaderParams(ConstShaderParamsPtr _params,
       // to set the texture index
       int texIndex = static_cast<int>(pass->getTextureUnitStateIndex(texUnit));
 
-      // set texture coordinate set
-      texUnit->setTextureCoordSet(uvSetIndex);
+      // NOTE(OGRE-Next 3.0): TextureUnitState::setTextureCoordSet() was
+      // removed in 3.0. UV set selection is now expressed in shader code
+      // directly; the uvSetIndex value is available but cannot be forwarded
+      // through the TextureUnitState API. Custom shaders that rely on a
+      // non-zero uvSetIndex must address the UV set in GLSL/HLSL directly.
+      (void)uvSetIndex;
 
       // set to wrap mode otherwise default is clamp mode
       Ogre::HlmsSamplerblock samplerBlockRef;

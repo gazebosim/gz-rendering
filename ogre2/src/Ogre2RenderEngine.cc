@@ -624,7 +624,8 @@ void Ogre2RenderEngine::CreateRoot()
 {
   try
   {
-    this->ogreRoot = new Ogre::Root("", "", "");
+    const Ogre::AbiCookie abiCookie = Ogre::generateAbiCookie();
+    this->ogreRoot = new Ogre::Root(&abiCookie, "", "", "");
   }
   catch (Ogre::Exception &)
   {

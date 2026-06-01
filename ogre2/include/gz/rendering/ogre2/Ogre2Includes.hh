@@ -30,6 +30,7 @@
 #include <memory>
 
 #include <Ogre.h>
+#include <OgreAbiUtils.h>
 #include <OgreBillboard.h>
 #include <OgreCamera.h>
 #include <OgreColourValue.h>

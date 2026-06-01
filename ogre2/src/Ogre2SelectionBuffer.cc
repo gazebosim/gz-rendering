@@ -557,7 +557,7 @@ bool Ogre2SelectionBuffer::ExecuteQuery(int _x, int _y,
   // under OGRE-Next 3.0 reverse-Z, where the custom matrix's depth row is
   // produced by RenderSystem::_convertProjectionMatrix and differs from the
   // analytic getProjectionParamsAB() value (see ClickToSceneHeightmap).
-  if (!this->dataPtr->selectionMaterial.isNull())
+  if (this->dataPtr->selectionMaterial)
   {
     const double farPlane =
         this->dataPtr->selectionCamera->getFarClipDistance();

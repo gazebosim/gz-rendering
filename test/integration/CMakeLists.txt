@@ -39,7 +39,9 @@ if (UNIX AND NOT APPLE)
 
   foreach(comp ${RENDERING_COMPONENTS})
    set(comp_target_name "${PROJECT_LIBRARY_TARGET_NAME}-${comp}")
-   add_test(NAME "INTEGRATION_versioned_symbols_${comp}"
-    COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash $<TARGET_FILE:${comp_target_name}>)
+   if(TARGET ${comp_target_name})
+     add_test(NAME "INTEGRATION_versioned_symbols_${comp}"
+      COMMAND bash ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash $<TARGET_FILE:${comp_target_name}>)
+   endif()
   endforeach()
 endif()

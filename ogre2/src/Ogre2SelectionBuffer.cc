@@ -75,23 +75,48 @@ namespace
 /// mis-linearized the reconstructed depth (ClickToSceneHeightmap read Z
 /// 5.002425 vs the geometrically-correct 5.002730, a ~3e-4 error).
 ///
-/// Reading the render-system depth-adjusted matrix
-/// (getProjectionMatrixWithRSDepth(), == mProjMatrixRSDepth, the same matrix the
-/// GPU writes with) makes the linearization self-consistent for both the auto
-/// and custom-matrix cases:
+/// When reverse-Z is enabled (RenderSystem::isReverseDepth()) we read the
+/// render-system depth-adjusted matrix (getProjectionMatrixWithRSDepth(),
+/// == mProjMatrixRSDepth, the same matrix the GPU writes with), which makes the
+/// linearization self-consistent for both the auto and custom-matrix cases:
 ///   A = m22 / m32
 ///   B = (-m23 / m32) / farPlane   (the trailing /farPlane is the gz
 ///                                  convention preserved from the original code)
+///
+/// When reverse-Z is OFF (e.g. legacy GL3+ without GL_ARB_clip_control, NDC
+/// stays [-1,1]) the RS-depth derivation is not exact; fall back to
+/// getProjectionParamsAB(), which is the pre-reverse-Z behavior this code
+/// originally relied on for the [-1,1] depth buffer.
 void SetSelectionProjectionParams(Ogre::Camera *_camera, double _farPlane,
     Ogre::GpuProgramParametersSharedPtr _psParams)
 {
-  const Ogre::Matrix4 &rsDepthProj = _camera->getProjectionMatrixWithRSDepth();
-  const double m22 = rsDepthProj[2][2];
-  const double m23 = rsDepthProj[2][3];
-  const double m32 = rsDepthProj[3][2];
+  const Ogre::RenderSystem *renderSystem =
+      Ogre::Root::getSingleton().getRenderSystem();
 
-  const double projectionA = m22 / m32;
-  const double projectionB = (-m23 / m32) / _farPlane;
+  double projectionA;
+  double projectionB;
+  if (renderSystem && renderSystem->isReverseDepth())
+  {
+    // OGRE-Next 3.0 reverse-Z: the RS-depth matrix is [0,1] and is the matrix
+    // the GPU writes with, so it is self-consistent for both auto and custom
+    // projection matrices.
+    const Ogre::Matrix4 &rsDepthProj =
+        _camera->getProjectionMatrixWithRSDepth();
+    const double m22 = rsDepthProj[2][2];
+    const double m23 = rsDepthProj[2][3];
+    const double m32 = rsDepthProj[3][2];
+
+    projectionA = m22 / m32;
+    projectionB = (-m23 / m32) / _farPlane;
+  }
+  else
+  {
+    // Legacy [-1,1] NDC: use the analytic A/B (the original pre-reverse-Z
+    // behavior).
+    const Ogre::Vector2 projectionAB = _camera->getProjectionParamsAB();
+    projectionA = projectionAB.x;
+    projectionB = projectionAB.y / _farPlane;
+  }
 
   _psParams->setNamedConstant("projectionParams",
       Ogre::Vector2(static_cast<Ogre::Real>(projectionA),

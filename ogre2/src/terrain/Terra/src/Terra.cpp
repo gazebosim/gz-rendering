@@ -316,10 +316,10 @@ namespace Ogre
             "TMP NormalMapTex_", getId(), m_sharedResources, TerraSharedResources::TmpNormalMap,
             m_normalMapTex, TextureFlags::RenderToTexture | TextureFlags::AllowAutomipmaps );
 
-        MaterialPtr normalMapperMat = MaterialManager::getSingleton().load(
+        MaterialPtr normalMapperMat = Ogre::static_pointer_cast<Material>(
+                    MaterialManager::getSingleton().load(
                     "Terra/GpuNormalMapper",
-                    ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME ).
-                staticCast<Material>();
+                    ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME ) );
         Pass *pass = normalMapperMat->getTechnique(0)->getPass(0);
         TextureUnitState *texUnit = pass->getTextureUnitState(0);
         texUnit->setTexture( m_heightMapTex );

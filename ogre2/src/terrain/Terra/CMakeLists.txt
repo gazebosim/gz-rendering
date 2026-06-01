@@ -30,10 +30,10 @@ target_include_directories(${PROJECT_NAME}
   PRIVATE
     # Hlms files inside Hlms/Pbs do not have #include <Hlms/Pbs/...> thus
     # we must add this one manually for this to build correctly
-    ${OGRE2_INCLUDE}/Hlms/Pbs
-    ${OGRE2_INCLUDE}/Hlms/Common
+    ${OGRE_NEXT_INCLUDE}/Hlms/Pbs
+    ${OGRE_NEXT_INCLUDE}/Hlms/Common
   PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/include
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE GzOGRE2::GzOGRE2)
+target_link_libraries(${PROJECT_NAME} PRIVATE GzOGRENext::GzOGRENext)

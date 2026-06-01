@@ -16,28 +16,28 @@ set(engine_name "ogre2")
 
 gz_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME ogre2_target)
 
-set(OGRE2_RESOURCE_PATH_STR "${OGRE2_RESOURCE_PATH}")
+set(OGRE2_RESOURCE_PATH_STR "${OGRE_NEXT_RESOURCE_PATH}")
 # On non-Windows, we need to convert the CMake list delimited (;) to the
 # list delimiter used in list of paths in code (:)
 # On Windows, the list delimiter in code is already ;, not need to change it to :
 if(NOT WIN32)
-  string(REPLACE ";" ":" OGRE2_RESOURCE_PATH_STR "${OGRE2_RESOURCE_PATH}")
+  string(REPLACE ";" ":" OGRE2_RESOURCE_PATH_STR "${OGRE_NEXT_RESOURCE_PATH}")
 endif()
 
 set_property(
   SOURCE Ogre2RenderEngine.cc
   PROPERTY COMPILE_DEFINITIONS
   OGRE2_RESOURCE_PATH="${OGRE2_RESOURCE_PATH_STR}"
-  OGRE2_VERSION="${OGRE2_VERSION}"
+  OGRE2_VERSION="${OGRE_NEXT_VERSION}"
 )
 
 target_compile_definitions(${ogre2_target}
   PRIVATE OGRE_IGNORE_UNKNOWN_DEBUG)
 
-# Add OGRE2_LIBRARY_DIRS to INSTALL_RPATH
+# Add OGRE_NEXT_LIBRARY_DIRS to INSTALL_RPATH
 # Append to a copy of CMAKE_INSTALL_RPATH since that is the default
 set(ogre2_target_install_rpath ${CMAKE_INSTALL_RPATH})
-list(APPEND ogre2_target_install_rpath ${OGRE2_LIBRARY_DIRS})
+list(APPEND ogre2_target_install_rpath ${OGRE_NEXT_LIBRARY_DIRS})
 set_property(
   TARGET ${ogre2_target}
   PROPERTY INSTALL_RPATH
@@ -48,8 +48,8 @@ target_include_directories(${ogre2_target}
   PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}
   # VCT GI needs this
-  ${OGRE2_INCLUDE}/Hlms/Pbs
-  ${OGRE2_INCLUDE}/Hlms/Common
+  ${OGRE_NEXT_INCLUDE}/Hlms/Pbs
+  ${OGRE_NEXT_INCLUDE}/Hlms/Common
 )
 
 target_link_libraries(${ogre2_target}
@@ -60,7 +60,7 @@ target_link_libraries(${ogre2_target}
     gz-plugin::register
     ${OPENGL_LIBRARIES}
     terra
-    GzOGRE2::GzOGRE2)
+    GzOGRENext::GzOGRENext)
 
 
 if (TARGET OpenGL::EGL)

@@ -61,13 +61,13 @@ add_executable(simple_demo_qml
 
 target_include_directories(simple_demo_qml PUBLIC
     ${GZ-RENDERING_INCLUDE_DIRS}
-    ${OGRE2_INCLUDE_DIRS}
+    ${OGRE_NEXT_INCLUDE_DIRS}
     ${OpenGL_INCLUDE_DIRS}
 )
 
 target_link_libraries(simple_demo_qml PUBLIC
     ${GZ-RENDERING_LIBRARIES}
-    ${OGRE2_LIBRARIES}
+    ${OGRE_NEXT_LIBRARIES}
     ${OPENGL_LIBRARIES}
     Qt5::Core
     Qt5::Gui

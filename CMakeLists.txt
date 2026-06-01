@@ -106,23 +106,23 @@ if (OGRE_FOUND)
 endif()
 
 #--------------------------------------
-# Find OGRE2: first try to find OGRE2 built with PlanarReflections support and
-# fallback to look for OGRE2 without it. Both seems to works for gz-rendering.
-# See https://github.com/gazebosim/gz-rendering/issues/597
-gz_find_package(GzOGRE2 VERSION 2.3.1
-    COMPONENTS HlmsPbs HlmsUnlit PlanarReflections
+# Find OGRE-Next 3.0: first try to find OGRE-Next built with PlanarReflections
+# support and fallback to look for OGRE-Next without it. Both seem to work for
+# gz-rendering. See https://github.com/gazebosim/gz-rendering/issues/597
+gz_find_package(GzOGRENext VERSION 3.0
+    COMPONENTS HlmsPbs HlmsUnlit PlanarReflections Overlay
     PRIVATE_FOR ogre2
     QUIET)
 
-if ("${OGRE2-PlanarReflections}" STREQUAL "OGRE2-PlanarReflections-NOTFOUND")
+if ("${OGRE_NEXT-PlanarReflections}" STREQUAL "OGRE_NEXT-PlanarReflections-NOTFOUND")
   message(STATUS "PlanarReflections component was not found. Try looking without it:")
-  gz_find_package(GzOGRE2 VERSION 2.3.1
-    COMPONENTS HlmsPbs HlmsUnlit
+  gz_find_package(GzOGRENext VERSION 3.0
+    COMPONENTS HlmsPbs HlmsUnlit Overlay
     REQUIRED_BY ogre2
     PRIVATE_FOR ogre2)
 endif()
 
-if (OGRE2_FOUND)
+if (OGRE_NEXT_FOUND)
   set(GZ_RENDERING_HAVE_OGRE2 TRUE)
 endif()
 
@@ -133,7 +133,7 @@ endif()
 if (UNIX AND NOT APPLE)
   # check if ogre-next vulkan headers are installed
   find_path(ogre_vulkan_INCLUDE "RenderSystems/Vulkan/OgreVulkanDevice.h"
-    HINTS ${OGRE2_INCLUDE_DIRS})
+    HINTS ${OGRE_NEXT_INCLUDE_DIRS})
 
   # if not installed, ogre-next is likely built on platform without vulkan
   # support, e.g. Focal

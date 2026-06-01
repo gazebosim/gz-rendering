@@ -54,6 +54,51 @@
 using namespace gz;
 using namespace rendering;
 
+namespace
+{
+//////////////////////////////////////////////////
+/// \brief Compute and upload the depth linearization params (A, B) used by
+/// selection_buffer_fs.glsl, which reconstructs view-space depth via
+/// `d = B / (fDepth - A)`.
+///
+/// These params MUST be derived from the projection matrix the GPU actually
+/// used to write the depth buffer. The selection camera renders with a custom
+/// projection matrix (set in ExecuteQuery() to zoom into the 1x1 pick region),
+/// so reading Ogre::Camera::getProjectionParamsAB() is wrong: that helper
+/// derives A/B from the camera near/far + projection type and ignores the
+/// custom matrix. Under OGRE-Next 3.0 the GL3+ render system enables reverse-Z
+/// by default (glClipControl, GL>=4.5 or GL_ARB_clip_control), so the custom
+/// matrix is reverse-Z converted by RenderSystem::_convertProjectionMatrix,
+/// which computes the depth scale q ~= near/(far-near) as the difference of two
+/// near-1.0 floats ((-m22 + m32)/2) and loses precision relative to the
+/// analytic value returned by getProjectionParamsAB(). That mismatch
+/// mis-linearized the reconstructed depth (ClickToSceneHeightmap read Z
+/// 5.002425 vs the geometrically-correct 5.002730, a ~3e-4 error).
+///
+/// Reading the render-system depth-adjusted matrix
+/// (getProjectionMatrixWithRSDepth(), == mProjMatrixRSDepth, the same matrix the
+/// GPU writes with) makes the linearization self-consistent for both the auto
+/// and custom-matrix cases:
+///   A = m22 / m32
+///   B = (-m23 / m32) / farPlane   (the trailing /farPlane is the gz
+///                                  convention preserved from the original code)
+void SetSelectionProjectionParams(Ogre::Camera *_camera, double _farPlane,
+    Ogre::GpuProgramParametersSharedPtr _psParams)
+{
+  const Ogre::Matrix4 &rsDepthProj = _camera->getProjectionMatrixWithRSDepth();
+  const double m22 = rsDepthProj[2][2];
+  const double m23 = rsDepthProj[2][3];
+  const double m32 = rsDepthProj[3][2];
+
+  const double projectionA = m22 / m32;
+  const double projectionB = (-m23 / m32) / _farPlane;
+
+  _psParams->setNamedConstant("projectionParams",
+      Ogre::Vector2(static_cast<Ogre::Real>(projectionA),
+                    static_cast<Ogre::Real>(projectionB)));
+}
+}  // namespace
+
 class gz::rendering::Ogre2SelectionBufferPrivate
 {
   /// \brief This is a material listener and a RenderTargetListener.
@@ -289,19 +334,17 @@ void Ogre2SelectionBuffer::CreateRTTBuffer()
       p->getFragmentProgramParameters();
 
   // Set the uniform variables (selection_buffer_fs.glsl).
-  // The projectParams is used to linearize depth buffer data
+  // The projectParams is used to linearize depth buffer data.
+  // Note this is an initial value computed from the (current) projection
+  // matrix; ExecuteQuery() recomputes it after setting the custom pick-region
+  // projection matrix, since that is the matrix the GPU actually renders with.
   double nearPlane = this->dataPtr->camera->getNearClipDistance();
   double farPlane = this->dataPtr->camera->getFarClipDistance();
   this->dataPtr->selectionCamera->setNearClipDistance(nearPlane);
   this->dataPtr->selectionCamera->setFarClipDistance(farPlane);
 
-  Ogre::Vector2 projectionAB =
-    this->dataPtr->selectionCamera->getProjectionParamsAB();
-  double projectionA = projectionAB.x;
-  double projectionB = projectionAB.y;
-  projectionB /= farPlane;
-  psParams->setNamedConstant("projectionParams",
-      Ogre::Vector2(projectionA, projectionB));
+  SetSelectionProjectionParams(this->dataPtr->selectionCamera, farPlane,
+      psParams);
   psParams->setNamedConstant("far",
       static_cast<float>(farPlane));
   psParams->setNamedConstant("inf",
@@ -481,6 +524,23 @@ bool Ogre2SelectionBuffer::ExecuteQuery(int _x, int _y,
       this->dataPtr->camera->getDerivedPosition());
   this->dataPtr->selectionCamera->setOrientation(
       this->dataPtr->camera->getDerivedOrientation());
+
+  // The depth linearization params depend on the projection matrix. A custom
+  // pick-region projection matrix was just set above, so the params computed in
+  // CreateRTTBuffer() from the previous matrix are stale. Recompute them from
+  // the matrix the GPU will actually render the depth buffer with. This matters
+  // under OGRE-Next 3.0 reverse-Z, where the custom matrix's depth row is
+  // produced by RenderSystem::_convertProjectionMatrix and differs from the
+  // analytic getProjectionParamsAB() value (see ClickToSceneHeightmap).
+  if (!this->dataPtr->selectionMaterial.isNull())
+  {
+    const double farPlane =
+        this->dataPtr->selectionCamera->getFarClipDistance();
+    Ogre::Pass *p =
+        this->dataPtr->selectionMaterial->getTechnique(0)->getPass(0);
+    SetSelectionProjectionParams(this->dataPtr->selectionCamera, farPlane,
+        p->getFragmentProgramParameters());
+  }
 
   // update render texture
   this->Update();

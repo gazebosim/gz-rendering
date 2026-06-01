@@ -181,6 +181,50 @@ class gz::rendering::Ogre2DepthCameraPrivate
 using namespace gz;
 using namespace rendering;
 
+namespace
+{
+//////////////////////////////////////////////////
+/// \brief Compute and upload the depth linearization params (A, B) used by
+/// depth_camera_fs.glsl, which reconstructs view-space depth via
+/// `d = B / (fDepth - A)`.
+///
+/// These params MUST be derived from the projection matrix that the GPU
+/// actually used to write the depth buffer. Previously they were read from
+/// Ogre::Camera::getProjectionParamsAB(), but that helper derives A/B solely
+/// from the camera near/far + projection type and *ignores* any custom
+/// projection matrix set via setCustomProjectionMatrix(). Under OGRE-Next 3.0
+/// the GL3+ render system enables reverse-Z by default (glClipControl, GL>=4.5
+/// or GL_ARB_clip_control), so a user-supplied [-1,1] custom matrix is
+/// additionally reverse-Z converted by RenderSystem::_convertProjectionMatrix.
+/// Reading getProjectionParamsAB() in that case yields stale (auto-matrix)
+/// values and mis-linearizes the depth (see DepthCameraProjection test, which
+/// read ~0.117 instead of 1.3).
+///
+/// We instead read the render-system depth-adjusted matrix
+/// (getProjectionMatrixWithRSDepth(), == mProjMatrixRSDepth, the same matrix
+/// produced by _makeRsProjectionMatrix / _convertProjectionMatrix and hence the
+/// one the GPU writes with), which works for both the auto and custom-matrix
+/// paths and reproduces the previous values exactly for the auto path:
+///   A = m22 / m32
+///   B = (-m23 / m32) / farPlane   (the trailing /farPlane is the gz
+///                                  convention preserved from the original code)
+void SetDepthProjectionParams(Ogre::Camera *_camera, double _farPlane,
+    Ogre::GpuProgramParametersSharedPtr _psParams)
+{
+  const Ogre::Matrix4 &rsDepthProj = _camera->getProjectionMatrixWithRSDepth();
+  const double m22 = rsDepthProj[2][2];
+  const double m23 = rsDepthProj[2][3];
+  const double m32 = rsDepthProj[3][2];
+
+  const double projectionA = m22 / m32;
+  const double projectionB = (-m23 / m32) / _farPlane;
+
+  _psParams->setNamedConstant("projectionParams",
+      Ogre::Vector2(static_cast<Ogre::Real>(projectionA),
+                    static_cast<Ogre::Real>(projectionB)));
+}
+}  // namespace
+
 //////////////////////////////////////////////////
 void Ogre2DepthGaussianNoisePass::PreRender(const CameraPtr &/*_camera*/)
 {
@@ -471,13 +515,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
   // The other params are used to clamp the range output
   // Use the 'real' clip distance here so depth can be
   // linearized correctly
-  Ogre::Vector2 projectionAB = this->ogreCamera->getProjectionParamsAB();
-  double projectionA = projectionAB.x;
-  double projectionB = projectionAB.y;
-  projectionB /= farPlane;
-
-  psParams->setNamedConstant("projectionParams",
-      Ogre::Vector2(projectionA, projectionB));
+  SetDepthProjectionParams(this->ogreCamera, farPlane, psParams);
   psParams->setNamedConstant("near",
       static_cast<float>(this->NearClipPlane()));
   psParams->setNamedConstant("far",
@@ -1028,6 +1066,21 @@ void Ogre2DepthCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
   BaseDepthCamera::SetProjectionMatrix(_matrix);
   this->ogreCamera->setCustomProjectionMatrix(
       true, Ogre2Conversions::Convert(this->projectionMatrix));
+
+  // The depth linearization params in the depth material are derived from the
+  // projection matrix. Now that a custom projection matrix has been set, the
+  // GPU will write the depth buffer using it, so the cached params computed in
+  // CreateDepthTexture() from the previous (auto) matrix are stale. Recompute
+  // them from the new matrix. If the material has not been created yet,
+  // CreateDepthTexture() will compute them correctly from the custom matrix.
+  if (this->dataPtr->depthMaterial)
+  {
+    const double farPlane = this->FarClipPlane() * 1.1;
+    Ogre::Pass *pass =
+        this->dataPtr->depthMaterial->getTechnique(0)->getPass(0);
+    SetDepthProjectionParams(this->ogreCamera, farPlane,
+        pass->getFragmentProgramParameters());
+  }
 }
 
 //////////////////////////////////////////////////

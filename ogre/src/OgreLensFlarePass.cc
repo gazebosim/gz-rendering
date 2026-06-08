@@ -50,7 +50,7 @@ namespace rendering
 {
 inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 /// \brief Helper class for setting up Camera and Materials when rendering
-/// via Ogre2LensFlarePass.
+/// via OgreNextLensFlarePass.
 class GZ_RENDERING_OGRE_HIDDEN OgreLensFlareCompositorListenerPrivate
     final : public Ogre::CompositorInstance::Listener
 {

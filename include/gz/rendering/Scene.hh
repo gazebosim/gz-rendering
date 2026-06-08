@@ -1414,7 +1414,7 @@ namespace gz
       /// We may queue _up to_ 6 render passes or less; but never more.
       ///
       /// \remarks Not all rendering engines care about this.
-      /// ogre2 plugin does.
+      /// ogre_next plugin does.
       ///
       /// \param[in] _numPass 0 for old projects who can't or don't know
       /// when to call PostRender and prefer to penalize rendering

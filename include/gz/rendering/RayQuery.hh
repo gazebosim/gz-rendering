@@ -120,7 +120,7 @@ namespace gz
 
       /// \brief Compute intersections
       /// \param[in] _forceSceneUpdate Performance optimization hint
-      /// When true Ogre2 will update all derived transforms to their
+      /// When true Ogre Next will update all derived transforms to their
       /// latest to get correct results.
       ///
       /// When false, that step is skipped. It is only safe to

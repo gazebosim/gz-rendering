@@ -33,12 +33,16 @@
 #define GZ_RENDERING_VERSION_HEADER "Gazebo Rendering, version ${PROJECT_VERSION_FULL}\nCopyright (C) 2014 Open Source Robotics Foundation.\nReleased under the Apache 2.0 License.\n\n"
 
 #cmakedefine GZ_RENDERING_HAVE_OGRE 1
+#cmakedefine GZ_RENDERING_HAVE_OGRE_NEXT 1
 #cmakedefine GZ_RENDERING_HAVE_OGRE2 1
 #cmakedefine GZ_RENDERING_HAVE_VULKAN 1
 
 // \todo(anyone) remove on tock
 #ifndef HAVE_OGRE
 #define HAVE_OGRE GZ_RENDERING_HAVE_OGRE
+#endif
+#ifndef HAVE_OGRE_NEXT
+#define HAVE_OGRE_NEXT GZ_RENDERING_HAVE_OGRE_NEXT
 #endif
 #ifndef HAVE_OGRE2
 #define HAVE_OGRE2 GZ_RENDERING_HAVE_OGRE2

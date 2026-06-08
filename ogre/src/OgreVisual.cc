@@ -27,7 +27,7 @@
 using namespace gz;
 using namespace rendering;
 
-/// \brief Private data for the Ogre2Visual class
+/// \brief Private data for the OgreNextVisual class
 class gz::rendering::OgreVisualPrivate
 {
   /// \brief True if wireframe mode is enabled

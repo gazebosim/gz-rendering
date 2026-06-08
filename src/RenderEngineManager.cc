@@ -481,14 +481,30 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
       /*_solibFilename=*/"");
 #endif
 
+  // Register OgreNext
+  const std::string ogreNextEngineName = "ogre_next";
+  const std::string ogreNextStaticFilename =
+      "static://gz::rendering::ogre_next::Plugin";
+#if GZ_RENDERING_HAVE_OGRE_NEXT
+  registerStaticOrSolibPlugin(ogreNextEngineName, ogreNextStaticFilename,
+      libNamePrefix + ogreNextEngineName);
+#else
+  registerStaticOrSolibPlugin(ogreNextEngineName, ogreNextStaticFilename,
+      /*_solibFilename=*/"");
+#endif
+
   // Register Ogre2
   const std::string ogre2EngineName = "ogre2";
   const std::string ogre2StaticFilename =
       "static://gz::rendering::ogre2::Plugin";
 #if GZ_RENDERING_HAVE_OGRE2
+  registerStaticOrSolibPlugin(ogreNextEngineName, ogreNextStaticFilename,
+      libNamePrefix + ogreNextEngineName);
   registerStaticOrSolibPlugin(ogre2EngineName, ogre2StaticFilename,
       libNamePrefix + ogre2EngineName);
 #else
+  registerStaticOrSolibPlugin(ogreNextEngineName, ogreNextStaticFilename,
+      /*_solibFilename=*/"");
   registerStaticOrSolibPlugin(ogre2EngineName, ogre2StaticFilename,
       /*_solibFilename=*/"");
 #endif

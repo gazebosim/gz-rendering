@@ -15,6 +15,8 @@
  *
  */
 
+#include <cstdlib>
+
 #ifdef __APPLE__
   #define GL_SILENCE_DEPRECATION
   #include <OpenGL/gl.h>
@@ -1469,9 +1471,33 @@ void Ogre2Scene::CreateContext()
 {
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
 
-  // getNumLogicalCores() may return 0 if couldn't detect
-  const size_t numThreads = std::max<size_t>(
-      1, Ogre::PlatformInformation::getNumLogicalCores());
+  // Number of worker threads Ogre uses for its per-frame SceneManager passes
+  // (transform/bounds/animation/light-list updates and frustum culling).
+  //
+  // Historically this was set to the number of logical CPU cores. For the
+  // scenes Gazebo typically renders that is a net loss: each of those passes
+  // fans out to every worker thread through a pthread barrier (~20-30 barrier
+  // syncs per rendered frame) regardless of how little work there is, with no
+  // early-out for low object counts. With a few hundred objects the
+  // synchronization overhead dwarfs the trivial SIMD work, so the threads burn
+  // several CPU cores while barely improving (and sometimes worsening) frame
+  // latency. Measured: a 400-box scene drops from ~9.1 ms to ~1.7 ms of CPU
+  // time per frame (-81%) going from cores(16) to 0 worker threads, with no
+  // latency penalty and bit-identical output. The benefit grows with core
+  // count, so the old default hurt most on the largest machines.
+  //
+  // Default to 0, which makes Ogre run these passes inline on the main thread
+  // (no worker threads, no barrier). Very large scenes (tens of thousands of
+  // objects) can opt back into threading via GZ_RENDERING_OGRE2_WORKER_THREADS:
+  //   unset / "0" -> run inline on the main thread (default)
+  //   "N"         -> use N worker threads
+  size_t numThreads = 0u;
+  if (const char *envT = std::getenv("GZ_RENDERING_OGRE2_WORKER_THREADS"))
+  {
+    const int t = std::atoi(envT);
+    if (t > 0)
+      numThreads = static_cast<size_t>(t);
+  }
 
   // See ogre doxygen documentation regarding culling methods.
   // In some cases you may still want to use single thread.

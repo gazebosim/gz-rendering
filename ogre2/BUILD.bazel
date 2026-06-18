@@ -77,16 +77,16 @@ gz_rendering_engine_libraries(
     ],
     data = [":ogre_media"],
     includes = ["include"],
+    linkopts = select({
+        "@platforms//os:macos": ["-framework OpenGL"],
+        "//conditions:default": [],
+    }),
     local_defines = [
         "OGRE2_RESOURCE_PATH='\"unused\"'",
         "OGRE2_VERSION='\"unused\"'",
     ] + select({
         "@platforms//os:macos": [],
         "//conditions:default": ["HAVE_EGL=1"],
-    }),
-    linkopts = select({
-        "@platforms//os:macos": ["-framework OpenGL"],
-        "//conditions:default": [],
     }),
     so_lib_name = "libgz-rendering-ogre2.so",
     static_lib_name = "gz-rendering-ogre2-engine-static",

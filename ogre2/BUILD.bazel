@@ -94,10 +94,6 @@ gz_rendering_engine_libraries(
     deps = [
         ":terra",
         "//:gz-rendering",
-    ] + select({
-        "@platforms//os:macos": [],
-        "//conditions:default": ["@egl-registry//:EGL_headers"],
-    }) + [
         "@gz-common",
         "@gz-math//eigen3",
         "@gz-plugin//:register",
@@ -105,5 +101,8 @@ gz_rendering_engine_libraries(
         "@ogre-next//:hlms_unlit",
         "@ogre-next//:ogre-main",
         "@ogre-next//:overlay",
-    ],
+    ] + select({
+        "@platforms//os:macos": [],
+        "//conditions:default": ["@egl-registry//:EGL_headers"],
+    }),
 )

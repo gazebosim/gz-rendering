@@ -77,18 +77,23 @@ gz_rendering_engine_libraries(
     ],
     data = [":ogre_media"],
     includes = ["include"],
+    linkopts = select({
+        "@platforms//os:macos": ["-framework OpenGL"],
+        "//conditions:default": [],
+    }),
     local_defines = [
-        "HAVE_EGL=1",
         "OGRE2_RESOURCE_PATH='\"unused\"'",
         "OGRE2_VERSION='\"unused\"'",
-    ],
+    ] + select({
+        "@platforms//os:macos": [],
+        "//conditions:default": ["HAVE_EGL=1"],
+    }),
     so_lib_name = "libgz-rendering-ogre2.so",
     static_lib_name = "gz-rendering-ogre2-engine-static",
     visibility = ["//visibility:public"],
     deps = [
         ":terra",
         "//:gz-rendering",
-        "@egl-registry//:EGL_headers",
         "@gz-common",
         "@gz-math//eigen3",
         "@gz-plugin//:register",
@@ -96,5 +101,8 @@ gz_rendering_engine_libraries(
         "@ogre-next//:hlms_unlit",
         "@ogre-next//:ogre-main",
         "@ogre-next//:overlay",
-    ],
+    ] + select({
+        "@platforms//os:macos": [],
+        "//conditions:default": ["@egl-registry//:EGL_headers"],
+    }),
 )

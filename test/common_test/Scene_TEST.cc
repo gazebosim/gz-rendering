@@ -53,7 +53,7 @@ TEST_F(SceneTest, Scene)
 /////////////////////////////////////////////////
 TEST_F(SceneTest, SceneGradient)
 {
-  CHECK_SUPPORTED_ENGINE("ogre");
+  CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);

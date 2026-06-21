@@ -39,6 +39,7 @@
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 #include "gz/rendering/ogre2/Ogre2Sensor.hh"
 
+#include "Ogre2GpuReadbackTicket.hh"
 #include "Ogre2ParticleNoiseListener.hh"
 
 #ifdef _MSC_VER
@@ -98,6 +99,10 @@ class gz::rendering::Ogre2DepthCameraPrivate
 
   /// \brief Outgoing depth data, used by newDepthFrame event.
   public: float *depthImage = nullptr;
+
+  /// \brief Persistent GPU->CPU readback ticket used by the non-legacy
+  /// PostRender path.
+  public: Ogre2GpuReadbackTicket depthReadback;
 
   /// \brief maximum value used for data outside sensor range
   public: float dataMaxVal = gz::math::INF_D;
@@ -301,6 +306,7 @@ void Ogre2DepthCamera::Init()
 void Ogre2DepthCamera::Destroy()
 {
   this->RemoveAllRenderPasses();
+  this->dataPtr->depthReadback.Destroy();
 
   if (this->dataPtr->depthBuffer)
   {
@@ -1152,6 +1158,30 @@ void Ogre2DepthCamera::PreRender()
   this->dataPtr->renderPassDirty = false;
 }
 
+namespace
+{
+  /// \brief Copy one mapped RGBA32 readback box into the persistent depth
+  /// buffers in a single stride-aware pass: the full RGBA row into
+  /// _depthBuffer (point cloud + DepthData()) and channel 0 into _depthImage
+  /// (depth frame). Honors _box.bytesPerRow as the source stride.
+  void FillDepthBuffers(const Ogre::TextureBox &_box,
+      float *_depthBuffer, float *_depthImage,
+      unsigned int _width, unsigned int _height,
+      unsigned int _channelCount, unsigned int _bytesPerChannel)
+  {
+    const float *src = static_cast<const float *>(_box.data);
+    for (unsigned int i = 0; i < _height; ++i)
+    {
+      const unsigned int rawRowIdx = i * _box.bytesPerRow / _bytesPerChannel;
+      const unsigned int rowIdx = i * _width * _channelCount;
+      memcpy(&_depthBuffer[rowIdx], &src[rawRowIdx],
+          _width * _channelCount * _bytesPerChannel);
+      for (unsigned int j = 0; j < _width; ++j)
+        _depthImage[i * _width + j] = src[rawRowIdx + j * _channelCount];
+    }
+  }
+}  // namespace
+
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::PostRender()
 {
@@ -1164,40 +1194,59 @@ void Ogre2DepthCamera::PostRender()
   unsigned int channelCount = PixelUtil::ChannelCount(format);
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
 
-  Ogre::Image2 image;
-  image.convertFromTexture(this->dataPtr->ogreDepthTexture[1], 0u, 0u);
-  Ogre::TextureBox box = image.getData(0);
-  float *depthBufferTmp = static_cast<float *>(box.data);
   if (!this->dataPtr->depthBuffer)
-  {
     this->dataPtr->depthBuffer = new float[len * channelCount];
-  }
-
-  // copy data row by row. The texture box may not be a contiguous region of
-  // a texture
-  for (unsigned int i = 0; i < height; ++i)
-  {
-    unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
-    unsigned int rowIdx = i * width * channelCount;
-    memcpy(&this->dataPtr->depthBuffer[rowIdx], &depthBufferTmp[rawDataRowIdx],
-        width * channelCount * bytesPerChannel);
-  }
-
   if (!this->dataPtr->depthImage)
-  {
     this->dataPtr->depthImage = new float[len];
-  }
 
-  // fill depth data
-  for (unsigned int i = 0; i < height; ++i)
+  if (Ogre2UseLegacyReadback())
   {
-    unsigned int step = i*width*channelCount;
-    for (unsigned int j = 0; j < width; ++j)
+    // Legacy A/B control: original Ogre::Image2 path, kept verbatim.
+    Ogre::Image2 image;
+    image.convertFromTexture(this->dataPtr->ogreDepthTexture[1], 0u, 0u);
+    Ogre::TextureBox box = image.getData(0);
+    float *depthBufferTmp = static_cast<float *>(box.data);
+
+    // copy data row by row. The texture box may not be a contiguous region of
+    // a texture
+    for (unsigned int i = 0; i < height; ++i)
     {
-      float x = this->dataPtr->depthBuffer[step + j*channelCount];
-      this->dataPtr->depthImage[i*width + j] = x;
+      unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
+      unsigned int rowIdx = i * width * channelCount;
+      memcpy(&this->dataPtr->depthBuffer[rowIdx],
+          &depthBufferTmp[rawDataRowIdx],
+          width * channelCount * bytesPerChannel);
+    }
+
+    // fill depth data
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      unsigned int step = i*width*channelCount;
+      for (unsigned int j = 0; j < width; ++j)
+      {
+        float x = this->dataPtr->depthBuffer[step + j*channelCount];
+        this->dataPtr->depthImage[i*width + j] = x;
+      }
     }
   }
+  else
+  {
+    // Persistent-ticket path: map the staging buffer once and copy straight
+    // into the persistent buffers in a single fused pass.
+    Ogre::TextureBox box = this->dataPtr->depthReadback.DownloadAndMap(
+        this->dataPtr->ogreDepthTexture[1]);
+    if (!box.data)
+    {
+      gzerr << "Ogre2DepthCamera: GPU readback failed; dropping frame"
+            << std::endl;
+      return;
+    }
+    FillDepthBuffers(box, this->dataPtr->depthBuffer,
+        this->dataPtr->depthImage, width, height, channelCount,
+        bytesPerChannel);
+    this->dataPtr->depthReadback.Unmap();
+  }
+
   this->dataPtr->newDepthFrame(
         this->dataPtr->depthImage, width, height, 1, "FLOAT32");
 
@@ -1207,49 +1256,7 @@ void Ogre2DepthCamera::PostRender()
     this->dataPtr->newRgbPointCloud(
         this->dataPtr->depthBuffer, width, height, channelCount,
         "PF_FLOAT32_RGBA");
-
-    // Uncomment to debug color output
-    // for (unsigned int i = 0; i < height; ++i)
-    // {
-    //   unsigned int step = i*width*channelCount;
-    //   for (unsigned int j = 0; j < width; ++j)
-    //   {
-    //     float color =
-    //         this->dataPtr->depthBuffer[step + j*channelCount + 3];
-    //     // unpack rgb data
-    //     uint32_t *rgba = reinterpret_cast<uint32_t *>(&color);
-    //     unsigned int r = *rgba >> 24 & 0xFF;
-    //     unsigned int g = *rgba >> 16 & 0xFF;
-    //     unsigned int b = *rgba >> 8 & 0xFF;
-    //     gzdbg << "[" << r << "]" << "[" << g << "]" << "[" << b << "],";
-    //   }
-    //   gzdbg << std::endl;
-    // }
-
-    // Uncomment to debug xyz output
-    // gzdbg << "wxh: " << width << " x " << height << std::endl;
-    // for (unsigned int i = 0; i < height; ++i)
-    // {
-    //   for (unsigned int j = 0; j < width; ++j)
-    //   {
-    //     gzdbg << "[" << this->dataPtr->depthBuffer[i*width*4+j*4] << "]"
-    //       << "[" << this->dataPtr->depthBuffer[i*width*4+j*4+1] << "]"
-    //       << "[" << this->dataPtr->depthBuffer[i*width*4+j*4+2] << "],";
-    //   }
-    //   gzdbg << std::endl;
-    // }
   }
-
-  // Uncomment to debug depth output
-  // gzdbg << "wxh: " << width << " x " << height << std::endl;
-  // for (unsigned int i = 0; i < height; ++i)
-  // {
-  //   for (unsigned int j = 0; j < width; ++j)
-  //   {
-  //     gzdbg << "[" << this->dataPtr->depthImage[i*width + j] << "]";
-  //   }
-  //   gzdbg << std::endl;
-  // }
 }
 
 //////////////////////////////////////////////////

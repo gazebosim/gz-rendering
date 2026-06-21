@@ -585,6 +585,8 @@ void Ogre2GpuRays::Init()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Destroy()
 {
+  this->dataPtr->gpuRaysReadback.Destroy();
+
   if (!this->dataPtr->ogreCamera)
     return;
 
@@ -593,7 +595,6 @@ void Ogre2GpuRays::Destroy()
     delete [] this->dataPtr->gpuRaysScan;
     this->dataPtr->gpuRaysScan = nullptr;
   }
-  this->dataPtr->gpuRaysReadback.Destroy();
 
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();

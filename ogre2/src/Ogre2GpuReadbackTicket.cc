@@ -18,6 +18,8 @@
 
 #include <cstdlib>
 
+#include <gz/common/Console.hh>
+
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 
 #ifdef _MSC_VER
@@ -69,6 +71,9 @@ void Ogre2GpuReadbackTicket::Destroy()
   auto textureMgr = ReadbackTextureManager();
   if (textureMgr)
     textureMgr->destroyAsyncTextureTicket(this->ticket);
+  else
+    gzwarn << "Ogre2GpuReadbackTicket::Destroy() called after engine "
+              "teardown; ticket staging buffer leaked." << std::endl;
 
   this->ticket = nullptr;
   this->width = 0u;
@@ -115,6 +120,14 @@ Ogre::TextureBox Ogre2GpuReadbackTicket::DownloadAndMap(
 
   if (!this->ticket)
     return box;
+
+  if (this->mapped)
+  {
+    gzwarn << "Ogre2GpuReadbackTicket::DownloadAndMap() called while still "
+              "mapped; unmapping previous frame first." << std::endl;
+    this->ticket->unmap();
+    this->mapped = false;
+  }
 
   // Blocking download (accurateTracking=true): map() waits on the fence.
   this->ticket->download(_texture, 0u, true);

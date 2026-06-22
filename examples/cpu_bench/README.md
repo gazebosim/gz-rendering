@@ -1,10 +1,12 @@
 # Headless CPU Benchmark for Ogre (and Ogre2) Render Path
 
-This example is a headless CPU benchmark designed to isolate where CPU cycles are spent per-frame during rendering. It is particularly useful for debugging performance regressions or bottleneck areas, such as when a large number of static or dynamic objects exist in a scene.
+This example is a headless CPU benchmark designed to isolate where CPU cycles are spent per-frame during rendering.
+It is particularly useful for debugging performance regressions or bottleneck areas, such as when a large number of static or dynamic objects exist in a scene.
 
 ## How it works
 
-The benchmark sets up $N$ box visuals in front of a camera. It runs a timed rendering loop for a configured number of frames, measuring both Wall time and CPU time (User + System time) to evaluate overhead.
+The benchmark sets up $N$ box visuals in front of a camera.
+It runs a timed rendering loop for a configured number of frames, measuring both Wall time and CPU time (User + System time) to evaluate overhead.
 
 Key capabilities of this benchmark include:
 * **Isolating Pose Updates:** Re-applying poses every frame via `BENCH_MOVE_POSES` helps mimic the unconditional pose dirtying/updating behaviors of `gz-sim`'s `RenderUtil`.

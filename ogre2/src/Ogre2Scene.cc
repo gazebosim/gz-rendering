@@ -1483,7 +1483,7 @@ void Ogre2Scene::CreateContext()
   std::string envT;
   if (gz::common::env("GZ_RENDERING_OGRE2_WORKER_THREADS", envT))
   {
-    const int t = std::atoi(envT);
+    const int t = std::atoi(envT.c_str());
     if (t > 0)
       numThreads = static_cast<size_t>(t);
   }

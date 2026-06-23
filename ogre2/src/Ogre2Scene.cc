@@ -15,8 +15,6 @@
  *
  */
 
-#include <cstdlib>
-
 #ifdef __APPLE__
   #define GL_SILENCE_DEPRECATION
   #include <OpenGL/gl.h>
@@ -33,6 +31,7 @@
 
 #include <gz/common/Console.hh>
 #include <gz/common/Profiler.hh>
+#include <gz/common/Util.hh>
 
 #include "gz/rendering/base/SceneExt.hh"
 #include "gz/rendering/GraphicsAPI.hh"
@@ -1481,7 +1480,8 @@ void Ogre2Scene::CreateContext()
   //   unset / "0" -> run inline on the main thread (default)
   //   "N"         -> use N worker threads
   size_t numThreads = 0u;
-  if (const char *envT = std::getenv("GZ_RENDERING_OGRE2_WORKER_THREADS"))
+  std::string envT;
+  if (gz::common::env("GZ_RENDERING_OGRE2_WORKER_THREADS", envT))
   {
     const int t = std::atoi(envT);
     if (t > 0)

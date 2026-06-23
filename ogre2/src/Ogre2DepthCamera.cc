@@ -1204,7 +1204,7 @@ void Ogre2DepthCamera::PostRender()
   if (!this->dataPtr->depthBuffer)
     this->dataPtr->depthBuffer = new float[len * channelCount];
   if (!this->dataPtr->depthImage)
-    this->dataPtr->depthImage = new float[len];
+    this->dataPtr->depthImage = new float[len * channelCount];
 
   if (Ogre2UseLegacyReadback())
   {

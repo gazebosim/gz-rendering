@@ -22,6 +22,14 @@ release will remove the deprecated code.
    index, e.g. `Node::ChildByIndex` and `Scene::VisualByIndex` may now
    return a different node pointer.
 
+### Optimizations
+
+* A Persistent GPU->CPU readback to avoid duplicate copies was introduced
+in [Pull request #1303](https://github.com/gazebosim/gz-rendering/pull/1303),
+although the end result is expected to be the same, it can be reverted
+in the presence of errors setting their environment variable
+`GZ_RENDERING_OGRE2_LEGACY_READBACK`.
+
 ## Gazebo Rendering 6.x to 7.x
 
 ### Deprecations

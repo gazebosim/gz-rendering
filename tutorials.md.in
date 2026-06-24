@@ -11,6 +11,7 @@ Gazebo @GZ_DESIGNATION_CAP@ library and how to use the library effectively.
 3. \subpage renderingplugin "Understanding the Rendering Plugin"
 4. \subpage lightmap "Creating and using light maps"
 5. \subpage transform_fbx_to_dae  "Transform FBX to Collada in Blender"
+6. \subpage gpucompression "GPU image compression (Phase 1)"
 
 **The examples**
 

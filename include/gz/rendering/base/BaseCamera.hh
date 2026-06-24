@@ -105,6 +105,26 @@ namespace gz
       public: virtual common::ConnectionPtr ConnectNewImageFrame(
                   Camera::NewFrameListener _listener) override;
 
+      // Documentation inherited.
+      public: virtual void SetImageEncoding(ImageEncoding _encoding) override;
+
+      // Documentation inherited.
+      public: virtual ImageEncoding Encoding() const override;
+
+      // Documentation inherited.
+      public: virtual void SetEncodeBitrate(unsigned int _bitsPerSec) override;
+
+      // Documentation inherited.
+      public: virtual unsigned int EncodeBitrate() const override;
+
+      // Documentation inherited.
+      public: virtual bool IsEncodingSupported(
+                  ImageEncoding _encoding) const override;
+
+      // Documentation inherited.
+      public: virtual common::ConnectionPtr ConnectNewCompressedImageFrame(
+                  Camera::NewCompressedImageFrameListener _listener) override;
+
       public: virtual RenderWindowPtr CreateRenderWindow() override;
 
       // Documentation inherited.
@@ -468,6 +488,52 @@ namespace gz
         Camera::NewFrameListener _listener)
     {
       return newFrameEvent.Connect(_listener);
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetImageEncoding(ImageEncoding _encoding)
+    {
+      if (_encoding != IE_NONE)
+      {
+        gzwarn << "Image encoding is not supported by the current render engine; "
+               << "falling back to the raw image path" << std::endl;
+      }
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    ImageEncoding BaseCamera<T>::Encoding() const
+    {
+      return IE_NONE;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseCamera<T>::SetEncodeBitrate(unsigned int)
+    {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    unsigned int BaseCamera<T>::EncodeBitrate() const
+    {
+      return 0u;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    bool BaseCamera<T>::IsEncodingSupported(ImageEncoding _encoding) const
+    {
+      return _encoding == IE_NONE;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    common::ConnectionPtr BaseCamera<T>::ConnectNewCompressedImageFrame(
+        Camera::NewCompressedImageFrameListener)
+    {
+      return nullptr;
     }
 
     //////////////////////////////////////////////////

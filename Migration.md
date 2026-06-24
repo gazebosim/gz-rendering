@@ -7,6 +7,16 @@ release will remove the deprecated code.
 
 ## Gazebo Rendering 10.x to 11.x
 
+### Additions
+
+1. **gz-rendering 11.0**
+   + Added `gz::rendering::CompressedImage`, `gz::rendering::ImageEncoding`, and
+     `gz::rendering::ColorimetryInfo`.
+   + Added virtual methods to `Camera`: `SetImageEncoding`, `Encoding`,
+     `SetEncodeBitrate`, `EncodeBitrate`, `IsEncodingSupported`, and
+     `ConnectNewCompressedImageFrame`. `BaseCamera` provides default no-op
+     implementations, so existing engines compile unchanged.
+
 ### Removals
 
 The optix plugin has been removed due to years of inactivity. The plugin was

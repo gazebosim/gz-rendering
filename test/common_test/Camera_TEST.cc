@@ -20,6 +20,7 @@
 #include "CommonRenderingTest.hh"
 
 #include "gz/rendering/Camera.hh"
+#include "gz/rendering/CompressedImage.hh"
 #include "gz/rendering/GaussianNoisePass.hh"
 #include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/Scene.hh"
@@ -383,5 +384,33 @@ TEST_F(CameraTest, IntrinsicMatrix)
   EXPECT_DOUBLE_EQ(camera->AspectRatio(), (double)width / (double)height);
 
   // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+// Default (engine-agnostic) compressed-output API: every engine without
+// compression support reports IE_NONE and rejects real encodings.
+TEST_F(CameraTest, CompressedOutputDefaults)
+{
+  CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  CameraPtr camera = scene->CreateCamera("camera");
+  ASSERT_NE(nullptr, camera);
+
+  EXPECT_EQ(IE_NONE, camera->Encoding());
+  EXPECT_TRUE(camera->IsEncodingSupported(IE_NONE));
+  // H.264/H.265 are never supported in Phase 1 / on these test backends.
+  EXPECT_FALSE(camera->IsEncodingSupported(IE_H264));
+  EXPECT_FALSE(camera->IsEncodingSupported(IE_H265));
+  EXPECT_EQ(0u, camera->EncodeBitrate());
+
+  // Connecting on an unsupported engine returns a null connection.
+  auto conn = camera->ConnectNewCompressedImageFrame(
+      [](const CompressedImage &){});
+  // Base default returns nullptr; engines that support it return a connection.
+  // We only assert it does not crash and Encoding() is unchanged.
+  EXPECT_EQ(IE_NONE, camera->Encoding());
+
   engine->DestroyScene(scene);
 }

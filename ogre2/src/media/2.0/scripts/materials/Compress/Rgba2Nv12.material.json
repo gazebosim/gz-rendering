@@ -1,0 +1,31 @@
+{
+    "compute" :
+    {
+        "Compress/Rgba2Nv12" :
+        {
+            "threads_per_group" : [8, 8, 1],
+
+            "source" : "Rgba2Nv12_cs",
+
+            "thread_groups_based_on_texture" : { "slot" : 0, "divisor" : [2, 2, 1] },
+
+            "uav_units" : 1,
+
+            "textures" :
+            [
+                {}
+            ],
+
+            "params" :
+            [
+                ["imgWidth",    [0], "uint"],
+                ["imgHeight",   [0], "uint"]
+            ],
+
+            "params_glsl" :
+            [
+                ["srcTex",      [0], "int"]
+            ]
+        }
+    }
+}

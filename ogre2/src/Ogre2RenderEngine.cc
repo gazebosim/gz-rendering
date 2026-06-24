@@ -886,6 +886,14 @@ void Ogre2RenderEngine::RegisterHlms()
       rootHlmsFolder, "2.0", "scripts", "materials", "Terra", "GLSL");
   Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
       terraGLSLMaterialFolder, "FileSystem", "General");
+  Ogre::String compressMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Compress");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      compressMaterialFolder, "FileSystem", "General");
+  Ogre::String compressGLSLMaterialFolder = common::joinPaths(
+      rootHlmsFolder, "2.0", "scripts", "materials", "Compress", "GLSL");
+  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+      compressGLSLMaterialFolder, "FileSystem", "General");
 
   if (this->dataPtr->graphicsAPI == GraphicsAPI::METAL)
   {

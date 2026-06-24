@@ -238,6 +238,11 @@ void Ogre2Camera::CreateRenderTexture()
   this->renderTexture->SetHeight(this->ImageHeight());
   this->renderTexture->SetBackgroundColor(this->scene->BackgroundColor());
   this->renderTexture->SetVisibilityMask(this->visibilityMask);
+
+  // If NV12 output was selected before the render texture existed, the texture
+  // must be Reinterpretable so the NV12 compute can alias it as UNORM.
+  if (this->dataPtr->encoding == IE_NV12 && this->renderTexture)
+    this->renderTexture->SetFormat(this->ImageFormat(), true);
 }
 
 //////////////////////////////////////////////////

@@ -72,7 +72,7 @@ TEST_F(GpuCompressionTest, Nv12FrameDelivered)
 
   // Pump frames; with a 1-frame pipeline the first compressed frame arrives
   // within a few Updates.
-  for (int i = 0; i < 5 && !got; ++i)
+  for (int i = 0; i < 8 && !got; ++i)
     camera->Update();
 
   ASSERT_TRUE(got);

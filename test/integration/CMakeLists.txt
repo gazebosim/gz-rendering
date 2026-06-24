@@ -4,6 +4,7 @@ set(tests
   boundingbox_camera
   camera
   depth_camera
+  gpu_compression
   gpu_rays
   heightmap
   lidar_visual

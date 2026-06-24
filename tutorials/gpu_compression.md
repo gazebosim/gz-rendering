@@ -1,8 +1,11 @@
 \page gpucompression GPU image compression (Phase 1)
 
 The ogre2 color camera can deliver frames as GPU-converted NV12 (semi-planar
-YUV 4:2:0) instead of a raw CPU readback, via an asynchronous, non-blocking
-path. This reduces both the render-thread stall and the GPU->CPU byte volume.
+YUV 4:2:0) instead of a raw CPU readback. The conversion runs on the GPU and
+the result is read back asynchronously, without blocking the render thread on a
+full-size copy. This cuts the GPU->CPU byte volume to 37.5% of RGBA8; avoiding
+the render-thread readback stall is the design goal of this async path (the
+`gpu_compress_bench` example reports the measured numbers).
 
 ## Usage
 
@@ -12,6 +15,10 @@ if (!camera->IsEncodingSupported(gz::rendering::IE_NV12))
 {
   // falls back to the raw Image path
 }
+camera->Encoding();  // query the currently active ImageEncoding
+
+// Keep 'conn' alive for as long as you want frames; destroying the returned
+// gz::common::ConnectionPtr disconnects the callback.
 auto conn = camera->ConnectNewCompressedImageFrame(
     [](const gz::rendering::CompressedImage &img)
     {

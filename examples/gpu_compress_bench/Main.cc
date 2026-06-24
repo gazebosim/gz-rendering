@@ -56,29 +56,31 @@ static double benchBlocking(CameraPtr _cam, int _frames)
   return std::chrono::duration<double, std::milli>(t1 - t0).count() / _frames;
 }
 
-static double benchNv12(CameraPtr _cam, int _frames, size_t &_bytesOut)
+static double benchNv12(CameraPtr _cam, int _frames, size_t &_bytesOut,
+                        int &_gotOut)
 {
-  size_t bytes = 0; int got = 0;
-  auto conn = _cam->ConnectNewCompressedImageFrame(
-      [&](const CompressedImage &_i){ bytes = _i.Size(); ++got; });
-  _cam->SetImageEncoding(IE_NV12);
   if (!_cam->IsEncodingSupported(IE_NV12))
   {
     std::cerr << "IE_NV12 unsupported on this backend\n";
     return -1.0;
   }
+  size_t bytes = 0; int got = 0;
+  auto conn = _cam->ConnectNewCompressedImageFrame(
+      [&](const CompressedImage &_i){ bytes = _i.Size(); ++got; });
+  _cam->SetImageEncoding(IE_NV12);
   auto t0 = Clock::now();
   for (int i = 0; i < _frames; ++i)
     _cam->Update();
   auto t1 = Clock::now();
   _bytesOut = bytes;
+  _gotOut = got;
   return std::chrono::duration<double, std::milli>(t1 - t0).count() / _frames;
 }
 
 int main(int _argc, char **_argv)
 {
   common::Console::SetVerbosity(2);
-  const int frames = (_argc > 1) ? std::atoi(_argv[1]) : 200;
+  const int frames = std::max(1, (_argc > 1) ? std::atoi(_argv[1]) : 200);
 
   ScenePtr scene = buildScene("ogre2");
   if (!scene) return 1;
@@ -91,14 +93,23 @@ int main(int _argc, char **_argv)
 
   double blockMs = benchBlocking(cam, frames);
   size_t nv12Bytes = 0;
-  double nv12Ms = benchNv12(cam, frames, nv12Bytes);
+  int nv12Got = 0;
+  double nv12Ms = benchNv12(cam, frames, nv12Bytes, nv12Got);
 
   const size_t rawBytes = 1280u * 720u * 4u;
   std::cout << "frames=" << frames << "\n"
             << "blocking ms/frame: " << blockMs << " (raw bytes/frame "
-            << rawBytes << ")\n"
-            << "nv12 ms/frame:     " << nv12Ms << " (nv12 bytes/frame "
-            << nv12Bytes << ", "
-            << (100.0 * (double)nv12Bytes / (double)rawBytes) << "% of raw)\n";
+            << rawBytes << ")\n";
+  if (nv12Ms < 0.0)
+  {
+    std::cout << "nv12: unsupported on this backend (needs Vulkan)\n";
+  }
+  else
+  {
+    std::cout << "nv12 ms/frame:     " << nv12Ms << " (nv12 bytes/frame "
+              << nv12Bytes << ", "
+              << (100.0 * (double)nv12Bytes / (double)rawBytes) << "% of raw)\n"
+              << "frames received:   " << nv12Got << "\n";
+  }
   return 0;
 }

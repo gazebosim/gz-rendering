@@ -803,13 +803,29 @@ void Ogre2RenderEngine::CreateRenderSystem()
   {
     try
     {
+      if (this->dataPtr->graphicsAPI == GraphicsAPI::VULKAN)
+      {
+        // Select ogre-next's headless NULL Vulkan window so offscreen
+        // rendering does not require a connected X monitor. Without this the
+        // Vulkan render system defaults to the XCB window interface, which
+        // reads video modes from a live monitor and aborts
+        // (VulkanXcbSupport::refreshConfig "Malformed resolution string")
+        // whenever no display/monitor is attached -- e.g. a headless server
+        // or a remote session whose screen has suspended -- and then silently
+        // falls back to OpenGL. The NULL interface is built in via
+        // OGRE_VULKAN_WINDOW_NULL.
+        renderSys->setConfigOption("Interface", "null");
+      }
+      else
+      {
         // This may fail if Ogre was *only* build with EGL support, but in that
         // case we can ignore the error
         renderSys->setConfigOption( "Interface", "Headless EGL / PBuffer" );
+      }
     }
     catch( Ogre::Exception & )
     {
-      std::cerr << "Unable to setup EGL (headless mode)" << '\n';
+      std::cerr << "Unable to setup headless rendering interface" << '\n';
     }
   }
 

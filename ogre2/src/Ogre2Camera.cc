@@ -15,13 +15,17 @@
  *
  */
 
+#include <cstring>
 #include <gz/common/Profiler.hh>
 
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2GpuCompression.hh"
+#include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 #include "gz/rendering/ogre2/Ogre2SelectionBuffer.hh"
+#include "gz/rendering/CompressedImage.hh"
 #include "gz/rendering/Utils.hh"
 
 #ifdef _MSC_VER
@@ -37,6 +41,20 @@
 /// \brief Private data for the Ogre2Camera class
 class gz::rendering::Ogre2CameraPrivate
 {
+  /// \brief Active output encoding.
+  public: ImageEncoding encoding = IE_NONE;
+
+  /// \brief Target bitrate (bits/sec) for bitstream encodings.
+  public: unsigned int encodeBitrate = 0u;
+
+  /// \brief GPU compression helper (lazily created when encoding != IE_NONE).
+  public: std::unique_ptr<Ogre2GpuCompression> gpuCompression;
+
+  /// \brief Event fired with each compressed frame.
+  public: common::EventT<void(const CompressedImage &)> newCompressedImageFrame;
+
+  /// \brief Reused output frame (valid only during the callback).
+  public: CompressedImage compressedFrame;
 };
 
 using namespace gz;
@@ -439,4 +457,122 @@ void Ogre2Camera::SetVisibilityMask(uint32_t _mask)
 Ogre::Camera *Ogre2Camera::OgreCamera() const
 {
   return this->ogreCamera;
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Camera::IsEncodingSupported(ImageEncoding _encoding) const
+{
+  if (_encoding == IE_NONE)
+    return true;
+  if (_encoding == IE_NV12)
+  {
+    return Ogre2RenderEngine::Instance()->GraphicsAPI() ==
+        GraphicsAPI::VULKAN;
+  }
+  return false;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetImageEncoding(ImageEncoding _encoding)
+{
+  if (_encoding != IE_NONE && !this->IsEncodingSupported(_encoding))
+  {
+    gzwarn << "Encoding " << static_cast<int>(_encoding)
+           << " not supported on this backend; falling back to raw output"
+           << std::endl;
+    this->dataPtr->encoding = IE_NONE;
+    this->dataPtr->gpuCompression.reset();
+    return;
+  }
+  this->dataPtr->encoding = _encoding;
+  if (_encoding == IE_NONE)
+  {
+    this->dataPtr->gpuCompression.reset();
+  }
+  else if (_encoding == IE_NV12)
+  {
+    // The NV12 compute shader needs a non-sRGB alias view of the RGBA8 render
+    // texture (to read raw stored bytes without linearization). Ogre requires
+    // TextureFlags::Reinterpretable for format-aliased views. Trigger a texture
+    // rebuild with that flag by calling SetFormat with reinterpretable=true.
+    if (this->renderTexture)
+    {
+      this->renderTexture->SetFormat(this->ImageFormat(), true);
+    }
+  }
+}
+
+//////////////////////////////////////////////////
+ImageEncoding Ogre2Camera::Encoding() const
+{
+  return this->dataPtr->encoding;
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::SetEncodeBitrate(unsigned int _bitsPerSec)
+{
+  this->dataPtr->encodeBitrate = _bitsPerSec;
+}
+
+//////////////////////////////////////////////////
+unsigned int Ogre2Camera::EncodeBitrate() const
+{
+  return this->dataPtr->encodeBitrate;
+}
+
+//////////////////////////////////////////////////
+common::ConnectionPtr Ogre2Camera::ConnectNewCompressedImageFrame(
+    Camera::NewCompressedImageFrameListener _listener)
+{
+  return this->dataPtr->newCompressedImageFrame.Connect(_listener);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::PostRender()
+{
+  // Raw path / forwarding unchanged.
+  BaseCamera<Ogre2Sensor>::PostRender();
+
+  if (this->dataPtr->encoding == IE_NONE ||
+      this->dataPtr->newCompressedImageFrame.ConnectionCount() == 0u)
+  {
+    return;
+  }
+
+  const unsigned int w = this->ImageWidth();
+  const unsigned int h = this->ImageHeight();
+
+  if (!this->dataPtr->gpuCompression)
+  {
+    this->dataPtr->gpuCompression =
+        std::make_unique<Ogre2GpuCompression>();
+  }
+  this->dataPtr->gpuCompression->Configure(w, h);
+
+  // Get the resolved colour TextureGpu from the render target.
+  // Ogre2RenderTexture::RenderTarget() returns ogreTexture[1] which is
+  // PFG_RGBA8_UNORM_SRGB. We need it as a non-sRGB (UNORM) view so that
+  // texelFetch in the compute shader reads the raw stored (sRGB-encoded)
+  // bytes — the same bytes Capture() returns — without linearization.
+  Ogre::TextureGpu *srcSrgb = this->renderTexture->RenderTarget();
+  if (!srcSrgb)
+    return;
+
+  if (this->dataPtr->encoding == IE_NV12)
+  {
+    this->dataPtr->gpuCompression->ConvertToNv12(srcSrgb);
+    std::vector<unsigned char> nv12;
+    if (this->dataPtr->gpuCompression->TryRetrieveNv12(nv12))
+    {
+      CompressedImage &out = this->dataPtr->compressedFrame;
+      out.SetDimensions(w, h);
+      out.SetEncoding(IE_NV12);
+      out.SetKeyFrame(true);
+      ColorimetryInfo ci;  // defaults: BT.709 limited sRGB
+      out.SetColorimetry(ci);
+      std::memcpy(out.Reserve(static_cast<unsigned int>(nv12.size())),
+          nv12.data(), nv12.size());
+      this->dataPtr->newCompressedImageFrame(out);
+    }
+  }
 }

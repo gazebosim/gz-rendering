@@ -168,9 +168,20 @@ void Ogre2GpuCompression::ConvertToNv12(Ogre::TextureGpu *_src)
   }
 
   // --- Bind input texture (slot 0) ---
+  // Request a UNORM (non-sRGB) alias view of the source texture.
+  // The camera's render target is PFG_RGBA8_UNORM_SRGB, and the colorimetry
+  // contract (transferCharacteristics=13, sRGB preserved) means the GPU compute
+  // must read the raw sRGB-ENCODED stored bytes without gamma decoding — the
+  // same values returned by the blocking Capture() / copyContentsToMemory path.
+  // Setting pixelFormat=PFG_RGBA8_UNORM here creates an aliased view so that
+  // texelFetch sees the raw stored bytes on both OpenGL (where texelFetch on
+  // sampler2D with sRGB target linearizes) and Vulkan (where the image view
+  // format determines sRGB decode). Without this, GPU NV12 would diverge by
+  // ~50 LSBs from the CPU reference for typical scene colours.
   Ogre::DescriptorSetTexture2::TextureSlot texSlot(
       Ogre::DescriptorSetTexture2::TextureSlot::makeEmpty());
   texSlot.texture = _src;
+  texSlot.pixelFormat = Ogre::PFG_RGBA8_UNORM;
   job->setTexture(0u, texSlot);
 
   // --- Bind output UAV buffer (slot 0) ---

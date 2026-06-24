@@ -24,6 +24,7 @@
 #include "gz/rendering/ogre2/Ogre2Includes.hh"
 #include "gz/rendering/ogre2/Ogre2ObjectInterface.hh"
 #include "gz/rendering/ogre2/Ogre2Sensor.hh"
+#include "gz/rendering/CompressedImage.hh"
 
 namespace Ogre
 {
@@ -141,6 +142,29 @@ namespace gz
 
       // Documentation inherited.
       public: virtual Ogre::Camera *OgreCamera() const override;
+
+      // Documentation inherited.
+      public: virtual void SetImageEncoding(ImageEncoding _encoding) override;
+
+      // Documentation inherited.
+      public: virtual ImageEncoding Encoding() const override;
+
+      // Documentation inherited.
+      public: virtual void SetEncodeBitrate(unsigned int _bitsPerSec) override;
+
+      // Documentation inherited.
+      public: virtual unsigned int EncodeBitrate() const override;
+
+      // Documentation inherited.
+      public: virtual bool IsEncodingSupported(
+                  ImageEncoding _encoding) const override;
+
+      // Documentation inherited.
+      public: virtual common::ConnectionPtr ConnectNewCompressedImageFrame(
+                  Camera::NewCompressedImageFrameListener _listener) override;
+
+      // Documentation inherited.
+      public: virtual void PostRender() override;
 
       // Documentation inherited.
       protected: virtual RenderTargetPtr RenderTarget() const override;

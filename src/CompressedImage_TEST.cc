@@ -72,6 +72,39 @@ TEST(CompressedImageTest, DeepCopyIndependent)
   EXPECT_EQ(42u, static_cast<const unsigned char *>(b.Data())[0]);  // b unaffected
 }
 
+/////////////////////////////////////////////////
+TEST(CompressedImageTest, CopyAssignmentIndependent)
+{
+  CompressedImage c(8u, 8u, IE_NV12);
+  unsigned char *buf = c.Reserve(4u);
+  buf[0] = 55u;
+
+  CompressedImage d;
+  d = c;                               // copy-assignment via ImplPtr
+  EXPECT_EQ(4u, d.Size());
+  EXPECT_EQ(55u, static_cast<const unsigned char *>(d.Data())[0]);
+
+  // Mutate c's buffer — d must be unaffected (deep copy).
+  c.Reserve(8u)[0] = 99u;
+  EXPECT_EQ(4u, d.Size());
+  EXPECT_EQ(55u, static_cast<const unsigned char *>(d.Data())[0]);
+}
+
+/////////////////////////////////////////////////
+TEST(CompressedImageTest, Movable)
+{
+  CompressedImage c(16u, 16u, IE_NV12);
+  unsigned char *buf = c.Reserve(4u);
+  buf[0] = 77u;
+  buf[1] = 88u;
+
+  // Move-construct: e must carry the expected size and bytes.
+  CompressedImage e(std::move(c));
+  EXPECT_EQ(4u, e.Size());
+  EXPECT_EQ(77u, static_cast<const unsigned char *>(e.Data())[0]);
+  EXPECT_EQ(88u, static_cast<const unsigned char *>(e.Data())[1]);
+}
+
 int main(int argc, char **argv)
 {
   ::testing::InitGoogleTest(&argc, argv);

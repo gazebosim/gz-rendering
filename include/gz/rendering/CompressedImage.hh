@@ -81,9 +81,6 @@ namespace gz
       public: CompressedImage(unsigned int _width, unsigned int _height,
                   ImageEncoding _encoding);
 
-      /// \brief Copy constructor. Performs a deep copy of the data.
-      public: CompressedImage(const CompressedImage &_other);
-
       /// \brief Destructor.
       public: ~CompressedImage();
 

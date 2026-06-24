@@ -20,12 +20,44 @@
 
 #include "gz/rendering/CompressedImage.hh"
 
+//////////////////////////////////////////////////
+template <class T>
+struct ArrayDeleter
+{
+  void operator () (T const * p)
+  {
+    delete [] p;
+  }
+};
+
 /// \brief Shared pointer to raw byte buffer.
 typedef std::shared_ptr<unsigned char> DataPtr;
 
 /// \brief Private fields of CompressedImage.
 class gz::rendering::CompressedImage::Implementation
 {
+  /// \brief Default constructor.
+  public: Implementation() = default;
+
+  /// \brief Deep-copy constructor. Allocates a fresh buffer and copies only
+  /// the valid \c size bytes. The copy's capacity is set to \c size.
+  public: Implementation(const Implementation &_other)
+    : width(_other.width)
+    , height(_other.height)
+    , encoding(_other.encoding)
+    , colorimetry(_other.colorimetry)
+    , keyFrame(_other.keyFrame)
+    , capacity(_other.size)
+    , size(_other.size)
+  {
+    if (_other.data && _other.size > 0)
+    {
+      this->data = DataPtr(new unsigned char[_other.size],
+                           ArrayDeleter<unsigned char>());
+      std::memcpy(this->data.get(), _other.data.get(), _other.size);
+    }
+  }
+
   /// \brief Source image width in pixels.
   public: unsigned int width = 0;
 
@@ -55,16 +87,6 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-template <class T>
-struct ArrayDeleter
-{
-  void operator () (T const * p)
-  {
-    delete [] p;
-  }
-};
-
-//////////////////////////////////////////////////
 CompressedImage::CompressedImage()
   : dataPtr(utils::MakeImpl<Implementation>())
 {
@@ -78,29 +100,6 @@ CompressedImage::CompressedImage(unsigned int _width, unsigned int _height,
   this->dataPtr->width = _width;
   this->dataPtr->height = _height;
   this->dataPtr->encoding = _encoding;
-}
-
-//////////////////////////////////////////////////
-CompressedImage::CompressedImage(const CompressedImage &_other)
-  : dataPtr(utils::MakeImpl<Implementation>())
-{
-  this->dataPtr->width = _other.dataPtr->width;
-  this->dataPtr->height = _other.dataPtr->height;
-  this->dataPtr->encoding = _other.dataPtr->encoding;
-  this->dataPtr->colorimetry = _other.dataPtr->colorimetry;
-  this->dataPtr->keyFrame = _other.dataPtr->keyFrame;
-  this->dataPtr->capacity = _other.dataPtr->capacity;
-  this->dataPtr->size = _other.dataPtr->size;
-
-  // Deep copy the data buffer
-  if (_other.dataPtr->data && _other.dataPtr->capacity > 0)
-  {
-    this->dataPtr->data =
-        DataPtr(new unsigned char[_other.dataPtr->capacity],
-                ArrayDeleter<unsigned char>());
-    std::memcpy(this->dataPtr->data.get(), _other.dataPtr->data.get(),
-                _other.dataPtr->capacity);
-  }
 }
 
 //////////////////////////////////////////////////

@@ -4,8 +4,7 @@
 // across invocations, so no atomics are needed.
 //
 // Dispatch: one invocation per 2x2 luma block.
-// Grid = (imgWidth/2) x (imgHeight/2) x 1
-// (caller halves the texture dimensions before setting num_thread_groups).
+// Grid = ceil(imgWidth/2) x ceil(imgHeight/2) x 1, auto-computed by ogre-next via thread_groups_based_on_texture divisor [2,2,1].
 
 @property( syntax != glslvk )
     #version 430
@@ -73,17 +72,10 @@ void main()
     uint y0 = by * 2u;
 
     // Fetch the four texels of this 2x2 block.
-@property( syntax != glslvk )
     vec3 c00 = texelFetch(srcTex, ivec2(x0,      y0     ), 0).rgb;
     vec3 c10 = texelFetch(srcTex, ivec2(x0 + 1u, y0     ), 0).rgb;
     vec3 c01 = texelFetch(srcTex, ivec2(x0,      y0 + 1u), 0).rgb;
     vec3 c11 = texelFetch(srcTex, ivec2(x0 + 1u, y0 + 1u), 0).rgb;
-@else
-    vec3 c00 = texelFetch(srcTex, ivec2(x0,      y0     ), 0).rgb;
-    vec3 c10 = texelFetch(srcTex, ivec2(x0 + 1u, y0     ), 0).rgb;
-    vec3 c01 = texelFetch(srcTex, ivec2(x0,      y0 + 1u), 0).rgb;
-    vec3 c11 = texelFetch(srcTex, ivec2(x0 + 1u, y0 + 1u), 0).rgb;
-@end
 
     // --- Y plane (bytes [0, w*h)) ---
     // Each pixel maps to byte index: y * w + x

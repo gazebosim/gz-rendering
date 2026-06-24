@@ -38,7 +38,10 @@ namespace gz
 
     /// \brief Converts an ogre2 camera's RGBA8 colour texture to NV12 on the
     /// GPU (compute) and reads it back asynchronously via BufferPacked::readRequest,
-    /// so frame N's transfer overlaps frame N+1's render. Not part of the public,
+    /// so a frame's transfer overlaps later renders. Bounded-latency drain: the
+    /// current frame is ALWAYS dispatched; when the in-flight ring is full the
+    /// OLDEST ticket is dropped (never the newest) so memory stays bounded while
+    /// no rendered frame is ever silently skipped. Not part of the public,
     /// engine-agnostic API.
     class GZ_RENDERING_OGRE2_VISIBLE Ogre2GpuCompression
     {
@@ -51,9 +54,11 @@ namespace gz
       /// \brief Size the NV12 UAV buffer and the staging ring for a source size.
       /// \param[in] _width Source texture width.
       /// \param[in] _height Source texture height.
-      /// \param[in] _ringDepth Number of in-flight readback tickets (>=2 for pipelining).
+      /// \param[in] _ringDepth Max in-flight readback tickets. Defaults to 3
+      ///   (latency+1) so steady single-camera pumping under multi-frame DMA
+      ///   latency never hits the cap and drops a frame.
       public: void Configure(unsigned int _width, unsigned int _height,
-                  unsigned int _ringDepth = 2u);
+                  unsigned int _ringDepth = 3u);
 
       /// \brief Dispatch the RGBA->NV12 compute job for _src into the NV12 UAV
       /// buffer, then issue a non-blocking readback ticket via readRequest().

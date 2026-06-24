@@ -62,24 +62,41 @@ TEST_F(GpuCompressionTest, Nv12FrameDelivered)
 
   CompressedImage received;
   bool got = false;
+  int delivered = 0;
   auto conn = camera->ConnectNewCompressedImageFrame(
       [&](const CompressedImage &_img)
       {
         received = _img;             // deep copy out of the transient buffer
         got = true;
+        ++delivered;
       });
   ASSERT_NE(nullptr, conn);
 
-  // Pump frames; with a 1-frame pipeline the first compressed frame arrives
-  // within a few Updates.
-  for (int i = 0; i < 8 && !got; ++i)
+  // Pump a fixed number of frames. The bounded-latency drain (FIX 1) means
+  // every rendered frame is converted and every completed ticket is delivered
+  // by the PostRender drain loop, so the delivered count must stay within
+  // ringDepth of the pumped count (no silent half-rate drop). ringDepth
+  // defaults to 3.
+  const int kUpdates = 30;
+  const int kRingDepth = 3;
+  for (int i = 0; i < kUpdates; ++i)
     camera->Update();
 
   ASSERT_TRUE(got);
   EXPECT_EQ(IE_NV12, received.Encoding());
   EXPECT_EQ(64u * 48u * 3u / 2u, received.Size());
-  EXPECT_EQ(1, received.Colorimetry().matrixCoefficients);  // BT.709
-  EXPECT_FALSE(received.Colorimetry().fullRange);            // limited
+  EXPECT_EQ(1, received.Colorimetry().matrixCoefficients);      // BT.709
+  EXPECT_EQ(1, received.Colorimetry().colourPrimaries);         // BT.709
+  EXPECT_EQ(13, received.Colorimetry().transferCharacteristics);// sRGB
+  EXPECT_FALSE(received.Colorimetry().fullRange);               // limited
+
+  // No-drop guarantee: with a single steadily-pumped camera the delivered
+  // count must be at least kUpdates - ringDepth (only the still-in-flight tail
+  // is outstanding). A regression to single-poll would halve this.
+  EXPECT_GE(delivered, kUpdates - kRingDepth)
+      << "Delivered " << delivered << " of " << kUpdates << " pumped frames; "
+      << "expected >= " << (kUpdates - kRingDepth)
+      << " (silent frame drop regression — see FIX 1 drain loop).";
   engine->DestroyScene(scene);
 }
 
@@ -206,9 +223,9 @@ TEST_F(GpuCompressionTest, Nv12MatchesCpuReference)
   std::cout << "[Nv12MatchesCpuReference] GPU-vs-CPU max byte diff: "
             << maxDiff << std::endl;
 
-  // Allow up to 3 LSBs of rounding difference.
-  EXPECT_LE(maxDiff, 3)
-      << "GPU NV12 differs from CPU reference by more than 3 LSBs. "
+  // Validated diff is 0; allow at most 1 LSB of integer-rounding difference.
+  EXPECT_LE(maxDiff, 1)
+      << "GPU NV12 differs from CPU reference by more than 1 LSB. "
       << "If diff ~10-30+, this is the sRGB-linearization issue (texelFetch "
       << "on sRGB texture). Fix: set texSlot.pixelFormat = PFG_RGBA8_UNORM "
       << "in ConvertToNv12().";

@@ -33,6 +33,8 @@
 #endif
 #include <OgreCamera.h>
 #include <OgreItem.h>
+#include <OgreRenderSystem.h>
+#include <OgreRoot.h>
 #include <OgreSceneManager.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
@@ -471,8 +473,24 @@ bool Ogre2Camera::IsEncodingSupported(ImageEncoding _encoding) const
     return true;
   if (_encoding == IE_NV12)
   {
-    return Ogre2RenderEngine::Instance()->GraphicsAPI() ==
-        GraphicsAPI::VULKAN;
+    // GraphicsAPI() reflects the REQUESTED backend, which can lie: if the
+    // Vulkan plugin fails to register its render system the engine silently
+    // falls back to GL3Plus (Ogre2RenderEngine::CreateRenderSystem leaves
+    // renderSys pointing at the last available renderer) while GraphicsAPI()
+    // still reports VULKAN. Confirm the ACTUAL loaded render system is Vulkan
+    // too (its name is "Vulkan Rendering Subsystem", set in
+    // Ogre2RenderEngine::CreateRenderSystem) so we never claim NV12 support on
+    // a GL fallback.
+    auto *engine = Ogre2RenderEngine::Instance();
+    if (engine->GraphicsAPI() != GraphicsAPI::VULKAN)
+      return false;
+    Ogre::Root *root = engine->OgreRoot();
+    if (!root)
+      return false;
+    Ogre::RenderSystem *rs = root->getRenderSystem();
+    if (!rs)
+      return false;
+    return rs->getName().find("Vulkan") != Ogre::String::npos;
   }
   return false;
 }
@@ -565,10 +583,17 @@ void Ogre2Camera::PostRender()
 
   if (this->dataPtr->encoding == IE_NV12)
   {
+    // Always dispatch this frame's conversion (the helper evicts its oldest
+    // in-flight ticket if the ring is full, so a rendered frame is never
+    // silently skipped). Then DRAIN every ready ticket: under multi-frame DMA
+    // latency more than one ticket can complete in a single PostRender, and a
+    // single-poll would leave the ring filling and stall delivery at half rate.
     this->dataPtr->gpuCompression->ConvertToNv12(srcSrgb);
     std::vector<unsigned char> nv12;
-    if (this->dataPtr->gpuCompression->TryRetrieveNv12(nv12))
+    while (this->dataPtr->gpuCompression->TryRetrieveNv12(nv12))
     {
+      // Reuse the compressedFrame member; bytes are valid only during the
+      // callback (consumers copy to retain). Fire once per ready frame.
       CompressedImage &out = this->dataPtr->compressedFrame;
       out.SetDimensions(w, h);
       out.SetEncoding(IE_NV12);

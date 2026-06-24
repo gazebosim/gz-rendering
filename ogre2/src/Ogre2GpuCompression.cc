@@ -57,7 +57,8 @@ class gz::rendering::Ogre2GpuCompressionPrivate
   public: unsigned int height = 0;
 
   /// \brief Ring depth (max concurrent in-flight readback tickets).
-  public: unsigned int ringDepth = 2u;
+  /// Default 3 (latency+1) so steady single-camera pumping never hits the cap.
+  public: unsigned int ringDepth = 3u;
 
   /// \brief NV12 byte count for the configured dimensions.
   /// Each NV12 byte is stored as one uint32 in the UAV (low 8 bits).
@@ -97,21 +98,26 @@ void Ogre2GpuCompression::Configure(unsigned int _width, unsigned int _height,
   if (_ringDepth < 2u)
     _ringDepth = 2u;
 
-  if (this->dataPtr->width == _width &&
-      this->dataPtr->height == _height &&
-      this->dataPtr->ringDepth == _ringDepth &&
-      this->dataPtr->nv12Uav)
-  {
-    return;
-  }
-
   // NV12 4:2:0 requires even width and height; odd dimensions would silently
   // truncate the Nv12Bytes() calculation (w*h*3/2 integer division).
+  // This guard MUST run BEFORE the unchanged-config early-return below:
+  // otherwise an odd-sized RESIZE could early-return on a partial match and
+  // leave a stale even-dimension UAV bound to the new (odd) texture.
   if ((_width & 1u) || (_height & 1u))
   {
     gzerr << "Ogre2GpuCompression::Configure: NV12 requires even width and "
           << "height, got " << _width << "x" << _height
           << ". Helper left unconfigured." << std::endl;
+    // Tear down any prior even-dimension state so nothing stale stays bound.
+    this->Reset();
+    return;
+  }
+
+  if (this->dataPtr->width == _width &&
+      this->dataPtr->height == _height &&
+      this->dataPtr->ringDepth == _ringDepth &&
+      this->dataPtr->nv12Uav)
+  {
     return;
   }
 
@@ -142,10 +148,26 @@ void Ogre2GpuCompression::ConvertToNv12(Ogre::TextureGpu *_src)
   if (!_src || !this->dataPtr->nv12Uav)
     return;
 
-  // Respect the ring depth: if we already have that many tickets in-flight,
-  // skip this frame to avoid unbounded memory growth.
-  if (this->dataPtr->inflight.size() >= this->dataPtr->ringDepth)
-    return;
+  // Bound memory WITHOUT silently dropping the newly rendered frame: if the
+  // ring is already full, evict the OLDEST in-flight ticket (never the newest)
+  // before issuing this frame's dispatch+readback below. This keeps memory
+  // capped at ringDepth while guaranteeing the current frame is always
+  // converted; the consumer's TryRetrieveNv12 drain loop then delivers every
+  // ticket that does complete.
+  while (this->dataPtr->inflight.size() >= this->dataPtr->ringDepth)
+  {
+    Nv12Inflight &old = this->dataPtr->inflight.front();
+    if (old.ticket)
+    {
+      // Force-complete the oldest DMA (map() blocks until done) then release,
+      // mirroring the Reset() drain discipline so no in-flight transfer is
+      // freed mid-fence. This is a rare back-pressure path, not steady state.
+      old.ticket->map();
+      old.ticket->unmap();
+      old.ticket.setNull();
+    }
+    this->dataPtr->inflight.pop_front();
+  }
 
   const unsigned int w = this->dataPtr->width;
   const unsigned int h = this->dataPtr->height;
@@ -239,7 +261,9 @@ void Ogre2GpuCompression::ConvertToNv12(Ogre::TextureGpu *_src)
   // --- Issue a non-blocking readback via readRequest() ---
   // readRequest(elementStart, elementCount) issues a GPU->CPU DMA and returns
   // an AsyncTicketPtr immediately (non-blocking).  We poll queryIsTransferDone
-  // in TryRetrieveNv12 without ever stalling the render thread.
+  // in TryRetrieveNv12 (drained every frame) without ever stalling the render
+  // thread. Up to ringDepth tickets may be in flight to absorb multi-frame DMA
+  // latency; the oldest is evicted above if that cap is reached.
   const size_t numElems = this->dataPtr->Nv12Bytes();
   Nv12Inflight rec;
   rec.ticket = this->dataPtr->nv12Uav->readRequest(0u, numElems);

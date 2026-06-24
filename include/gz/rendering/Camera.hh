@@ -92,26 +92,32 @@ namespace gz
       /// (default) keeps the raw Image/Copy path. A real encoding (e.g.
       /// IE_NV12) is honoured only on engines/backends that support it; others
       /// fall back to raw (see IsEncodingSupported).
+      ///
+      /// Declared NON-pure (with a no-op default) so that Camera subclasses
+      /// that do not derive from BaseCamera still compile, and so adding this
+      /// method does not break ABI on 11.0.0-pre1. Engines with a real
+      /// compressed path (ogre2 on Vulkan) override it.
       /// \param[in] _encoding Desired wire encoding.
-      public: virtual void SetImageEncoding(ImageEncoding _encoding) = 0;
+      public: virtual void SetImageEncoding(ImageEncoding /*_encoding*/) {}
 
       /// \brief Get the currently selected output encoding.
       /// \return The active ImageEncoding (IE_NONE if compression disabled).
-      public: virtual ImageEncoding Encoding() const = 0;
+      public: virtual ImageEncoding Encoding() const { return IE_NONE; }
 
       /// \brief Set the target bitrate for bitstream encodings (bits/sec).
       /// Ignored for IE_NV12 and unsupported encodings.
       /// \param[in] _bitsPerSec Target bitrate in bits per second.
-      public: virtual void SetEncodeBitrate(unsigned int _bitsPerSec) = 0;
+      public: virtual void SetEncodeBitrate(unsigned int /*_bitsPerSec*/) {}
 
       /// \brief Get the effective target bitrate (bits/sec), 0 if not set.
-      public: virtual unsigned int EncodeBitrate() const = 0;
+      public: virtual unsigned int EncodeBitrate() const { return 0u; }
 
       /// \brief Query whether an encoding is supported on this camera's engine
       /// and backend. IE_NONE is always supported.
       /// \param[in] _encoding Encoding to query.
       /// \return True if the encoding can be produced.
-      public: virtual bool IsEncodingSupported(ImageEncoding _encoding) const = 0;
+      public: virtual bool IsEncodingSupported(ImageEncoding _encoding) const
+              { return _encoding == IE_NONE; }
 
       /// \brief Subscribe to compressed image frames. Frames are delivered
       /// synchronously on the render thread; the CompressedImage is valid only
@@ -119,7 +125,8 @@ namespace gz
       /// \param[in] _listener Callback to invoke per compressed frame.
       /// \return A connection; null on engines without compression support.
       public: virtual common::ConnectionPtr ConnectNewCompressedImageFrame(
-                  NewCompressedImageFrameListener _listener) = 0;
+                  NewCompressedImageFrameListener /*_listener*/)
+              { return nullptr; }
 
       /// \brief Get the total image memory size in bytes
       /// \return The image memory size in bytes

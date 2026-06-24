@@ -105,6 +105,16 @@ void Ogre2GpuCompression::Configure(unsigned int _width, unsigned int _height,
     return;
   }
 
+  // NV12 4:2:0 requires even width and height; odd dimensions would silently
+  // truncate the Nv12Bytes() calculation (w*h*3/2 integer division).
+  if ((_width & 1u) || (_height & 1u))
+  {
+    gzerr << "Ogre2GpuCompression::Configure: NV12 requires even width and "
+          << "height, got " << _width << "x" << _height
+          << ". Helper left unconfigured." << std::endl;
+    return;
+  }
+
   this->Reset();
   this->dataPtr->width = _width;
   this->dataPtr->height = _height;
@@ -143,8 +153,7 @@ void Ogre2GpuCompression::ConvertToNv12(Ogre::TextureGpu *_src)
   auto *engine = Ogre2RenderEngine::Instance();
   Ogre::Root *root = engine->OgreRoot();
   Ogre::HlmsManager *hlmsManager = root->getHlmsManager();
-  Ogre::HlmsCompute *hlmsCompute = static_cast<Ogre::HlmsCompute *>(
-      hlmsManager->getComputeHlms());
+  Ogre::HlmsCompute *hlmsCompute = hlmsManager->getComputeHlms();
 
   // Look up the compute job once and cache it.
   if (!this->dataPtr->nv12Job)
@@ -262,11 +271,18 @@ bool Ogre2GpuCompression::TryRetrieveNv12(std::vector<unsigned char> &_out)
 //////////////////////////////////////////////////
 void Ogre2GpuCompression::Reset()
 {
-  // Drop all in-flight tickets before freeing the UAV they reference.
+  // Block-drain every in-flight ticket so its DMA fence has signalled before
+  // we free the UAV buffer.  map() blocks until the transfer is done;
+  // unmap() releases the CPU-side mapping.  This blocking is acceptable here
+  // because Reset() is teardown / reconfigure, NOT the render hot-path.
   for (Nv12Inflight &rec : this->dataPtr->inflight)
   {
     if (rec.ticket)
+    {
+      rec.ticket->map();
+      rec.ticket->unmap();
       rec.ticket.setNull();
+    }
   }
   this->dataPtr->inflight.clear();
 

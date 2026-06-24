@@ -2,6 +2,9 @@
 
 ## Gazebo Rendering 8.X
 
+1. Highly reduce the CPU by setting the ogre workers to 0
+    * [Pull request #1307](https://github.com/gazebosim/gz-rendering/pull/1307)
+
 ### Gazebo Rendering 8.2.3 (2025-11-14)
 
 1. Increase tolerance for heightmap test

@@ -7,6 +7,14 @@ release will remove the deprecated code.
 
 ## Gazebo Rendering 10.x to 11.x
 
+### Optimizations
+
+* The number of ogre threads spawn by default has changed from being the
+  number of cores of the host computer to zero to reduce the CPU usage
+  in https://github.com/gazebosim/gz-rendering/pull/1302. It can be
+  fine-tunning by using the environment variable
+  GZ_RENDERING_OGRE2_WORKER_THREADS=<number>.
+
 ### Removals
 
 The optix plugin has been removed due to years of inactivity. The plugin was

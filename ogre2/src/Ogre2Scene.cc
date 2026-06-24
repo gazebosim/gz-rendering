@@ -31,6 +31,7 @@
 
 #include <gz/common/Console.hh>
 #include <gz/common/Profiler.hh>
+#include <gz/common/Util.hh>
 
 #include "gz/rendering/base/SceneExt.hh"
 #include "gz/rendering/GraphicsAPI.hh"
@@ -1469,9 +1470,23 @@ void Ogre2Scene::CreateContext()
 {
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
 
-  // getNumLogicalCores() may return 0 if couldn't detect
-  const size_t numThreads = std::max<size_t>(
-      1, Ogre::PlatformInformation::getNumLogicalCores());
+  // Number of worker threads Ogre uses for its per-frame SceneManager passes
+  // (transform/bounds/animation/light-list updates and frustum culling).
+  // See https://github.com/gazebosim/gz-rendering/pull/1302
+  //
+  // Default to 0, which makes Ogre run these passes inline on the main thread
+  // (no worker threads, no barrier). Very large scenes (tens of thousands of
+  // objects) can opt back into threading via GZ_RENDERING_OGRE2_WORKER_THREADS:
+  //   unset / "0" -> run inline on the main thread (default)
+  //   "N"         -> use N worker threads
+  size_t numThreads = 0u;
+  std::string envT;
+  if (gz::common::env("GZ_RENDERING_OGRE2_WORKER_THREADS", envT))
+  {
+    const int t = std::atoi(envT.c_str());
+    if (t > 0)
+      numThreads = static_cast<size_t>(t);
+  }
 
   // See ogre doxygen documentation regarding culling methods.
   // In some cases you may still want to use single thread.

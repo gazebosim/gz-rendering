@@ -30,7 +30,10 @@
 
 #include <gz/common/Profiler.hh>
 
+#include <vector>
+
 #include "gz/rendering/RenderTypes.hh"
+#include "gz/rendering/ogre2/Ogre2AsyncImageReadback.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2DepthCamera.hh"
 #include "gz/rendering/ogre2/Ogre2GaussianNoisePass.hh"
@@ -176,6 +179,17 @@ class gz::rendering::Ogre2DepthCameraPrivate
 
   /// \brief Pointer to the particle target definition in the workspace
   public: Ogre::CompositorTargetDef *particleTargetDef{nullptr};
+
+  /// \brief When true, the depth/point-cloud texture is read back
+  /// asynchronously (non-blocking download drained on a later frame).
+  public: bool asyncEnabled = false;
+
+  /// \brief Multi-buffered async readback ring (created lazily when enabled).
+  public: std::unique_ptr<Ogre2AsyncImageReadback> asyncReadback;
+
+  /// \brief Scratch buffer receiving the tight RGBA32F texture bytes from the
+  /// async readback ring.
+  public: std::vector<unsigned char> asyncBuf;
 };
 
 using namespace gz;
@@ -303,6 +317,11 @@ void Ogre2DepthCamera::Init()
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::Destroy()
 {
+  // Release async readback tickets before the render engine/texture manager
+  // is torn down.
+  if (this->dataPtr && this->dataPtr->asyncReadback)
+    this->dataPtr->asyncReadback.reset();
+
   this->RemoveAllRenderPasses();
 
   if (this->dataPtr->depthBuffer)
@@ -1171,23 +1190,49 @@ void Ogre2DepthCamera::PostRender()
   unsigned int channelCount = PixelUtil::ChannelCount(format);
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
 
-  Ogre::Image2 image;
-  image.convertFromTexture(this->dataPtr->ogreDepthTexture[1], 0u, 0u);
-  Ogre::TextureBox box = image.getData(0);
-  float *depthBufferTmp = static_cast<float *>(box.data);
   if (!this->dataPtr->depthBuffer)
   {
     this->dataPtr->depthBuffer = new float[len * channelCount];
   }
 
-  // copy data row by row. The texture box may not be a contiguous region of
-  // a texture
-  for (unsigned int i = 0; i < height; ++i)
+  if (this->dataPtr->asyncEnabled)
   {
-    unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
-    unsigned int rowIdx = i * width * channelCount;
-    memcpy(&this->dataPtr->depthBuffer[rowIdx], &depthBufferTmp[rawDataRowIdx],
-        width * channelCount * bytesPerChannel);
+    // Async path: issue this frame's non-blocking download and drain the
+    // oldest finished one (one-frame latency). The ring delivers a tight
+    // RGBA32F buffer (row padding already removed), so the copy into
+    // depthBuffer is a single contiguous memcpy.
+    if (!this->dataPtr->asyncReadback)
+    {
+      this->dataPtr->asyncReadback =
+          std::make_unique<Ogre2AsyncImageReadback>();
+    }
+    this->dataPtr->asyncReadback->Configure(width, height);
+    this->dataPtr->asyncReadback->RequestDownload(
+        this->dataPtr->ogreDepthTexture[1]);
+
+    if (!this->dataPtr->asyncReadback->TryRetrieve(this->dataPtr->asyncBuf))
+      return;  // nothing ready yet (warmup); skip emitting this frame
+
+    memcpy(this->dataPtr->depthBuffer, this->dataPtr->asyncBuf.data(),
+        static_cast<size_t>(len) * channelCount * bytesPerChannel);
+  }
+  else
+  {
+    // Blocking path: synchronous full-texture readback.
+    Ogre::Image2 image;
+    image.convertFromTexture(this->dataPtr->ogreDepthTexture[1], 0u, 0u);
+    Ogre::TextureBox box = image.getData(0);
+    float *depthBufferTmp = static_cast<float *>(box.data);
+
+    // copy data row by row. The texture box may not be a contiguous region of
+    // a texture
+    for (unsigned int i = 0; i < height; ++i)
+    {
+      unsigned int rawDataRowIdx = i * box.bytesPerRow / bytesPerChannel;
+      unsigned int rowIdx = i * width * channelCount;
+      memcpy(&this->dataPtr->depthBuffer[rowIdx], &depthBufferTmp[rawDataRowIdx],
+          width * channelCount * bytesPerChannel);
+    }
   }
 
   if (!this->dataPtr->depthImage)
@@ -1263,6 +1308,20 @@ void Ogre2DepthCamera::PostRender()
 const float *Ogre2DepthCamera::DepthData() const
 {
   return this->dataPtr->depthBuffer;
+}
+
+//////////////////////////////////////////////////
+void Ogre2DepthCamera::SetAsyncReadback(bool _enable)
+{
+  this->dataPtr->asyncEnabled = _enable;
+  if (!_enable)
+    this->dataPtr->asyncReadback.reset();
+}
+
+//////////////////////////////////////////////////
+bool Ogre2DepthCamera::AsyncReadback() const
+{
+  return this->dataPtr->asyncEnabled;
 }
 
 //////////////////////////////////////////////////

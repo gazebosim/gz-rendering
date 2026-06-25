@@ -98,6 +98,16 @@ namespace gz
       /// \return The z-buffer as a float array
       public: virtual const float *DepthData() const override;
 
+      /// \brief Enable/disable asynchronous (deferred, non-blocking) GPU->CPU
+      /// readback of the depth/point-cloud texture. Trades +1 frame of latency
+      /// for overlap of the readback DMA with subsequent rendering. Opt-in;
+      /// disabled by default (the stock blocking readback is unchanged).
+      /// \param[in] _enable True to enable async readback.
+      public: virtual void SetAsyncReadback(bool _enable) override;
+
+      // Documentation inherited (gz::rendering::Camera).
+      public: virtual bool AsyncReadback() const override;
+
       /// \brief Connect a to the new depth image signal
       /// \param[in] _subscriber Subscriber callback function
       /// \return Pointer to the new Connection. This must be kept in scope

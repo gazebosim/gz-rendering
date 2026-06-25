@@ -39,6 +39,7 @@
 #include <sys/resource.h>
 
 #include <algorithm>
+#include <cmath>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
@@ -150,12 +151,21 @@ int main(int _argc, char **_argv)
 
   long depthFrames = 0;
   long cloudFrames = 0;
+  double lastDepthSum = 0.0;   // sampled checksum to compare sync vs async data
   std::vector<common::ConnectionPtr> conns;
   for (auto &c : cams)
   {
     conns.push_back(c->ConnectNewDepthFrame(
-        [&](const float *, unsigned int, unsigned int, unsigned int,
-            const std::string &){ ++depthFrames; }));
+        [&](const float *_data, unsigned int _w, unsigned int _h, unsigned int,
+            const std::string &)
+        {
+          ++depthFrames;
+          double s = 0.0;
+          const unsigned int n = _w * _h;
+          for (unsigned int i = 0; i < n; i += 251u)
+            if (std::isfinite(_data[i])) s += _data[i];
+          lastDepthSum = s;
+        }));
   }
 
   auto emit = [&](const std::string &path, double secs, double cpu0,
@@ -179,7 +189,8 @@ int main(int _argc, char **_argv)
               << " depth_mb_s=" << depthMbs << " cloud_mb_s=" << cloudMbs
               << " total_mb_s=" << (depthMbs + cloudMbs)
               << " depth_frames=" << depthFrames
-              << " cloud_frames=" << cloudFrames << "\n";
+              << " cloud_frames=" << cloudFrames
+              << " depth_checksum=" << lastDepthSum << "\n";
   };
 
   for (int i = 0; i < 10; ++i)            // warmup (depth only)
@@ -215,6 +226,23 @@ int main(int _argc, char **_argv)
     double secs = std::chrono::duration<double>(Clock::now() - t0).count();
     emit("rgbd", secs, cpu0, true);
   }
+
+  // --- rgbd_async: same depth + cloud readback, but deferred (non-blocking) ---
+  // so each camera's readback DMA overlaps the next camera's render.
+  for (auto &c : cams) c->SetAsyncReadback(true);
+  for (int i = 0; i < 12; ++i)            // warmup: fill + reach steady state
+    for (auto &c : cams) c->Update();
+
+  depthFrames = 0; cloudFrames = 0;
+  {
+    double cpu0 = cpuSeconds();
+    auto t0 = Clock::now();
+    for (int f = 0; f < frames; ++f)
+      for (auto &c : cams) c->Update();
+    double secs = std::chrono::duration<double>(Clock::now() - t0).count();
+    emit("rgbd_async", secs, cpu0, true);
+  }
+  for (auto &c : cams) c->SetAsyncReadback(false);
 
   return 0;
 }

@@ -498,6 +498,12 @@ void Ogre2Scene::Clear()
 //////////////////////////////////////////////////
 void Ogre2Scene::Destroy()
 {
+  // Persist the HLMS shader/PSO disk cache (opt-in) while the engine, Ogre Root
+  // and HLMS are still alive. The gui-client destroys the scene on shutdown but
+  // never the render engine, so the engine's own Destroy() save hook does not
+  // run in the GUI; saving here covers that path. Overwrite-safe.
+  Ogre2RenderEngine::Instance()->SaveHlmsDiskCache();
+
   this->DestroyNodes();
 
   // cleanup any items that were not attached to nodes

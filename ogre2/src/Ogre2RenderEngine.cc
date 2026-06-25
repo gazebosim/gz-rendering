@@ -20,6 +20,10 @@
   // pulled in by anybody (e.g., Boost).
   #include <Winsock2.h>
 #endif
+#include <cctype>
+#include <cstdlib>
+#include <string>
+
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
 #include <gz/common/StringUtils.hh>
@@ -58,6 +62,12 @@
 #include "Terra/Hlms/OgreHlmsTerra.h"
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 #include "Terra/TerraWorkspaceListener.h"
+
+#include <OgreArchive.h>
+#include <OgreArchiveManager.h>
+#include <OgreHlms.h>
+#include <OgreHlmsDiskCache.h>
+#include <OgreHlmsManager.h>
 
 #if HAVE_GLX
 # include <X11/Xlib.h>
@@ -194,6 +204,10 @@ void Ogre2RenderEngine::Destroy()
 
   if (this->ogreRoot)
   {
+    // Persist the shader/PSO disk cache (opt-in) before the engine is torn
+    // down, capturing any shaders compiled during this session.
+    this->SaveHlmsDiskCache();
+
     // Clean up any textures that may still be in flight.
     Ogre::TextureGpuManager *mgr =
         this->ogreRoot->getRenderSystem()->getTextureGpuManager();
@@ -248,6 +262,174 @@ void Ogre2RenderEngine::Destroy()
   if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
     eglReleaseThread();
 #endif
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderEngine::LoadHlmsDiskCache()
+{
+  // Opt-in via GZ_RENDERING_OGRE2_SHADER_CACHE:
+  //   unset / "0" / "false" -> disabled (default; no behavior change)
+  //   "1" / "true"          -> enabled, default dir ~/.gz/rendering/ogre2
+  //   <path>                -> enabled, use <path> as the cache base dir
+  const char *env = std::getenv("GZ_RENDERING_OGRE2_SHADER_CACHE");
+  if (!env || !env[0])
+    return;
+  const std::string val = env;
+  if (val == "0" || val == "false" || val == "FALSE")
+    return;
+
+  if (!this->ogreRoot)
+    return;
+  Ogre::RenderSystem *rs = this->ogreRoot->getRenderSystem();
+  if (!rs)
+    return;
+
+  // Resolve the base directory.
+  std::string baseDir;
+  if (val == "1" || val == "true" || val == "TRUE")
+  {
+    std::string home;
+    common::env(GZ_HOMEDIR, home);
+    baseDir = common::joinPaths(home, ".gz", "rendering", "ogre2",
+        "shader_cache");
+  }
+  else
+  {
+    baseDir = val;
+  }
+
+  // Key the cache by render-system + GPU + driver + ogre version so an
+  // incompatible cache (e.g. after a driver or GPU change) lands in a separate
+  // directory instead of being replayed. Fall back to the render-system name
+  // when capabilities are not yet available.
+  std::string key = rs->getName();
+  const Ogre::RenderSystemCapabilities *caps = rs->getCapabilities();
+  if (caps)
+  {
+    key += "_" + caps->getDeviceName() + "_" +
+        caps->getDriverVersion().toString();
+  }
+  key += "_ogre" OGRE2_VERSION;
+  for (char &c : key)
+  {
+    if (!std::isalnum(static_cast<unsigned char>(c)))
+      c = '_';
+  }
+
+  this->shaderCacheDir = common::joinPaths(baseDir, key);
+  if (!common::createDirectories(this->shaderCacheDir))
+  {
+    gzwarn << "Unable to create ogre2 shader cache dir ["
+           << this->shaderCacheDir << "]; shader disk cache disabled."
+           << std::endl;
+    this->shaderCacheDir.clear();
+    return;
+  }
+
+  Ogre::HlmsManager *hlmsManager = this->ogreRoot->getHlmsManager();
+  if (!hlmsManager)
+  {
+    this->shaderCacheDir.clear();
+    return;
+  }
+
+  try
+  {
+    Ogre::Archive *archive = Ogre::ArchiveManager::getSingleton().load(
+        this->shaderCacheDir, "FileSystem", false);
+
+    // The compiled-microcode cache MUST be enabled and loaded BEFORE the HLMS
+    // disk caches, so applyTo() reuses compiled microcode rather than
+    // recompiling synchronously (see OgreHlmsDiskCache.h). Enabling it here
+    // also makes a cold run accumulate microcode for SaveHlmsDiskCache().
+    Ogre::GpuProgramManager &gpuMgr = Ogre::GpuProgramManager::getSingleton();
+    gpuMgr.setSaveMicrocodesToCache(true);
+    if (archive->exists("microcodeCache.cache"))
+    {
+      Ogre::DataStreamPtr stream = archive->open("microcodeCache.cache");
+      gpuMgr.loadMicrocodeCache(stream);
+    }
+
+    Ogre::HlmsDiskCache diskCache(hlmsManager);
+    int applied = 0;
+    for (size_t i = Ogre::HLMS_LOW_LEVEL + 1u; i < Ogre::HLMS_MAX; ++i)
+    {
+      Ogre::Hlms *hlms = hlmsManager->getHlms(static_cast<Ogre::HlmsTypes>(i));
+      if (!hlms)
+        continue;
+      const std::string fname = "hlmsDiskCache" + std::to_string(i) + ".bin";
+      if (!archive->exists(fname))
+        continue;
+      Ogre::DataStreamPtr stream = archive->open(fname);
+      diskCache.loadFrom(stream);
+      diskCache.applyTo(hlms);
+      ++applied;
+    }
+    Ogre::ArchiveManager::getSingleton().unload(archive);
+    gzmsg << "Loaded ogre2 HLMS shader disk cache from ["
+          << this->shaderCacheDir << "] (" << applied << " hlms type(s))."
+          << std::endl;
+  }
+  catch (const Ogre::Exception &_e)
+  {
+    gzwarn << "Failed to load ogre2 shader disk cache: " << _e.what()
+           << ". Continuing without it (it will be rebuilt)." << std::endl;
+  }
+  catch (...)
+  {
+    gzwarn << "Failed to load ogre2 shader disk cache (unknown error); "
+           << "continuing without it." << std::endl;
+  }
+}
+
+//////////////////////////////////////////////////
+void Ogre2RenderEngine::SaveHlmsDiskCache()
+{
+  // shaderCacheDir is only set when the cache was successfully enabled in
+  // LoadHlmsDiskCache(); otherwise this is a no-op.
+  if (this->shaderCacheDir.empty() || !this->ogreRoot)
+    return;
+  Ogre::HlmsManager *hlmsManager = this->ogreRoot->getHlmsManager();
+  if (!hlmsManager)
+    return;
+
+  try
+  {
+    Ogre::Archive *archive = Ogre::ArchiveManager::getSingleton().load(
+        this->shaderCacheDir, "FileSystem", false);
+
+    Ogre::HlmsDiskCache diskCache(hlmsManager);
+    for (size_t i = Ogre::HLMS_LOW_LEVEL + 1u; i < Ogre::HLMS_MAX; ++i)
+    {
+      Ogre::Hlms *hlms = hlmsManager->getHlms(static_cast<Ogre::HlmsTypes>(i));
+      if (!hlms)
+        continue;
+      diskCache.copyFrom(hlms);
+      Ogre::DataStreamPtr stream =
+          archive->create("hlmsDiskCache" + std::to_string(i) + ".bin");
+      diskCache.saveTo(stream);
+    }
+
+    Ogre::GpuProgramManager &gpuMgr = Ogre::GpuProgramManager::getSingleton();
+    if (gpuMgr.getSaveMicrocodesToCache() && gpuMgr.isCacheDirty())
+    {
+      Ogre::DataStreamPtr stream = archive->create("microcodeCache.cache");
+      gpuMgr.saveMicrocodeCache(stream);
+    }
+    Ogre::ArchiveManager::getSingleton().unload(archive);
+    gzmsg << "Saved ogre2 HLMS shader disk cache to ["
+          << this->shaderCacheDir << "]." << std::endl;
+  }
+  catch (const Ogre::Exception &_e)
+  {
+    gzwarn << "Failed to save ogre2 shader disk cache: " << _e.what()
+           << std::endl;
+  }
+  catch (...)
+  {
+    gzwarn << "Failed to save ogre2 shader disk cache (unknown error)."
+           << std::endl;
+  }
 }
 
 //////////////////////////////////////////////////
@@ -1267,6 +1449,10 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   }
 
   this->RegisterHlms();
+
+  // Replay a previously-saved shader/PSO disk cache (opt-in) so the first
+  // frames don't stall compiling HLMS shaders on the render thread.
+  this->LoadHlmsDiskCache();
 
   if (this->window)
   {

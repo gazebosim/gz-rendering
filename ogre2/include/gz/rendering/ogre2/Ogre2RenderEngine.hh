@@ -153,6 +153,18 @@ namespace gz
       /// \brief Register Hlms
       private: void RegisterHlms();
 
+      /// \brief Load the HLMS shader + PSO disk cache (compiled microcode plus
+      /// per-Hlms source/PSO metadata) so the engine skips synchronous
+      /// first-draw shader compilation. Opt-in via the
+      /// GZ_RENDERING_OGRE2_SHADER_CACHE environment variable; no-op otherwise.
+      private: void LoadHlmsDiskCache();
+
+      /// \brief Persist the HLMS shader + PSO disk cache at shutdown so the
+      /// next run can replay it. No-op unless the disk cache is enabled.
+      /// Idempotent / overwrite-safe; the gui-client tears down the scene but
+      /// not the engine, so Ogre2Scene::Destroy() also calls this.
+      public: void SaveHlmsDiskCache();
+
       /// \brief Create ogre root
       private: void CreateRoot();
 
@@ -216,6 +228,10 @@ namespace gz
 
       /// \brief Ogre log manager
       private: Ogre::LogManager *ogreLogManager = nullptr;
+
+      /// \brief Directory for the HLMS shader disk cache, keyed by
+      /// render-system/GPU/driver. Empty when the cache is disabled (default).
+      private: std::string shaderCacheDir;
 
       /// \brief Paths to ogre plugins
       private: std::vector<std::string> ogrePaths;

@@ -1,10 +1,16 @@
 // RGBA -> NV12 compute shader (BT.709 limited range).
-// Strategy: uint-per-byte buffer — the UAV buffer has w*h*3/2 uint elements,
-// each holding one NV12 output byte in the low 8 bits. Indices are disjoint
-// across invocations, so no atomics are needed.
+// Strategy: PACKED-byte buffer — the UAV holds w*h*3/8 uint elements, each
+// holding 4 NV12 output bytes (little-endian: lowest NV12 address in the low 8
+// bits). The host reads it back with a plain memcpy (no per-byte compaction).
 //
-// Dispatch: one invocation per 2x2 luma block.
-// Grid = ceil(imgWidth/2) x ceil(imgHeight/2) x 1, auto-computed by ogre-next via thread_groups_based_on_texture divisor [2,2,1].
+// Race-freedom: one invocation owns a 4x2 source tile and writes exactly three
+// disjoint uint words (two Y rows + one interleaved CbCr word), so no two
+// invocations touch the same uint. This requires imgWidth % 4 == 0 and
+// imgHeight even (enforced by Ogre2GpuCompression::Configure).
+//
+// Dispatch: one invocation per 4x2 luma tile.
+// Grid = ceil(imgWidth/4) x ceil(imgHeight/2) x 1, auto-computed by ogre-next
+// via thread_groups_based_on_texture divisor [4,2,1].
 
 @property( syntax != glslvk )
     #version 430
@@ -20,15 +26,15 @@ uniform sampler2D srcTex;
 layout( vulkan( ogre_t0 ) ) uniform texture2D srcTex;
 @end
 
-// Output: NV12 byte stream packed as one uint32 per byte (low 8 bits used).
-// Buffer size = imgWidth * imgHeight * 3 / 2  uint elements.
+// Output: NV12 byte stream packed 4 bytes per uint32 (little-endian).
+// Buffer size = imgWidth * imgHeight * 3 / 8  uint elements.
 @property( syntax != glslvk )
 layout(std430, binding = 0) buffer Nv12Buffer
 @else
 layout(std430, ogre_U0) buffer Nv12Buffer
 @end
 {
-    writeonly uint dstBytes[];
+    writeonly uint dstWords[];
 };
 
 vulkan( layout( ogre_P0 ) uniform Params { )
@@ -54,45 +60,48 @@ float rgb2cr(vec3 c)
     return 128.0 + (0.4392 * c.r - 0.3989 * c.g - 0.0403 * c.b) * 255.0;
 }
 
+// Luma byte for a pixel (clamp+truncate identical to the per-byte shader).
+uint y8(vec3 c)  { return uint(clamp(rgb2y(c), 0.0, 255.0)); }
+uint c8(float v) { return uint(clamp(v,       0.0, 255.0)); }
+
 void main()
 {
     uint w = imgWidth;
     uint h = imgHeight;
 
-    // One invocation per 2x2 luma block.
-    uint bx = gl_GlobalInvocationID.x;   // block x index
-    uint by = gl_GlobalInvocationID.y;   // block y index
+    // One invocation per 4x2 tile = two horizontally-adjacent 2x2 chroma blocks.
+    uint tileX = gl_GlobalInvocationID.x;
+    uint tileY = gl_GlobalInvocationID.y;
 
-    // Guard against over-dispatch (in case dims are odd, though w/h must be even
-    // for NV12).
-    if (bx * 2u >= w || by * 2u >= h)
+    uint x0 = tileX * 4u;
+    uint y0 = tileY * 2u;
+    if (x0 >= w || y0 >= h)
         return;
 
-    uint x0 = bx * 2u;
-    uint y0 = by * 2u;
+    // Fetch the 4x2 texels (cols x0..x0+3, rows y0..y0+1).
+    vec3 p00 = texelFetch(srcTex, ivec2(x0,      y0     ), 0).rgb;
+    vec3 p10 = texelFetch(srcTex, ivec2(x0 + 1u, y0     ), 0).rgb;
+    vec3 p20 = texelFetch(srcTex, ivec2(x0 + 2u, y0     ), 0).rgb;
+    vec3 p30 = texelFetch(srcTex, ivec2(x0 + 3u, y0     ), 0).rgb;
+    vec3 p01 = texelFetch(srcTex, ivec2(x0,      y0 + 1u), 0).rgb;
+    vec3 p11 = texelFetch(srcTex, ivec2(x0 + 1u, y0 + 1u), 0).rgb;
+    vec3 p21 = texelFetch(srcTex, ivec2(x0 + 2u, y0 + 1u), 0).rgb;
+    vec3 p31 = texelFetch(srcTex, ivec2(x0 + 3u, y0 + 1u), 0).rgb;
 
-    // Fetch the four texels of this 2x2 block.
-    vec3 c00 = texelFetch(srcTex, ivec2(x0,      y0     ), 0).rgb;
-    vec3 c10 = texelFetch(srcTex, ivec2(x0 + 1u, y0     ), 0).rgb;
-    vec3 c01 = texelFetch(srcTex, ivec2(x0,      y0 + 1u), 0).rgb;
-    vec3 c11 = texelFetch(srcTex, ivec2(x0 + 1u, y0 + 1u), 0).rgb;
+    uint wq = w / 4u;  // uint words per Y-plane row
 
-    // --- Y plane (bytes [0, w*h)) ---
-    // Each pixel maps to byte index: y * w + x
-    dstBytes[y0 * w + x0]             = uint(clamp(rgb2y(c00), 0.0, 255.0));
-    dstBytes[y0 * w + x0 + 1u]        = uint(clamp(rgb2y(c10), 0.0, 255.0));
-    dstBytes[(y0 + 1u) * w + x0]      = uint(clamp(rgb2y(c01), 0.0, 255.0));
-    dstBytes[(y0 + 1u) * w + x0 + 1u] = uint(clamp(rgb2y(c11), 0.0, 255.0));
+    // --- Y plane: two packed words, one per row (bytes y*w + x0 .. +3) ---
+    dstWords[y0 * wq + tileX] =
+        y8(p00) | (y8(p10) << 8) | (y8(p20) << 16) | (y8(p30) << 24);
+    dstWords[(y0 + 1u) * wq + tileX] =
+        y8(p01) | (y8(p11) << 8) | (y8(p21) << 16) | (y8(p31) << 24);
 
-    // --- Interleaved CbCr plane (bytes [w*h, w*h*3/2)) ---
-    // Average chroma over the 2x2 block (NV12 4:2:0 subsampling).
-    vec3 avg = (c00 + c10 + c01 + c11) * 0.25;
-    uint cb = uint(clamp(rgb2cb(avg), 0.0, 255.0));
-    uint cr = uint(clamp(rgb2cr(avg), 0.0, 255.0));
-
-    // Each 2x2 block produces one (Cb, Cr) pair at:
-    //   base = w*h + (by * (w/2) + bx) * 2
-    uint cBase = w * h + (by * (w / 2u) + bx) * 2u;
-    dstBytes[cBase]      = cb;
-    dstBytes[cBase + 1u] = cr;
+    // --- Interleaved CbCr plane: one packed word (Cb_l Cr_l Cb_r Cr_r) ---
+    // 4:2:0 subsampling: average chroma over each 2x2 block.
+    vec3 avgL = (p00 + p10 + p01 + p11) * 0.25;
+    vec3 avgR = (p20 + p30 + p21 + p31) * 0.25;
+    uint uvWord = (w * h) / 4u + tileY * wq + tileX;
+    dstWords[uvWord] =
+        c8(rgb2cb(avgL)) | (c8(rgb2cr(avgL)) << 8) |
+        (c8(rgb2cb(avgR)) << 16) | (c8(rgb2cr(avgR)) << 24);
 }

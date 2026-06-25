@@ -7,7 +7,7 @@
 
             "source" : "Rgba2Nv12_cs",
 
-            "thread_groups_based_on_texture" : { "slot" : 0, "divisor" : [2, 2, 1] },
+            "thread_groups_based_on_texture" : { "slot" : 0, "divisor" : [4, 2, 1] },
 
             "uav_units" : 1,
 

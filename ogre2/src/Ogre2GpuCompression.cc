@@ -16,6 +16,7 @@
  */
 
 #include <cstdint>
+#include <cstring>
 #include <deque>
 #include <vector>
 
@@ -60,16 +61,19 @@ class gz::rendering::Ogre2GpuCompressionPrivate
   /// Default 3 (latency+1) so steady single-camera pumping never hits the cap.
   public: unsigned int ringDepth = 3u;
 
-  /// \brief NV12 byte count for the configured dimensions.
-  /// Each NV12 byte is stored as one uint32 in the UAV (low 8 bits).
+  /// \brief NV12 byte count for the configured dimensions (the output size).
   public: size_t Nv12Bytes() const
           { return static_cast<size_t>(width) * height * 3u / 2u; }
+
+  /// \brief UAV element count: 4 packed NV12 bytes per uint32 word.
+  /// Requires width % 4 == 0 (enforced in Configure) so Nv12Bytes() / 4 is exact.
+  public: size_t Nv12Words() const { return this->Nv12Bytes() / 4u; }
 
   /// \brief The RGBA->NV12 compute job (looked up once from the JSON material).
   public: Ogre::HlmsComputeJob *nv12Job = nullptr;
 
-  /// \brief UAV buffer the compute job writes into (uint-per-byte packing).
-  /// numElements = w*h*3/2, bytesPerElement = sizeof(uint32_t).
+  /// \brief UAV buffer the compute job writes into (4 packed bytes per uint32).
+  /// numElements = w*h*3/8, bytesPerElement = sizeof(uint32_t).
   public: Ogre::UavBufferPacked *nv12Uav = nullptr;
 
   /// \brief In-flight async readback tickets, oldest first.
@@ -103,12 +107,18 @@ void Ogre2GpuCompression::Configure(unsigned int _width, unsigned int _height,
   // This guard MUST run BEFORE the unchanged-config early-return below:
   // otherwise an odd-sized RESIZE could early-return on a partial match and
   // leave a stale even-dimension UAV bound to the new (odd) texture.
-  if ((_width & 1u) || (_height & 1u))
+  // The packed-byte compute shader writes whole uint32 words (4 NV12 bytes),
+  // owning a 4x2 source tile per invocation. That requires width % 4 == 0 and
+  // even height; otherwise the per-row Y words and the CbCr word would not be
+  // uint32-aligned / disjoint. This guard MUST run BEFORE the unchanged-config
+  // early-return below so a now-invalid RESIZE never early-returns on a partial
+  // match and leaves a stale UAV bound to mismatched dimensions.
+  if ((_width & 3u) || (_height & 1u))
   {
-    gzerr << "Ogre2GpuCompression::Configure: NV12 requires even width and "
-          << "height, got " << _width << "x" << _height
+    gzerr << "Ogre2GpuCompression::Configure: packed NV12 requires width "
+          << "divisible by 4 and even height, got " << _width << "x" << _height
           << ". Helper left unconfigured." << std::endl;
-    // Tear down any prior even-dimension state so nothing stale stays bound.
+    // Tear down any prior valid-dimension state so nothing stale stays bound.
     this->Reset();
     return;
   }
@@ -126,14 +136,15 @@ void Ogre2GpuCompression::Configure(unsigned int _width, unsigned int _height,
   this->dataPtr->height = _height;
   this->dataPtr->ringDepth = _ringDepth;
 
-  // Allocate the UAV buffer: one uint32 per NV12 output byte (uint-per-byte
-  // packing strategy from the Task 4 compute shader design; disjoint writes
-  // from each thread are race-free). The host compacts in TryRetrieveNv12.
+  // Allocate the UAV buffer: 4 packed NV12 bytes per uint32 word
+  // (numElems = w*h*3/8). Each invocation owns disjoint whole words (a 4x2
+  // tile), so writes stay race-free without atomics, the GPU->CPU DMA is the
+  // true NV12 size (w*h*3/2 bytes), and TryRetrieveNv12 is a plain memcpy.
   auto *engine = Ogre2RenderEngine::Instance();
   Ogre::VaoManager *vaoManager =
       engine->OgreRoot()->getRenderSystem()->getVaoManager();
 
-  const size_t numElems = this->dataPtr->Nv12Bytes();
+  const size_t numElems = this->dataPtr->Nv12Words();
   this->dataPtr->nv12Uav = vaoManager->createUavBuffer(
       numElems,
       static_cast<uint32_t>(sizeof(uint32_t)),
@@ -264,7 +275,7 @@ void Ogre2GpuCompression::ConvertToNv12(Ogre::TextureGpu *_src)
   // in TryRetrieveNv12 (drained every frame) without ever stalling the render
   // thread. Up to ringDepth tickets may be in flight to absorb multi-frame DMA
   // latency; the oldest is evicted above if that cap is reached.
-  const size_t numElems = this->dataPtr->Nv12Bytes();
+  const size_t numElems = this->dataPtr->Nv12Words();
   Nv12Inflight rec;
   rec.ticket = this->dataPtr->nv12Uav->readRequest(0u, numElems);
   this->dataPtr->inflight.push_back(std::move(rec));
@@ -288,13 +299,12 @@ bool Ogre2GpuCompression::TryRetrieveNv12(std::vector<unsigned char> &_out)
   const size_t numBytes = this->dataPtr->Nv12Bytes();
   _out.resize(numBytes);
 
-  // Map the ticket's CPU-side staging data.
-  // The UAV stores one uint32 per NV12 output byte (low 8 bits hold the
-  // byte value; upper bits zero from the compute shader write).
+  // The UAV stores 4 packed NV12 bytes per uint32 word in little-endian order
+  // (lowest NV12 address in the low 8 bits), so the mapped staging memory is
+  // already the contiguous NV12 byte stream — a plain memcpy, no compaction.
+  // (Assumes a little-endian host, true for all gz targets: x86_64 / ARM-LE.)
   const void *mapped = rec.ticket->map();
-  const uint32_t *words = static_cast<const uint32_t *>(mapped);
-  for (size_t i = 0; i < numBytes; ++i)
-    _out[i] = static_cast<unsigned char>(words[i] & 0xFFu);
+  std::memcpy(_out.data(), mapped, numBytes);
   rec.ticket->unmap();
 
   // Release the ticket before popping (SharedPtr ref-count drop).

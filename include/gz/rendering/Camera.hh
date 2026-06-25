@@ -200,6 +200,28 @@ namespace gz
       public: virtual common::ConnectionPtr ConnectNewImageFrame(
                   NewFrameListener _listener) = 0;
 
+      /// \brief Enable/disable ASYNC GPU->CPU readback (experimental). When
+      /// enabled and at least one ConnectNewImageFrameAsync listener is
+      /// connected, each Update() issues a non-blocking, multi-buffered
+      /// readback of the rendered frame; finished frames are delivered via the
+      /// async listener a few frames later. This avoids the per-frame GPU
+      /// fence stall of the blocking Capture()/Copy() path. Default no-op;
+      /// engines without an async path simply ignore it.
+      /// \param[in] _enable True to enable async readback.
+      public: virtual void SetAsyncReadback(bool /*_enable*/) {}
+
+      /// \brief Get whether async readback is enabled.
+      /// \return True if async readback is enabled.
+      public: virtual bool AsyncReadback() const { return false; }
+
+      /// \brief Connect to the async readback frame event. The callback
+      /// signature matches ConnectNewImageFrame (data, width, height, depth,
+      /// format); the data pointer is valid only for the call's duration.
+      /// \param[in] _listener Callback to invoke per delivered async frame.
+      /// \return A connection, or nullptr if the engine has no async path.
+      public: virtual common::ConnectionPtr ConnectNewImageFrameAsync(
+                  NewFrameListener /*_listener*/) { return nullptr; }
+
       /// \brief Create a render window.
       /// \return A pointer to the render window.
       public: virtual RenderWindowPtr CreateRenderWindow() = 0;

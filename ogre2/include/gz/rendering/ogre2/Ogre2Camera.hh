@@ -143,6 +143,21 @@ namespace gz
       public: virtual Ogre::Camera *OgreCamera() const override;
 
       // Documentation inherited.
+      public: virtual void SetAsyncReadback(bool _enable) override;
+
+      // Documentation inherited.
+      public: virtual bool AsyncReadback() const override;
+
+      // Documentation inherited.
+      public: virtual common::ConnectionPtr ConnectNewImageFrameAsync(
+                  NewFrameListener _listener) override;
+
+      /// \brief Drive the async readback ring (issue this frame's download,
+      /// drain finished frames to the async listeners). No-op unless async
+      /// readback is enabled with a connected listener.
+      public: virtual void PostRender() override;
+
+      // Documentation inherited.
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
       // Documentation inherited.

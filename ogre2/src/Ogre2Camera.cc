@@ -15,8 +15,12 @@
  *
  */
 
+#include <string>
+#include <vector>
+
 #include <gz/common/Profiler.hh>
 
+#include "gz/rendering/ogre2/Ogre2AsyncImageReadback.hh"
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
@@ -37,6 +41,18 @@
 /// \brief Private data for the Ogre2Camera class
 class gz::rendering::Ogre2CameraPrivate
 {
+  /// \brief Whether async GPU->CPU readback is enabled.
+  public: bool asyncEnabled = false;
+
+  /// \brief Multi-buffered async readback ring (lazily created).
+  public: std::unique_ptr<Ogre2AsyncImageReadback> asyncReadback;
+
+  /// \brief Event fired per delivered async frame.
+  public: common::EventT<void(const void *, unsigned int, unsigned int,
+              unsigned int, const std::string &)> newImageFrameAsync;
+
+  /// \brief Scratch buffer reused for async frame delivery.
+  public: std::vector<unsigned char> asyncBuf;
 };
 
 using namespace gz;
@@ -55,8 +71,71 @@ Ogre2Camera::~Ogre2Camera()
 }
 
 //////////////////////////////////////////////////
+void Ogre2Camera::SetAsyncReadback(bool _enable)
+{
+  this->dataPtr->asyncEnabled = _enable;
+  if (!_enable)
+    this->dataPtr->asyncReadback.reset();
+}
+
+//////////////////////////////////////////////////
+bool Ogre2Camera::AsyncReadback() const
+{
+  return this->dataPtr->asyncEnabled;
+}
+
+//////////////////////////////////////////////////
+common::ConnectionPtr Ogre2Camera::ConnectNewImageFrameAsync(
+    Camera::NewFrameListener _listener)
+{
+  return this->dataPtr->newImageFrameAsync.Connect(_listener);
+}
+
+//////////////////////////////////////////////////
+void Ogre2Camera::PostRender()
+{
+  // Forward the standard post-render path (synchronous newImageFrame, etc.).
+  BaseCamera<Ogre2Sensor>::PostRender();
+
+  if (!this->dataPtr->asyncEnabled ||
+      this->dataPtr->newImageFrameAsync.ConnectionCount() == 0u)
+  {
+    return;
+  }
+
+  Ogre::TextureGpu *src = this->renderTexture->RenderTarget();
+  if (!src)
+    return;
+
+  const unsigned int w = this->ImageWidth();
+  const unsigned int h = this->ImageHeight();
+
+  if (!this->dataPtr->asyncReadback)
+  {
+    this->dataPtr->asyncReadback =
+        std::make_unique<Ogre2AsyncImageReadback>();
+  }
+  this->dataPtr->asyncReadback->Configure(w, h);
+
+  // Issue this frame's non-blocking download, then DRAIN every finished ticket
+  // (under multi-frame DMA latency more than one can complete per PostRender;
+  // a single poll would leave the ring filling and stall delivery).
+  this->dataPtr->asyncReadback->RequestDownload(src);
+  std::vector<unsigned char> &buf = this->dataPtr->asyncBuf;
+  while (this->dataPtr->asyncReadback->TryRetrieve(buf))
+  {
+    this->dataPtr->newImageFrameAsync(
+        buf.data(), w, h, 1u, "R8G8B8A8");
+  }
+}
+
+//////////////////////////////////////////////////
 void Ogre2Camera::Destroy()
 {
+  // Release async readback tickets before the render texture goes away.
+  if (this->dataPtr && this->dataPtr->asyncReadback)
+    this->dataPtr->asyncReadback.reset();
+
   if (!this->ogreCamera || !this->Scene()->IsInitialized())
     return;
 

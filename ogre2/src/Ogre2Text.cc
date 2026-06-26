@@ -255,6 +255,14 @@ Ogre2MovableText::Ogre2MovableText(Ogre::IdType _id,
 {
   this->renderOp.vertexData = nullptr;
   this->aabb = new Ogre::AxisAlignedBox;
+
+  // Provide a custom parameter for solid-color render passes (e.g. selection
+  // buffer, segmentation, thermal, gpu-rays). Unlike Ogre::Items, this is a
+  // custom v1 Renderable that the material switchers do not iterate over, so
+  // they never call setCustomParameter(1u, ...) on it. Without this, the
+  // GzHlmsUnlit listener throws Ogre::ItemIdentityException in
+  // GORM_SOLID_COLOR mode (getCustomParameter(1u)) and crashes the process.
+  this->setCustomParameter(1u, Ogre::Vector4(0, 0, 0, 1));
 }
 
 //////////////////////////////////////////////////

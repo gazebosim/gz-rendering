@@ -88,7 +88,7 @@ namespace gz
     };
 
     /// \brief Whether to use the legacy Ogre::Image2::convertFromTexture
-    /// readback path instead of the persistent-ticket path. True iff the env
+    /// readback path instead of the persistent-ticket path. True if the env
     /// var GZ_RENDERING_OGRE2_LEGACY_READBACK is set. Evaluated once.
     /// \todo Deprecate this temporary fallback env var in Gazebo N /
     /// gz-rendering12, then remove it in Gazebo O / gz-rendering13. If the new

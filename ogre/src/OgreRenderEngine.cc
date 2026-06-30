@@ -506,16 +506,15 @@ void OgreRenderEngine::LoadPlugins()
     plugins.push_back(path+"/Plugin_BSPSceneManager");
     plugins.push_back(path+"/Plugin_OctreeSceneManager");
 
-    // OGRE 1.12 ships image codecs as separate plugins. Without one of these
-    // loaded, ImageCodec only knows astc/bsp/dds/ktx/mesh/pkm and any
-    // PNG/JPG texture (e.g. the diffuse/normal maps fed to the stock
-    // TerrainMaterialGeneratorA SM2Profile by the heightmap layers) is
-    // rejected with "Can not find codec for 'png' format". STBI is the
-    // lighter dependency; FreeImage is tried as a fallback. Both load
-    // attempts are wrapped in the per-plugin try/catch below, so a missing
-    // .so on a stripped install is a no-op rather than a hard failure.
+    // OGRE 1.12 ships image codecs as separate plugins. Without one loaded,
+    // ImageCodec only knows astc/bsp/dds/ktx/mesh/pkm and any PNG/JPG texture
+    // (e.g. the diffuse/normal maps fed to the stock TerrainMaterialGeneratorA
+    // SM2Profile by the heightmap layers) is rejected with "Can not find codec
+    // for 'png' format". We load only the STBI codec: dropping the historical
+    // FreeImage dependency is one of the motivations for moving to OGRE 1.12.
+    // The load is wrapped in the per-plugin try/catch below, so a missing .so
+    // on a stripped install is a no-op rather than a hard failure.
     plugins.push_back(path+"/Codec_STBI");
-    plugins.push_back(path+"/Codec_FreeImage");
 
 #ifdef HAVE_OCULUS
     plugins.push_back(path+"/Plugin_CgProgramManager");

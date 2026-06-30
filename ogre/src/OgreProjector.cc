@@ -20,11 +20,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <cstring>
-
 #include <OgreEntity.h>
 #include <OgreGpuProgramParams.h>
-#include <OgreHardwarePixelBuffer.h>
 #include <OgreHighLevelGpuProgramManager.h>
 #include <OgreMaterialManager.h>
 #include <OgrePass.h>
@@ -48,70 +45,6 @@
 
 using namespace gz;
 using namespace rendering;
-
-namespace
-{
-  /// \brief Load a PNG (or any gz-common-decodable image) from disk and
-  /// upload it to an OGRE texture under the given alias name. OGRE 1.12 ships
-  /// without a PNG codec, so we must decode via gz-common and push raw RGBA.
-  /// \param[in] _alias Unique OGRE texture name to register.
-  /// \param[in] _path Absolute path to the image file.
-  /// \return True on success, false if the file can't be decoded.
-  bool LoadImageAsOgreTexture(const std::string &_alias,
-      const std::string &_path)
-  {
-    if (Ogre::TextureManager::getSingleton().getByName(_alias,
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME))
-    {
-      return true;
-    }
-
-    common::Image img;
-    if (img.Load(_path) != 0 || img.Width() == 0 || img.Height() == 0)
-      return false;
-
-    auto ogreTexture = Ogre::TextureManager::getSingleton().createManual(
-        _alias,
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-        Ogre::TEX_TYPE_2D,
-        img.Width(), img.Height(), 0, Ogre::PF_BYTE_RGBA);
-    auto pixelBuffer = ogreTexture->getBuffer();
-    pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
-    const auto &pixelBox = pixelBuffer->getCurrentLock();
-    auto data = img.RGBAData();
-    // Same heap-overflow class fixed in
-    // OgreMaterial::CreateOgreTextureFromImage: gz-common's RGBAData()
-    // returns 2x the bytes for 16-bit-per-channel sources (e.g. an embedded
-    // 16-bit PNG used as a projector texture).
-    // PF_BYTE_RGBA expects 8 bits/channel; a naive memcpy(data.size())
-    // overflows the OGRE pixel buffer and corrupts the heap.
-    const size_t bytes8 = static_cast<size_t>(img.Width()) *
-                          static_cast<size_t>(img.Height()) * 4u;
-    if (data.size() == bytes8)
-    {
-      std::memcpy(pixelBox.data, data.data(), bytes8);
-    }
-    else if (data.size() == bytes8 * 2u)
-    {
-      // 16-bit per channel: stbi keeps native uint16_t order, so on
-      // little-endian hosts the high (most-significant) byte is at offset 1.
-      auto *dst = static_cast<unsigned char *>(pixelBox.data);
-      const auto *src = data.data();
-      for (size_t i = 0; i < bytes8; ++i)
-        dst[i] = src[i * 2u + 1u];
-    }
-    else
-    {
-      gzwarn << "Skipping projector texture upload for '" << _alias
-             << "': RGBAData size " << data.size() << " does not match "
-             << img.Width() << "x" << img.Height()
-             << " 8-bit RGBA (" << bytes8 << ") or 16-bit RGBA ("
-             << (bytes8 * 2u) << ")" << std::endl;
-    }
-    pixelBuffer->unlock();
-    return true;
-  }
-}
 
 namespace gz
 {
@@ -632,46 +565,32 @@ void OgreProjectorListener::AddDecalToMaterial(
   this->BindProjectorShader(pass);
   pass->setLightingEnabled(false);
 
-  // OGRE 1.12 dropped the FreeImage-based PNG codec; loading textures by
-  // file name directly results in "Can not find codec for 'png' format"
-  // and a blank sampler. Pre-decode both the decal and filter textures via
-  // gz-common and upload them as manual textures, then attach by alias.
-  const std::string decalAlias =
-      "__gz_proj_decal_" + this->nodeName;
-  const std::string filterAlias =
-      "__gz_proj_filter_" + this->nodeName;
-  LoadImageAsOgreTexture(decalAlias, this->textureName);
-
-  std::string filterPath = "projection_filter.png";
-  // projection_filter.png lives in ogre/media/materials/textures, registered
-  // as a resource location by OgreRenderEngine. Resolve to an absolute path
-  // via the resource group manager so gz-common can decode it.
+  // Attach the decal texture by name. OGRE's STBI codec (loaded in
+  // OgreRenderEngine::LoadPlugins) decodes the PNG/JPG OGRE 1.12 indexes
+  // textures by basename within a resource location, so register the parent
+  // directory and reference the file by basename (see
+  // OgreMaterial::SetTextureImpl for the same fix).
+  const std::string decalFile = common::basename(this->textureName);
+  const std::string decalDir = common::parentPath(this->textureName);
+  auto &rgm = Ogre::ResourceGroupManager::getSingleton();
+  if (!decalDir.empty() && decalDir != this->textureName &&
+      !rgm.resourceLocationExists(decalDir,
+          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME))
   {
-    auto &rgm = Ogre::ResourceGroupManager::getSingleton();
-    if (rgm.resourceExistsInAnyGroup(filterPath))
-    {
-      auto group = rgm.findGroupContainingResource(filterPath);
-      auto archives = rgm.listResourceLocations(group);
-      for (const auto &loc : *archives)
-      {
-        std::string candidate = loc + "/" + filterPath;
-        if (common::isFile(candidate))
-        {
-          filterPath = candidate;
-          break;
-        }
-      }
-    }
+    rgm.addResourceLocation(decalDir, "FileSystem",
+        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
   }
-  LoadImageAsOgreTexture(filterAlias, filterPath);
 
-  Ogre::TextureUnitState *texState = pass->createTextureUnitState(decalAlias);
+  Ogre::TextureUnitState *texState = pass->createTextureUnitState(decalFile);
   texState->setProjectiveTexturing(true, this->frustum.get());
   texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
   texState->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
   texState->setTextureBorderColour(Ogre::ColourValue(0.0, 0.0, 0.0, 0.0));
 
-  texState = pass->createTextureUnitState(filterAlias);
+  // projection_filter.png lives in ogre/media/materials/textures, already
+  // registered as a resource location by OgreRenderEngine, so reference it
+  // by name directly.
+  texState = pass->createTextureUnitState("projection_filter.png");
   texState->setProjectiveTexturing(true, this->filterFrustum.get());
   texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
   texState->setTextureFiltering(Ogre::TFO_NONE);

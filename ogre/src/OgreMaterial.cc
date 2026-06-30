@@ -724,71 +724,14 @@ void OgreMaterial::SetTextureImpl(const std::string &_texture)
   // SetVertexShader / SetFragmentShader) and split _texture into parent
   // dir + basename.
   const std::string textureFile = common::basename(_texture);
-  bool createdManual = false;
-
-  // Path 1: gz-common pre-decode + manual upload.
-  // OGRE 1.12 on Ubuntu Noble ships without PNG/JPG codecs ("Can not find
-  // codec for 'png' format" in Ogre.log). Decoding through gz-common's image
-  // codecs and uploading raw RGBA bypasses the gap. This is the same
-  // workaround commit 12065492 introduced for projector decals.
-  if (!_texture.empty() && common::exists(_texture) &&
-      !Ogre::TextureManager::getSingleton().getByName(textureFile,
-          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME))
+  const std::string textureDir = common::parentPath(_texture);
+  if (!textureDir.empty() && textureDir != _texture)
   {
-    common::Image img;
-    if (img.Load(_texture) == 0 && img.Width() > 0 && img.Height() > 0)
+    if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+            textureDir, this->ogreGroup))
     {
-      auto ogreTexture = Ogre::TextureManager::getSingleton().createManual(
-          textureFile,
-          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-          Ogre::TEX_TYPE_2D,
-          img.Width(), img.Height(), 0, Ogre::PF_BYTE_RGBA);
-      auto pixelBuffer = ogreTexture->getBuffer();
-      pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
-      const auto &pixelBox = pixelBuffer->getCurrentLock();
-      auto data = img.RGBAData();
-      // See CreateOgreTextureFromImage for why we cannot blindly memcpy
-      // data.size(): RGBAData() doubles the byte count for 16-bit-per-channel
-      // sources, which would overflow the PF_BYTE_RGBA buffer.
-      const size_t bytes8 = static_cast<size_t>(img.Width()) *
-                            static_cast<size_t>(img.Height()) * 4u;
-      if (data.size() == bytes8)
-      {
-        std::memcpy(pixelBox.data, data.data(), bytes8);
-      }
-      else if (data.size() == bytes8 * 2u)
-      {
-        auto *dst = static_cast<unsigned char *>(pixelBox.data);
-        const auto *src = data.data();
-        for (size_t i = 0; i < bytes8; ++i)
-          dst[i] = src[i * 2u + 1u];
-      }
-      else
-      {
-        gzwarn << "Skipping texture upload for '" << textureFile
-               << "': RGBAData size " << data.size() << " does not match "
-               << img.Width() << "x" << img.Height()
-               << " 8-bit RGBA (" << bytes8 << ") or 16-bit RGBA ("
-               << (bytes8 * 2u) << ")" << std::endl;
-      }
-      pixelBuffer->unlock();
-      createdManual = true;
-    }
-  }
-
-  // Path 2: fall back to resource-group lookup for codecs OGRE handles
-  // natively (DDS, KTX, etc.) when pre-decode wasn't possible.
-  if (!createdManual)
-  {
-    const std::string textureDir = common::parentPath(_texture);
-    if (!textureDir.empty() && textureDir != _texture)
-    {
-      if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
-              textureDir, this->ogreGroup))
-      {
-        Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-            textureDir, "FileSystem", this->ogreGroup);
-      }
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+          textureDir, "FileSystem", this->ogreGroup);
     }
   }
 

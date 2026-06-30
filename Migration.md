@@ -9,6 +9,12 @@ release will remove the deprecated code.
 
 ### Optimizations
 
+* A Persistent GPU->CPU readback to avoid duplicate copies was introduced
+  in [Pull request #1303](https://github.com/gazebosim/gz-rendering/pull/1303),
+  although the end result is expected to be the same, it can be reverted
+  in the presence of errors setting their environment variable
+  `GZ_RENDERING_OGRE2_LEGACY_READBACK`.
+
 * The number of ogre threads spawn by default has changed from being the
   number of cores of the host computer to zero to reduce the CPU usage
   in https://github.com/gazebosim/gz-rendering/pull/1302. It can be

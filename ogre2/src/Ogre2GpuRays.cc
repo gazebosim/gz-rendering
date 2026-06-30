@@ -60,6 +60,8 @@
   #pragma warning(pop)
 #endif
 
+#include "Ogre2GpuReadbackTicket.hh"
+
 namespace gz
 {
 namespace rendering
@@ -132,6 +134,10 @@ class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2GpuRaysPrivate
 
   /// \brief Outgoing gpu rays data, used by newGpuRaysFrame event.
   public: float *gpuRaysScan = nullptr;
+
+  /// \brief Persistent GPU->CPU readback ticket used by the non-legacy
+  /// PostRender path.
+  public: Ogre2GpuReadbackTicket gpuRaysReadback;
 
   /// \brief Cubemap camera
   public: Ogre::Camera *cubeCam{nullptr};
@@ -581,6 +587,8 @@ void Ogre2GpuRays::Init()
 //////////////////////////////////////////////////
 void Ogre2GpuRays::Destroy()
 {
+  this->dataPtr->gpuRaysReadback.Destroy();
+
   if (!this->dataPtr->ogreCamera)
     return;
 
@@ -1300,6 +1308,33 @@ void Ogre2GpuRays::PreRender()
   }
 }
 
+namespace
+{
+  /// \brief Copy one mapped RGBA32 readback box into the RGB scan buffer
+  /// (drops alpha) in a single stride-aware pass. Honors _box.bytesPerRow.
+  void FillGpuRaysScan(const Ogre::TextureBox &_box, float *_scan,
+      unsigned int _width, unsigned int _height,
+      unsigned int _channels, unsigned int _rawChannelCount,
+      unsigned int _bytesPerChannel)
+  {
+    const float *src = static_cast<const float *>(_box.data);
+    for (unsigned int row = 0; row < _height; ++row)
+    {
+      const unsigned int rawDataRowIdx =
+          row * _box.bytesPerRow / _bytesPerChannel;
+      const unsigned int rowIdx = row * _width * _channels;
+      for (unsigned int column = 0; column < _width; ++column)
+      {
+        const unsigned int idx = rowIdx + column * _channels;
+        const unsigned int rawIdx = rawDataRowIdx + column * _rawChannelCount;
+        _scan[idx] = src[rawIdx];
+        _scan[idx + 1] = src[rawIdx + 1];
+        _scan[idx + 2] = src[rawIdx + 2];
+      }
+    }
+  }
+}  // namespace
+
 //////////////////////////////////////////////////
 void Ogre2GpuRays::PostRender()
 {
@@ -1311,12 +1346,6 @@ void Ogre2GpuRays::PostRender()
   unsigned int rawChannelCount = PixelUtil::ChannelCount(format);
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
 
-  // blit data from gpu to cpu
-  Ogre::Image2 image;
-  image.convertFromTexture(this->dataPtr->secondPassTexture, 0u, 0u);
-  Ogre::TextureBox box = image.getData(0u);
-  float *bufferTmp = static_cast<float *>(box.data);
-
   // Metal does not support RGB32_FLOAT so the internal texture format is
   // RGBA32_FLOAT. For backward compatibility, output data is kept in RGB
   // format instead of RGBA
@@ -1326,23 +1355,43 @@ void Ogre2GpuRays::PostRender()
     this->dataPtr->gpuRaysScan = new float[outputLen];
   }
 
-  // copy data from RGBA buffer to RGB buffer
-  for (unsigned int row = 0; row < height; ++row)
+  if (Ogre2UseLegacyReadback())
   {
-    unsigned int rawDataRowIdx = row * box.bytesPerRow / bytesPerChannel;
-    unsigned int rowIdx = row * width * this->Channels();
+    // Legacy A/B control: original Ogre::Image2 path, kept verbatim.
+    Ogre::Image2 image;
+    image.convertFromTexture(this->dataPtr->secondPassTexture, 0u, 0u);
+    Ogre::TextureBox box = image.getData(0u);
+    float *bufferTmp = static_cast<float *>(box.data);
 
-    // the texture box step size could be larger than our image buffer step
-    // size
-    for (unsigned int column = 0; column < width; ++column)
+    // copy data from RGBA buffer to RGB buffer
+    for (unsigned int row = 0; row < height; ++row)
     {
-      unsigned int idx = rowIdx + column * this->Channels();
-      unsigned int rawIdx = rawDataRowIdx + column * rawChannelCount;
-
-      this->dataPtr->gpuRaysScan[idx] = bufferTmp[rawIdx];
-      this->dataPtr->gpuRaysScan[idx + 1] = bufferTmp[rawIdx + 1];
-      this->dataPtr->gpuRaysScan[idx + 2] = bufferTmp[rawIdx + 2];
+      unsigned int rawDataRowIdx = row * box.bytesPerRow / bytesPerChannel;
+      unsigned int rowIdx = row * width * this->Channels();
+      for (unsigned int column = 0; column < width; ++column)
+      {
+        unsigned int idx = rowIdx + column * this->Channels();
+        unsigned int rawIdx = rawDataRowIdx + column * rawChannelCount;
+        this->dataPtr->gpuRaysScan[idx] = bufferTmp[rawIdx];
+        this->dataPtr->gpuRaysScan[idx + 1] = bufferTmp[rawIdx + 1];
+        this->dataPtr->gpuRaysScan[idx + 2] = bufferTmp[rawIdx + 2];
+      }
     }
+  }
+  else
+  {
+    // Persistent-ticket path: map the staging buffer once and repack RGBA->RGB
+    // in a single fused pass.
+    Ogre::TextureBox box = this->dataPtr->gpuRaysReadback.DownloadAndMap(
+        this->dataPtr->secondPassTexture);
+    if (!box.data)
+    {
+      gzerr << "Ogre2GpuRays: GPU readback failed; dropping frame" << std::endl;
+      return;
+    }
+    FillGpuRaysScan(box, this->dataPtr->gpuRaysScan, width, height,
+        this->Channels(), rawChannelCount, bytesPerChannel);
+    this->dataPtr->gpuRaysReadback.Unmap();
   }
 
   this->dataPtr->newGpuRaysFrame(this->dataPtr->gpuRaysScan,

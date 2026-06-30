@@ -678,40 +678,20 @@ void OgreRenderEngine::CreateResources()
     //     std::make_pair(prefix + "/media/models", "General"));
     archNames.push_back(
         std::make_pair(p + "/fonts", "Fonts"));
-  }
 
-  // OGRE 1.12+ requires the ShadowVolume programs for stencil shadow support
-  // and the Terrain helpers (TerrainTransforms.glsl, TerrainHelpers.glsl) for
-  // the stock TerrainMaterialGeneratorA shaders. These are shipped with the
-  // OGRE package media; locate them via OGRE_MEDIA_DIR (exported by
-  // OGREConfig.cmake) when available, falling back to the Linux FHS paths.
-  //
-  // TODO(gz-cmake): on Debian/Ubuntu, FindGzOGRE.cmake resolves OGRE via
-  // pkg-config, which has no `media` variable, so OGRE_MEDIA_DIR is never set
-  // and OGRE_MEDIA_PATH stays undefined here. The proper fix is to teach
-  // FindGzOGRE.cmake to also call find_package(OGRE CONFIG QUIET) and pick up
-  // OGREConfig.cmake's OGRE_MEDIA_DIR; until that lands the FHS fallback below
-  // covers the standard libogre-1.12* package layout.
-  std::vector<std::string> ogreMediaCandidates;
-#ifdef OGRE_MEDIA_PATH
-  ogreMediaCandidates.emplace_back(OGRE_MEDIA_PATH);
-#endif
-  ogreMediaCandidates.emplace_back("/usr/share/OGRE/Media");
-  ogreMediaCandidates.emplace_back("/usr/local/share/OGRE/Media");
-  for (const auto &ogreMedia : ogreMediaCandidates)
-  {
-    bool found = false;
-    for (const char *sub : {"ShadowVolume", "Terrain"})
-    {
-      std::string path = common::joinPaths(ogreMedia, sub);
-      if (common::isDirectory(path))
-      {
-        archNames.push_back(std::make_pair(path, "General"));
-        found = true;
-      }
-    }
-    if (found)
-      break;
+    // OGRE 1.12+ requires the ShadowVolume programs for stencil shadow support
+    // (OgreShadowVolumeExtrudeProgram::initialise() looks up the
+    // Ogre/ShadowExtrude* programs in a resource location named "ShadowVolume")
+    // and the Terrain helpers (TerrainTransforms.glsl, TerrainHelpers.glsl)
+    // for the stock TerrainMaterialGeneratorA shaders. Both are vendored
+    // verbatim from the OGRE package media (see ShadowVolume/README.md and
+    // Terrain/README.md) so the script versions stay pinned to the OGRE
+    // release gz-rendering was tested against, rather than picking up whatever
+    // copy happens to be installed in the system OGRE Media tree.
+    archNames.push_back(
+        std::make_pair(p + "/ShadowVolume", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/Terrain", "General"));
   }
 
   for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)

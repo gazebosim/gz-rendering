@@ -93,6 +93,10 @@ endif()
 
 if (OGRE_FOUND)
   # find boost - mainly needed on macOS and also by the terrain component
+  if(POLICY CMP0167)
+    # Prefer boost config supplied by package over find module
+    cmake_policy(SET CMP0167 NEW)
+  endif()
   find_package(Boost)
   if (Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})

@@ -876,6 +876,14 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
 /////////////////////////////////////////////////
 TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
 {
+  // ogre fails with lidar against the stock TerrainMaterialGeneratorA on
+  // OGRE 1.12 -- the laser-pass whole-scene material override never
+  // resolves the terrain renderables and every ray returns 0.
+  // The equivalent HeightmapGpuRays test in test/integration/heightmap.cc
+  // already skips ogre for the same reason.
+  // See https://github.com/gazebosim/gz-rendering/issues/35
+  CHECK_UNSUPPORTED_ENGINE("ogre");
+
 #ifdef __APPLE__
   GTEST_SKIP() << "Unsupported on apple, see issue #35.";
 #endif

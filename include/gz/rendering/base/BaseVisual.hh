@@ -311,8 +311,13 @@ namespace gz
     template <class T>
     void BaseVisual<T>::PreRender()
     {
+      // T::PreRender() resolves to BaseNode<T>::PreRender(), which already
+      // recurses into this visual's children through the virtual
+      // PreRenderChildren(). Calling PreRenderChildren() a second time here
+      // would pre-render every child twice, compounding to O(2^depth)
+      // redundant visits down the scene graph. Children are therefore
+      // pre-rendered exactly once, via T::PreRender().
       T::PreRender();
-      this->PreRenderChildren();
       this->PreRenderGeometries();
     }
 

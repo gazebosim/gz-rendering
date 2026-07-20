@@ -16,7 +16,6 @@
  */
 
 #include <gz/common/Console.hh>
-#include <gz/common/Profiler.hh>
 #include <gz/common/Util.hh>
 
 #include "gz/rendering/base/SceneExt.hh"

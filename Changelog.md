@@ -2,6 +2,9 @@
 
 ### Gazebo Rendering 10.X
 
+1. Highly reduce the CPU by setting the ogre workers to 0
+    * [Pull request #1305](https://github.com/gazebosim/gz-rendering/pull/1305)
+
 ### Gazebo Rendering 10.0.1 (2026-01-20)
 
 1. Fix item visibility check when building GI Vct

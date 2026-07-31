@@ -117,6 +117,7 @@ gz_find_package(GzOGRE2 VERSION 2.3.1
 
 if ("${OGRE2-PlanarReflections}" STREQUAL "OGRE2-PlanarReflections-NOTFOUND")
   message(STATUS "PlanarReflections component was not found. Try looking without it:")
+  list(REMOVE_ITEM OGRE2_COMPONENTS PlanarReflections)
   gz_find_package(GzOGRE2 VERSION 2.3.1
     COMPONENTS ${OGRE2_COMPONENTS}
     REQUIRED_BY ogre2

@@ -353,6 +353,88 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 }
 
 /////////////////////////////////////////////////
+/// \brief Test cubemap sampling at horizontal scan endpoints
+TEST_F(GpuRaysTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(CubemapEndpointSampling))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  // A 90 degree horizontal field of view puts both endpoint directions on
+  // cubemap face boundaries. Distinct ranges at those boundaries expose
+  // accidental wrap addressing in the second-pass texture lookup.
+  const double hMinAngle = -GZ_PI / 4.0;
+  const double hMaxAngle = GZ_PI / 4.0;
+  const double minRange = 0.1;
+  const double maxRange = 10.0;
+  const unsigned int hRayCount = 900u;
+  const unsigned int vRayCount = 1u;
+  const double nearBoxDistance = 4.0;
+  const double farBoxDistance = 7.0;
+  const double sqrtHalf = 0.7071067811865476;
+  const double endpointTolerance = 1e-2;
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr root = scene->RootVisual();
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("endpoint_gpu_rays");
+  ASSERT_NE(nullptr, gpuRays);
+  gpuRays->SetWorldPosition(0, 0, 0.5);
+  gpuRays->SetNearClipPlane(minRange);
+  gpuRays->SetFarClipPlane(maxRange);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  VisualPtr nearBox = scene->CreateVisual("EndpointNearBox");
+  nearBox->AddGeometry(scene->CreateBox());
+  nearBox->SetWorldPosition(
+      nearBoxDistance * sqrtHalf, -nearBoxDistance * sqrtHalf, 0.5);
+  root->AddChild(nearBox);
+
+  VisualPtr farBox = scene->CreateVisual("EndpointFarBox");
+  farBox->AddGeometry(scene->CreateBox());
+  farBox->SetWorldPosition(
+      farBoxDistance * sqrtHalf, farBoxDistance * sqrtHalf, 0.5);
+  root->AddChild(farBox);
+
+  const unsigned int channels = gpuRays->Channels();
+  float *scan = new float[hRayCount * vRayCount * channels];
+  common::ConnectionPtr connection =
+    gpuRays->ConnectNewGpuRaysFrame(
+        std::bind(&::OnNewGpuRaysFrame, scan,
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
+
+  gpuRays->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+
+  // A unit axis-aligned box intersects a 45 degree ray half a diagonal
+  // before its center.
+  const double halfBoxDiagonal = sqrtHalf;
+  const double expectedNearRange = nearBoxDistance - halfBoxDiagonal;
+  const double expectedFarRange = farBoxDistance - halfBoxDiagonal;
+  const unsigned int last = (hRayCount - 1u) * channels;
+  const unsigned int mid = (hRayCount / 2u) * channels;
+
+  EXPECT_NEAR(scan[0], expectedNearRange, endpointTolerance);
+  EXPECT_FLOAT_EQ(scan[mid], math::INF_F);
+  EXPECT_NEAR(scan[last], expectedFarRange, endpointTolerance);
+
+  connection.reset();
+  delete [] scan;
+  scan = nullptr;
+
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
 /// \brief Test GPU rays vertical component
 TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 {

@@ -382,6 +382,37 @@ bool Ogre2RenderEngine::LoadImpl(
   if (it != _params.end())
     std::istringstream(it->second) >> this->winID;
 
+  it = _params.find("wayland");
+  if (it != _params.end())
+    std::istringstream(it->second) >> this->isWayland;
+
+  if (this->isWayland)
+  {
+    it = _params.find("waylandDisplay");
+    if (it != _params.end())
+    {
+      size_t ptrValue = 0u;
+      std::istringstream(it->second) >> ptrValue;
+      this->waylandDisplay = reinterpret_cast<void *>(ptrValue);
+    }
+
+    it = _params.find("waylandSurface");
+    if (it != _params.end())
+    {
+      size_t ptrValue = 0u;
+      std::istringstream(it->second) >> ptrValue;
+      this->waylandSurface = reinterpret_cast<void *>(ptrValue);
+    }
+
+    if (!this->waylandDisplay || !this->waylandSurface)
+    {
+      gzerr << "wayland=true was specified but waylandDisplay/"
+            << "waylandSurface were not both provided. Native Wayland "
+            << "rendering requires both." << std::endl;
+      this->isWayland = false;
+    }
+  }
+
   it = _params.find("metal");
   if (it != _params.end())
   {
@@ -530,9 +561,11 @@ void Ogre2RenderEngine::CreateContext()
   }
 #endif
 #if !defined(__APPLE__) && !defined(_WIN32)
-  if (this->Headless())
+  if (this->Headless() || this->isWayland)
   {
-    // Nothing to do
+    // Nothing to do. In Wayland mode, OGRE-Next's Wayland EGL backend
+    // creates its own EGL context from the caller-supplied wl_display -
+    // there is no X11/GLX dummy context to set up here.
     return;
   }
 #if HAVE_GLX
@@ -782,7 +815,29 @@ void Ogre2RenderEngine::CreateRenderSystem()
             "and make sure OpenGL is enabled." << std::endl;
   }
 
-  if (!this->Headless())
+  if (this->isWayland)
+  {
+    try
+    {
+      // This may fail if OGRE-Next was built without native Wayland EGL
+      // support (e.g. an older OGRE-Next predating that backend) - in that
+      // case, fall through with GLX/the default interface still selected
+      // and let CreateRenderWindow's params report the real error.
+      renderSys->setConfigOption("Interface", "Wayland EGL Window");
+    }
+    catch (Ogre::Exception &)
+    {
+      gzerr << "Unable to select the \"Wayland EGL Window\" interface. "
+            << "This OGRE-Next build may predate native Wayland support."
+            << std::endl;
+    }
+
+    if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
+    {
+      renderSys->setConfigOption("RTT Preferred Mode", "FBO");
+    }
+  }
+  else if (!this->Headless())
   {
 
     // We operate in windowed mode
@@ -1134,6 +1189,12 @@ void Ogre2RenderEngine::CreateRenderWindow()
       handle = std::to_string((uintptr_t)&vulkanX11Data);
     }
   }
+  else if (this->isWayland)
+  {
+    // No X11 dummy handle in Wayland mode - the wl_display/wl_surface
+    // pair is injected directly into params by the public
+    // CreateRenderWindow overload below, keyed off this->isWayland.
+  }
   else
   {
     handle = std::to_string(this->dummyWindowId);
@@ -1165,7 +1226,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
       params["SDL2x11"] = _handle;
     }
   }
-  else
+  else if (!this->isWayland)
   {
     // if use current gl then don't include window handle params
     if (!this->useCurrentGLContext)
@@ -1236,8 +1297,15 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
 #endif
   }
 
+  if (this->isWayland)
+  {
+    params["externalWaylandDisplay"] =
+      std::to_string(reinterpret_cast<size_t>(this->waylandDisplay));
+    params["externalWaylandSurface"] =
+      std::to_string(reinterpret_cast<size_t>(this->waylandSurface));
+  }
 #if !defined(__APPLE__) && !defined(_MSC_VER)
-  if (!this->winID.empty())
+  else if (!this->winID.empty())
   {
     params["parentWindowHandle"] = this->winID;
   }

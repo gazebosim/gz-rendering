@@ -406,7 +406,7 @@ bool Ogre2RenderEngine::LoadImpl(
 
     if (!this->waylandDisplay || !this->waylandSurface)
     {
-      gzerr << "wayland=true was specified but waylandDisplay/"
+      gzerr << "wayland=1 was specified but waylandDisplay/"
             << "waylandSurface were not both provided. Native Wayland "
             << "rendering requires both." << std::endl;
       this->isWayland = false;
@@ -832,10 +832,14 @@ void Ogre2RenderEngine::CreateRenderSystem()
             << std::endl;
     }
 
-    if (this->dataPtr->graphicsAPI == GraphicsAPI::OPENGL)
-    {
-      renderSys->setConfigOption("RTT Preferred Mode", "FBO");
-    }
+    // NOTE: unlike the windowed (GLX) branch below, "RTT Preferred Mode"
+    // is deliberately NOT set here. WaylandEglSupport::addConfig() doesn't
+    // register that option at all (it's meaningless for this backend -
+    // the primary Wayland window is a throwaway bootstrap window, never
+    // used as an RTT target; real camera rendering always goes through a
+    // separate Ogre2RenderTexture regardless of windowing backend), so
+    // calling setConfigOption for it here would throw
+    // Ogre::Exception::ERR_INVALIDPARAMS uncaught.
   }
   else if (!this->Headless())
   {

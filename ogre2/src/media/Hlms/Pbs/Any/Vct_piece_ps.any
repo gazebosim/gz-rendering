@@ -22,12 +22,12 @@
 		@end
 	@end
 	@property( syntax == metal )
-		, array<texture3d<float> vctProbes, @value( vct_num_probes )>	[[texture(@value(vctProbes))]]
+		, array<texture3d<float>, @value( vct_num_probes )> vctProbes   [[texture(@value(vctProbes))]]
 		, sampler vctProbeSampler			[[sampler(@value(vctProbes))]]
 		@property( vct_anisotropic )
-			, array<texture3d<float> vctProbeX, @value( vct_num_probes )>	[[texture(@value(vctProbeX))]]
-			, array<texture3d<float> vctProbeY, @value( vct_num_probes )>	[[texture(@value(vctProbeY))]]
-			, array<texture3d<float> vctProbeZ, @value( vct_num_probes )>	[[texture(@value(vctProbeZ))]]
+    , array<texture3d<float>, @value( vct_num_probes )> vctProbeX   [[texture(@value(vctProbeX))]]
+    , array<texture3d<float>, @value( vct_num_probes )> vctProbeY   [[texture(@value(vctProbeY))]]
+    , array<texture3d<float>, @value( vct_num_probes )> vctProbeZ   [[texture(@value(vctProbeZ))]]
 		@end
 	@end
 @end
@@ -75,7 +75,7 @@
 			( VctProbeParams probeParams, float3 posLS,
 			  float3 dirLS, float tanHalfAngle,
 			  float startingLodLevel, float startingAlpha, int probeIdx,
-			  OGRE_Texture3D_float4 probes[@value( vct_num_probes )]
+			  OGRE_ArrayTex( OGRE_Texture3D_float4, probes, @value( vct_num_probes ) )
 			  OGRE_SAMPLER_ARG_DECL( probeSampler )
 			  OGRE_VCT_ANISO_PROBE_ARG_DECL )
 		{
@@ -307,7 +307,7 @@
 		OGRE_INOUT_REF( float3, vctSpecPosVS ),
 	@end
 		VctProbeParams probeParams,
-		OGRE_Texture3D_float4 probes[@value( vct_num_probes )]
+		OGRE_ArrayTex( OGRE_Texture3D_float4, probes, @value( vct_num_probes ) )
 		OGRE_SAMPLER_ARG_DECL( probeSampler )
 		OGRE_VCT_ANISO_PROBE_ARG_DECL
 	)

@@ -71,6 +71,19 @@ Image::Image(unsigned int _width, unsigned int _height,
 }
 
 //////////////////////////////////////////////////
+Image::Image(unsigned int _width, unsigned int _height,
+  PixelFormat _format, void *_data)
+  : dataPtr(utils::MakeImpl<Implementation>())
+{
+  this->dataPtr->width = _width;
+  this->dataPtr->height = _height;
+  this->dataPtr->format = PixelUtil::Sanitize(_format);
+  // The caller owns the buffer: the deleter does nothing.
+  this->dataPtr->data = DataPtr(
+      static_cast<unsigned char *>(_data), [](unsigned char *) {});
+}
+
+//////////////////////////////////////////////////
 Image::~Image() = default;
 
 //////////////////////////////////////////////////

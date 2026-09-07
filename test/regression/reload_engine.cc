@@ -221,7 +221,7 @@ TEST_F(ReloadEngineTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ThermalCamera))
 /////////////////////////////////////////////////
 TEST_F(ReloadEngineTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
 {
-  CHECK_SUPPORTED_ENGINE("ogre");
+  CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
 
   this->Run([](auto engine){
     auto scene = engine->CreateScene("scene");

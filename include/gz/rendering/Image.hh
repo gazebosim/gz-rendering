@@ -48,6 +48,19 @@ namespace ignition
       public: Image(unsigned int _width, unsigned int _height,
                   PixelFormat _format);
 
+      /// \brief Constructor. Creates an image that stores its pixels in a
+      /// caller owned buffer instead of allocating its own. The buffer must
+      /// hold at least MemorySize() bytes and outlive the image and any copy
+      /// of it, since copies share the same buffer. Copying a camera into
+      /// such an image writes straight into the caller's memory, for example
+      /// a message payload, and saves one copy per frame.
+      /// \param[in] _width Image width in pixels
+      /// \param[in] _height Image height in pixels
+      /// \param[in] _format Image pixel format
+      /// \param[in] _data Caller owned pixel buffer
+      public: Image(unsigned int _width, unsigned int _height,
+                  PixelFormat _format, void *_data);
+
       /// \brief Deconstructor
       public: ~Image();
 

@@ -17,10 +17,11 @@
 
 #include <memory>
 
+#include <utility>
+
 #include "gz/rendering/Image.hh"
 
 /// \brief Shared pointer to raw image buffer
-typedef std::shared_ptr<unsigned char> DataPtr;
 
 /// \brief Private fields of Image
 class gz::rendering::Image::Implementation
@@ -35,7 +36,7 @@ class gz::rendering::Image::Implementation
   public: PixelFormat format = PF_UNKNOWN;
 
   /// \brief Pointer to the image data
-  public: DataPtr data = nullptr;
+  public: Image::DataPtr data = nullptr;
 };
 
 using namespace gz;
@@ -67,20 +68,18 @@ Image::Image(unsigned int _width, unsigned int _height,
   this->dataPtr->format = PixelUtil::Sanitize(_format);
   unsigned int size = this->MemorySize();
   this->dataPtr->data =
-      DataPtr(new unsigned char[size], ArrayDeleter<unsigned char>());
+      Image::DataPtr(new unsigned char[size], ArrayDeleter<unsigned char>());
 }
 
 //////////////////////////////////////////////////
 Image::Image(unsigned int _width, unsigned int _height,
-  PixelFormat _format, void *_data)
+  PixelFormat _format, DataPtr _data)
   : dataPtr(utils::MakeImpl<Implementation>())
 {
   this->dataPtr->width = _width;
   this->dataPtr->height = _height;
   this->dataPtr->format = PixelUtil::Sanitize(_format);
-  // The caller owns the buffer: the deleter does nothing.
-  this->dataPtr->data = DataPtr(
-      static_cast<unsigned char *>(_data), [](unsigned char *) {});
+  this->dataPtr->data = std::move(_data);
 }
 
 //////////////////////////////////////////////////

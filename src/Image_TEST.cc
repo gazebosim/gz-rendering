@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 
+#include <memory>
 #include <vector>
 
 #include "gz/rendering/Image.hh"
@@ -46,7 +47,9 @@ TEST(ImageTest, ExternalBuffer)
   std::vector<unsigned char> buffer(36, 0);
 
   {
-    Image image(4, 3, PF_R8G8B8, buffer.data());
+    // The caller keeps ownership: the deleter does nothing.
+    Image image(4, 3, PF_R8G8B8,
+        Image::DataPtr(buffer.data(), [](unsigned char *) {}));
     EXPECT_EQ(4u, image.Width());
     EXPECT_EQ(3u, image.Height());
     EXPECT_EQ(PF_R8G8B8, image.Format());
@@ -70,4 +73,31 @@ TEST(ImageTest, ExternalBuffer)
   // contents are intact.
   EXPECT_EQ(42, buffer[5]);
   EXPECT_EQ(43, buffer[6]);
+}
+
+/////////////////////////////////////////////////
+TEST(ImageTest, SharedOwner)
+{
+  // The buffer belongs to an owner object; the image keeps that owner alive
+  // through an aliased shared pointer.
+  auto owner = std::make_shared<std::vector<unsigned char>>(36, 7);
+  std::weak_ptr<std::vector<unsigned char>> watch = owner;
+
+  Image image(4, 3, PF_R8G8B8, Image::DataPtr(owner, owner->data()));
+  EXPECT_EQ(owner->data(), image.Data<unsigned char>());
+  EXPECT_EQ(2, owner.use_count());
+
+  // Dropping the caller's reference does not free the buffer.
+  owner.reset();
+  EXPECT_FALSE(watch.expired());
+  EXPECT_EQ(7, image.Data<unsigned char>()[0]);
+
+  // A copy shares the owner too; the buffer lives until the last image goes.
+  {
+    Image copy = image;
+    EXPECT_EQ(image.Data<unsigned char>(), copy.Data<unsigned char>());
+  }
+  EXPECT_FALSE(watch.expired());
+  image = Image(1, 1, PF_R8G8B8);
+  EXPECT_TRUE(watch.expired());
 }

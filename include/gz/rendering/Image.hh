@@ -35,6 +35,10 @@ namespace gz
     /// \brief Encapsulates a raw image buffer and relevant properties
     class GZ_RENDERING_VISIBLE Image
     {
+      /// \brief Shared pointer to a pixel buffer. Used to hand the image a
+      /// buffer the caller owns, see the matching constructor.
+      public: using DataPtr = std::shared_ptr<unsigned char>;
+
       /// \brief Default constructor
       public: Image();
 
@@ -45,18 +49,20 @@ namespace gz
       public: Image(unsigned int _width, unsigned int _height,
                   PixelFormat _format);
 
-      /// \brief Constructor. Creates an image that stores its pixels in a
-      /// caller owned buffer instead of allocating its own. The buffer must
-      /// hold at least MemorySize() bytes and outlive the image and any copy
-      /// of it, since copies share the same buffer. Copying a camera into
-      /// such an image writes straight into the caller's memory, for example
-      /// a message payload, and saves one copy per frame.
+      /// \brief Constructor. Creates an image whose pixels live in a buffer
+      /// the caller provides instead of one the image allocates. The buffer
+      /// must hold at least MemorySize() bytes. Ownership follows the shared
+      /// pointer: alias it to the buffer's owner to keep that owner alive for
+      /// as long as the image or any copy of it exists, or give it a no op
+      /// deleter for memory known to outlive the image. Pointer stability is
+      /// still the caller's job: if the owner reallocates the buffer (for
+      /// example a std::string that is resized), create a new image.
       /// \param[in] _width Image width in pixels
       /// \param[in] _height Image height in pixels
       /// \param[in] _format Image pixel format
-      /// \param[in] _data Caller owned pixel buffer
+      /// \param[in] _data Shared pointer to the caller's pixel buffer
       public: Image(unsigned int _width, unsigned int _height,
-                  PixelFormat _format, void *_data);
+                  PixelFormat _format, DataPtr _data);
 
       /// \brief Destructor
       public: virtual ~Image();

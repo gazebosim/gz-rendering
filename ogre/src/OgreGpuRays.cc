@@ -15,6 +15,8 @@
  *
 */
 
+#include <cstdint>
+
 #include <gz/common/Mesh.hh>
 #include <gz/common/SubMesh.hh>
 #include <gz/common/Profiler.hh>
@@ -582,6 +584,12 @@ void OgreGpuRays::UpdateRenderTarget(Ogre::RenderTarget *_target,
   renderSys->setLightingEnabled(false);
   renderSys->_setFog(Ogre::FOG_NONE);
 
+  // Seed the GL fixed-function view/projection state. notifyRenderSingleObject
+  // pushes the world matrix per object so gl_ModelViewMatrix resolves to
+  // view*world under OGRE 1.12.
+  renderSys->_setProjectionMatrix(_cam->getProjectionMatrixRS());
+  renderSys->_setViewMatrix(_cam->getViewMatrix(true));
+
   pass->_updateAutoParams(&autoParamDataSource, 1);
 
   if (_updateTex)
@@ -650,9 +658,14 @@ void OgreGpuRays::Render()
   if (this->dataPtr->textureCount > 1)
       this->Node()->roll(Ogre::Radian(this->dataPtr->cameraYaws[3]));
 
-  sceneMgr->removeRenderObjectListener(this);
-
   this->dataPtr->visual->SetVisible(true);
+
+  // Keep the listener active for the 2nd pass so the canvas renderable also
+  // gets its world matrix pushed to the GL fixed-function state under OGRE
+  // 1.12. Switch currentMat/currentTexture so the listener binds the 2nd-pass
+  // programs/params against the canvas.
+  this->dataPtr->currentMat = this->dataPtr->matSecondPass;
+  this->dataPtr->currentTexture = this->dataPtr->secondPassTexture;
 
   this->UpdateRenderTarget(
       this->dataPtr->secondPassTexture->getBuffer()->getRenderTarget(),
@@ -661,6 +674,7 @@ void OgreGpuRays::Render()
 
   this->dataPtr->visual->SetVisible(false);
 
+  sceneMgr->removeRenderObjectListener(this);
   sceneMgr->_suppressRenderStateChanges(false);
 }
 
@@ -1003,11 +1017,16 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
 
   pass->_updateAutoParams(&autoParamDataSource,
       Ogre::GPV_GLOBAL | Ogre::GPV_PER_OBJECT);
-  pass->getFragmentProgramParameters()->setNamedConstant("retro", retro[0]);
-  pass->getFragmentProgramParameters()->setNamedConstant(
-      "max", static_cast<float>(this->dataMaxVal));
-  pass->getFragmentProgramParameters()->setNamedConstant(
-      "min", static_cast<float>(this->dataMinVal));
+  // retro/max/min are only present on the 1st-pass material; the 2nd-pass
+  // canvas material does not declare them, so skip if absent.
+  if (this->dataPtr->currentMat == this->dataPtr->matFirstPass)
+  {
+    pass->getFragmentProgramParameters()->setNamedConstant("retro", retro[0]);
+    pass->getFragmentProgramParameters()->setNamedConstant(
+        "max", static_cast<float>(this->dataMaxVal));
+    pass->getFragmentProgramParameters()->setNamedConstant(
+        "min", static_cast<float>(this->dataMinVal));
+  }
   renderSys->bindGpuProgram(
       pass->getVertexProgram()->_getBindingDelegate());
 
@@ -1021,6 +1040,36 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
   renderSys->bindGpuProgramParameters(Ogre::GPT_FRAGMENT_PROGRAM,
       pass->getFragmentProgramParameters(),
       (Ogre::GPV_GLOBAL | Ogre::GPV_PER_OBJECT));
+
+  // Push this renderable's world matrix into the GL fixed-function state so
+  // gl_ModelViewMatrix / ftransform() in the legacy GLSL laser shaders see
+  // view*world instead of the stale value left by OGRE 1.12's SceneManager
+  // (which no longer calls RenderSystem::_setWorldMatrix per object). Place
+  // this LAST so nothing above perturbs the GL MODELVIEW stack.
+  //
+  // Renderable::getWorldTransforms writes getNumWorldTransforms() matrices
+  // into the buffer with no size argument, so the count must be checked
+  // *before* the call to avoid a stack write past the array for software-
+  // skinned renderables (where getNumWorldTransforms() can exceed
+  // OGRE_MAX_NUM_BONES).
+  // TODO(anyone): laser shaders only consume xform[0], so skinned visuals
+  // still
+  // render at their root-bone transform. Fixing that requires plumbing the
+  // bone-matrix array into the GLSL programs.
+  const uint16_t count = _rend->getNumWorldTransforms();
+  if (count == 0)
+    return;
+  if (count > OGRE_MAX_NUM_BONES)
+  {
+    gzwarn << "OgreGpuRays: renderable reports " << count
+           << " world transforms (>" << OGRE_MAX_NUM_BONES
+           << "); skipping world-matrix push to avoid stack overflow"
+           << std::endl;
+    return;
+  }
+  Ogre::Matrix4 xform[OGRE_MAX_NUM_BONES];
+  _rend->getWorldTransforms(xform);
+  renderSys->_setWorldMatrix(xform[0]);
 }
 
 //////////////////////////////////////////////////

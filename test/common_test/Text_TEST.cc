@@ -31,6 +31,7 @@ class TextTest : public CommonRenderingTest
 /////////////////////////////////////////////////
 TEST_F(TextTest, Text)
 {
+  // CreateText is not implemented for ogre2 (see issue #1264)
   CHECK_SUPPORTED_ENGINE("ogre");
 
   ScenePtr scene = engine->CreateScene("scene");
@@ -99,6 +100,7 @@ TEST_F(TextTest, Text)
 class FontTest : public TextTest, public testing::WithParamInterface<std::string> {};
 
 TEST_P(FontTest, SupportedFont){
+  // CreateText is not implemented for ogre2 (see issue #1264)
   CHECK_SUPPORTED_ENGINE("ogre");
 
   ScenePtr scene = engine->CreateScene("scene");

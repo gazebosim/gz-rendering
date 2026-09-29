@@ -104,7 +104,19 @@ void Ogre2Visual::SetVisible(bool _visible)
   if (!this->ogreNode)
     return;
 
-  this->ogreNode->setVisible(_visible);
+  // Do not let Ogre cascade the visibility to child scene nodes. Child
+  // visuals get their own SetVisible call so that they can apply their
+  // rules, e.g. an arrow visual keeps its rotation visual hidden.
+  this->ogreNode->setVisible(_visible, false);
+
+  for (auto it = this->children->Begin(); it != this->children->End(); ++it)
+  {
+    VisualPtr visual = std::dynamic_pointer_cast<Visual>(*it);
+    if (visual)
+      visual->SetVisible(_visible);
+    else if ((*it)->Node())
+      (*it)->Node()->setVisible(_visible);
+  }
 }
 
 //////////////////////////////////////////////////

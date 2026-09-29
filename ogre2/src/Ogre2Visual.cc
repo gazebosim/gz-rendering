@@ -15,6 +15,8 @@
  *
  */
 
+#include <unordered_set>
+
 #include <gz/common/Console.hh>
 #include <gz/common/Profiler.hh>
 
@@ -104,18 +106,32 @@ void Ogre2Visual::SetVisible(bool _visible)
   if (!this->ogreNode)
     return;
 
-  // Do not let Ogre cascade the visibility to child scene nodes. Child
-  // visuals get their own SetVisible call so that they can apply their
-  // rules, e.g. an arrow visual keeps its rotation visual hidden.
+  // Do not let Ogre cascade the visibility into child visuals. They get
+  // their own SetVisible call so that they can apply their rules, e.g. an
+  // arrow visual keeps its rotation visual hidden.
   this->ogreNode->setVisible(_visible, false);
 
+  std::unordered_set<Ogre::Node *> childVisualNodes;
   for (auto it = this->children->Begin(); it != this->children->End(); ++it)
   {
     VisualPtr visual = std::dynamic_pointer_cast<Visual>(*it);
-    if (visual)
+    if (visual && (*it)->Node())
+    {
       visual->SetVisible(_visible);
-    else if ((*it)->Node())
-      (*it)->Node()->setVisible(_visible);
+      childVisualNodes.insert((*it)->Node());
+    }
+  }
+
+  // Other child scene nodes, e.g. lights or nodes created internally by a
+  // visual, keep the cascading behavior.
+  for (size_t i = 0; i < this->ogreNode->numChildren(); ++i)
+  {
+    Ogre::Node *child = this->ogreNode->getChild(i);
+    if (childVisualNodes.count(child) > 0u)
+      continue;
+    auto *childSceneNode = dynamic_cast<Ogre::SceneNode *>(child);
+    if (childSceneNode)
+      childSceneNode->setVisible(_visible);
   }
 }
 

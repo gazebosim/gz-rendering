@@ -105,30 +105,28 @@ TEST_F(AxisVisualTest,
   axis->SetLocalScale(kScale, kScale, kScale);
   parent->AddChild(axis);
 
+  // The rotation visuals are hidden when the axis visual is created
+  const unsigned int created = this->CountNonBackgroundPixels();
+  EXPECT_GT(created, 0u);
+
   parent->SetVisible(false);
   EXPECT_EQ(0u, this->CountNonBackgroundPixels());
 
   parent->SetVisible(true);
-  const unsigned int parentShown = this->CountNonBackgroundPixels();
+  EXPECT_EQ(created, this->CountNonBackgroundPixels());
 
-  // Showing the axis itself keeps the rotation visuals hidden
   axis->SetVisible(true);
-  const unsigned int axisShown = this->CountNonBackgroundPixels();
-
-  EXPECT_GT(axisShown, 0u);
-  EXPECT_EQ(axisShown, parentShown);
+  EXPECT_EQ(created, this->CountNonBackgroundPixels());
 
   engine->DestroyScene(this->scene);
 }
 
 /////////////////////////////////////////////////
 // A rotation visual that was explicitly shown must stay visible when the
-// parent of the arrow is shown again, e.g. for revolute joint visuals.
+// arrow or its parent is shown again, e.g. for revolute joint visuals.
 TEST_F(AxisVisualTest,
-    GZ_UTILS_TEST_DISABLED_ON_WIN32(ParentSetVisibleKeepsShownRotation))
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(SetVisibleKeepsShownRotation))
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
-
   ASSERT_NO_FATAL_FAILURE(this->SetUpScene());
 
   VisualPtr parent = this->scene->CreateVisual();
@@ -141,14 +139,18 @@ TEST_F(AxisVisualTest,
 
   arrow->ShowArrowRotation(false);
   const unsigned int rotationHidden = this->CountNonBackgroundPixels();
+  EXPECT_GT(rotationHidden, 0u);
 
   arrow->ShowArrowRotation(true);
+  const unsigned int rotationShown = this->CountNonBackgroundPixels();
+  EXPECT_GT(rotationShown, rotationHidden);
+
+  arrow->SetVisible(true);
+  EXPECT_EQ(rotationShown, this->CountNonBackgroundPixels());
+
   parent->SetVisible(false);
   parent->SetVisible(true);
-  const unsigned int rotationShown = this->CountNonBackgroundPixels();
-
-  EXPECT_GT(rotationHidden, 0u);
-  EXPECT_GT(rotationShown, rotationHidden);
+  EXPECT_EQ(rotationShown, this->CountNonBackgroundPixels());
 
   engine->DestroyScene(this->scene);
 }

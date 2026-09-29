@@ -17,6 +17,14 @@ release will remove the deprecated code.
   own visibility state, such as lidar and frustum visuals, now also receive
   the call. Child nodes that are not visuals keep the cascading behavior.
 
+* `BaseArrowVisual::ShowArrowRotation` updates the flag used by
+  `BaseArrowVisual::SetVisible` again, as it did before
+  [Pull request #889](https://github.com/gazebosim/gz-rendering/pull/889).
+  A rotation visual shown with `ShowArrowRotation(true)` now stays visible
+  when `SetVisible(true)` is called on the arrow or its parent, so the
+  rotation visuals that joint visuals show for revolute, revolute2, universal
+  and gearbox joints are no longer hidden by those calls.
+
 ### Optimizations
 
 * A Persistent GPU->CPU readback to avoid duplicate copies was introduced

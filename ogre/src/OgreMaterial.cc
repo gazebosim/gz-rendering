@@ -17,6 +17,7 @@
 
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
+#include <gz/common/Image.hh>
 #include <gz/common/Profiler.hh>
 
 #include "gz/rendering/InstallationDirectories.hh"
@@ -64,7 +65,8 @@ void OgreMaterial::Destroy()
 #else
   if (this->ogreMaterial)
   {
-    matManager.remove(this->ogreMaterial->getName());
+    if (this->ogreMaterialOwner)
+      matManager.remove(this->ogreMaterial->getName());
     this->ogreMaterial.reset();
   }
 #endif
@@ -354,8 +356,12 @@ void OgreMaterial::SetNormalMap(const std::string &_name,
 
   this->normalMapName = _name;
   this->normalMapData = _img;
-  // TODO(anyone): implement
-  // this->SetNormalMapImpl(texture);
+
+  // Load the normal-map image into OGRE's TextureManager so the RTSS
+  // NormalMapLighting SRS can bind it by name later. Do not touch
+  // this->ogreTexState — that slot is the diffuse texture.
+  if (_img)
+    this->CreateOgreTextureFromImage(_name, _img);
 }
 
 //////////////////////////////////////////////////
@@ -556,16 +562,28 @@ void OgreMaterial::SetVertexShader(const std::string &_path)
     return;
   }
 
-  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(_path,
-  "FileSystem", "General", false);
+  std::string shaderDir = common::parentPath(_path);
+  std::string shaderFile = common::basename(_path);
+  if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+          shaderDir, this->ogreGroup))
+  {
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        shaderDir, "FileSystem", this->ogreGroup);
+  }
 
+  const std::string programName = "__gz_rendering_vertex__" + _path;
   Ogre::HighLevelGpuProgramPtr vertexShader =
-    Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
-        "__gz_rendering_vertex__" + _path,
-        this->ogreGroup,
-        "glsl", Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
+    Ogre::HighLevelGpuProgramManager::getSingletonPtr()->getByName(
+        programName, this->ogreGroup);
+  if (!vertexShader)
+  {
+    vertexShader =
+      Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
+          programName, this->ogreGroup,
+          "glsl", Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
+  }
 
-  vertexShader->setSourceFile(_path);
+  vertexShader->setSourceFile(shaderFile);
   vertexShader->load();
 
   assert(vertexShader->isLoaded());
@@ -606,16 +624,28 @@ void OgreMaterial::SetFragmentShader(const std::string &_path)
     return;
   }
 
-  Ogre::ResourceGroupManager::getSingleton().addResourceLocation(_path,
-  "FileSystem", "General", false);
+  std::string shaderDir = common::parentPath(_path);
+  std::string shaderFile = common::basename(_path);
+  if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+          shaderDir, this->ogreGroup))
+  {
+    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+        shaderDir, "FileSystem", this->ogreGroup);
+  }
 
+  const std::string programName = "__gz_rendering_fragment__" + _path;
   Ogre::HighLevelGpuProgramPtr fragmentShader =
-    Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
-        "__gz_rendering_fragment__" + _path,
-        this->ogreGroup,
-        "glsl", Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
+    Ogre::HighLevelGpuProgramManager::getSingleton().getByName(
+        programName, this->ogreGroup);
+  if (!fragmentShader)
+  {
+    fragmentShader =
+      Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
+          programName, this->ogreGroup,
+          "glsl", Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
+  }
 
-  fragmentShader->setSourceFile(_path);
+  fragmentShader->setSourceFile(shaderFile);
   fragmentShader->load();
 
   assert(fragmentShader->isLoaded());
@@ -684,14 +714,28 @@ void OgreMaterial::LoadOneImage(const std::string &_name, Ogre::Image &_image)
 void OgreMaterial::SetTextureImpl(const std::string &_texture)
 {
   GZ_PROFILE("OgreMaterial::SetTextureImpl");
-  if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(
-      this->ogreGroup, _texture))
+
+  // OGRE 1.12 resolves textures through a resource group, indexed by basename:
+  // addResourceLocation expects a directory and setTextureName expects the
+  // name as it appears within that directory. Passing the full file path to
+  // both (the previous behaviour) registered a no-op location and then asked
+  // OGRE to look up an absolute path that was never indexed, leaving every
+  // mesh texture blank. Mirror commit 526304ef (the same fix for
+  // SetVertexShader / SetFragmentShader) and split _texture into parent
+  // dir + basename.
+  const std::string textureFile = common::basename(_texture);
+  const std::string textureDir = common::parentPath(_texture);
+  if (!textureDir.empty() && textureDir != _texture)
   {
-    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-        _texture, "FileSystem", this->ogreGroup);
+    if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
+            textureDir, this->ogreGroup))
+    {
+      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
+          textureDir, "FileSystem", this->ogreGroup);
+    }
   }
 
-  this->ogreTexState->setTextureName(_texture);
+  this->ogreTexState->setTextureName(textureFile);
   this->UpdateColorOperation();
 }
 
@@ -700,40 +744,74 @@ void OgreMaterial::SetTextureDataImpl(const std::string &_texture,
   const std::shared_ptr<const common::Image> &_img)
 {
   GZ_PROFILE("OgreMaterial::SetTextureDataImpl");
-  // Create the texture only if it was not created already
-  if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(
-      this->ogreGroup, _texture))
-  {
-    auto ogreTexture =
+  this->CreateOgreTextureFromImage(_texture, _img);
+  this->ogreTexState->setTextureName(_texture);
+  this->UpdateColorOperation();
+}
+
+//////////////////////////////////////////////////
+void OgreMaterial::CreateOgreTextureFromImage(const std::string &_name,
+  const std::shared_ptr<const common::Image> &_img)
+{
+  GZ_PROFILE("OgreMaterial::CreateOgreTextureFromImage");
+  if (!_img)
+    return;
+
+  // Create the texture only if it was not created already.
+  // Check both the TextureManager (actual objects) and the ResourceGroupManager
+  // (file-system locations) — OGRE 1.12 throws on duplicate creates.
+  if (Ogre::TextureManager::getSingleton().getByName(_name) ||
+      Ogre::ResourceGroupManager::getSingleton().resourceExists(
+          this->ogreGroup, _name))
+    return;
+
+  // OGRE's PF_R8G8B8A8 is a packed word 0xRRGGBBAA — on little-endian that is
+  // memory bytes {A, B, G, R}. RGBAData() is byte-order {R, G, B, A}, so
+  // upload via PF_BYTE_RGBA (aliases to PF_A8B8G8R8 on LE, memory {R,G,B,A}).
+  auto ogreTexture =
     Ogre::TextureManager::getSingleton().createManual(
-        _texture,
+        _name,
         "General",
         Ogre::TEX_TYPE_2D,
         _img->Width(),
         _img->Height(),
         0,
-        Ogre::PF_R8G8B8A8);
-    Ogre::HardwarePixelBufferSharedPtr pixelBuffer = ogreTexture->getBuffer();
-    pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
-    const Ogre::PixelBox &pixelBox = pixelBuffer->getCurrentLock();
+        Ogre::PF_BYTE_RGBA);
+  Ogre::HardwarePixelBufferSharedPtr pixelBuffer = ogreTexture->getBuffer();
+  pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
+  const Ogre::PixelBox &pixelBox = pixelBuffer->getCurrentLock();
 
-    auto data = _img->RGBAData();
-    // TODO(anyone) Why we need to switch red and blue again for OGRE1?
-    for (unsigned int r = 0; r < _img->Height(); ++r)
-    {
-      for (unsigned int c = 0; c < _img->Width(); ++c)
-      {
-        int pixIdx = (r * _img->Width() + c) * 4;
-        std::swap(data[pixIdx], data[pixIdx + 2]);
-      }
-    }
-
-    memcpy(pixelBox.data, &data[0], data.size());
-    pixelBuffer->unlock();
+  auto data = _img->RGBAData();
+  // RGBAData() returns w*h*4*(bits_per_channel/8) bytes — for a 16-bit-per-
+  // channel source (e.g. embedded 16-bit PNG normal maps in GLB models) it
+  // returns 2x the bytes that fit in PF_BYTE_RGBA. A naive memcpy(data.size())
+  // overflows the OGRE pixel buffer and corrupts the heap, which then crashes
+  // an unrelated GL driver allocator on the next big upload. Match the OGRE
+  // buffer's 8-bit RGBA expectation here.
+  const size_t bytes8 = static_cast<size_t>(_img->Width()) *
+                        static_cast<size_t>(_img->Height()) * 4u;
+  if (data.size() == bytes8)
+  {
+    std::memcpy(pixelBox.data, data.data(), bytes8);
   }
-
-  this->ogreTexState->setTextureName(_texture);
-  this->UpdateColorOperation();
+  else if (data.size() == bytes8 * 2u)
+  {
+    // 16-bit per channel: stbi keeps native uint16_t order, so on
+    // little-endian hosts the high (most-significant) byte sits at offset 1.
+    auto *dst = static_cast<unsigned char *>(pixelBox.data);
+    const auto *src = data.data();
+    for (size_t i = 0; i < bytes8; ++i)
+      dst[i] = src[i * 2u + 1u];
+  }
+  else
+  {
+    gzwarn << "Skipping texture upload for '" << _name
+           << "': RGBAData size " << data.size() << " does not match "
+           << _img->Width() << "x" << _img->Height()
+           << " 8-bit RGBA (" << bytes8 << ") or 16-bit RGBA ("
+           << (bytes8 * 2u) << ")" << std::endl;
+  }
+  pixelBuffer->unlock();
 }
 
 //////////////////////////////////////////////////
@@ -767,11 +845,15 @@ Ogre::TexturePtr OgreMaterial::CreateTexture(const std::string &_name)
     return texture;
   }
 
-  texture = Ogre::TextureManager::getSingleton().createManual(_name,
-      this->ogreGroup, Ogre::TEX_TYPE_2D, image.getWidth(),
-      image.getHeight(), 0, Ogre::PF_X8R8G8B8);
-
-  texture->loadImage(image);
+  auto &texManager = Ogre::TextureManager::getSingleton();
+  texture = texManager.getByName(_name, this->ogreGroup);
+  if (!texture)
+  {
+    texture = texManager.createManual(_name, this->ogreGroup,
+        Ogre::TEX_TYPE_2D, image.getWidth(), image.getHeight(),
+        0, Ogre::PF_X8R8G8B8);
+    texture->loadImage(image);
+  }
   return texture;
 }
 
@@ -880,15 +962,30 @@ void OgreMaterial::Init()
   BaseMaterial::Init();
   this->ogreGroup = Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME;
   Ogre::MaterialManager &matManager = Ogre::MaterialManager::getSingleton();
-  this->ogreMaterial = matManager.create(this->name, this->ogreGroup);
+  auto result = matManager.createOrRetrieve(this->name, this->ogreGroup);
+  this->ogreMaterial =
+      Ogre::static_pointer_cast<Ogre::Material>(result.first);
+  this->ogreMaterialOwner = result.second;
   this->ogreTechnique = this->ogreMaterial->getTechnique(0);
   this->ogrePass = this->ogreTechnique->getPass(0);
-  this->ogreTexState = this->ogrePass->createTextureUnitState();
-  this->ogreTexState->setBlank();
-  this->Reset();
-
-  // TODO(anyone): provide function interface
-  this->ogreMaterial->setTextureAnisotropy(8);
+  if (this->ogreMaterialOwner)
+  {
+    this->ogreTexState = this->ogrePass->createTextureUnitState();
+    this->ogreTexState->setBlank();
+    this->Reset();
+    // TODO(anyone): provide function interface
+    this->ogreMaterial->setTextureAnisotropy(8);
+  }
+  else
+  {
+    if (this->ogrePass->getNumTextureUnitStates() > 0)
+      this->ogreTexState = this->ogrePass->getTextureUnitState(0);
+    else
+    {
+      this->ogreTexState = this->ogrePass->createTextureUnitState();
+      this->ogreTexState->setBlank();
+    }
+  }
 }
 
 //////////////////////////////////////////////////

@@ -1075,20 +1075,14 @@ void Ogre2WideAngleCamera::Render()
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::Copy(Image &_image) const
 {
-<<<<<<< HEAD
-  if (_image.Width() != this->ImageWidth() ||
-      _image.Height() != this->ImageHeight())
-=======
   this->CopyToBuffer(PixelBuffer(_image));
 }
 
 //////////////////////////////////////////////////
 bool Ogre2WideAngleCamera::CopyToBuffer(const PixelBuffer &_dst) const
 {
-  GZ_PROFILE("Ogre2WideAngleCamera::Copy");
   if (!_dst.Valid() || _dst.Width() != this->ImageWidth() ||
       _dst.Height() != this->ImageHeight())
->>>>>>> 320bc2d (Copy camera frames into caller owned memory through PixelBuffer (#1344))
   {
     gzerr << "Invalid image dimensions or buffer" << std::endl;
     return false;

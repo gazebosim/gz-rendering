@@ -71,16 +71,12 @@ OgreRenderTarget::~OgreRenderTarget()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Copy(Image &_image) const
 {
-<<<<<<< HEAD
-=======
   this->CopyToBuffer(PixelBuffer(_image));
 }
 
 //////////////////////////////////////////////////
 bool OgreRenderTarget::CopyToBuffer(const PixelBuffer &_dst) const
 {
-  GZ_PROFILE("OgreRenderTarget::Copy");
->>>>>>> 320bc2d (Copy camera frames into caller owned memory through PixelBuffer (#1344))
   if (nullptr == this->RenderTarget())
     return false;
 

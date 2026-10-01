@@ -579,16 +579,12 @@ void OgreWideAngleCamera::Render()
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::Copy(Image &_image) const
 {
-<<<<<<< HEAD
-=======
   this->CopyToBuffer(PixelBuffer(_image));
 }
 
 //////////////////////////////////////////////////
 bool OgreWideAngleCamera::CopyToBuffer(const PixelBuffer &_dst) const
 {
-  GZ_PROFILE("OgreWideAngleCamera::Copy");
->>>>>>> 320bc2d (Copy camera frames into caller owned memory through PixelBuffer (#1344))
   const unsigned int width = this->ImageWidth();
   const unsigned int height = this->ImageHeight();
 

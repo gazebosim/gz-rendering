@@ -24,6 +24,7 @@
 
 #include "gz/rendering/base/BaseRenderTypes.hh"
 #include "gz/rendering/base/BaseRenderTarget.hh"
+#include "gz/rendering/PixelBuffer.hh"
 #include "gz/rendering/ogre2/Ogre2Object.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTargetMaterial.hh"
 
@@ -71,6 +72,14 @@ namespace ignition
       /// \brief Copy the render target buffer data to an image
       /// \param[in] _image Image to copy the data to
       public: virtual void Copy(Image &_image) const override;
+
+      /// \brief Copy the last rendered frame into a caller owned buffer.
+      /// Copy(Image &) forwards here. Every pixel write goes through a
+      /// PixelBuffer, which cannot be rebound, so the destination the caller
+      /// gave us is the one that receives the pixels.
+      /// \param[in] _dst Destination buffer, must match the image size
+      /// \return True if the pixels were written
+      private: bool CopyToBuffer(const PixelBuffer &_dst) const;
 
       /// \brief Get a pointer to the internal ogre camera
       /// \return Pointer to ogre camera

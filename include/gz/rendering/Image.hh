@@ -31,6 +31,9 @@ namespace ignition
   {
     inline namespace IGNITION_RENDERING_VERSION_NAMESPACE {
     //
+    class Camera;
+    class PixelBuffer;
+
     /// \class Image Image.hh ignition/rendering/Image.hh
     /// \brief Encapsulates a raw image buffer and relevant properties
     class IGNITION_RENDERING_VISIBLE Image
@@ -90,6 +93,17 @@ namespace ignition
       /// \return The pointer to image data
       public: template <typename T>
               T *Data();
+
+      /// \brief Constructor. Creates an image whose pixels live in the
+      /// caller owned buffer described by _buffer. The image never frees
+      /// that buffer. Only Camera::CopyTo builds such an image, for the
+      /// duration of one copy, so no image that aliases foreign memory can
+      /// outlive the call that created it.
+      /// \param[in] _buffer View of the caller's buffer
+      private: explicit Image(const PixelBuffer &_buffer);
+
+      /// \brief Camera::CopyTo needs the private constructor above.
+      private: friend class Camera;
 
       /// \brief Image width in pixels
       private: unsigned int width = 0;

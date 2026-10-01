@@ -18,15 +18,38 @@
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/PixelBuffer.hh"
 
+/// \brief Private fields of PixelBuffer
+class gz::rendering::PixelBuffer::Implementation
+{
+  /// \brief Width in pixels
+  public: unsigned int width = 0;
+
+  /// \brief Height in pixels
+  public: unsigned int height = 0;
+
+  /// \brief Pixel format
+  public: PixelFormat format = PF_UNKNOWN;
+
+  /// \brief Start of the caller owned buffer
+  public: unsigned char *data = nullptr;
+
+  /// \brief Size of the buffer in bytes
+  public: std::size_t size = 0;
+};
+
 using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
 PixelBuffer::PixelBuffer(unsigned int _width, unsigned int _height,
     PixelFormat _format, void *_data, std::size_t _size)
-  : width(_width), height(_height), format(PixelUtil::Sanitize(_format)),
-    data(static_cast<unsigned char *>(_data)), size(_size)
+  : dataPtr(utils::MakeImpl<Implementation>())
 {
+  this->dataPtr->width = _width;
+  this->dataPtr->height = _height;
+  this->dataPtr->format = PixelUtil::Sanitize(_format);
+  this->dataPtr->data = static_cast<unsigned char *>(_data);
+  this->dataPtr->size = _size;
 }
 
 //////////////////////////////////////////////////
@@ -37,43 +60,51 @@ PixelBuffer::PixelBuffer(Image &_image)
 }
 
 //////////////////////////////////////////////////
+PixelBuffer::PixelBuffer(const PixelBuffer &_other) = default;
+
+//////////////////////////////////////////////////
+PixelBuffer::~PixelBuffer() = default;
+
+//////////////////////////////////////////////////
 unsigned int PixelBuffer::Width() const
 {
-  return this->width;
+  return this->dataPtr->width;
 }
 
 //////////////////////////////////////////////////
 unsigned int PixelBuffer::Height() const
 {
-  return this->height;
+  return this->dataPtr->height;
 }
 
 //////////////////////////////////////////////////
 PixelFormat PixelBuffer::Format() const
 {
-  return this->format;
+  return this->dataPtr->format;
 }
 
 //////////////////////////////////////////////////
 std::size_t PixelBuffer::Size() const
 {
-  return this->size;
+  return this->dataPtr->size;
 }
 
 //////////////////////////////////////////////////
 std::size_t PixelBuffer::MemorySize() const
 {
-  return PixelUtil::MemorySize(this->format, this->width, this->height);
+  return PixelUtil::MemorySize(this->dataPtr->format,
+      this->dataPtr->width, this->dataPtr->height);
 }
 
 //////////////////////////////////////////////////
 bool PixelBuffer::Valid() const
 {
-  return this->data != nullptr && this->size >= this->MemorySize();
+  return this->dataPtr->data != nullptr &&
+      this->dataPtr->size >= this->MemorySize();
 }
 
 //////////////////////////////////////////////////
 unsigned char *PixelBuffer::Data() const
 {
-  return this->data;
+  return this->dataPtr->data;
 }

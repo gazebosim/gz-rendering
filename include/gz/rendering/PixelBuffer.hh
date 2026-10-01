@@ -19,6 +19,8 @@
 
 #include <cstddef>
 
+#include <gz/utils/ImplPtr.hh>
+
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
 #include "gz/rendering/PixelFormat.hh"
@@ -62,7 +64,8 @@ namespace gz
       public: explicit PixelBuffer(Image &_image);
 
       /// \brief Copy constructor. Copies of a view share the same buffer.
-      public: PixelBuffer(const PixelBuffer &) = default;
+      /// \param[in] _other View to copy
+      public: PixelBuffer(const PixelBuffer &_other);
 
       /// \brief Views cannot be rebound.
       public: PixelBuffer &operator=(const PixelBuffer &) = delete;
@@ -71,7 +74,7 @@ namespace gz
       public: PixelBuffer &operator=(PixelBuffer &&) = delete;
 
       /// \brief Destructor. Does not free the buffer.
-      public: ~PixelBuffer() = default;
+      public: ~PixelBuffer();
 
       /// \brief Get the width in pixels
       /// \return Width in pixels
@@ -104,20 +107,9 @@ namespace gz
       /// \return Pointer to the buffer
       public: unsigned char *Data() const;
 
-      /// \brief Width in pixels
-      private: const unsigned int width;
-
-      /// \brief Height in pixels
-      private: const unsigned int height;
-
-      /// \brief Pixel format
-      private: const PixelFormat format;
-
-      /// \brief Start of the caller owned buffer
-      private: unsigned char *const data;
-
-      /// \brief Size of the buffer in bytes
-      private: const std::size_t size;
+      /// \internal
+      /// \brief Private data pointer
+      GZ_UTILS_IMPL_PTR(dataPtr)
     };
     }
   }

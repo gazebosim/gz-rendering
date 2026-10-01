@@ -17,7 +17,7 @@
 
 #include <array>
 
-#include "gz/common/Console.hh"
+#include <gz/common/Console.hh>
 
 #include "gz/math/Plane.hh"
 #include "gz/math/Vector2.hh"

@@ -30,9 +30,15 @@ Camera::~Camera() = default;
 //////////////////////////////////////////////////
 bool Camera::CopyTo(const PixelBuffer &_buffer) const
 {
+  if (_buffer.Data() == nullptr)
+  {
+    gzerr << "CopyTo: pixel buffer has a null data pointer" << std::endl;
+    return false;
+  }
+
   if (!_buffer.Valid())
   {
-    gzerr << "CopyTo: invalid pixel buffer, " << _buffer.MemorySize()
+    gzerr << "CopyTo: pixel buffer too small, " << _buffer.MemorySize()
           << " bytes needed but " << _buffer.Size() << " given" << std::endl;
     return false;
   }

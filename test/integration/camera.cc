@@ -879,4 +879,7 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyIntoExternalBuffer))
       bayerBuffer.data(), bayerBuffer.size())));
   EXPECT_EQ(0, std::memcmp(bayerExpected.Data(), bayerBuffer.data(),
       width * height));
+
+  // Clean up
+  engine->DestroyScene(scene);
 }

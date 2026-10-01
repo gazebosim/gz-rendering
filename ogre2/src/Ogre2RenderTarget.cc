@@ -352,15 +352,22 @@ void Ogre2RenderTarget::RebuildCompositor()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Copy(Image &_image) const
 {
+  this->CopyToBuffer(PixelBuffer(_image));
+}
+
+//////////////////////////////////////////////////
+bool Ogre2RenderTarget::CopyToBuffer(const PixelBuffer &_dst) const
+{
   // TODO(anyone) handle Bayer conversions
 
-  if (_image.Width() != this->width || _image.Height() != this->height)
+  if (!_dst.Valid() || _dst.Width() != this->width ||
+      _dst.Height() != this->height)
   {
-    ignerr << "Invalid image dimensions" << std::endl;
-    return;
+    ignerr << "Invalid image dimensions or buffer" << std::endl;
+    return false;
   }
 
-  Ogre::PixelFormatGpu dstOgrePf = Ogre2Conversions::Convert(_image.Format());
+  Ogre::PixelFormatGpu dstOgrePf = Ogre2Conversions::Convert(_dst.Format());
   Ogre::TextureGpu *texture = this->RenderTarget();
 
   if (Ogre::PixelFormatGpuUtils::isSRgb(dstOgrePf) !=
@@ -385,10 +392,10 @@ void Ogre2RenderTarget::Copy(Image &_image) const
     static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
       texture->getWidth(), texture->getHeight(), 1u, 1u,
       dstOgrePf, 1u)));
-  dstBox.data = _image.Data();
+  dstBox.data = _dst.Data();
 
   Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u), dstBox,
-                                     dstOgrePf);
+                                     dstOgrePf);  return true;
 }
 
 //////////////////////////////////////////////////

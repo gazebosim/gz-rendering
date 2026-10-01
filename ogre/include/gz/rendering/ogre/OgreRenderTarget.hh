@@ -21,6 +21,7 @@
 
 #include "gz/rendering/base/BaseRenderTypes.hh"
 #include "gz/rendering/base/BaseRenderTarget.hh"
+#include "gz/rendering/PixelBuffer.hh"
 #include "gz/rendering/ogre/OgreRenderTypes.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"
 #include "gz/rendering/ogre/OgreObject.hh"
@@ -51,6 +52,14 @@ namespace ignition
       public: virtual void SetAntiAliasing(unsigned int _aa);
 
       public: virtual void Copy(Image &_image) const override;
+
+      /// \brief Copy the last rendered frame into a caller owned buffer.
+      /// Copy(Image &) forwards here. Every pixel write goes through a
+      /// PixelBuffer, which cannot be rebound, so the destination the caller
+      /// gave us is the one that receives the pixels.
+      /// \param[in] _dst Destination buffer, must match the image size
+      /// \return True if the pixels were written
+      private: bool CopyToBuffer(const PixelBuffer &_dst) const;
 
       public: virtual Ogre::Camera *Camera() const;
 

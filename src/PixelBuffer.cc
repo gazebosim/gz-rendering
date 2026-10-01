@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Open Source Robotics Foundation
+ * Copyright (C) 2026 Open Source Robotics Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/PixelBuffer.hh"
 
@@ -21,79 +22,58 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-template <class T>
-struct ArrayDeleter
-{
-  void operator () (T const * p)
-  {
-    delete [] p;
-  }
-};
-
-//////////////////////////////////////////////////
-Image::Image(unsigned int _width, unsigned int _height,
-  PixelFormat _format) :
-  width(_width),
-  height(_height)
-{
-  this->format = PixelUtil::Sanitize(_format);
-  unsigned int size = this->MemorySize();
-  this->data = DataPtr(new unsigned char[size], ArrayDeleter<unsigned char>());
-}
-
-//////////////////////////////////////////////////
-Image::Image(const PixelBuffer &_buffer) :
-  width(_buffer.Width()),
-  height(_buffer.Height()),
-  format(_buffer.Format())
-{
-  // The caller owns the buffer: the deleter does nothing.
-  this->data = DataPtr(_buffer.Data(), [](unsigned char *) {});
-}
-
-//////////////////////////////////////////////////
-Image::~Image()
+PixelBuffer::PixelBuffer(unsigned int _width, unsigned int _height,
+    PixelFormat _format, void *_data, std::size_t _size)
+  : width(_width), height(_height), format(PixelUtil::Sanitize(_format)),
+    data(static_cast<unsigned char *>(_data)), size(_size)
 {
 }
 
 //////////////////////////////////////////////////
-unsigned int Image::Width() const
+PixelBuffer::PixelBuffer(Image &_image)
+  : PixelBuffer(_image.Width(), _image.Height(), _image.Format(),
+                _image.Data(), _image.MemorySize())
+{
+}
+
+//////////////////////////////////////////////////
+unsigned int PixelBuffer::Width() const
 {
   return this->width;
 }
 
 //////////////////////////////////////////////////
-unsigned int Image::Height() const
+unsigned int PixelBuffer::Height() const
 {
   return this->height;
 }
 
 //////////////////////////////////////////////////
-PixelFormat Image::Format() const
+PixelFormat PixelBuffer::Format() const
 {
   return this->format;
 }
 
 //////////////////////////////////////////////////
-unsigned int Image::Depth() const
+std::size_t PixelBuffer::Size() const
 {
-  return PixelUtil::ChannelCount(this->format);
+  return this->size;
 }
 
 //////////////////////////////////////////////////
-unsigned int Image::MemorySize() const
+std::size_t PixelBuffer::MemorySize() const
 {
   return PixelUtil::MemorySize(this->format, this->width, this->height);
 }
 
 //////////////////////////////////////////////////
-const void *Image::Data() const
+bool PixelBuffer::Valid() const
 {
-  return this->data.get();
+  return this->data != nullptr && this->size >= this->MemorySize();
 }
 
 //////////////////////////////////////////////////
-void *Image::Data()
+unsigned char *PixelBuffer::Data() const
 {
-  return this->data.get();
+  return this->data;
 }

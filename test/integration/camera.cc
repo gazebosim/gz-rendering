@@ -17,6 +17,9 @@
 
 #include <gtest/gtest.h>
 
+#include <cstring>
+#include <vector>
+
 #include <gz/common/Console.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
@@ -24,6 +27,7 @@
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/GpuRays.hh"
+#include "gz/rendering/PixelBuffer.hh"
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
@@ -57,6 +61,9 @@ class CameraTest: public testing::Test,
 
   // Test selecting visual with custom shader
   public: void ShaderSelection(const std::string &_renderEngine);
+
+  // Test copying a frame straight into a caller owned buffer
+  public: void CopyIntoExternalBuffer(const std::string &_renderEngine);
 
   // Path to test media directory
   public: const std::string TEST_MEDIA_PATH =
@@ -811,6 +818,71 @@ void CameraTest::ShaderSelection(const std::string &_renderEngine)
 }
 
 /////////////////////////////////////////////////
+void CameraTest::CopyIntoExternalBuffer(const std::string &_renderEngine)
+{
+  RenderEngine *engine = rendering::engine(_renderEngine);
+  if (!engine)
+  {
+    igndbg << "Engine '" << _renderEngine
+           << "' is not supported" << std::endl;
+    return;
+  }
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_TRUE(scene != nullptr);
+  scene->SetBackgroundColor(0, 0, 0);
+  scene->SetAmbientLight(1, 1, 1);
+
+  VisualPtr root = scene->RootVisual();
+  ASSERT_TRUE(root != nullptr);
+
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_TRUE(camera != nullptr);
+  camera->SetWorldPosition(-1, 0, 0);
+  camera->SetImageWidth(64);
+  camera->SetImageHeight(48);
+  camera->SetImageFormat(PF_R8G8B8);
+  root->AddChild(camera);
+
+  // A green box in front of the camera so the frame is not uniform
+  VisualPtr box = scene->CreateVisual();
+  ASSERT_TRUE(box != nullptr);
+  box->AddGeometry(scene->CreateBox());
+  box->SetWorldPosition(0.0, 0.0, 0.0);
+  MaterialPtr green = scene->CreateMaterial();
+  green->SetAmbient(0.0, 1.0, 0.0);
+  green->SetDiffuse(0.0, 1.0, 0.0);
+  green->SetSpecular(0.0, 1.0, 0.0);
+  box->SetMaterial(green);
+  root->AddChild(box);
+
+  const unsigned int width = camera->ImageWidth();
+  const unsigned int height = camera->ImageHeight();
+
+  // Reference frame captured into an image the camera allocates
+  Image rgb = camera->CreateImage();
+  camera->Capture(rgb);
+
+  // The same frame copied straight into a caller owned buffer
+  std::vector<unsigned char> rgbBuffer(rgb.MemorySize(), 0);
+  EXPECT_TRUE(camera->CopyTo(PixelBuffer(width, height, PF_R8G8B8,
+      rgbBuffer.data(), rgbBuffer.size())));
+  EXPECT_EQ(0, std::memcmp(rgb.Data(), rgbBuffer.data(), rgb.MemorySize()));
+
+  // A buffer that is too small, or the wrong size, is refused and untouched
+  std::vector<unsigned char> tooSmall(rgb.MemorySize() - 1, 0xFF);
+  EXPECT_FALSE(camera->CopyTo(PixelBuffer(width, height, PF_R8G8B8,
+      tooSmall.data(), tooSmall.size())));
+  EXPECT_EQ(0xFF, tooSmall[0]);
+  EXPECT_FALSE(camera->CopyTo(PixelBuffer(width + 1, height, PF_R8G8B8,
+      rgbBuffer.data(), rgbBuffer.size())));
+
+  // Clean up
+  engine->DestroyScene(scene);
+  unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
 TEST_P(CameraTest, Track)
 {
   Track(GetParam());
@@ -840,6 +912,12 @@ TEST_P(CameraTest,
        IGN_UTILS_TEST_DISABLED_ON_MAC(ShaderSelection))
 {
   ShaderSelection(GetParam());
+}
+
+/////////////////////////////////////////////////
+TEST_P(CameraTest, CopyIntoExternalBuffer)
+{
+  CopyIntoExternalBuffer(GetParam());
 }
 
 INSTANTIATE_TEST_CASE_P(Camera, CameraTest,

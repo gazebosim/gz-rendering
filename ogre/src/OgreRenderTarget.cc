@@ -68,22 +68,30 @@ OgreRenderTarget::~OgreRenderTarget()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Copy(Image &_image) const
 {
+  this->CopyToBuffer(PixelBuffer(_image));
+}
+
+//////////////////////////////////////////////////
+bool OgreRenderTarget::CopyToBuffer(const PixelBuffer &_dst) const
+{
   if (nullptr == this->RenderTarget())
-    return;
+    return false;
 
   // TODO(anyone): handle Bayer conversions
   // TODO(anyone): handle ogre version differences
 
-  if (_image.Width() != this->width || _image.Height() != this->height)
+  if (!_dst.Valid() || _dst.Width() != this->width ||
+      _dst.Height() != this->height)
   {
-    ignerr << "Invalid image dimensions" << std::endl;
-    return;
+    ignerr << "Invalid image dimensions or buffer" << std::endl;
+    return false;
   }
 
-  void* data = _image.Data();
-  Ogre::PixelFormat imageFormat = OgreConversions::Convert(_image.Format());
+  void* data = _dst.Data();
+  Ogre::PixelFormat imageFormat = OgreConversions::Convert(_dst.Format());
   Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
   this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+  return true;
 }
 
 //////////////////////////////////////////////////

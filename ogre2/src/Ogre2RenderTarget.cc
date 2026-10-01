@@ -371,16 +371,12 @@ void Ogre2RenderTarget::RebuildCompositor()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Copy(Image &_image) const
 {
-<<<<<<< HEAD
-=======
   this->CopyToBuffer(PixelBuffer(_image));
 }
 
 //////////////////////////////////////////////////
 bool Ogre2RenderTarget::CopyToBuffer(const PixelBuffer &_dst) const
 {
-  GZ_PROFILE("Ogre2RenderTarget::Copy");
->>>>>>> 320bc2d (Copy camera frames into caller owned memory through PixelBuffer (#1344))
   // TODO(anyone) handle Bayer conversions
 
   if (!_dst.Valid() || _dst.Width() != this->width ||

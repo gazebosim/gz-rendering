@@ -373,26 +373,33 @@ void Ogre2RenderTarget::RebuildCompositor()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Copy(Image &_image) const
 {
+  this->CopyToBuffer(PixelBuffer(_image));
+}
+
+//////////////////////////////////////////////////
+bool Ogre2RenderTarget::CopyToBuffer(const PixelBuffer &_dst) const
+{
   GZ_PROFILE("Ogre2RenderTarget::Copy");
   // TODO(anyone) handle Bayer conversions
 
-  if (_image.Width() != this->width || _image.Height() != this->height)
+  if (!_dst.Valid() || _dst.Width() != this->width ||
+      _dst.Height() != this->height)
   {
-    gzerr << "Invalid image dimensions" << std::endl;
-    return;
+    gzerr << "Invalid image dimensions or buffer" << std::endl;
+    return false;
   }
 
   Ogre::PixelFormatGpu dstOgrePf;
-  if ((_image.Format() == PF_BAYER_RGGB8) ||
-      (_image.Format() == PF_BAYER_BGGR8) ||
-      (_image.Format() == PF_BAYER_GBRG8) ||
-      (_image.Format() == PF_BAYER_GRBG8))
+  if ((_dst.Format() == PF_BAYER_RGGB8) ||
+      (_dst.Format() == PF_BAYER_BGGR8) ||
+      (_dst.Format() == PF_BAYER_GBRG8) ||
+      (_dst.Format() == PF_BAYER_GRBG8))
   {
     dstOgrePf = Ogre2Conversions::Convert(PF_R8G8B8);
   }
   else
   {
-    dstOgrePf = Ogre2Conversions::Convert(_image.Format());
+    dstOgrePf = Ogre2Conversions::Convert(_dst.Format());
   }
   Ogre::TextureGpu *texture = this->RenderTarget();
 
@@ -419,25 +426,27 @@ void Ogre2RenderTarget::Copy(Image &_image) const
       texture->getInternalWidth(), texture->getInternalHeight(), 1u, 1u,
       dstOgrePf, 1u)));
 
-  if ((_image.Format() == PF_BAYER_RGGB8) ||
-      (_image.Format() == PF_BAYER_BGGR8) ||
-      (_image.Format() == PF_BAYER_GBRG8) ||
-      (_image.Format() == PF_BAYER_GRBG8))
+  if ((_dst.Format() == PF_BAYER_RGGB8) ||
+      (_dst.Format() == PF_BAYER_BGGR8) ||
+      (_dst.Format() == PF_BAYER_GBRG8) ||
+      (_dst.Format() == PF_BAYER_GRBG8))
   {
     // create tmp color image to get data from gpu
     Image colorImage(this->width, this->height, PF_R8G8B8);
     dstBox.data = colorImage.Data();
     Ogre::Image2::copyContentsToMemory(
         texture, texture->getEmptyBox(0u), dstBox, dstOgrePf);
-    // convert color image to bayer image
-    _image = gz::rendering::convertRGBToBayer(colorImage, _image.Format());
+    // convert color image to bayer image straight into the caller's buffer
+    if (!gz::rendering::convertRGBToBayer(colorImage, _dst))
+      return false;
   }
   else
   {
-    dstBox.data = _image.Data();
+    dstBox.data = _dst.Data();
     Ogre::Image2::copyContentsToMemory(
         texture, texture->getEmptyBox(0u), dstBox, dstOgrePf);
   }
+  return true;
 }
 
 //////////////////////////////////////////////////

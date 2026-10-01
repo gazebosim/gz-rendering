@@ -258,6 +258,7 @@ void Ogre2RenderTarget::BuildCompositor()
             nodeDef->addTextureDefinition("rt_fsaa");
 
         msaaDef->fsaa = std::to_string(fsaa);
+        msaaDef->format = this->dataPtr->ogreTexture[0]->getPixelFormat();
 
         rtvDef->colourAttachments[0].textureName = "rt_fsaa";
         rtvDef->colourAttachments[0].resolveTextureName = "rt0";
@@ -623,6 +624,22 @@ void Ogre2RenderTarget::DestroyTargetImpl()
 }
 
 //////////////////////////////////////////////////
+Ogre::PixelFormatGpu InternalRenderFormat(PixelFormat _format)
+{
+  switch (_format)
+  {
+    // For grey scale we render natively in grey scale format
+    // This saves CPU time later as we don't need to convert
+    // the texture.
+    case PF_L8:
+    case PF_L16:
+      return Ogre2Conversions::Convert(_format);
+    default:
+      return Ogre::PFG_RGBA8_UNORM_SRGB;
+  }
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderTarget::BuildTargetImpl()
 {
   auto engine = Ogre2RenderEngine::Instance();
@@ -648,7 +665,8 @@ void Ogre2RenderTarget::BuildTargetImpl()
 
     this->dataPtr->ogreTexture[i]->setResolution(this->width, this->height);
     this->dataPtr->ogreTexture[i]->setNumMipmaps(1u);
-    this->dataPtr->ogreTexture[i]->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+    const Ogre::PixelFormatGpu pf = InternalRenderFormat(this->format);
+    this->dataPtr->ogreTexture[i]->setPixelFormat(pf);
 
     this->dataPtr->ogreTexture[i]->scheduleTransitionTo(
           Ogre::GpuResidency::Resident);

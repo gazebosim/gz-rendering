@@ -15,9 +15,26 @@
 */
 #include <gtest/gtest.h>
 
+<<<<<<< HEAD:src/Utils_TEST.cc
 #include <gz/common/Console.hh>
 
 #include "gz/rendering/Camera.hh"
+=======
+#include "CommonRenderingTest.hh"
+
+#include <array>
+#include <cstring>
+#include <vector>
+
+#include <gz/common/geospatial/ImageHeightmap.hh>
+#include <gz/utils/ExtraTestMacros.hh>
+
+#include "gz/rendering/Camera.hh"
+#include "gz/rendering/Heightmap.hh"
+#include "gz/rendering/Image.hh"
+#include "gz/rendering/PixelBuffer.hh"
+#include "gz/rendering/PixelFormat.hh"
+>>>>>>> 320bc2d (Copy camera frames into caller owned memory through PixelBuffer (#1344)):test/common_test/Utils_TEST.cc
 #include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/RenderingIface.hh"
@@ -180,4 +197,106 @@ int main(int argc, char **argv)
 {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
+}
+
+/// \brief Build a 2x2 RGB image where pixel i holds (10i, 10i+1, 10i+2), so
+/// every byte identifies both its pixel and its channel.
+Image MakeRgb2x2()
+{
+  Image image(2, 2, PF_R8G8B8);
+  unsigned char *data = image.Data<unsigned char>();
+  for (unsigned int i = 0; i < 4; ++i)
+  {
+    data[i * 3 + 0] = static_cast<unsigned char>(10 * i);
+    data[i * 3 + 1] = static_cast<unsigned char>(10 * i + 1);
+    data[i * 3 + 2] = static_cast<unsigned char>(10 * i + 2);
+  }
+  return image;
+}
+
+/////////////////////////////////////////////////
+TEST(UtilsTest, ConvertRGBToBayerPatterns)
+{
+  // Expected 2x2 Bayer output per format, laid out row-major: each entry is
+  // the byte from MakeRgb2x2 that the pattern samples at that position.
+  const struct
+  {
+    PixelFormat format;
+    std::array<unsigned char, 4> expected;
+  } cases[] = {
+    {PF_BAYER_RGGB8, {0, 11, 21, 32}},
+    {PF_BAYER_BGGR8, {2, 11, 21, 30}},
+    {PF_BAYER_GBRG8, {1, 12, 20, 31}},
+    {PF_BAYER_GRBG8, {1, 10, 22, 31}},
+  };
+
+  const Image rgb = MakeRgb2x2();
+  for (const auto &c : cases)
+  {
+    // Returning overload
+    Image bayer = convertRGBToBayer(rgb, c.format);
+    EXPECT_EQ(c.format, bayer.Format());
+    EXPECT_EQ(4u, bayer.MemorySize());
+    for (unsigned int i = 0; i < 4; ++i)
+      EXPECT_EQ(c.expected[i], bayer.Data<unsigned char>()[i]) << i;
+
+    // In-place overload
+    Image inPlace(2, 2, c.format);
+    EXPECT_TRUE(convertRGBToBayer(rgb, PixelBuffer(inPlace)));
+    for (unsigned int i = 0; i < 4; ++i)
+      EXPECT_EQ(c.expected[i], inPlace.Data<unsigned char>()[i]) << i;
+  }
+}
+
+/////////////////////////////////////////////////
+TEST(UtilsTest, ConvertRGBToBayerExternalBuffer)
+{
+  // The in-place overload must write into a caller owned buffer.
+  const Image rgb = MakeRgb2x2();
+  std::vector<unsigned char> buffer(4, 0xFF);
+  EXPECT_TRUE(convertRGBToBayer(rgb,
+      PixelBuffer(2, 2, PF_BAYER_RGGB8, buffer.data(), buffer.size())));
+  EXPECT_EQ(0, buffer[0]);
+  EXPECT_EQ(11, buffer[1]);
+  EXPECT_EQ(21, buffer[2]);
+  EXPECT_EQ(32, buffer[3]);
+}
+
+/////////////////////////////////////////////////
+TEST(UtilsTest, ConvertRGBToBayerRejectsMismatch)
+{
+  const Image rgb = MakeRgb2x2();
+
+  // Destination is not a Bayer format
+  {
+    Image dst(2, 2, PF_L8);
+    std::memset(dst.Data(), 0xAB, dst.MemorySize());
+    EXPECT_FALSE(convertRGBToBayer(rgb, PixelBuffer(dst)));
+    EXPECT_EQ(0xAB, dst.Data<unsigned char>()[0]);
+  }
+
+  // Destination dimensions differ
+  {
+    Image dst(3, 2, PF_BAYER_RGGB8);
+    std::memset(dst.Data(), 0xAB, dst.MemorySize());
+    EXPECT_FALSE(convertRGBToBayer(rgb, PixelBuffer(dst)));
+    EXPECT_EQ(0xAB, dst.Data<unsigned char>()[0]);
+  }
+
+  // Destination buffer is too small
+  {
+    std::vector<unsigned char> buffer(4, 0xAB);
+    EXPECT_FALSE(convertRGBToBayer(rgb,
+        PixelBuffer(2, 2, PF_BAYER_RGGB8, buffer.data(), 3)));
+    EXPECT_EQ(0xAB, buffer[0]);
+  }
+
+  // Source is not RGB
+  {
+    Image src(2, 2, PF_L8);
+    Image dst(2, 2, PF_BAYER_RGGB8);
+    std::memset(dst.Data(), 0xAB, dst.MemorySize());
+    EXPECT_FALSE(convertRGBToBayer(src, PixelBuffer(dst)));
+    EXPECT_EQ(0xAB, dst.Data<unsigned char>()[0]);
+  }
 }

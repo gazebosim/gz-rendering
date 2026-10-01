@@ -15,6 +15,7 @@
  *
  */
 #include "gz/rendering/Image.hh"
+#include "gz/rendering/PixelBuffer.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -41,8 +42,19 @@ Image::Image(unsigned int _width, unsigned int _height,
 }
 
 //////////////////////////////////////////////////
+<<<<<<< HEAD
 Image::~Image()
 {
+=======
+Image::Image(const PixelBuffer &_buffer)
+  : dataPtr(utils::MakeImpl<Implementation>())
+{
+  this->dataPtr->width = _buffer.Width();
+  this->dataPtr->height = _buffer.Height();
+  this->dataPtr->format = _buffer.Format();
+  // The caller owns the buffer: the deleter does nothing.
+  this->dataPtr->data = DataPtr(_buffer.Data(), [](unsigned char *) {});
+>>>>>>> 320bc2d (Copy camera frames into caller owned memory through PixelBuffer (#1344))
 }
 
 //////////////////////////////////////////////////

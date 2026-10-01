@@ -68,14 +68,26 @@ OgreRenderTarget::~OgreRenderTarget()
 //////////////////////////////////////////////////
 void OgreRenderTarget::Copy(Image &_image) const
 {
+<<<<<<< HEAD
+=======
+  this->CopyToBuffer(PixelBuffer(_image));
+}
+
+//////////////////////////////////////////////////
+bool OgreRenderTarget::CopyToBuffer(const PixelBuffer &_dst) const
+{
+  GZ_PROFILE("OgreRenderTarget::Copy");
+>>>>>>> 320bc2d (Copy camera frames into caller owned memory through PixelBuffer (#1344))
   if (nullptr == this->RenderTarget())
-    return;
+    return false;
 
   // TODO(anyone): handle Bayer conversions
   // TODO(anyone): handle ogre version differences
 
-  if (_image.Width() != this->width || _image.Height() != this->height)
+  if (!_dst.Valid() || _dst.Width() != this->width ||
+      _dst.Height() != this->height)
   {
+<<<<<<< HEAD
     ignerr << "Invalid image dimensions" << std::endl;
     return;
   }
@@ -84,6 +96,38 @@ void OgreRenderTarget::Copy(Image &_image) const
   Ogre::PixelFormat imageFormat = OgreConversions::Convert(_image.Format());
   Ogre::PixelBox ogrePixelBox(this->width, this->height, 1, imageFormat, data);
   this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+=======
+    gzerr << "Invalid image dimensions or buffer" << std::endl;
+    return false;
+  }
+
+  Ogre::PixelFormat imageFormat;
+  if ((_dst.Format() == PF_BAYER_RGGB8) ||
+      (_dst.Format() == PF_BAYER_BGGR8) ||
+      (_dst.Format() == PF_BAYER_GBRG8) ||
+      (_dst.Format() == PF_BAYER_GRBG8))
+  {
+    // create tmp color image to get data from gpu
+    imageFormat = OgreConversions::Convert(PF_R8G8B8);
+    Image colorImage(this->width, this->height, PF_R8G8B8);
+    void *data =  colorImage.Data();
+    Ogre::PixelBox ogrePixelBox(
+        this->width, this->height, 1, imageFormat, data);
+    this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+    // convert color image to bayer image straight into the caller's buffer
+    if (!gz::rendering::convertRGBToBayer(colorImage, _dst))
+      return false;
+  }
+  else
+  {
+    imageFormat = OgreConversions::Convert(_dst.Format());
+    void *data = _dst.Data();
+    Ogre::PixelBox ogrePixelBox(
+        this->width, this->height, 1, imageFormat, data);
+    this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+  }
+  return true;
+>>>>>>> 320bc2d (Copy camera frames into caller owned memory through PixelBuffer (#1344))
 }
 
 //////////////////////////////////////////////////

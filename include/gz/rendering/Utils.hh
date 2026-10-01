@@ -29,6 +29,11 @@
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Export.hh"
 #include "gz/rendering/RayQuery.hh"
+<<<<<<< HEAD
+=======
+#include "gz/rendering/Image.hh"
+#include "gz/rendering/PixelBuffer.hh"
+>>>>>>> 320bc2d (Copy camera frames into caller owned memory through PixelBuffer (#1344))
 
 
 namespace ignition
@@ -111,6 +116,34 @@ namespace ignition
     ignition::math::Matrix3d projectionToCameraIntrinsic(
         const ignition::math::Matrix4d &_projectionMatrix,
         double _width, double _height);
+<<<<<<< HEAD
+=======
+
+    /// \brief convert an RGB image data into bayer image data
+    /// \param[in] _image Input RGB image
+    /// \param[in] _bayerFormat Bayer format to convert to
+    /// \return Image in bayer format
+    GZ_RENDERING_VISIBLE
+    Image convertRGBToBayer(const Image &_image, PixelFormat _bayerFormat);
+
+    /// \brief Convert an RGB image into an existing Bayer buffer. Unlike the
+    /// overload that returns a new image, this one writes into memory the
+    /// caller provides, so it also works for buffers the caller owns.
+    /// \param[in] _image Input image in PF_R8G8B8 format
+    /// \param[out] _bayer Destination buffer. It must be valid, have the
+    /// same dimensions as _image and one of the Bayer pixel formats.
+    /// \return True on success. False if the buffer is invalid or the
+    /// formats or dimensions do not match, in which case the destination is
+    /// left untouched.
+    GZ_RENDERING_VISIBLE
+    bool convertRGBToBayer(const Image &_image, const PixelBuffer &_bayer);
+
+    /// \brief Convenience function to get the default graphics API based on
+    /// current platform
+    /// \return Graphics API, i.e. METAL, OPENGL, VULKAN
+    GZ_RENDERING_VISIBLE
+    GraphicsAPI defaultGraphicsAPI();
+>>>>>>> 320bc2d (Copy camera frames into caller owned memory through PixelBuffer (#1344))
     }
   }
 }

@@ -352,15 +352,45 @@ void Ogre2RenderTarget::RebuildCompositor()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Copy(Image &_image) const
 {
+<<<<<<< HEAD
+=======
+  this->CopyToBuffer(PixelBuffer(_image));
+}
+
+//////////////////////////////////////////////////
+bool Ogre2RenderTarget::CopyToBuffer(const PixelBuffer &_dst) const
+{
+  GZ_PROFILE("Ogre2RenderTarget::Copy");
+>>>>>>> 320bc2d (Copy camera frames into caller owned memory through PixelBuffer (#1344))
   // TODO(anyone) handle Bayer conversions
 
-  if (_image.Width() != this->width || _image.Height() != this->height)
+  if (!_dst.Valid() || _dst.Width() != this->width ||
+      _dst.Height() != this->height)
   {
+<<<<<<< HEAD
     ignerr << "Invalid image dimensions" << std::endl;
     return;
   }
 
   Ogre::PixelFormatGpu dstOgrePf = Ogre2Conversions::Convert(_image.Format());
+=======
+    gzerr << "Invalid image dimensions or buffer" << std::endl;
+    return false;
+  }
+
+  Ogre::PixelFormatGpu dstOgrePf;
+  if ((_dst.Format() == PF_BAYER_RGGB8) ||
+      (_dst.Format() == PF_BAYER_BGGR8) ||
+      (_dst.Format() == PF_BAYER_GBRG8) ||
+      (_dst.Format() == PF_BAYER_GRBG8))
+  {
+    dstOgrePf = Ogre2Conversions::Convert(PF_R8G8B8);
+  }
+  else
+  {
+    dstOgrePf = Ogre2Conversions::Convert(_dst.Format());
+  }
+>>>>>>> 320bc2d (Copy camera frames into caller owned memory through PixelBuffer (#1344))
   Ogre::TextureGpu *texture = this->RenderTarget();
 
   if (Ogre::PixelFormatGpuUtils::isSRgb(dstOgrePf) !=
@@ -387,8 +417,32 @@ void Ogre2RenderTarget::Copy(Image &_image) const
       dstOgrePf, 1u)));
   dstBox.data = _image.Data();
 
+<<<<<<< HEAD
   Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u), dstBox,
                                      dstOgrePf);
+=======
+  if ((_dst.Format() == PF_BAYER_RGGB8) ||
+      (_dst.Format() == PF_BAYER_BGGR8) ||
+      (_dst.Format() == PF_BAYER_GBRG8) ||
+      (_dst.Format() == PF_BAYER_GRBG8))
+  {
+    // create tmp color image to get data from gpu
+    Image colorImage(this->width, this->height, PF_R8G8B8);
+    dstBox.data = colorImage.Data();
+    Ogre::Image2::copyContentsToMemory(
+        texture, texture->getEmptyBox(0u), dstBox, dstOgrePf);
+    // convert color image to bayer image straight into the caller's buffer
+    if (!gz::rendering::convertRGBToBayer(colorImage, _dst))
+      return false;
+  }
+  else
+  {
+    dstBox.data = _dst.Data();
+    Ogre::Image2::copyContentsToMemory(
+        texture, texture->getEmptyBox(0u), dstBox, dstOgrePf);
+  }
+  return true;
+>>>>>>> 320bc2d (Copy camera frames into caller owned memory through PixelBuffer (#1344))
 }
 
 //////////////////////////////////////////////////

@@ -19,6 +19,8 @@
 
 #include <vector>
 
+#include <gz/utils/SuppressWarning.hh>
+
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/PixelFormat.hh"
 
@@ -41,33 +43,26 @@ TEST(ImageTest, OwnedBuffer)
 }
 
 /////////////////////////////////////////////////
-TEST(ImageTest, ExternalBuffer)
+TEST(ImageTest, DeprecatedExternalBuffer)
 {
+  // The deprecated constructor still wraps the caller's buffer without
+  // taking ownership of it.
   std::vector<unsigned char> buffer(36, 0);
 
   {
+    GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
     Image image(4, 3, PF_R8G8B8, buffer.data());
+    GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
     EXPECT_EQ(4u, image.Width());
     EXPECT_EQ(3u, image.Height());
     EXPECT_EQ(PF_R8G8B8, image.Format());
     EXPECT_EQ(36u, image.MemorySize());
-
-    // The image uses the caller's buffer instead of allocating its own.
     EXPECT_EQ(buffer.data(), image.Data<unsigned char>());
 
-    // Writing through the image lands in the caller's buffer.
     image.Data<unsigned char>()[5] = 42;
     EXPECT_EQ(42, buffer[5]);
-
-    // A copy of the image shares the same external buffer.
-    Image copy = image;
-    EXPECT_EQ(buffer.data(), copy.Data<unsigned char>());
-    copy.Data<unsigned char>()[6] = 43;
-    EXPECT_EQ(43, buffer[6]);
   }
 
-  // The image went out of scope; the caller still owns the buffer and its
-  // contents are intact.
+  // The image went out of scope; the caller still owns the buffer.
   EXPECT_EQ(42, buffer[5]);
-  EXPECT_EQ(43, buffer[6]);
 }

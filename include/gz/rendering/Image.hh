@@ -48,6 +48,20 @@ namespace gz
       public: Image(unsigned int _width, unsigned int _height,
                   PixelFormat _format);
 
+      /// \brief Constructor. Creates an image that stores its pixels in a
+      /// caller owned buffer instead of allocating its own. The buffer must
+      /// hold at least MemorySize() bytes and outlive the image and any copy
+      /// of it, since copies share the same buffer.
+      /// \deprecated Use Camera::CopyTo with a PixelBuffer instead. It
+      /// writes into caller owned memory without keeping a pointer to it
+      /// past the call, and checks the buffer size before writing.
+      /// \param[in] _width Image width in pixels
+      /// \param[in] _height Image height in pixels
+      /// \param[in] _format Image pixel format
+      /// \param[in] _data Caller owned pixel buffer
+      public: GZ_DEPRECATED(8) Image(unsigned int _width,
+                  unsigned int _height, PixelFormat _format, void *_data);
+
       /// \brief Destructor
       public: virtual ~Image();
 

@@ -9,6 +9,12 @@ release will remove the deprecated code.
 
 ### Deprecations
 
+1. **Image**
+    + Deprecated: `Image(unsigned int _width, unsigned int _height, PixelFormat _format, void *_data)`
+    + Replacement: `Camera::CopyTo(const PixelBuffer &_buffer)`. Build a
+      `PixelBuffer` over the caller owned memory right before the call. It
+      checks the buffer size and keeps no pointer to the memory afterwards.
+
 1. **Ogre2MeshFactory**
     + Deprecated: `void ClearMaterialsCache(const std::string &_name)`
 

@@ -15,16 +15,14 @@
  *
 */
 
-<<<<<<< HEAD
 #ifdef __linux__
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 #endif
-=======
+
 #include <array>
 
 #include <gz/common/Console.hh>
->>>>>>> d51f498 (Copy camera frames into caller owned memory through PixelBuffer (backport #1344 and #1361) (#1362))
 
 #include "gz/math/Plane.hh"
 #include "gz/math/Vector2.hh"

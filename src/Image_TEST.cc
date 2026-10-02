@@ -17,6 +17,9 @@
 
 #include <gtest/gtest.h>
 
+#include <vector>
+
+#include <gz/utils/SuppressWarning.hh>
 
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/PixelFormat.hh"
@@ -37,4 +40,29 @@ TEST(ImageTest, OwnedBuffer)
   // The buffer is writable and readable through the typed accessors.
   image.Data<unsigned char>()[0] = 7;
   EXPECT_EQ(7, image.Data<unsigned char>()[0]);
+}
+
+/////////////////////////////////////////////////
+TEST(ImageTest, DeprecatedExternalBuffer)
+{
+  // The deprecated constructor still wraps the caller's buffer without
+  // taking ownership of it.
+  std::vector<unsigned char> buffer(36, 0);
+
+  {
+    GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
+    Image image(4, 3, PF_R8G8B8, buffer.data());
+    GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
+    EXPECT_EQ(4u, image.Width());
+    EXPECT_EQ(3u, image.Height());
+    EXPECT_EQ(PF_R8G8B8, image.Format());
+    EXPECT_EQ(36u, image.MemorySize());
+    EXPECT_EQ(buffer.data(), image.Data<unsigned char>());
+
+    image.Data<unsigned char>()[5] = 42;
+    EXPECT_EQ(42, buffer[5]);
+  }
+
+  // The image went out of scope; the caller still owns the buffer.
+  EXPECT_EQ(42, buffer[5]);
 }

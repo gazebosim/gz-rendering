@@ -92,6 +92,7 @@ test_sources = glob([
             "@googletest//:gtest",
             "@googletest//:gtest_main",
             "@gz-common//geospatial",
+            "@gz-utils//:SuppressWarning",
         ],
     )
     for src in test_sources

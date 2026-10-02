@@ -5,9 +5,7 @@ Deprecated code produces compile-time warnings. These warning serve as
 notification to users that their code should be upgraded. The next major
 release will remove the deprecated code.
 
-<<<<<<< HEAD
-=======
-## Gazebo Rendering 9.x to 10.x
+## Gazebo Rendering 8.x to 9.x
 
 ### Deprecations
 
@@ -16,29 +14,6 @@ release will remove the deprecated code.
     + Replacement: `Camera::CopyTo(const PixelBuffer &_buffer)`. Build a
       `PixelBuffer` over the caller owned memory right before the call. It
       checks the buffer size and keeps no pointer to the memory afterwards.
-
-1. **Ogre2MeshFactory**
-    + Deprecated: `void ClearMaterialsCache(const std::string &_name)`
-
-1. **Ogre2Scene**
-    + Deprecated: `void ClearMaterialsCache(const std::string &_name)`
-
-### Removals
-
-1. The macro `GZ_RENDERING_RESOURCE_PATH` is removed. Use
-`gz::rendering::getResourcePath()` instead.
-
-1. The macro `GZ_RENDERING_ENGINE_INSTALL_DIR` is removed. Use
-`gz::rendering::getEngineInstallDir()` instead.
-
-1. **Ogre2SelectionBuffer**
-    + Removed: `bool ExecuteQuery(const int _x, const int _y, Ogre::Item *&_item, math::Vector3d &_point)`
-    + Replacement: `bool ExecuteQuery(int _x, int _y, Ogre::MovableObject *&_obj, math::Vector3d &_point)`
-
->>>>>>> d51f498 (Copy camera frames into caller owned memory through PixelBuffer (backport #1344 and #1361) (#1362))
-## Gazebo Rendering 8.x to 9.x
-
-### Deprecations
 
 1. **Ogre2SelectionBuffer**
     + Deprecated: `bool ExecuteQuery(const int _x, const int _y, Ogre::Item *&_item, math::Vector3d &_point)`

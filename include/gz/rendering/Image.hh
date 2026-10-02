@@ -59,7 +59,7 @@ namespace gz
       /// \param[in] _height Image height in pixels
       /// \param[in] _format Image pixel format
       /// \param[in] _data Caller owned pixel buffer
-      public: GZ_DEPRECATED(10) Image(unsigned int _width,
+      public: GZ_DEPRECATED(9) Image(unsigned int _width,
                   unsigned int _height, PixelFormat _format, void *_data);
 
       /// \brief Destructor

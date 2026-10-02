@@ -31,6 +31,9 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
+    class Camera;
+    class PixelBuffer;
+
     /// \class Image Image.hh gz/rendering/Image.hh
     /// \brief Encapsulates a raw image buffer and relevant properties
     class GZ_RENDERING_VISIBLE Image
@@ -48,15 +51,16 @@ namespace gz
       /// \brief Constructor. Creates an image that stores its pixels in a
       /// caller owned buffer instead of allocating its own. The buffer must
       /// hold at least MemorySize() bytes and outlive the image and any copy
-      /// of it, since copies share the same buffer. Copying a camera into
-      /// such an image writes straight into the caller's memory, for example
-      /// a message payload, and saves one copy per frame.
+      /// of it, since copies share the same buffer.
+      /// \deprecated Use Camera::CopyTo with a PixelBuffer instead. It
+      /// writes into caller owned memory without keeping a pointer to it
+      /// past the call, and checks the buffer size before writing.
       /// \param[in] _width Image width in pixels
       /// \param[in] _height Image height in pixels
       /// \param[in] _format Image pixel format
       /// \param[in] _data Caller owned pixel buffer
-      public: Image(unsigned int _width, unsigned int _height,
-                  PixelFormat _format, void *_data);
+      public: GZ_DEPRECATED(10) Image(unsigned int _width,
+                  unsigned int _height, PixelFormat _format, void *_data);
 
       /// \brief Destructor
       public: virtual ~Image();
@@ -100,6 +104,17 @@ namespace gz
       /// \return The pointer to image data
       public: template <typename T>
               T *Data();
+
+      /// \brief Constructor. Creates an image whose pixels live in the
+      /// caller owned buffer described by _buffer. The image never frees
+      /// that buffer. Only Camera::CopyTo builds such an image, for the
+      /// duration of one copy, so no image that aliases foreign memory can
+      /// outlive the call that created it.
+      /// \param[in] _buffer View of the caller's buffer
+      private: explicit Image(const PixelBuffer &_buffer);
+
+      /// \brief Camera::CopyTo needs the private constructor above.
+      private: friend class Camera;
 
       GZ_UTILS_IMPL_PTR(dataPtr)
     };

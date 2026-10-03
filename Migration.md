@@ -9,12 +9,6 @@ release will remove the deprecated code.
 
 ### Deprecations
 
-1. **Image**
-    + Deprecated: `Image(unsigned int _width, unsigned int _height, PixelFormat _format, void *_data)`
-    + Replacement: `Camera::CopyTo(const PixelBuffer &_buffer)`. Build a
-      `PixelBuffer` over the caller owned memory right before the call. It
-      checks the buffer size and keeps no pointer to the memory afterwards.
-
 1. The following `HAVE_` prefixed macros that are defined in config.hh are deprecated and will be removed in future versions.
     + Deprecated: `HAVE_OGRE`, `HAVE_OGRE2` `HAVE_OPTIX`
     + Replacement: `GZ_RENDERING_HAVE_OGRE`, `GZ_RENDERING_HAVE_OGRE2` `GZ_RENDERING_HAVE_OPTIX`

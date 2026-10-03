@@ -24,6 +24,7 @@
 
 #include "gz/rendering/config.hh"
 #include "gz/rendering/Image.hh"
+#include "gz/rendering/PixelBuffer.hh"
 #include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/Sensor.hh"
 #include "gz/rendering/Scene.hh"
@@ -195,6 +196,18 @@ namespace gz
       /// before a single image has been rendered will have undefined behavior.
       /// \param[out] _image Output image buffer
       public: virtual void Copy(Image &_image) const = 0;
+
+      /// \brief Writes the last rendered image into a caller owned buffer,
+      /// for example a message payload, without an intermediate copy. Like
+      /// Copy, this can be called any number of times after PostRender.
+      /// The buffer must match the camera's image size and be at least
+      /// _buffer.MemorySize() bytes. Nothing keeps a pointer to the buffer
+      /// once this call returns.
+      /// \param[in] _buffer Where to write the frame
+      /// \return True if the frame was written. False, with an error logged
+      /// and the buffer untouched, if the buffer is invalid or does not match
+      /// the camera's image size.
+      public: bool CopyTo(const PixelBuffer &_buffer) const;
 
       /// \brief Writes the previously rendered frame to a file. This function
       /// can be called multiple times after PostRender has been called,

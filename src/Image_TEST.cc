@@ -19,8 +19,6 @@
 
 #include <vector>
 
-#include <gz/utils/SuppressWarning.hh>
-
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/PixelFormat.hh"
 
@@ -43,16 +41,13 @@ TEST(ImageTest, OwnedBuffer)
 }
 
 /////////////////////////////////////////////////
-TEST(ImageTest, DeprecatedExternalBuffer)
+TEST(ImageTest, ExternalBuffer)
 {
-  // The deprecated constructor still wraps the caller's buffer without
-  // taking ownership of it.
+  // The constructor wraps the caller's buffer without taking ownership.
   std::vector<unsigned char> buffer(36, 0);
 
   {
-    GZ_UTILS_WARN_IGNORE__DEPRECATED_DECLARATION
     Image image(4, 3, PF_R8G8B8, buffer.data());
-    GZ_UTILS_WARN_RESUME__DEPRECATED_DECLARATION
     EXPECT_EQ(4u, image.Width());
     EXPECT_EQ(3u, image.Height());
     EXPECT_EQ(PF_R8G8B8, image.Format());

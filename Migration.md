@@ -7,6 +7,14 @@ release will remove the deprecated code.
 
 ## Gazebo Rendering 10.x to 11.x
 
+### Deprecations
+
+1. **Image**
+    + Deprecated: `Image(unsigned int _width, unsigned int _height, PixelFormat _format, void *_data)`
+    + Replacement: `Camera::CopyTo(const PixelBuffer &_buffer)`. Build a
+      `PixelBuffer` over the caller owned memory right before the call. It
+      checks the buffer size and keeps no pointer to the memory afterwards.
+
 ### Optimizations
 
 * A Persistent GPU->CPU readback to avoid duplicate copies was introduced

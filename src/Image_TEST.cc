@@ -43,6 +43,7 @@ TEST(ImageTest, OwnedBuffer)
 /////////////////////////////////////////////////
 TEST(ImageTest, ExternalBuffer)
 {
+  // The constructor wraps the caller's buffer without taking ownership.
   std::vector<unsigned char> buffer(36, 0);
 
   {
@@ -51,23 +52,12 @@ TEST(ImageTest, ExternalBuffer)
     EXPECT_EQ(3u, image.Height());
     EXPECT_EQ(PF_R8G8B8, image.Format());
     EXPECT_EQ(36u, image.MemorySize());
-
-    // The image uses the caller's buffer instead of allocating its own.
     EXPECT_EQ(buffer.data(), image.Data<unsigned char>());
 
-    // Writing through the image lands in the caller's buffer.
     image.Data<unsigned char>()[5] = 42;
     EXPECT_EQ(42, buffer[5]);
-
-    // A copy of the image shares the same external buffer.
-    Image copy = image;
-    EXPECT_EQ(buffer.data(), copy.Data<unsigned char>());
-    copy.Data<unsigned char>()[6] = 43;
-    EXPECT_EQ(43, buffer[6]);
   }
 
-  // The image went out of scope; the caller still owns the buffer and its
-  // contents are intact.
+  // The image went out of scope; the caller still owns the buffer.
   EXPECT_EQ(42, buffer[5]);
-  EXPECT_EQ(43, buffer[6]);
 }

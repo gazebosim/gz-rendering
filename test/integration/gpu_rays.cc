@@ -21,13 +21,17 @@
 
 #include <gz/common/Image.hh>
 #include <gz/common/Filesystem.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/SubMesh.hh>
 #include <gz/common/geospatial/ImageHeightmap.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
 #include "gz/rendering/GpuRays.hh"
 #include "gz/rendering/ParticleEmitter.hh"
 #include "gz/rendering/Heightmap.hh"
+#include "gz/rendering/Mesh.hh"
 #include "gz/rendering/Scene.hh"
+#include "gz/rendering/Visual.hh"
 
 constexpr double LASER_TOL = 2e-4;
 
@@ -553,6 +557,68 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 
   delete [] scan;
   scan = nullptr;
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief Test that the ogre second pass draws each ray at a pixel center
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(SecondPassPixelCenters))
+{
+  CHECK_SUPPORTED_ENGINE("ogre");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  const unsigned int hRayCount = 8;
+  const unsigned int vRayCount = 4;
+  const std::string name = "pixel_center_gpu_rays";
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr root = scene->RootVisual();
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays(name);
+  gpuRays->SetNearClipPlane(0.1);
+  gpuRays->SetFarClipPlane(5.0);
+  gpuRays->SetAngleMin(-GZ_PI/2.0);
+  gpuRays->SetAngleMax(GZ_PI/2.0);
+  gpuRays->SetVerticalAngleMin(-GZ_PI/4.0);
+  gpuRays->SetVerticalAngleMax(GZ_PI/4.0);
+  gpuRays->SetRayCount(hRayCount);
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  gpuRays->Update();
+
+  // The second pass draws one point per ray into a texture that has one
+  // pixel per ray. A point on a pixel boundary lands in whichever pixel the
+  // GL implementation rounds to, so every point has to be at a pixel center.
+  VisualPtr canvas = scene->VisualByName(name + "second_pass_canvas");
+  ASSERT_NE(nullptr, canvas);
+  ASSERT_EQ(1u, canvas->GeometryCount());
+  MeshPtr mesh = std::dynamic_pointer_cast<Mesh>(canvas->GeometryByIndex(0));
+  ASSERT_NE(nullptr, mesh);
+  const common::Mesh *points = mesh->Descriptor().mesh;
+  ASSERT_NE(nullptr, points);
+  ASSERT_EQ(1u, points->SubMeshCount());
+  auto subMesh = points->SubMeshByIndex(0).lock();
+  ASSERT_NE(nullptr, subMesh);
+  ASSERT_EQ(hRayCount * vRayCount, subMesh->VertexCount());
+
+  // one pixel spans 0.1 units of the second pass orthographic camera
+  const double pixelSize = 0.1;
+  for (unsigned int j = 0; j < vRayCount; ++j)
+  {
+    for (unsigned int i = 0; i < hRayCount; ++i)
+    {
+      math::Vector3d point = subMesh->Vertex(j * hRayCount + i);
+      EXPECT_NEAR(i + 0.5, -point.Y() / pixelSize, 1e-6);
+      EXPECT_NEAR(vRayCount - j - 0.5, point.Z() / pixelSize, 1e-6);
+    }
+  }
 
   // Clean up
   engine->DestroyScene(scene);

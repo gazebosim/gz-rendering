@@ -72,14 +72,6 @@ Image::Image(unsigned int _width, unsigned int _height,
 }
 
 //////////////////////////////////////////////////
-Image::Image(unsigned int _width, unsigned int _height,
-  PixelFormat _format, void *_data)
-  : Image(PixelBuffer(_width, _height, _format, _data,
-      PixelUtil::MemorySize(PixelUtil::Sanitize(_format), _width, _height)))
-{
-}
-
-//////////////////////////////////////////////////
 Image::Image(const PixelBuffer &_buffer)
   : dataPtr(utils::MakeImpl<Implementation>())
 {

@@ -70,6 +70,7 @@ namespace gz
     class Ogre2Sensor;
     class Ogre2SpotLight;
     class Ogre2SubMesh;
+    class Ogre2Text;
     class Ogre2ThermalCamera;
     class Ogre2Visual;
     class Ogre2WideAngleCamera;
@@ -129,6 +130,7 @@ namespace gz
     typedef shared_ptr<Ogre2Sensor>               Ogre2SensorPtr;
     typedef shared_ptr<Ogre2SpotLight>            Ogre2SpotLightPtr;
     typedef shared_ptr<Ogre2SubMesh>              Ogre2SubMeshPtr;
+    typedef shared_ptr<Ogre2Text>                 Ogre2TextPtr;
     typedef shared_ptr<Ogre2ThermalCamera>        Ogre2ThermalCameraPtr;
     typedef shared_ptr<Ogre2Visual>               Ogre2VisualPtr;
     typedef shared_ptr<Ogre2WideAngleCamera>      Ogre2WideAngleCameraPtr;

@@ -203,6 +203,13 @@ namespace gz
       protected: void SetTextureDataImpl(const std::string &_texture,
                      const std::shared_ptr<const common::Image> &_img);
 
+      /// \brief Create an OGRE texture in the TextureManager under _name
+      /// from the given common::Image, if it does not already exist.
+      /// Does not bind the texture to any TextureUnitState.
+      protected: void CreateOgreTextureFromImage(
+                     const std::string &_name,
+                     const std::shared_ptr<const common::Image> &_img);
+
       protected: virtual Ogre::TexturePtr Texture(const std::string &_name);
 
       protected: virtual Ogre::TexturePtr CreateTexture(
@@ -225,6 +232,11 @@ namespace gz
 
       GZ_UTILS_WARN_IGNORE__DLL_INTERFACE_MISSING
       protected: Ogre::MaterialPtr ogreMaterial;
+
+      /// \brief True if this instance created the underlying OGRE material
+      /// (vs. retrieved an already-existing one via createOrRetrieve).
+      /// Only the creator should remove it from the ResourceManager on Destroy.
+      protected: bool ogreMaterialOwner = false;
 
       protected: Ogre::Technique *ogreTechnique = nullptr;
 

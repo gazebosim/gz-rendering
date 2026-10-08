@@ -842,11 +842,11 @@ void OgreGpuRays::CreateMesh()
 
   dx = 0.1;
 
-  // startX ranges from 0 to -(w2nd/10) at dx=0.1 increments
-  // startY ranges from h2nd/10 to 0 at dy=0.1 decrements
+  // startX ranges from -0.05 to -(w2nd/10 - 0.05) at dx=0.1 increments
+  // startY ranges from h2nd/10 - 0.05 to 0.05 at dy=0.1 decrements
   // see OgreGpuRays::Set2ndPassTarget() on how the ortho cam is set up
-  double startX = dx;
-  double startY = this->dataPtr->h2nd/10.0;
+  double startX = dx / 2.0;
+  double startY = (this->dataPtr->h2nd - 0.5) / 10.0;
 
   // half of actual camera vertical FOV without padding
   double phi = this->VFOV().Radian() / 2.0;
@@ -900,7 +900,7 @@ void OgreGpuRays::CreateMesh()
       if (ptsOnLine == this->dataPtr->w2nd)
       {
         ptsOnLine = 0;
-        startX = 0;
+        startX = -dx / 2.0;
         startY -= dy;
       }
       ptsOnLine++;

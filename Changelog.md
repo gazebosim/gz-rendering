@@ -1,5 +1,13 @@
 ## Ignition Rendering
 
+### Ignition Rendering 6.7.0 (2026-10-08)
+
+1. Copy camera frames into caller owned memory through PixelBuffer
+    * [Pull request #1360](https://github.com/gazebosim/gz-rendering/pull/1360)
+
+1. Disable RenderingIfaceTest and RenderEngine tests on Windows
+    * [Pull request #1284](https://github.com/gazebosim/gz-rendering/pull/1284)
+
 ### Ignition Rendering 6.6.4 (2026-01-29)
 
 1. Fortress: disable Ubuntu Focal CI

@@ -2,8 +2,65 @@
 
 ### Gazebo Rendering 9.X
 
+### Gazebo Rendering 9.6.0 (2026-10-08)
+
+1. Copy camera frames into caller owned memory through PixelBuffer
+    * [Pull request #1363](https://github.com/gazebosim/gz-rendering/pull/1363)
+
+1. Use the SPDX identifier Apache-2.0 in the license declaration
+    * [Pull request #1347](https://github.com/gazebosim/gz-rendering/pull/1347)
+
+1. Use R16_UNORM as internal render format if output is PF_L16
+    * [Pull request #1294](https://github.com/gazebosim/gz-rendering/pull/1294)
+
+1. Make global illumination work on mac
+    * [Pull request #1326](https://github.com/gazebosim/gz-rendering/pull/1326)
+
+1. Do not pre-render each visual's children twice per frame
+    * [Pull request #1309](https://github.com/gazebosim/gz-rendering/pull/1309)
+
 1. Highly reduce the CPU by setting the ogre workers to 0
     * [Pull request #1306](https://github.com/gazebosim/gz-rendering/pull/1306)
+
+1. Use RTLD_NODELETE when loading the render engine plugin
+    * [Pull request #1280](https://github.com/gazebosim/gz-rendering/pull/1280)
+
+1. Ogre2FrustumVisual: draw wireframe at the actual frustum extents
+    * [Pull request #1276](https://github.com/gazebosim/gz-rendering/pull/1276)
+
+1. Enable WireBox_TEST for ogre2
+    * [Pull request #1267](https://github.com/gazebosim/gz-rendering/pull/1267)
+
+1. Mark RenderSystem_GL3Plus as optional on macOS
+    * [Pull request #1255](https://github.com/gazebosim/gz-rendering/pull/1255)
+
+1. Deduplicate OGRE_RESOURCE_PATH in OGRE1 constructor
+    * [Pull request #1254](https://github.com/gazebosim/gz-rendering/pull/1254)
+
+1. Add check for existing renderable in Ogre2FrustumVisual and clear branch functionality
+    * [Pull request #1251](https://github.com/gazebosim/gz-rendering/pull/1251)
+
+1. Fix cppcheck warnings, typos, style issues
+    * [Pull request #1227](https://github.com/gazebosim/gz-rendering/pull/1227)
+
+1. Code cleanup
+    * [Pull request #1217](https://github.com/gazebosim/gz-rendering/pull/1217)
+
+1. Fix item visibility check when building GI Vct
+    * [Pull request #1216](https://github.com/gazebosim/gz-rendering/pull/1216)
+
+1. Bazel updates
+    * [Pull request #1339](https://github.com/gazebosim/gz-rendering/pull/1339)
+    * [Pull request #1315](https://github.com/gazebosim/gz-rendering/pull/1315)
+    * [Pull request #1297](https://github.com/gazebosim/gz-rendering/pull/1297)
+    * [Pull request #1206](https://github.com/gazebosim/gz-rendering/pull/1206)
+    * [Pull request #1202](https://github.com/gazebosim/gz-rendering/pull/1202)
+    * [Pull request #1191](https://github.com/gazebosim/gz-rendering/pull/1191)
+
+1. CI updates
+    * [Pull request #1273](https://github.com/gazebosim/gz-rendering/pull/1273)
+    * [Pull request #1241](https://github.com/gazebosim/gz-rendering/pull/1241)
+    * [Pull request #1208](https://github.com/gazebosim/gz-rendering/pull/1208)
 
 ### Gazebo Rendering 9.5.0 (2025-11-14)
 

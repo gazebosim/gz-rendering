@@ -2,8 +2,49 @@
 
 ## Gazebo Rendering 8.X
 
+### Gazebo Rendering 8.3.0 (2026-10-08)
+
+1. Copy camera frames into caller owned memory through PixelBuffer
+    * [Pull request #1364](https://github.com/gazebosim/gz-rendering/pull/1364)
+
+1. Use the SPDX identifier Apache-2.0 in the license declaration
+    * [Pull request #1347](https://github.com/gazebosim/gz-rendering/pull/1347)
+
+1. Use R16_UNORM as internal render format if output is PF_L16
+    * [Pull request #1294](https://github.com/gazebosim/gz-rendering/pull/1294)
+
+1. Make global illumination work on mac
+    * [Pull request #1326](https://github.com/gazebosim/gz-rendering/pull/1326)
+
+1. Do not pre-render each visual's children twice per frame
+    * [Pull request #1309](https://github.com/gazebosim/gz-rendering/pull/1309)
+
 1. Highly reduce the CPU by setting the ogre workers to 0
     * [Pull request #1307](https://github.com/gazebosim/gz-rendering/pull/1307)
+
+1. Use RTLD_NODELETE when loading the render engine plugin
+    * [Pull request #1280](https://github.com/gazebosim/gz-rendering/pull/1280)
+
+1. Enable WireBox_TEST for ogre2
+    * [Pull request #1267](https://github.com/gazebosim/gz-rendering/pull/1267)
+
+1. Mark RenderSystem_GL3Plus as optional on macOS
+    * [Pull request #1255](https://github.com/gazebosim/gz-rendering/pull/1255)
+
+1. Deduplicate OGRE_RESOURCE_PATH in OGRE1 constructor
+    * [Pull request #1258](https://github.com/gazebosim/gz-rendering/pull/1258)
+
+1. Added missing includes
+    * [Pull request #1253](https://github.com/gazebosim/gz-rendering/pull/1253)
+
+1. Fix cppcheck warnings, typos, style issues
+    * [Pull request #1232](https://github.com/gazebosim/gz-rendering/pull/1232)
+
+1. Code cleanup
+    * [Pull request #1220](https://github.com/gazebosim/gz-rendering/pull/1220)
+
+1. Fix item visibility check when building GI Vct
+    * [Pull request #1216](https://github.com/gazebosim/gz-rendering/pull/1216)
 
 ### Gazebo Rendering 8.2.3 (2025-11-14)
 

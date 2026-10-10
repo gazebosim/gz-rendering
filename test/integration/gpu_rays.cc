@@ -1169,3 +1169,72 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   // Clean up
   engine->DestroyScene(scene);
 }
+
+/////////////////////////////////////////////////
+/// \brief Test that lidar scans do not recede inwards
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LidarRaysDoNotRecede))
+{
+  CHECK_SUPPORTED_ENGINE("ogre");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  const double hMinAngle = -2.35;
+  const double hMaxAngle = 2.35;
+  const double minRange = 0.08;
+  const double maxRange = 50.0;
+  const int hRayCount = 10;
+  const int vRayCount = 1;
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr root = scene->RootVisual();
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays");
+  gpuRays->SetWorldPosition(math::Vector3d(0, 0, 0.13));
+  gpuRays->SetWorldRotation(math::Quaterniond::Identity);
+  gpuRays->SetNearClipPlane(minRange);
+  gpuRays->SetFarClipPlane(maxRange);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  VisualPtr floor = scene->CreateVisual("floor");
+  floor->AddGeometry(scene->CreatePlane());
+  floor->SetLocalScale(1000, 1000, 1);
+  floor->SetWorldPosition(0, 0, 0);
+  root->AddChild(floor);
+
+  unsigned int channels = gpuRays->Channels();
+  float *scan = new float[hRayCount * vRayCount * channels];
+  common::ConnectionPtr c =
+    gpuRays->ConnectNewGpuRaysFrame(
+        std::bind(&::OnNewGpuRaysFrame, scan,
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
+
+  // Running 8000 frames as it usually took 4500+ frames for original
+  // regression to manifest.
+  for (unsigned int i = 0u; i < 8000u; ++i)
+  {
+    gpuRays->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+
+    // None of the scans should report hitting anything
+    for (unsigned int j = 0; j < hRayCount * channels; j += channels)
+    {
+      EXPECT_FLOAT_EQ(scan[j], math::INF_F);
+    }
+  }
+
+  c.reset();
+
+  delete [] scan;
+  scan = nullptr;
+
+  // Clean up
+  engine->DestroyScene(scene);
+}

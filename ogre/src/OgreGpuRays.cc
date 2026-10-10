@@ -89,7 +89,7 @@ class gz::rendering::OgreGpuRaysPrivate
   public: unsigned int textureCount = 0u;
 
   /// \brief A list of camera angles for first pass rendering.
-  public: double cameraYaws[4];
+  public: double cameraYaws[3];
 
   /// \brief Image width of first pass.
   public: unsigned int w1st = 0u;
@@ -430,16 +430,13 @@ void OgreGpuRays::CreateGpuRaysTextures()
   if (this->dataPtr->textureCount == 2)
   {
     this->dataPtr->cameraYaws[0] = -this->HFOV().Radian() / 2.0;
-    this->dataPtr->cameraYaws[1] = +this->HFOV().Radian();
-    this->dataPtr->cameraYaws[2] = 0;
-    this->dataPtr->cameraYaws[3] = -this->HFOV().Radian() / 2.0;
+    this->dataPtr->cameraYaws[1] = +this->HFOV().Radian() / 2.0;
   }
   else
   {
     this->dataPtr->cameraYaws[0] = -this->HFOV().Radian();
-    this->dataPtr->cameraYaws[1] = +this->HFOV().Radian();
+    this->dataPtr->cameraYaws[1] = 0;
     this->dataPtr->cameraYaws[2] = +this->HFOV().Radian();
-    this->dataPtr->cameraYaws[3] = -this->HFOV().Radian();
   }
 
   // Configure first pass textures that are not yet configured properly
@@ -629,12 +626,17 @@ void OgreGpuRays::Render()
   sceneMgr->_suppressRenderStateChanges(true);
   sceneMgr->addRenderObjectListener(this);
 
+  Ogre::Quaternion initialOrientation;
+  if (this->dataPtr->textureCount > 1)
+    initialOrientation = this->Node()->getOrientation();
+
   for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
   {
     if (this->dataPtr->textureCount > 1)
     {
       // Cannot call Camera::RotateYaw because it rotates in world frame,
       // but we need rotation in camera local frame
+      this->Node()->setOrientation(initialOrientation);
       this->Node()->roll(Ogre::Radian(this->dataPtr->cameraYaws[i]));
     }
 
@@ -648,7 +650,7 @@ void OgreGpuRays::Render()
   }
 
   if (this->dataPtr->textureCount > 1)
-      this->Node()->roll(Ogre::Radian(this->dataPtr->cameraYaws[3]));
+      this->Node()->setOrientation(initialOrientation);
 
   sceneMgr->removeRenderObjectListener(this);
 

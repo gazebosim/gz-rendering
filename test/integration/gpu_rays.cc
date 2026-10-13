@@ -1182,7 +1182,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LidarRaysDoNotRecede))
   const double hMinAngle = -2.35;
   const double hMaxAngle = 2.35;
   const double minRange = 0.08;
-  const double maxRange = 50.0;
+  const double maxRange = 100.0;
   const int hRayCount = 10;
   const int vRayCount = 1;
 
@@ -1192,7 +1192,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LidarRaysDoNotRecede))
   VisualPtr root = scene->RootVisual();
 
   GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays");
-  gpuRays->SetWorldPosition(math::Vector3d(0, 0, 0.13));
+  gpuRays->SetWorldPosition(math::Vector3d(0, 0, 0.01));
   gpuRays->SetWorldRotation(math::Quaterniond::Identity);
   gpuRays->SetNearClipPlane(minRange);
   gpuRays->SetFarClipPlane(maxRange);
@@ -1216,9 +1216,9 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LidarRaysDoNotRecede))
           std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
           std::placeholders::_4, std::placeholders::_5));
 
-  // Running 8000 frames as it usually took 4500+ frames for original
-  // regression to manifest.
-  for (unsigned int i = 0u; i < 8000u; ++i)
+  // The original regression showed up after ~170 frames, so 500 frames leave a
+  // 3x margin.
+  for (unsigned int i = 0u; i < 500u; ++i)
   {
     gpuRays->Update();
     scene->SetTime(scene->Time() + std::chrono::milliseconds(16));

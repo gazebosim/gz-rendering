@@ -5,6 +5,27 @@ Deprecated code produces compile-time warnings. These warning serve as
 notification to users that their code should be upgraded. The next major
 release will remove the deprecated code.
 
+## Gazebo Rendering 9.6.0 to 9.X
+
+### Modifications
+
+* `OgreVisual::SetVisible` and `Ogre2Visual::SetVisible` no longer let Ogre
+  cascade the visibility to child visuals. They call `SetVisible` on each
+  child visual instead, so overrides such as `BaseArrowVisual::SetVisible`
+  also apply when a parent visual is shown or hidden. For example, showing
+  the parent of an axis visual no longer shows the arrow rotation visuals.
+  Visuals that keep their own visibility state, such as lidar and frustum
+  visuals, now also receive the call. Child nodes that are not visuals keep
+  the cascading behavior.
+
+* `BaseArrowVisual::ShowArrowRotation` updates the flag used by
+  `BaseArrowVisual::SetVisible` again, as it did before
+  [Pull request #889](https://github.com/gazebosim/gz-rendering/pull/889).
+  A rotation visual shown with `ShowArrowRotation(true)` now stays visible
+  when `SetVisible(true)` is called on the arrow or its parent, so the
+  rotation visuals that joint visuals show for revolute, revolute2, universal
+  and gearbox joints are no longer hidden by those calls.
+
 ## Gazebo Rendering 8.x to 9.x
 
 ### Deprecations

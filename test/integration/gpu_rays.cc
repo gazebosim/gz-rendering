@@ -21,13 +21,17 @@
 
 #include <gz/common/Image.hh>
 #include <gz/common/Filesystem.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/SubMesh.hh>
 #include <gz/common/geospatial/ImageHeightmap.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
 #include "gz/rendering/GpuRays.hh"
 #include "gz/rendering/ParticleEmitter.hh"
 #include "gz/rendering/Heightmap.hh"
+#include "gz/rendering/Mesh.hh"
 #include "gz/rendering/Scene.hh"
+#include "gz/rendering/Visual.hh"
 
 constexpr double LASER_TOL = 2e-4;
 
@@ -553,6 +557,68 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 
   delete [] scan;
   scan = nullptr;
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief Test that the ogre second pass draws each ray at a pixel center
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(SecondPassPixelCenters))
+{
+  CHECK_SUPPORTED_ENGINE("ogre");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  const unsigned int hRayCount = 8;
+  const unsigned int vRayCount = 4;
+  const std::string name = "pixel_center_gpu_rays";
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr root = scene->RootVisual();
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays(name);
+  gpuRays->SetNearClipPlane(0.1);
+  gpuRays->SetFarClipPlane(5.0);
+  gpuRays->SetAngleMin(-GZ_PI/2.0);
+  gpuRays->SetAngleMax(GZ_PI/2.0);
+  gpuRays->SetVerticalAngleMin(-GZ_PI/4.0);
+  gpuRays->SetVerticalAngleMax(GZ_PI/4.0);
+  gpuRays->SetRayCount(hRayCount);
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  gpuRays->Update();
+
+  // The second pass draws one point per ray into a texture that has one
+  // pixel per ray. A point on a pixel boundary lands in whichever pixel the
+  // GL implementation rounds to, so every point has to be at a pixel center.
+  VisualPtr canvas = scene->VisualByName(name + "second_pass_canvas");
+  ASSERT_NE(nullptr, canvas);
+  ASSERT_EQ(1u, canvas->GeometryCount());
+  MeshPtr mesh = std::dynamic_pointer_cast<Mesh>(canvas->GeometryByIndex(0));
+  ASSERT_NE(nullptr, mesh);
+  const common::Mesh *points = mesh->Descriptor().mesh;
+  ASSERT_NE(nullptr, points);
+  ASSERT_EQ(1u, points->SubMeshCount());
+  auto subMesh = points->SubMeshByIndex(0).lock();
+  ASSERT_NE(nullptr, subMesh);
+  ASSERT_EQ(hRayCount * vRayCount, subMesh->VertexCount());
+
+  // one pixel spans 0.1 units of the second pass orthographic camera
+  const double pixelSize = 0.1;
+  for (unsigned int j = 0; j < vRayCount; ++j)
+  {
+    for (unsigned int i = 0; i < hRayCount; ++i)
+    {
+      math::Vector3d point = subMesh->Vertex(j * hRayCount + i);
+      EXPECT_NEAR(i + 0.5, -point.Y() / pixelSize, 1e-6);
+      EXPECT_NEAR(vRayCount - j - 0.5, point.Z() / pixelSize, 1e-6);
+    }
+  }
 
   // Clean up
   engine->DestroyScene(scene);
@@ -1093,6 +1159,75 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
     double range = scan[i];
     EXPECT_LT(14.9, range);
     EXPECT_GT(20.0, range);
+  }
+
+  c.reset();
+
+  delete [] scan;
+  scan = nullptr;
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief Test that lidar scans do not recede inwards
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LidarRaysDoNotRecede))
+{
+  CHECK_SUPPORTED_ENGINE("ogre");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  const double hMinAngle = -2.35;
+  const double hMaxAngle = 2.35;
+  const double minRange = 0.08;
+  const double maxRange = 100.0;
+  const int hRayCount = 10;
+  const int vRayCount = 1;
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr root = scene->RootVisual();
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays");
+  gpuRays->SetWorldPosition(math::Vector3d(0, 0, 0.01));
+  gpuRays->SetWorldRotation(math::Quaterniond::Identity);
+  gpuRays->SetNearClipPlane(minRange);
+  gpuRays->SetFarClipPlane(maxRange);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  VisualPtr floor = scene->CreateVisual("floor");
+  floor->AddGeometry(scene->CreatePlane());
+  floor->SetLocalScale(1000, 1000, 1);
+  floor->SetWorldPosition(0, 0, 0);
+  root->AddChild(floor);
+
+  unsigned int channels = gpuRays->Channels();
+  float *scan = new float[hRayCount * vRayCount * channels];
+  common::ConnectionPtr c =
+    gpuRays->ConnectNewGpuRaysFrame(
+        std::bind(&::OnNewGpuRaysFrame, scan,
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
+
+  // The original regression showed up after ~170 frames, so 500 frames leave a
+  // 3x margin.
+  for (unsigned int i = 0u; i < 500u; ++i)
+  {
+    gpuRays->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+
+    // None of the scans should report hitting anything
+    for (unsigned int j = 0; j < hRayCount * channels; j += channels)
+    {
+      EXPECT_FLOAT_EQ(scan[j], math::INF_F);
+    }
   }
 
   c.reset();

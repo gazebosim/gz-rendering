@@ -1086,15 +1086,21 @@ void Ogre2WideAngleCamera::Render()
 //////////////////////////////////////////////////
 void Ogre2WideAngleCamera::Copy(Image &_image) const
 {
+  this->CopyToBuffer(PixelBuffer(_image));
+}
+
+//////////////////////////////////////////////////
+bool Ogre2WideAngleCamera::CopyToBuffer(const PixelBuffer &_dst) const
+{
   GZ_PROFILE("Ogre2WideAngleCamera::Copy");
-  if (_image.Width() != this->ImageWidth() ||
-      _image.Height() != this->ImageHeight())
+  if (!_dst.Valid() || _dst.Width() != this->ImageWidth() ||
+      _dst.Height() != this->ImageHeight())
   {
-    gzerr << "Invalid image dimensions" << std::endl;
-    return;
+    gzerr << "Invalid image dimensions or buffer" << std::endl;
+    return false;
   }
 
-  Ogre::PixelFormatGpu dstOgrePf = Ogre2Conversions::Convert(_image.Format());
+  Ogre::PixelFormatGpu dstOgrePf = Ogre2Conversions::Convert(_dst.Format());
   Ogre::TextureGpu *texture =
     this->dataPtr->ogreStitchTexture[kStichFinalTexture];
 
@@ -1120,10 +1126,11 @@ void Ogre2WideAngleCamera::Copy(Image &_image) const
     static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
       texture->getInternalWidth(), texture->getInternalHeight(), 1u, 1u,
       dstOgrePf, 1u)));
-  dstBox.data = _image.Data();
+  dstBox.data = _dst.Data();
 
   Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u), dstBox,
                                      dstOgrePf);
+  return true;
 }
 
 //////////////////////////////////////////////////

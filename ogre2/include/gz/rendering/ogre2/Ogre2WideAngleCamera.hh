@@ -105,6 +105,14 @@ namespace gz
       // Documentation inherited.
       public: void Copy(Image &_image) const override;
 
+      /// \brief Copy the last rendered frame into a caller owned buffer.
+      /// Copy(Image &) forwards here. Every pixel write goes through a
+      /// PixelBuffer, which cannot be rebound, so the destination the caller
+      /// gave us is the one that receives the pixels.
+      /// \param[in] _dst Destination buffer, must match the image size
+      /// \return True if the pixels were written
+      private: bool CopyToBuffer(const PixelBuffer &_dst) const;
+
       // Documentation inherited
       public: common::ConnectionPtr ConnectNewWideAngleFrame(
           std::function<void(const unsigned char *, unsigned int, unsigned int,

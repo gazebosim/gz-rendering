@@ -12,6 +12,7 @@
 
   <build_depend>gz-cmake</build_depend>
 
+  <depend>boost</depend>
   <depend>glut</depend>
   <depend>gz-common</depend>
   <depend>gz-math</depend>

@@ -30,6 +30,7 @@
 #include "gz/rendering/Utils.hh"
 
 #include <string.h>
+#include <vector>
 
 namespace gz
 {
@@ -103,10 +104,89 @@ class gz::rendering::Ogre2RenderTargetPrivate
   /// actual window
   ///
   public: Ogre::TextureGpu *ogreTexture[2] = {nullptr, nullptr};
+
+  /// \brief Buffer CopyToBuffer() reads the texture back into, in the
+  /// texture's own format, when the requested format differs. Kept across
+  /// frames so it is not allocated and zero-filled on every copy.
+  public: std::vector<uint8_t> conversionBuffer;
 };
 
 using namespace gz;
 using namespace rendering;
+
+//////////////////////////////////////////////////
+/// \brief Describe a tightly packed box covering the whole texture, laid out
+/// in the given pixel format. Its data pointer is left null.
+/// \param[in] _texture Texture the box covers
+/// \param[in] _format Pixel format of the memory the box describes
+/// \return The box, containing metadata only
+static Ogre::TextureBox textureBoxFor(Ogre::TextureGpu *_texture,
+    Ogre::PixelFormatGpu _format)
+{
+  return Ogre::TextureBox(
+    _texture->getInternalWidth(), _texture->getInternalHeight(),
+    _texture->getDepth(), _texture->getNumSlices(),
+    static_cast<uint32_t>(
+      Ogre::PixelFormatGpuUtils::getBytesPerPixel(_format)),
+    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
+      _texture->getInternalWidth(), 1u, 1u, 1u, _format, 1u)),
+    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
+      _texture->getInternalWidth(), _texture->getInternalHeight(), 1u, 1u,
+      _format, 1u)));
+}
+
+//////////////////////////////////////////////////
+/// \brief Read a texture back into memory, converting it to another format.
+///
+/// Reads back in the texture's own format first, then converts in regular
+/// memory. Image2::copyContentsToMemory() would otherwise convert straight out
+/// of the mapped GPU buffer, one byte at a time. Where the driver maps that
+/// buffer uncached (Mesa freedreno on Adreno) that costs ~40 ms per 848x480
+/// RGB frame; a same-format readback is a plain row memcpy instead.
+/// \param[in] _texture Texture to read back
+/// \param[in] _dstFormat Pixel format to write to _dst. May differ from the
+/// buffer's own format in sRGB-ness only.
+/// \param[in] _dst Destination buffer, must hold the whole texture in
+/// _dstFormat. Left untouched, with an error printed, if it is too small.
+/// \param[in,out] _conversionBuffer Buffer for the raw readback when the
+/// formats differ; grown as needed and reused across calls
+/// \return True if the texture was read back, false if _dst is too small
+static bool readBack(Ogre::TextureGpu *_texture,
+    Ogre::PixelFormatGpu _dstFormat, const PixelBuffer &_dst,
+    std::vector<uint8_t> &_conversionBuffer)
+{
+  Ogre::TextureBox dstBox = textureBoxFor(_texture, _dstFormat);
+  if (_dst.Size() < dstBox.getSizeBytes())
+  {
+    gzerr << "Buffer too small for texture readback: "
+          << dstBox.getSizeBytes() << " bytes needed, "
+          << _dst.Size() << " available" << std::endl;
+    return false;
+  }
+  dstBox.data = _dst.Data();
+
+  const Ogre::PixelFormatGpu texFormat = _texture->getPixelFormat();
+  if (texFormat == _dstFormat)
+  {
+    // Same format: Ogre copies the rows with a plain memcpy.
+    Ogre::Image2::copyContentsToMemory(
+        _texture, _texture->getEmptyBox(0u), dstBox, _dstFormat);
+  }
+  else
+  {
+    // Formats differ: read back unconverted into regular memory, then
+    // convert there.
+    Ogre::TextureBox rawBox = textureBoxFor(_texture, texFormat);
+    _conversionBuffer.resize(rawBox.getSizeBytes());
+    rawBox.data = _conversionBuffer.data();
+
+    Ogre::Image2::copyContentsToMemory(
+        _texture, _texture->getEmptyBox(0u), rawBox, texFormat);
+    Ogre::PixelFormatGpuUtils::bulkPixelConversion(
+        rawBox, texFormat, dstBox, _dstFormat);
+  }
+  return true;
+}
 
 //////////////////////////////////////////////////
 // Ogre2RenderTarget
@@ -415,17 +495,6 @@ bool Ogre2RenderTarget::CopyToBuffer(const PixelBuffer &_dst) const
       dstOgrePf = Ogre::PixelFormatGpuUtils::getEquivalentLinear(dstOgrePf);
   }
 
-  Ogre::TextureBox dstBox(
-    texture->getInternalWidth(), texture->getInternalHeight(),
-    texture->getDepth(), texture->getNumSlices(),
-    static_cast<uint32_t>(
-      Ogre::PixelFormatGpuUtils::getBytesPerPixel(dstOgrePf)),
-    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
-      texture->getInternalWidth(), 1u, 1u, 1u, dstOgrePf, 1u)),
-    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
-      texture->getInternalWidth(), texture->getInternalHeight(), 1u, 1u,
-      dstOgrePf, 1u)));
-
   if ((_dst.Format() == PF_BAYER_RGGB8) ||
       (_dst.Format() == PF_BAYER_BGGR8) ||
       (_dst.Format() == PF_BAYER_GBRG8) ||
@@ -433,18 +502,19 @@ bool Ogre2RenderTarget::CopyToBuffer(const PixelBuffer &_dst) const
   {
     // create tmp color image to get data from gpu
     Image colorImage(this->width, this->height, PF_R8G8B8);
-    dstBox.data = colorImage.Data();
-    Ogre::Image2::copyContentsToMemory(
-        texture, texture->getEmptyBox(0u), dstBox, dstOgrePf);
+    if (!readBack(texture, dstOgrePf, PixelBuffer(colorImage),
+        this->dataPtr->conversionBuffer))
+    {
+      return false;
+    }
     // convert color image to bayer image straight into the caller's buffer
     if (!gz::rendering::convertRGBToBayer(colorImage, _dst))
       return false;
   }
   else
   {
-    dstBox.data = _dst.Data();
-    Ogre::Image2::copyContentsToMemory(
-        texture, texture->getEmptyBox(0u), dstBox, dstOgrePf);
+    if (!readBack(texture, dstOgrePf, _dst, this->dataPtr->conversionBuffer))
+      return false;
   }
   return true;
 }

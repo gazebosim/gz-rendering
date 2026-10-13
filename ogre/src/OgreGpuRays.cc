@@ -650,7 +650,7 @@ void OgreGpuRays::Render()
   }
 
   if (this->dataPtr->textureCount > 1)
-      this->Node()->setOrientation(initialOrientation);
+    this->Node()->setOrientation(initialOrientation);
 
   sceneMgr->removeRenderObjectListener(this);
 

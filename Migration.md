@@ -9,13 +9,14 @@ release will remove the deprecated code.
 
 ### Modifications
 
-* `Ogre2Visual::SetVisible` no longer lets Ogre cascade the visibility to
-  child visuals. It calls `SetVisible` on each child visual instead, so
-  overrides such as `BaseArrowVisual::SetVisible` also apply when a parent
-  visual is shown or hidden. For example, showing the parent of an axis
-  visual no longer shows the arrow rotation visuals. Visuals that keep their
-  own visibility state, such as lidar and frustum visuals, now also receive
-  the call. Child nodes that are not visuals keep the cascading behavior.
+* `OgreVisual::SetVisible` and `Ogre2Visual::SetVisible` no longer let Ogre
+  cascade the visibility to child visuals. They call `SetVisible` on each
+  child visual instead, so overrides such as `BaseArrowVisual::SetVisible`
+  also apply when a parent visual is shown or hidden. For example, showing
+  the parent of an axis visual no longer shows the arrow rotation visuals.
+  Visuals that keep their own visibility state, such as lidar and frustum
+  visuals, now also receive the call. Child nodes that are not visuals keep
+  the cascading behavior.
 
 * `BaseArrowVisual::ShowArrowRotation` updates the flag used by
   `BaseArrowVisual::SetVisible` again, as it did before

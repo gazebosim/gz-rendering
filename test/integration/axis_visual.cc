@@ -92,9 +92,6 @@ class AxisVisualTest : public CommonRenderingTest
 TEST_F(AxisVisualTest,
     GZ_UTILS_TEST_DISABLED_ON_WIN32(ParentSetVisibleKeepsRotationHidden))
 {
-  // Ogre 1.x still cascades the visibility of a visual to its children.
-  CHECK_SUPPORTED_ENGINE("ogre2");
-
   ASSERT_NO_FATAL_FAILURE(this->SetUpScene());
 
   VisualPtr parent = this->scene->CreateVisual();

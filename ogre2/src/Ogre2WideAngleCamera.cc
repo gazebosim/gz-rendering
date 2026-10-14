@@ -26,6 +26,11 @@
 #include <gz/common/Profiler.hh>
 #include "gz/common/Util.hh"
 
+#include <memory>
+#include <vector>
+
+#include "Ogre2TextureReadback.hh"
+
 #ifdef _MSC_VER
 #  pragma warning(push, 0)
 #endif
@@ -165,6 +170,9 @@ class gz::rendering::Ogre2WideAngleCamera::Implementation
   /// \brief Destination image data - used if image format is not rgb
   ///  and needs to be converted to another format.
   public: std::unique_ptr<unsigned char []> dstImgData;
+
+  /// \brief Reads the texture back for CopyToBuffer()
+  public: Ogre2TextureReadback readback;
 
   explicit Implementation(gz::rendering::Ogre2WideAngleCamera &_owner) :
     workspaceListener(_owner)
@@ -1116,21 +1124,7 @@ bool Ogre2WideAngleCamera::CopyToBuffer(const PixelBuffer &_dst) const
       dstOgrePf = Ogre::PixelFormatGpuUtils::getEquivalentLinear(dstOgrePf);
   }
 
-  Ogre::TextureBox dstBox(
-    texture->getInternalWidth(), texture->getInternalHeight(),
-    texture->getDepth(), texture->getNumSlices(),
-    static_cast<uint32_t>(
-      Ogre::PixelFormatGpuUtils::getBytesPerPixel(dstOgrePf)),
-    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
-      texture->getInternalWidth(), 1u, 1u, 1u, dstOgrePf, 1u)),
-    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
-      texture->getInternalWidth(), texture->getInternalHeight(), 1u, 1u,
-      dstOgrePf, 1u)));
-  dstBox.data = _dst.Data();
-
-  Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u), dstBox,
-                                     dstOgrePf);
-  return true;
+  return this->dataPtr->readback.ReadBack(texture, dstOgrePf, _dst);
 }
 
 //////////////////////////////////////////////////

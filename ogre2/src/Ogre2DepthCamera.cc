@@ -59,6 +59,39 @@
   #pragma warning(pop)
 #endif
 
+namespace
+{
+/// \brief Scale applied to the configured near clip plane when setting the
+/// ogre camera near clip distance. The ogre frustum is made slightly larger
+/// than the configured range and the exact near / far clamping is handled in
+/// the depth camera shaders.
+constexpr double kDepthNearClipScale = 0.9;
+
+/// \brief Scale applied to the configured far clip plane when setting the
+/// ogre camera far clip distance. See kDepthNearClipScale.
+constexpr double kDepthFarClipScale = 1.1;
+
+/// \brief Overwrite the depth rows (2 and 3) of a perspective projection
+/// matrix so that they encode the given near and far clip distances. The
+/// image plane rows (0 and 1) are left untouched.
+/// \param[in,out] _matrix Projection matrix to update
+/// \param[in] _near Near clip distance
+/// \param[in] _far Far clip distance
+void SetProjectionDepthRows(gz::math::Matrix4d &_matrix,
+    double _near, double _far)
+{
+  const double invd = 1.0 / (_far - _near);
+  _matrix(2, 0) = 0.0;
+  _matrix(2, 1) = 0.0;
+  _matrix(2, 2) = -(_far + _near) * invd;
+  _matrix(2, 3) = -2.0 * _far * _near * invd;
+  _matrix(3, 0) = 0.0;
+  _matrix(3, 1) = 0.0;
+  _matrix(3, 2) = -1.0;
+  _matrix(3, 3) = 0.0;
+}
+}  // namespace
+
 namespace gz
 {
 namespace rendering
@@ -467,8 +500,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
 
   // Configure camera behaviour.
   // Make the clipping plane dist large and handle near clamping in shaders
-  double nearPlane = this->NearClipPlane() * 0.9;
-  double farPlane = this->FarClipPlane() * 1.1;
+  double nearPlane = this->NearClipPlane() * kDepthNearClipScale;
+  double farPlane = this->FarClipPlane() * kDepthFarClipScale;
   this->ogreCamera->setNearClipDistance(nearPlane);
   this->ogreCamera->setFarClipDistance(farPlane);
 
@@ -1025,15 +1058,34 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
 /////////////////////////////////////////////////
 math::Matrix4d Ogre2DepthCamera::ProjectionMatrix() const
 {
-  return Ogre2Conversions::Convert(this->ogreCamera->getProjectionMatrix());
+  // When a custom projection matrix has been set, report it as given so that
+  // ProjectionMatrix() / SetProjectionMatrix() round trip.
+  if (this->ogreCamera->isCustomProjectionMatrixEnabled())
+    return this->projectionMatrix;
+
+  // The ogre camera uses widened clip distances (see CreateDepthTexture)
+  // which must not leak to users. Report the configured near / far planes.
+  math::Matrix4d result =
+      Ogre2Conversions::Convert(this->ogreCamera->getProjectionMatrix());
+  SetProjectionDepthRows(result, this->NearClipPlane(), this->FarClipPlane());
+  return result;
 }
 
 /////////////////////////////////////////////////
 void Ogre2DepthCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
 {
   BaseDepthCamera::SetProjectionMatrix(_matrix);
+
+  // Only the image plane rows (0 and 1) are taken from the given matrix.
+  // The depth rows must match the widened clip distances used by the ogre
+  // camera, otherwise the depth pipeline (e.g. point cloud reconstruction
+  // from view space corners) would be inconsistent with the frustum.
+  math::Matrix4d ogreMatrix = _matrix;
+  SetProjectionDepthRows(ogreMatrix,
+      this->NearClipPlane() * kDepthNearClipScale,
+      this->FarClipPlane() * kDepthFarClipScale);
   this->ogreCamera->setCustomProjectionMatrix(
-      true, Ogre2Conversions::Convert(this->projectionMatrix));
+      true, Ogre2Conversions::Convert(ogreMatrix));
 }
 
 //////////////////////////////////////////////////

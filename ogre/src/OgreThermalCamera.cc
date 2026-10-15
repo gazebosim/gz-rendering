@@ -390,6 +390,60 @@ void OgreThermalCamera::CreateCamera()
   this->ogreCamera->setCustomProjectionMatrix(false);
 }
 
+//////////////////////////////////////////////////
+void OgreThermalCamera::SyncOgreCameraFrustum()
+{
+  if (!this->ogreCamera)
+    return;
+
+  // set aspect ratio and fov
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
+  this->ogreCamera->setFOVy(Ogre::Radian(static_cast<Ogre::Real>(vfov)));
+  this->ogreCamera->setAspectRatio(static_cast<Ogre::Real>(aspectRatio));
+
+  // set clip planes.
+  // Once the thermal texture exists, a very small near clip distance is used
+  // so the camera can see close objects without being clipped; the configured
+  // near plane is applied in shaders. Before that, keep the configured value
+  // so the projection matrix is consistent with the camera configuration.
+  const Ogre::Real nearDist = this->dataPtr->ogreThermalTexture ?
+      static_cast<Ogre::Real>(1e-4) :
+      static_cast<Ogre::Real>(this->NearClipPlane());
+  this->ogreCamera->setNearClipDistance(nearDist);
+  this->ogreCamera->setFarClipDistance(
+      static_cast<Ogre::Real>(this->FarClipPlane()));
+}
+
+//////////////////////////////////////////////////
+void OgreThermalCamera::SetHFOV(const math::Angle &_angle)
+{
+  BaseThermalCamera::SetHFOV(_angle);
+  this->SyncOgreCameraFrustum();
+}
+
+//////////////////////////////////////////////////
+void OgreThermalCamera::SetAspectRatio(const double _ratio)
+{
+  BaseThermalCamera::SetAspectRatio(_ratio);
+  this->SyncOgreCameraFrustum();
+}
+
+//////////////////////////////////////////////////
+void OgreThermalCamera::SetNearClipPlane(const double _near)
+{
+  BaseThermalCamera::SetNearClipPlane(_near);
+  this->SyncOgreCameraFrustum();
+}
+
+//////////////////////////////////////////////////
+void OgreThermalCamera::SetFarClipPlane(const double _far)
+{
+  BaseThermalCamera::SetFarClipPlane(_far);
+  this->SyncOgreCameraFrustum();
+}
+
 /////////////////////////////////////////////////
 void OgreThermalCamera::CreateThermalTexture()
 {
@@ -417,21 +471,15 @@ void OgreThermalCamera::CreateThermalTexture()
     vp->setOverlaysEnabled(false);
   }
 
-  const double aspectRatio = this->AspectRatio();
-  const double angle = this->HFOV().Radian();
-  const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
-  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
-  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
+  // Make sure the ogre camera frustum (fov, aspect ratio, clip planes)
+  // reflects the current camera configuration.
+  this->SyncOgreCameraFrustum();
 
   // near and far plane are passed to heat source frag shaders through
   // material switcher. They are used to normalize depth values which are then
   // used for adding variations to temperature of the heat source
-  // Here we set a small clip distance so camera can see close objects
-  // without being clipped.
   double nearPlane = this->NearClipPlane();
   double farPlane = this->FarClipPlane();
-  this->ogreCamera->setNearClipDistance(1e-4f);
-  this->ogreCamera->setFarClipDistance(farPlane);
 
   // create thermal material
   std::string matName = "ThermalCamera";

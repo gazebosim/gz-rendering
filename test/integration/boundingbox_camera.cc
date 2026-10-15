@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 
 #include "CommonRenderingTest.hh"
+#include "ProjectionTestUtils.hh"
 
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Event.hh>
@@ -360,6 +361,50 @@ TEST_F(BoundingBoxCameraTest, Oriented3dBoxes)
 
   EXPECT_EQ(box.Label(), 1u);
   g_mutex.unlock();
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+// Verify that the projection matrix reported by the bounding box camera is
+// valid and consistent with the configured camera parameters before the
+// first render, and that rendering does not change a custom projection
+// matrix.
+TEST_F(BoundingBoxCameraTest, ProjectionMatrixBeforeFirstRender)
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+
+  const int imgWidth = 320;
+  const int imgHeight = 240;
+  const double aspectRatio = static_cast<double>(imgWidth) / imgHeight;
+  const double farDist = 100.0;
+  const double nearDist = 0.1;
+  const gz::math::Angle hfov(GZ_PI / 2);
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  auto camera = scene->CreateBoundingBoxCamera("BoundingBoxCamera");
+  ASSERT_NE(nullptr, camera);
+  camera->SetBoundingBoxType(BoundingBoxType::BBT_VISIBLEBOX2D);
+  camera->SetImageWidth(imgWidth);
+  camera->SetImageHeight(imgHeight);
+  camera->SetAspectRatio(aspectRatio);
+  camera->SetHFOV(hfov);
+  camera->SetNearClipPlane(nearDist);
+  camera->SetFarClipPlane(farDist);
+  scene->RootVisual()->AddChild(camera);
+
+  // Projection matrix must already be valid without any render call.
+  const auto proj = camera->ProjectionMatrix();
+  ExpectProjectionMatches(proj, hfov, aspectRatio, nearDist, farDist);
+
+  // A custom projection matrix equal to the default must survive rendering.
+  camera->SetProjectionMatrix(proj);
+  EXPECT_EQ(proj, camera->ProjectionMatrix());
+  camera->Update();
+  EXPECT_EQ(proj, camera->ProjectionMatrix());
 
   // Clean up
   engine->DestroyScene(scene);

@@ -288,12 +288,7 @@ void OgreDepthCamera::CreateDepthTexture()
     this->depthTexture->SetHeight(1);
   }
 
-  const double aspectRatio = this->AspectRatio();
-  const double angle = this->HFOV().Radian();
-  const double vfov =
-    this->LimitFOV(2.0 * atan(tan(angle / 2.0) / aspectRatio));
-  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
-  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
+  this->SyncOgreCameraFrustum();
 }
 
 //////////////////////////////////////////////////
@@ -625,16 +620,55 @@ double OgreDepthCamera::LimitFOV(const double _fov)
 }
 
 //////////////////////////////////////////////////
+void OgreDepthCamera::SyncOgreCameraFrustum()
+{
+  if (!this->ogreCamera)
+    return;
+
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov =
+    this->LimitFOV(2.0 * atan(tan(angle / 2.0) / aspectRatio));
+  this->ogreCamera->setFOVy(Ogre::Radian(static_cast<Ogre::Real>(vfov)));
+  this->ogreCamera->setAspectRatio(static_cast<Ogre::Real>(aspectRatio));
+
+  // Note: UpdateRenderTarget() overrides the near clip distance with a very
+  // small value while rendering so that depth values below the configured
+  // near plane can be clamped in shaders. Keep the configured value here so
+  // that the projection matrix is consistent with the camera configuration
+  // before the first render.
+  this->ogreCamera->setNearClipDistance(
+      static_cast<Ogre::Real>(this->NearClipPlane()));
+  this->ogreCamera->setFarClipDistance(
+      static_cast<Ogre::Real>(BaseDepthCamera::FarClipPlane()));
+}
+
+//////////////////////////////////////////////////
+void OgreDepthCamera::SetHFOV(const math::Angle &_angle)
+{
+  BaseDepthCamera::SetHFOV(_angle);
+  this->SyncOgreCameraFrustum();
+}
+
+//////////////////////////////////////////////////
+void OgreDepthCamera::SetAspectRatio(const double _ratio)
+{
+  BaseDepthCamera::SetAspectRatio(_ratio);
+  this->SyncOgreCameraFrustum();
+}
+
+//////////////////////////////////////////////////
 void OgreDepthCamera::SetNearClipPlane(const double _near)
 {
   BaseDepthCamera::SetNearClipPlane(_near);
+  this->SyncOgreCameraFrustum();
 }
 
 //////////////////////////////////////////////////
 void OgreDepthCamera::SetFarClipPlane(const double _far)
 {
   BaseDepthCamera::SetFarClipPlane(_far);
-  this->ogreCamera->setFarClipDistance(_far);
+  this->SyncOgreCameraFrustum();
 }
 
 //////////////////////////////////////////////////

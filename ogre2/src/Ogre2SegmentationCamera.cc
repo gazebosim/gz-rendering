@@ -200,18 +200,61 @@ void Ogre2SegmentationCamera::CreateCamera()
   this->ogreCamera->setCustomProjectionMatrix(false);
 }
 
+//////////////////////////////////////////////////
+void Ogre2SegmentationCamera::SyncOgreCameraFrustum()
+{
+  if (!this->ogreCamera)
+    return;
+
+  // set aspect ratio and fov
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
+  this->ogreCamera->setFOVy(Ogre::Radian(static_cast<Ogre::Real>(vfov)));
+  this->ogreCamera->setAspectRatio(static_cast<Ogre::Real>(aspectRatio));
+
+  // set clip planes
+  this->ogreCamera->setNearClipDistance(
+      static_cast<Ogre::Real>(this->NearClipPlane()));
+  this->ogreCamera->setFarClipDistance(
+      static_cast<Ogre::Real>(this->FarClipPlane()));
+}
+
+//////////////////////////////////////////////////
+void Ogre2SegmentationCamera::SetHFOV(const math::Angle &_angle)
+{
+  BaseSegmentationCamera::SetHFOV(_angle);
+  this->SyncOgreCameraFrustum();
+}
+
+//////////////////////////////////////////////////
+void Ogre2SegmentationCamera::SetAspectRatio(const double _ratio)
+{
+  BaseSegmentationCamera::SetAspectRatio(_ratio);
+  this->SyncOgreCameraFrustum();
+}
+
+//////////////////////////////////////////////////
+void Ogre2SegmentationCamera::SetNearClipPlane(const double _near)
+{
+  BaseSegmentationCamera::SetNearClipPlane(_near);
+  this->SyncOgreCameraFrustum();
+}
+
+//////////////////////////////////////////////////
+void Ogre2SegmentationCamera::SetFarClipPlane(const double _far)
+{
+  BaseSegmentationCamera::SetFarClipPlane(_far);
+  this->SyncOgreCameraFrustum();
+}
+
 /////////////////////////////////////////////////
 void Ogre2SegmentationCamera::CreateSegmentationTexture()
 {
   GZ_PROFILE("Ogre2SegmentationCamera::CreateSegmentationTexture");
-  // Camera Parameters
-  this->ogreCamera->setNearClipDistance(this->NearClipPlane());
-  this->ogreCamera->setFarClipDistance(this->FarClipPlane());
-  const double aspectRatio = this->AspectRatio();
-  const double angle = this->HFOV().Radian();
-  const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
-  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
-  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
+  // Make sure the ogre camera frustum (fov, aspect ratio, clip planes)
+  // reflects the current camera configuration.
+  this->SyncOgreCameraFrustum();
 
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();

@@ -16,9 +16,13 @@
 */
 
 #include <gtest/gtest.h>
+#include <cmath>
+#include <cstddef>
 #include <string>
+#include <vector>
 
 #include "CommonRenderingTest.hh"
+#include "ProjectionTestUtils.hh"
 
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Event.hh>
@@ -859,5 +863,162 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraProjection))
     delete [] scan;
   }
 
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+// Verify that the projection matrix reported by the depth camera is valid
+// and consistent with the configured camera parameters before the first
+// render. Also verify that setting a custom projection matrix equal to the
+// default one does not change the generated depth image / point cloud.
+// See https://github.com/gazebosim/gz-sensors/issues/614
+TEST_F(DepthCameraTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(ProjectionMatrixBeforeFirstRender))
+{
+  CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
+
+  const int imgWidth = 256;
+  const int imgHeight = 256;
+  const double aspectRatio = static_cast<double>(imgWidth) / imgHeight;
+  const double farDist = 100.0;
+  const double nearDist = 0.1;
+  const gz::math::Angle hfov(1.05);
+
+  // ogre2 depth camera widens the ogre frustum clip planes slightly so that
+  // exact near / far clamping can be done in shaders.
+  const double nearScale = this->engineToTest == "ogre2" ? 0.9 : 1.0;
+  const double farScale = this->engineToTest == "ogre2" ? 1.1 : 1.0;
+
+  const double unitBoxSize = 1.0;
+  const gz::math::Vector3d boxPosition(1.8, 0.0, 0.0);
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  gz::rendering::VisualPtr root = scene->RootVisual();
+
+  gz::rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  box->SetLocalPosition(boxPosition);
+  box->SetLocalScale(unitBoxSize, unitBoxSize, unitBoxSize);
+  root->AddChild(box);
+
+  auto configure = [&](const gz::rendering::DepthCameraPtr &_camera)
+  {
+    _camera->SetImageWidth(imgWidth);
+    _camera->SetImageHeight(imgHeight);
+    _camera->SetAspectRatio(aspectRatio);
+    _camera->SetHFOV(hfov);
+    _camera->SetNearClipPlane(nearDist);
+    _camera->SetFarClipPlane(farDist);
+    root->AddChild(_camera);
+  };
+
+  // camera 1: default projection
+  auto camera1 = scene->CreateDepthCamera("camera1");
+  ASSERT_NE(nullptr, camera1);
+  configure(camera1);
+
+  // Projection matrix must already be valid, without any render call and
+  // without calling CreateDepthTexture().
+  const auto proj1 = camera1->ProjectionMatrix();
+  ExpectProjectionMatches(proj1, hfov, aspectRatio,
+      nearDist * nearScale, farDist * farScale);
+
+  // camera 2: explicitly set the same projection matrix
+  auto camera2 = scene->CreateDepthCamera("camera2");
+  ASSERT_NE(nullptr, camera2);
+  configure(camera2);
+  camera2->SetProjectionMatrix(proj1);
+  EXPECT_EQ(proj1, camera2->ProjectionMatrix());
+
+  // render both and compare
+  const unsigned int pcChannels = 4u;
+  std::vector<float> depth1(imgWidth * imgHeight);
+  std::vector<float> depth2(imgWidth * imgHeight);
+  std::vector<float> points1(imgWidth * imgHeight * pcChannels);
+  std::vector<float> points2(imgWidth * imgHeight * pcChannels);
+
+  auto c1 = camera1->ConnectNewDepthFrame(
+      std::bind(&::OnNewDepthFrame, depth1.data(),
+        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+        std::placeholders::_4, std::placeholders::_5));
+  auto c2 = camera1->ConnectNewRgbPointCloud(
+      std::bind(&::OnNewRgbPointCloud, points1.data(),
+        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+        std::placeholders::_4, std::placeholders::_5));
+  auto c3 = camera2->ConnectNewDepthFrame(
+      std::bind(&::OnNewDepthFrame, depth2.data(),
+        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+        std::placeholders::_4, std::placeholders::_5));
+  auto c4 = camera2->ConnectNewRgbPointCloud(
+      std::bind(&::OnNewRgbPointCloud, points2.data(),
+        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+        std::placeholders::_4, std::placeholders::_5));
+
+  g_depthCounter = 0u;
+  g_pointCloudCounter = 0u;
+  camera1->Update();
+  camera2->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+  EXPECT_EQ(2u, g_depthCounter);
+  EXPECT_EQ(2u, g_pointCloudCounter);
+
+  // rendering must not have changed the projection matrices.
+  // Note: the ogre (v1) depth camera lowers the ogre near clip distance while
+  // rendering so its default projection matrix changes after the first
+  // render; a custom projection matrix is not affected.
+  if (this->engineToTest == "ogre2")
+  {
+    EXPECT_EQ(proj1, camera1->ProjectionMatrix());
+  }
+  EXPECT_EQ(proj1, camera2->ProjectionMatrix());
+
+  // depth images must be identical
+  unsigned int boxPixels = 0u;
+  for (std::size_t i = 0; i < depth1.size(); ++i)
+  {
+    if (std::isfinite(depth1[i]))
+    {
+      EXPECT_FLOAT_EQ(depth1[i], depth2[i]) << "depth index " << i;
+      ++boxPixels;
+    }
+    else
+    {
+      EXPECT_FALSE(std::isfinite(depth2[i])) << "depth index " << i;
+    }
+  }
+  EXPECT_LT(0u, boxPixels);
+
+  // point clouds must be identical. Only check xyz, the 4th channel holds
+  // packed rgb.
+  const float expectedX = static_cast<float>(
+      boxPosition.X() - unitBoxSize * 0.5);
+  for (std::size_t i = 0; i < points1.size(); i += pcChannels)
+  {
+    for (unsigned int c = 0; c < 3; ++c)
+    {
+      if (std::isfinite(points1[i + c]))
+      {
+        EXPECT_FLOAT_EQ(points1[i + c], points2[i + c])
+            << "point index " << i << " channel " << c;
+      }
+      else
+      {
+        EXPECT_FALSE(std::isfinite(points2[i + c]))
+            << "point index " << i << " channel " << c;
+      }
+    }
+    // sanity check: points on the box face have x == box face distance
+    if (std::isfinite(points1[i]))
+    {
+      EXPECT_NEAR(expectedX, points1[i], 1e-3) << "point index " << i;
+    }
+  }
+
+  // Clean up
+  c1.reset();
+  c2.reset();
+  c3.reset();
+  c4.reset();
   engine->DestroyScene(scene);
 }

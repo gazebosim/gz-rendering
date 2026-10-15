@@ -812,6 +812,54 @@ void Ogre2ThermalCamera::CreateCamera()
   this->ogreCamera->setCustomProjectionMatrix(false);
 }
 
+//////////////////////////////////////////////////
+void Ogre2ThermalCamera::SyncOgreCameraFrustum()
+{
+  if (!this->ogreCamera)
+    return;
+
+  // set aspect ratio and fov
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
+  this->ogreCamera->setFOVy(Ogre::Radian(static_cast<Ogre::Real>(vfov)));
+  this->ogreCamera->setAspectRatio(static_cast<Ogre::Real>(aspectRatio));
+
+  // set clip planes
+  this->ogreCamera->setNearClipDistance(
+      static_cast<Ogre::Real>(this->NearClipPlane()));
+  this->ogreCamera->setFarClipDistance(
+      static_cast<Ogre::Real>(this->FarClipPlane()));
+}
+
+//////////////////////////////////////////////////
+void Ogre2ThermalCamera::SetHFOV(const math::Angle &_angle)
+{
+  BaseThermalCamera::SetHFOV(_angle);
+  this->SyncOgreCameraFrustum();
+}
+
+//////////////////////////////////////////////////
+void Ogre2ThermalCamera::SetAspectRatio(const double _ratio)
+{
+  BaseThermalCamera::SetAspectRatio(_ratio);
+  this->SyncOgreCameraFrustum();
+}
+
+//////////////////////////////////////////////////
+void Ogre2ThermalCamera::SetNearClipPlane(const double _near)
+{
+  BaseThermalCamera::SetNearClipPlane(_near);
+  this->SyncOgreCameraFrustum();
+}
+
+//////////////////////////////////////////////////
+void Ogre2ThermalCamera::SetFarClipPlane(const double _far)
+{
+  BaseThermalCamera::SetFarClipPlane(_far);
+  this->SyncOgreCameraFrustum();
+}
+
 /////////////////////////////////////////////////
 void Ogre2ThermalCamera::CreateRenderTexture()
 {
@@ -826,12 +874,9 @@ void Ogre2ThermalCamera::CreateRenderTexture()
 void Ogre2ThermalCamera::CreateThermalTexture()
 {
   GZ_PROFILE("Ogre2ThermalCamera::CreateThermalTexture");
-  // set aspect ratio and fov
-  const double aspectRatio = this->AspectRatio();
-  const double angle = this->HFOV().Radian();
-  const double vfov = 2.0 * atan(tan(angle / 2.0) / aspectRatio);
-  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
-  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
+  // Make sure the ogre camera frustum (fov, aspect ratio, clip planes)
+  // reflects the current camera configuration.
+  this->SyncOgreCameraFrustum();
 
   // Load thermal material
   // The ThermalCamera material is defined in script (thermal_camera.material).
@@ -846,12 +891,6 @@ void Ogre2ThermalCamera::CreateThermalTexture()
       this->dataPtr->thermalMaterial->getTechnique(0)->getPass(0);
   Ogre::GpuProgramParametersSharedPtr psParams =
       pass->getFragmentProgramParameters();
-
-  // Configure camera behaviour.
-  double nearPlane = this->NearClipPlane();
-  double farPlane = this->FarClipPlane();
-  this->ogreCamera->setNearClipDistance(nearPlane);
-  this->ogreCamera->setFarClipDistance(farPlane);
 
   // only support 8 bit and 16 bit formats for now.
   // default to 16 bit
@@ -878,7 +917,7 @@ void Ogre2ThermalCamera::CreateThermalTexture()
     this->ogreCamera->getProjectionParamsAB();
   double projectionA = projectionAB.x;
   double projectionB = projectionAB.y;
-  projectionB /= farPlane;
+  projectionB /= this->FarClipPlane();
   psParams->setNamedConstant("projectionParams",
       Ogre::Vector2(projectionA, projectionB));
   psParams->setNamedConstant("near",

@@ -115,6 +115,12 @@ namespace gz
       /// \brief Implementation of the render call
       public: virtual void Render() override;
 
+      // Documentation inherited.
+      public: virtual void SetHFOV(const math::Angle &_angle) override;
+
+      // Documentation inherited.
+      public: virtual void SetAspectRatio(const double _ratio) override;
+
       /// \brief Set the far clip distance
       /// \param[in] _far far clip distance
       public: virtual void SetFarClipPlane(const double _far) override;
@@ -154,6 +160,12 @@ namespace gz
 
       /// \brief Create the camera.
       protected: void CreateCamera();
+
+      /// \brief Update the ogre camera frustum (field of view, aspect
+      /// ratio and clip distances) so that it reflects the current camera
+      /// configuration. This keeps the ogre camera projection matrix
+      /// valid at all times, not only after the first render.
+      private: void SyncOgreCameraFrustum();
 
       /// \brief Notifies us that the shadow node definition is about to be
       /// updated. This means our compositor workspace must be destroyed

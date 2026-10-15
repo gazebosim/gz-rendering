@@ -59,6 +59,19 @@
   #pragma warning(pop)
 #endif
 
+namespace
+{
+/// \brief Scale applied to the configured near clip plane when setting the
+/// ogre camera near clip distance. The ogre frustum is made slightly larger
+/// than the configured range and the exact near / far clamping is handled in
+/// the depth camera shaders.
+constexpr double kDepthNearClipScale = 0.9;
+
+/// \brief Scale applied to the configured far clip plane when setting the
+/// ogre camera far clip distance. See kDepthNearClipScale.
+constexpr double kDepthFarClipScale = 1.1;
+}  // namespace
+
 namespace gz
 {
 namespace rendering
@@ -444,13 +457,9 @@ void Ogre2DepthCamera::CreateRenderTexture()
 void Ogre2DepthCamera::CreateDepthTexture()
 {
   GZ_PROFILE("Ogre2DepthCamera::CreateDepthTexture");
-  // set aspect ratio and fov
-  const double aspectRatio = this->AspectRatio();
-  const double angle = this->HFOV().Radian();
-  const double vfov =
-    this->LimitFOV(2.0 * atan(tan(angle / 2.0) / aspectRatio));
-  this->ogreCamera->setFOVy(Ogre::Radian((Ogre::Real)vfov));
-  this->ogreCamera->setAspectRatio((Ogre::Real)aspectRatio);
+  // Make sure the ogre camera frustum (fov, aspect ratio, clip planes)
+  // reflects the current camera configuration.
+  this->SyncOgreCameraFrustum();
 
   // Load depth material
   // The DepthCamera material is defined in script (depth_camera.material).
@@ -465,12 +474,10 @@ void Ogre2DepthCamera::CreateDepthTexture()
   Ogre::GpuProgramParametersSharedPtr psParams =
       pass->getFragmentProgramParameters();
 
-  // Configure camera behaviour.
-  // Make the clipping plane dist large and handle near clamping in shaders
-  double nearPlane = this->NearClipPlane() * 0.9;
-  double farPlane = this->FarClipPlane() * 1.1;
-  this->ogreCamera->setNearClipDistance(nearPlane);
-  this->ogreCamera->setFarClipDistance(farPlane);
+  // The ogre camera clip planes are widened relative to the configured
+  // near / far planes (see SyncOgreCameraFrustum) and near / far clamping
+  // is handled in shaders.
+  const double farPlane = this->FarClipPlane() * kDepthFarClipScale;
 
   // Set the uniform variables (depth_camera_fs.glsl).
   // The projectParams is used to linearize depth buffer data
@@ -1301,17 +1308,57 @@ double Ogre2DepthCamera::LimitFOV(const double _fov)
 }
 
 //////////////////////////////////////////////////
+void Ogre2DepthCamera::SyncOgreCameraFrustum()
+{
+  if (!this->ogreCamera)
+    return;
+
+  // set aspect ratio and fov
+  const double aspectRatio = this->AspectRatio();
+  const double angle = this->HFOV().Radian();
+  const double vfov =
+    this->LimitFOV(2.0 * atan(tan(angle / 2.0) / aspectRatio));
+  this->ogreCamera->setFOVy(Ogre::Radian(static_cast<Ogre::Real>(vfov)));
+  this->ogreCamera->setAspectRatio(static_cast<Ogre::Real>(aspectRatio));
+
+  // Make the ogre clip planes slightly larger than the configured range.
+  // Exact near / far clamping is handled in shaders.
+  this->ogreCamera->setNearClipDistance(static_cast<Ogre::Real>(
+      this->NearClipPlane() * kDepthNearClipScale));
+  this->ogreCamera->setFarClipDistance(static_cast<Ogre::Real>(
+      this->FarClipPlane() * kDepthFarClipScale));
+}
+
+//////////////////////////////////////////////////
+void Ogre2DepthCamera::SetHFOV(const math::Angle &_angle)
+{
+  BaseDepthCamera::SetHFOV(_angle);
+  this->SyncOgreCameraFrustum();
+}
+
+//////////////////////////////////////////////////
+void Ogre2DepthCamera::SetAspectRatio(const double _ratio)
+{
+  BaseDepthCamera::SetAspectRatio(_ratio);
+  this->SyncOgreCameraFrustum();
+}
+
+//////////////////////////////////////////////////
 void Ogre2DepthCamera::SetNearClipPlane(const double _near)
 {
   BaseDepthCamera::SetNearClipPlane(_near);
-  // near plane clipping is handled in shaders
+  // The ogre camera uses a widened near clip distance; exact near plane
+  // clamping is handled in shaders.
+  this->SyncOgreCameraFrustum();
 }
 
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::SetFarClipPlane(const double _far)
 {
   BaseDepthCamera::SetFarClipPlane(_far);
-  // far plane clipping is handled in shaders
+  // The ogre camera uses a widened far clip distance; exact far plane
+  // clamping is handled in shaders.
+  this->SyncOgreCameraFrustum();
 }
 
 //////////////////////////////////////////////////

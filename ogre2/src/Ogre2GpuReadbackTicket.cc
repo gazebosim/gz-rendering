@@ -210,6 +210,7 @@ void Ogre2GpuReadbackTicket::Destroy()
               "teardown; ticket staging buffer leaked." << std::endl;
 
   this->ticket = nullptr;
+  this->downloaded = false;
   this->width = 0u;
   this->height = 0u;
   this->format = Ogre::PFG_UNKNOWN;
@@ -219,13 +220,20 @@ void Ogre2GpuReadbackTicket::Destroy()
 Ogre::TextureBox Ogre2GpuReadbackTicket::DownloadAndMap(
     Ogre::TextureGpu *_texture)
 {
-  Ogre::TextureBox box;  // default-constructed: data == nullptr
+  if (!this->Download(_texture))
+    return Ogre::TextureBox();  // data == nullptr
+  return this->MapDownloaded();
+}
+
+//////////////////////////////////////////////////
+bool Ogre2GpuReadbackTicket::Download(Ogre::TextureGpu *_texture)
+{
   if (!_texture)
-    return box;
+    return false;
 
   auto textureMgr = ReadbackTextureManager();
   if (!textureMgr)
-    return box;
+    return false;
 
   const unsigned int w = _texture->getWidth();
   const unsigned int h = _texture->getHeight();
@@ -253,11 +261,11 @@ Ogre::TextureBox Ogre2GpuReadbackTicket::DownloadAndMap(
   }
 
   if (!this->ticket)
-    return box;
+    return false;
 
   if (this->mapped)
   {
-    gzwarn << "Ogre2GpuReadbackTicket::DownloadAndMap() called while still "
+    gzwarn << "Ogre2GpuReadbackTicket::Download() called while still "
               "mapped; unmapping previous frame first." << std::endl;
     this->ticket->unmap();
     this->mapped = false;
@@ -265,7 +273,17 @@ Ogre::TextureBox Ogre2GpuReadbackTicket::DownloadAndMap(
 
   // accurateTracking=true: the download gets its own fence.
   this->ticket->download(_texture, 0u, true);
-  box = WaitAndMap(this->ticket);
+  this->downloaded = true;
+  return true;
+}
+
+//////////////////////////////////////////////////
+Ogre::TextureBox Ogre2GpuReadbackTicket::MapDownloaded()
+{
+  if (!this->ticket || !this->downloaded)
+    return Ogre::TextureBox();  // data == nullptr
+  Ogre::TextureBox box = WaitAndMap(this->ticket);
+  this->downloaded = false;
   this->mapped = true;
   return box;
 }

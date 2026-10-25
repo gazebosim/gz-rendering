@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstdlib>
 #include <cstring>
 #include <string>
 #include <thread>
@@ -982,5 +983,152 @@ TEST_F(DepthCameraTest,
   depthConn.reset();
   cloudConn.reset();
   scene->DestroySensor(depthCamera);
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+// Rendering two depth cameras, then issuing both readbacks before either
+// PostRender, delivers the same bytes as Render + PostRender on each in
+// turn; and a readback issued for a frame that was never post-rendered is
+// not delivered for the next one.
+TEST_F(DepthCameraTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(IssueReadbackMatchesSerial))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  if (std::getenv("GZ_RENDERING_OGRE2_LEGACY_READBACK"))
+    GTEST_SKIP() << "The legacy readback can't be issued ahead.";
+  const unsigned int width = 160;
+  const unsigned int height = 120;
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  gz::rendering::VisualPtr root = scene->RootVisual();
+
+  gz::rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  root->AddChild(box);
+
+  struct Output
+  {
+    gz::rendering::DepthCameraPtr camera;
+    std::vector<float> depth;
+    std::vector<float> cloud;
+    int frames = 0;
+    gz::common::ConnectionPtr depthConn;
+    gz::common::ConnectionPtr cloudConn;
+  };
+  std::vector<Output> cams(2);
+  for (unsigned int i = 0; i < cams.size(); ++i)
+  {
+    Output &c = cams[i];
+    c.camera = scene->CreateDepthCamera("DepthCamera" + std::to_string(i));
+    ASSERT_NE(nullptr, c.camera);
+    c.camera->SetImageWidth(width);
+    c.camera->SetImageHeight(height);
+    c.camera->SetNearClipPlane(0.15);
+    c.camera->SetFarClipPlane(10.0);
+    c.camera->SetAspectRatio(static_cast<double>(width) / height);
+    c.camera->SetHFOV(1.05);
+    c.camera->SetLocalRotation(0, 0, i == 0 ? -0.2 : 0.2);
+    c.camera->CreateDepthTexture();
+    root->AddChild(c.camera);
+    c.depth.resize(width * height);
+    c.cloud.resize(width * height * 4);
+    c.depthConn = c.camera->ConnectNewDepthFrame(
+        [&c](const float *_data, unsigned int _w, unsigned int _h,
+            unsigned int _c, const std::string &)
+        {
+          ASSERT_EQ(c.depth.size(), static_cast<size_t>(_w) * _h * _c);
+          memcpy(c.depth.data(), _data, c.depth.size() * sizeof(float));
+          ++c.frames;
+        });
+    c.cloudConn = c.camera->ConnectNewRgbPointCloud(
+        [&c](const float *_data, unsigned int _w, unsigned int _h,
+            unsigned int _c, const std::string &)
+        {
+          ASSERT_EQ(c.cloud.size(), static_cast<size_t>(_w) * _h * _c);
+          memcpy(c.cloud.data(), _data, c.cloud.size() * sizeof(float));
+        });
+  }
+
+  // One frame of both cameras, serial or with the readbacks issued ahead;
+  // returns each camera's depth and point cloud.
+  auto frame = [&](bool _ahead)
+  {
+    for (auto &c : cams)
+    {
+      std::fill(c.depth.begin(), c.depth.end(), -1.0f);
+      std::fill(c.cloud.begin(), c.cloud.end(), -1.0f);
+    }
+    scene->PreRender();
+    for (auto &c : cams)
+    {
+      const int before = c.frames;
+      c.camera->Render();
+      if (_ahead)
+        EXPECT_TRUE(c.camera->IssueReadback());
+      else
+        c.camera->PostRender();
+      EXPECT_EQ(before + (_ahead ? 0 : 1), c.frames);
+    }
+    for (auto &c : cams)
+    {
+      if (_ahead)
+        c.camera->PostRender();
+    }
+    scene->PostRender();
+    std::vector<std::vector<float>> out;
+    for (auto &c : cams)
+    {
+      out.push_back(c.depth);
+      out.push_back(c.cloud);
+    }
+    return out;
+  };
+
+  std::vector<std::vector<float>> previous;
+  for (int i = 0; i < 4; ++i)
+  {
+    box->SetLocalPosition(2.0 + 0.3 * i, -0.4 + 0.25 * i, 0.1 * i);
+    const auto ahead = frame(true);
+    const auto serial = frame(false);
+    for (unsigned int k = 0; k < serial.size(); ++k)
+    {
+      EXPECT_EQ(0, memcmp(ahead[k].data(), serial[k].data(),
+          serial[k].size() * sizeof(float)))
+          << "camera " << k / 2 << (k % 2 ? " cloud" : " depth")
+          << ", frame " << i;
+      // The box moved: a stale frame would not match the new one.
+      if (!previous.empty())
+      {
+        EXPECT_NE(0, memcmp(previous[k].data(), serial[k].data(),
+            serial[k].size() * sizeof(float)))
+            << "camera " << k / 2 << ", frame " << i;
+      }
+    }
+    previous = serial;
+  }
+
+  // A readback issued for a frame that is never post-rendered: the next
+  // frame delivers its own data, not that one's.
+  scene->PreRender();
+  cams[0].camera->Render();
+  EXPECT_TRUE(cams[0].camera->IssueReadback());
+  scene->PostRender();
+  box->SetLocalPosition(1.5, 0.3, 0.0);
+  const auto next = frame(false);
+  const auto again = frame(false);
+  for (unsigned int k = 0; k < next.size(); ++k)
+  {
+    EXPECT_EQ(0, memcmp(next[k].data(), again[k].data(),
+        next[k].size() * sizeof(float))) << "camera " << k / 2;
+  }
+
+  for (auto &c : cams)
+  {
+    c.depthConn.reset();
+    c.cloudConn.reset();
+    scene->DestroySensor(c.camera);
+  }
   engine->DestroyScene(scene);
 }

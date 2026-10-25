@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstdlib>
 #include <cstring>
 #include <string>
 #include <thread>
@@ -1344,5 +1345,137 @@ TEST_F(GpuRaysTest,
 
   c.reset();
   scene->DestroySensor(gpuRays);
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+// Rendering two GPU lidars, then issuing both readbacks before either
+// PostRender, delivers the same bytes as Render + PostRender on each in
+// turn; and a readback issued for a frame that was never post-rendered is
+// not delivered for the next one.
+TEST_F(GpuRaysTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(IssueReadbackMatchesSerial))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  if (std::getenv("GZ_RENDERING_OGRE2_LEGACY_READBACK"))
+    GTEST_SKIP() << "The legacy readback can't be issued ahead.";
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  VisualPtr root = scene->RootVisual();
+
+  VisualPtr box = scene->CreateVisual("box");
+  box->AddGeometry(scene->CreateBox());
+  root->AddChild(box);
+
+  const unsigned int hRayCount = 320;
+  const unsigned int vRayCount = 16;
+  struct Output
+  {
+    GpuRaysPtr rays;
+    std::vector<float> scan;
+    int frames = 0;
+    common::ConnectionPtr conn;
+  };
+  std::vector<Output> lidars(2);
+  for (unsigned int i = 0; i < lidars.size(); ++i)
+  {
+    Output &l = lidars[i];
+    l.rays = scene->CreateGpuRays("gpu_rays" + std::to_string(i));
+    l.rays->SetWorldPosition(0, 0.3 * i, 0.1);
+    l.rays->SetNearClipPlane(0.1);
+    l.rays->SetFarClipPlane(10.0);
+    l.rays->SetAngleMin(-GZ_PI / 2.0);
+    l.rays->SetAngleMax(GZ_PI / 2.0);
+    l.rays->SetRayCount(hRayCount);
+    l.rays->SetVerticalAngleMin(-0.2);
+    l.rays->SetVerticalAngleMax(0.2);
+    l.rays->SetVerticalRayCount(vRayCount);
+    root->AddChild(l.rays);
+    l.scan.resize(hRayCount * vRayCount * l.rays->Channels());
+    l.conn = l.rays->ConnectNewGpuRaysFrame(
+        [&l](const float *_scan, unsigned int _w, unsigned int _h,
+            unsigned int _c, const std::string &)
+        {
+          ASSERT_EQ(l.scan.size(), static_cast<size_t>(_w) * _h * _c);
+          memcpy(l.scan.data(), _scan, l.scan.size() * sizeof(float));
+          ++l.frames;
+        });
+  }
+
+  // One frame of both lidars, serial or with the readbacks issued ahead;
+  // returns each lidar's scan.
+  auto frame = [&](bool _ahead)
+  {
+    for (auto &l : lidars)
+      std::fill(l.scan.begin(), l.scan.end(), -1.0f);
+    scene->PreRender();
+    for (auto &l : lidars)
+    {
+      const int before = l.frames;
+      l.rays->Render();
+      if (_ahead)
+        EXPECT_TRUE(l.rays->IssueReadback());
+      else
+        l.rays->PostRender();
+      EXPECT_EQ(before + (_ahead ? 0 : 1), l.frames);
+    }
+    for (auto &l : lidars)
+    {
+      if (_ahead)
+        l.rays->PostRender();
+    }
+    scene->PostRender();
+    std::vector<std::vector<float>> out;
+    for (auto &l : lidars)
+      out.push_back(l.scan);
+    return out;
+  };
+
+  std::vector<std::vector<float>> previous;
+  for (int i = 0; i < 4; ++i)
+  {
+    box->SetWorldPosition(2.0 + 0.5 * i, -1.5 + 0.5 * i, 0.1);
+    const auto ahead = frame(true);
+    const auto serial = frame(false);
+    for (unsigned int k = 0; k < serial.size(); ++k)
+    {
+      EXPECT_EQ(0, memcmp(ahead[k].data(), serial[k].data(),
+          serial[k].size() * sizeof(float)))
+          << "lidar " << k << ", frame " << i;
+      // The box moved: a stale frame would not match the new one.
+      if (!previous.empty())
+      {
+        EXPECT_NE(0, memcmp(previous[k].data(), serial[k].data(),
+            serial[k].size() * sizeof(float)))
+            << "lidar " << k << ", frame " << i;
+      }
+    }
+    previous = serial;
+  }
+
+  // A readback issued for a frame that is never post-rendered: the next
+  // frame delivers its own data, not that one's.
+  scene->PreRender();
+  lidars[0].rays->Render();
+  EXPECT_TRUE(lidars[0].rays->IssueReadback());
+  scene->PostRender();
+  box->SetWorldPosition(1.5, 0.5, 0.1);
+  const auto next = frame(false);
+  const auto again = frame(false);
+  for (unsigned int k = 0; k < next.size(); ++k)
+  {
+    EXPECT_EQ(0, memcmp(next[k].data(), again[k].data(),
+        next[k].size() * sizeof(float))) << "lidar " << k;
+  }
+
+  for (auto &l : lidars)
+  {
+    l.conn.reset();
+    scene->DestroySensor(l.rays);
+  }
   engine->DestroyScene(scene);
 }

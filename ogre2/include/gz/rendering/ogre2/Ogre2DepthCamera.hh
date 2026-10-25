@@ -94,6 +94,9 @@ namespace gz
       /// \brief Render the camera
       public: virtual void PostRender() override;
 
+      // Documentation inherited.
+      public: bool IssueReadback() override;
+
       /// \brief All things needed to get back z buffer for depth data
       /// \return The z-buffer as a float array
       public: virtual const float *DepthData() const override;

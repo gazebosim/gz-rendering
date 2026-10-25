@@ -48,6 +48,7 @@
   #pragma warning(push, 0)
 #endif
 #include <Compositor/OgreCompositorManager2.h>
+#include <Compositor/OgreCompositorNode.h>
 #include <Compositor/OgreCompositorWorkspace.h>
 #include <Compositor/Pass/PassClear/OgreCompositorPassClearDef.h>
 #include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
@@ -109,6 +110,30 @@ class gz::rendering::Ogre2DepthCameraPrivate
   /// \brief True if IssueReadback() issued the readback of the last
   /// Render(), which PostRender() then maps.
   public: bool readbackIssued = false;
+
+  /// \brief Final quad pass writing the xyz + colour output.
+  public: Ogre::CompositorPassDef *finalPassDef = nullptr;
+
+  /// \brief Final quad pass writing the depth-only output (x of the xyz
+  /// output) into an R32 target, used without point cloud subscribers.
+  public: Ogre::CompositorPassDef *depthOnlyPassDef = nullptr;
+
+  /// \brief True if the last Render set up a depth-only frame.
+  public: bool renderDepthOnly = false;
+
+  /// \brief Texture that the persistent-ticket readback of the last Render
+  /// downloads: the depth-only output of a depth-only frame, else the
+  /// xyz + colour output.
+  /// \return The texture, nullptr if not found.
+  public: Ogre::TextureGpu *ReadbackTexture() const
+  {
+    if (!this->renderDepthOnly)
+      return this->ogreDepthTexture[1];
+    Ogre::CompositorNode *node =
+        this->ogreCompositorWorkspace->findNodeNoThrow(
+        this->ogreCompositorFinalNodeDef);
+    return node ? node->getDefinedTexture("rt_depth") : nullptr;
+  }
 
   /// \brief maximum value used for data outside sensor range
   public: float dataMaxVal = gz::math::INF_D;
@@ -910,7 +935,30 @@ void Ogre2DepthCamera::CreateDepthTexture()
     finalNodeDef->addTextureSourceName("rt_output", 1,
         Ogre::TextureDefinitionBase::TEXTURE_INPUT);
 
-    finalNodeDef->setNumTargetPass(1);
+    // Depth-only output: the final pass writes into a single channel uint
+    // target too, which keeps the x (depth) bits of its uvec4 output. It is
+    // read back instead of rt_output when there are no point cloud
+    // subscribers: a quarter of the bytes.
+    Ogre::TextureDefinitionBase::TextureDefinition *depthOnlyTexDef =
+        finalNodeDef->addTextureDefinition("rt_depth");
+    depthOnlyTexDef->textureType = Ogre::TextureTypes::Type2D;
+    depthOnlyTexDef->width = 0;
+    depthOnlyTexDef->height = 0;
+    depthOnlyTexDef->depthOrSlices = 1;
+    depthOnlyTexDef->numMipmaps = 0;
+    depthOnlyTexDef->widthFactor = 1;
+    depthOnlyTexDef->heightFactor = 1;
+    depthOnlyTexDef->format = Ogre::PFG_R32_UINT;
+    depthOnlyTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
+    depthOnlyTexDef->depthBufferId = Ogre::DepthBuffer::POOL_NO_DEPTH;
+    depthOnlyTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
+    depthOnlyTexDef->preferDepthTexture = false;
+    depthOnlyTexDef->fsaa = "0";
+    Ogre::RenderTargetViewDef *rtvDepthOnly =
+      finalNodeDef->addRenderTextureView("rt_depth");
+    rtvDepthOnly->setForTextureDefinition("rt_depth", depthOnlyTexDef);
+
+    finalNodeDef->setNumTargetPass(2);
     // rt_output target - converts depth to xyz
     Ogre::CompositorTargetDef *outputTargetDef =
         finalNodeDef->addTargetPass("rt_output");
@@ -928,6 +976,23 @@ void Ogre2DepthCamera::CreateDepthTexture()
 
       passQuad->mMaterialName = this->dataPtr->depthFinalMaterial->getName();
       passQuad->addQuadTextureSource(0, "rt_input");
+      this->dataPtr->finalPassDef = passQuad;
+    }
+    // rt_depth target - same pass, depth only; disabled until Render
+    // finds no point cloud subscribers
+    Ogre::CompositorTargetDef *depthOnlyTargetDef =
+        finalNodeDef->addTargetPass("rt_depth");
+    depthOnlyTargetDef->setNumPasses(1);
+    {
+      Ogre::CompositorPassQuadDef *passQuad =
+          static_cast<Ogre::CompositorPassQuadDef *>(
+          depthOnlyTargetDef->addPass(Ogre::PASS_QUAD));
+      // the quad covers every pixel
+      passQuad->setAllLoadActions(Ogre::LoadAction::DontCare);
+      passQuad->mMaterialName = this->dataPtr->depthFinalMaterial->getName();
+      passQuad->addQuadTextureSource(0, "rt_input");
+      passQuad->mExecutionMask = ~this->dataPtr->kDepthExecutionMask;
+      this->dataPtr->depthOnlyPassDef = passQuad;
     }
     finalNodeDef->mapOutputChannel(0, "rt_output");
 
@@ -1046,6 +1111,30 @@ void Ogre2DepthCamera::Render()
   GZ_PROFILE("Ogre2DepthCamera::Render");
   // A readback issued for an earlier frame is not this frame's.
   this->dataPtr->readbackIssued = false;
+  // Depth-only or point cloud frame: chosen from the point cloud
+  // connections at Render time, not at PreRender. A sensor connects its
+  // point cloud callback after the scene's PreRender (gz-sim:
+  // Scene::PreRender, then the sensors' Update), and that frame must
+  // deliver a point cloud.
+  // Without point cloud subscribers the final pass writes depth only, and
+  // PostRender reads back that instead of the xyz + colour output.
+  // (CreateDepthTexture sets all the pass defs used here together)
+  if (this->dataPtr->finalPassDef)
+  {
+    // (the legacy readback reads the xyz + colour output)
+    const bool depthOnly =
+        this->dataPtr->newRgbPointCloud.ConnectionCount() == 0u &&
+        !Ogre2UseLegacyReadback();
+    auto enable = [this](Ogre::CompositorPassDef *_def, bool _on)
+    {
+      _def->mExecutionMask = _on ? this->dataPtr->kDepthExecutionMask :
+          ~this->dataPtr->kDepthExecutionMask;
+    };
+    enable(this->dataPtr->finalPassDef, !depthOnly);
+    enable(this->dataPtr->depthOnlyPassDef, depthOnly);
+    this->dataPtr->renderDepthOnly = depthOnly;
+  }
+
   // Our shaders rely on clamped values so enable it for this sensor
   //
   // TODO(anyone): Matias N. Goldberg (dark_sylinc) insists this is a hack
@@ -1249,12 +1338,32 @@ void Ogre2DepthCamera::PostRender()
     Ogre::TextureBox box = this->dataPtr->readbackIssued ?
         this->dataPtr->depthReadback.MapDownloaded() :
         this->dataPtr->depthReadback.DownloadAndMap(
-            this->dataPtr->ogreDepthTexture[1]);
+            this->dataPtr->ReadbackTexture());
     this->dataPtr->readbackIssued = false;
     if (!box.data)
     {
       gzerr << "Ogre2DepthCamera: GPU readback failed; dropping frame"
             << std::endl;
+      return;
+    }
+    if (this->dataPtr->renderDepthOnly)
+    {
+      // A depth-only frame (no point cloud subscribers, see Render) read
+      // back the R32 depth target: the mapped memory goes straight to the
+      // depth frame subscribers when its rows are contiguous.
+      const float *depth = static_cast<const float *>(box.data);
+      if (box.bytesPerRow != width * sizeof(float))
+      {
+        for (unsigned int i = 0; i < height; ++i)
+        {
+          memcpy(&this->dataPtr->depthImage[i * width],
+              static_cast<const char *>(box.data) + i * box.bytesPerRow,
+              width * sizeof(float));
+        }
+        depth = this->dataPtr->depthImage;
+      }
+      this->dataPtr->newDepthFrame(depth, width, height, 1, "FLOAT32");
+      this->dataPtr->depthReadback.Unmap();
       return;
     }
     FillDepthBuffers(box, this->dataPtr->depthBuffer,
@@ -1281,7 +1390,7 @@ bool Ogre2DepthCamera::IssueReadback()
   if (Ogre2UseLegacyReadback())
     return false;
   this->dataPtr->readbackIssued = this->dataPtr->depthReadback.Download(
-      this->dataPtr->ogreDepthTexture[1]);
+      this->dataPtr->ReadbackTexture());
   return this->dataPtr->readbackIssued;
 }
 

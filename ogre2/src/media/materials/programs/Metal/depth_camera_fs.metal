@@ -40,6 +40,10 @@ struct Params
   float particleScatterRatio;
   // rnd is a random number in the range of [0-1]
   float rnd;
+
+  // 1 when the pass also does the final pass's job (depth only, no
+  // point cloud): see depth_camera_final_fs.metal
+  float depthOnly;
 };
 
 uint packUnorm4x8Gz(float4 color)
@@ -199,6 +203,35 @@ fragment uint4 main_metal
     {
       color = float4(p.backgroundColor, 1.0);
     }
+  }
+
+  if (p.depthOnly > 0.5)
+  {
+    // depth_camera_final_fs.metal on the same values: the frame is the
+    // depth alone, without an xyz + colour pass in between
+    if (!isinf(point.x) && length(point) > p.far - tolerance)
+    {
+      if (isinf(p.max))
+      {
+        point = float3(p.max);
+      }
+      else
+      {
+        point.x = p.max;
+      }
+    }
+    else if (point.x < p.near + tolerance)
+    {
+      if (isinf(p.min))
+      {
+        point = float3(p.min);
+      }
+      else
+      {
+        point.x = p.min;
+      }
+    }
+    return uint4(as_type<uint3>(point), 0u);
   }
 
   // gamma correct

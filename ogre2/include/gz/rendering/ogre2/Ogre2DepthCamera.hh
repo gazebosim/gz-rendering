@@ -97,6 +97,12 @@ namespace gz
       // Documentation inherited.
       public: bool IssueReadback() override;
 
+      // Documentation inherited.
+      public: bool SetPointCloudFormat(PixelFormat _format) override;
+
+      // Documentation inherited.
+      public: PixelFormat PointCloudFormat() const override;
+
       /// \brief All things needed to get back z buffer for depth data
       /// \return The z-buffer as a float array
       public: virtual const float *DepthData() const override;

@@ -132,6 +132,19 @@ class gz::rendering::Ogre2DepthCameraPrivate
   /// between the base and the final node.
   public: Ogre::CompositorPassDef *mergedPassDef = nullptr;
 
+  /// \brief Final node pass packing the xyz output into rt_points.
+  public: Ogre::CompositorPassDef *packPassDef = nullptr;
+
+  /// \brief Material of the pass packing the xyz output.
+  public: Ogre::MaterialPtr packMaterial;
+
+  /// \brief Point cloud format requested by SetPointCloudFormat().
+  public: PixelFormat pointFormat = PF_FLOAT32_RGBA;
+
+  /// \brief True if point cloud frames pack the xyz output into rt_points
+  /// (PF_FLOAT32_RGB point clouds); set by CreateDepthTexture.
+  public: bool packedPoints = false;
+
   /// \brief True if the point cloud event had connections at the last
   /// PreRender, which chose the colour passes.
   public: bool pointsAtPreRender = false;
@@ -156,8 +169,10 @@ class gz::rendering::Ogre2DepthCameraPrivate
     Ogre::TextureGpu *depth = this->renderMerged ?
         defined(this->ogreCompositorBaseNodeDef, "depthOnlyTexture") :
         defined(this->ogreCompositorFinalNodeDef, "rt_depth");
-    Ogre::TextureGpu *points =
-        this->renderDepthOnly ? nullptr : this->ogreDepthTexture[1];
+    Ogre::TextureGpu *points = this->renderDepthOnly ? nullptr :
+        (this->packedPoints ?
+        defined(this->ogreCompositorFinalNodeDef, "rt_points") :
+        this->ogreDepthTexture[1]);
     this->depthDownloaded = depth && this->depthReadback.Download(depth);
     this->pointsDownloaded = points && this->pointReadback.Download(points);
     return this->depthDownloaded || this->pointsDownloaded;
@@ -424,6 +439,12 @@ void Ogre2DepthCamera::Destroy()
         this->dataPtr->depthFinalMaterial->getName());
     this->dataPtr->depthFinalMaterial.setNull();
   }
+  if (this->dataPtr->packMaterial)
+  {
+    Ogre::MaterialManager::getSingleton().remove(
+        this->dataPtr->packMaterial->getName());
+    this->dataPtr->packMaterial.setNull();
+  }
 
   if (!this->dataPtr->ogreCompositorWorkspaceDef.empty())
   {
@@ -585,6 +606,22 @@ void Ogre2DepthCamera::CreateDepthTexture()
       static_cast<float>(this->dataPtr->dataMaxVal));
   psParamsFinal->setNamedConstant("min",
       static_cast<float>(this->dataPtr->dataMinVal));
+  psParamsFinal->setNamedConstant("packXyz", 0.0f);
+
+  // A copy of it for the pass packing the xyz output.
+  // ponytail: rows must pack into whole RGBA texels (width multiple of 4);
+  // other widths keep PF_FLOAT32_RGBA point clouds.
+  this->dataPtr->packedPoints =
+      this->dataPtr->pointFormat == PF_FLOAT32_RGB &&
+      this->ImageWidth() % 4u == 0u;
+  if (this->dataPtr->packedPoints)
+  {
+    this->dataPtr->packMaterial = this->dataPtr->depthFinalMaterial->clone(
+        this->Name() + "_" + matDepthFinalName + "_pack");
+    this->dataPtr->packMaterial->load();
+    this->dataPtr->packMaterial->getTechnique(0)->getPass(0)
+        ->getFragmentProgramParameters()->setNamedConstant("packXyz", 1.0f);
+  }
 
   // create background material is specified
   MaterialPtr backgroundMaterial = this->Scene()->BackgroundMaterial();
@@ -1052,7 +1089,29 @@ void Ogre2DepthCamera::CreateDepthTexture()
       finalNodeDef->addRenderTextureView("rt_depth");
     rtvDepthOnly->setForTextureDefinition("rt_depth", depthOnlyTexDef);
 
-    finalNodeDef->setNumTargetPass(2);
+    // Packed xyz output: the x, y, z of the xyz + colour output, rows
+    // without padding, 4 floats per texel: an xyz PointCloudPacked's data.
+    if (this->dataPtr->packedPoints)
+    {
+      Ogre::TextureDefinitionBase::TextureDefinition *pointsTexDef =
+          finalNodeDef->addTextureDefinition("rt_points");
+      pointsTexDef->textureType = Ogre::TextureTypes::Type2D;
+      pointsTexDef->width = this->ImageWidth() * 3u / 4u;
+      pointsTexDef->height = this->ImageHeight();
+      pointsTexDef->depthOrSlices = 1;
+      pointsTexDef->numMipmaps = 0;
+      pointsTexDef->format = Ogre::PFG_RGBA32_UINT;
+      pointsTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
+      pointsTexDef->depthBufferId = Ogre::DepthBuffer::POOL_NO_DEPTH;
+      pointsTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
+      pointsTexDef->preferDepthTexture = false;
+      pointsTexDef->fsaa = "0";
+      Ogre::RenderTargetViewDef *rtvPoints =
+        finalNodeDef->addRenderTextureView("rt_points");
+      rtvPoints->setForTextureDefinition("rt_points", pointsTexDef);
+    }
+
+    finalNodeDef->setNumTargetPass(this->dataPtr->packedPoints ? 3 : 2);
     // rt_output target - converts depth to xyz
     Ogre::CompositorTargetDef *outputTargetDef =
         finalNodeDef->addTargetPass("rt_output");
@@ -1087,6 +1146,23 @@ void Ogre2DepthCamera::CreateDepthTexture()
       passQuad->addQuadTextureSource(0, "rt_input");
       passQuad->mExecutionMask = ~this->dataPtr->kDepthExecutionMask;
       this->dataPtr->depthOnlyPassDef = passQuad;
+    }
+    // rt_points target - packs rt_output; disabled until Render finds
+    // point cloud subscribers
+    if (this->dataPtr->packedPoints)
+    {
+      Ogre::CompositorTargetDef *pointsTargetDef =
+          finalNodeDef->addTargetPass("rt_points");
+      pointsTargetDef->setNumPasses(1);
+      Ogre::CompositorPassQuadDef *passQuad =
+          static_cast<Ogre::CompositorPassQuadDef *>(
+          pointsTargetDef->addPass(Ogre::PASS_QUAD));
+      // the quad covers every pixel
+      passQuad->setAllLoadActions(Ogre::LoadAction::DontCare);
+      passQuad->mMaterialName = this->dataPtr->packMaterial->getName();
+      passQuad->addQuadTextureSource(0, "rt_output");
+      passQuad->mExecutionMask = ~this->dataPtr->kDepthExecutionMask;
+      this->dataPtr->packPassDef = passQuad;
     }
     finalNodeDef->mapOutputChannel(0, "rt_output");
 
@@ -1242,6 +1318,8 @@ void Ogre2DepthCamera::Render()
     this->dataPtr->depthMaterial->getTechnique(0)->getPass(0)
         ->getFragmentProgramParameters()->setNamedConstant(
         "depthOnly", merged ? 1.0f : 0.0f);
+    if (this->dataPtr->packPassDef)
+      enable(this->dataPtr->packPassDef, !depthOnly);
     this->dataPtr->renderDepthOnly = depthOnly;
     this->dataPtr->renderMerged = merged;
 
@@ -1295,6 +1373,15 @@ void Ogre2DepthCamera::PreRender()
   // Colour scene passes only with rgb point cloud connections
   this->dataPtr->pointsAtPreRender =
       this->dataPtr->newRgbPointCloud.ConnectionCount() > 0u;
+  const bool hasParticles =
+      this->scene->OgreSceneManager()->getMovableObjectIterator(
+      Ogre::ParticleSystemFactory::FACTORY_TYPE_NAME).hasMoreElements();
+  // Packed xyz point clouds need no colour. With particles the colour
+  // passes run anyway whenever there are point cloud subscribers: the
+  // particle noise listener draws a random number in every scene pass that
+  // sees particles, so skipping them would change the depth noise.
+  const bool needColor = this->dataPtr->pointsAtPreRender &&
+      (hasParticles || !this->dataPtr->packedPoints);
   if (this->dataPtr->colorTargetDef)
   {
     Ogre::CompositorPassDefVec &colorPasses =
@@ -1306,11 +1393,11 @@ void Ogre2DepthCamera::PreRender()
     // Without them nothing reads the colour target except the legacy
     // readback, so only that needs it cleared.
     colorPasses[0]->mExecutionMask =
-      (!this->dataPtr->pointsAtPreRender && Ogre2UseLegacyReadback()) ?
+      (!needColor && Ogre2UseLegacyReadback()) ?
       this->dataPtr->kDepthExecutionMask : ~this->dataPtr->kDepthExecutionMask;
     for (size_t i = 1; i < colorPasses.size(); ++i)
     {
-      colorPasses[i]->mExecutionMask = this->dataPtr->pointsAtPreRender ?
+      colorPasses[i]->mExecutionMask = needColor ?
           this->dataPtr->kDepthExecutionMask :
           ~this->dataPtr->kDepthExecutionMask;
     }
@@ -1319,9 +1406,6 @@ void Ogre2DepthCamera::PreRender()
   // Particle scene pass only if there are particles
   if (this->dataPtr->particleTargetDef)
   {
-    bool hasParticles =
-        this->scene->OgreSceneManager()->getMovableObjectIterator(
-        Ogre::ParticleSystemFactory::FACTORY_TYPE_NAME).hasMoreElements();
     Ogre::CompositorPassDefVec &particlePasses =
         this->dataPtr->particleTargetDef->getCompositorPassesNonConst();
     GZ_ASSERT(particlePasses.size() == 2u,
@@ -1456,9 +1540,11 @@ void Ogre2DepthCamera::PostRender()
 
     // The point cloud buffer is also DepthData(), so it is filled before
     // either event fires.
+    const unsigned int pointChannels =
+        this->dataPtr->packedPoints ? 3u : channelCount;
     if (pointBox.data)
     {
-      const size_t rowBytes = width * channelCount * sizeof(float);
+      const size_t rowBytes = width * pointChannels * sizeof(float);
       char *dst = reinterpret_cast<char *>(this->dataPtr->depthBuffer);
       for (unsigned int i = 0; i < height; ++i)
       {
@@ -1485,7 +1571,8 @@ void Ogre2DepthCamera::PostRender()
         this->dataPtr->newRgbPointCloud.ConnectionCount() > 0u)
     {
       this->dataPtr->newRgbPointCloud(this->dataPtr->depthBuffer, width,
-          height, channelCount, "PF_FLOAT32_RGBA");
+          height, pointChannels,
+          this->dataPtr->packedPoints ? "PF_FLOAT32_RGB" : "PF_FLOAT32_RGBA");
     }
     this->dataPtr->depthReadback.Unmap();
     this->dataPtr->pointReadback.Unmap();
@@ -1511,6 +1598,26 @@ bool Ogre2DepthCamera::IssueReadback()
     return false;
   this->dataPtr->readbackIssued = this->dataPtr->Download();
   return this->dataPtr->readbackIssued;
+}
+
+//////////////////////////////////////////////////
+bool Ogre2DepthCamera::SetPointCloudFormat(PixelFormat _format)
+{
+  // PF_FLOAT32_RGB point clouds are packed for the persistent-ticket
+  // readback, which the legacy readback path doesn't use.
+  if (_format == PF_FLOAT32_RGB && !Ogre2UseLegacyReadback())
+  {
+    this->dataPtr->pointFormat = PF_FLOAT32_RGB;
+    return true;
+  }
+  this->dataPtr->pointFormat = PF_FLOAT32_RGBA;
+  return _format == PF_FLOAT32_RGBA;
+}
+
+//////////////////////////////////////////////////
+PixelFormat Ogre2DepthCamera::PointCloudFormat() const
+{
+  return this->dataPtr->pointFormat;
 }
 
 //////////////////////////////////////////////////

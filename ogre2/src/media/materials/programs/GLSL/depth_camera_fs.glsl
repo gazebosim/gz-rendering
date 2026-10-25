@@ -47,6 +47,10 @@ vulkan( layout( ogre_P0 ) uniform Params { )
 	uniform float particleScatterRatio;
 	// rnd is a random number in the range of [0-1]
 	uniform float rnd;
+
+	// 1 when the pass also does the final pass's job (depth only, no
+	// point cloud): see depth_camera_final_fs.glsl
+	uniform float depthOnly;
 vulkan( }; )
 
 uint packUnorm4x8Gz(vec4 color)
@@ -194,6 +198,36 @@ void main()
     {
       color = vec4(backgroundColor, 1.0);
     }
+  }
+
+  if (depthOnly > 0.5)
+  {
+    // depth_camera_final_fs.glsl on the same values: the frame is the
+    // depth alone, without an xyz + colour pass in between
+    if (!isinf(point.x) && length(point) > far - tolerance)
+    {
+      if (isinf(max))
+      {
+        point = vec3(max);
+      }
+      else
+      {
+        point.x = max;
+      }
+    }
+    else if (point.x < near + tolerance)
+    {
+      if (isinf(min))
+      {
+        point = vec3(min);
+      }
+      else
+      {
+        point.x = min;
+      }
+    }
+    fragColor = uvec4(floatBitsToUint(point), 0u);
+    return;
   }
 
   // gamma correct

@@ -23,6 +23,7 @@
   #include <windows.h>
 #endif
 
+#include <algorithm>
 #include <cstdint>
 #include <math.h>
 #include <gz/math/Helpers.hh>
@@ -118,8 +119,20 @@ class gz::rendering::Ogre2DepthCameraPrivate
   /// output) into an R32 target, used without point cloud subscribers.
   public: Ogre::CompositorPassDef *depthOnlyPassDef = nullptr;
 
+  /// \brief Quad pass of the base node writing the xyz + colour output.
+  public: Ogre::CompositorPassDef *xyzPassDef = nullptr;
+
+  /// \brief Quad pass of the base node writing the depth-only output
+  /// directly, the xyz and the final depth-only passes in one. Used
+  /// without point cloud subscribers when no render pass (noise) sits
+  /// between the base and the final node.
+  public: Ogre::CompositorPassDef *mergedPassDef = nullptr;
+
   /// \brief True if the last Render set up a depth-only frame.
   public: bool renderDepthOnly = false;
+
+  /// \brief True if the last Render set up the merged depth-only pass.
+  public: bool renderMerged = false;
 
   /// \brief Texture that the persistent-ticket readback of the last Render
   /// downloads: the depth-only output of a depth-only frame, else the
@@ -130,9 +143,10 @@ class gz::rendering::Ogre2DepthCameraPrivate
     if (!this->renderDepthOnly)
       return this->ogreDepthTexture[1];
     Ogre::CompositorNode *node =
-        this->ogreCompositorWorkspace->findNodeNoThrow(
-        this->ogreCompositorFinalNodeDef);
-    return node ? node->getDefinedTexture("rt_depth") : nullptr;
+        this->ogreCompositorWorkspace->findNodeNoThrow(this->renderMerged ?
+        this->ogreCompositorBaseNodeDef : this->ogreCompositorFinalNodeDef);
+    return node ? node->getDefinedTexture(
+        this->renderMerged ? "depthOnlyTexture" : "rt_depth") : nullptr;
   }
 
   /// \brief maximum value used for data outside sensor range
@@ -527,6 +541,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
   psParams->setNamedConstant("backgroundColor", bg);
   psParams->setNamedConstant("particleStddev",
     static_cast<float>(this->dataPtr->particleStddev));
+  // The merged depth-only pass shares this material (Render sets
+  // depthOnly); only one of the two runs in a frame.
+  psParams->setNamedConstant("depthOnly", 0.0f);
 
   std::string matDepthFinalName = "DepthCameraFinal";
   Ogre::MaterialPtr matDepthFinal =
@@ -762,7 +779,28 @@ void Ogre2DepthCamera::CreateDepthTexture()
                                                 particleTexDef);
     rtvParticleTexture->depthAttachment.textureName = "particleDepthTexture";
 
-    baseNodeDef->setNumTargetPass(4);
+    // Depth-only output of the merged pass, same as the final node's
+    // rt_depth
+    Ogre::TextureDefinitionBase::TextureDefinition *mergedTexDef =
+        baseNodeDef->addTextureDefinition("depthOnlyTexture");
+    mergedTexDef->textureType = Ogre::TextureTypes::Type2D;
+    mergedTexDef->width = 0;
+    mergedTexDef->height = 0;
+    mergedTexDef->depthOrSlices = 1;
+    mergedTexDef->numMipmaps = 0;
+    mergedTexDef->widthFactor = 1;
+    mergedTexDef->heightFactor = 1;
+    mergedTexDef->format = Ogre::PFG_R32_UINT;
+    mergedTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
+    mergedTexDef->depthBufferId = Ogre::DepthBuffer::POOL_NO_DEPTH;
+    mergedTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
+    mergedTexDef->preferDepthTexture = false;
+    mergedTexDef->fsaa = "0";
+    Ogre::RenderTargetViewDef *rtvMerged =
+      baseNodeDef->addRenderTextureView("depthOnlyTexture");
+    rtvMerged->setForTextureDefinition("depthOnlyTexture", mergedTexDef);
+
+    baseNodeDef->setNumTargetPass(5);
     this->dataPtr->colorTargetDef =
         baseNodeDef->addTargetPass("colorTexture");
     if (validBackground)
@@ -897,6 +935,29 @@ void Ogre2DepthCamera::CreateDepthTexture()
       passQuad->addQuadTextureSource(3, "particleDepthTexture");
       passQuad->mFrustumCorners =
           Ogre::CompositorPassQuadDef::VIEW_SPACE_CORNERS;
+      this->dataPtr->xyzPassDef = passQuad;
+    }
+
+    // depthOnlyTexture target - xyz and final depth-only pass in one;
+    // disabled until Render chooses it
+    Ogre::CompositorTargetDef *mergedTargetDef =
+        baseNodeDef->addTargetPass("depthOnlyTexture");
+    mergedTargetDef->setNumPasses(1);
+    {
+      Ogre::CompositorPassQuadDef *passQuad =
+          static_cast<Ogre::CompositorPassQuadDef *>(
+          mergedTargetDef->addPass(Ogre::PASS_QUAD));
+      // the quad covers every pixel
+      passQuad->setAllLoadActions(Ogre::LoadAction::DontCare);
+      passQuad->mMaterialName = this->dataPtr->depthMaterial->getName();
+      passQuad->addQuadTextureSource(0, "depthTexture");
+      passQuad->addQuadTextureSource(1, "colorTexture");
+      passQuad->addQuadTextureSource(2, "particleTexture");
+      passQuad->addQuadTextureSource(3, "particleDepthTexture");
+      passQuad->mFrustumCorners =
+          Ogre::CompositorPassQuadDef::VIEW_SPACE_CORNERS;
+      passQuad->mExecutionMask = ~this->dataPtr->kDepthExecutionMask;
+      this->dataPtr->mergedPassDef = passQuad;
     }
 
     baseNodeDef->mapOutputChannel(0, "rt0");
@@ -1125,14 +1186,27 @@ void Ogre2DepthCamera::Render()
     const bool depthOnly =
         this->dataPtr->newRgbPointCloud.ConnectionCount() == 0u &&
         !Ogre2UseLegacyReadback();
+    // Without render passes (noise) between the base and the final node,
+    // one quad pass of the base node writes the depth-only output: the
+    // xyz pass followed by the final depth-only pass, in one pass.
+    const bool merged = depthOnly &&
+        std::none_of(this->dataPtr->renderPasses.begin(),
+            this->dataPtr->renderPasses.end(),
+            [](const RenderPassPtr &_pass) { return _pass->IsEnabled(); });
     auto enable = [this](Ogre::CompositorPassDef *_def, bool _on)
     {
       _def->mExecutionMask = _on ? this->dataPtr->kDepthExecutionMask :
           ~this->dataPtr->kDepthExecutionMask;
     };
     enable(this->dataPtr->finalPassDef, !depthOnly);
-    enable(this->dataPtr->depthOnlyPassDef, depthOnly);
+    enable(this->dataPtr->depthOnlyPassDef, depthOnly && !merged);
+    enable(this->dataPtr->xyzPassDef, !merged);
+    enable(this->dataPtr->mergedPassDef, merged);
+    this->dataPtr->depthMaterial->getTechnique(0)->getPass(0)
+        ->getFragmentProgramParameters()->setNamedConstant(
+        "depthOnly", merged ? 1.0f : 0.0f);
     this->dataPtr->renderDepthOnly = depthOnly;
+    this->dataPtr->renderMerged = merged;
   }
 
   // Our shaders rely on clamped values so enable it for this sensor

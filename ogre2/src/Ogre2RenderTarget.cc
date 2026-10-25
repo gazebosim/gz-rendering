@@ -32,6 +32,9 @@
 #include "Ogre2GpuReadbackTicket.hh"
 
 #include <string.h>
+
+#include <algorithm>
+#include <cstdint>
 #include <vector>
 
 namespace gz
@@ -181,6 +184,66 @@ static bool downloadTexture(Ogre::TextureGpu *_texture,
 }
 
 //////////////////////////////////////////////////
+/// \brief Download a texture and convert it straight into _dst, in
+/// another format. The mapped buffer is read by memcpy only, a block of
+/// rows at a time into _scratch (#1345: it may be uncached memory), and
+/// each block is converted by Ogre (bulkPixelConversion, pixel by pixel)
+/// while it is in cache: the frame makes no round trip through a full-size
+/// intermediate buffer, and the bytes are those of converting it whole.
+/// \param[in] _texture Texture to read back
+/// \param[in] _dst Box covering the whole texture, in _dstFormat
+/// \param[in] _dstFormat Pixel format of _dst
+/// \param[in,out] _scratch Block buffer, grown as needed
+/// \param[in,out] _ticket Persistent ticket to download through
+/// \return True if the texture was read back
+static bool downloadConverting(Ogre::TextureGpu *_texture,
+    Ogre::TextureBox &_dst, Ogre::PixelFormatGpu _dstFormat,
+    std::vector<uint8_t> &_scratch, Ogre2GpuReadbackTicket &_ticket)
+{
+  const Ogre::TextureBox mapped = _ticket.DownloadAndMap(_texture);
+  if (!mapped.data)
+  {
+    gzerr << "GPU readback of the render target failed" << std::endl;
+    return false;
+  }
+  if (!mapped.equalSize(_dst))
+  {
+    gzerr << "GPU readback of the render target is " << mapped.width << "x"
+          << mapped.height << ", expected " << _dst.width << "x"
+          << _dst.height << std::endl;
+    _ticket.Unmap();
+    return false;
+  }
+  const size_t rowBytes = mapped.width * mapped.bytesPerPixel;
+  // About 64 KiB per block: well inside L2
+  const size_t blockRows = std::max<size_t>(1u, (64u << 10) / rowBytes);
+  _scratch.resize(std::min<size_t>(blockRows, _dst.height) * rowBytes);
+  const uint8_t *src = static_cast<const uint8_t *>(mapped.data);
+  uint8_t *dst = static_cast<uint8_t *>(_dst.data);
+  for (size_t y0 = 0; y0 < _dst.height; y0 += blockRows)
+  {
+    const size_t rows = std::min<size_t>(blockRows, _dst.height - y0);
+    for (size_t r = 0; r < rows; ++r)
+    {
+      memcpy(_scratch.data() + r * rowBytes,
+          src + (y0 + r) * mapped.bytesPerRow, rowBytes);
+    }
+    Ogre::TextureBox srcBlock(mapped.width, static_cast<uint32_t>(rows), 1u,
+        1u, mapped.bytesPerPixel, static_cast<uint32_t>(rowBytes),
+        static_cast<uint32_t>(rows * rowBytes));
+    srcBlock.data = _scratch.data();
+    Ogre::TextureBox dstBlock(_dst.width, static_cast<uint32_t>(rows), 1u, 1u,
+        _dst.bytesPerPixel, _dst.bytesPerRow,
+        static_cast<uint32_t>(rows * _dst.bytesPerRow));
+    dstBlock.data = dst + y0 * _dst.bytesPerRow;
+    Ogre::PixelFormatGpuUtils::bulkPixelConversion(
+        srcBlock, _texture->getPixelFormat(), dstBlock, _dstFormat);
+  }
+  _ticket.Unmap();
+  return true;
+}
+
+//////////////////////////////////////////////////
 /// \brief Read a texture back into memory, converting it to another format.
 ///
 /// Reads back in the texture's own format first, then converts in regular
@@ -217,6 +280,12 @@ static bool readBack(Ogre::TextureGpu *_texture,
   {
     // Same format: the rows are copied with a plain memcpy.
     return downloadTexture(_texture, dstBox, _ticket);
+  }
+  else if (!Ogre2UseLegacyReadback())
+  {
+    // Formats differ: converted block by block
+    return downloadConverting(_texture, dstBox, _dstFormat, _conversionBuffer,
+        _ticket);
   }
   else
   {

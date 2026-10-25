@@ -17,6 +17,7 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <cstring>
 #include <vector>
 
@@ -933,6 +934,81 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyTracksEveryFrame))
     EXPECT_EQ(0u, wrong) << "frame " << i << ": first pixel "
         << int(buffer[0]) << " " << int(buffer[1]) << " " << int(buffer[2]);
   }
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+// An R8G8B8 copy of a frame is the R8G8B8A8 copy of the same frame minus the
+// alpha bytes, at a size whose rows, pixel count and readback blocks do not
+// divide evenly.
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyRgbMatchesRgba))
+{
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  VisualPtr root = scene->RootVisual();
+  scene->SetAmbientLight(0.3, 0.3, 0.3);
+  scene->SetBackgroundColor(0.2, 0.4, 0.6);
+
+  DirectionalLightPtr light = scene->CreateDirectionalLight();
+  light->SetDirection(0.5, 0.5, -1);
+  light->SetDiffuseColor(0.8, 0.8, 0.8);
+  root->AddChild(light);
+
+  const math::Color colors[] = {{1, 0, 0}, {0, 1, 0}};
+  for (int i = 0; i < 2; ++i)
+  {
+    MaterialPtr material = scene->CreateMaterial();
+    material->SetDiffuse(colors[i]);
+    material->SetAmbient(colors[i]);
+    VisualPtr visual = scene->CreateVisual();
+    visual->AddGeometry(i == 0 ? scene->CreateBox() : scene->CreateSphere());
+    visual->SetMaterial(material);
+    visual->SetLocalPosition(2, i == 0 ? 0.5 : -0.5, 0);
+    root->AddChild(visual);
+  }
+
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_NE(nullptr, camera);
+  // 161 pixels per row (not a multiple of 4), 121 rows (more than one
+  // 64 KiB block of 644-byte rows)
+  const unsigned int width = 161;
+  const unsigned int height = 121;
+  camera->SetImageWidth(width);
+  camera->SetImageHeight(height);
+  camera->SetImageFormat(PF_R8G8B8);
+  camera->SetHFOV(GZ_PI / 2);
+  root->AddChild(camera);
+  camera->Update();
+
+  std::vector<unsigned char> rgba(width * height * 4, 0x7F);
+  std::vector<unsigned char> rgb(width * height * 3, 0x7F);
+  ASSERT_TRUE(camera->CopyTo(PixelBuffer(width, height, PF_R8G8B8A8,
+      rgba.data(), rgba.size())));
+  ASSERT_TRUE(camera->CopyTo(PixelBuffer(width, height, PF_R8G8B8,
+      rgb.data(), rgb.size())));
+
+  size_t wrong = 0;
+  size_t firstWrong = rgb.size();
+  for (size_t p = 0; p < width * height; ++p)
+  {
+    for (size_t c = 0; c < 3; ++c)
+    {
+      if (rgb[p * 3 + c] != rgba[p * 4 + c])
+      {
+        ++wrong;
+        firstWrong = std::min(firstWrong, p * 3 + c);
+      }
+    }
+  }
+  EXPECT_EQ(0u, wrong) << "first wrong byte " << firstWrong;
+
+  // The frame is not uniform, so misplaced pixels would show
+  size_t changes = 0;
+  for (size_t p = 1; p < width * height; ++p)
+    changes += memcmp(&rgb[p * 3], &rgb[(p - 1) * 3], 3) != 0;
+  EXPECT_GT(changes, 100u);
 
   // Clean up
   engine->DestroyScene(scene);

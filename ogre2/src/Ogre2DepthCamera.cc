@@ -108,7 +108,11 @@ class gz::rendering::Ogre2DepthCameraPrivate
   /// PostRender path.
   public: Ogre2GpuReadbackTicket depthReadback;
 
-  /// \brief True if IssueReadback() issued the readback of the last
+  /// \brief Persistent readback of the point cloud of point cloud frames,
+  /// whose depth frame depthReadback reads back from its own target.
+  public: Ogre2GpuReadbackTicket pointReadback;
+
+  /// \brief True if IssueReadback() issued the readbacks of the last
   /// Render(), which PostRender() then maps.
   public: bool readbackIssued = false;
 
@@ -138,20 +142,32 @@ class gz::rendering::Ogre2DepthCameraPrivate
   /// \brief True if the last Render set up the merged depth-only pass.
   public: bool renderMerged = false;
 
-  /// \brief Texture that the persistent-ticket readback of the last Render
-  /// downloads: the depth-only output of a depth-only frame, else the
-  /// xyz + colour output.
-  /// \return The texture, nullptr if not found.
-  public: Ogre::TextureGpu *ReadbackTexture() const
+  /// \brief Issue the persistent-ticket downloads of the last Render: the
+  /// depth-only output, and for a point cloud frame the point cloud.
+  /// \return False if none was issued.
+  public: bool Download()
   {
-    if (!this->renderDepthOnly)
-      return this->ogreDepthTexture[1];
-    Ogre::CompositorNode *node =
-        this->ogreCompositorWorkspace->findNodeNoThrow(this->renderMerged ?
-        this->ogreCompositorBaseNodeDef : this->ogreCompositorFinalNodeDef);
-    return node ? node->getDefinedTexture(
-        this->renderMerged ? "depthOnlyTexture" : "rt_depth") : nullptr;
+    auto defined = [this](const std::string &_node, const char *_name)
+    {
+      Ogre::CompositorNode *node =
+          this->ogreCompositorWorkspace->findNodeNoThrow(_node);
+      return node ? node->getDefinedTexture(_name) : nullptr;
+    };
+    Ogre::TextureGpu *depth = this->renderMerged ?
+        defined(this->ogreCompositorBaseNodeDef, "depthOnlyTexture") :
+        defined(this->ogreCompositorFinalNodeDef, "rt_depth");
+    Ogre::TextureGpu *points =
+        this->renderDepthOnly ? nullptr : this->ogreDepthTexture[1];
+    this->depthDownloaded = depth && this->depthReadback.Download(depth);
+    this->pointsDownloaded = points && this->pointReadback.Download(points);
+    return this->depthDownloaded || this->pointsDownloaded;
   }
+
+  /// \brief True if the last Download() issued the depth download.
+  public: bool depthDownloaded = false;
+
+  /// \brief True if the last Download() issued the point cloud download.
+  public: bool pointsDownloaded = false;
 
   /// \brief maximum value used for data outside sensor range
   public: float dataMaxVal = gz::math::INF_D;
@@ -357,6 +373,7 @@ void Ogre2DepthCamera::Destroy()
 {
   this->RemoveAllRenderPasses();
   this->dataPtr->depthReadback.Destroy();
+  this->dataPtr->pointReadback.Destroy();
 
   if (this->dataPtr->depthBuffer)
   {
@@ -1215,7 +1232,11 @@ void Ogre2DepthCamera::Render()
           ~this->dataPtr->kDepthExecutionMask;
     };
     enable(this->dataPtr->finalPassDef, !depthOnly);
-    enable(this->dataPtr->depthOnlyPassDef, depthOnly && !merged);
+    // Point cloud frames read the depth frame back from the final
+    // depth-only pass's target too: cheaper than gathering it from the point
+    // cloud on the CPU, which only the legacy readback does.
+    enable(this->dataPtr->depthOnlyPassDef,
+        !merged && !Ogre2UseLegacyReadback());
     enable(this->dataPtr->xyzPassDef, !merged);
     enable(this->dataPtr->mergedPassDef, merged);
     this->dataPtr->depthMaterial->getTechnique(0)->getPass(0)
@@ -1362,30 +1383,6 @@ void Ogre2DepthCamera::PreRender()
   this->dataPtr->renderPassDirty = false;
 }
 
-namespace
-{
-  /// \brief Copy one mapped RGBA32 readback box into the persistent depth
-  /// buffers in a single stride-aware pass: the full RGBA row into
-  /// _depthBuffer (point cloud + DepthData()) and channel 0 into _depthImage
-  /// (depth frame). Honors _box.bytesPerRow as the source stride.
-  void FillDepthBuffers(const Ogre::TextureBox &_box,
-      float *_depthBuffer, float *_depthImage,
-      unsigned int _width, unsigned int _height,
-      unsigned int _channelCount, unsigned int _bytesPerChannel)
-  {
-    const float *src = static_cast<const float *>(_box.data);
-    for (unsigned int i = 0; i < _height; ++i)
-    {
-      const unsigned int rawRowIdx = i * _box.bytesPerRow / _bytesPerChannel;
-      const unsigned int rowIdx = i * _width * _channelCount;
-      memcpy(&_depthBuffer[rowIdx], &src[rawRowIdx],
-          _width * _channelCount * _bytesPerChannel);
-      for (unsigned int j = 0; j < _width; ++j)
-        _depthImage[i * _width + j] = src[rawRowIdx + j * _channelCount];
-    }
-  }
-}  // namespace
-
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::PostRender()
 {
@@ -1436,43 +1433,63 @@ void Ogre2DepthCamera::PostRender()
   }
   else
   {
-    // Persistent-ticket path: map the staging buffer once and copy straight
-    // into the persistent buffers in a single fused pass.
-    Ogre::TextureBox box = this->dataPtr->readbackIssued ?
-        this->dataPtr->depthReadback.MapDownloaded() :
-        this->dataPtr->depthReadback.DownloadAndMap(
-            this->dataPtr->ReadbackTexture());
+    // Persistent-ticket path. Every frame reads back the R32 depth target,
+    // a point cloud frame also the xyz + colour output. The depth frame goes
+    // straight from the mapped memory to its subscribers when its rows are
+    // contiguous; the point cloud is copied into the point cloud buffer.
+    if (!this->dataPtr->readbackIssued)
+      this->dataPtr->Download();
     this->dataPtr->readbackIssued = false;
-    if (!box.data)
+    // (only the tickets this frame downloaded to: the other one may hold an
+    // older frame)
+    Ogre::TextureBox depthBox;
+    Ogre::TextureBox pointBox;
+    if (this->dataPtr->depthDownloaded)
+      depthBox = this->dataPtr->depthReadback.MapDownloaded();
+    if (this->dataPtr->pointsDownloaded)
+      pointBox = this->dataPtr->pointReadback.MapDownloaded();
+    if (!depthBox.data && !pointBox.data)
     {
       gzerr << "Ogre2DepthCamera: GPU readback failed; dropping frame"
             << std::endl;
-      return;
     }
-    if (this->dataPtr->renderDepthOnly)
+
+    // The point cloud buffer is also DepthData(), so it is filled before
+    // either event fires.
+    if (pointBox.data)
     {
-      // A depth-only frame (no point cloud subscribers, see Render) read
-      // back the R32 depth target: the mapped memory goes straight to the
-      // depth frame subscribers when its rows are contiguous.
-      const float *depth = static_cast<const float *>(box.data);
-      if (box.bytesPerRow != width * sizeof(float))
+      const size_t rowBytes = width * channelCount * sizeof(float);
+      char *dst = reinterpret_cast<char *>(this->dataPtr->depthBuffer);
+      for (unsigned int i = 0; i < height; ++i)
+      {
+        memcpy(dst + i * rowBytes, static_cast<const char *>(pointBox.data) +
+            i * pointBox.bytesPerRow, rowBytes);
+      }
+    }
+    if (depthBox.data)
+    {
+      const float *depth = static_cast<const float *>(depthBox.data);
+      if (depthBox.bytesPerRow != width * sizeof(float))
       {
         for (unsigned int i = 0; i < height; ++i)
         {
           memcpy(&this->dataPtr->depthImage[i * width],
-              static_cast<const char *>(box.data) + i * box.bytesPerRow,
-              width * sizeof(float));
+              static_cast<const char *>(depthBox.data) +
+              i * depthBox.bytesPerRow, width * sizeof(float));
         }
         depth = this->dataPtr->depthImage;
       }
       this->dataPtr->newDepthFrame(depth, width, height, 1, "FLOAT32");
-      this->dataPtr->depthReadback.Unmap();
-      return;
     }
-    FillDepthBuffers(box, this->dataPtr->depthBuffer,
-        this->dataPtr->depthImage, width, height, channelCount,
-        bytesPerChannel);
+    if (pointBox.data &&
+        this->dataPtr->newRgbPointCloud.ConnectionCount() > 0u)
+    {
+      this->dataPtr->newRgbPointCloud(this->dataPtr->depthBuffer, width,
+          height, channelCount, "PF_FLOAT32_RGBA");
+    }
     this->dataPtr->depthReadback.Unmap();
+    this->dataPtr->pointReadback.Unmap();
+    return;
   }
 
   this->dataPtr->newDepthFrame(
@@ -1492,8 +1509,7 @@ bool Ogre2DepthCamera::IssueReadback()
 {
   if (Ogre2UseLegacyReadback())
     return false;
-  this->dataPtr->readbackIssued = this->dataPtr->depthReadback.Download(
-      this->dataPtr->ReadbackTexture());
+  this->dataPtr->readbackIssued = this->dataPtr->Download();
   return this->dataPtr->readbackIssued;
 }
 

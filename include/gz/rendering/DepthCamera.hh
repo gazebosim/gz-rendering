@@ -75,6 +75,22 @@ namespace gz
           std::function<void(const float *_pointCloud, unsigned int _width,
           unsigned int _height, unsigned int _depth,
           const std::string &_format)> _subscriber) = 0;
+
+      /// \brief Request the point cloud format of the new rgb point cloud
+      /// event. PF_FLOAT32_RGBA (default) is x, y, z and the colour packed
+      /// in a float, per point. PF_FLOAT32_RGB is x, y, z alone, without
+      /// padding between rows: the data of an xyz-only point cloud message,
+      /// and the colour is not rendered. Engines may deliver
+      /// PF_FLOAT32_RGBA point clouds anyway (ogre2: for image widths that
+      /// are not a multiple of 4), so check the event's format and channel
+      /// count. Call before CreateDepthTexture().
+      /// \param[in] _format PF_FLOAT32_RGBA or PF_FLOAT32_RGB
+      /// \return True if the engine supports the format.
+      public: virtual bool SetPointCloudFormat(PixelFormat _format);
+
+      /// \brief The point cloud format set by SetPointCloudFormat().
+      /// \return PF_FLOAT32_RGBA or PF_FLOAT32_RGB
+      public: virtual PixelFormat PointCloudFormat() const;
     };
   }
   }

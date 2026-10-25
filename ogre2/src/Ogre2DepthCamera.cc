@@ -128,6 +128,10 @@ class gz::rendering::Ogre2DepthCameraPrivate
   /// between the base and the final node.
   public: Ogre::CompositorPassDef *mergedPassDef = nullptr;
 
+  /// \brief True if the point cloud event had connections at the last
+  /// PreRender, which chose the colour passes.
+  public: bool pointsAtPreRender = false;
+
   /// \brief True if the last Render set up a depth-only frame.
   public: bool renderDepthOnly = false;
 
@@ -544,6 +548,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
   // The merged depth-only pass shares this material (Render sets
   // depthOnly); only one of the two runs in a frame.
   psParams->setNamedConstant("depthOnly", 0.0f);
+  psParams->setNamedConstant("hasParticles", 0.0f);
 
   std::string matDepthFinalName = "DepthCameraFinal";
   Ogre::MaterialPtr matDepthFinal =
@@ -735,6 +740,10 @@ void Ogre2DepthCamera::CreateDepthTexture()
     colorTexDef->depthBufferFormat = Ogre::PFG_D32_FLOAT;
     colorTexDef->preferDepthTexture = true;
     colorTexDef->fsaa = "0";
+    // keep_content: depth-only frames neither render nor clear it, and the
+    // depth shader samples it (without using it); a discardable texture
+    // would start every frame undefined
+    colorTexDef->textureFlags &= ~Ogre::TextureFlags::DiscardableContent;
 
     Ogre::RenderTargetViewDef *rtvColor =
       baseNodeDef->addRenderTextureView("colorTexture");
@@ -755,6 +764,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
     particleTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
     particleTexDef->preferDepthTexture = false;
     particleTexDef->fsaa = "0";
+    // keep_content: without particles it is neither rendered nor cleared
+    // (see hasParticles), like colorTexture
+    particleTexDef->textureFlags &= ~Ogre::TextureFlags::DiscardableContent;
 
     Ogre::TextureDefinitionBase::TextureDefinition *particleDepthTexDef =
         baseNodeDef->addTextureDefinition("particleDepthTexture");
@@ -770,6 +782,8 @@ void Ogre2DepthCamera::CreateDepthTexture()
     particleDepthTexDef->depthBufferFormat = Ogre::PFG_UNKNOWN;
     particleDepthTexDef->fsaa = "0";
     particleDepthTexDef->textureFlags &= ~Ogre::TextureFlags::Uav;
+    particleDepthTexDef->textureFlags &=
+        ~Ogre::TextureFlags::DiscardableContent;
 
     // Auto setup the RTV then manually override the depth buffer so
     // it uses the one we created (and thus we can sample from it later)
@@ -898,7 +912,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
           static_cast<Ogre::CompositorPassClearDef *>(
           this->dataPtr->particleTargetDef->addPass(Ogre::PASS_CLEAR));
       passClear->setAllClearColours(Ogre::ColourValue::Black);
-      passClear->mExecutionMask = this->dataPtr->kDepthExecutionMask;
+      // never runs: without particles the shader reads the particle target
+      // as empty (hasParticles), and the scene pass clears it
+      passClear->mExecutionMask = ~this->dataPtr->kDepthExecutionMask;
 
       // scene pass
       Ogre::CompositorPassSceneDef *passScene =
@@ -1207,6 +1223,17 @@ void Ogre2DepthCamera::Render()
         "depthOnly", merged ? 1.0f : 0.0f);
     this->dataPtr->renderDepthOnly = depthOnly;
     this->dataPtr->renderMerged = merged;
+
+    // A subscriber that connected after PreRender: PreRender set up the
+    // colour target as for no subscribers, without its scene passes (which
+    // also keeps the particle noise's random draws as they were), and such
+    // a frame used to read back the cleared target. Clear it for this point
+    // cloud frame too, instead of reading back stale colour.
+    if (!depthOnly && !this->dataPtr->pointsAtPreRender)
+    {
+      this->dataPtr->colorTargetDef->getCompositorPassesNonConst()[0]
+          ->mExecutionMask = this->dataPtr->kDepthExecutionMask;
+    }
   }
 
   // Our shaders rely on clamped values so enable it for this sensor
@@ -1244,8 +1271,9 @@ void Ogre2DepthCamera::PreRender()
   if (!this->dataPtr->ogreCompositorWorkspace)
     this->CreateWorkspaceInstance();
 
-  // Disable color target (set to clear pass) if there are no rgb point cloud
-  // connections
+  // Colour scene passes only with rgb point cloud connections
+  this->dataPtr->pointsAtPreRender =
+      this->dataPtr->newRgbPointCloud.ConnectionCount() > 0u;
   if (this->dataPtr->colorTargetDef)
   {
     Ogre::CompositorPassDefVec &colorPasses =
@@ -1254,19 +1282,20 @@ void Ogre2DepthCamera::PreRender()
         "Ogre2DepthCamera color target should contain more than 2 passes");
     GZ_ASSERT(colorPasses[0]->getType() == Ogre::PASS_CLEAR,
         "Ogre2DepthCamera color target should start with a clear pass");
+    // Without them nothing reads the colour target except the legacy
+    // readback, so only that needs it cleared.
     colorPasses[0]->mExecutionMask =
-      (this->dataPtr->newRgbPointCloud.ConnectionCount() > 0u) ?
-      ~this->dataPtr->kDepthExecutionMask :this->dataPtr->kDepthExecutionMask;
+      (!this->dataPtr->pointsAtPreRender && Ogre2UseLegacyReadback()) ?
+      this->dataPtr->kDepthExecutionMask : ~this->dataPtr->kDepthExecutionMask;
     for (size_t i = 1; i < colorPasses.size(); ++i)
     {
-      colorPasses[i]->mExecutionMask =
-          (this->dataPtr->newRgbPointCloud.ConnectionCount() > 0u) ?
+      colorPasses[i]->mExecutionMask = this->dataPtr->pointsAtPreRender ?
           this->dataPtr->kDepthExecutionMask :
           ~this->dataPtr->kDepthExecutionMask;
     }
   }
 
-  // Disable particle target (set to clear pass) if there are no particles
+  // Particle scene pass only if there are particles
   if (this->dataPtr->particleTargetDef)
   {
     bool hasParticles =
@@ -1280,12 +1309,12 @@ void Ogre2DepthCamera::PreRender()
         "Ogre2DepthCamera particle target should start with a clear pass");
     GZ_ASSERT(particlePasses[1]->getType() == Ogre::PASS_SCENE,
         "Ogre2DepthCamera particle target should end with a scene pass");
-    particlePasses[0]->mExecutionMask =
-      (hasParticles) ? ~this->dataPtr->kDepthExecutionMask :
-                       this->dataPtr->kDepthExecutionMask;
     particlePasses[1]->mExecutionMask =
       (hasParticles) ? this->dataPtr->kDepthExecutionMask :
                        ~this->dataPtr->kDepthExecutionMask;
+    this->dataPtr->depthMaterial->getTechnique(0)->getPass(0)
+        ->getFragmentProgramParameters()->setNamedConstant(
+        "hasParticles", hasParticles ? 1.0f : 0.0f);
   }
 
   // update depth camera render passes

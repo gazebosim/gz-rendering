@@ -44,6 +44,10 @@ struct Params
   // 1 when the pass also does the final pass's job (depth only, no
   // point cloud): see depth_camera_final_fs.metal
   float depthOnly;
+
+  // 0 when the scene has no particles: the particle target is then
+  // neither rendered nor cleared, and reads as empty
+  float hasParticles;
 };
 
 uint packUnorm4x8Gz(float4 color)
@@ -123,7 +127,8 @@ fragment uint4 main_metal
   float4 color = colorTexture.sample(colorSampler, inPs.uv0);
 
   // particle mask - color and depth
-  float4 particle = particleTexture.sample(particleSampler, inPs.uv0);
+  float4 particle = p.hasParticles > 0.5 ?
+      particleTexture.sample(particleSampler, inPs.uv0) : float4(0.0);
   float particleDepth = particleDepthTexture.sample(particleDepthSampler, inPs.uv0).x;
   float pd = p.projectionParams.y / (particleDepth - p.projectionParams.x);
 

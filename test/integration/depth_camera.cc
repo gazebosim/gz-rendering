@@ -16,7 +16,13 @@
 */
 
 #include <gtest/gtest.h>
+
+#include <algorithm>
+#include <chrono>
+#include <cstring>
 #include <string>
+#include <thread>
+#include <vector>
 
 #include "CommonRenderingTest.hh"
 
@@ -27,6 +33,7 @@
 #include "gz/rendering/ParticleEmitter.hh"
 #include "gz/rendering/Scene.hh"
 
+#include <gz/utils/Environment.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
 constexpr double DEPTH_TOL = 1e-4;
@@ -859,5 +866,121 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraProjection))
     delete [] scan;
   }
 
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief On OpenGL the readback waits for the GPU by polling its fence
+/// with short sleeps while the render thread has idle time;
+/// GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT makes map() wait instead. Both
+/// must give the same depth image and point cloud bytes, frame for frame,
+/// while a box moves in front of the camera.
+TEST_F(DepthCameraTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(ReadbackWaitMatchesBlocking))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  const char *kBlockingEnv = "GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT";
+  const unsigned int width = 160;
+  const unsigned int height = 120;
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  scene->SetAmbientLight(1.0, 1.0, 1.0);
+  gz::rendering::VisualPtr root = scene->RootVisual();
+
+  gz::rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  root->AddChild(box);
+
+  auto depthCamera = scene->CreateDepthCamera("DepthCamera");
+  ASSERT_NE(nullptr, depthCamera);
+  depthCamera->SetImageWidth(width);
+  depthCamera->SetImageHeight(height);
+  depthCamera->SetNearClipPlane(0.15);
+  depthCamera->SetFarClipPlane(10.0);
+  depthCamera->SetAspectRatio(static_cast<double>(width) / height);
+  depthCamera->SetHFOV(1.05);
+  depthCamera->CreateDepthTexture();
+  root->AddChild(depthCamera);
+
+  std::vector<float> depth(width * height);
+  std::vector<float> cloud(width * height * 4);
+  int depthFrames = 0;
+  int cloudFrames = 0;
+  gz::common::ConnectionPtr depthConn = depthCamera->ConnectNewDepthFrame(
+      [&depth, &depthFrames](const float *_data, unsigned int _w,
+          unsigned int _h, unsigned int _c, const std::string &)
+      {
+        ASSERT_EQ(depth.size(), static_cast<size_t>(_w) * _h * _c);
+        memcpy(depth.data(), _data, depth.size() * sizeof(float));
+        ++depthFrames;
+      });
+  gz::common::ConnectionPtr cloudConn = depthCamera->ConnectNewRgbPointCloud(
+      [&cloud, &cloudFrames](const float *_data, unsigned int _w,
+          unsigned int _h, unsigned int _c, const std::string &)
+      {
+        ASSERT_EQ(cloud.size(), static_cast<size_t>(_w) * _h * _c);
+        memcpy(cloud.data(), _data, cloud.size() * sizeof(float));
+        ++cloudFrames;
+      });
+
+  // Render once with the given wait into depth and cloud.
+  auto render = [&](bool _blocking)
+  {
+    if (_blocking)
+      EXPECT_TRUE(gz::utils::setenv(kBlockingEnv, "1"));
+    else
+      EXPECT_TRUE(gz::utils::unsetenv(kBlockingEnv));
+    std::fill(depth.begin(), depth.end(), -1.0f);
+    std::fill(cloud.begin(), cloud.end(), -1.0f);
+    const int depthBefore = depthFrames;
+    const int cloudBefore = cloudFrames;
+    depthCamera->Update();
+    EXPECT_EQ(depthBefore + 1, depthFrames);
+    EXPECT_EQ(cloudBefore + 1, cloudFrames);
+    EXPECT_TRUE(gz::utils::unsetenv(kBlockingEnv));
+  };
+
+  // The polled wait sleeps only while the thread has idle time: idle 20 ms
+  // before each polled frame, and long enough for the wait policy to see it.
+  const auto idle = []()
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  };
+  for (int i = 0; i < 20; ++i)
+  {
+    idle();
+    render(false);
+  }
+
+  std::vector<float> previous;
+  std::vector<float> previousCloud;
+  for (int i = 0; i < 6; ++i)
+  {
+    box->SetLocalPosition(1.5 + 0.3 * i, -0.6 + 0.2 * i, 0.1 * i);
+    idle();
+    render(false);
+    const std::vector<float> polled = depth;
+    const std::vector<float> polledCloud = cloud;
+    render(true);
+    EXPECT_EQ(0, memcmp(polled.data(), depth.data(),
+        depth.size() * sizeof(float))) << "depth, frame " << i;
+    EXPECT_EQ(0, memcmp(polledCloud.data(), cloud.data(),
+        cloud.size() * sizeof(float))) << "point cloud, frame " << i;
+    // The box moved: a stale frame would not match the new one.
+    if (!previous.empty())
+    {
+      EXPECT_NE(0, memcmp(previous.data(), depth.data(),
+          depth.size() * sizeof(float))) << "frame " << i;
+      EXPECT_NE(0, memcmp(previousCloud.data(), cloud.data(),
+          cloud.size() * sizeof(float))) << "point cloud, frame " << i;
+    }
+    previous = depth;
+    previousCloud = cloud;
+  }
+
+  depthConn.reset();
+  cloudConn.reset();
+  scene->DestroySensor(depthCamera);
   engine->DestroyScene(scene);
 }

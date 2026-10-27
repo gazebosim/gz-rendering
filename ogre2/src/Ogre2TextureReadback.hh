@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "gz/rendering/config.hh"
+#include "gz/rendering/ogre2/Export.hh"
 #include "gz/rendering/PixelBuffer.hh"
 
 #ifdef _MSC_VER
@@ -44,7 +45,7 @@ namespace gz
     //
     /// \brief Reads a texture back into memory, converting it to another
     /// format.
-    class Ogre2TextureReadback
+    class GZ_RENDERING_OGRE2_HIDDEN Ogre2TextureReadback
     {
       /// \brief Read _texture back into _dst.
       /// \param[in] _texture Texture to read back

@@ -17,6 +17,8 @@
 
 #include <gtest/gtest.h>
 
+#include <cstring>
+
 #include "CommonRenderingTest.hh"
 
 #include <gz/common/Filesystem.hh>

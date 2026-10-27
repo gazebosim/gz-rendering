@@ -33,12 +33,14 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
+namespace
+{
 /// \brief Describe a tightly packed box covering the whole texture, laid out
 /// in the given pixel format. Its data pointer is left null.
 /// \param[in] _texture Texture the box covers
 /// \param[in] _format Pixel format of the memory the box describes
 /// \return The box, containing metadata only
-static Ogre::TextureBox textureBoxFor(Ogre::TextureGpu *_texture,
+Ogre::TextureBox textureBoxFor(Ogre::TextureGpu *_texture,
     Ogre::PixelFormatGpu _format)
 {
   return Ogre::TextureBox(
@@ -51,6 +53,7 @@ static Ogre::TextureBox textureBoxFor(Ogre::TextureGpu *_texture,
     static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
       _texture->getInternalWidth(), _texture->getInternalHeight(), 1u, 1u,
       _format, 1u)));
+}
 }
 
 //////////////////////////////////////////////////

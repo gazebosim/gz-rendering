@@ -28,6 +28,12 @@ namespace gz::rendering
 Camera::~Camera() = default;
 
 //////////////////////////////////////////////////
+bool Camera::IssueReadback()
+{
+  return false;
+}
+
+//////////////////////////////////////////////////
 bool Camera::CopyTo(const PixelBuffer &_buffer) const
 {
   if (_buffer.Data() == nullptr)

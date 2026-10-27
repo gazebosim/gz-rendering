@@ -57,9 +57,26 @@ namespace gz
       /// width/height/pixel-format changes. The caller MUST read the data out
       /// honoring TextureBox::bytesPerRow and then call Unmap() before the next
       /// frame's DownloadAndMap().
+      /// With OpenGL, the wait for the download either spins inside map() or
+      /// polls its fence with short sleeps; Ogre2ReadbackWaitPolicy chooses,
+      /// per calling thread, from that thread's idle time. The data is the
+      /// same either way. The env var GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT
+      /// forces the wait inside map(); it is read on every call.
       /// \param[in] _texture Source GPU texture.
       /// \return Mapped TextureBox; box.data is nullptr on failure.
       public: Ogre::TextureBox DownloadAndMap(Ogre::TextureGpu *_texture);
+
+      /// \brief First half of DownloadAndMap(): issue the download of
+      /// \p _texture without waiting for it.
+      /// \param[in] _texture Source GPU texture.
+      /// \return False on failure (no texture or ticket).
+      public: bool Download(Ogre::TextureGpu *_texture);
+
+      /// \brief Second half of DownloadAndMap(): wait for the last
+      /// Download() and map it, with the same wait as DownloadAndMap().
+      /// \return Mapped TextureBox; box.data is nullptr if nothing was
+      /// downloaded since the last map.
+      public: Ogre::TextureBox MapDownloaded();
 
       /// \brief Unmap the ticket previously mapped by DownloadAndMap().
       /// Safe to call when nothing is mapped.
@@ -85,6 +102,9 @@ namespace gz
 
       /// \brief True while the ticket is currently mapped.
       private: bool mapped{false};
+
+      /// \brief True from Download() until MapDownloaded().
+      private: bool downloaded{false};
     };
 
     /// \brief Whether to use the legacy Ogre::Image2::convertFromTexture

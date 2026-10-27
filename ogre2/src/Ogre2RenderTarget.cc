@@ -29,7 +29,12 @@
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 #include "gz/rendering/Utils.hh"
 
+#include "Ogre2GpuReadbackTicket.hh"
+
 #include <string.h>
+
+#include <algorithm>
+#include <cstdint>
 #include <vector>
 
 namespace gz
@@ -109,6 +114,11 @@ class gz::rendering::Ogre2RenderTargetPrivate
   /// texture's own format, when the requested format differs. Kept across
   /// frames so it is not allocated and zero-filled on every copy.
   public: std::vector<uint8_t> conversionBuffer;
+
+  /// \brief Staging buffer CopyToBuffer() downloads the texture into. Kept
+  /// across frames: Image2::copyContentsToMemory() allocates and frees a
+  /// new one on every copy.
+  public: Ogre2GpuReadbackTicket readbackTicket;
 };
 
 using namespace gz;
@@ -136,6 +146,104 @@ static Ogre::TextureBox textureBoxFor(Ogre::TextureGpu *_texture,
 }
 
 //////////////////////////////////////////////////
+/// \brief Download a texture into memory in its own format.
+/// \param[in] _texture Texture to read back
+/// \param[in] _dst Box in the texture's format, covering the whole texture
+/// \param[in,out] _ticket Persistent ticket to download through
+/// \return True if the texture was read back
+static bool downloadTexture(Ogre::TextureGpu *_texture,
+    Ogre::TextureBox &_dst, Ogre2GpuReadbackTicket &_ticket)
+{
+  const Ogre::PixelFormatGpu texFormat = _texture->getPixelFormat();
+  if (Ogre2UseLegacyReadback())
+  {
+    // A new ticket (staging buffer) per copy, as before the persistent one.
+    Ogre::Image2::copyContentsToMemory(
+        _texture, _texture->getEmptyBox(0u), _dst, texFormat);
+    return true;
+  }
+  const Ogre::TextureBox mapped = _ticket.DownloadAndMap(_texture);
+  if (!mapped.data)
+  {
+    gzerr << "GPU readback of the render target failed" << std::endl;
+    return false;
+  }
+  if (!mapped.equalSize(_dst))
+  {
+    gzerr << "GPU readback of the render target is " << mapped.width << "x"
+          << mapped.height << ", expected " << _dst.width << "x"
+          << _dst.height << std::endl;
+    _ticket.Unmap();
+    return false;
+  }
+  // Ogre's own same-format copy: a row memcpy honouring both row pitches.
+  Ogre::PixelFormatGpuUtils::bulkPixelConversion(
+      mapped, texFormat, _dst, texFormat);
+  _ticket.Unmap();
+  return true;
+}
+
+//////////////////////////////////////////////////
+/// \brief Download a texture and convert it straight into _dst, in
+/// another format. The mapped buffer is read by memcpy only, a block of
+/// rows at a time into _scratch (#1345: it may be uncached memory), and
+/// each block is converted by Ogre (bulkPixelConversion, pixel by pixel)
+/// while it is in cache: the frame makes no round trip through a full-size
+/// intermediate buffer, and the bytes are those of converting it whole.
+/// \param[in] _texture Texture to read back
+/// \param[in] _dst Box covering the whole texture, in _dstFormat
+/// \param[in] _dstFormat Pixel format of _dst
+/// \param[in,out] _scratch Block buffer, grown as needed
+/// \param[in,out] _ticket Persistent ticket to download through
+/// \return True if the texture was read back
+static bool downloadConverting(Ogre::TextureGpu *_texture,
+    Ogre::TextureBox &_dst, Ogre::PixelFormatGpu _dstFormat,
+    std::vector<uint8_t> &_scratch, Ogre2GpuReadbackTicket &_ticket)
+{
+  const Ogre::TextureBox mapped = _ticket.DownloadAndMap(_texture);
+  if (!mapped.data)
+  {
+    gzerr << "GPU readback of the render target failed" << std::endl;
+    return false;
+  }
+  if (!mapped.equalSize(_dst))
+  {
+    gzerr << "GPU readback of the render target is " << mapped.width << "x"
+          << mapped.height << ", expected " << _dst.width << "x"
+          << _dst.height << std::endl;
+    _ticket.Unmap();
+    return false;
+  }
+  const size_t rowBytes = mapped.width * mapped.bytesPerPixel;
+  // About 64 KiB per block: well inside L2
+  const size_t blockRows = std::max<size_t>(1u, (64u << 10) / rowBytes);
+  _scratch.resize(std::min<size_t>(blockRows, _dst.height) * rowBytes);
+  const uint8_t *src = static_cast<const uint8_t *>(mapped.data);
+  uint8_t *dst = static_cast<uint8_t *>(_dst.data);
+  for (size_t y0 = 0; y0 < _dst.height; y0 += blockRows)
+  {
+    const size_t rows = std::min<size_t>(blockRows, _dst.height - y0);
+    for (size_t r = 0; r < rows; ++r)
+    {
+      memcpy(_scratch.data() + r * rowBytes,
+          src + (y0 + r) * mapped.bytesPerRow, rowBytes);
+    }
+    Ogre::TextureBox srcBlock(mapped.width, static_cast<uint32_t>(rows), 1u,
+        1u, mapped.bytesPerPixel, static_cast<uint32_t>(rowBytes),
+        static_cast<uint32_t>(rows * rowBytes));
+    srcBlock.data = _scratch.data();
+    Ogre::TextureBox dstBlock(_dst.width, static_cast<uint32_t>(rows), 1u, 1u,
+        _dst.bytesPerPixel, _dst.bytesPerRow,
+        static_cast<uint32_t>(rows * _dst.bytesPerRow));
+    dstBlock.data = dst + y0 * _dst.bytesPerRow;
+    Ogre::PixelFormatGpuUtils::bulkPixelConversion(
+        srcBlock, _texture->getPixelFormat(), dstBlock, _dstFormat);
+  }
+  _ticket.Unmap();
+  return true;
+}
+
+//////////////////////////////////////////////////
 /// \brief Read a texture back into memory, converting it to another format.
 ///
 /// Reads back in the texture's own format first, then converts in regular
@@ -150,10 +258,12 @@ static Ogre::TextureBox textureBoxFor(Ogre::TextureGpu *_texture,
 /// _dstFormat. Left untouched, with an error printed, if it is too small.
 /// \param[in,out] _conversionBuffer Buffer for the raw readback when the
 /// formats differ; grown as needed and reused across calls
+/// \param[in,out] _ticket Persistent ticket to download through
 /// \return True if the texture was read back, false if _dst is too small
+/// or the download failed
 static bool readBack(Ogre::TextureGpu *_texture,
     Ogre::PixelFormatGpu _dstFormat, const PixelBuffer &_dst,
-    std::vector<uint8_t> &_conversionBuffer)
+    std::vector<uint8_t> &_conversionBuffer, Ogre2GpuReadbackTicket &_ticket)
 {
   Ogre::TextureBox dstBox = textureBoxFor(_texture, _dstFormat);
   if (_dst.Size() < dstBox.getSizeBytes())
@@ -168,9 +278,14 @@ static bool readBack(Ogre::TextureGpu *_texture,
   const Ogre::PixelFormatGpu texFormat = _texture->getPixelFormat();
   if (texFormat == _dstFormat)
   {
-    // Same format: Ogre copies the rows with a plain memcpy.
-    Ogre::Image2::copyContentsToMemory(
-        _texture, _texture->getEmptyBox(0u), dstBox, _dstFormat);
+    // Same format: the rows are copied with a plain memcpy.
+    return downloadTexture(_texture, dstBox, _ticket);
+  }
+  else if (!Ogre2UseLegacyReadback())
+  {
+    // Formats differ: converted block by block
+    return downloadConverting(_texture, dstBox, _dstFormat, _conversionBuffer,
+        _ticket);
   }
   else
   {
@@ -180,8 +295,8 @@ static bool readBack(Ogre::TextureGpu *_texture,
     _conversionBuffer.resize(rawBox.getSizeBytes());
     rawBox.data = _conversionBuffer.data();
 
-    Ogre::Image2::copyContentsToMemory(
-        _texture, _texture->getEmptyBox(0u), rawBox, texFormat);
+    if (!downloadTexture(_texture, rawBox, _ticket))
+      return false;
     Ogre::PixelFormatGpuUtils::bulkPixelConversion(
         rawBox, texFormat, dstBox, _dstFormat);
   }
@@ -503,7 +618,7 @@ bool Ogre2RenderTarget::CopyToBuffer(const PixelBuffer &_dst) const
     // create tmp color image to get data from gpu
     Image colorImage(this->width, this->height, PF_R8G8B8);
     if (!readBack(texture, dstOgrePf, PixelBuffer(colorImage),
-        this->dataPtr->conversionBuffer))
+        this->dataPtr->conversionBuffer, this->dataPtr->readbackTicket))
     {
       return false;
     }
@@ -513,7 +628,8 @@ bool Ogre2RenderTarget::CopyToBuffer(const PixelBuffer &_dst) const
   }
   else
   {
-    if (!readBack(texture, dstOgrePf, _dst, this->dataPtr->conversionBuffer))
+    if (!readBack(texture, dstOgrePf, _dst, this->dataPtr->conversionBuffer,
+        this->dataPtr->readbackTicket))
       return false;
   }
   return true;
@@ -619,6 +735,8 @@ bool Ogre2RenderTarget::IsRenderWindow() const
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::DestroyTargetImpl()
 {
+  // Render windows own no texture but may have read back through the ticket
+  this->dataPtr->readbackTicket.Destroy();
   if (nullptr == this->dataPtr->ogreTexture[0])
     return;
 
@@ -1189,6 +1307,8 @@ Ogre::TextureGpu *Ogre2RenderWindow::RenderTarget() const
 void Ogre2RenderWindow::Destroy()
 {
   this->RemoveAllRenderPasses();
+  // Only the readback ticket: the window texture is not ours
+  Ogre2RenderTarget::DestroyTargetImpl();
   // TODO(anyone)
 }
 

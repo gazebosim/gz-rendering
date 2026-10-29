@@ -25,6 +25,10 @@
 
 #include "gz/common/Util.hh"
 
+#include <vector>
+
+#include "Ogre2TextureReadback.hh"
+
 #ifdef _MSC_VER
 #  pragma warning(push, 0)
 #endif
@@ -35,7 +39,6 @@
 #include <Compositor/Pass/PassQuad/OgreCompositorPassQuadDef.h>
 #include <Compositor/Pass/PassScene/OgreCompositorPassSceneDef.h>
 #include <OgreDepthBuffer.h>
-#include <OgreImage2.h>
 #include <OgrePass.h>
 #include <OgreSceneManager.h>
 #include <OgreTechnique.h>
@@ -161,6 +164,15 @@ class gz::rendering::Ogre2WideAngleCamera::Implementation
   /// changed
   public: bool backgroundMaterialDirty = false;
 
+<<<<<<< HEAD
+=======
+  /// \brief Image data handed to newImageFrame, reused across frames
+  public: std::vector<unsigned char> imageData;
+
+  /// \brief Reads the texture back for CopyToBuffer()
+  public: Ogre2TextureReadback readback;
+
+>>>>>>> d962cf6 (Move Ogre2 texture readback into a reusable class (#1382))
   explicit Implementation(gz::rendering::Ogre2WideAngleCamera &_owner) :
     workspaceListener(_owner)
   {
@@ -1100,21 +1112,7 @@ bool Ogre2WideAngleCamera::CopyToBuffer(const PixelBuffer &_dst) const
       dstOgrePf = Ogre::PixelFormatGpuUtils::getEquivalentLinear(dstOgrePf);
   }
 
-  Ogre::TextureBox dstBox(
-    texture->getInternalWidth(), texture->getInternalHeight(),
-    texture->getDepth(), texture->getNumSlices(),
-    static_cast<uint32_t>(
-      Ogre::PixelFormatGpuUtils::getBytesPerPixel(dstOgrePf)),
-    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
-      texture->getInternalWidth(), 1u, 1u, 1u, dstOgrePf, 1u)),
-    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
-      texture->getInternalWidth(), texture->getInternalHeight(), 1u, 1u,
-      dstOgrePf, 1u)));
-  dstBox.data = _dst.Data();
-
-  Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u), dstBox,
-                                     dstOgrePf);
-  return true;
+  return this->dataPtr->readback.ReadBack(texture, dstOgrePf, _dst);
 }
 
 //////////////////////////////////////////////////
@@ -1272,6 +1270,7 @@ void Ogre2WideAngleCamera::PostRender()
   const unsigned int height = this->ImageHeight();
 
   // blit data from gpu to cpu
+<<<<<<< HEAD
   Ogre::Image2 image;
   image.convertFromTexture(this->dataPtr->ogreStitchTexture[kStichFinalTexture],
                            0u, 0u);
@@ -1300,6 +1299,16 @@ void Ogre2WideAngleCamera::PostRender()
   PixelFormat format = this->ImageFormat();
   unsigned int channelCount = PixelUtil::ChannelCount(format);
   this->dataPtr->newImageFrame(reinterpret_cast<uint8_t *>(box.data), width,
+=======
+  this->dataPtr->imageData.resize(
+      width * height * channelCount * bytesPerChannel);
+  if (!this->CopyToBuffer(PixelBuffer(width, height, format,
+      this->dataPtr->imageData.data(), this->dataPtr->imageData.size())))
+  {
+    return;
+  }
+  this->dataPtr->newImageFrame(this->dataPtr->imageData.data(), width,
+>>>>>>> d962cf6 (Move Ogre2 texture readback into a reusable class (#1382))
                                height, channelCount,
                                PixelUtil::Name(this->ImageFormat()));
 

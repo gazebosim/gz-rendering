@@ -15,6 +15,10 @@
  *
 */
 
+#include <algorithm>
+#include <cmath>
+#include <vector>
+
 #include <gtest/gtest.h>
 
 #include "CommonRenderingTest.hh"
@@ -621,6 +625,167 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(SecondPassPixelCenters))
   }
 
   // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief Check finite undistortion UVs for degenerate and resampled scans.
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ScanTextureCoordinates))
+{
+  CHECK_SUPPORTED_ENGINE("ogre");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  struct ScanConfig
+  {
+    unsigned int verticalSamples;
+    double verticalResolution;
+    double horizontalResolution;
+    double verticalMin;
+    double verticalMax;
+    unsigned int rows;
+    unsigned int horizontalSamples = 16u;
+  };
+  // Include a single output row produced by downsampling several rays, and
+  // multiple output rows produced by upsampling one ray. The texture shape
+  // depends on range counts, not just on the number of input samples.
+  const std::vector<ScanConfig> configs = {
+    {1u, 1.0, 1.0, 0.0, 0.0, 1u},
+    {1u, 1.0, 0.5, 0.0, 0.0, 1u},
+    {1u, 1.0, 2.0, 0.0, 0.0, 1u},
+    {4u, 0.25, 1.0, 0.0, 0.0, 1u},
+    {4u, 0.25, 0.5, 0.0, 0.0, 1u},
+    {1u, 1.0, 1.0, 0.2, 0.2, 1u},
+    {1u, 1.0, 1.0, -0.2, 0.2, 1u},
+    {3u, 1.0, 1.0, -0.1, 0.1, 3u},
+    {4u, 0.5, 1.0, -0.1, 0.1, 2u},
+    {1u, 2.0, 1.0, -0.1, 0.1, 2u},
+    {1u, 1.0, 1.0, 0.0, 0.0, 1u, 1u},
+    {3u, 1.0, 1.0, -0.1, 0.1, 3u, 1u}
+  };
+
+  for (const auto &config : configs)
+  {
+    SCOPED_TRACE(testing::Message()
+        << "samples=" << config.verticalSamples
+        << " vertical resolution=" << config.verticalResolution
+        << " horizontal resolution=" << config.horizontalResolution
+        << " vertical angles=" << config.verticalMin << ", "
+        << config.verticalMax);
+    ScenePtr scene = engine->CreateScene("scene");
+    ASSERT_NE(nullptr, scene);
+    const std::string name = "texture_coordinates_gpu_rays";
+    GpuRaysPtr gpuRays = scene->CreateGpuRays(name);
+    ASSERT_NE(nullptr, gpuRays);
+    gpuRays->SetNearClipPlane(0.1);
+    gpuRays->SetFarClipPlane(5.0);
+    gpuRays->SetAngleMin(-0.5);
+    gpuRays->SetAngleMax(0.5);
+    gpuRays->SetRayCount(config.horizontalSamples);
+    gpuRays->SetHorizontalResolution(config.horizontalResolution);
+    gpuRays->SetVerticalRayCount(config.verticalSamples);
+    gpuRays->SetVerticalResolution(config.verticalResolution);
+    gpuRays->SetVerticalAngleMin(config.verticalMin);
+    gpuRays->SetVerticalAngleMax(config.verticalMax);
+    scene->RootVisual()->AddChild(gpuRays);
+    ASSERT_EQ(config.rows,
+        static_cast<unsigned int>(gpuRays->VerticalRangeCount()));
+
+    // Inspect the generated mesh before rendering. NaN texture coordinates
+    // are invalid even on drivers that happen to produce plausible ranges.
+    gpuRays->PreRender();
+    VisualPtr canvas = scene->VisualByName(name + "second_pass_canvas");
+    ASSERT_NE(nullptr, canvas);
+    ASSERT_EQ(1u, canvas->GeometryCount());
+    MeshPtr mesh = std::dynamic_pointer_cast<Mesh>(canvas->GeometryByIndex(0));
+    ASSERT_NE(nullptr, mesh);
+    const common::Mesh *points = mesh->Descriptor().mesh;
+    ASSERT_NE(nullptr, points);
+    ASSERT_EQ(1u, points->SubMeshCount());
+    auto subMesh = points->SubMeshByIndex(0).lock();
+    ASSERT_NE(nullptr, subMesh);
+    const unsigned int columns = gpuRays->RangeCount();
+    ASSERT_EQ(columns * config.rows, subMesh->TexCoordCount());
+    for (unsigned int i = 0; i < subMesh->TexCoordCount(); ++i)
+    {
+      const auto uv = subMesh->TexCoord(i);
+      ASSERT_TRUE(std::isfinite(uv.X())) << "ray " << i;
+      ASSERT_TRUE(std::isfinite(uv.Y())) << "ray " << i;
+      if (columns == 1u)
+      {
+        EXPECT_DOUBLE_EQ(0.5, uv.X()) << "ray " << i;
+      }
+      if (config.rows == 1u)
+      {
+        EXPECT_DOUBLE_EQ(0.5, uv.Y()) << "ray " << i;
+      }
+    }
+    engine->DestroyScene(scene);
+  }
+}
+
+/////////////////////////////////////////////////
+/// \brief Check ranges when several vertical samples produce one output row.
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DownsampledSingleRow))
+{
+  CHECK_SUPPORTED_ENGINE("ogre");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  VisualPtr root = scene->RootVisual();
+  VisualPtr wall = scene->CreateVisual("wall");
+  wall->AddGeometry(scene->CreateBox());
+  wall->SetLocalPosition(2.5, 0, 0);
+  wall->SetLocalScale(1, 20, 20);
+  root->AddChild(wall);
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("downsampled_gpu_rays");
+  ASSERT_NE(nullptr, gpuRays);
+  gpuRays->SetNearClipPlane(0.1);
+  gpuRays->SetFarClipPlane(10.0);
+  gpuRays->SetAngleMin(-0.5);
+  gpuRays->SetAngleMax(0.5);
+  gpuRays->SetRayCount(32);
+  gpuRays->SetVerticalAngleMin(0.0);
+  gpuRays->SetVerticalAngleMax(0.0);
+  gpuRays->SetVerticalRayCount(4);
+  gpuRays->SetVerticalResolution(0.25);
+  root->AddChild(gpuRays);
+  ASSERT_EQ(1, gpuRays->VerticalRangeCount());
+
+  const unsigned int columns = gpuRays->RangeCount();
+  const unsigned int channels = gpuRays->Channels();
+  std::vector<float> scan(columns * channels, math::INF_F);
+  unsigned int frames = 0;
+  auto connection = gpuRays->ConnectNewGpuRaysFrame(
+      [&](const float *_frame, unsigned int _width, unsigned int _height,
+          unsigned int _channels, const std::string &)
+      {
+        ASSERT_EQ(columns, _width);
+        ASSERT_EQ(1u, _height);
+        ASSERT_EQ(channels, _channels);
+        std::copy(_frame, _frame + scan.size(), scan.begin());
+        ++frames;
+      });
+  gpuRays->Update();
+  ASSERT_EQ(1u, frames);
+
+  // The front face is x = 2 m. Exclude the two edge rays, whose texture
+  // stitching boundary behavior is independent of vertical resampling.
+  const double step = 1.0 / (columns - 1);
+  for (unsigned int i = 1; i + 1 < columns; ++i)
+  {
+    ASSERT_TRUE(std::isfinite(scan[i * channels])) << "ray " << i;
+    const double angle = -0.5 + i * step;
+    EXPECT_NEAR(2.0 / std::cos(angle), scan[i * channels], 5e-3)
+        << "ray " << i;
+  }
+
+  connection.reset();
   engine->DestroyScene(scene);
 }
 

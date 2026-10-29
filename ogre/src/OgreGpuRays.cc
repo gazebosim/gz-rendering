@@ -372,9 +372,9 @@ void OgreGpuRays::ConfigureCameras()
 
   this->SetCosVertFOV(vfovCamera);
 
-  // If vertical ray is not 1 adjust horizontal and vertical
-  // ray count to maintain aspect ratio
-  if (this->vSamples > 1)
+  // Use the output row count when configuring the first-pass aspect ratio;
+  // vertical resolution can change it independently of the sample count.
+  if (this->VerticalRangeCount() > 1)
   {
     double cameraAspectRatio =
       tan(this->HFOV().Radian() / 2.0) / tan(vfovCamera / 2.0);
@@ -396,7 +396,7 @@ void OgreGpuRays::ConfigureCameras()
   }
   else
   {
-    // In case of 1 vert. ray, set a very small vertical FOV for camera
+    // A single output row needs a small, nonzero camera vertical FOV.
     this->SetRayCountRatio(horzRangeCountPerCamera);
     double camVFOV = 2.0 * atan(tan(
           this->HFOV().Radian() / 2.0) / this->RayCountRatio());
@@ -865,13 +865,10 @@ void OgreGpuRays::CreateMesh()
 
   // total gpu rays hfov
   double thfov = this->dataPtr->textureCount * this->CosHorzFOV();
-  double hstep = thfov / (this->dataPtr->w2nd - 1);
-  double vstep = 2.0 * phi / (this->dataPtr->h2nd - 1);
-
-  if (this->dataPtr->h2nd == 1)
-  {
-    vstep = 0;
-  }
+  const double hstep = this->dataPtr->w2nd > 1u ?
+      thfov / (this->dataPtr->w2nd - 1u) : 0.0;
+  const double vstep = this->dataPtr->h2nd > 1u ?
+      2.0 * phi / (this->dataPtr->h2nd - 1u) : 0.0;
 
   for (unsigned int j = 0; j < this->dataPtr->h2nd; ++j)
   {
@@ -884,8 +881,8 @@ void OgreGpuRays::CreateMesh()
 
     for (unsigned int i = 0; i < this->dataPtr->w2nd; ++i)
     {
-      // current horizontal angle from start of gpu rays scan
-      double delta = hstep * i;
+      // Sample the center of the scan when it has only one output column.
+      double delta = this->dataPtr->w2nd > 1u ? hstep * i : thfov / 2.0;
 
       // index of texture that contains the depth value
       unsigned int texture = static_cast<unsigned int>(
@@ -920,8 +917,14 @@ void OgreGpuRays::CreateMesh()
       // adjust uv coordinates of depth texture to match projection of current
       // gpu ray the depth image plane.
       double u = 0.5 - tan(delta) / (2.0 * tan(theta));
-      double v = 0.5 - (tan(gamma) * cos(theta)) /
-          (2.0 * tan(phiCamera) * cos(delta));
+      // A single output row samples the texture center. Its vertical FOV
+      // can be zero, so evaluating the projection would divide zero by zero.
+      double v = 0.5;
+      if (this->dataPtr->h2nd > 1u)
+      {
+        v -= (tan(gamma) * cos(theta)) /
+            (2.0 * tan(phiCamera) * cos(delta));
+      }
 
       submesh->AddTexCoord(u, v);
       submesh->AddIndex(this->dataPtr->w2nd * j + i);

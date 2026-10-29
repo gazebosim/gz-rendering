@@ -17,6 +17,8 @@
 
 #include <gtest/gtest.h>
 
+#include <cstring>
+
 #include "CommonRenderingTest.hh"
 
 #include <gz/common/Filesystem.hh>
@@ -249,6 +251,13 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
     // which is needed for the following test passes.
     return;
   }
+
+  // Copy() reads the same frame back through CopyToBuffer(), and must match
+  // the frame delivered to the callback
+  Image image = camera->CreateImage();
+  camera->Copy(image);
+  EXPECT_EQ(0, memcmp(g_buffer, image.Data<unsigned char>(),
+      width * height * channelCount));
 
   // Now coordinate convention test:
   //  Make sure it's not upside down, mirrored, etc.

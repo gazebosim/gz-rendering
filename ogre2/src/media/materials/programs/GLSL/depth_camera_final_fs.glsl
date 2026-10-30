@@ -35,10 +35,31 @@ vulkan( layout( ogre_P0 ) uniform Params { )
 	uniform float max;
 
 	uniform vec4 texResolution;
+	// 1 to pack the x, y, z of the input (the xyz + colour output) into a
+	// target 3/4 as wide, rows without padding: texel u of a row holds floats
+	// 4u to 4u+3 of the row's x, y, z triplets (an xyz PointCloudPacked)
+	uniform float packXyz;
 vulkan( }; )
 
 void main()
 {
+  if (packXyz > 0.5)
+  {
+    // texResolution is the input's size
+    int u = int(inPs.uv0.x * texResolution.x * 0.75);
+    int v = int(inPs.uv0.y * texResolution.y);
+    // the first float, 4u, is component r of point p
+    int p = (4 * u) / 3;
+    int r = u % 3;
+    uvec4 a = texelFetch(inputTexture, ivec2(p, v), 0);
+    // p + 1 < width: the last texel starts at component 2 of point
+    // width - 2
+    uvec4 b = texelFetch(inputTexture, ivec2(p + 1, v), 0);
+    fragColor = r == 0 ? uvec4(a.xyz, b.x) :
+        (r == 1 ? uvec4(a.yz, b.xy) : uvec4(a.z, b.xyz));
+    return;
+  }
+
   float tolerance = 1e-6;
 
   // Note: We use PFG_RGBA32_UINT because p.a contains an uint32 and sampling

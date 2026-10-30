@@ -22,4 +22,16 @@ namespace gz::rendering
 
 DepthCamera::~DepthCamera() = default;
 
+//////////////////////////////////////////////////
+bool DepthCamera::SetPointCloudFormat(PixelFormat _format)
+{
+  return _format == PF_FLOAT32_RGBA;
+}
+
+//////////////////////////////////////////////////
+PixelFormat DepthCamera::PointCloudFormat() const
+{
+  return PF_FLOAT32_RGBA;
+}
+
 }  // namespace gz::rendering

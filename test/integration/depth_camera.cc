@@ -16,17 +16,32 @@
 */
 
 #include <gtest/gtest.h>
+
+#include <algorithm>
+#include <cmath>
+#include <chrono>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <functional>
 #include <string>
+#include <thread>
+#include <vector>
 
 #include "CommonRenderingTest.hh"
 
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Event.hh>
+#include <gz/math/Rand.hh>
 
 #include "gz/rendering/DepthCamera.hh"
+#include "gz/rendering/GaussianNoisePass.hh"
+#include "gz/rendering/Material.hh"
 #include "gz/rendering/ParticleEmitter.hh"
+#include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/Scene.hh"
 
+#include <gz/utils/Environment.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
 constexpr double DEPTH_TOL = 1e-4;
@@ -65,6 +80,85 @@ void OnNewRgbPointCloud(float *_scanDest, const float *_scan,
   g_pointCloudCounter++;
 }
 
+
+/////////////////////////////////////////////////
+/// \brief A depth camera of the given size and clip planes, HFOV 1.05.
+/// The caller sets its point cloud format and render passes, then calls
+/// CreateDepthTexture() and adds it to the scene.
+gz::rendering::DepthCameraPtr NewDepthCamera(
+    const gz::rendering::ScenePtr &_scene, const std::string &_name,
+    unsigned int _width, unsigned int _height, double _near, double _far)
+{
+  gz::rendering::DepthCameraPtr camera = _scene->CreateDepthCamera(_name);
+  if (camera)
+  {
+    camera->SetImageWidth(_width);
+    camera->SetImageHeight(_height);
+    camera->SetNearClipPlane(_near);
+    camera->SetFarClipPlane(_far);
+    camera->SetAspectRatio(static_cast<double>(_width) / _height);
+    camera->SetHFOV(1.05);
+  }
+  return camera;
+}
+
+/////////////////////////////////////////////////
+/// \brief A depth frame or point cloud callback that copies each frame
+/// into _dest, which must have the frame's size, and counts the frames in
+/// _count.
+std::function<void(const float *, unsigned int, unsigned int, unsigned int,
+    const std::string &)> CaptureInto(std::vector<float> &_dest, int &_count)
+{
+  return [&_dest, &_count](const float *_data, unsigned int _w,
+      unsigned int _h, unsigned int _c, const std::string &)
+  {
+    ASSERT_EQ(_dest.size(), static_cast<size_t>(_w) * _h * _c);
+    memcpy(_dest.data(), _data, _dest.size() * sizeof(float));
+    ++_count;
+  };
+}
+
+/////////////////////////////////////////////////
+/// \brief The x, y, z of an RGBA point cloud, without the colour.
+std::vector<float> Xyz(const std::vector<float> &_rgba)
+{
+  std::vector<float> xyz;
+  xyz.reserve(_rgba.size() / 4 * 3);
+  for (size_t p = 0; p + 4 <= _rgba.size(); p += 4)
+    xyz.insert(xyz.end(), &_rgba[p], &_rgba[p + 3]);
+  return xyz;
+}
+
+/////////////////////////////////////////////////
+/// \brief Adds a unit box for the caller to move, and a small box across
+/// a near clip plane of 0.3 (its front face in front of it) at the left
+/// edge of the image of a camera at the origin. Returns the unit box.
+gz::rendering::VisualPtr AddBoxes(const gz::rendering::ScenePtr &_scene)
+{
+  gz::rendering::VisualPtr root = _scene->RootVisual();
+  gz::rendering::VisualPtr box = _scene->CreateVisual();
+  box->AddGeometry(_scene->CreateBox());
+  root->AddChild(box);
+  gz::rendering::VisualPtr nearBox = _scene->CreateVisual();
+  nearBox->AddGeometry(_scene->CreateBox());
+  nearBox->SetLocalScale(0.2, 0.2, 0.2);
+  nearBox->SetLocalPosition(0.3, 0.12, 0.0);
+  root->AddChild(nearBox);
+  return box;
+}
+
+/////////////////////////////////////////////////
+/// \brief Expects values in range, beyond far (+inf) and in front of near
+/// (-inf) in _v.
+void ExpectFiniteAndInfinities(const std::vector<float> &_v)
+{
+  EXPECT_TRUE(std::any_of(_v.begin(), _v.end(),
+      [](float _x) { return std::isfinite(_x); }));
+  EXPECT_TRUE(std::any_of(_v.begin(), _v.end(),
+      [](float _x) { return std::isinf(_x) && _x > 0; }));
+  EXPECT_TRUE(std::any_of(_v.begin(), _v.end(),
+      [](float _x) { return std::isinf(_x) && _x < 0; }));
+}
 
 /////////////////////////////////////////////////
 class DepthCameraTest: public CommonRenderingTest
@@ -858,6 +952,814 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraProjection))
     connection.reset();
     delete [] scan;
   }
+
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief On OpenGL the readback waits for the GPU by polling its fence
+/// with short sleeps while the render thread has idle time;
+/// GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT makes map() wait instead. Both
+/// must give the same depth image and point cloud bytes, frame for frame,
+/// while a box moves in front of the camera.
+TEST_F(DepthCameraTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(ReadbackWaitMatchesBlocking))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  const char *kBlockingEnv = "GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT";
+  const unsigned int width = 160;
+  const unsigned int height = 120;
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  scene->SetAmbientLight(1.0, 1.0, 1.0);
+  gz::rendering::VisualPtr root = scene->RootVisual();
+
+  gz::rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  root->AddChild(box);
+
+  auto depthCamera = scene->CreateDepthCamera("DepthCamera");
+  ASSERT_NE(nullptr, depthCamera);
+  depthCamera->SetImageWidth(width);
+  depthCamera->SetImageHeight(height);
+  depthCamera->SetNearClipPlane(0.15);
+  depthCamera->SetFarClipPlane(10.0);
+  depthCamera->SetAspectRatio(static_cast<double>(width) / height);
+  depthCamera->SetHFOV(1.05);
+  depthCamera->CreateDepthTexture();
+  root->AddChild(depthCamera);
+
+  std::vector<float> depth(width * height);
+  std::vector<float> cloud(width * height * 4);
+  int depthFrames = 0;
+  int cloudFrames = 0;
+  gz::common::ConnectionPtr depthConn = depthCamera->ConnectNewDepthFrame(
+      [&depth, &depthFrames](const float *_data, unsigned int _w,
+          unsigned int _h, unsigned int _c, const std::string &)
+      {
+        ASSERT_EQ(depth.size(), static_cast<size_t>(_w) * _h * _c);
+        memcpy(depth.data(), _data, depth.size() * sizeof(float));
+        ++depthFrames;
+      });
+  gz::common::ConnectionPtr cloudConn = depthCamera->ConnectNewRgbPointCloud(
+      [&cloud, &cloudFrames](const float *_data, unsigned int _w,
+          unsigned int _h, unsigned int _c, const std::string &)
+      {
+        ASSERT_EQ(cloud.size(), static_cast<size_t>(_w) * _h * _c);
+        memcpy(cloud.data(), _data, cloud.size() * sizeof(float));
+        ++cloudFrames;
+      });
+
+  // Render once with the given wait into depth and cloud.
+  auto render = [&](bool _blocking)
+  {
+    if (_blocking)
+      EXPECT_TRUE(gz::utils::setenv(kBlockingEnv, "1"));
+    else
+      EXPECT_TRUE(gz::utils::unsetenv(kBlockingEnv));
+    std::fill(depth.begin(), depth.end(), -1.0f);
+    std::fill(cloud.begin(), cloud.end(), -1.0f);
+    const int depthBefore = depthFrames;
+    const int cloudBefore = cloudFrames;
+    depthCamera->Update();
+    EXPECT_EQ(depthBefore + 1, depthFrames);
+    EXPECT_EQ(cloudBefore + 1, cloudFrames);
+    EXPECT_TRUE(gz::utils::unsetenv(kBlockingEnv));
+  };
+
+  // The polled wait sleeps only while the thread has idle time: idle 20 ms
+  // before each polled frame, and long enough for the wait policy to see it.
+  const auto idle = []()
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  };
+  for (int i = 0; i < 20; ++i)
+  {
+    idle();
+    render(false);
+  }
+
+  std::vector<float> previous;
+  std::vector<float> previousCloud;
+  for (int i = 0; i < 6; ++i)
+  {
+    box->SetLocalPosition(1.5 + 0.3 * i, -0.6 + 0.2 * i, 0.1 * i);
+    idle();
+    render(false);
+    const std::vector<float> polled = depth;
+    const std::vector<float> polledCloud = cloud;
+    render(true);
+    EXPECT_EQ(0, memcmp(polled.data(), depth.data(),
+        depth.size() * sizeof(float))) << "depth, frame " << i;
+    EXPECT_EQ(0, memcmp(polledCloud.data(), cloud.data(),
+        cloud.size() * sizeof(float))) << "point cloud, frame " << i;
+    // The box moved: a stale frame would not match the new one.
+    if (!previous.empty())
+    {
+      EXPECT_NE(0, memcmp(previous.data(), depth.data(),
+          depth.size() * sizeof(float))) << "frame " << i;
+      EXPECT_NE(0, memcmp(previousCloud.data(), cloud.data(),
+          cloud.size() * sizeof(float))) << "point cloud, frame " << i;
+    }
+    previous = depth;
+    previousCloud = cloud;
+  }
+
+  depthConn.reset();
+  cloudConn.reset();
+  scene->DestroySensor(depthCamera);
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+// Rendering two depth cameras, then issuing both readbacks before either
+// PostRender, delivers the same bytes as Render + PostRender on each in
+// turn; and a readback issued for a frame that was never post-rendered is
+// not delivered for the next one.
+TEST_F(DepthCameraTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(IssueReadbackMatchesSerial))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  if (std::getenv("GZ_RENDERING_OGRE2_LEGACY_READBACK"))
+    GTEST_SKIP() << "The legacy readback can't be issued ahead.";
+  const unsigned int width = 160;
+  const unsigned int height = 120;
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  gz::rendering::VisualPtr root = scene->RootVisual();
+
+  gz::rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  root->AddChild(box);
+
+  struct Output
+  {
+    gz::rendering::DepthCameraPtr camera;
+    std::vector<float> depth;
+    std::vector<float> cloud;
+    int frames = 0;
+    gz::common::ConnectionPtr depthConn;
+    gz::common::ConnectionPtr cloudConn;
+  };
+  std::vector<Output> cams(2);
+  for (unsigned int i = 0; i < cams.size(); ++i)
+  {
+    Output &c = cams[i];
+    c.camera = scene->CreateDepthCamera("DepthCamera" + std::to_string(i));
+    ASSERT_NE(nullptr, c.camera);
+    c.camera->SetImageWidth(width);
+    c.camera->SetImageHeight(height);
+    c.camera->SetNearClipPlane(0.15);
+    c.camera->SetFarClipPlane(10.0);
+    c.camera->SetAspectRatio(static_cast<double>(width) / height);
+    c.camera->SetHFOV(1.05);
+    c.camera->SetLocalRotation(0, 0, i == 0 ? -0.2 : 0.2);
+    c.camera->CreateDepthTexture();
+    root->AddChild(c.camera);
+    c.depth.resize(width * height);
+    c.cloud.resize(width * height * 4);
+    c.depthConn = c.camera->ConnectNewDepthFrame(
+        [&c](const float *_data, unsigned int _w, unsigned int _h,
+            unsigned int _c, const std::string &)
+        {
+          ASSERT_EQ(c.depth.size(), static_cast<size_t>(_w) * _h * _c);
+          memcpy(c.depth.data(), _data, c.depth.size() * sizeof(float));
+          ++c.frames;
+        });
+    c.cloudConn = c.camera->ConnectNewRgbPointCloud(
+        [&c](const float *_data, unsigned int _w, unsigned int _h,
+            unsigned int _c, const std::string &)
+        {
+          ASSERT_EQ(c.cloud.size(), static_cast<size_t>(_w) * _h * _c);
+          memcpy(c.cloud.data(), _data, c.cloud.size() * sizeof(float));
+        });
+  }
+
+  // One frame of both cameras, serial or with the readbacks issued ahead;
+  // returns each camera's depth and point cloud.
+  auto frame = [&](bool _ahead)
+  {
+    for (auto &c : cams)
+    {
+      std::fill(c.depth.begin(), c.depth.end(), -1.0f);
+      std::fill(c.cloud.begin(), c.cloud.end(), -1.0f);
+    }
+    scene->PreRender();
+    for (auto &c : cams)
+    {
+      const int before = c.frames;
+      c.camera->Render();
+      if (_ahead)
+        EXPECT_TRUE(c.camera->IssueReadback());
+      else
+        c.camera->PostRender();
+      EXPECT_EQ(before + (_ahead ? 0 : 1), c.frames);
+    }
+    for (auto &c : cams)
+    {
+      if (_ahead)
+        c.camera->PostRender();
+    }
+    scene->PostRender();
+    std::vector<std::vector<float>> out;
+    for (auto &c : cams)
+    {
+      out.push_back(c.depth);
+      out.push_back(c.cloud);
+    }
+    return out;
+  };
+
+  std::vector<std::vector<float>> previous;
+  for (int i = 0; i < 4; ++i)
+  {
+    box->SetLocalPosition(2.0 + 0.3 * i, -0.4 + 0.25 * i, 0.1 * i);
+    const auto ahead = frame(true);
+    const auto serial = frame(false);
+    for (unsigned int k = 0; k < serial.size(); ++k)
+    {
+      EXPECT_EQ(0, memcmp(ahead[k].data(), serial[k].data(),
+          serial[k].size() * sizeof(float)))
+          << "camera " << k / 2 << (k % 2 ? " cloud" : " depth")
+          << ", frame " << i;
+      // The box moved: a stale frame would not match the new one.
+      if (!previous.empty())
+      {
+        EXPECT_NE(0, memcmp(previous[k].data(), serial[k].data(),
+            serial[k].size() * sizeof(float)))
+            << "camera " << k / 2 << ", frame " << i;
+      }
+    }
+    previous = serial;
+  }
+
+  // Depth-only frames (no point cloud subscribers) read back another
+  // target; the same holds for them.
+  for (auto &c : cams)
+    c.cloudConn.reset();
+  // A released connection leaves the event at its next signal: the frame
+  // after a disconnect still counts it (a point cloud frame without
+  // callbacks). Render that one first.
+  frame(false);
+  for (int i = 0; i < 2; ++i)
+  {
+    box->SetLocalPosition(1.8 - 0.2 * i, 0.3 * i, 0.0);
+    const auto ahead = frame(true);
+    const auto serial = frame(false);
+    for (unsigned int k = 0; k < serial.size(); k += 2)
+    {
+      EXPECT_EQ(0, memcmp(ahead[k].data(), serial[k].data(),
+          serial[k].size() * sizeof(float)))
+          << "depth only, camera " << k / 2 << ", frame " << i;
+      EXPECT_NE(0, memcmp(previous[k].data(), serial[k].data(),
+          serial[k].size() * sizeof(float)))
+          << "depth only, camera " << k / 2 << ", frame " << i;
+    }
+    previous = serial;
+  }
+
+  // A readback issued for a frame that is never post-rendered: the next
+  // frame delivers its own data, not that one's.
+  scene->PreRender();
+  cams[0].camera->Render();
+  EXPECT_TRUE(cams[0].camera->IssueReadback());
+  scene->PostRender();
+  box->SetLocalPosition(1.5, 0.3, 0.0);
+  const auto next = frame(false);
+  const auto again = frame(false);
+  for (unsigned int k = 0; k < next.size(); ++k)
+  {
+    EXPECT_EQ(0, memcmp(next[k].data(), again[k].data(),
+        next[k].size() * sizeof(float))) << "camera " << k / 2;
+  }
+
+  for (auto &c : cams)
+  {
+    c.depthConn.reset();
+    c.cloudConn.reset();
+    scene->DestroySensor(c.camera);
+  }
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief A point cloud subscriber that connects between the scene's
+/// PreRender and the camera's Render (gz-sim's order: Scene::PreRender,
+/// then each sensor's Update connects its callbacks and renders) gets a
+/// point cloud from that very frame: the same xyz as a frame rendered with
+/// the subscriber connected throughout, and the colour cleared, as for a
+/// frame whose PreRender saw no subscriber (never a stale colour). None
+/// once it disconnects.
+TEST_F(DepthCameraTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(PointCloudFromFrameOfConnect))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  const unsigned int width = 160;
+  const unsigned int height = 120;
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  scene->SetAmbientLight(1.0, 1.0, 1.0);
+  gz::rendering::VisualPtr root = scene->RootVisual();
+  gz::rendering::MaterialPtr red = scene->CreateMaterial();
+  red->SetAmbient(1.0, 0.0, 0.0);
+  red->SetDiffuse(1.0, 0.0, 0.0);
+  gz::rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  box->SetMaterial(red);
+  box->SetLocalPosition(2.0, 0.2, 0.0);
+  root->AddChild(box);
+
+  auto depthCamera = NewDepthCamera(scene, "DepthCamera", width, height,
+      0.15, 10.0);
+  ASSERT_NE(nullptr, depthCamera);
+  depthCamera->CreateDepthTexture();
+  root->AddChild(depthCamera);
+
+  std::vector<float> depth(width * height);
+  std::vector<float> cloud(width * height * 4);
+  int depthFrames = 0;
+  int cloudFrames = 0;
+  gz::common::ConnectionPtr depthConn = depthCamera->ConnectNewDepthFrame(
+      CaptureInto(depth, depthFrames));
+  auto onCloud = CaptureInto(cloud, cloudFrames);
+  // whether the colour channel holds the same bytes everywhere
+  auto uniformColour = [&cloud]()
+  {
+    for (size_t i = 7; i < cloud.size(); i += 4)
+    {
+      if (memcmp(&cloud[i], &cloud[3], sizeof(float)) != 0)
+        return false;
+    }
+    return true;
+  };
+  // whether the cloud's x, y, z are bit for bit those of _other
+  auto sameXyz = [&cloud](const std::vector<float> &_other)
+  {
+    const std::vector<float> a = Xyz(cloud);
+    const std::vector<float> b = Xyz(_other);
+    return a.size() == b.size() &&
+        memcmp(a.data(), b.data(), a.size() * sizeof(float)) == 0;
+  };
+  // the scene's PreRender, a connection change, then the camera's frame
+  auto lateFrame = [&](const std::function<void()> &_change)
+  {
+    std::fill(cloud.begin(), cloud.end(), -1.0f);
+    scene->PreRender();
+    _change();
+    depthCamera->Render();
+    depthCamera->PostRender();
+    scene->PostRender();
+  };
+
+  // Frames with the subscriber connected throughout: the colour target
+  // holds the red box on black.
+  gz::common::ConnectionPtr cloudConn =
+      depthCamera->ConnectNewRgbPointCloud(onCloud);
+  depthCamera->Update();
+  depthCamera->Update();
+  ASSERT_EQ(2, cloudFrames);
+  const std::vector<float> full = cloud;
+  const std::vector<float> fullDepth = depth;
+  ASSERT_FALSE(uniformColour()) << "no box colour in view";
+
+  // Frames without a subscriber.
+  cloudConn.reset();
+  depthCamera->Update();
+  depthCamera->Update();
+  EXPECT_EQ(4, depthFrames);
+  EXPECT_EQ(2, cloudFrames);
+  EXPECT_EQ(0, memcmp(fullDepth.data(), depth.data(),
+      depth.size() * sizeof(float)));
+
+  // The subscriber connects after the scene's PreRender.
+  lateFrame([&]()
+      { cloudConn = depthCamera->ConnectNewRgbPointCloud(onCloud); });
+  EXPECT_EQ(5, depthFrames);
+  EXPECT_EQ(3, cloudFrames) << "no point cloud from the frame of connect";
+  EXPECT_TRUE(sameXyz(full));
+  EXPECT_TRUE(uniformColour()) << "stale colour in the frame of connect";
+  EXPECT_EQ(0, memcmp(fullDepth.data(), depth.data(),
+      depth.size() * sizeof(float)));
+
+  // The next frame is a full one again.
+  std::fill(cloud.begin(), cloud.end(), -1.0f);
+  depthCamera->Update();
+  EXPECT_EQ(4, cloudFrames);
+  EXPECT_EQ(0, memcmp(full.data(), cloud.data(),
+      cloud.size() * sizeof(float)));
+
+  // The subscriber disconnects after the scene's PreRender: no point cloud,
+  // the same depth frame.
+  lateFrame([&]() { cloudConn.reset(); });
+  EXPECT_EQ(7, depthFrames);
+  EXPECT_EQ(4, cloudFrames);
+  EXPECT_EQ(0, memcmp(fullDepth.data(), depth.data(),
+      depth.size() * sizeof(float)));
+
+  depthConn.reset();
+  scene->DestroySensor(depthCamera);
+  engine->DestroyScene(scene);
+}
+
+
+/////////////////////////////////////////////////
+/// \brief A depth frame rendered without point cloud subscribers (read
+/// back from the depth-only target: one quad pass, or two with a noise
+/// pass in between) is bit for bit the depth frame of a point cloud frame
+/// (channel 0 of the xyz + colour output, which the test checks too), with
+/// pixels in range, beyond the far clip plane and in front of the near clip
+/// plane. One scene; per variant a camera: 0 plain, 1 with a noise render
+/// pass.
+TEST_F(DepthCameraTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthOnlyFramesMatchPointCloudFrames))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  const unsigned int width = 160;
+  const unsigned int height = 120;
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  gz::rendering::VisualPtr box = AddBoxes(scene);
+
+  std::vector<std::vector<float>> plain;
+  for (int variant : {0, 1})
+  {
+    const bool noise = variant == 1;
+    auto camera = NewDepthCamera(scene,
+        "DepthCamera" + std::to_string(variant), width, height, 0.3, 4.0);
+    ASSERT_NE(nullptr, camera);
+    if (noise)
+    {
+      // a render pass between the base and the final node: the depth-only
+      // frame takes the two-pass path
+      auto pass = std::dynamic_pointer_cast<gz::rendering::GaussianNoisePass>(
+          engine->RenderPassSystem()->Create<
+          gz::rendering::GaussianNoisePass>());
+      ASSERT_NE(nullptr, pass);
+      pass->SetMean(0.1);
+      pass->SetStdDev(0.01);
+      camera->AddRenderPass(pass);
+    }
+    camera->CreateDepthTexture();
+    scene->RootVisual()->AddChild(camera);
+
+    std::vector<float> depth(width * height);
+    int frames = 0;
+    gz::common::ConnectionPtr depthConn = camera->ConnectNewDepthFrame(
+        CaptureInto(depth, frames));
+    int clouds = 0;
+    std::vector<float> cloudDepth(width * height);
+    auto onCloud = [&clouds, &cloudDepth](const float *_data, unsigned int _w,
+        unsigned int _h, unsigned int _c, const std::string &)
+    {
+      // the depth is channel 0 of the point cloud
+      ASSERT_EQ(cloudDepth.size(), static_cast<size_t>(_w) * _h);
+      for (size_t i = 0; i < cloudDepth.size(); ++i)
+        cloudDepth[i] = _data[i * _c];
+      ++clouds;
+    };
+
+    // One frame with or without a point cloud subscriber, with the same
+    // noise; returns the depth frame.
+    auto frame = [&](bool _cloud)
+    {
+      gz::common::ConnectionPtr cloudConn;
+      if (_cloud)
+      {
+        cloudConn = camera->ConnectNewRgbPointCloud(onCloud);
+      }
+      else
+      {
+        // A released connection leaves the event at its next signal: the
+        // frame after a disconnect still counts it (a point cloud frame
+        // without callbacks). Render that one first.
+        camera->Update();
+      }
+      const int before = clouds;
+      std::fill(depth.begin(), depth.end(), -1.0f);
+      gz::math::Rand::Seed(11);
+      camera->Update();
+      EXPECT_EQ(before + (_cloud ? 1 : 0), clouds);
+      if (_cloud)
+      {
+        EXPECT_EQ(0, memcmp(cloudDepth.data(), depth.data(),
+            depth.size() * sizeof(float))) << "depth frame vs point cloud";
+      }
+      return depth;
+    };
+
+    std::vector<float> previous;
+    for (int i = 0; i < 4; ++i)
+    {
+      // (raised: background (+inf) below it in every frame)
+      box->SetLocalPosition(1.5 + 0.4 * i, -0.3 + 0.2 * i, 0.1 + 0.1 * i);
+      const std::vector<float> full = frame(true);
+      const std::vector<float> depthOnly = frame(false);
+      SCOPED_TRACE("variant " + std::to_string(variant) + ", frame " +
+          std::to_string(i));
+      EXPECT_EQ(0, memcmp(full.data(), depthOnly.data(),
+          full.size() * sizeof(float)));
+      ExpectFiniteAndInfinities(full);
+      // The box moved: a stale frame would not match the new one.
+      if (!previous.empty())
+      {
+        EXPECT_NE(0, memcmp(previous.data(), depthOnly.data(),
+            full.size() * sizeof(float)));
+      }
+      previous = depthOnly;
+      // the noise pass is applied (to both kinds of frames)
+      if (noise)
+      {
+        EXPECT_NE(0, memcmp(plain[i].data(), depthOnly.data(),
+            full.size() * sizeof(float)));
+      }
+      else
+      {
+        plain.push_back(full);
+      }
+    }
+    EXPECT_EQ(12, frames);
+
+    depthConn.reset();
+  }
+  // (the cameras go with the scene: a depth camera created after another
+  // one was destroyed trips an Ogre datablock assertion)
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief One frame of a depth camera: the point cloud, its format and
+/// channel count, the depth frame, DepthData() as the depth frame callback
+/// sees it, and the number of events of each kind.
+struct Frame
+{
+  std::vector<float> points;
+  std::string format;
+  unsigned int channels = 0;
+  std::vector<float> depth;
+  std::vector<float> depthData;
+  int depthEvents = 0;
+  int cloudEvents = 0;
+};
+
+/////////////////////////////////////////////////
+/// \brief Connects the events of _camera to _f, adding the connections to
+/// _conns. The depth frame callback also copies _depthDataSize floats of
+/// DepthData().
+void ConnectFrame(const gz::rendering::DepthCameraPtr &_camera, Frame &_f,
+    std::vector<gz::common::ConnectionPtr> &_conns,
+    size_t _depthDataSize = 0)
+{
+  gz::rendering::DepthCamera *cam = _camera.get();
+  _conns.push_back(_camera->ConnectNewDepthFrame(
+      [&_f, cam, _depthDataSize](const float *_data, unsigned int _w,
+          unsigned int _h, unsigned int _c, const std::string &)
+      {
+        _f.depth.assign(_data, _data + static_cast<size_t>(_w) * _h * _c);
+        _f.depthData.assign(cam->DepthData(),
+            cam->DepthData() + _depthDataSize);
+        ++_f.depthEvents;
+      }));
+  _conns.push_back(_camera->ConnectNewRgbPointCloud(
+      [&_f](const float *_data, unsigned int _w, unsigned int _h,
+          unsigned int _c, const std::string &_format)
+      {
+        _f.points.assign(_data, _data + static_cast<size_t>(_w) * _h * _c);
+        _f.format = _format;
+        _f.channels = _c;
+        ++_f.cloudEvents;
+      }));
+}
+
+/////////////////////////////////////////////////
+/// \brief A packed xyz point cloud (PF_FLOAT32_RGB) holds the x, y, z of
+/// the RGBA point cloud of the same frame, bit for bit, without padding
+/// between rows; widths that do not pack into whole texels deliver RGBA.
+/// The depth frames are the same either way.
+TEST_F(DepthCameraTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(PackedPointsMatchRgbaPoints))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  // (the legacy readback has no packed point clouds)
+  if (std::getenv("GZ_RENDERING_OGRE2_LEGACY_READBACK"))
+    GTEST_SKIP() << "legacy readback";
+  const unsigned int height = 120;
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  gz::rendering::VisualPtr box = AddBoxes(scene);
+
+  int cameras = 0;
+  for (unsigned int width : {160u, 162u})
+  {
+    std::vector<gz::rendering::DepthCameraPtr> pair;
+    std::vector<Frame> frames(2);
+    std::vector<float> previous;
+    std::vector<gz::common::ConnectionPtr> conns;
+    for (int i = 0; i < 2; ++i)
+    {
+      auto camera = NewDepthCamera(scene,
+          "DepthCamera" + std::to_string(cameras++), width, height, 0.3, 4.0);
+      ASSERT_NE(nullptr, camera);
+      if (i == 1)
+      {
+        EXPECT_TRUE(camera->SetPointCloudFormat(
+            gz::rendering::PF_FLOAT32_RGB));
+        EXPECT_EQ(gz::rendering::PF_FLOAT32_RGB, camera->PointCloudFormat());
+      }
+      camera->CreateDepthTexture();
+      scene->RootVisual()->AddChild(camera);
+      ConnectFrame(camera, frames[i], conns, static_cast<size_t>(width) *
+          height * (i == 1 && width % 4u == 0u ? 3u : 4u));
+      pair.push_back(camera);
+    }
+
+    for (int n = 0; n < 4; ++n)
+    {
+      SCOPED_TRACE("width " + std::to_string(width) + ", frame " +
+          std::to_string(n));
+      if (n == 2)
+      {
+        // a frame rendered with its readbacks issued but never
+        // post-rendered must not be delivered later
+        scene->PreRender();
+        for (auto &camera : pair)
+        {
+          camera->Render();
+          EXPECT_TRUE(camera->IssueReadback());
+        }
+        scene->PostRender();
+      }
+      // (raised: background (+inf) below it in every frame)
+      box->SetLocalPosition(1.5 + 0.4 * n, -0.3 + 0.2 * n, 0.1 + 0.1 * n);
+      for (auto &f : frames)
+        f = Frame();
+      if (n == 3)
+      {
+        // readbacks issued ahead, as a render-ahead caller does
+        scene->PreRender();
+        for (auto &camera : pair)
+        {
+          camera->Render();
+          EXPECT_TRUE(camera->IssueReadback());
+        }
+        for (auto &camera : pair)
+          camera->PostRender();
+        scene->PostRender();
+      }
+      else
+      {
+        for (auto &camera : pair)
+          camera->Update();
+      }
+      for (const auto &f : frames)
+      {
+        // DepthData() is the point cloud of this frame already in the
+        // depth frame callback
+        ASSERT_EQ(f.points.size(), f.depthData.size());
+        EXPECT_EQ(0, memcmp(f.points.data(), f.depthData.data(),
+            f.points.size() * sizeof(float)));
+        // and its x is the depth frame of this frame
+        ASSERT_EQ(f.depth.size() * f.channels, f.points.size());
+        size_t mismatches = 0;
+        for (size_t p = 0; p < f.depth.size(); ++p)
+        {
+          if (memcmp(&f.depth[p], &f.points[p * f.channels], sizeof(float)))
+            ++mismatches;
+        }
+        EXPECT_EQ(0u, mismatches);
+      }
+
+      const Frame &rgba = frames[0];
+      const Frame &packed = frames[1];
+      // the box moved: a stale frame would match the previous one
+      if (n > 0)
+      {
+        EXPECT_NE(previous, rgba.depth);
+      }
+      previous = rgba.depth;
+      ASSERT_EQ(4u, rgba.channels);
+      EXPECT_EQ("PF_FLOAT32_RGBA", rgba.format);
+      EXPECT_EQ(rgba.depth, packed.depth);
+      if (width % 4u != 0u)
+      {
+        // not packed: the same RGBA point cloud
+        EXPECT_EQ("PF_FLOAT32_RGBA", packed.format);
+        ASSERT_EQ(rgba.points.size(), packed.points.size());
+        EXPECT_EQ(0, memcmp(rgba.points.data(), packed.points.data(),
+            rgba.points.size() * sizeof(float)));
+        continue;
+      }
+      EXPECT_EQ("PF_FLOAT32_RGB", packed.format);
+      ASSERT_EQ(3u, packed.channels);
+      const std::vector<float> xyz = Xyz(rgba.points);
+      ASSERT_EQ(xyz.size(), packed.points.size());
+      EXPECT_EQ(0, memcmp(xyz.data(), packed.points.data(),
+          xyz.size() * sizeof(float)));
+      ExpectFiniteAndInfinities(xyz);
+    }
+    conns.clear();
+  }
+  // (the cameras go with the scene: a depth camera created after another
+  // one was destroyed trips an Ogre datablock assertion)
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief The particle noise draws a random number in every scene pass of
+/// a depth camera that sees particles. A packed xyz point cloud
+/// (PF_FLOAT32_RGB) needs no colour, but with particles in view its frames
+/// must draw the same random numbers as RGBA point cloud frames, so that
+/// the depth noise stays the same for a given seed: the same scene state
+/// rendered by an RGBA and a packed camera after the same seed gives the
+/// same next random number, depth frame and x, y, z, byte for byte.
+TEST_F(DepthCameraTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(PackedPointsKeepParticleNoise))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  // (the legacy readback has no packed point clouds)
+  if (std::getenv("GZ_RENDERING_OGRE2_LEGACY_READBACK"))
+    GTEST_SKIP() << "legacy readback";
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  scene->SetAmbientLight(1.0, 1.0, 1.0);
+  gz::rendering::VisualPtr root = scene->RootVisual();
+  gz::rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  box->SetLocalPosition(1.8, 0.0, 0.0);
+  box->SetLocalScale(1.0, 10.0, 10.0);
+  root->AddChild(box);
+  gz::rendering::ParticleEmitterPtr emitter = scene->CreateParticleEmitter();
+  emitter->SetLocalPosition(1.0, 0.0, 0.0);
+  emitter->SetLocalRotation(gz::math::Quaterniond(0, -1.57, 0));
+  emitter->SetParticleSize(gz::math::Vector3d(0.2, 0.2, 0.2));
+  emitter->SetRate(100);
+  emitter->SetLifetime(2);
+  emitter->SetVelocityRange(0.1, 0.1);
+  emitter->SetScaleRate(0.0);
+  emitter->SetEmitting(true);
+  root->AddChild(emitter);
+
+  std::vector<gz::rendering::DepthCameraPtr> pair;
+  std::vector<Frame> frames(2);
+  std::vector<gz::common::ConnectionPtr> conns;
+  for (int i = 0; i < 2; ++i)
+  {
+    auto camera = NewDepthCamera(scene, "DepthCamera" + std::to_string(i),
+        160, 120, 0.01, 10.0);
+    ASSERT_NE(nullptr, camera);
+    if (i == 1)
+    {
+      EXPECT_TRUE(camera->SetPointCloudFormat(gz::rendering::PF_FLOAT32_RGB));
+    }
+    camera->CreateDepthTexture();
+    root->AddChild(camera);
+    ConnectFrame(camera, frames[i], conns);
+    pair.push_back(camera);
+  }
+
+  // let the particles flow into view
+  for (int i = 0; i < 100; ++i)
+  {
+    pair[0]->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+  }
+
+  for (int n = 0; n < 3; ++n)
+  {
+    SCOPED_TRACE("frame " + std::to_string(n));
+    std::vector<int> next(2);
+    for (int i = 0; i < 2; ++i)
+    {
+      frames[i] = Frame();
+      gz::math::Rand::Seed(11 + n);
+      pair[i]->Update();
+      next[i] = gz::math::Rand::IntUniform(0, 1 << 30);
+      EXPECT_EQ(1, frames[i].depthEvents) << "camera " << i;
+      EXPECT_EQ(1, frames[i].cloudEvents) << "camera " << i;
+    }
+    gz::math::Rand::Seed(11 + n);
+    EXPECT_NE(gz::math::Rand::IntUniform(0, 1 << 30), next[0])
+        << "the frame drew no random numbers: no particles in view?";
+    EXPECT_EQ(next[0], next[1]);
+    ASSERT_FALSE(frames[0].depth.empty());
+    ASSERT_FALSE(frames[0].points.empty());
+    ASSERT_EQ(4u, frames[0].channels);
+    ASSERT_EQ(3u, frames[1].channels);
+    ASSERT_EQ(frames[0].depth.size(), frames[1].depth.size());
+    EXPECT_EQ(0, memcmp(frames[0].depth.data(), frames[1].depth.data(),
+        frames[0].depth.size() * sizeof(float)));
+    const std::vector<float> xyz = Xyz(frames[0].points);
+    ASSERT_EQ(xyz.size(), frames[1].points.size());
+    EXPECT_EQ(0, memcmp(xyz.data(), frames[1].points.data(),
+        xyz.size() * sizeof(float)));
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+  }
+  conns.clear();
 
   engine->DestroyScene(scene);
 }

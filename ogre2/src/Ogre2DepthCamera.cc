@@ -106,6 +106,10 @@ class gz::rendering::Ogre2DepthCameraPrivate
   /// PostRender path.
   public: Ogre2GpuReadbackTicket depthReadback;
 
+  /// \brief True if IssueReadback() issued the readback of the last
+  /// Render(), which PostRender() then maps.
+  public: bool readbackIssued = false;
+
   /// \brief maximum value used for data outside sensor range
   public: float dataMaxVal = gz::math::INF_D;
 
@@ -1040,6 +1044,8 @@ void Ogre2DepthCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
 void Ogre2DepthCamera::Render()
 {
   GZ_PROFILE("Ogre2DepthCamera::Render");
+  // A readback issued for an earlier frame is not this frame's.
+  this->dataPtr->readbackIssued = false;
   // Our shaders rely on clamped values so enable it for this sensor
   //
   // TODO(anyone): Matias N. Goldberg (dark_sylinc) insists this is a hack
@@ -1240,8 +1246,11 @@ void Ogre2DepthCamera::PostRender()
   {
     // Persistent-ticket path: map the staging buffer once and copy straight
     // into the persistent buffers in a single fused pass.
-    Ogre::TextureBox box = this->dataPtr->depthReadback.DownloadAndMap(
-        this->dataPtr->ogreDepthTexture[1]);
+    Ogre::TextureBox box = this->dataPtr->readbackIssued ?
+        this->dataPtr->depthReadback.MapDownloaded() :
+        this->dataPtr->depthReadback.DownloadAndMap(
+            this->dataPtr->ogreDepthTexture[1]);
+    this->dataPtr->readbackIssued = false;
     if (!box.data)
     {
       gzerr << "Ogre2DepthCamera: GPU readback failed; dropping frame"
@@ -1264,6 +1273,16 @@ void Ogre2DepthCamera::PostRender()
         this->dataPtr->depthBuffer, width, height, channelCount,
         "PF_FLOAT32_RGBA");
   }
+}
+
+//////////////////////////////////////////////////
+bool Ogre2DepthCamera::IssueReadback()
+{
+  if (Ogre2UseLegacyReadback())
+    return false;
+  this->dataPtr->readbackIssued = this->dataPtr->depthReadback.Download(
+      this->dataPtr->ogreDepthTexture[1]);
+  return this->dataPtr->readbackIssued;
 }
 
 //////////////////////////////////////////////////

@@ -506,6 +506,16 @@ void OgreRenderEngine::LoadPlugins()
     plugins.push_back(path+"/Plugin_BSPSceneManager");
     plugins.push_back(path+"/Plugin_OctreeSceneManager");
 
+    // OGRE 1.12 ships image codecs as separate plugins. Without one loaded,
+    // ImageCodec only knows astc/bsp/dds/ktx/mesh/pkm and any PNG/JPG texture
+    // (e.g. the diffuse/normal maps fed to the stock TerrainMaterialGeneratorA
+    // SM2Profile by the heightmap layers) is rejected with "Can not find codec
+    // for 'png' format". We load only the STBI codec: dropping the historical
+    // FreeImage dependency is one of the motivations for moving to OGRE 1.12.
+    // The load is wrapped in the per-plugin try/catch below, so a missing .so
+    // on a stripped install is a no-op rather than a hard failure.
+    plugins.push_back(path+"/Codec_STBI");
+
 #ifdef HAVE_OCULUS
     plugins.push_back(path+"/Plugin_CgProgramManager");
 #endif
@@ -668,14 +678,31 @@ void OgreRenderEngine::CreateResources()
     //     std::make_pair(prefix + "/media/models", "General"));
     archNames.push_back(
         std::make_pair(p + "/fonts", "Fonts"));
+
+    // OGRE 1.12+ requires the ShadowVolume programs for stencil shadow support
+    // (OgreShadowVolumeExtrudeProgram::initialise() looks up the
+    // Ogre/ShadowExtrude* programs in a resource location named "ShadowVolume")
+    // and the Terrain helpers (TerrainTransforms.glsl, TerrainHelpers.glsl)
+    // for the stock TerrainMaterialGeneratorA shaders. Both are vendored
+    // verbatim from the OGRE package media (see ShadowVolume/README.md and
+    // Terrain/README.md) so the script versions stay pinned to the OGRE
+    // release gz-rendering was tested against, rather than picking up whatever
+    // copy happens to be installed in the system OGRE Media tree.
+    archNames.push_back(
+        std::make_pair(p + "/ShadowVolume", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/Terrain", "General"));
   }
 
   for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
   {
     try
     {
+      // Fonts are organised in subdirectories (e.g. roboto/, liberation-sans/)
+      // so the Fonts resource group needs a recursive scan.
+      bool recursive = (aiter->second == "Fonts");
       Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-          aiter->first, "FileSystem", aiter->second);
+          aiter->first, "FileSystem", aiter->second, recursive);
     }
     catch(Ogre::Exception &/*_e*/)
     {

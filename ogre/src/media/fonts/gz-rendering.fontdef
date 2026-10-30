@@ -1,4 +1,4 @@
-Console
+font Console
 {
   type truetype
   source console.ttf
@@ -6,7 +6,7 @@ Console
   resolution 96
 }
 
-Liberation Sans
+font "Liberation Sans"
 {
   type truetype
   source liberation-sans/LiberationSans-Regular.ttf
@@ -14,7 +14,7 @@ Liberation Sans
   resolution 96
 }
 
-Roboto
+font Roboto
 {
   type truetype
   source roboto/Roboto-Regular.ttf
@@ -22,7 +22,7 @@ Roboto
   resolution 96
 }
 
-Roboto Black
+font "Roboto Black"
 {
   type truetype
   source roboto/Roboto-Black.ttf
@@ -30,7 +30,7 @@ Roboto Black
   resolution 96
 }
 
-Roboto BlackItalic
+font "Roboto BlackItalic"
 {
   type truetype
   source roboto/Roboto-BlackItalic.ttf
@@ -38,7 +38,7 @@ Roboto BlackItalic
   resolution 96
 }
 
-Roboto Bold
+font "Roboto Bold"
 {
   type truetype
   source roboto/Roboto-Bold.ttf
@@ -46,7 +46,7 @@ Roboto Bold
   resolution 96
 }
 
-Roboto BoldItalic
+font "Roboto BoldItalic"
 {
   type truetype
   source roboto/Roboto-BoldItalic.ttf
@@ -54,7 +54,7 @@ Roboto BoldItalic
   resolution 96
 }
 
-Roboto Italic
+font "Roboto Italic"
 {
   type truetype
   source roboto/Roboto-Italic.ttf
@@ -62,7 +62,7 @@ Roboto Italic
   resolution 96
 }
 
-Roboto Light
+font "Roboto Light"
 {
   type truetype
   source roboto/Roboto-Light.ttf
@@ -70,7 +70,7 @@ Roboto Light
   resolution 96
 }
 
-Roboto LightItalic
+font "Roboto LightItalic"
 {
   type truetype
   source roboto/Roboto-LightItalic.ttf
@@ -78,7 +78,7 @@ Roboto LightItalic
   resolution 96
 }
 
-Roboto Medium
+font "Roboto Medium"
 {
   type truetype
   source roboto/Roboto-Medium.ttf
@@ -86,7 +86,7 @@ Roboto Medium
   resolution 96
 }
 
-Roboto MediumItalic
+font "Roboto MediumItalic"
 {
   type truetype
   source roboto/Roboto-MediumItalic.ttf
@@ -94,7 +94,7 @@ Roboto MediumItalic
   resolution 96
 }
 
-Roboto Regular
+font "Roboto Regular"
 {
   type truetype
   source roboto/Roboto-Regular.ttf
@@ -102,7 +102,7 @@ Roboto Regular
   resolution 96
 }
 
-Roboto Thin
+font "Roboto Thin"
 {
   type truetype
   source roboto/Roboto-Thin.ttf
@@ -110,7 +110,7 @@ Roboto Thin
   resolution 96
 }
 
-Roboto ThinItalic
+font "Roboto ThinItalic"
 {
   type truetype
   source roboto/Roboto-ThinItalic.ttf

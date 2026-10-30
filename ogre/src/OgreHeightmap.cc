@@ -625,14 +625,25 @@ void OgreHeightmap::Init()
     defaultimp.layerList.resize(this->descriptor.TextureCount());
 
     // The worldSize decides how big each splat of textures will be.
-    // A smaller value will increase the resolution
+    // A smaller value will increase the resolution.
+    //
+    // OGRE's FileSystemArchive indexes files by basename. The
+    // TextureManager::load() lookup performed by stock
+    // TerrainMaterialGeneratorA's SM2Profile asks for a resource by the
+    // exact name pushed here -- an absolute file path never matches an
+    // archive entry, the prepare step logs "Cannot locate resource <abs
+    // path> in resource group General" and the texture unit becomes blank.
+    // Push the basename so the lookup hits the parent directory archive
+    // that AddResourcePath above just registered.
     for (unsigned int i = 0; i < this->descriptor.TextureCount(); ++i)
     {
       auto texture = this->descriptor.TextureByIndex(i);
 
       defaultimp.layerList[i].worldSize = texture->Size();
-      defaultimp.layerList[i].textureNames.push_back(texture->Diffuse());
-      defaultimp.layerList[i].textureNames.push_back(texture->Normal());
+      defaultimp.layerList[i].textureNames.push_back(
+          common::basename(texture->Diffuse()));
+      defaultimp.layerList[i].textureNames.push_back(
+          common::basename(texture->Normal()));
     }
   }
 
@@ -1024,14 +1035,10 @@ void OgreHeightmap::CreateMaterial()
 
     this->dataPtr->terrainGlobals->setDefaultMaterialGenerator(ptr);
 #else
-    // init custom material generator
-    Ogre::TerrainMaterialGeneratorPtr terrainMaterialGenerator;
-    auto terrainMaterial = OGRE_NEW TerrainMaterial("Default/White");
-    if (this->dataPtr->splitTerrain)
-      terrainMaterial->setGridSize(this->dataPtr->numTerrainSubdivisions);
-    terrainMaterialGenerator.bind(terrainMaterial);
-    this->dataPtr->terrainGlobals->setDefaultMaterialGenerator(
-        terrainMaterialGenerator);
+    // On OGRE >= 1.11 rely on TerrainGlobalOptions' stock
+    // TerrainMaterialGeneratorA, whose active Profile is an SM2Profile and
+    // therefore accepts SetupShadows' SM2Profile setters without the ABI
+    // mismatch that GzTerrainMatGen exposed against 1.12.10.
 #endif
 
     this->SetupShadows(true);
@@ -1044,20 +1051,12 @@ void OgreHeightmap::SetupShadows(bool _enableShadows)
   GZ_PROFILE("OgreHeightmap::SetupShadows");
   auto matGen = this->dataPtr->terrainGlobals->getDefaultMaterialGenerator();
 
-  // Assume we get a shader model 2 material profile
-  Ogre::TerrainMaterialGeneratorA::SM2Profile *matProfile;
-#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 11
-  matProfile = static_cast<GzTerrainMatGen::SM2Profile *>(
-      matGen->getActiveProfile());
-#else
-  // Since OGRE 1.11 the custom GzTerrainMatGen path is disabled and
-  // CreateMaterial() installs our TerrainMaterial generator whose Profile is
-  // not an SM2Profile. Use dynamic_cast so the nullptr guard below skips the
-  // SM2Profile-only setters and avoids writing past the real Profile object
-  // (the static_cast path led to heap corruption during loadAllTerrains).
-  matProfile = dynamic_cast<Ogre::TerrainMaterialGeneratorA::SM2Profile *>(
-      matGen->getActiveProfile());
-#endif
+  // Assume we get a shader model 2 material profile. dynamic_cast guards the
+  // case where CreateMaterial installed our custom TerrainMaterial generator
+  // (when a material name was supplied) whose Profile is not an SM2Profile.
+  Ogre::TerrainMaterialGeneratorA::SM2Profile *matProfile =
+      dynamic_cast<Ogre::TerrainMaterialGeneratorA::SM2Profile *>(
+          matGen->getActiveProfile());
 
   if (nullptr == matProfile)
   {

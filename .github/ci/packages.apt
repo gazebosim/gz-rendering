@@ -8,7 +8,7 @@ libgz-rotary-math-dev
 libgz-rotary-math-eigen3-dev
 libgz-rotary-plugin-dev
 libgz-rotary-utils-dev
-libogre-1.9-dev
+libogre-1.12-dev
 libogre-next-2.3-dev
 libvulkan-dev
 libxi-dev

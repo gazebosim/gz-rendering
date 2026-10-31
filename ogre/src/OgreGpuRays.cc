@@ -15,6 +15,8 @@
  *
 */
 
+#include <algorithm>
+
 #include <gz/common/Mesh.hh>
 #include <gz/common/SubMesh.hh>
 #include <gz/common/Profiler.hh>
@@ -938,7 +940,10 @@ void OgreGpuRays::CreateMesh()
         v -= tan(gamma) / (2.0 * tan(phiCamera) * cos(delta));
       }
 
-      submesh->AddTexCoord(u, v);
+      // Roundoff at a frustum boundary can put a valid coordinate just
+      // outside [0, 1]. The second-pass shader rejects any such lookup.
+      submesh->AddTexCoord(std::clamp(u, 0.0, 1.0),
+          std::clamp(v, 0.0, 1.0));
       submesh->AddIndex(this->dataPtr->w2nd * j + i);
     }
   }

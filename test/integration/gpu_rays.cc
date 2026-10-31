@@ -647,6 +647,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ScanTextureCoordinates))
     double verticalMax;
     unsigned int rows;
     unsigned int horizontalSamples = 16u;
+    double horizontalFov = 1.0;
   };
   // Include a single output row produced by downsampling several rays, and
   // multiple output rows produced by upsampling one ray. The texture shape
@@ -664,7 +665,9 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ScanTextureCoordinates))
     {1u, 2.0, 1.0, -0.1, 0.1, 2u},
     {1u, 2.0, 1.0, 0.0, 0.0, 2u},
     {1u, 1.0, 1.0, 0.0, 0.0, 1u, 1u},
-    {3u, 1.0, 1.0, -0.1, 0.1, 3u, 1u}
+    {3u, 1.0, 1.0, -0.1, 0.1, 3u, 1u},
+    {4u, 1.0, 1.0, -GZ_PI / 4.0, GZ_PI / 4.0, 4u, 640u, GZ_PI},
+    {2u, 1.0, 1.0, -0.5, 0.5, 2u}
   };
 
   for (const auto &config : configs)
@@ -673,6 +676,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ScanTextureCoordinates))
         << "vertical samples=" << config.verticalSamples
         << " horizontal samples=" << config.horizontalSamples
         << " rows=" << config.rows
+        << " horizontal FOV=" << config.horizontalFov
         << " vertical resolution=" << config.verticalResolution
         << " horizontal resolution=" << config.horizontalResolution
         << " vertical angles=" << config.verticalMin << ", "
@@ -684,8 +688,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ScanTextureCoordinates))
     ASSERT_NE(nullptr, gpuRays);
     gpuRays->SetNearClipPlane(0.1);
     gpuRays->SetFarClipPlane(5.0);
-    gpuRays->SetAngleMin(-0.5);
-    gpuRays->SetAngleMax(0.5);
+    gpuRays->SetAngleMin(-config.horizontalFov / 2.0);
+    gpuRays->SetAngleMax(config.horizontalFov / 2.0);
     gpuRays->SetRayCount(config.horizontalSamples);
     gpuRays->SetHorizontalResolution(config.horizontalResolution);
     gpuRays->SetVerticalRayCount(config.verticalSamples);
@@ -716,6 +720,12 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ScanTextureCoordinates))
       const auto uv = subMesh->TexCoord(i);
       ASSERT_TRUE(std::isfinite(uv.X())) << "ray " << i;
       ASSERT_TRUE(std::isfinite(uv.Y())) << "ray " << i;
+      // The second-pass shader treats even roundoff outside [0, 1] as an
+      // invalid lookup, returning 1 rather than a measured range.
+      EXPECT_GE(uv.X(), 0.0) << "ray " << i;
+      EXPECT_LE(uv.X(), 1.0) << "ray " << i;
+      EXPECT_GE(uv.Y(), 0.0) << "ray " << i;
+      EXPECT_LE(uv.Y(), 1.0) << "ray " << i;
       if (columns == 1u)
       {
         EXPECT_DOUBLE_EQ(0.5, uv.X()) << "ray " << i;

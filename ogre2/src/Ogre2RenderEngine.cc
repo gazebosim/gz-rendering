@@ -20,6 +20,9 @@
   // pulled in by anybody (e.g., Boost).
   #include <Winsock2.h>
 #endif
+#include <locale>
+#include <sstream>
+
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
 #include <gz/common/StringUtils.hh>
@@ -128,6 +131,24 @@ class GZ_RENDERING_OGRE2_HIDDEN
 
 using namespace gz;
 using namespace rendering;
+
+namespace
+{
+  /// \brief Convert a double to a string that always uses '.' as the
+  /// decimal separator. std::to_string follows the C locale, so it gives
+  /// "1,000000" under a locale like de_DE, but OGRE expects "1.000000".
+  /// See https://github.com/gazebosim/gz-rendering/issues/136
+  /// \param[in] _value Value to convert
+  /// \return _value in fixed notation, the same as std::to_string in the
+  /// "C" locale
+  std::string LocaleIndependentToString(const double _value)
+  {
+    std::ostringstream stream;
+    stream.imbue(std::locale::classic());
+    stream << std::fixed << _value;
+    return stream.str();
+  }
+}  // namespace
 
 //////////////////////////////////////////////////
 Ogre2RenderEnginePlugin::Ogre2RenderEnginePlugin()
@@ -1200,7 +1221,7 @@ std::string Ogre2RenderEngine::CreateRenderWindow(const std::string &_handle,
   stream << "OgreWindow(0)" << "_" << _handle;
 
   // Needed for retina displays
-  params["contentScalingFactor"] = std::to_string(_ratio);
+  params["contentScalingFactor"] = LocaleIndependentToString(_ratio);
 
   // Ogre 2 PBS expects gamma correction
   params["gamma"] = "Yes";
@@ -1335,7 +1356,7 @@ NativeWindowPtr Ogre2RenderEngine::CreateNativeWindow(
   stream << "OgreNativeWindow(0)" << "_" << _winHandle;
 
   // Needed for retina displays
-  params["contentScalingFactor"] = std::to_string(_ratio);
+  params["contentScalingFactor"] = LocaleIndependentToString(_ratio);
 
   // Ogre 2 PBS expects gamma correction
   params["gamma"] = "Yes";

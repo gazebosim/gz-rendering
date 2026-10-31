@@ -17,6 +17,13 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
+#include <chrono>
+#include <cstring>
+#include <string>
+#include <thread>
+#include <vector>
+
 #include "CommonRenderingTest.hh"
 
 #include <gz/common/Image.hh>
@@ -24,6 +31,7 @@
 #include <gz/common/Mesh.hh>
 #include <gz/common/SubMesh.hh>
 #include <gz/common/geospatial/ImageHeightmap.hh>
+#include <gz/utils/Environment.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
 #include "gz/rendering/GpuRays.hh"
@@ -1236,5 +1244,105 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LidarRaysDoNotRecede))
   scan = nullptr;
 
   // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief On OpenGL the readback waits for the GPU by polling its fence
+/// with short sleeps while the render thread has idle time;
+/// GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT makes map() wait instead. Both
+/// must read back the same bytes, frame for frame, while a box moves through
+/// the scan.
+TEST_F(GpuRaysTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(ReadbackWaitMatchesBlocking))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+  const char *kBlockingEnv = "GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT";
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  VisualPtr root = scene->RootVisual();
+
+  const unsigned int hRayCount = 320;
+  const unsigned int vRayCount = 16;
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays");
+  gpuRays->SetWorldPosition(0, 0, 0.1);
+  gpuRays->SetNearClipPlane(0.1);
+  gpuRays->SetFarClipPlane(10.0);
+  gpuRays->SetAngleMin(-GZ_PI / 2.0);
+  gpuRays->SetAngleMax(GZ_PI / 2.0);
+  gpuRays->SetRayCount(hRayCount);
+  gpuRays->SetVerticalAngleMin(-0.2);
+  gpuRays->SetVerticalAngleMax(0.2);
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  VisualPtr box = scene->CreateVisual("box");
+  box->AddGeometry(scene->CreateBox());
+  root->AddChild(box);
+
+  const unsigned int size = hRayCount * vRayCount * gpuRays->Channels();
+  std::vector<float> scan(size);
+  int frames = 0;
+  common::ConnectionPtr c = gpuRays->ConnectNewGpuRaysFrame(
+      [&scan, &frames](const float *_scan, unsigned int _w, unsigned int _h,
+          unsigned int _c, const std::string &)
+      {
+        ASSERT_EQ(scan.size(), static_cast<size_t>(_w) * _h * _c);
+        memcpy(scan.data(), _scan, scan.size() * sizeof(float));
+        ++frames;
+      });
+
+  // Render once with the given wait into scan.
+  auto render = [&](bool _blocking)
+  {
+    if (_blocking)
+      EXPECT_TRUE(gz::utils::setenv(kBlockingEnv, "1"));
+    else
+      EXPECT_TRUE(gz::utils::unsetenv(kBlockingEnv));
+    std::fill(scan.begin(), scan.end(), -1.0f);
+    const int before = frames;
+    gpuRays->Update();
+    EXPECT_EQ(before + 1, frames);
+    EXPECT_TRUE(gz::utils::unsetenv(kBlockingEnv));
+  };
+
+  // The polled wait sleeps only while the thread has idle time: idle 20 ms
+  // before each polled frame, and long enough for the wait policy to see it.
+  const auto idle = []()
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+  };
+  for (int i = 0; i < 20; ++i)
+  {
+    idle();
+    render(false);
+  }
+
+  std::vector<float> previous;
+  for (int i = 0; i < 6; ++i)
+  {
+    box->SetWorldPosition(2.0 + 0.5 * i, -1.5 + 0.5 * i, 0.1);
+
+    idle();
+    render(false);
+    const std::vector<float> polled = scan;
+    render(true);
+    EXPECT_EQ(0, memcmp(polled.data(), scan.data(), size * sizeof(float)))
+        << "frame " << i;
+    // The box moved: a stale frame would not match the new one.
+    if (!previous.empty())
+    {
+      EXPECT_NE(0, memcmp(previous.data(), scan.data(),
+          size * sizeof(float))) << "frame " << i;
+    }
+    previous = scan;
+  }
+
+  c.reset();
+  scene->DestroySensor(gpuRays);
   engine->DestroyScene(scene);
 }

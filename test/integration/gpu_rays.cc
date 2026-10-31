@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -661,6 +662,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ScanTextureCoordinates))
     {3u, 1.0, 1.0, -0.1, 0.1, 3u},
     {4u, 0.5, 1.0, -0.1, 0.1, 2u},
     {1u, 2.0, 1.0, -0.1, 0.1, 2u},
+    {1u, 2.0, 1.0, 0.0, 0.0, 2u},
     {1u, 1.0, 1.0, 0.0, 0.0, 1u, 1u},
     {3u, 1.0, 1.0, -0.1, 0.1, 3u, 1u}
   };
@@ -668,7 +670,9 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ScanTextureCoordinates))
   for (const auto &config : configs)
   {
     SCOPED_TRACE(testing::Message()
-        << "samples=" << config.verticalSamples
+        << "vertical samples=" << config.verticalSamples
+        << " horizontal samples=" << config.horizontalSamples
+        << " rows=" << config.rows
         << " vertical resolution=" << config.verticalResolution
         << " horizontal resolution=" << config.horizontalResolution
         << " vertical angles=" << config.verticalMin << ", "
@@ -774,10 +778,10 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DownsampledSingleRow))
   gpuRays->Update();
   ASSERT_EQ(1u, frames);
 
-  // The front face is x = 2 m. Exclude the two edge rays, whose texture
-  // stitching boundary behavior is independent of vertical resampling.
+  // The front face is x = 2 m. Check the complete scan, including both
+  // endpoints of the single first-pass camera.
   const double step = 1.0 / (columns - 1);
-  for (unsigned int i = 1; i + 1 < columns; ++i)
+  for (unsigned int i = 0; i < columns; ++i)
   {
     ASSERT_TRUE(std::isfinite(scan[i * channels])) << "ray " << i;
     const double angle = -0.5 + i * step;
@@ -787,6 +791,80 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DownsampledSingleRow))
 
   connection.reset();
   engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief Keep upsampled zero-FOV rows valid without excessive texture width.
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(UpsampledZeroVerticalFov))
+{
+  CHECK_SUPPORTED_ENGINE("ogre");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  for (const unsigned int rows : {2u, 512u})
+  {
+    SCOPED_TRACE(testing::Message() << "rows=" << rows);
+    ScenePtr scene = engine->CreateScene("scene");
+    ASSERT_NE(nullptr, scene);
+    VisualPtr root = scene->RootVisual();
+    VisualPtr wall = scene->CreateVisual("wall");
+    wall->AddGeometry(scene->CreateBox());
+    wall->SetLocalPosition(2.5, 0, 0);
+    wall->SetLocalScale(1, 20, 20);
+    root->AddChild(wall);
+
+    GpuRaysPtr gpuRays = scene->CreateGpuRays("upsampled_gpu_rays");
+    ASSERT_NE(nullptr, gpuRays);
+    gpuRays->SetNearClipPlane(0.1);
+    gpuRays->SetFarClipPlane(10.0);
+    gpuRays->SetAngleMin(-0.5);
+    gpuRays->SetAngleMax(0.5);
+    gpuRays->SetRayCount(32);
+    gpuRays->SetVerticalAngleMin(0.0);
+    gpuRays->SetVerticalAngleMax(0.0);
+    gpuRays->SetVerticalRayCount(1);
+    gpuRays->SetVerticalResolution(rows);
+    root->AddChild(gpuRays);
+    ASSERT_EQ(static_cast<int>(rows), gpuRays->VerticalRangeCount());
+
+    const unsigned int columns = gpuRays->RangeCount();
+    const unsigned int channels = gpuRays->Channels();
+    std::vector<float> scan(columns * rows * channels, math::INF_F);
+    unsigned int frames = 0;
+    auto connection = gpuRays->ConnectNewGpuRaysFrame(
+        [&](const float *_frame, unsigned int _width, unsigned int _height,
+            unsigned int _channels, const std::string &)
+        {
+          ASSERT_EQ(columns, _width);
+          ASSERT_EQ(rows, _height);
+          ASSERT_EQ(channels, _channels);
+          std::copy(_frame, _frame + scan.size(), scan.begin());
+          ++frames;
+        });
+    gpuRays->Update();
+    ASSERT_EQ(1u, frames);
+
+    // The logical vertical scan remains nearly planar after camera padding.
+    // Using that small scan FOV for the texture lookup instead of the padded
+    // camera FOV would sample the wrong elevations, notably with 512 rows.
+    for (unsigned int j = 0; j < rows; ++j)
+    {
+      const double vertical = gpuRays->VerticalAngleMin().Radian() +
+          j * gpuRays->VFOV().Radian() / (rows - 1u);
+      for (unsigned int i = 0; i < columns; ++i)
+      {
+        const unsigned int index = (j * columns + i) * channels;
+        ASSERT_TRUE(std::isfinite(scan[index])) << "ray " << i << ", " << j;
+        const double horizontal = -0.5 + i / (columns - 1.0);
+        ASSERT_NEAR(2.0 / (std::cos(horizontal) * std::cos(vertical)),
+            scan[index], 5e-3) << "ray " << i << ", " << j;
+      }
+    }
+
+    connection.reset();
+    engine->DestroyScene(scene);
+  }
 }
 
 /////////////////////////////////////////////////

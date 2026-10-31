@@ -379,6 +379,18 @@ void OgreGpuRays::ConfigureCameras()
     double cameraAspectRatio =
       tan(this->HFOV().Radian() / 2.0) / tan(vfovCamera / 2.0);
 
+    // A very small vertical FOV can otherwise inflate the texture width
+    // beyond the GPU limit just to retain the requested number of rows.
+    // Pad the camera FOV instead, keeping the horizontal resolution.
+    const double textureAspectRatio =
+        static_cast<double>(horzRangeCountPerCamera) / vertRangeCountPerCamera;
+    if (cameraAspectRatio > textureAspectRatio)
+    {
+      cameraAspectRatio = textureAspectRatio;
+      this->SetCosVertFOV(2.0 * atan(
+          tan(this->HFOV().Radian() / 2.0) / cameraAspectRatio));
+    }
+
     this->SetRayCountRatio(cameraAspectRatio);
     this->rangeCountRatio = cameraAspectRatio;
 
@@ -850,9 +862,10 @@ void OgreGpuRays::CreateMesh()
   double startX = dx / 2.0;
   double startY = (this->dataPtr->h2nd - 0.5) / 10.0;
 
-  // half of actual camera vertical FOV without padding
+  // Half of the logical scan vertical FOV.
   double phi = this->VFOV().Radian() / 2.0;
-  double phiCamera = phi + std::abs(this->VertHalfAngle());
+  // Camera padding can differ from the logical scan vertical FOV.
+  const double phiCamera = this->CosVertFOV() / 2.0;
   double theta = this->CosHorzFOV() / 2.0;
 
   if (this->dataPtr->h2nd == 1)
@@ -888,11 +901,11 @@ void OgreGpuRays::CreateMesh()
       unsigned int texture = static_cast<unsigned int>(
           delta / this->CosHorzFOV());
 
-      // cap texture index and horizontal angle
-      if (texture > this->dataPtr->textureCount-1)
+      // The final ray lies at the last camera's upper boundary. Clamp the
+      // camera index without moving the ray back by one angular step.
+      if (texture >= this->dataPtr->textureCount)
       {
-        texture -= 1;
-        delta -= hstep;
+        texture = this->dataPtr->textureCount - 1u;
       }
 
       startX -= dx;
@@ -922,8 +935,7 @@ void OgreGpuRays::CreateMesh()
       double v = 0.5;
       if (this->dataPtr->h2nd > 1u)
       {
-        v -= (tan(gamma) * cos(theta)) /
-            (2.0 * tan(phiCamera) * cos(delta));
+        v -= tan(gamma) / (2.0 * tan(phiCamera) * cos(delta));
       }
 
       submesh->AddTexCoord(u, v);

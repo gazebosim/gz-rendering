@@ -94,7 +94,8 @@ namespace gz
       /// focal lengths, principal point and skew, are used. The depth rows
       /// (2 and 3) are derived from the configured near and far clip planes
       /// so that depth rendering stays consistent with the camera frustum.
-      /// ProjectionMatrix() returns the matrix as given.
+      /// Consequently ProjectionMatrix() returns the given image plane rows
+      /// together with depth rows encoding the configured clip planes.
       /// \param[in] _matrix Camera projection matrix
       public: virtual void SetProjectionMatrix(
           const math::Matrix4d &_matrix) override;

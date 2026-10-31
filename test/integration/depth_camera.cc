@@ -945,6 +945,17 @@ TEST_F(DepthCameraTest,
   camera2->SetProjectionMatrix(proj1);
   EXPECT_EQ(proj1, camera2->ProjectionMatrix());
 
+  // The depth rows of a custom matrix are owned by the depth camera: a
+  // matrix with different depth rows must still report the configured
+  // near / far clip planes.
+  gz::math::Matrix4d bogusDepthRows = proj1;
+  bogusDepthRows(2, 2) = -1.5;
+  bogusDepthRows(2, 3) = -3.0;
+  camera2->SetProjectionMatrix(bogusDepthRows);
+  EXPECT_EQ(proj1, camera2->ProjectionMatrix());
+  camera2->SetProjectionMatrix(proj1);
+  EXPECT_EQ(proj1, camera2->ProjectionMatrix());
+
   // render both and compare
   const unsigned int pcChannels = 4u;
   std::vector<float> depth1(imgWidth * imgHeight);

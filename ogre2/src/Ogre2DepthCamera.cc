@@ -1045,40 +1045,6 @@ void Ogre2DepthCamera::CreateWorkspaceInstance()
   }
 }
 
-<<<<<<< HEAD
-=======
-/////////////////////////////////////////////////
-math::Matrix4d Ogre2DepthCamera::ProjectionMatrix() const
-{
-  // The ogre camera uses widened clip distances (see CreateDepthTexture)
-  // which must not leak to users. Always report the configured near / far
-  // planes in the depth rows, whether the image plane rows come from a
-  // custom projection matrix or from the ogre camera.
-  math::Matrix4d result = this->ogreCamera->isCustomProjectionMatrixEnabled() ?
-      this->projectionMatrix :
-      Ogre2Conversions::Convert(this->ogreCamera->getProjectionMatrix());
-  SetProjectionDepthRows(result, this->NearClipPlane(), this->FarClipPlane());
-  return result;
-}
-
-/////////////////////////////////////////////////
-void Ogre2DepthCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
-{
-  BaseDepthCamera::SetProjectionMatrix(_matrix);
-
-  // Only the image plane rows (0 and 1) are taken from the given matrix.
-  // The depth rows must match the widened clip distances used by the ogre
-  // camera, otherwise the depth pipeline (e.g. point cloud reconstruction
-  // from view space corners) would be inconsistent with the frustum.
-  math::Matrix4d ogreMatrix = _matrix;
-  SetProjectionDepthRows(ogreMatrix,
-      this->NearClipPlane() * kDepthNearClipScale,
-      this->FarClipPlane() * kDepthFarClipScale);
-  this->ogreCamera->setCustomProjectionMatrix(
-      true, Ogre2Conversions::Convert(ogreMatrix));
-}
-
->>>>>>> 06e0235 (Ogre2DepthCamera: fix projection matrix (#1390))
 //////////////////////////////////////////////////
 void Ogre2DepthCamera::Render()
 {
@@ -1122,11 +1088,20 @@ void Ogre2DepthCamera::PreRender()
   if (this->ogreCamera &&
       this->projectionMatrix != gz::math::Matrix4d::Zero)
   {
-    if (this->projectionMatrix !=
+    // Only the image plane rows (0 and 1) are taken from the user supplied
+    // projection matrix. The depth rows must match the widened clip
+    // distances used by the ogre camera (see CreateDepthTexture), otherwise
+    // the depth pipeline (e.g. point cloud reconstruction from view space
+    // corners) would be inconsistent with the frustum.
+    math::Matrix4d ogreMatrix = this->projectionMatrix;
+    SetProjectionDepthRows(ogreMatrix,
+        this->NearClipPlane() * kDepthNearClipScale,
+        this->FarClipPlane() * kDepthFarClipScale);
+    if (ogreMatrix !=
         Ogre2Conversions::Convert(this->ogreCamera->getProjectionMatrix()))
     {
       this->ogreCamera->setCustomProjectionMatrix(true,
-          Ogre2Conversions::Convert(this->projectionMatrix));
+          Ogre2Conversions::Convert(ogreMatrix));
     }
   }
 

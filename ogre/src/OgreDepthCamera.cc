@@ -22,6 +22,8 @@
   #endif
   #include <windows.h>
 #endif
+#include <cstdint>
+
 #include <gz/common/Profiler.hh>
 
 #include <gz/math/Helpers.hh>
@@ -338,6 +340,7 @@ void OgreDepthCamera::Render()
   // point cloud xyz and depth
   sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_NONE);
   sceneMgr->_suppressRenderStateChanges(true);
+  sceneMgr->addRenderObjectListener(this);
 
   this->dataPtr->pcdTexture->SetAutoUpdated(false);
   OgreMaterialPtr ogreMat =
@@ -346,6 +349,7 @@ void OgreDepthCamera::Render()
       ogreMat->Material().get(), ogreMat->Material()->getName());
   this->dataPtr->pcdTexture->RenderTarget()->update(false);
 
+  sceneMgr->removeRenderObjectListener(this);
   sceneMgr->_suppressRenderStateChanges(false);
   sceneMgr->setShadowTechnique(shadowTech);
 
@@ -431,6 +435,46 @@ void OgreDepthCamera::UpdateRenderTarget(OgreRenderTexturePtr _target,
     renderSys->bindGpuProgramParameters(Ogre::GPT_FRAGMENT_PROGRAM,
     pass->getFragmentProgramParameters(), 1);
   }
+}
+
+//////////////////////////////////////////////////
+void OgreDepthCamera::notifyRenderSingleObject(Ogre::Renderable *_rend,
+    const Ogre::Pass * /*_pass*/,
+    const Ogre::AutoParamDataSource * /*_source*/,
+    const Ogre::LightList * /*_lights*/, bool /*_suppressRSChanges*/)
+{
+  GZ_PROFILE("OgreDepthCamera::notifyRenderSingleObject");
+  // OGRE 1.12's SceneManager no longer calls RenderSystem::_setWorldMatrix
+  // per renderable, so gl_ModelViewMatrix / ftransform() would otherwise see a
+  // stale (or identity) world matrix. Push the renderable's world transform
+  // into the GL fixed-function state here so the legacy GLSL depth shaders
+  // resolve correct eye-space positions.
+  //
+  // Renderable::getWorldTransforms writes getNumWorldTransforms() matrices
+  // into the buffer with no size argument, so the count must be checked
+  // *before* the call to avoid a stack write past the array for software-
+  // skinned renderables (where getNumWorldTransforms() can exceed
+  // OGRE_MAX_NUM_BONES).
+  // TODO(anyone): depth shaders only consume xform[0], so skinned visuals
+  // still
+  // render at their root-bone transform. Fixing that requires plumbing the
+  // bone-matrix array into the GLSL programs.
+  const uint16_t count = _rend->getNumWorldTransforms();
+  if (count == 0)
+    return;
+  if (count > OGRE_MAX_NUM_BONES)
+  {
+    gzwarn << "OgreDepthCamera: renderable reports " << count
+           << " world transforms (>" << OGRE_MAX_NUM_BONES
+           << "); skipping world-matrix push to avoid stack overflow"
+           << std::endl;
+    return;
+  }
+  Ogre::Matrix4 xform[OGRE_MAX_NUM_BONES];
+  _rend->getWorldTransforms(xform);
+  Ogre::RenderSystem *renderSys =
+      this->scene->OgreSceneManager()->getDestinationRenderSystem();
+  renderSys->_setWorldMatrix(xform[0]);
 }
 
 //////////////////////////////////////////////////

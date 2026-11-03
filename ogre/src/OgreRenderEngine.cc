@@ -39,6 +39,7 @@ typedef khronos_intptr_t GLintptr;
 #include <dlfcn.h>
 
 # include <filesystem>
+# include <locale>
 # include <sstream>
 
 #include <OgreDynLib.h>
@@ -96,6 +97,24 @@ void loadGLPlugin(const std::string &_pluginName)
   pFunc();
   return;
 }
+
+namespace
+{
+  /// \brief Convert a double to a string that always uses '.' as the
+  /// decimal separator. std::to_string follows the C locale, so it gives
+  /// "1,000000" under a locale like de_DE, but OGRE expects "1.000000".
+  /// See https://github.com/gazebosim/gz-rendering/issues/136
+  /// \param[in] _value Value to convert
+  /// \return _value in fixed notation, the same as std::to_string in the
+  /// "C" locale
+  std::string LocaleIndependentToString(const double _value)
+  {
+    std::ostringstream stream;
+    stream.imbue(std::locale::classic());
+    stream << std::fixed << _value;
+    return stream.str();
+  }
+}  // namespace
 
 //////////////////////////////////////////////////
 OgreRenderEnginePlugin::OgreRenderEnginePlugin()
@@ -729,7 +748,7 @@ std::string OgreRenderEngine::CreateRenderWindow(const std::string &_handle,
   params["border"] = "none";
 
   // Needed for retina displays
-  params["contentScalingFactor"] = std::to_string(_ratio);
+  params["contentScalingFactor"] = LocaleIndependentToString(_ratio);
 
   if (this->useCurrentGLContext)
   {

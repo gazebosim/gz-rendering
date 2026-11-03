@@ -1,6 +1,7 @@
 set(TEST_TYPE "INTEGRATION")
 
 set(tests
+  axis_visual
   boundingbox_camera
   camera
   depth_camera

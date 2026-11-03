@@ -15,6 +15,8 @@
  *
 */
 
+#include <algorithm>
+
 #include <gz/common/Mesh.hh>
 #include <gz/common/SubMesh.hh>
 #include <gz/common/Profiler.hh>
@@ -89,7 +91,7 @@ class gz::rendering::OgreGpuRaysPrivate
   public: unsigned int textureCount = 0u;
 
   /// \brief A list of camera angles for first pass rendering.
-  public: double cameraYaws[4];
+  public: double cameraYaws[3];
 
   /// \brief Image width of first pass.
   public: unsigned int w1st = 0u;
@@ -372,12 +374,24 @@ void OgreGpuRays::ConfigureCameras()
 
   this->SetCosVertFOV(vfovCamera);
 
-  // If vertical ray is not 1 adjust horizontal and vertical
-  // ray count to maintain aspect ratio
-  if (this->vSamples > 1)
+  // Use the output row count when configuring the first-pass aspect ratio;
+  // vertical resolution can change it independently of the sample count.
+  if (this->VerticalRangeCount() > 1)
   {
     double cameraAspectRatio =
       tan(this->HFOV().Radian() / 2.0) / tan(vfovCamera / 2.0);
+
+    // A very small vertical FOV can otherwise inflate the texture width
+    // beyond the GPU limit just to retain the requested number of rows.
+    // Pad the camera FOV instead, keeping the horizontal resolution.
+    const double textureAspectRatio =
+        static_cast<double>(horzRangeCountPerCamera) / vertRangeCountPerCamera;
+    if (cameraAspectRatio > textureAspectRatio)
+    {
+      cameraAspectRatio = textureAspectRatio;
+      this->SetCosVertFOV(2.0 * atan(
+          tan(this->HFOV().Radian() / 2.0) / cameraAspectRatio));
+    }
 
     this->SetRayCountRatio(cameraAspectRatio);
     this->rangeCountRatio = cameraAspectRatio;
@@ -396,7 +410,7 @@ void OgreGpuRays::ConfigureCameras()
   }
   else
   {
-    // In case of 1 vert. ray, set a very small vertical FOV for camera
+    // A single output row needs a small, nonzero camera vertical FOV.
     this->SetRayCountRatio(horzRangeCountPerCamera);
     double camVFOV = 2.0 * atan(tan(
           this->HFOV().Radian() / 2.0) / this->RayCountRatio());
@@ -430,16 +444,13 @@ void OgreGpuRays::CreateGpuRaysTextures()
   if (this->dataPtr->textureCount == 2)
   {
     this->dataPtr->cameraYaws[0] = -this->HFOV().Radian() / 2.0;
-    this->dataPtr->cameraYaws[1] = +this->HFOV().Radian();
-    this->dataPtr->cameraYaws[2] = 0;
-    this->dataPtr->cameraYaws[3] = -this->HFOV().Radian() / 2.0;
+    this->dataPtr->cameraYaws[1] = +this->HFOV().Radian() / 2.0;
   }
   else
   {
     this->dataPtr->cameraYaws[0] = -this->HFOV().Radian();
-    this->dataPtr->cameraYaws[1] = +this->HFOV().Radian();
+    this->dataPtr->cameraYaws[1] = 0;
     this->dataPtr->cameraYaws[2] = +this->HFOV().Radian();
-    this->dataPtr->cameraYaws[3] = -this->HFOV().Radian();
   }
 
   // Configure first pass textures that are not yet configured properly
@@ -629,12 +640,17 @@ void OgreGpuRays::Render()
   sceneMgr->_suppressRenderStateChanges(true);
   sceneMgr->addRenderObjectListener(this);
 
+  Ogre::Quaternion initialOrientation;
+  if (this->dataPtr->textureCount > 1)
+    initialOrientation = this->Node()->getOrientation();
+
   for (unsigned int i = 0; i < this->dataPtr->textureCount; ++i)
   {
     if (this->dataPtr->textureCount > 1)
     {
       // Cannot call Camera::RotateYaw because it rotates in world frame,
       // but we need rotation in camera local frame
+      this->Node()->setOrientation(initialOrientation);
       this->Node()->roll(Ogre::Radian(this->dataPtr->cameraYaws[i]));
     }
 
@@ -648,7 +664,7 @@ void OgreGpuRays::Render()
   }
 
   if (this->dataPtr->textureCount > 1)
-      this->Node()->roll(Ogre::Radian(this->dataPtr->cameraYaws[3]));
+    this->Node()->setOrientation(initialOrientation);
 
   sceneMgr->removeRenderObjectListener(this);
 
@@ -842,15 +858,16 @@ void OgreGpuRays::CreateMesh()
 
   dx = 0.1;
 
-  // startX ranges from 0 to -(w2nd/10) at dx=0.1 increments
-  // startY ranges from h2nd/10 to 0 at dy=0.1 decrements
+  // startX ranges from -0.05 to -(w2nd/10 - 0.05) at dx=0.1 increments
+  // startY ranges from h2nd/10 - 0.05 to 0.05 at dy=0.1 decrements
   // see OgreGpuRays::Set2ndPassTarget() on how the ortho cam is set up
-  double startX = dx;
-  double startY = this->dataPtr->h2nd/10.0;
+  double startX = dx / 2.0;
+  double startY = (this->dataPtr->h2nd - 0.5) / 10.0;
 
-  // half of actual camera vertical FOV without padding
+  // Half of the logical scan vertical FOV.
   double phi = this->VFOV().Radian() / 2.0;
-  double phiCamera = phi + std::abs(this->VertHalfAngle());
+  // Camera padding can differ from the logical scan vertical FOV.
+  const double phiCamera = this->CosVertFOV() / 2.0;
   double theta = this->CosHorzFOV() / 2.0;
 
   if (this->dataPtr->h2nd == 1)
@@ -863,13 +880,10 @@ void OgreGpuRays::CreateMesh()
 
   // total gpu rays hfov
   double thfov = this->dataPtr->textureCount * this->CosHorzFOV();
-  double hstep = thfov / (this->dataPtr->w2nd - 1);
-  double vstep = 2.0 * phi / (this->dataPtr->h2nd - 1);
-
-  if (this->dataPtr->h2nd == 1)
-  {
-    vstep = 0;
-  }
+  const double hstep = this->dataPtr->w2nd > 1u ?
+      thfov / (this->dataPtr->w2nd - 1u) : 0.0;
+  const double vstep = this->dataPtr->h2nd > 1u ?
+      2.0 * phi / (this->dataPtr->h2nd - 1u) : 0.0;
 
   for (unsigned int j = 0; j < this->dataPtr->h2nd; ++j)
   {
@@ -882,25 +896,25 @@ void OgreGpuRays::CreateMesh()
 
     for (unsigned int i = 0; i < this->dataPtr->w2nd; ++i)
     {
-      // current horizontal angle from start of gpu rays scan
-      double delta = hstep * i;
+      // Sample the center of the scan when it has only one output column.
+      double delta = this->dataPtr->w2nd > 1u ? hstep * i : thfov / 2.0;
 
       // index of texture that contains the depth value
       unsigned int texture = static_cast<unsigned int>(
           delta / this->CosHorzFOV());
 
-      // cap texture index and horizontal angle
-      if (texture > this->dataPtr->textureCount-1)
+      // The final ray lies at the last camera's upper boundary. Clamp the
+      // camera index without moving the ray back by one angular step.
+      if (texture >= this->dataPtr->textureCount)
       {
-        texture -= 1;
-        delta -= hstep;
+        texture = this->dataPtr->textureCount - 1u;
       }
 
       startX -= dx;
       if (ptsOnLine == this->dataPtr->w2nd)
       {
         ptsOnLine = 0;
-        startX = 0;
+        startX = -dx / 2.0;
         startY -= dy;
       }
       ptsOnLine++;
@@ -918,10 +932,18 @@ void OgreGpuRays::CreateMesh()
       // adjust uv coordinates of depth texture to match projection of current
       // gpu ray the depth image plane.
       double u = 0.5 - tan(delta) / (2.0 * tan(theta));
-      double v = 0.5 - (tan(gamma) * cos(theta)) /
-          (2.0 * tan(phiCamera) * cos(delta));
+      // A single output row samples the texture center. Its vertical FOV
+      // can be zero, so evaluating the projection would divide zero by zero.
+      double v = 0.5;
+      if (this->dataPtr->h2nd > 1u)
+      {
+        v -= tan(gamma) / (2.0 * tan(phiCamera) * cos(delta));
+      }
 
-      submesh->AddTexCoord(u, v);
+      // Roundoff at a frustum boundary can put a valid coordinate just
+      // outside [0, 1]. The second-pass shader rejects any such lookup.
+      submesh->AddTexCoord(std::clamp(u, 0.0, 1.0),
+          std::clamp(v, 0.0, 1.0));
       submesh->AddIndex(this->dataPtr->w2nd * j + i);
     }
   }

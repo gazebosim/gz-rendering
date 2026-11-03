@@ -350,7 +350,8 @@ void ThreadedTriRay::execute(size_t _threadId, size_t _numThreads)
   for (auto iter = this->ogreResult.begin(); iter != this->ogreResult.end();
        ++iter)
   {
-    if (iter->distance <= 0.0)
+    // A distance of zero is valid when the ray origin is inside the AABB.
+    if (iter->distance < 0.0)
       continue;
 
     if (!iter->movable || !iter->movable->getVisible())

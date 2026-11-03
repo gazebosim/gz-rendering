@@ -29,7 +29,10 @@
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 #include "gz/rendering/Utils.hh"
 
+#include "Ogre2TextureReadback.hh"
+
 #include <string.h>
+#include <vector>
 
 namespace gz
 {
@@ -103,6 +106,9 @@ class gz::rendering::Ogre2RenderTargetPrivate
   /// actual window
   ///
   public: Ogre::TextureGpu *ogreTexture[2] = {nullptr, nullptr};
+
+  /// \brief Reads the texture back for CopyToBuffer()
+  public: Ogre2TextureReadback readback;
 };
 
 using namespace gz;
@@ -180,6 +186,7 @@ void Ogre2RenderTarget::BuildCompositor()
             nodeDef->addTextureDefinition("rt_fsaa");
 
         msaaDef->fsaa = std::to_string(fsaa);
+        msaaDef->format = this->dataPtr->ogreTexture[0]->getPixelFormat();
 
         rtvDef->colourAttachments[0].textureName = "rt_fsaa";
         rtvDef->colourAttachments[0].resolveTextureName = "rt0";
@@ -372,26 +379,33 @@ void Ogre2RenderTarget::RebuildCompositor()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::Copy(Image &_image) const
 {
+  this->CopyToBuffer(PixelBuffer(_image));
+}
+
+//////////////////////////////////////////////////
+bool Ogre2RenderTarget::CopyToBuffer(const PixelBuffer &_dst) const
+{
   GZ_PROFILE("Ogre2RenderTarget::Copy");
   // TODO(anyone) handle Bayer conversions
 
-  if (_image.Width() != this->width || _image.Height() != this->height)
+  if (!_dst.Valid() || _dst.Width() != this->width ||
+      _dst.Height() != this->height)
   {
-    gzerr << "Invalid image dimensions" << std::endl;
-    return;
+    gzerr << "Invalid image dimensions or buffer" << std::endl;
+    return false;
   }
 
   Ogre::PixelFormatGpu dstOgrePf;
-  if ((_image.Format() == PF_BAYER_RGGB8) ||
-      (_image.Format() == PF_BAYER_BGGR8) ||
-      (_image.Format() == PF_BAYER_GBRG8) ||
-      (_image.Format() == PF_BAYER_GRBG8))
+  if ((_dst.Format() == PF_BAYER_RGGB8) ||
+      (_dst.Format() == PF_BAYER_BGGR8) ||
+      (_dst.Format() == PF_BAYER_GBRG8) ||
+      (_dst.Format() == PF_BAYER_GRBG8))
   {
     dstOgrePf = Ogre2Conversions::Convert(PF_R8G8B8);
   }
   else
   {
-    dstOgrePf = Ogre2Conversions::Convert(_image.Format());
+    dstOgrePf = Ogre2Conversions::Convert(_dst.Format());
   }
   Ogre::TextureGpu *texture = this->RenderTarget();
 
@@ -407,36 +421,28 @@ void Ogre2RenderTarget::Copy(Image &_image) const
       dstOgrePf = Ogre::PixelFormatGpuUtils::getEquivalentLinear(dstOgrePf);
   }
 
-  Ogre::TextureBox dstBox(
-    texture->getInternalWidth(), texture->getInternalHeight(),
-    texture->getDepth(), texture->getNumSlices(),
-    static_cast<uint32_t>(
-      Ogre::PixelFormatGpuUtils::getBytesPerPixel(dstOgrePf)),
-    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
-      texture->getInternalWidth(), 1u, 1u, 1u, dstOgrePf, 1u)),
-    static_cast<uint32_t>(Ogre::PixelFormatGpuUtils::getSizeBytes(
-      texture->getInternalWidth(), texture->getInternalHeight(), 1u, 1u,
-      dstOgrePf, 1u)));
-
-  if ((_image.Format() == PF_BAYER_RGGB8) ||
-      (_image.Format() == PF_BAYER_BGGR8) ||
-      (_image.Format() == PF_BAYER_GBRG8) ||
-      (_image.Format() == PF_BAYER_GRBG8))
+  if ((_dst.Format() == PF_BAYER_RGGB8) ||
+      (_dst.Format() == PF_BAYER_BGGR8) ||
+      (_dst.Format() == PF_BAYER_GBRG8) ||
+      (_dst.Format() == PF_BAYER_GRBG8))
   {
     // create tmp color image to get data from gpu
     Image colorImage(this->width, this->height, PF_R8G8B8);
-    dstBox.data = colorImage.Data();
-    Ogre::Image2::copyContentsToMemory(
-        texture, texture->getEmptyBox(0u), dstBox, dstOgrePf);
-    // convert color image to bayer image
-    _image = gz::rendering::convertRGBToBayer(colorImage, _image.Format());
+    if (!this->dataPtr->readback.ReadBack(texture, dstOgrePf,
+        PixelBuffer(colorImage)))
+    {
+      return false;
+    }
+    // convert color image to bayer image straight into the caller's buffer
+    if (!gz::rendering::convertRGBToBayer(colorImage, _dst))
+      return false;
   }
   else
   {
-    dstBox.data = _image.Data();
-    Ogre::Image2::copyContentsToMemory(
-        texture, texture->getEmptyBox(0u), dstBox, dstOgrePf);
+    if (!this->dataPtr->readback.ReadBack(texture, dstOgrePf, _dst))
+      return false;
   }
+  return true;
 }
 
 //////////////////////////////////////////////////
@@ -560,6 +566,22 @@ void Ogre2RenderTarget::DestroyTargetImpl()
 }
 
 //////////////////////////////////////////////////
+Ogre::PixelFormatGpu InternalRenderFormat(PixelFormat _format)
+{
+  switch (_format)
+  {
+    // For grey scale we render natively in grey scale format
+    // This saves CPU time later as we don't need to convert
+    // the texture.
+    case PF_L8:
+    case PF_L16:
+      return Ogre2Conversions::Convert(_format);
+    default:
+      return Ogre::PFG_RGBA8_UNORM_SRGB;
+  }
+}
+
+//////////////////////////////////////////////////
 void Ogre2RenderTarget::BuildTargetImpl()
 {
   auto engine = Ogre2RenderEngine::Instance();
@@ -585,7 +607,8 @@ void Ogre2RenderTarget::BuildTargetImpl()
 
     this->dataPtr->ogreTexture[i]->setResolution(this->width, this->height);
     this->dataPtr->ogreTexture[i]->setNumMipmaps(1u);
-    this->dataPtr->ogreTexture[i]->setPixelFormat(Ogre::PFG_RGBA8_UNORM_SRGB);
+    const Ogre::PixelFormatGpu pf = InternalRenderFormat(this->format);
+    this->dataPtr->ogreTexture[i]->setPixelFormat(pf);
 
     this->dataPtr->ogreTexture[i]->scheduleTransitionTo(
           Ogre::GpuResidency::Resident);

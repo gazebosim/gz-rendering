@@ -5,13 +5,14 @@
   <version>11.0.0</version>
   <description>Gazebo Rendering: Rendering library for robot applications</description>
   <maintainer email="ichen@openrobotics.org">Ian Chen</maintainer>
-  <license>Apache License 2.0</license>
+  <license>Apache-2.0</license>
   <url type="website">https://github.com/gazebosim/gz-rendering</url>
 
   <buildtool_depend>cmake</buildtool_depend>
 
   <build_depend>gz-cmake</build_depend>
 
+  <depend>boost</depend>
   <depend>glut</depend>
   <depend>gz-common</depend>
   <depend>gz-math</depend>

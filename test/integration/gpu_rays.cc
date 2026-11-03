@@ -15,19 +15,28 @@
  *
 */
 
+#include <algorithm>
+#include <cmath>
+#include <string>
+#include <vector>
+
 #include <gtest/gtest.h>
 
 #include "CommonRenderingTest.hh"
 
 #include <gz/common/Image.hh>
 #include <gz/common/Filesystem.hh>
+#include <gz/common/Mesh.hh>
+#include <gz/common/SubMesh.hh>
 #include <gz/common/geospatial/ImageHeightmap.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
 #include "gz/rendering/GpuRays.hh"
 #include "gz/rendering/ParticleEmitter.hh"
 #include "gz/rendering/Heightmap.hh"
+#include "gz/rendering/Mesh.hh"
 #include "gz/rendering/Scene.hh"
+#include "gz/rendering/Visual.hh"
 
 constexpr double LASER_TOL = 2e-4;
 
@@ -556,6 +565,316 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 
   // Clean up
   engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief Test that the ogre second pass draws each ray at a pixel center
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(SecondPassPixelCenters))
+{
+  CHECK_SUPPORTED_ENGINE("ogre");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  const unsigned int hRayCount = 8;
+  const unsigned int vRayCount = 4;
+  const std::string name = "pixel_center_gpu_rays";
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr root = scene->RootVisual();
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays(name);
+  gpuRays->SetNearClipPlane(0.1);
+  gpuRays->SetFarClipPlane(5.0);
+  gpuRays->SetAngleMin(-GZ_PI/2.0);
+  gpuRays->SetAngleMax(GZ_PI/2.0);
+  gpuRays->SetVerticalAngleMin(-GZ_PI/4.0);
+  gpuRays->SetVerticalAngleMax(GZ_PI/4.0);
+  gpuRays->SetRayCount(hRayCount);
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  gpuRays->Update();
+
+  // The second pass draws one point per ray into a texture that has one
+  // pixel per ray. A point on a pixel boundary lands in whichever pixel the
+  // GL implementation rounds to, so every point has to be at a pixel center.
+  VisualPtr canvas = scene->VisualByName(name + "second_pass_canvas");
+  ASSERT_NE(nullptr, canvas);
+  ASSERT_EQ(1u, canvas->GeometryCount());
+  MeshPtr mesh = std::dynamic_pointer_cast<Mesh>(canvas->GeometryByIndex(0));
+  ASSERT_NE(nullptr, mesh);
+  const common::Mesh *points = mesh->Descriptor().mesh;
+  ASSERT_NE(nullptr, points);
+  ASSERT_EQ(1u, points->SubMeshCount());
+  auto subMesh = points->SubMeshByIndex(0).lock();
+  ASSERT_NE(nullptr, subMesh);
+  ASSERT_EQ(hRayCount * vRayCount, subMesh->VertexCount());
+
+  // one pixel spans 0.1 units of the second pass orthographic camera
+  const double pixelSize = 0.1;
+  for (unsigned int j = 0; j < vRayCount; ++j)
+  {
+    for (unsigned int i = 0; i < hRayCount; ++i)
+    {
+      math::Vector3d point = subMesh->Vertex(j * hRayCount + i);
+      EXPECT_NEAR(i + 0.5, -point.Y() / pixelSize, 1e-6);
+      EXPECT_NEAR(vRayCount - j - 0.5, point.Z() / pixelSize, 1e-6);
+    }
+  }
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief Check finite undistortion UVs for degenerate and resampled scans.
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ScanTextureCoordinates))
+{
+  CHECK_SUPPORTED_ENGINE("ogre");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  struct ScanConfig
+  {
+    unsigned int verticalSamples;
+    double verticalResolution;
+    double horizontalResolution;
+    double verticalMin;
+    double verticalMax;
+    unsigned int rows;
+    unsigned int horizontalSamples = 16u;
+    double horizontalFov = 1.0;
+  };
+  // Include a single output row produced by downsampling several rays, and
+  // multiple output rows produced by upsampling one ray. The texture shape
+  // depends on range counts, not just on the number of input samples.
+  const std::vector<ScanConfig> configs = {
+    {1u, 1.0, 1.0, 0.0, 0.0, 1u},
+    {1u, 1.0, 0.5, 0.0, 0.0, 1u},
+    {1u, 1.0, 2.0, 0.0, 0.0, 1u},
+    {4u, 0.25, 1.0, 0.0, 0.0, 1u},
+    {4u, 0.25, 0.5, 0.0, 0.0, 1u},
+    {1u, 1.0, 1.0, 0.2, 0.2, 1u},
+    {1u, 1.0, 1.0, -0.2, 0.2, 1u},
+    {3u, 1.0, 1.0, -0.1, 0.1, 3u},
+    {4u, 0.5, 1.0, -0.1, 0.1, 2u},
+    {1u, 2.0, 1.0, -0.1, 0.1, 2u},
+    {1u, 2.0, 1.0, 0.0, 0.0, 2u},
+    {1u, 1.0, 1.0, 0.0, 0.0, 1u, 1u},
+    {3u, 1.0, 1.0, -0.1, 0.1, 3u, 1u},
+    {4u, 1.0, 1.0, -GZ_PI / 4.0, GZ_PI / 4.0, 4u, 640u, GZ_PI},
+    {2u, 1.0, 1.0, -0.5, 0.5, 2u}
+  };
+
+  for (const auto &config : configs)
+  {
+    SCOPED_TRACE(testing::Message()
+        << "vertical samples=" << config.verticalSamples
+        << " horizontal samples=" << config.horizontalSamples
+        << " rows=" << config.rows
+        << " horizontal FOV=" << config.horizontalFov
+        << " vertical resolution=" << config.verticalResolution
+        << " horizontal resolution=" << config.horizontalResolution
+        << " vertical angles=" << config.verticalMin << ", "
+        << config.verticalMax);
+    ScenePtr scene = engine->CreateScene("scene");
+    ASSERT_NE(nullptr, scene);
+    const std::string name = "texture_coordinates_gpu_rays";
+    GpuRaysPtr gpuRays = scene->CreateGpuRays(name);
+    ASSERT_NE(nullptr, gpuRays);
+    gpuRays->SetNearClipPlane(0.1);
+    gpuRays->SetFarClipPlane(5.0);
+    gpuRays->SetAngleMin(-config.horizontalFov / 2.0);
+    gpuRays->SetAngleMax(config.horizontalFov / 2.0);
+    gpuRays->SetRayCount(config.horizontalSamples);
+    gpuRays->SetHorizontalResolution(config.horizontalResolution);
+    gpuRays->SetVerticalRayCount(config.verticalSamples);
+    gpuRays->SetVerticalResolution(config.verticalResolution);
+    gpuRays->SetVerticalAngleMin(config.verticalMin);
+    gpuRays->SetVerticalAngleMax(config.verticalMax);
+    scene->RootVisual()->AddChild(gpuRays);
+    ASSERT_EQ(config.rows,
+        static_cast<unsigned int>(gpuRays->VerticalRangeCount()));
+
+    // Inspect the generated mesh before rendering. NaN texture coordinates
+    // are invalid even on drivers that happen to produce plausible ranges.
+    gpuRays->PreRender();
+    VisualPtr canvas = scene->VisualByName(name + "second_pass_canvas");
+    ASSERT_NE(nullptr, canvas);
+    ASSERT_EQ(1u, canvas->GeometryCount());
+    MeshPtr mesh = std::dynamic_pointer_cast<Mesh>(canvas->GeometryByIndex(0));
+    ASSERT_NE(nullptr, mesh);
+    const common::Mesh *points = mesh->Descriptor().mesh;
+    ASSERT_NE(nullptr, points);
+    ASSERT_EQ(1u, points->SubMeshCount());
+    auto subMesh = points->SubMeshByIndex(0).lock();
+    ASSERT_NE(nullptr, subMesh);
+    const unsigned int columns = gpuRays->RangeCount();
+    ASSERT_EQ(columns * config.rows, subMesh->TexCoordCount());
+    for (unsigned int i = 0; i < subMesh->TexCoordCount(); ++i)
+    {
+      const auto uv = subMesh->TexCoord(i);
+      ASSERT_TRUE(std::isfinite(uv.X())) << "ray " << i;
+      ASSERT_TRUE(std::isfinite(uv.Y())) << "ray " << i;
+      // The second-pass shader treats even roundoff outside [0, 1] as an
+      // invalid lookup, returning 1 rather than a measured range.
+      EXPECT_GE(uv.X(), 0.0) << "ray " << i;
+      EXPECT_LE(uv.X(), 1.0) << "ray " << i;
+      EXPECT_GE(uv.Y(), 0.0) << "ray " << i;
+      EXPECT_LE(uv.Y(), 1.0) << "ray " << i;
+      if (columns == 1u)
+      {
+        EXPECT_DOUBLE_EQ(0.5, uv.X()) << "ray " << i;
+      }
+      if (config.rows == 1u)
+      {
+        EXPECT_DOUBLE_EQ(0.5, uv.Y()) << "ray " << i;
+      }
+    }
+    engine->DestroyScene(scene);
+  }
+}
+
+/////////////////////////////////////////////////
+/// \brief Check ranges when several vertical samples produce one output row.
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DownsampledSingleRow))
+{
+  CHECK_SUPPORTED_ENGINE("ogre");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  VisualPtr root = scene->RootVisual();
+  VisualPtr wall = scene->CreateVisual("wall");
+  wall->AddGeometry(scene->CreateBox());
+  wall->SetLocalPosition(2.5, 0, 0);
+  wall->SetLocalScale(1, 20, 20);
+  root->AddChild(wall);
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("downsampled_gpu_rays");
+  ASSERT_NE(nullptr, gpuRays);
+  gpuRays->SetNearClipPlane(0.1);
+  gpuRays->SetFarClipPlane(10.0);
+  gpuRays->SetAngleMin(-0.5);
+  gpuRays->SetAngleMax(0.5);
+  gpuRays->SetRayCount(32);
+  gpuRays->SetVerticalAngleMin(0.0);
+  gpuRays->SetVerticalAngleMax(0.0);
+  gpuRays->SetVerticalRayCount(4);
+  gpuRays->SetVerticalResolution(0.25);
+  root->AddChild(gpuRays);
+  ASSERT_EQ(1, gpuRays->VerticalRangeCount());
+
+  const unsigned int columns = gpuRays->RangeCount();
+  const unsigned int channels = gpuRays->Channels();
+  std::vector<float> scan(columns * channels, math::INF_F);
+  unsigned int frames = 0;
+  auto connection = gpuRays->ConnectNewGpuRaysFrame(
+      [&](const float *_frame, unsigned int _width, unsigned int _height,
+          unsigned int _channels, const std::string &)
+      {
+        ASSERT_EQ(columns, _width);
+        ASSERT_EQ(1u, _height);
+        ASSERT_EQ(channels, _channels);
+        std::copy(_frame, _frame + scan.size(), scan.begin());
+        ++frames;
+      });
+  gpuRays->Update();
+  ASSERT_EQ(1u, frames);
+
+  // The front face is x = 2 m. Check the complete scan, including both
+  // endpoints of the single first-pass camera.
+  const double step = 1.0 / (columns - 1);
+  for (unsigned int i = 0; i < columns; ++i)
+  {
+    ASSERT_TRUE(std::isfinite(scan[i * channels])) << "ray " << i;
+    const double angle = -0.5 + i * step;
+    EXPECT_NEAR(2.0 / std::cos(angle), scan[i * channels], 5e-3)
+        << "ray " << i;
+  }
+
+  connection.reset();
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief Keep upsampled zero-FOV rows valid without excessive texture width.
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(UpsampledZeroVerticalFov))
+{
+  CHECK_SUPPORTED_ENGINE("ogre");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  for (const unsigned int rows : {2u, 512u})
+  {
+    SCOPED_TRACE(testing::Message() << "rows=" << rows);
+    ScenePtr scene = engine->CreateScene("scene");
+    ASSERT_NE(nullptr, scene);
+    VisualPtr root = scene->RootVisual();
+    VisualPtr wall = scene->CreateVisual("wall");
+    wall->AddGeometry(scene->CreateBox());
+    wall->SetLocalPosition(2.5, 0, 0);
+    wall->SetLocalScale(1, 20, 20);
+    root->AddChild(wall);
+
+    GpuRaysPtr gpuRays = scene->CreateGpuRays("upsampled_gpu_rays");
+    ASSERT_NE(nullptr, gpuRays);
+    gpuRays->SetNearClipPlane(0.1);
+    gpuRays->SetFarClipPlane(10.0);
+    gpuRays->SetAngleMin(-0.5);
+    gpuRays->SetAngleMax(0.5);
+    gpuRays->SetRayCount(32);
+    gpuRays->SetVerticalAngleMin(0.0);
+    gpuRays->SetVerticalAngleMax(0.0);
+    gpuRays->SetVerticalRayCount(1);
+    gpuRays->SetVerticalResolution(rows);
+    root->AddChild(gpuRays);
+    ASSERT_EQ(static_cast<int>(rows), gpuRays->VerticalRangeCount());
+
+    const unsigned int columns = gpuRays->RangeCount();
+    const unsigned int channels = gpuRays->Channels();
+    std::vector<float> scan(columns * rows * channels, math::INF_F);
+    unsigned int frames = 0;
+    auto connection = gpuRays->ConnectNewGpuRaysFrame(
+        [&](const float *_frame, unsigned int _width, unsigned int _height,
+            unsigned int _channels, const std::string &)
+        {
+          ASSERT_EQ(columns, _width);
+          ASSERT_EQ(rows, _height);
+          ASSERT_EQ(channels, _channels);
+          std::copy(_frame, _frame + scan.size(), scan.begin());
+          ++frames;
+        });
+    gpuRays->Update();
+    ASSERT_EQ(1u, frames);
+
+    // The logical vertical scan remains nearly planar after camera padding.
+    // Using that small scan FOV for the texture lookup instead of the padded
+    // camera FOV would sample the wrong elevations, notably with 512 rows.
+    for (unsigned int j = 0; j < rows; ++j)
+    {
+      const double vertical = gpuRays->VerticalAngleMin().Radian() +
+          j * gpuRays->VFOV().Radian() / (rows - 1u);
+      for (unsigned int i = 0; i < columns; ++i)
+      {
+        const unsigned int index = (j * columns + i) * channels;
+        ASSERT_TRUE(std::isfinite(scan[index])) << "ray " << i << ", " << j;
+        const double horizontal = -0.5 + i / (columns - 1.0);
+        ASSERT_NEAR(2.0 / (std::cos(horizontal) * std::cos(vertical)),
+            scan[index], 5e-3) << "ray " << i << ", " << j;
+      }
+    }
+
+    connection.reset();
+    engine->DestroyScene(scene);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -1093,6 +1412,75 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
     double range = scan[i];
     EXPECT_LT(14.9, range);
     EXPECT_GT(20.0, range);
+  }
+
+  c.reset();
+
+  delete [] scan;
+  scan = nullptr;
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief Test that lidar scans do not recede inwards
+TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LidarRaysDoNotRecede))
+{
+  CHECK_SUPPORTED_ENGINE("ogre");
+  #ifdef __APPLE__
+    GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+  #endif
+
+  const double hMinAngle = -2.35;
+  const double hMaxAngle = 2.35;
+  const double minRange = 0.08;
+  const double maxRange = 100.0;
+  const int hRayCount = 10;
+  const int vRayCount = 1;
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr root = scene->RootVisual();
+
+  GpuRaysPtr gpuRays = scene->CreateGpuRays("gpu_rays");
+  gpuRays->SetWorldPosition(math::Vector3d(0, 0, 0.01));
+  gpuRays->SetWorldRotation(math::Quaterniond::Identity);
+  gpuRays->SetNearClipPlane(minRange);
+  gpuRays->SetFarClipPlane(maxRange);
+  gpuRays->SetAngleMin(hMinAngle);
+  gpuRays->SetAngleMax(hMaxAngle);
+  gpuRays->SetRayCount(hRayCount);
+  gpuRays->SetVerticalRayCount(vRayCount);
+  root->AddChild(gpuRays);
+
+  VisualPtr floor = scene->CreateVisual("floor");
+  floor->AddGeometry(scene->CreatePlane());
+  floor->SetLocalScale(1000, 1000, 1);
+  floor->SetWorldPosition(0, 0, 0);
+  root->AddChild(floor);
+
+  unsigned int channels = gpuRays->Channels();
+  float *scan = new float[hRayCount * vRayCount * channels];
+  common::ConnectionPtr c =
+    gpuRays->ConnectNewGpuRaysFrame(
+        std::bind(&::OnNewGpuRaysFrame, scan,
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
+
+  // The original regression showed up after ~170 frames, so 500 frames leave a
+  // 3x margin.
+  for (unsigned int i = 0u; i < 500u; ++i)
+  {
+    gpuRays->Update();
+    scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+
+    // None of the scans should report hitting anything
+    for (unsigned int j = 0; j < hRayCount * channels; j += channels)
+    {
+      EXPECT_FLOAT_EQ(scan[j], math::INF_F);
+    }
   }
 
   c.reset();

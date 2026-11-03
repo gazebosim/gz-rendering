@@ -585,23 +585,30 @@ void OgreWideAngleCamera::Render()
 //////////////////////////////////////////////////
 void OgreWideAngleCamera::Copy(Image &_image) const
 {
+  this->CopyToBuffer(PixelBuffer(_image));
+}
+
+//////////////////////////////////////////////////
+bool OgreWideAngleCamera::CopyToBuffer(const PixelBuffer &_dst) const
+{
   GZ_PROFILE("OgreWideAngleCamera::Copy");
   const unsigned int width = this->ImageWidth();
   const unsigned int height = this->ImageHeight();
 
-  if (_image.Width() != width || _image.Height() != height)
+  if (!_dst.Valid() || _dst.Width() != width || _dst.Height() != height)
   {
-    gzerr << "Invalid image dimensions" << std::endl;
-    return;
+    gzerr << "Invalid image dimensions or buffer" << std::endl;
+    return false;
   }
 
-  void *data = _image.Data();
-  Ogre::PixelFormat imageFormat = OgreConversions::Convert(_image.Format());
+  void *data = _dst.Data();
+  Ogre::PixelFormat imageFormat = OgreConversions::Convert(_dst.Format());
   Ogre::PixelBox ogrePixelBox(width, height, 1, imageFormat, data);
 
   Ogre::RenderTarget *rt =
     this->dataPtr->ogreRenderTexture->getBuffer()->getRenderTarget();
   rt->copyContentsToMemory(ogrePixelBox);
+  return true;
 }
 
 //////////////////////////////////////////////////

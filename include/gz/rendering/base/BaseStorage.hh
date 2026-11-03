@@ -881,6 +881,40 @@ namespace gz
       auto begin = this->store.begin();
       auto end = this->store.end();
 
+      if (begin == end)
+      {
+        return end;
+      }
+
+      // BaseScene::CreateObjectId hands out IDs from a decrementing counter
+      // and objects are only ever appended or erased, so a store is usually
+      // ordered by how far each ID has counted down from the first one.
+      // Unsigned subtraction keeps that order across wrap-around. Bisect on
+      // it first, then fall back to a linear scan for stores holding
+      // caller-chosen IDs in any other order.
+      const unsigned int frontId = (*begin)->Id();
+      const unsigned int target = frontId - _id;
+      auto low = begin;
+      auto high = end;
+      while (low != high)
+      {
+        auto mid = low + (high - low) / 2;
+        const unsigned int midId = (*mid)->Id();
+        if (midId == _id)
+        {
+          return mid;
+        }
+
+        if (frontId - midId < target)
+        {
+          low = mid + 1;
+        }
+        else
+        {
+          high = mid;
+        }
+      }
+
       for (auto iter = begin; iter != end; ++iter)
       {
         if ((*iter)->Id() == _id)
@@ -994,16 +1028,18 @@ namespace gz
 
 
       auto idx = std::distance(this->store.begin(), _iter);
-      std::string nameToErase;
-      for (auto &[name, objIdx] : this->storeMap)
-      {
-        if (objIdx == idx)
-          nameToErase = name;
+      this->storeMap.erase((*_iter)->Name());
 
-        if (objIdx >= idx)
-          objIdx--;
+      // Only objects after the removed one shift down. Removing the last
+      // object, as DestroyAll does, leaves every other index unchanged.
+      if (static_cast<std::size_t>(idx) + 1 < this->store.size())
+      {
+        for (auto &entry : this->storeMap)
+        {
+          if (entry.second > idx)
+            --entry.second;
+        }
       }
-      this->storeMap.erase(nameToErase);
 
       UPtr result = *_iter;
       this->store.erase(_iter);

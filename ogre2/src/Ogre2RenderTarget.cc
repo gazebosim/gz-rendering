@@ -81,7 +81,7 @@ class Ogre2RenderTargetCompositorListener :
 }
 
 /// \brief Private data class for Ogre2RenderTarget
-class gz::rendering::Ogre2RenderTargetPrivate
+class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2RenderTargetPrivate
 {
   /// \brief Listener for chaning compositor pass properties
   public: Ogre2RenderTargetCompositorListener *rtListener = nullptr;

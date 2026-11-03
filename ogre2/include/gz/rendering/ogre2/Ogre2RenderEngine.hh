@@ -235,6 +235,24 @@ namespace gz
       /// \brief True to use the current opengl context
       private: bool useCurrentGLContext = false;
 
+      /// \brief True to create the primary/bootstrap render window against
+      /// a caller-supplied native Wayland wl_display/wl_surface pair
+      /// instead of X11/GLX. Requires waylandDisplay and waylandSurface to
+      /// both be set. Only meaningful for GraphicsAPI::OPENGL.
+      private: bool isWayland = false;
+
+      /// \brief A wl_display* supplied by the caller (e.g. gz-gui, via
+      /// Qt6's public QNativeInterface::QWaylandApplication::display()).
+      /// Only used when isWayland is true. Not owned by this class.
+      private: void *waylandDisplay = nullptr;
+
+      /// \brief A wl_surface* supplied by the caller. Only used when
+      /// isWayland is true. Not owned by this class - the caller is
+      /// responsible for the surface's lifetime and for dispatching the
+      /// wl_display's event loop (OGRE-Next's Wayland EGL backend never
+      /// dispatches it itself).
+      private: void *waylandSurface = nullptr;
+
       /// \brief Pointer to private data
       private: std::unique_ptr<Ogre2RenderEnginePrivate> dataPtr;
 

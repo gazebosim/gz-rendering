@@ -1117,6 +1117,8 @@ void Ogre2RenderEngine::CreateResources()
         std::make_pair(p + "/Hlms/Common/Metal", "General"));
     archNames.push_back(
         std::make_pair(p + "/Hlms/Pbs/Any", "General"));
+    archNames.push_back(
+        std::make_pair(p + "/fonts", "General"));
 
     for (auto aiter = archNames.begin(); aiter != archNames.end(); ++aiter)
     {

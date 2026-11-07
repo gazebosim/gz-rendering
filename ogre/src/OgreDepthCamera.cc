@@ -382,14 +382,15 @@ void OgreDepthCamera::UpdateRenderTarget(OgreRenderTexturePtr _target,
   // OgreSceneManager::_render function automatically sets farClip to 0.
   // Which normally equates to infinite distance. We don't want this. So
   // we have to set the distance every time.
-  this->ogreCamera->setFarClipDistance(this->FarClipPlane());
-  this->ogreCamera->setNearClipDistance(1e-4f);
+  double farPlane = std::max(this->FarClipPlane(), this->DepthFarClipPlane());
+  double nearPlane = this->hasDepthNearClip ? this->NearClipPlane() : 1e-4;
+  this->ogreCamera->setFarClipDistance(farPlane);
+  this->ogreCamera->setNearClipDistance(nearPlane);
 
   Ogre::AutoParamDataSource autoParamDataSource;
 
   // return farClip in case no renderable object is inside frustrum
-  vp->setBackgroundColour(Ogre::ColourValue(this->FarClipPlane(),
-      this->FarClipPlane(), this->FarClipPlane()));
+  vp->setBackgroundColour(Ogre::ColourValue(farPlane, farPlane, farPlane));
 
   Ogre::CompositorManager::getSingleton().setCompositorEnabled(
       vp, matName, true);
@@ -440,8 +441,10 @@ void OgreDepthCamera::PostRender()
   unsigned int width = this->ImageWidth();
   unsigned int height = this->ImageHeight();
   unsigned int len = width * height;
-  double farPlane = this->FarClipPlane();
-  double nearPlane = this->NearClipPlane();
+  double farPlane = this->DepthFarClipPlane();
+  double nearPlane = this->DepthNearClipPlane();
+  double colorFarPlane = this->FarClipPlane();
+  double colorNearPlane = this->NearClipPlane();
 
   // get depth data
   if (!this->dataPtr->depthBuffer)
@@ -485,13 +488,11 @@ void OgreDepthCamera::PostRender()
       float *z = &this->dataPtr->pcdBuffer[pcdStep + j*channelCount + 2];
 
       float depth = *x;
-      bool clamp = false;
+      bool clampColor = (depth >= colorFarPlane) || (depth <= colorNearPlane);
       // shaders return far for pixels with no depth data
       // manually clamp to max
-      if ((*x >= farPlane) && (*y >= farPlane)
-          && (*z >= farPlane))
+      if (depth >= farPlane)
       {
-        clamp = true;
         depth = this->dataPtr->dataMaxVal;
         if (this->dataPtr->outputPoints)
         {
@@ -501,10 +502,8 @@ void OgreDepthCamera::PostRender()
         }
       }
       // Manually clamp values to min
-      else if ((*x <= nearPlane) && (*y <= nearPlane)
-          && (*z <= nearPlane))
+      else if (depth <= nearPlane)
       {
-        clamp = true;
         depth = this->dataPtr->dataMinVal;
         if (this->dataPtr->outputPoints)
         {
@@ -524,7 +523,7 @@ void OgreDepthCamera::PostRender()
         int b = 0;
         int a = 255;
         float *color = &this->dataPtr->pcdBuffer[pcdStep + j*channelCount + 3];
-        if (clamp)
+        if (clampColor)
         {
           r = bgColorR;
           g = bgColorG;
@@ -646,10 +645,7 @@ double OgreDepthCamera::NearClipPlane() const
 //////////////////////////////////////////////////
 double OgreDepthCamera::FarClipPlane() const
 {
-  if (this->ogreCamera)
-    return this->ogreCamera->getFarClipDistance();
-  else
-    return 0;
+  return BaseDepthCamera::FarClipPlane();
 }
 
 //////////////////////////////////////////////////

@@ -44,6 +44,27 @@ namespace gz
       /// \brief Create a texture which will hold the depth data
       public: virtual void CreateDepthTexture() = 0;
 
+      /// \brief Set the depth near clip distance. When set, this overrides
+      /// NearClipPlane() for clamping depth and point cloud data while
+      /// NearClipPlane() remains the camera's frustum near clip plane.
+      /// \param[in] _near Depth near clip distance
+      public: virtual void SetDepthNearClipPlane(double _near) = 0;
+
+      /// \brief Get the depth near clip distance. If not explicitly set via
+      /// SetDepthNearClipPlane(), returns NearClipPlane().
+      /// \return Depth near clip distance
+      public: virtual double DepthNearClipPlane() const = 0;
+
+      /// \brief Set the depth far clip distance. When set, this overrides
+      /// FarClipPlane() for clamping depth and point cloud data.
+      /// \param[in] _far Depth far clip distance
+      public: virtual void SetDepthFarClipPlane(double _far) = 0;
+
+      /// \brief Get the depth far clip distance. If not explicitly set via
+      /// SetDepthFarClipPlane(), returns FarClipPlane().
+      /// \return Depth far clip distance
+      public: virtual double DepthFarClipPlane() const = 0;
+
       /// \brief All things needed to get back z buffer for depth data
       /// \return The z-buffer as a float array
       public: virtual const float *DepthData() const = 0;

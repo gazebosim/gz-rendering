@@ -26,6 +26,13 @@ release will remove the deprecated code.
   rotation visuals that joint visuals show for revolute, revolute2, universal
   and gearbox joints are no longer hidden by those calls.
 
+* `Ogre2DepthCamera` no longer enables hardware depth clamping
+  (`_setNeedsDepthClamp(true)`), so geometry closer than the frustum near clip
+  plane is clipped rather than returning `-inf`. `DepthCamera` now provides
+  `SetDepthNearClipPlane` / `DepthNearClipPlane` and `SetDepthFarClipPlane` /
+  `DepthFarClipPlane` to configure the valid depth range independently of the
+  camera frustum clip planes (`NearClipPlane` / `FarClipPlane`).
+
 ### Optimizations
 
 * A Persistent GPU->CPU readback to avoid duplicate copies was introduced

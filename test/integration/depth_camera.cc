@@ -1826,6 +1826,7 @@ TEST_F(DepthCameraTest,
       {
         EXPECT_TRUE(camera->SetPointCloudFormat(
             gz::rendering::PF_FLOAT32_RGB));
+        // (the requested format, also where RGBA is delivered)
         EXPECT_EQ(gz::rendering::PF_FLOAT32_RGB, camera->PointCloudFormat());
       }
       camera->CreateDepthTexture();
@@ -1922,6 +1923,131 @@ TEST_F(DepthCameraTest,
     conns.clear();
   }
   // (the cameras go with the scene: a depth camera created after another
+  // one was destroyed trips an Ogre datablock assertion)
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief A packed xyz point cloud camera (PF_FLOAT32_RGB) whose point
+/// cloud subscriber disconnects and reconnects, and whose point cloud
+/// frame is abandoned with its readbacks issued: the depth-only frames have
+/// no point cloud and the same depth frame, and the next point cloud frame
+/// is the same as the frame after it (no stale readback). IssueReadback()
+/// and PostRender() before the first PreRender() deliver nothing.
+TEST_F(DepthCameraTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(PackedPointsSubscriberChanges))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  // (the legacy readback has no packed point clouds)
+  if (std::getenv("GZ_RENDERING_OGRE2_LEGACY_READBACK"))
+    GTEST_SKIP() << "legacy readback";
+  const unsigned int width = 160;
+  const unsigned int height = 120;
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  gz::rendering::VisualPtr box = AddBoxes(scene);
+  auto camera = NewDepthCamera(scene, "DepthCamera", width, height, 0.3,
+      4.0);
+  ASSERT_NE(nullptr, camera);
+  EXPECT_TRUE(camera->SetPointCloudFormat(gz::rendering::PF_FLOAT32_RGB));
+  scene->RootVisual()->AddChild(camera);
+  Frame f;
+  std::vector<gz::common::ConnectionPtr> conns;
+  ConnectFrame(camera, f, conns);
+
+  // Before the first PreRender (which creates the depth texture).
+  EXPECT_FALSE(camera->IssueReadback());
+  camera->PostRender();
+  EXPECT_EQ(0, f.depthEvents);
+  EXPECT_EQ(0, f.cloudEvents);
+
+  // A point cloud frame: a packed point cloud whose x is the depth frame,
+  // the same as the next frame of the same scene.
+  auto cloudFrame = [&]()
+  {
+    f = Frame();
+    camera->Update();
+    const Frame got = f;
+    EXPECT_EQ(1, got.depthEvents);
+    EXPECT_EQ(1, got.cloudEvents);
+    EXPECT_EQ("PF_FLOAT32_RGB", got.format);
+    EXPECT_EQ(3u, got.channels);
+    EXPECT_EQ(got.depth.size() * 3u, got.points.size());
+    size_t mismatches = 0;
+    for (size_t p = 0; p < got.depth.size() && 3 * p < got.points.size();
+        ++p)
+    {
+      if (memcmp(&got.depth[p], &got.points[3 * p], sizeof(float)))
+        ++mismatches;
+    }
+    EXPECT_EQ(0u, mismatches);
+    f = Frame();
+    camera->Update();
+    EXPECT_EQ(got.points.size(), f.points.size());
+    EXPECT_EQ(0, memcmp(got.points.data(), f.points.data(),
+        std::min(got.points.size(), f.points.size()) * sizeof(float)));
+    EXPECT_EQ(0, memcmp(got.depth.data(), f.depth.data(),
+        got.depth.size() * sizeof(float)));
+    return got;
+  };
+  // A depth-only frame: no point cloud, the depth frame of _cloud.
+  auto depthOnlyFrame = [&](const Frame &_cloud)
+  {
+    f = Frame();
+    camera->Update();
+    EXPECT_EQ(1, f.depthEvents);
+    EXPECT_EQ(0, f.cloudEvents);
+    EXPECT_EQ(0, memcmp(_cloud.depth.data(), f.depth.data(),
+        f.depth.size() * sizeof(float)));
+  };
+
+  box->SetLocalPosition(1.5, -0.3, 0.1);
+  const Frame first = cloudFrame();
+  ExpectFiniteAndInfinities(first.depth);
+
+  // The subscriber disconnects: a released connection leaves the event at
+  // its next signal, so the next frame is still a point cloud frame
+  // (without callbacks); the ones after it are depth-only frames.
+  conns[1].reset();
+  camera->Update();
+  depthOnlyFrame(first);
+  depthOnlyFrame(first);
+
+  // It reconnects.
+  box->SetLocalPosition(1.9, -0.1, 0.2);
+  conns.clear();
+  ConnectFrame(camera, f, conns);
+  const Frame second = cloudFrame();
+  EXPECT_NE(0, memcmp(first.depth.data(), second.depth.data(),
+      first.depth.size() * sizeof(float)));
+
+  // A point cloud frame with its readbacks issued but never
+  // post-rendered, then the subscriber disconnects: a point cloud frame
+  // without callbacks, a depth-only frame, and the subscriber reconnects.
+  box->SetLocalPosition(2.3, 0.1, 0.3);
+  scene->PreRender();
+  camera->Render();
+  EXPECT_TRUE(camera->IssueReadback());
+  scene->PostRender();
+  conns[1].reset();
+  camera->Update();
+  box->SetLocalPosition(1.7, 0.2, 0.0);
+  f = Frame();
+  camera->Update();
+  EXPECT_EQ(1, f.depthEvents);
+  EXPECT_EQ(0, f.cloudEvents);
+  const std::vector<float> depthOnly = f.depth;
+  conns.clear();
+  ConnectFrame(camera, f, conns);
+  const Frame third = cloudFrame();
+  EXPECT_EQ(0, memcmp(depthOnly.data(), third.depth.data(),
+      depthOnly.size() * sizeof(float)));
+  EXPECT_NE(0, memcmp(second.depth.data(), third.depth.data(),
+      second.depth.size() * sizeof(float)));
+
+  conns.clear();
+  // (the camera goes with the scene: a depth camera created after another
   // one was destroyed trips an Ogre datablock assertion)
   engine->DestroyScene(scene);
 }

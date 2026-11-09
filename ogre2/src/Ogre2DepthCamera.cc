@@ -195,8 +195,9 @@ class gz::rendering::Ogre2DepthCameraPrivate
   {
     auto defined = [this](const std::string &_node, const char *_name)
     {
-      Ogre::CompositorNode *node =
-          this->ogreCompositorWorkspace->findNodeNoThrow(_node);
+      // (no workspace before the first PreRender or CreateDepthTexture)
+      Ogre::CompositorNode *node = this->ogreCompositorWorkspace ?
+          this->ogreCompositorWorkspace->findNodeNoThrow(_node) : nullptr;
       return node ? node->getDefinedTexture(_name) : nullptr;
     };
     Ogre::TextureGpu *depth = this->renderMerged ?

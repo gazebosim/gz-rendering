@@ -35,6 +35,17 @@ release will remove the deprecated code.
   does nothing; the ogre2 depth camera and GPU rays implement it, except
   with `GZ_RENDERING_OGRE2_LEGACY_READBACK`.
 
+* Added the virtuals `DepthCamera::SetPointCloudFormat()` and
+  `DepthCamera::PointCloudFormat()` (ABI break). Requesting
+  `PF_FLOAT32_RGB` before `CreateDepthTexture()` makes the new rgb point
+  cloud event deliver x, y, z alone (3 floats per point, no colour) instead
+  of `PF_FLOAT32_RGBA`. `PointCloudFormat()` returns the requested format;
+  the event's format argument tells the delivered one, which the ogre2
+  depth camera keeps at `PF_FLOAT32_RGBA` for image widths that are not a
+  multiple of 4. With `GZ_RENDERING_OGRE2_LEGACY_READBACK`,
+  `SetPointCloudFormat(PF_FLOAT32_RGB)` returns false. The default stays
+  `PF_FLOAT32_RGBA`.
+
 ### Optimizations
 
 * A Persistent GPU->CPU readback to avoid duplicate copies was introduced

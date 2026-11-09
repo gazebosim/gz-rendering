@@ -1721,6 +1721,34 @@ TEST_F(GpuRaysTest,
         next[k].size() * sizeof(float))) << "lidar " << k;
   }
 
+  // Two frames issued in a row, the first never post-rendered: PostRender
+  // delivers the second one.
+  scene->PreRender();
+  for (auto &l : lidars)
+  {
+    l.rays->Render();
+    EXPECT_TRUE(l.rays->IssueReadback());
+  }
+  scene->PostRender();
+  box->SetWorldPosition(2.5, -0.5, 0.1);
+  const auto latest = frame(true);
+  const auto latestSerial = frame(false);
+  for (unsigned int k = 0; k < latest.size(); ++k)
+  {
+    EXPECT_EQ(0, memcmp(latest[k].data(), latestSerial[k].data(),
+        latest[k].size() * sizeof(float))) << "lidar " << k;
+    EXPECT_NE(0, memcmp(again[k].data(), latest[k].data(),
+        latest[k].size() * sizeof(float))) << "lidar " << k;
+  }
+
+  // The lidars are destroyed with their readbacks issued.
+  scene->PreRender();
+  for (auto &l : lidars)
+  {
+    l.rays->Render();
+    EXPECT_TRUE(l.rays->IssueReadback());
+  }
+  scene->PostRender();
   for (auto &l : lidars)
   {
     l.conn.reset();

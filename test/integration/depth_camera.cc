@@ -1302,6 +1302,34 @@ TEST_F(DepthCameraTest,
         next[k].size() * sizeof(float))) << "camera " << k / 2;
   }
 
+  // Two frames issued in a row, the first never post-rendered: PostRender
+  // delivers the second one.
+  scene->PreRender();
+  for (auto &c : cams)
+  {
+    c.camera->Render();
+    EXPECT_TRUE(c.camera->IssueReadback());
+  }
+  scene->PostRender();
+  box->SetLocalPosition(1.7, -0.3, 0.0);
+  const auto latest = frame(true);
+  const auto latestSerial = frame(false);
+  for (unsigned int k = 0; k < latest.size(); ++k)
+  {
+    EXPECT_EQ(0, memcmp(latest[k].data(), latestSerial[k].data(),
+        latest[k].size() * sizeof(float))) << "camera " << k / 2;
+    EXPECT_NE(0, memcmp(again[k].data(), latest[k].data(),
+        latest[k].size() * sizeof(float))) << "camera " << k / 2;
+  }
+
+  // The cameras are destroyed with their readbacks issued.
+  scene->PreRender();
+  for (auto &c : cams)
+  {
+    c.camera->Render();
+    EXPECT_TRUE(c.camera->IssueReadback());
+  }
+  scene->PostRender();
   for (auto &c : cams)
   {
     c.depthConn.reset();

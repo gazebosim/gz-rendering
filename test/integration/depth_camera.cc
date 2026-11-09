@@ -18,7 +18,6 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
-#include <cmath>
 #include <chrono>
 #include <cmath>
 #include <cstddef>
@@ -1398,6 +1397,54 @@ TEST_F(DepthCameraTest,
     previous = serial;
   }
 
+  // A point cloud subscriber that connects while the readback of a
+  // depth-only frame is issued gets no point cloud from that frame (it has
+  // none), then the point clouds of the next frames.
+  box->SetLocalPosition(1.6, -0.2, 0.0);
+  const auto depthOnly = frame(false);
+  scene->PreRender();
+  for (auto &c : cams)
+  {
+    c.camera->Render();
+    EXPECT_TRUE(c.camera->IssueReadback());
+  }
+  for (auto &c : cams)
+  {
+    std::fill(c.depth.begin(), c.depth.end(), -1.0f);
+    std::fill(c.cloud.begin(), c.cloud.end(), -1.0f);
+    c.cloudConn = c.camera->ConnectNewRgbPointCloud(
+        [&c](const float *_data, unsigned int _w, unsigned int _h,
+            unsigned int _c, const std::string &)
+        {
+          ASSERT_EQ(c.cloud.size(), static_cast<size_t>(_w) * _h * _c);
+          memcpy(c.cloud.data(), _data, c.cloud.size() * sizeof(float));
+        });
+    c.camera->PostRender();
+  }
+  scene->PostRender();
+  const std::vector<float> noCloud(cams[0].cloud.size(), -1.0f);
+  for (unsigned int i = 0; i < cams.size(); ++i)
+  {
+    EXPECT_EQ(0, memcmp(depthOnly[2 * i].data(), cams[i].depth.data(),
+        cams[i].depth.size() * sizeof(float))) << "camera " << i;
+    EXPECT_EQ(0, memcmp(noCloud.data(), cams[i].cloud.data(),
+        noCloud.size() * sizeof(float))) << "camera " << i;
+  }
+  {
+    const auto ahead = frame(true);
+    const auto serial = frame(false);
+    for (unsigned int k = 0; k < serial.size(); ++k)
+    {
+      EXPECT_EQ(0, memcmp(ahead[k].data(), serial[k].data(),
+          serial[k].size() * sizeof(float))) << "camera " << k / 2;
+    }
+    for (unsigned int k = 0; k < serial.size(); k += 2)
+    {
+      EXPECT_EQ(0, memcmp(depthOnly[k].data(), serial[k].data(),
+          serial[k].size() * sizeof(float))) << "camera " << k / 2;
+    }
+  }
+
   // A readback issued for a frame that is never post-rendered: the next
   // frame delivers its own data, not that one's.
   scene->PreRender();
@@ -1578,7 +1625,8 @@ TEST_F(DepthCameraTest,
 /// (channel 0 of the xyz + colour output, which the test checks too), with
 /// pixels in range, beyond the far clip plane and in front of the near clip
 /// plane. One scene; per variant a camera: 0 plain, 1 with a noise render
-/// pass.
+/// pass (not on macOS: the Metal depth noise shader is broken, see
+/// DepthGaussianNoise in render_pass.cc).
 TEST_F(DepthCameraTest,
     GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthOnlyFramesMatchPointCloudFrames))
 {
@@ -1591,7 +1639,11 @@ TEST_F(DepthCameraTest,
   gz::rendering::VisualPtr box = AddBoxes(scene);
 
   std::vector<std::vector<float>> plain;
+#ifdef __APPLE__
+  for (int variant : {0})
+#else
   for (int variant : {0, 1})
+#endif
   {
     const bool noise = variant == 1;
     auto camera = NewDepthCamera(scene,

@@ -50,6 +50,16 @@ class CameraTest: public CommonRenderingTest
   /// \param[in] _antiAliasing Camera anti-aliasing (MSAA samples)
   public: void CheckCopyTracksEveryFrame(PixelFormat _format,
       unsigned int _antiAliasing);
+
+  /// \brief Check that a copy converted to R8G8B8 matches a copy of the
+  /// same frame that needs no conversion
+  /// \param[in] _format Camera format: PF_R8G8B8 (compared with an
+  /// R8G8B8A8 copy) or PF_L8 (compared with an L8 copy)
+  /// \param[in] _width Image width
+  /// \param[in] _height Image height
+  /// \param[in] _antiAliasing Camera anti-aliasing (MSAA samples)
+  public: void CheckConvertedCopy(PixelFormat _format, unsigned int _width,
+      unsigned int _height, unsigned int _antiAliasing);
 };
 
 /////////////////////////////////////////////////
@@ -975,10 +985,12 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyTracksEveryFrameMsaa))
 }
 
 /////////////////////////////////////////////////
-// An R8G8B8 copy of a frame is the R8G8B8A8 copy of the same frame minus the
-// alpha bytes, at a size whose rows, pixel count and readback blocks do not
-// divide evenly.
-TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyRgbMatchesRgba))
+// An R8G8B8 copy of a frame is the copy of the same frame in the camera
+// target's own layout (R8G8B8A8 minus the alpha bytes, or L8 in the red
+// channel with green and blue zero), at sizes whose rows, pixel count and
+// readback blocks do not divide evenly.
+void CameraTest::CheckConvertedCopy(PixelFormat _format, unsigned int _width,
+    unsigned int _height, unsigned int _antiAliasing)
 {
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
@@ -1006,31 +1018,33 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyRgbMatchesRgba))
 
   CameraPtr camera = scene->CreateCamera();
   ASSERT_NE(nullptr, camera);
-  // 161 pixels per row (not a multiple of 4), 121 rows (more than one
-  // 64 KiB block of 644-byte rows)
-  const unsigned int width = 161;
-  const unsigned int height = 121;
-  camera->SetImageWidth(width);
-  camera->SetImageHeight(height);
-  camera->SetImageFormat(PF_R8G8B8);
+  camera->SetImageWidth(_width);
+  camera->SetImageHeight(_height);
+  camera->SetImageFormat(_format);
+  camera->SetAntiAliasing(_antiAliasing);
   camera->SetHFOV(GZ_PI / 2);
   root->AddChild(camera);
   camera->Update();
 
-  std::vector<unsigned char> rgba(width * height * 4, 0x7F);
-  std::vector<unsigned char> rgb(width * height * 3, 0x7F);
-  ASSERT_TRUE(camera->CopyTo(PixelBuffer(width, height, PF_R8G8B8A8,
-      rgba.data(), rgba.size())));
-  ASSERT_TRUE(camera->CopyTo(PixelBuffer(width, height, PF_R8G8B8,
+  const bool grey = (_format == PF_L8);
+  const PixelFormat refFormat = grey ? PF_L8 : PF_R8G8B8A8;
+  const size_t refChannels = grey ? 1u : 4u;
+  std::vector<unsigned char> ref(_width * _height * refChannels, 0x7F);
+  std::vector<unsigned char> rgb(_width * _height * 3, 0x7F);
+  ASSERT_TRUE(camera->CopyTo(PixelBuffer(_width, _height, refFormat,
+      ref.data(), ref.size())));
+  ASSERT_TRUE(camera->CopyTo(PixelBuffer(_width, _height, PF_R8G8B8,
       rgb.data(), rgb.size())));
 
   size_t wrong = 0;
   size_t firstWrong = rgb.size();
-  for (size_t p = 0; p < width * height; ++p)
+  for (size_t p = 0; p < _width * _height; ++p)
   {
     for (size_t c = 0; c < 3; ++c)
     {
-      if (rgb[p * 3 + c] != rgba[p * 4 + c])
+      const unsigned char expected =
+          c < refChannels ? ref[p * refChannels + c] : 0u;
+      if (rgb[p * 3 + c] != expected)
       {
         ++wrong;
         firstWrong = std::min(firstWrong, p * 3 + c);
@@ -1041,10 +1055,32 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyRgbMatchesRgba))
 
   // The frame is not uniform, so misplaced pixels would show
   size_t changes = 0;
-  for (size_t p = 1; p < width * height; ++p)
+  for (size_t p = 1; p < _width * _height; ++p)
     changes += memcmp(&rgb[p * 3], &rgb[(p - 1) * 3], 3) != 0;
   EXPECT_GT(changes, 100u);
 
   // Clean up
   engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+// 161 pixels per row (not a multiple of 4), 121 rows (more than one 64 KiB
+// block of 644-byte rows)
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyRgbMatchesRgba))
+{
+  CheckConvertedCopy(PF_R8G8B8, 161u, 121u, 0u);
+}
+
+/////////////////////////////////////////////////
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyRgbMatchesRgbaMsaa))
+{
+  CheckConvertedCopy(PF_R8G8B8, 161u, 121u, 4u);
+}
+
+/////////////////////////////////////////////////
+// An L8 target 65 pixels wide: its readback rows are padded, and 1100 rows
+// of 65 bytes are more than one 64 KiB block
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyL8AsRgb))
+{
+  CheckConvertedCopy(PF_L8, 65u, 1100u, 0u);
 }

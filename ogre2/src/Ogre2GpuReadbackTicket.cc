@@ -45,9 +45,11 @@
 using namespace gz;
 using namespace rendering;
 
+namespace
+{
 //////////////////////////////////////////////////
 /// \brief Fetch the active OGRE render system, or nullptr if unavailable.
-static Ogre::RenderSystem *ReadbackRenderSystem()
+Ogre::RenderSystem *ReadbackRenderSystem()
 {
   auto engine = Ogre2RenderEngine::Instance();
   if (!engine)
@@ -60,7 +62,7 @@ static Ogre::RenderSystem *ReadbackRenderSystem()
 
 //////////////////////////////////////////////////
 /// \brief Fetch the active OGRE texture manager, or nullptr if unavailable.
-static Ogre::TextureGpuManager *ReadbackTextureManager()
+Ogre::TextureGpuManager *ReadbackTextureManager()
 {
   auto renderSystem = ReadbackRenderSystem();
   return renderSystem ? renderSystem->getTextureGpuManager() : nullptr;
@@ -72,7 +74,7 @@ static Ogre::TextureGpuManager *ReadbackTextureManager()
 /// then chooses per wait. OpenGL only: there the driver may busy-wait in
 /// map() (glClientWaitSync) for the whole GPU latency, while Vulkan's
 /// flushCommands() does not submit the download.
-static bool PollReadback()
+bool PollReadback()
 {
   auto engine = Ogre2RenderEngine::Instance();
   return engine && engine->GraphicsAPI() == GraphicsAPI::OPENGL;
@@ -82,7 +84,7 @@ static bool PollReadback()
 /// \brief Whether the env var GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT
 /// forces the wait in map(). Read on every call so tests can compare both
 /// waits.
-static bool BlockingReadbackForced()
+bool BlockingReadbackForced()
 {
   return std::getenv("GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT") != nullptr;
 }
@@ -94,7 +96,7 @@ static bool BlockingReadbackForced()
 /// \return False where the thread's CPU time is not available (no POSIX
 /// CLOCK_THREAD_CPUTIME_ID, e.g. Windows): the readback then waits in
 /// map(), as it did before the sleeping wait existed.
-static bool ReadbackClocks(double &_wallUs, double &_cpuUs)
+bool ReadbackClocks(double &_wallUs, double &_cpuUs)
 {
 #ifdef CLOCK_THREAD_CPUTIME_ID
   timespec cpu;
@@ -117,7 +119,7 @@ static bool ReadbackClocks(double &_wallUs, double &_cpuUs)
 /// map(): only who waits for the fence changes.
 /// \param[in] _ticket Ticket with a download issued with accurate tracking.
 /// \param[in] _renderSystem Render system that issued the download.
-static void WaitForDownload(Ogre::AsyncTextureTicket *_ticket,
+void WaitForDownload(Ogre::AsyncTextureTicket *_ticket,
     Ogre::RenderSystem *_renderSystem)
 {
   using Clock = std::chrono::steady_clock;
@@ -159,7 +161,7 @@ static void WaitForDownload(Ogre::AsyncTextureTicket *_ticket,
 /// the ones GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT forces into map().
 /// \param[in] _ticket Ticket with a download issued with accurate tracking.
 /// \return The mapped box.
-static Ogre::TextureBox WaitAndMap(Ogre::AsyncTextureTicket *_ticket)
+Ogre::TextureBox WaitAndMap(Ogre::AsyncTextureTicket *_ticket)
 {
   // One per thread: all the readbacks of a render thread share its slack.
   static thread_local Ogre2ReadbackWaitPolicy policy;
@@ -183,6 +185,7 @@ static Ogre::TextureBox WaitAndMap(Ogre::AsyncTextureTicket *_ticket)
   }
   return box;
 }
+}  // namespace
 
 //////////////////////////////////////////////////
 Ogre2GpuReadbackTicket::~Ogre2GpuReadbackTicket()

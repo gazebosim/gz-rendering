@@ -883,3 +883,57 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyIntoExternalBuffer))
   // Clean up
   engine->DestroyScene(scene);
 }
+
+/////////////////////////////////////////////////
+/// \brief Every copy returns the frame rendered just before it, also across
+/// image size changes. ogre2 reads the frames back through one staging
+/// buffer that it keeps from frame to frame.
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyTracksEveryFrame))
+{
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_NE(nullptr, camera);
+  camera->SetImageFormat(PF_R8G8B8);
+  scene->RootVisual()->AddChild(camera);
+
+  // An empty scene shows the background colour only. 0 and 1 map to 0 and
+  // 255 whether or not the target is sRGB.
+  const math::Color colors[] = {
+      {1, 0, 0}, {0, 1, 0}, {0, 0, 1}, {1, 1, 0}, {0, 1, 1}, {1, 0, 1}};
+  // The second size has an odd width (row of 195 bytes), the last frame
+  // goes back to the first size. The size is set only when it changes:
+  // setting it rebuilds the render target, and with it the readback
+  // ticket, so frames 1, 3 and 4 read back through the previous frame's
+  // ticket.
+  const unsigned int sizes[][2] = {
+      {64, 48}, {64, 48}, {65, 33}, {65, 33}, {65, 33}, {64, 48}};
+  for (size_t i = 0; i < 6; ++i)
+  {
+    const unsigned int width = sizes[i][0];
+    const unsigned int height = sizes[i][1];
+    if (i == 0 || width != sizes[i - 1][0] || height != sizes[i - 1][1])
+    {
+      camera->SetImageWidth(width);
+      camera->SetImageHeight(height);
+    }
+    scene->SetBackgroundColor(colors[i]);
+    camera->Update();
+
+    std::vector<unsigned char> buffer(width * height * 3, 0x7F);
+    ASSERT_TRUE(camera->CopyTo(PixelBuffer(width, height, PF_R8G8B8,
+        buffer.data(), buffer.size()))) << "frame " << i;
+    const unsigned char expected[3] = {
+        static_cast<unsigned char>(colors[i].R() * 255),
+        static_cast<unsigned char>(colors[i].G() * 255),
+        static_cast<unsigned char>(colors[i].B() * 255)};
+    size_t wrong = 0;
+    for (size_t p = 0; p < buffer.size(); ++p)
+      wrong += buffer[p] != expected[p % 3];
+    EXPECT_EQ(0u, wrong) << "frame " << i << ": first pixel "
+        << int(buffer[0]) << " " << int(buffer[1]) << " " << int(buffer[2]);
+  }
+
+  // Clean up
+  engine->DestroyScene(scene);
+}

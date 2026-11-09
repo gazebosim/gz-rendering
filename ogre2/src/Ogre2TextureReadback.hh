@@ -24,6 +24,8 @@
 #include "gz/rendering/ogre2/Export.hh"
 #include "gz/rendering/PixelBuffer.hh"
 
+#include "Ogre2GpuReadbackTicket.hh"
+
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
@@ -55,13 +57,22 @@ namespace gz
       /// _dstFormat. Left untouched, with an error printed, if it is too
       /// small.
       /// \return True if the texture was read back, false if _dst is too
-      /// small
+      /// small or the download failed
       public: bool ReadBack(Ogre::TextureGpu *_texture,
           Ogre::PixelFormatGpu _dstFormat, const PixelBuffer &_dst);
+
+      /// \brief Release the staging buffer. Call while the render engine is
+      /// still alive, e.g. together with the textures read back.
+      public: void Destroy();
 
       /// \brief Raw readback in the texture's own format, used when the
       /// formats differ. Empty until then; reused across calls.
       private: std::vector<uint8_t> conversionBuffer;
+
+      /// \brief Staging buffer the texture is downloaded into. Kept across
+      /// calls: Image2::copyContentsToMemory() allocates and frees a new one
+      /// on every copy.
+      private: Ogre2GpuReadbackTicket ticket;
     };
     }
   }

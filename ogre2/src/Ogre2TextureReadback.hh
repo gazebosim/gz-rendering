@@ -66,7 +66,8 @@ namespace gz
       public: void Destroy();
 
       /// \brief Raw readback in the texture's own format, used when the
-      /// formats differ. Empty until then; reused across calls.
+      /// formats differ: a block of rows at a time, or the whole texture
+      /// with the legacy readback. Empty until then; reused across calls.
       private: std::vector<uint8_t> conversionBuffer;
 
       /// \brief Staging buffer the texture is downloaded into. Kept across

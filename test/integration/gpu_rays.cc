@@ -16,18 +16,14 @@
 */
 
 #include <algorithm>
-#include <cmath>
-#include <string>
-#include <vector>
-
-#include <gtest/gtest.h>
-
-#include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <cstring>
 #include <string>
 #include <thread>
 #include <vector>
+
+#include <gtest/gtest.h>
 
 #include "CommonRenderingTest.hh"
 

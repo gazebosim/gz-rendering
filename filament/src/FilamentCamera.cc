@@ -1,0 +1,422 @@
+/*
+ * Copyright (C) 2026 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
+
+#include <filament/Camera.h>
+#include <filament/ColorGrading.h>
+#include <filament/Engine.h>
+#include <filament/Scene.h>
+#include <filament/TransformManager.h>
+#include <filament/View.h>
+#include <utils/EntityManager.h>
+
+#include <gz/common/Console.hh>
+#include <gz/math/Helpers.hh>
+#include <gz/math/Matrix4.hh>
+
+#include "gz/rendering/filament/FilamentCamera.hh"
+#include "gz/rendering/filament/FilamentConversions.hh"
+#include "gz/rendering/filament/FilamentMesh.hh"
+#include "gz/rendering/filament/FilamentRenderEngine.hh"
+#include "gz/rendering/filament/FilamentScene.hh"
+
+using namespace gz;
+using namespace rendering;
+
+/// \brief FilamentColorGrading.cc
+filament::ColorGrading *CreateQualityColorGrading(filament::Engine &_engine);
+
+namespace
+{
+  /// \brief gz matrices are row-major accessors, filament mat4 is indexed
+  /// [column][row]
+  filament::math::mat4 ToFilament(const math::Matrix4d &_m)
+  {
+    filament::math::mat4 out;
+    for (int c = 0; c < 4; ++c)
+      for (int r = 0; r < 4; ++r)
+        out[c][r] = _m(r, c);
+    return out;
+  }
+}
+
+//////////////////////////////////////////////////
+FilamentCamera::FilamentCamera()
+{
+}
+
+//////////////////////////////////////////////////
+FilamentCamera::~FilamentCamera()
+{
+}
+
+//////////////////////////////////////////////////
+void FilamentCamera::Destroy()
+{
+  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
+  if (engine)
+  {
+    if (this->view)
+      engine->destroy(this->view);
+    if (this->colorGrading)
+      engine->destroy(this->colorGrading);
+    if (!this->cameraEntity.isNull())
+    {
+      engine->destroyCameraComponent(this->cameraEntity);
+      engine->getTransformManager().destroy(this->cameraEntity);
+      ::utils::EntityManager::get().destroy(this->cameraEntity);
+    }
+  }
+  this->view = nullptr;
+  this->colorGrading = nullptr;
+  this->camera = nullptr;
+  this->cameraEntity = ::utils::Entity();
+  if (this->renderTexture)
+  {
+    this->renderTexture->Destroy();
+    this->renderTexture.reset();
+  }
+  BaseCamera::Destroy();
+}
+
+//////////////////////////////////////////////////
+filament::View *FilamentCamera::View() const
+{
+  return this->view;
+}
+
+//////////////////////////////////////////////////
+filament::Camera *FilamentCamera::Native() const
+{
+  return this->camera;
+}
+
+//////////////////////////////////////////////////
+unsigned int FilamentCamera::RenderTextureGLId() const
+{
+  return this->renderTexture ? this->renderTexture->GLId() : 0u;
+}
+
+//////////////////////////////////////////////////
+RenderTargetPtr FilamentCamera::RenderTarget() const
+{
+  return this->renderTexture;
+}
+
+//////////////////////////////////////////////////
+void FilamentCamera::Init()
+{
+  BaseCamera::Init();
+  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
+  auto &tm = engine->getTransformManager();
+
+  this->cameraEntity = ::utils::EntityManager::get().create();
+  tm.create(this->cameraEntity, tm.getInstance(this->entity),
+      FilamentConversions::CameraFix());
+  this->camera = engine->createCamera(this->cameraEntity);
+  // exposure 1: pixel = radiance, no photographic scaling
+  this->camera->setExposure(1.0f);
+
+  this->view = engine->createView();
+  this->view->setScene(this->scene->Native());
+  this->view->setCamera(this->camera);
+  this->view->setVisibleLayers(0xff, 0x1);
+  // Sensors want plain radiance: no tone mapping, AA, dithering, bloom...
+  this->view->setPostProcessingEnabled(false);
+
+  this->CreateRenderTexture();
+  this->Reset();
+}
+
+//////////////////////////////////////////////////
+void FilamentCamera::UpdateQualityMode()
+{
+  static const bool requested = []
+  {
+    const char *env = std::getenv("GZ_FILAMENT_QUALITY");
+    return env && std::strcmp(env, "1") == 0;
+  }();
+  if (!requested || this->colorGrading)
+    return;
+  const Variant user = this->UserData("user-camera");
+  const bool *isUser = std::get_if<bool>(&user);
+  if (!isUser || !*isUser)
+    return;
+
+  using namespace filament;
+  // the LUT is baked with filament's job system: on the render thread
+  FilamentRenderEngine::Instance()->AdoptThread();
+  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
+  // Tone mapping: identity up to 0.8, then PBR Neutral's highlight roll-off
+  // (see FilamentColorGrading.cc), so base colours and mid-greys keep
+  // ogre2's brightness (exposure stays 1) while sun + ambient on bright
+  // surfaces no longer clip.
+  this->colorGrading = CreateQualityColorGrading(*engine);
+  this->view->setColorGrading(this->colorGrading);
+  // also turns on temporal dithering, which assumes the LUT's sRGB output:
+  // the target becomes plain RGBA8 (gz-gui reads it raw, like the sRGB one
+  // it skips the decode of), rebuilt now so this frame lands in it
+  this->view->setPostProcessingEnabled(true);
+  this->renderTexture->SetSrgb(false);
+  this->renderTexture->PreRender();
+
+  // MSAA (set in Render) when the camera asks for it, else FXAA
+  const bool msaa = this->AntiAliasing() > 1u;
+  this->view->setAntiAliasing(msaa ?
+      View::AntiAliasing::NONE : View::AntiAliasing::FXAA);
+
+  // SSAO darkens the ambient (IndirectLight) term in creases
+  // and contacts.
+  // GTAO: SAO's default bias leaves self-occlusion noise on large flat
+  // faces, a bias that removes it also removes most of the effect. Bent
+  // normals and cone-traced shadows stay off: cost for little gain.
+  View::AmbientOcclusionOptions ao;
+  ao.enabled = true;
+  ao.aoType = View::AmbientOcclusionOptions::AmbientOcclusionType::GTAO;
+  ao.radius = 0.3f;
+  ao.quality = View::QualityLevel::MEDIUM;
+  ao.lowPassFilter = View::QualityLevel::HIGH;
+  ao.upsampling = View::QualityLevel::MEDIUM;
+  this->view->setAmbientOcclusionOptions(ao);
+
+  // Filament's stock diffuse for this view (Filament patch 0007; the other
+  // views keep patch 0005's ogre2 diffuse). Lights: FilamentScene::
+  // PhysicalLights.
+  this->view->setMaterialGlobal(3, {0.0f, 0.0f, 1.0f, 1.0f});
+
+  // Shadows stay PCF. Filament 1.79's soft shadows (PCSS, VSM) filter
+  // moments: Chebyshev's bound lets the sun bleed through thin walls into
+  // interiors, with or without highPrecision / lightBleedReduction and a
+  // smaller penumbra search. 1.79 has no PCF filter size (DPCF is gone).
+
+  gzmsg << "Filament quality mode on for camera [" << this->Name()
+        << "]: tone mapping, GTAO, physical lights, "
+        << (msaa ? "MSAA " + std::to_string(std::min(this->AntiAliasing(),
+            8u)) + "x" : std::string("FXAA")) << std::endl;
+}
+
+//////////////////////////////////////////////////
+VisualPtr FilamentCamera::VisualAt(const math::Vector2i &_mousePos)
+{
+  if (!this->view || _mousePos.X() < 0 || _mousePos.Y() < 0 ||
+      static_cast<unsigned int>(_mousePos.X()) >= this->ImageWidth() ||
+      static_cast<unsigned int>(_mousePos.Y()) >= this->ImageHeight())
+  {
+    return VisualPtr();
+  }
+
+  // The query is answered by the next render of this view. Its callback can
+  // fire after this function returns if the driver is slow, so the result
+  // lives in a shared state rather than on the stack.
+  struct Result { ::utils::Entity entity; bool done{false}; };
+  auto result = std::make_shared<Result>();
+  // filament picking coordinates have their origin at the bottom-left
+  this->view->pick(static_cast<uint32_t>(_mousePos.X()),
+      this->ImageHeight() - 1u - static_cast<uint32_t>(_mousePos.Y()),
+      [result](const filament::View::PickingQueryResult &_r)
+      {
+        result->entity = _r.renderable;
+        result->done = true;
+      });
+  this->PreRender();
+  this->Render();
+  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
+  for (int i = 0; i < 10 && !result->done; ++i)
+  {
+    engine->flushAndWait();
+    engine->pumpMessageQueues();
+  }
+  if (!result->done || result->entity.isNull())
+    return VisualPtr();
+
+  for (FilamentMesh *mesh : this->scene->Meshes())
+  {
+    if (mesh->Entity() == result->entity)
+      return mesh->Parent();
+  }
+  return VisualPtr();
+}
+
+//////////////////////////////////////////////////
+void FilamentCamera::CreateRenderTexture()
+{
+  RenderTexturePtr base = this->scene->CreateRenderTexture();
+  this->renderTexture = std::dynamic_pointer_cast<FilamentRenderTexture>(base);
+  this->renderTexture->SetFormat(PF_R8G8B8);
+  this->renderTexture->SetWidth(this->ImageWidth());
+  this->renderTexture->SetHeight(this->ImageHeight());
+}
+
+//////////////////////////////////////////////////
+bool FilamentCamera::Orthographic() const
+{
+  // Sensor subclasses never get here with CPT_ORTHOGRAPHIC: their
+  // SetProjectionType resolves to BaseCamera<FilamentCamera>, which only
+  // stores the type, like ogre2 (only Ogre2Camera honours it)
+  return this->projectionType == CPT_ORTHOGRAPHIC;
+}
+
+//////////////////////////////////////////////////
+math::Matrix4d FilamentCamera::WithDepthRows(math::Matrix4d _matrix,
+    double _near, double _far)
+{
+  const double invd = 1.0 / (_far - _near);
+  _matrix(2, 0) = 0.0;
+  _matrix(2, 1) = 0.0;
+  if (!math::equal(_matrix(3, 3), 0.0))
+  {
+    // orthographic
+    _matrix(2, 2) = -2.0 * invd;
+    _matrix(2, 3) = -(_far + _near) * invd;
+    return _matrix;
+  }
+  _matrix(2, 2) = -(_far + _near) * invd;
+  _matrix(2, 3) = -2.0 * _far * _near * invd;
+  _matrix(3, 0) = 0.0;
+  _matrix(3, 1) = 0.0;
+  _matrix(3, 2) = -1.0;
+  return _matrix;
+}
+
+//////////////////////////////////////////////////
+math::Matrix4d FilamentCamera::ProjectionMatrix() const
+{
+  if (this->customProjection)
+    return this->projectionMatrix;
+  if (this->Orthographic())
+  {
+    // ogre2 never sets an ortho window: ogre's default is 1000 units tall
+    const double height = 1000.0;
+    math::Matrix4d m = math::Matrix4d::Zero;
+    m(0, 0) = 2.0 / (height * this->AspectRatio());
+    m(1, 1) = 2.0 / height;
+    m(3, 3) = 1.0;
+    return WithDepthRows(m, this->NearClipPlane(), this->FarClipPlane());
+  }
+  return BaseCamera::ProjectionMatrix();
+}
+
+//////////////////////////////////////////////////
+void FilamentCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
+{
+  BaseCamera::SetProjectionMatrix(_matrix);
+  this->customProjection = true;
+}
+
+//////////////////////////////////////////////////
+void FilamentCamera::SetProjectionType(CameraProjectionType _type)
+{
+  BaseCamera::SetProjectionType(_type);
+  // like Ogre2Camera: a type change drops the custom matrix
+  this->customProjection = false;
+}
+
+//////////////////////////////////////////////////
+void FilamentCamera::SetClampedProjection(double _renderNear,
+    double _renderFar)
+{
+  if (this->customProjection || this->Orthographic())
+  {
+    // image plane rows as given, depth rows from the clip planes: render
+    // with the render ones, cull with the camera's own (ogre2 rebuilds the
+    // depth row from its clip distances as well)
+    const math::Matrix4d m = this->ProjectionMatrix();
+    this->camera->setCustomProjection(
+        ToFilament(WithDepthRows(m, _renderNear, _renderFar)),
+        ToFilament(WithDepthRows(m, this->NearClipPlane(),
+            this->FarClipPlane())),
+        this->NearClipPlane(), this->FarClipPlane());
+    return;
+  }
+  using filament::Camera;
+  const double hfovDeg = this->HFOV().Degree();
+  const double aspect = this->AspectRatio();
+  this->camera->setCustomProjection(
+      Camera::projection(Camera::Fov::HORIZONTAL, hfovDeg, aspect,
+          _renderNear, _renderFar),
+      Camera::projection(Camera::Fov::HORIZONTAL, hfovDeg, aspect,
+          this->NearClipPlane(), this->FarClipPlane()),
+      this->NearClipPlane(), this->FarClipPlane());
+}
+
+//////////////////////////////////////////////////
+void FilamentCamera::UpdateProjection()
+{
+  if (!this->camera)
+    return;
+  if (this->customProjection || this->Orthographic())
+  {
+    this->SetClampedProjection(this->NearClipPlane(), this->FarClipPlane());
+    return;
+  }
+  const double aspect = this->AspectRatio();
+  const double hfovDeg = this->HFOV().Degree();
+  this->camera->setProjection(hfovDeg, aspect, this->NearClipPlane(),
+      this->FarClipPlane(), filament::Camera::Fov::HORIZONTAL);
+}
+
+//////////////////////////////////////////////////
+void FilamentCamera::Render()
+{
+  this->UpdateQualityMode();
+  // MSAA at the level the camera asks for, like ogre2's fsaa (gz-gui: 8,
+  // gz-sensors: SDF <anti_aliasing>, default 4; unset: 0 = off).
+  // Sensors (no post-processing): a multisampled render target, resolved
+  // once into the camera's textures. View MSAA would add an R11G11B10F
+  // intermediate, a resolve and a blit per frame (+16% CPU on 6 cameras).
+  // The quality-mode user camera keeps view MSAA: its post-processing
+  // runs on the intermediate buffer anyway.
+  // Set every frame: gz-gui sets the level after the view exists.
+  const auto aa = static_cast<uint8_t>(std::min(this->AntiAliasing(), 8u));
+  const bool post = this->view->isPostProcessingEnabled();
+  filament::View::MultiSampleAntiAliasingOptions msaa;
+  msaa.enabled = post && aa > 1u;
+  msaa.sampleCount = aa;
+  this->view->setMultiSampleAntiAliasingOptions(msaa);
+  this->renderTexture->SetSamples(post ? 1u : aa);
+  this->renderTexture->PreRender();
+  this->UpdateProjection();
+  const math::Color bg = this->scene->BackgroundColor();
+  this->renderTexture->SetClearColor(FilamentConversions::ToFloat4(bg));
+  this->view->setVisibleLayers(0xff,
+      FilamentConversions::MaskToLayers(this->VisibilityMask()));
+  // the camera looks along its +X
+  this->scene->SortParticles(this->WorldPose().Rot() * math::Vector3d::UnitX);
+  this->renderTexture->Render(this->view);
+  if (!this->scene->Projectors().empty())
+  {
+    // projected textures go on the scene, before the render passes
+    const math::Matrix4d inverse =
+        (this->ProjectionMatrix() * this->ViewMatrix()).Inverse();
+    filament::math::mat4f invViewProj;
+    for (int c = 0; c < 4; ++c)
+    {
+      for (int r = 0; r < 4; ++r)
+        invViewProj[c][r] = static_cast<float>(inverse(r, c));
+    }
+    this->renderTexture->ApplyProjectors(this->scene->Projectors(),
+        invViewProj, this->VisibilityMask());
+  }
+  this->renderTexture->ApplyRenderPasses(this->renderTexture->RenderPasses());
+  // A target shared with the caller's GL context (a GUI) is sampled next,
+  // as rendered: bottom row first, the GUI mirrors it. Finish the frame.
+  if (this->renderTexture->SharedGLId() != 0)
+    FilamentRenderEngine::Instance()->FilamentEngine()->flushAndWait();
+}

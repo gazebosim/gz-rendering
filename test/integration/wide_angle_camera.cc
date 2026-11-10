@@ -431,7 +431,9 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Projection))
   auto screenPt = camera->Project3d(worldPoint);
   EXPECT_FLOAT_EQ(camera->ImageWidth() * 0.5, screenPt.X());
   EXPECT_FLOAT_EQ(camera->ImageHeight() * 0.5, screenPt.Y());
-  EXPECT_GT(screenPt.Z(), 0.0);
+  // on the optical axis the distance from the image center is 0 (ogre2
+  // returns float noise slightly above it)
+  EXPECT_GE(screenPt.Z(), 0.0);
   EXPECT_LT(screenPt.Z(), 1.0);
 
   // point behind camera

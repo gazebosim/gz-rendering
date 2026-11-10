@@ -1,0 +1,40 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c02e80d4..25f673be 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -714,6 +714,9 @@ endif()
+ # Target system.
+ if (IS_MOBILE_TARGET)
+     set(MATC_TARGET mobile)
++elseif (FILAMENT_SUPPORTS_EGL_ON_LINUX)
++    # EGL on Linux builds the GLES backend: needs mobile shaders too
++    set(MATC_TARGET all)
+ else()
+     set(MATC_TARGET desktop)
+ endif()
+diff --git a/libs/generatePrefilterMipmap/CMakeLists.txt b/libs/generatePrefilterMipmap/CMakeLists.txt
+index ed28e30d..749df471 100644
+--- a/libs/generatePrefilterMipmap/CMakeLists.txt
++++ b/libs/generatePrefilterMipmap/CMakeLists.txt
+@@ -57,7 +57,7 @@ else()
+         # TODO: aggressive vectorization is currently broken on Android
+         #        -fslp-vectorize-aggressive
+         -fvisibility-inlines-hidden
+-        -fstrict-vtable-pointers
++        $<$<CXX_COMPILER_ID:Clang,AppleClang>:-fstrict-vtable-pointers>
+     )
+ endif()
+ 
+diff --git a/libs/iblprefilter/CMakeLists.txt b/libs/iblprefilter/CMakeLists.txt
+index f3809117..75a13970 100644
+--- a/libs/iblprefilter/CMakeLists.txt
++++ b/libs/iblprefilter/CMakeLists.txt
+@@ -110,7 +110,7 @@ else()
+         # TODO: aggressive vectorization is currently broken on Android
+         #        -fslp-vectorize-aggressive
+         -fvisibility-inlines-hidden
+-        -fstrict-vtable-pointers
++        $<$<CXX_COMPILER_ID:Clang,AppleClang>:-fstrict-vtable-pointers>
+     )
+ endif()
+ 

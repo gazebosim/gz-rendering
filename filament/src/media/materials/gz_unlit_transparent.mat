@@ -1,0 +1,27 @@
+// gz_unlit with alpha blending, for materials with transparency > 0 (marker
+// and lidar visual materials): ogre2 blends them (non premultiplied source
+// alpha), without writing depth.
+material {
+    name : gz_unlit_transparent,
+    shadingModel : unlit,
+    blending : transparent,
+    depthWrite : false,
+    requires : [ uv0 ],
+    parameters : [
+        { type : float4,    name : baseColor },
+        { type : int,       name : hasTexture },
+        { type : sampler2d, name : baseColorMap }
+    ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        vec4 c = materialParams.baseColor;
+        if (materialParams.hasTexture != 0) {
+            c *= texture(materialParams_baseColorMap, getUV0());
+        }
+        // transparent blending expects premultiplied alpha
+        material.baseColor = vec4(c.rgb * c.a, c.a);
+    }
+}

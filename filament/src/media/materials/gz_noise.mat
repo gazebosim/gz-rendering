@@ -1,0 +1,60 @@
+// Gaussian noise pass, drawn as a fullscreen triangle in device (clip) space.
+// Same model as ogre2's gaussian_noise_fs.glsl: z = N(0, 1) * stddev + mean,
+// then (mode 0) the color gets sign(z) * |z|^2.1 added to each RGB channel and
+// is clamped to [0, 1]; colorIn and the output are sRGB targets, so like in
+// ogre2 the noise is added to linear values. Mode 1 writes z itself into the
+// red channel (float target), for the depth camera's CPU side.
+// The uniforms come from a PCG hash of (pixel, seed) instead of ogre2's
+// fract(sin()) hash; seed is redrawn on the CPU every frame. Not replicated:
+// that hash has few bits and sometimes returns 0, which ogre2's color shader
+// turns into |N(0, 1)| = 7.4 outliers (~0.15% of pixels on Intel).
+material {
+    name : gz_noise,
+    shadingModel : unlit,
+    blending : opaque,
+    depthWrite : false,
+    depthCulling : false,
+    culling : none,
+    vertexDomain : device,
+    parameters : [
+        { type : sampler2d, name : colorIn, precision : high },
+        { type : uint, name : seed },
+        { type : float, name : mean, precision : high },
+        { type : float, name : stddev, precision : high },
+        { type : int, name : mode }
+    ]
+}
+
+fragment {
+    // Jarzynski & Olano, "Hash Functions for GPU Rendering" (pcg3d)
+    highp uvec3 pcg3d(highp uvec3 v)
+    {
+        v = v * 1664525u + 1013904223u;
+        v.x += v.y * v.z; v.y += v.z * v.x; v.z += v.x * v.y;
+        v ^= v >> 16u;
+        v.x += v.y * v.z; v.y += v.z * v.x; v.z += v.x * v.y;
+        return v;
+    }
+
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        highp ivec2 px = ivec2(gl_FragCoord.xy);
+        highp uvec3 h = pcg3d(uvec3(uvec2(px), materialParams.seed));
+        // Box-Muller; u1 in (0, 1] keeps log() finite
+        highp float u1 = (float(h.x >> 8u) + 1.0) * (1.0 / 16777216.0);
+        highp float u2 = float(h.y >> 8u) * (1.0 / 16777216.0);
+        // gaussian_noise_depth_fs.glsl clamps its uniforms to >= 0.001,
+        // which bounds |N(0, 1)| by 3.72
+        if (materialParams.mode == 1)
+            u1 = max(u1, 0.001);
+        highp float z = sqrt(-2.0 * log(u1)) * cos(6.283185307179586 * u2);
+        z = z * materialParams.stddev + materialParams.mean;
+        if (materialParams.mode == 1) {
+            material.baseColor = vec4(z, 0.0, 0.0, 1.0);
+            return;
+        }
+        highp float n = sign(z) * pow(abs(z), 2.1);
+        highp vec4 c = texelFetch(materialParams_colorIn, px, 0);
+        material.baseColor = vec4(clamp(c.rgb + n, 0.0, 1.0), c.a);
+    }
+}

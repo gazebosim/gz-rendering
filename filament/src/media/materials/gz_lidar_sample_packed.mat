@@ -1,0 +1,28 @@
+// gz_lidar_sample for an RGBA8 target (used on Vulkan, see PackedScan in
+// FilamentGpuRays.cc): same range, written as the 4 bytes of its float bits
+// so the readback is a plain copy that gives back the exact float.
+material {
+    name : gz_lidar_sample_packed,
+    shadingModel : unlit,
+    blending : opaque,
+    depthWrite : false,
+    depthCulling : false,
+    culling : none,
+    vertexDomain : device,
+    parameters : [
+        { type : sampler2d, name : atlas, precision : high, filterable : false },
+        { type : sampler2d, name : rays, precision : high, filterable : false }
+    ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        highp vec4 ray = texelFetch(materialParams_rays, ivec2(gl_FragCoord.xy), 0);
+        highp float depth = texelFetch(materialParams_atlas, ivec2(ray.xy), 0).r;
+        // the bits of the float range as 4 bytes, least significant in red,
+        // for an RGBA8 target: read back as is, i.e. as little endian floats
+        highp uint bits = floatBitsToUint(depth * ray.z);
+        material.baseColor = vec4((uvec4(bits) >> uvec4(0u, 8u, 16u, 24u)) & 0xffu) / 255.0;
+    }
+}

@@ -34,7 +34,7 @@ class FrustumVisualTest : public CommonRenderingTest
 /////////////////////////////////////////////////
 TEST_F(FrustumVisualTest, FrustumVisual)
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   ScenePtr scene = engine->CreateScene("scene");
   EXPECT_NE(nullptr, scene);

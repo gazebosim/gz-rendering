@@ -1,0 +1,81 @@
+// Lens flare pass, drawn as a fullscreen triangle in device (clip) space.
+// ogre2's lens_flare_fs.glsl verbatim: the flare of a light at lightPos
+// (normalized device coordinates, y up) is added to the image in linear
+// space. scale is the occlusion-weighted flare scale, vpAspectRatio the
+// width over height that the flare's x axis is stretched with.
+material {
+    name : gz_lens_flare,
+    shadingModel : unlit,
+    blending : opaque,
+    depthWrite : false,
+    depthCulling : false,
+    culling : none,
+    vertexDomain : device,
+    parameters : [
+        { type : sampler2d, name : colorIn, precision : high },
+        { type : float, name : vpAspectRatio, precision : high },
+        { type : float2, name : lightPos, precision : high },
+        { type : float, name : scale, precision : high },
+        { type : float3, name : color, precision : high }
+    ]
+}
+
+fragment {
+    highp vec3 lensflare(highp vec2 uv, highp vec2 pos)
+    {
+        highp float scale = materialParams.scale;
+        highp vec2 main = uv - pos;
+        highp vec2 uvd = uv * length(uv);
+
+        highp float f0 = 1.0 / (length(uv - pos) * 16.0 / scale + 1.0);
+
+        highp float f2 = max(1.0 / (1.0 + 32.0 * pow(length(uvd + 0.8 * pos), 2.0)), 0.0) * 0.25;
+        highp float f22 = max(1.0 / (1.0 + 32.0 * pow(length(uvd + 0.85 * pos), 2.0)), 0.0) * 0.23;
+        highp float f23 = max(1.0 / (1.0 + 32.0 * pow(length(uvd + 0.9 * pos), 2.0)), 0.0) * 0.21;
+
+        highp vec2 uvx = mix(uv, uvd, -0.5);
+
+        highp float f4 = max(0.01 - pow(length(uvx + 0.4 * pos), 2.4), 0.0) * 6.0;
+        highp float f42 = max(0.01 - pow(length(uvx + 0.45 * pos), 2.4), 0.0) * 5.0;
+        highp float f43 = max(0.01 - pow(length(uvx + 0.5 * pos), 2.4), 0.0) * 3.0;
+
+        uvx = mix(uv, uvd, -0.4);
+
+        highp float f5 = max(0.01 - pow(length(uvx + 0.2 * pos), 5.5), 0.0) * 2.0;
+        highp float f52 = max(0.01 - pow(length(uvx + 0.4 * pos), 5.5), 0.0) * 2.0;
+        highp float f53 = max(0.01 - pow(length(uvx + 0.6 * pos), 5.5), 0.0) * 2.0;
+
+        uvx = mix(uv, uvd, -0.5);
+
+        highp float f6 = max(0.01 - pow(length(uvx - 0.3 * pos), 1.6), 0.0) * 6.0;
+        highp float f62 = max(0.01 - pow(length(uvx - 0.325 * pos), 1.6), 0.0) * 3.0;
+        highp float f63 = max(0.01 - pow(length(uvx - 0.35 * pos), 1.6), 0.0) * 5.0;
+
+        highp vec3 c = vec3(0.0);
+        c.r += f2 + f4 + f5 + f6;
+        c.g += f22 + f42 + f52 + f62;
+        c.b += f23 + f43 + f53 + f63;
+        c *= min(scale, 0.2) / 0.2;
+        c += vec3(f0);
+        return c;
+    }
+
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        highp ivec2 px = ivec2(gl_FragCoord.xy);
+        highp vec4 src = texelFetch(materialParams_colorIn, px, 0);
+        // image space of ogre2's quad: origin at the center, y down. The
+        // viewport coordinate has its origin at the bottom left on every
+        // backend.
+        highp vec2 vp = getNormalizedViewportCoord().xy;
+        highp vec2 uv = vec2(vp.x, 1.0 - vp.y) - 0.5;
+        // light in the same range: flip y, [-1, 1] to [-0.5, 0.5]
+        highp vec2 pos = vec2(materialParams.lightPos.x,
+            -materialParams.lightPos.y) * 0.5;
+        // fix aspect ratio
+        uv.x *= materialParams.vpAspectRatio;
+        pos.x *= materialParams.vpAspectRatio;
+        material.baseColor = vec4(
+            src.rgb + materialParams.color * lensflare(uv, pos), src.a);
+    }
+}

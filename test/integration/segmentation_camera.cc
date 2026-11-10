@@ -108,8 +108,8 @@ void BuildScene(rendering::ScenePtr scene)
 //////////////////////////////////////////////////
 TEST_F(SegmentationCameraTest, SegmentationCameraBoxes)
 {
-  // Currently, only ogre2 supports segmentation cameras
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  // Segmentation cameras: ogre2 and filament
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);

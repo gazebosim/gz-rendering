@@ -155,6 +155,18 @@ if (UNIX AND NOT APPLE)
   endif()
 endif()
 
+#--------------------------------------
+# Find Filament (experimental engine). Point FILAMENT_ROOT at an install
+# prefix produced by filament's own CMake build (see filament/README.md).
+set(FILAMENT_ROOT "$ENV{FILAMENT_ROOT}" CACHE PATH
+  "Filament install prefix; enables the experimental filament component")
+if (FILAMENT_ROOT AND EXISTS "${FILAMENT_ROOT}/include/filament/Engine.h")
+  message(STATUS "Found Filament at ${FILAMENT_ROOT}")
+  set(GZ_RENDERING_HAVE_FILAMENT TRUE)
+else()
+  message(STATUS "Skipping component [filament]: FILAMENT_ROOT not set")
+endif()
+
 # Plugin install dirs
 set(GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR
   ${GZ_LIB_INSTALL_DIR}/gz-${GZ_DESIGNATION}/engine-plugins
@@ -188,6 +200,10 @@ endif()
 
 if (GZ_RENDERING_HAVE_OGRE2)
   list(APPEND RENDERING_COMPONENTS ogre2)
+endif()
+
+if (GZ_RENDERING_HAVE_FILAMENT)
+  list(APPEND RENDERING_COMPONENTS filament)
 endif()
 
 configure_file("${PROJECT_SOURCE_DIR}/cppcheck.suppress.in"

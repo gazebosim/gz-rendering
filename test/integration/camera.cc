@@ -24,6 +24,7 @@
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/GpuRays.hh"
+#include "gz/rendering/Marker.hh"
 #include "gz/rendering/PixelBuffer.hh"
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/SegmentationCamera.hh"
@@ -509,6 +510,26 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
   EXPECT_EQ(gBSum, 0u);
   EXPECT_EQ(bBSum, 0u);
 
+  // a mask with every bit but visualA's (like ~GZ_VISIBILITY_GUI) hides
+  // visualA and shows visualB
+  CameraPtr cameraC = scene->CreateCamera();
+  ASSERT_NE(nullptr, cameraC);
+  cameraC->SetWorldPosition(-1, 0, 0);
+  cameraC->SetVisibilityMask(~0x01u);
+  root->AddChild(cameraC);
+  Image imageC = cameraC->CreateImage();
+  cameraC->Capture(imageC);
+  unsigned char *dataC = imageC.Data<unsigned char>();
+  unsigned int rCSum = 0u;
+  unsigned int gCSum = 0u;
+  for (unsigned int i = 0; i < height * step; i += bpp)
+  {
+    rCSum += dataC[i];
+    gCSum += dataC[i + 1];
+  }
+  EXPECT_GT(rCSum, 0u);
+  EXPECT_EQ(gCSum, 0u);
+
   // Clean up
   engine->DestroyScene(scene);
 }
@@ -519,6 +540,8 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ShaderSelection))
   // This test checks that custom shaders are being rendering correctly in
   // camera view. It also verifies that visual selection is working and the
   // visual's material remains the same after selection.
+  // Raw GLSL shader files: filament only consumes matc-compiled materials.
+  CHECK_UNSUPPORTED_ENGINE("filament");
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
@@ -881,5 +904,61 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyIntoExternalBuffer))
       width * height));
 
   // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(CameraTest, TransparentMarker)
+{
+  // unlit materials blend with transparency > 0
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  scene->SetBackgroundColor(0.0, 0.0, 1.0);
+  scene->SetAmbientLight(1.0, 1.0, 1.0);
+  VisualPtr root = scene->RootVisual();
+
+  CameraPtr camera = scene->CreateCamera();
+  camera->SetImageWidth(32);
+  camera->SetImageHeight(32);
+  root->AddChild(camera);
+
+  // red triangles covering the view, one opaque and one half transparent
+  // (markers copy their material when it is assigned)
+  VisualPtr visuals[2];
+  for (int i = 0; i < 2; ++i)
+  {
+    MaterialPtr red = scene->CreateMaterial();
+    red->SetDiffuse(1.0, 0.0, 0.0);
+    red->SetLightingEnabled(false);
+    red->SetTransparency(i == 0 ? 0.0 : 0.5);
+    MarkerPtr marker = scene->CreateMarker();
+    marker->SetType(MT_TRIANGLE_LIST);
+    marker->AddPoint(3.0, 10.0, -10.0, math::Color::Red);
+    marker->AddPoint(3.0, -10.0, -10.0, math::Color::Red);
+    marker->AddPoint(3.0, 0.0, 10.0, math::Color::Red);
+    marker->SetMaterial(red);
+    visuals[i] = scene->CreateVisual();
+    visuals[i]->AddGeometry(marker);
+    root->AddChild(visuals[i]);
+  }
+
+  Image image = camera->CreateImage();
+  const unsigned int center = (16 * 32 + 16) * 3;
+
+  // opaque: no blue left
+  visuals[1]->SetVisible(false);
+  camera->Capture(image);
+  EXPECT_GT(image.Data<unsigned char>()[center], 100);
+  EXPECT_LT(image.Data<unsigned char>()[center + 2], 20);
+
+  // half transparent: the blue background shows through
+  visuals[0]->SetVisible(false);
+  visuals[1]->SetVisible(true);
+  camera->Capture(image);
+  EXPECT_GT(image.Data<unsigned char>()[center], 50);
+  EXPECT_GT(image.Data<unsigned char>()[center + 2], 50);
+
   engine->DestroyScene(scene);
 }

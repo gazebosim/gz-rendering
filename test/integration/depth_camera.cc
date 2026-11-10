@@ -32,6 +32,7 @@
 #include <gz/common/Event.hh>
 
 #include "gz/rendering/DepthCamera.hh"
+#include "gz/rendering/Marker.hh"
 #include "gz/rendering/ParticleEmitter.hh"
 #include "gz/rendering/Scene.hh"
 
@@ -473,8 +474,8 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
 /////////////////////////////////////////////////
 TEST_F(DepthCameraTest, DepthCameraParticles)
 {
-  // particle emitter is only supported in ogre2
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  // particle emitters: ogre2 and filament
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   int imgWidth_ = 256;
   int imgHeight_ = 256;
@@ -753,7 +754,7 @@ TEST_F(DepthCameraTest, DepthCameraParticles)
 /////////////////////////////////////////////////
 TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraProjection))
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   int imgWidth = 256;
   int imgHeight = 256;
@@ -880,7 +881,7 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraProjection))
 TEST_F(DepthCameraTest,
     GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraProjectionRoundTrip))
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   const int imgWidth = 256;
   const int imgHeight = 256;
@@ -1044,6 +1045,65 @@ TEST_F(DepthCameraTest,
   c2.reset();
   c3.reset();
   c4.reset();
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(DepthCameraTest, DepthCameraMarkerPoints)
+{
+  // ogre2 draws marker points as 1 pixel dots in sensors, whatever their size
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
+
+  constexpr unsigned int kSize = 256u;
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  gz::rendering::VisualPtr root = scene->RootVisual();
+
+  // three points 3 m in front of the camera, away from pixel edges
+  gz::rendering::MarkerPtr marker = scene->CreateMarker();
+  marker->SetType(gz::rendering::MT_POINTS);
+  marker->SetSize(5.0);
+  marker->AddPoint(3.0, 0.5, 0.2, gz::math::Color::Green);
+  marker->AddPoint(3.0, -0.5, 0.2, gz::math::Color::Green);
+  marker->AddPoint(3.0, 0.1, -0.7, gz::math::Color::Green);
+  gz::rendering::VisualPtr visual = scene->CreateVisual();
+  visual->AddGeometry(marker);
+  root->AddChild(visual);
+
+  auto depthCamera = scene->CreateDepthCamera("DepthCamera");
+  ASSERT_NE(depthCamera, nullptr);
+  depthCamera->SetImageWidth(kSize);
+  depthCamera->SetImageHeight(kSize);
+  depthCamera->SetFarClipPlane(10.0);
+  depthCamera->SetNearClipPlane(0.1);
+  depthCamera->SetAspectRatio(1.0);
+  depthCamera->SetHFOV(1.05);
+  depthCamera->CreateDepthTexture();
+  root->AddChild(depthCamera);
+
+  std::vector<float> scan(kSize * kSize);
+  gz::common::ConnectionPtr connection =
+    depthCamera->ConnectNewDepthFrame(
+        std::bind(&::OnNewDepthFrame, scan.data(),
+          std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+          std::placeholders::_4, std::placeholders::_5));
+  g_depthCounter = 0u;
+  depthCamera->Update();
+  ASSERT_EQ(1u, g_depthCounter);
+
+  unsigned int dots = 0u;
+  for (float d : scan)
+  {
+    if (std::isfinite(d))
+    {
+      EXPECT_NEAR(3.0, d, 1e-3);
+      ++dots;
+    }
+  }
+  EXPECT_EQ(3u, dots);
+
+  // Clean up
+  connection.reset();
   engine->DestroyScene(scene);
 }
 

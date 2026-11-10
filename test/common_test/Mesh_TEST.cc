@@ -21,9 +21,11 @@
 
 #include "CommonRenderingTest.hh"
 
+#include <gz/common/Mesh.hh>
 #include <gz/common/MeshManager.hh>
 #include <gz/common/Skeleton.hh>
 #include <gz/common/SkeletonAnimation.hh>
+#include <gz/common/SubMesh.hh>
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/Mesh.hh"
@@ -320,5 +322,53 @@ TEST_F(MeshTest, MeshClone)
   EXPECT_EQ(newMatClone, clonedMesh->Material());
 
   // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(MeshTest, CenterSubMesh)
+{
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  // a triangle far from the origin, bounding box center (10, 21, 31)
+  common::Mesh commonMesh;
+  commonMesh.SetName("offset_triangle");
+  auto sub = std::make_unique<common::SubMesh>();
+  sub->SetName("sub");
+  sub->AddVertex(9, 20, 30);
+  sub->AddVertex(11, 20, 30);
+  sub->AddVertex(9, 22, 32);
+  for (unsigned int i = 0; i < 3u; ++i)
+  {
+    sub->AddIndex(i);
+    sub->AddNormal(0, 0, 1);
+  }
+  commonMesh.AddSubMesh(std::move(sub));
+
+  // the same submesh used centered and not centered
+  for (const bool center : {true, false, true})
+  {
+    MeshDescriptor descriptor;
+    descriptor.mesh = &commonMesh;
+    descriptor.meshName = "offset_triangle";
+    descriptor.centerSubMesh = center;
+    MeshPtr mesh = scene->CreateMesh(descriptor);
+    ASSERT_NE(nullptr, mesh);
+    VisualPtr visual = scene->CreateVisual();
+    visual->AddGeometry(mesh);
+
+    // ogre/ogre2 take the bounds from the whole uncentered mesh even when
+    // they draw it centered: only the geometry is centered there
+    const bool boundsFollowGeometry =
+        engine->Name().find("ogre") == std::string::npos;
+    const math::Vector3d c = visual->LocalBoundingBox().Center();
+    const math::Vector3d expected = center && boundsFollowGeometry ?
+        math::Vector3d::Zero : math::Vector3d(10, 21, 31);
+    EXPECT_NEAR(expected.X(), c.X(), 1e-3) << "center " << center;
+    EXPECT_NEAR(expected.Y(), c.Y(), 1e-3) << "center " << center;
+    EXPECT_NEAR(expected.Z(), c.Z(), 1e-3) << "center " << center;
+  }
+
   engine->DestroyScene(scene);
 }

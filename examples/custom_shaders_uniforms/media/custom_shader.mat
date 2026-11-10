@@ -1,0 +1,41 @@
+// Filament port of vertex_shader_330.glsl + fragment_shader_330.glsl, for
+// the filament render engine: pass this file to both SetVertexShader and
+// SetFragmentShader. ShaderParams set parameters of the same name.
+material {
+    name : custom_shaders_uniforms,
+    shadingModel : unlit,
+    parameters : [
+        { type : int,    name : u_seed },
+        { type : float2, name : u_resolution },
+        { type : float3, name : u_color },
+        { type : mat4,   name : u_adjustments }
+    ],
+    // clip space position, like interpolatedPosition in the GLSL version
+    variables : [ clipPosition ]
+}
+
+vertex {
+    void materialVertex(inout MaterialVertexInputs material) {
+        material.clipPosition = getClipFromWorldMatrix() * material.worldPosition;
+    }
+}
+
+fragment {
+    float random(vec2 uv, float seed) {
+        return fract(sin(mod(dot(uv, vec2(12.9898, 78.233)) + 1113.1 * seed,
+            3.1415926535897932384626433832795)) * 43758.5453);
+    }
+
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        // gz shader param buffers are row-major (ogre transposes them)
+        mat4 adj = transpose(materialParams.u_adjustments);
+        vec4 p = variable_clipPosition;
+        vec3 a = vec3(adj[0][0], adj[1][0], adj[2][0]);
+        vec2 b = vec2(distance(p.xyw, a)) * adj[3][0];
+        vec2 normalizedFragCoord = b / materialParams.u_resolution;
+        vec3 color = vec3(random(normalizedFragCoord,
+            float(materialParams.u_seed)));
+        material.baseColor = vec4(color * materialParams.u_color, 1.0);
+    }
+}

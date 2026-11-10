@@ -1,0 +1,28 @@
+// Depth sensor material: writes the linear view-space depth (distance along
+// the camera's optical axis, in meters) into the red channel of a float
+// render target.
+material {
+    name : gz_depth,
+    shadingModel : unlit,
+    requires : [ uv0 ],
+    blending : opaque,
+    depthWrite : true,
+    parameters : [
+        { type : sampler2d, name : alphaMap, precision : high },
+        { type : float, name : alphaThreshold, precision : high }
+    ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        // alpha tested meshes (FilamentSubMesh::ApplyInstance): ogre2's
+        // sensor passes keep the alpha test. Threshold 0 keeps everything.
+        if (texture(materialParams_alphaMap, getUV0()).a <
+                materialParams.alphaThreshold) {
+            discard;
+        }
+        vec4 viewPos = getViewFromWorldMatrix() * vec4(getWorldPosition(), 1.0);
+        material.baseColor = vec4(-viewPos.z, 0.0, 0.0, 1.0);
+    }
+}

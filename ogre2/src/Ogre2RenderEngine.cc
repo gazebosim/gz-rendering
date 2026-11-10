@@ -272,6 +272,16 @@ void Ogre2RenderEngine::Destroy()
 }
 
 //////////////////////////////////////////////////
+bool Ogre2RenderEngine::IsSoftwareRenderer() const
+{
+  if (!this->ogreRoot || !this->ogreRoot->getRenderSystem())
+    return false;
+  const auto *capabilities =
+      this->ogreRoot->getRenderSystem()->getCapabilities();
+  return capabilities && IsSoftwareDeviceName(capabilities->getDeviceName());
+}
+
+//////////////////////////////////////////////////
 bool Ogre2RenderEngine::IsEnabled() const
 {
   return BaseRenderEngine::IsEnabled();

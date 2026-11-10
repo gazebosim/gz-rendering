@@ -108,6 +108,9 @@ namespace gz
       // Documentation Inherited
       public: virtual bool Headless() const override;
 
+      // Documentation inherited.
+      public: virtual bool IsSoftwareRenderer() const override;
+
       // Documentation Inherited
       public: virtual RenderPassSystemPtr RenderPassSystem() const override;
 
@@ -130,6 +133,12 @@ namespace gz
       protected: bool loaded = false;
 
       protected: bool initialized = false;
+
+      /// \brief Check if the name of a graphics device is that of a known
+      /// software rasterizer.
+      /// \param[in] _name Name of the device, as reported by the graphics API
+      /// \return True if the device is a software rasterizer
+      protected: static bool IsSoftwareDeviceName(const std::string &_name);
 
       protected: bool isHeadless = false;
 

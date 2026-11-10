@@ -93,6 +93,9 @@ namespace gz
 
       public: virtual bool IsEnabled() const override;
 
+      // Documentation inherited.
+      public: virtual bool IsSoftwareRenderer() const override;
+
       public: virtual std::string Name() const override;
 
       public: OgreRenderPathType RenderPathType() const;

@@ -88,6 +88,9 @@ namespace gz
       // Documentation Inherited.
       public: virtual bool IsEnabled() const override;
 
+      // Documentation inherited.
+      public: virtual bool IsSoftwareRenderer() const override;
+
       // Documentation Inherited.
       public: virtual std::string Name() const override;
 

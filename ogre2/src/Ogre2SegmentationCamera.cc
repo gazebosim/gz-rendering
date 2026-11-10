@@ -23,6 +23,7 @@
 #include <gz/math/Color.hh>
 #include <gz/math/Matrix4.hh>
 
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2Includes.hh"
@@ -273,7 +274,10 @@ void Ogre2SegmentationCamera::PostRender()
   const auto bufferSize = len * channelCount * bytesPerChannel;
 
   Ogre::Image2 image;
-  image.convertFromTexture(this->dataPtr->ogreSegmentationTexture, 0u, 0u);
+  {
+    ScopedGpuWait gpuWait;
+    image.convertFromTexture(this->dataPtr->ogreSegmentationTexture, 0u, 0u);
+  }
   Ogre::TextureBox box = image.getData(0);
 
   if (!this->dataPtr->buffer)

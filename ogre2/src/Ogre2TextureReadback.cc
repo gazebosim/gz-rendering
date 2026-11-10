@@ -18,6 +18,8 @@
 
 #include <gz/common/Console.hh>
 
+#include "gz/rendering/GpuWaitTime.hh"
+
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
@@ -74,6 +76,7 @@ bool Ogre2TextureReadback::ReadBack(Ogre::TextureGpu *_texture,
   if (texFormat == _dstFormat)
   {
     // Same format: Ogre copies the rows with a plain memcpy.
+    ScopedGpuWait gpuWait;
     Ogre::Image2::copyContentsToMemory(
         _texture, _texture->getEmptyBox(0u), dstBox, _dstFormat);
   }
@@ -89,8 +92,11 @@ bool Ogre2TextureReadback::ReadBack(Ogre::TextureGpu *_texture,
     this->conversionBuffer.resize(rawBox.getSizeBytes());
     rawBox.data = this->conversionBuffer.data();
 
-    Ogre::Image2::copyContentsToMemory(
-        _texture, _texture->getEmptyBox(0u), rawBox, texFormat);
+    {
+      ScopedGpuWait gpuWait;
+      Ogre::Image2::copyContentsToMemory(
+          _texture, _texture->getEmptyBox(0u), rawBox, texFormat);
+    }
     Ogre::PixelFormatGpuUtils::bulkPixelConversion(
         rawBox, texFormat, dstBox, _dstFormat);
   }

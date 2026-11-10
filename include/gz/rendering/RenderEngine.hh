@@ -192,6 +192,12 @@ namespace gz
       /// \return True if headless mode is enable, false otherwise.
       public: virtual bool Headless() const = 0;
 
+      /// \brief Check if the engine is running on a software rasterizer, such
+      /// as llvmpipe, instead of on a GPU.
+      /// \return True if the rendering work runs on the CPU. False if it runs
+      /// on a GPU, or if the engine can't tell.
+      public: virtual bool IsSoftwareRenderer() const = 0;
+
       /// \brief Add path to media resource location
       /// \param[in] _path Absolute path to resource location
       public: virtual void AddResourcePath(const std::string &_path) = 0;

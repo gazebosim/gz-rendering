@@ -30,6 +30,7 @@
 
 #include <gz/common/Profiler.hh>
 
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2DepthCamera.hh"
@@ -1260,7 +1261,10 @@ void Ogre2DepthCamera::PostRender()
   {
     // Legacy A/B control: original Ogre::Image2 path, kept verbatim.
     Ogre::Image2 image;
-    image.convertFromTexture(this->dataPtr->ogreDepthTexture[1], 0u, 0u);
+    {
+      ScopedGpuWait gpuWait;
+      image.convertFromTexture(this->dataPtr->ogreDepthTexture[1], 0u, 0u);
+    }
     Ogre::TextureBox box = image.getData(0);
     float *depthBufferTmp = static_cast<float *>(box.data);
 

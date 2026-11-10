@@ -35,6 +35,7 @@
 #include <gz/math/Matrix4.hh>
 #include <gz/math/OrientedBox.hh>
 
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Utils.hh"
 #include "gz/rendering/ogre2/Ogre2BoundingBoxCamera.hh"
@@ -600,7 +601,10 @@ void Ogre2BoundingBoxCamera::PostRender()
   unsigned int rawChannelCount = 4u;
 
   Ogre::Image2 image;
-  image.convertFromTexture(this->dataPtr->ogreRenderTexture, 0u, 0u);
+  {
+    ScopedGpuWait gpuWait;
+    image.convertFromTexture(this->dataPtr->ogreRenderTexture, 0u, 0u);
+  }
   Ogre::TextureBox box = image.getData(0);
   uint8_t *imgBufferTmp = static_cast<uint8_t *>(box.data);
   if (!this->dataPtr->buffer)

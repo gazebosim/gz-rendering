@@ -27,6 +27,7 @@
 #include <gz/math/Helpers.hh>
 #include <gz/math/Matrix4.hh>
 
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/ogre/OgreConversions.hh"
 #include "gz/rendering/ogre/OgreDepthCamera.hh"
@@ -468,8 +469,11 @@ void OgreDepthCamera::PostRender()
 
     Ogre::PixelBox ogrePixelBox(width, height, 1,
         OgreConversions::Convert(colorFormat), this->dataPtr->colorBuffer);
-    this->dataPtr->colorTexture->RenderTarget()->copyContentsToMemory(
-        ogrePixelBox);
+    {
+      ScopedGpuWait gpuWait;
+      this->dataPtr->colorTexture->RenderTarget()->copyContentsToMemory(
+          ogrePixelBox);
+    }
   }
 
   // fill depthBuffer and clamp values

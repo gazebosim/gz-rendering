@@ -34,6 +34,7 @@
 
 #include <gz/common/Profiler.hh>
 
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/CameraLens.hh"
 
 #include "gz/rendering/ogre/OgreWideAngleCamera.hh"
@@ -607,7 +608,10 @@ bool OgreWideAngleCamera::CopyToBuffer(const PixelBuffer &_dst) const
 
   Ogre::RenderTarget *rt =
     this->dataPtr->ogreRenderTexture->getBuffer()->getRenderTarget();
-  rt->copyContentsToMemory(ogrePixelBox);
+  {
+    ScopedGpuWait gpuWait;
+    rt->copyContentsToMemory(ogrePixelBox);
+  }
   return true;
 }
 
@@ -825,7 +829,10 @@ void OgreWideAngleCamera::PostRender()
       this->dataPtr->ogreRenderTexture->getBuffer()->getRenderTarget();
   Ogre::PixelBox ogrePixelBox(width, height, 1,
       OgreConversions::Convert(format), this->dataPtr->imageBuffer);
-  rt->copyContentsToMemory(ogrePixelBox);
+  {
+    ScopedGpuWait gpuWait;
+    rt->copyContentsToMemory(ogrePixelBox);
+  }
 
   // fill image data
   memcpy(this->dataPtr->wideAngleImage, this->dataPtr->imageBuffer,

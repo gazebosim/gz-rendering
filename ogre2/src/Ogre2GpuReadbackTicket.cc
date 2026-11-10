@@ -20,6 +20,7 @@
 
 #include <gz/common/Console.hh>
 
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 
 #ifdef _MSC_VER
@@ -129,9 +130,12 @@ Ogre::TextureBox Ogre2GpuReadbackTicket::DownloadAndMap(
     this->mapped = false;
   }
 
-  // Blocking download (accurateTracking=true): map() waits on the fence.
-  this->ticket->download(_texture, 0u, true);
-  box = this->ticket->map(0u);
+  {
+    ScopedGpuWait gpuWait;
+    // Blocking download (accurateTracking=true): map() waits on the fence.
+    this->ticket->download(_texture, 0u, true);
+    box = this->ticket->map(0u);
+  }
   this->mapped = true;
   return box;
 }

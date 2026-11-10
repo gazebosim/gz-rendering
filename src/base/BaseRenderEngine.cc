@@ -15,6 +15,10 @@
  *
  */
 
+#include <algorithm>
+#include <cctype>
+#include <string>
+
 #include <gz/common/Console.hh>
 
 #include "gz/rendering/RenderPassSystem.hh"
@@ -257,6 +261,28 @@ void BaseRenderEngine::SetHeadless(bool _headless)
 bool BaseRenderEngine::Headless() const
 {
   return this->isHeadless;
+}
+
+//////////////////////////////////////////////////
+bool BaseRenderEngine::IsSoftwareRenderer() const
+{
+  return false;
+}
+
+//////////////////////////////////////////////////
+bool BaseRenderEngine::IsSoftwareDeviceName(const std::string &_name)
+{
+  std::string name = _name;
+  std::transform(name.begin(), name.end(), name.begin(),
+      [](unsigned char _c) { return std::tolower(_c); });
+
+  for (const char *software : {"llvmpipe", "lavapipe", "softpipe", "swrast",
+                               "swiftshader", "software rasterizer"})
+  {
+    if (name.find(software) != std::string::npos)
+      return true;
+  }
+  return false;
 }
 
 //////////////////////////////////////////////////

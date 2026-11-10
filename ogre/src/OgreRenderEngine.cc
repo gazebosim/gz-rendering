@@ -221,6 +221,16 @@ void OgreRenderEngine::Destroy()
 }
 
 //////////////////////////////////////////////////
+bool OgreRenderEngine::IsSoftwareRenderer() const
+{
+  if (!this->ogreRoot || !this->ogreRoot->getRenderSystem())
+    return false;
+  const auto *capabilities =
+      this->ogreRoot->getRenderSystem()->getCapabilities();
+  return capabilities && IsSoftwareDeviceName(capabilities->getDeviceName());
+}
+
+//////////////////////////////////////////////////
 bool OgreRenderEngine::IsEnabled() const
 {
   return this->initialized && this->renderPathType != NONE;

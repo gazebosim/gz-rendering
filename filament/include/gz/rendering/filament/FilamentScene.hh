@@ -71,7 +71,7 @@ namespace gz
       public: virtual void SetSkyEnabled(bool _enabled) override;
 
       // Documentation inherited.
-      // Also switches the GUI quality mode's sky lighting (UpdateSkyLight).
+      // Also switches the quality mode's sky lighting (UpdateSkyLight).
       public: virtual void PreRender() override;
 
       // Documentation inherited.
@@ -261,15 +261,14 @@ namespace gz
 
       private: FilamentScenePtr SharedThis();
 
-      /// \brief GUI quality mode: with GZ_FILAMENT_QUALITY=1 and a camera
-      /// tagged "user-camera" (gz-gui's MinimalScene) in this scene, the
-      /// sky, when enabled, lights the scene (image based lighting): its
-      /// prefiltered cube map as reflections and its irradiance (3-band SH,
-      /// scaled to the ambient light's level) as the ambient term, instead
-      /// of SetAmbientLight's uniform ambient with black reflections.
-      /// Every camera of this filament::Scene sees it, so sensors keep
-      /// ogre2's lighting only while no GUI camera shares their scene (gz-sim
-      /// renders the GUI in its own process).
+      /// \brief Quality mode (the default; GZ_FILAMENT_QUALITY=0 keeps
+      /// ogre2's lighting): the sky, when enabled, lights the scene (image
+      /// based lighting): its prefiltered cube map as reflections and its
+      /// irradiance (3-band SH, scaled to the ambient light's level) as the
+      /// ambient term, instead of SetAmbientLight's uniform ambient with
+      /// black reflections. Every camera of this filament::Scene sees it;
+      /// sensors that draw with unlit override materials (depth, thermal,
+      /// segmentation, lidar) are unaffected.
       private: void UpdateSkyLight();
 
       protected: filament::Scene *scene{nullptr};
@@ -279,7 +278,7 @@ namespace gz
       /// \brief Skybox drawn when the sky is enabled
       protected: filament::Skybox *skybox{nullptr};
 
-      /// \brief Sky lighting of the GUI quality mode (see UpdateSkyLight),
+      /// \brief Sky lighting of the quality mode (see UpdateSkyLight),
       /// rebuilt when the ambient light changes
       private: filament::IndirectLight *skyLight{nullptr};
 
@@ -291,9 +290,6 @@ namespace gz
 
       /// \brief Cube map file of the skybox (see SetSkyEnabled)
       private: std::string skyCubemap;
-
-      /// \brief A camera tagged "user-camera" was seen in this scene
-      private: bool userCamera{false};
 
       protected: math::Color ambient;
 

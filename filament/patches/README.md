@@ -34,7 +34,8 @@ Patches applied on top of Filament 0643fd0f for this spike:
   (Filament's own) when material global 3.z is non-zero
   (View::setMaterialGlobal(3, ...); Filament's default is (0, 0, 0, 1), so
   every view keeps 0005's ogre2 diffuse unless asked). gz-rendering sets it
-  on the GZ_FILAMENT_QUALITY=1 user camera only. Shader only, like 0005;
+  on its quality-mode views only (GUI and RGB cameras, the default;
+  GZ_FILAMENT_QUALITY=0 turns it off). Shader only, like 0005;
   MATERIAL_VERSION 81, so materials from a matc without 0007 are refused
   instead of silently ignoring the switch.
   The switch overwrites Fd after the ogre2 lobe in surfaceShading: an early

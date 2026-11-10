@@ -290,6 +290,26 @@ void FilamentRenderTarget::ApplyRenderPasses(
 }
 
 //////////////////////////////////////////////////
+void FilamentRenderTarget::RenderDepth(filament::View *_view)
+{
+  if (!this->target)
+    return;
+  auto it = this->colorTargets.find(this->depthTexture);
+  if (it == this->colorTargets.end())
+  {
+    it = this->colorTargets.emplace(this->depthTexture,
+        filament::RenderTarget::Builder()
+            .texture(filament::RenderTarget::AttachmentPoint::DEPTH,
+                this->depthTexture)
+            .build(*Engine())).first;
+  }
+  filament::RenderTarget *scene = this->target;
+  this->target = it->second;
+  this->Render(_view);
+  this->target = scene;
+}
+
+//////////////////////////////////////////////////
 void FilamentRenderTarget::ApplyProjectors(
     const std::set<FilamentProjector *> &_projectors,
     const filament::math::mat4f &_invViewProj, uint32_t _visibilityMask)

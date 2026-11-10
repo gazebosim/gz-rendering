@@ -19,7 +19,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <variant>
 #include <vector>
 
 #include <filament-iblprefilter/IBLPrefilterContext.h>
@@ -72,13 +71,14 @@ using namespace rendering;
 
 namespace
 {
-/// \brief GZ_FILAMENT_QUALITY=1: GUI quality mode
+/// \brief Quality mode, the default; GZ_FILAMENT_QUALITY=0 turns it off
+/// (ogre2's look)
 bool QualityMode()
 {
   static const bool on = []
   {
     const char *env = std::getenv("GZ_FILAMENT_QUALITY");
-    return env && std::strcmp(env, "1") == 0;
+    return !env || std::strcmp(env, "0") != 0;
   }();
   return on;
 }
@@ -279,16 +279,7 @@ void FilamentScene::PreRender()
 //////////////////////////////////////////////////
 void FilamentScene::UpdateSkyLight()
 {
-  // Evaluated per frame: gz-gui tags its camera after creating it.
-  // ponytail: latched; a GUI camera destroyed later keeps the sky lighting
-  for (unsigned int i = 0; !this->userCamera && i < this->sensors->Size();
-      ++i)
-  {
-    const Variant tag = this->sensors->GetByIndex(i)->UserData("user-camera");
-    const bool *isUser = std::get_if<bool>(&tag);
-    this->userCamera = isUser && *isUser;
-  }
-  if (!this->userCamera || !this->scene)
+  if (!this->scene)
     return;
 
   if (!this->SkyEnabled())
@@ -303,6 +294,9 @@ void FilamentScene::UpdateSkyLight()
   auto *engine = gzEngine->FilamentEngine();
   if (!this->skyReflections)
   {
+    // the prefilter runs on filament's job system: on the render thread,
+    // which may not have rendered a camera yet
+    gzEngine->AdoptThread();
     // once per sky cube map: the skybox's (SetSkyEnabled)
     unsigned int size = 0u;
     std::vector<uint8_t> faces;

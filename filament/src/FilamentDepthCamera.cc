@@ -225,6 +225,9 @@ void FilamentDepthCamera::Render()
     FilamentRenderEngine::Instance()->BeginFrame();
     // ogre2 renders this pass with its shadow node, like a camera
     this->view->setShadowingEnabled(true);
+    // the RGBD image looks like an RGB camera's (quality mode's stock
+    // diffuse; the depth pass's material ignores it)
+    this->UpdateQualityMode();
     this->colorTexture->Render(this->view);
     this->view->setShadowingEnabled(false);
   }

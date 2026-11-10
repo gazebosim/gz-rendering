@@ -95,6 +95,11 @@ namespace gz
           const filament::math::mat4f &_invViewProj,
           uint32_t _visibilityMask);
 
+      /// \brief Render _view's depth alone into the depth attachment, for
+      /// ApplyProjectors after a post-processed render (which leaves it
+      /// untouched)
+      public: void RenderDepth(filament::View *_view);
+
       /// \brief Passes added with AddRenderPass
       public: const std::vector<RenderPassPtr> &RenderPasses() const;
 
@@ -151,8 +156,8 @@ namespace gz
       private: filament::Texture *glColor{nullptr};
 
       /// \brief Targets with just a color attachment, for drawing over what
-      /// the scene rendered while sampling its depth (ApplyProjectors); by
-      /// color texture
+      /// the scene rendered while sampling its depth (ApplyProjectors), or
+      /// just the depth one (RenderDepth); by texture
       private: std::map<filament::Texture *, filament::RenderTarget *>
           colorTargets;
 

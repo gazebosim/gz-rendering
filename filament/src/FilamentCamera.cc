@@ -139,6 +139,7 @@ void FilamentCamera::Init()
   this->view->setCamera(this->camera);
   this->view->setVisibleLayers(0xff, 0x1);
   // Sensors want plain radiance: no tone mapping, AA, dithering, bloom...
+  // (the quality mode turns it on for the GUI camera, UpdateQualityMode)
   this->view->setPostProcessingEnabled(false);
 
   this->CreateRenderTexture();
@@ -151,16 +152,26 @@ void FilamentCamera::UpdateQualityMode()
   static const bool requested = []
   {
     const char *env = std::getenv("GZ_FILAMENT_QUALITY");
-    return env && std::strcmp(env, "1") == 0;
+    return !env || std::strcmp(env, "0") != 0;
   }();
-  if (!requested || this->colorGrading)
+  if (!requested || this->qualityChecked)
     return;
+  this->qualityChecked = true;
+
+  using namespace filament;
+  // Filament's stock diffuse for this view (Filament patch 0007; the other
+  // views keep patch 0005's ogre2 diffuse). Lights: FilamentScene::
+  // PhysicalLights. Shader only: no cost.
+  this->view->setMaterialGlobal(3, {0.0f, 0.0f, 1.0f, 1.0f});
+
+  // Sensors stop here: post-processing (tone mapping, GTAO, view MSAA)
+  // cost +23..36% CPU on 6 cameras. gz-gui tags its camera before the
+  // first render.
   const Variant user = this->UserData("user-camera");
   const bool *isUser = std::get_if<bool>(&user);
   if (!isUser || !*isUser)
     return;
 
-  using namespace filament;
   // the LUT is baked with filament's job system: on the render thread
   FilamentRenderEngine::Instance()->AdoptThread();
   auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
@@ -195,11 +206,6 @@ void FilamentCamera::UpdateQualityMode()
   ao.lowPassFilter = View::QualityLevel::HIGH;
   ao.upsampling = View::QualityLevel::MEDIUM;
   this->view->setAmbientOcclusionOptions(ao);
-
-  // Filament's stock diffuse for this view (Filament patch 0007; the other
-  // views keep patch 0005's ogre2 diffuse). Lights: FilamentScene::
-  // PhysicalLights.
-  this->view->setMaterialGlobal(3, {0.0f, 0.0f, 1.0f, 1.0f});
 
   // Shadows stay PCF. Filament 1.79's soft shadows (PCSS, VSM) filter
   // moments: Chebyshev's bound lets the sun bleed through thin walls into
@@ -381,8 +387,8 @@ void FilamentCamera::Render()
   // Sensors (no post-processing): a multisampled render target, resolved
   // once into the camera's textures. View MSAA would add an R11G11B10F
   // intermediate, a resolve and a blit per frame (+16% CPU on 6 cameras).
-  // The quality-mode user camera keeps view MSAA: its post-processing
-  // runs on the intermediate buffer anyway.
+  // The quality-mode GUI camera keeps view MSAA: its post-processing runs
+  // on the intermediate buffer anyway.
   // Set every frame: gz-gui sets the level after the view exists.
   const auto aa = static_cast<uint8_t>(std::min(this->AntiAliasing(), 8u));
   const bool post = this->view->isPostProcessingEnabled();
@@ -402,6 +408,15 @@ void FilamentCamera::Render()
   this->renderTexture->Render(this->view);
   if (!this->scene->Projectors().empty())
   {
+    // post-processing (the quality-mode GUI camera) renders the scene into
+    // its own buffers and leaves the target's depth alone: fill it for the
+    // decals with a plain pass
+    if (post)
+    {
+      this->view->setPostProcessingEnabled(false);
+      this->renderTexture->RenderDepth(this->view);
+      this->view->setPostProcessingEnabled(true);
+    }
     // projected textures go on the scene, before the render passes
     const math::Matrix4d inverse =
         (this->ProjectionMatrix() * this->ViewMatrix()).Inverse();

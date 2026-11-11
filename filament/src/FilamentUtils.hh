@@ -27,6 +27,7 @@
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
 #include <math/vec3.h>
+#include <math/vec4.h>
 
 #include <gz/common/Console.hh>
 #include <gz/math/Color.hh>
@@ -70,6 +71,16 @@ namespace gz::rendering::filament_utils
     _cache[rgb] = mi;
     return mi;
   }
+
+  /// \brief Clear color of a packed float target that reads +inf.
+  /// Float sensor outputs (depth, lidar ranges, depth noise) go through
+  /// RGBA8 targets as the 4 bytes of their float bits, least significant in
+  /// red (gz_depth.mat): filament's GLES shaders write their color at
+  /// mediump, which drivers may round to half precision (Mesa's llvmpipe
+  /// does), and every byte value survives that. Vulkan's readPixels also
+  /// copies RGBA8 rows as they are, but converts R32F texel by texel.
+  constexpr filament::math::float4 kPackedInf{
+      0.0f, 0.0f, 128.0f / 255.0f, 127.0f / 255.0f};
 
   /// \brief The color whose 8 bit channels are _rgb (0xRRGGBB)
   inline math::Color ColorFromRgb(uint32_t _rgb)

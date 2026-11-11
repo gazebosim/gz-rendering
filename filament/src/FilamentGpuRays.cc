@@ -97,32 +97,25 @@ void FilamentGpuRays::Init()
 
   this->renderTexture = std::dynamic_pointer_cast<FilamentRenderTexture>(
       this->scene->CreateRenderTexture());
-  this->renderTexture->SetFormat(PF_FLOAT32_R);
+  // depths and ranges as float bits in RGBA8, see filament_utils::kPackedInf
+  this->renderTexture->SetFormat(PF_R8G8B8A8);
+  this->renderTexture->SetSrgb(false);
   this->InitSamplePass();
 }
 
 //////////////////////////////////////////////////
 void FilamentGpuRays::InitSamplePass()
 {
-  // packed: the range's float bits as RGBA8, see PackedFloatTargets
-  const bool packed = FilamentRenderEngine::Instance()->PackedFloatTargets();
-  filament::Material *mat = FilamentRenderEngine::Instance()->Material(
-      packed ? "gz_lidar_sample_packed" : "gz_lidar_sample");
+  filament::Material *mat =
+      FilamentRenderEngine::Instance()->Material("gz_lidar_sample");
   if (!mat)
     return;
   this->samplePass = std::make_unique<FilamentFullscreenPass>(*mat);
 
   this->scanTexture = std::dynamic_pointer_cast<FilamentRenderTexture>(
       this->scene->CreateRenderTexture());
-  if (packed)
-  {
-    this->scanTexture->SetFormat(PF_R8G8B8A8);
-    this->scanTexture->SetSrgb(false);
-  }
-  else
-  {
-    this->scanTexture->SetFormat(PF_FLOAT32_R);
-  }
+  this->scanTexture->SetFormat(PF_R8G8B8A8);
+  this->scanTexture->SetSrgb(false);
 }
 
 //////////////////////////////////////////////////
@@ -329,8 +322,7 @@ void FilamentGpuRays::Render()
     this->renderTexture->SetHeight(n);
   }
   this->renderTexture->PreRender();
-  const float inf = std::numeric_limits<float>::infinity();
-  this->renderTexture->SetClearColor({inf, inf, inf, 1.0f});
+  this->renderTexture->SetClearColor(filament_utils::kPackedInf);
 
   auto &tm = FilamentRenderEngine::Instance()->FilamentEngine()
       ->getTransformManager();
@@ -376,15 +368,12 @@ void FilamentGpuRays::Render()
   this->scanTexture->Render(this->samplePass->view);
   FilamentRenderEngine::Instance()->EndFrame();
   this->ranges.resize(static_cast<size_t>(hCount) * vCount);
-  // packed: 4 bytes per ray that are the float range, little endian
-  const bool packed = FilamentRenderEngine::Instance()->PackedFloatTargets();
+  // 4 bytes per ray that are the float range, little endian
   renderer->readPixels(this->scanTexture->Native(), 0, 0, hCount, vCount,
       filament::backend::PixelBufferDescriptor(this->ranges.data(),
       this->ranges.size() * sizeof(float),
-      packed ? filament::backend::PixelDataFormat::RGBA :
-               filament::backend::PixelDataFormat::R,
-      packed ? filament::backend::PixelDataType::UBYTE :
-               filament::backend::PixelDataType::FLOAT));
+      filament::backend::PixelDataFormat::RGBA,
+      filament::backend::PixelDataType::UBYTE));
   engine->flushAndWait();
   for (FilamentMesh *m : meshes)
     m->RestoreMaterials();

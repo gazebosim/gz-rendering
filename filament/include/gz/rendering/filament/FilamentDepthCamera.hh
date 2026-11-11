@@ -43,9 +43,9 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Depth camera: renders every mesh with the gz_depth_clamp
-    /// material (linear view depth, clamped like ogre2's) into an R32F
-    /// target, then reads it back. With particles in view it renders the
-    /// raw depth (gz_depth) and PostRender clamps.
+    /// material (linear view depth, clamped like ogre2's) into an RGBA8
+    /// target that holds the float bits, then reads it back. With particles
+    /// in view it renders the raw depth (gz_depth) and PostRender clamps.
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentDepthCamera :
       public BaseDepthCamera<FilamentCamera>
     {
@@ -89,10 +89,10 @@ namespace gz
       /// \return The pinhole: fx, fy, cx, cy
       private: std::array<double, 4> UpdateRays();
 
-      /// \brief gz_depth(_packed): the raw depth, for particles
+      /// \brief gz_depth: the raw depth, for particles
       protected: filament::MaterialInstance *depthInstance{nullptr};
 
-      /// \brief gz_depth_clamp(_packed): the depth clamped in the shader
+      /// \brief gz_depth_clamp: the depth clamped in the shader
       protected: filament::MaterialInstance *clampInstance{nullptr};
 
       /// \brief clampInstance's per pixel far thresholds (R32F), the

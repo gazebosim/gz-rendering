@@ -176,12 +176,6 @@ rendering::GraphicsAPI FilamentRenderEngine::GraphicsAPI() const
 }
 
 //////////////////////////////////////////////////
-bool FilamentRenderEngine::PackedFloatTargets() const
-{
-  return this->dataPtr->backend == rendering::GraphicsAPI::VULKAN;
-}
-
-//////////////////////////////////////////////////
 filament::Engine *FilamentRenderEngine::FilamentEngine() const
 {
   return this->dataPtr->engine;

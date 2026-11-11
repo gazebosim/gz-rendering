@@ -79,12 +79,6 @@ namespace gz
 
       public: virtual rendering::GraphicsAPI GraphicsAPI() const override;
 
-      /// \brief Whether float sensor targets (depth, lidar ranges) hold
-      /// their float bits as RGBA8 instead of R32F: on Vulkan, whose
-      /// readPixels converts R32F texel by texel but copies RGBA8 rows as
-      /// they are. OpenGL reads both directly and keeps R32F.
-      public: bool PackedFloatTargets() const;
-
       /// \brief Native filament engine
       public: filament::Engine *FilamentEngine() const;
 

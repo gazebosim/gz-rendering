@@ -2,8 +2,8 @@
 // Same model as ogre2's gaussian_noise_fs.glsl: z = N(0, 1) * stddev + mean,
 // then (mode 0) the color gets sign(z) * |z|^2.1 added to each RGB channel and
 // is clamped to [0, 1]; colorIn and the output are sRGB targets, so like in
-// ogre2 the noise is added to linear values. Mode 1 writes z itself into the
-// red channel (float target), for the depth camera's CPU side.
+// ogre2 the noise is added to linear values. Mode 1 writes z itself, packed
+// like gz_depth, for the depth camera's CPU side.
 // The uniforms come from a PCG hash of (pixel, seed) instead of ogre2's
 // fract(sin()) hash; seed is redrawn on the CPU every frame. Not replicated:
 // that hash has few bits and sometimes returns 0, which ogre2's color shader
@@ -61,7 +61,9 @@ fragment {
         highp float z = sqrt(-2.0 * log(u1)) * cos(6.283185307179586 * u2);
         z = z * materialParams.stddev + materialParams.mean;
         if (materialParams.mode == 1) {
-            material.baseColor = vec4(z, 0.0, 0.0, 1.0);
+            highp uint bits = floatBitsToUint(z);
+            material.baseColor =
+                vec4((uvec4(bits) >> uvec4(0u, 8u, 16u, 24u)) & 0xffu) / 255.0;
             return;
         }
         highp float n = sign(z) * pow(abs(z), 2.1);

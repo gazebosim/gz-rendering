@@ -3,7 +3,8 @@
 // each pixel's least depth whose range along the pixel ray is beyond far,
 // computed on the CPU with the CPU path's double test (FarThreshold), and
 // `nearT` the least float >= near + tol, so both decisions are the CPU's,
-// bit for bit. Texel rows follow gl_FragCoord (bottom first on OpenGL).
+// bit for bit. Output packed like gz_depth. Texel rows follow gl_FragCoord
+// (bottom first on OpenGL).
 material {
     name : gz_depth_clamp,
     shadingModel : unlit,
@@ -27,12 +28,15 @@ fragment {
                 materialParams.alphaThreshold) {
             discard;
         }
-        vec4 viewPos = getViewFromWorldMatrix() * vec4(getWorldPosition(), 1.0);
+        highp vec4 viewPos =
+            getViewFromWorldMatrix() * vec4(getWorldPosition(), 1.0);
         highp float depth = -viewPos.z;
         if (depth >= texelFetch(materialParams_farMap, ivec2(gl_FragCoord.xy), 0).r)
             depth = materialParams.inf;
         else if (depth < materialParams.nearT)
             depth = -materialParams.inf;
-        material.baseColor = vec4(depth, 0.0, 0.0, 1.0);
+        highp uint bits = floatBitsToUint(depth);
+        material.baseColor =
+            vec4((uvec4(bits) >> uvec4(0u, 8u, 16u, 24u)) & 0xffu) / 255.0;
     }
 }

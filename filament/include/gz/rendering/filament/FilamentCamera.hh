@@ -42,9 +42,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentCamera :
       public BaseCamera<FilamentSensor>
     {
-      protected: FilamentCamera();
+      protected: FilamentCamera() = default;
 
-      public: virtual ~FilamentCamera();
+      public: virtual ~FilamentCamera() = default;
 
       public: virtual void Render() override;
 

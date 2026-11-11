@@ -77,10 +77,6 @@ namespace gz
       private: void Samples(const ScenePtr &_scene, unsigned int _width,
           unsigned int _height, std::vector<float> &_out);
 
-      /// \brief Lazily create the material instance, fullscreen triangle,
-      /// scene and view; false if the material is missing
-      private: bool CreateResources();
-
       /// \brief Set the per draw uniforms
       private: void SetParameters(filament::Texture *_colorIn, int _mode);
 

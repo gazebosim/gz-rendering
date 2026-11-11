@@ -42,14 +42,13 @@ namespace gz
     class FilamentMesh;
 
     /// \brief Bounding box camera. Renders every mesh with a flat color that
-    /// encodes (mesh index, label), exactly like ogre2's material switcher,
-    /// then computes the boxes on the CPU with ogre2's algorithms.
+    /// encodes (mesh index, label), then computes the boxes on the CPU.
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentBoundingBoxCamera :
       public BaseBoundingBoxCamera<FilamentCamera>
     {
-      protected: FilamentBoundingBoxCamera();
+      protected: FilamentBoundingBoxCamera() = default;
 
-      public: virtual ~FilamentBoundingBoxCamera();
+      public: virtual ~FilamentBoundingBoxCamera() = default;
 
       // BaseCamera<FilamentCamera> would otherwise win over FilamentCamera
       public: virtual void SetProjectionMatrix(const math::Matrix4d &_matrix)
@@ -89,9 +88,9 @@ namespace gz
 
       private: void BoundingBoxes3D();
 
-      /// \brief Label of every item with a visible pixel by item index,
-      /// 0xffffffff for the others
-      private: std::vector<uint32_t> MarkVisibleBoxes() const;
+      /// \brief Name of the top level visual of an item, to merge the
+      /// boxes of multi-link models
+      private: std::string ParentName(uint32_t _itemId) const;
 
       /// \brief gz_flat instances by colour (0xRRGGBB)
       private: std::unordered_map<uint32_t, filament::MaterialInstance *>
@@ -101,9 +100,6 @@ namespace gz
       private: std::vector<Item> items;
 
       /// \brief Last ID image, RGB8: R,G = item index (low, high), B = label
-      private: std::vector<uint8_t> buffer;
-
-      /// \brief Readback image of PostRender, reused
       private: Image image;
 
       private: common::EventT<void(const std::vector<BoundingBox> &)>

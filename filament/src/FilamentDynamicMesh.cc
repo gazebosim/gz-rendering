@@ -15,7 +15,6 @@
  *
  */
 #include <algorithm>
-#include <cstring>
 #include <limits>
 
 #include <filament/Box.h>
@@ -53,24 +52,6 @@ namespace
 }
 
 //////////////////////////////////////////////////
-FilamentDynamicSubMesh::FilamentDynamicSubMesh()
-{
-}
-
-//////////////////////////////////////////////////
-void FilamentDynamicSubMesh::Setup(FilamentMesh *_mesh)
-{
-  this->mesh = _mesh;
-  this->index = 0u;
-}
-
-//////////////////////////////////////////////////
-void FilamentDynamicSubMesh::Apply(filament::MaterialInstance *_instance)
-{
-  this->ApplyInstance(_instance);
-}
-
-//////////////////////////////////////////////////
 void FilamentDynamicSubMesh::PreRender()
 {
   if (this->custom)
@@ -80,27 +61,17 @@ void FilamentDynamicSubMesh::PreRender()
 }
 
 //////////////////////////////////////////////////
-FilamentDynamicMesh::FilamentDynamicMesh()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentDynamicMesh::~FilamentDynamicMesh()
-{
-}
-
-//////////////////////////////////////////////////
 void FilamentDynamicMesh::Init()
 {
   FilamentMesh::Init();
   this->sub = std::make_shared<FilamentDynamicSubMesh>();
-  this->sub->Setup(this);
+  this->sub->mesh = this;
   this->AddSubMesh(this->sub);
   // ogre2 draws material-less meshes flat unlit white
   MaterialPtr flat = this->scene->CreateMaterial();
   flat->SetLightingEnabled(false);
   this->sub->SetMaterial(flat, false);
-  this->sub->OwnMaterial();
+  this->sub->ownsMaterial = true;
 }
 
 //////////////////////////////////////////////////
@@ -168,12 +139,6 @@ void FilamentDynamicMesh::SetOperationType(MarkerType _type)
 }
 
 //////////////////////////////////////////////////
-MarkerType FilamentDynamicMesh::OperationType() const
-{
-  return this->opType;
-}
-
-//////////////////////////////////////////////////
 void FilamentDynamicMesh::AddPoint(const math::Vector3d &_pt,
     const math::Color &_color)
 {
@@ -208,18 +173,6 @@ void FilamentDynamicMesh::SetColor(unsigned int _index,
   }
   this->colors[_index] = _color;
   this->dirty = true;
-}
-
-//////////////////////////////////////////////////
-math::Vector3d FilamentDynamicMesh::Point(unsigned int _index) const
-{
-  if (_index >= this->vertices.size())
-  {
-    gzerr << "Point index[" << _index << "] is out of bounds[0-"
-          << this->vertices.size() - 1 << "]\n";
-    return math::Vector3d(math::INF_D, math::INF_D, math::INF_D);
-  }
-  return this->vertices[_index];
 }
 
 //////////////////////////////////////////////////
@@ -329,7 +282,7 @@ void FilamentDynamicMesh::ApplyMaterial()
     instance = FilamentRenderEngine::Instance()->Material("gz_unlit")
         ->getDefaultInstance();
   }
-  this->sub->Apply(instance);
+  this->sub->ApplyInstance(instance);
 }
 
 //////////////////////////////////////////////////

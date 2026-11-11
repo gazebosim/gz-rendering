@@ -35,13 +35,11 @@
 #include <filament/Viewport.h>
 #include <utils/EntityManager.h>
 
-#include <gz/common/Console.hh>
 #include <gz/math/Helpers.hh>
 #include <gz/math/Quaternion.hh>
 #include <gz/math/Rand.hh>
 #include <gz/math/Vector3.hh>
 
-#include "gz/rendering/Image.hh"
 #include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentGpuRays.hh"
 #include "gz/rendering/filament/FilamentMesh.hh"
@@ -65,15 +63,15 @@ namespace
 }
 
 //////////////////////////////////////////////////
+FilamentGpuRays::~FilamentGpuRays()
+{
+}
+
+//////////////////////////////////////////////////
 FilamentGpuRays::FilamentGpuRays()
 {
   // range, retro, unused (same layout as ogre2)
   this->channels = 3u;
-}
-
-//////////////////////////////////////////////////
-FilamentGpuRays::~FilamentGpuRays()
-{
 }
 
 //////////////////////////////////////////////////

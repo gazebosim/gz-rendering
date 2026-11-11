@@ -22,16 +22,6 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-FilamentGeometry::FilamentGeometry()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentGeometry::~FilamentGeometry()
-{
-}
-
-//////////////////////////////////////////////////
 bool FilamentGeometry::HasParent() const
 {
   return this->parent != nullptr;

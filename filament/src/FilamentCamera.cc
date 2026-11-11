@@ -20,7 +20,6 @@
 #include <filament/Camera.h>
 #include <filament/ColorGrading.h>
 #include <filament/Engine.h>
-#include <filament/Scene.h>
 #include <filament/TransformManager.h>
 #include <filament/View.h>
 #include <utils/EntityManager.h>
@@ -33,6 +32,7 @@
 #include "gz/rendering/filament/FilamentCamera.hh"
 #include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentMesh.hh"
+#include "gz/rendering/filament/FilamentParticleEmitter.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
 
@@ -41,16 +41,6 @@ using namespace rendering;
 
 /// \brief FilamentColorGrading.cc
 filament::ColorGrading *CreateQualityColorGrading(filament::Engine &_engine);
-
-//////////////////////////////////////////////////
-FilamentCamera::FilamentCamera()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentCamera::~FilamentCamera()
-{
-}
 
 //////////////////////////////////////////////////
 void FilamentCamera::Destroy()
@@ -378,8 +368,11 @@ void FilamentCamera::Render()
   this->renderTexture->SetClearColor(FilamentConversions::ToFloat4(bg));
   this->view->setVisibleLayers(0xff,
       FilamentConversions::MaskToLayers(this->VisibilityMask()));
-  // the camera looks along its +X
-  this->scene->SortParticles(this->WorldPose().Rot() * math::Vector3d::UnitX);
+  // particles are sorted back to front along the camera's forward vector
+  const math::Vector3d forward =
+      this->WorldPose().Rot() * math::Vector3d::UnitX;
+  for (FilamentParticleEmitter *e : this->scene->ParticleEmitters())
+    e->SortFor(forward);
   // the quality-mode GUI camera reflects the scene around it
   if (post)
   {
@@ -428,8 +421,8 @@ math::Vector3d FilamentCamera::ReflectionProbePosition()
   this->probeCameraPose = pose;
   // 1 m short of what the camera looks at (at most half way), where the
   // reflective things the user looks at are; 5 m ahead if it looks at
-  // nothing. Measured on the Cycles sunroom: 0.5x / 0.75x of the way and
-  // the camera position reflect too much of what is behind the camera.
+  // nothing. Closer to the camera, the probe reflects too much of what is
+  // behind the camera.
   constexpr double kBack = 1.0;
   constexpr double kNoHit = 5.0;
   const math::Vector3d dir = pose.Rot() * math::Vector3d::UnitX;

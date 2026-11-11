@@ -18,7 +18,6 @@
 
 #include "gz/rendering/Capsule.hh"
 #include "gz/rendering/filament/FilamentMarker.hh"
-#include "gz/rendering/filament/FilamentMaterial.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
 #include "gz/rendering/filament/FilamentVisual.hh"
 #include "FilamentUtils.hh"

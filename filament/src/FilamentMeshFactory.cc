@@ -42,7 +42,6 @@
 
 #include "gz/rendering/Material.hh"
 #include "gz/rendering/filament/FilamentConversions.hh"
-#include "gz/rendering/filament/FilamentMaterial.hh"
 #include "gz/rendering/filament/FilamentMesh.hh"
 #include "gz/rendering/filament/FilamentMeshFactory.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
@@ -55,8 +54,7 @@ using namespace rendering;
 namespace
 {
   /// \brief GPU buffers of one common::SubMesh, shared by all the
-  /// visuals that use it: one vertex array per distinct mesh instead of one
-  /// per visual is ~2.5 ms/frame at 2500 boxes (GL and Vulkan)
+  /// visuals that use it
   struct SharedGeometry
   {
     /// \brief Pins the source so its address (the cache key) is not reused
@@ -118,11 +116,6 @@ namespace
 //////////////////////////////////////////////////
 FilamentMeshFactory::FilamentMeshFactory(FilamentScenePtr _scene)
   : scene(_scene)
-{
-}
-
-//////////////////////////////////////////////////
-FilamentMeshFactory::~FilamentMeshFactory()
 {
 }
 
@@ -304,11 +297,14 @@ bool FilamentMeshFactory::Load(FilamentMeshPtr _mesh,
             .attribute(VA::BONE_WEIGHTS, 4, AT::FLOAT4);
       }
       geom->vb = vbb.build(*engine);
-      geom->vb->setBufferAt(*engine, 0, filament::VertexBuffer::BufferDescriptor(
+      geom->vb->setBufferAt(*engine, 0,
+          filament::VertexBuffer::BufferDescriptor(
           pos, sizeof(float3) * nv, &FreeBuffer<float3>));
-      geom->vb->setBufferAt(*engine, 1, filament::VertexBuffer::BufferDescriptor(
+      geom->vb->setBufferAt(*engine, 1,
+          filament::VertexBuffer::BufferDescriptor(
           tangents, sizeof(float4) * nv, &FreeBuffer<float4>));
-      geom->vb->setBufferAt(*engine, 2, filament::VertexBuffer::BufferDescriptor(
+      geom->vb->setBufferAt(*engine, 2,
+          filament::VertexBuffer::BufferDescriptor(
           uv, sizeof(float4) * nv, &FreeBuffer<float4>));
       if (skinned)
       {

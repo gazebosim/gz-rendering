@@ -49,9 +49,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentDepthCamera :
       public BaseDepthCamera<FilamentCamera>
     {
-      protected: FilamentDepthCamera();
+      protected: FilamentDepthCamera() = default;
 
-      public: virtual ~FilamentDepthCamera();
+      public: virtual ~FilamentDepthCamera() = default;
 
       // BaseCamera<FilamentCamera> would otherwise win over FilamentCamera
       public: virtual void SetProjectionMatrix(const math::Matrix4d &_matrix)

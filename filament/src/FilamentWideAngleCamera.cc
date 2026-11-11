@@ -29,7 +29,6 @@
 #include <filament/Viewport.h>
 
 #include <gz/common/Console.hh>
-#include <gz/math/Helpers.hh>
 
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/PixelFormat.hh"
@@ -52,12 +51,12 @@ namespace
 }
 
 //////////////////////////////////////////////////
-FilamentWideAngleCamera::FilamentWideAngleCamera()
+FilamentWideAngleCamera::~FilamentWideAngleCamera()
 {
 }
 
 //////////////////////////////////////////////////
-FilamentWideAngleCamera::~FilamentWideAngleCamera()
+FilamentWideAngleCamera::FilamentWideAngleCamera()
 {
 }
 
@@ -70,10 +69,7 @@ void FilamentWideAngleCamera::Init()
       this->scene->CreateRenderTexture());
   this->atlas->SetFormat(PF_R8G8B8);
 
-  filament::Material *mat =
-      FilamentRenderEngine::Instance()->Material("gz_wide_angle");
-  if (mat)
-    this->samplePass = std::make_unique<FilamentFullscreenPass>(*mat);
+  FilamentFullscreenPass::Create(this->samplePass, "gz_wide_angle");
 }
 
 //////////////////////////////////////////////////
@@ -277,9 +273,8 @@ void FilamentWideAngleCamera::PostRender()
   }
   this->Copy(image);
   const PixelFormat format = image.Format();
-  const unsigned char *data = image.Data<unsigned char>();
-  this->imageData.assign(data, data + image.MemorySize());
-  this->newImageFrame(this->imageData.data(), image.Width(), image.Height(),
+  this->newImageFrame(image.Data<unsigned char>(), image.Width(),
+      image.Height(),
       PixelUtil::ChannelCount(format), PixelUtil::Name(format));
 }
 

@@ -28,22 +28,11 @@
 #include "gz/rendering/filament/FilamentMesh.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
-#include "gz/rendering/filament/FilamentMesh.hh"
 #include "gz/rendering/filament/FilamentVisual.hh"
 #include "gz/rendering/Utils.hh"
 
 using namespace gz;
 using namespace rendering;
-
-//////////////////////////////////////////////////
-FilamentVisual::FilamentVisual()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentVisual::~FilamentVisual()
-{
-}
 
 //////////////////////////////////////////////////
 void FilamentVisual::SetVisible(bool _visible)

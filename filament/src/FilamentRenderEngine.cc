@@ -84,7 +84,7 @@ namespace gz
 }
 
 //////////////////////////////////////////////////
-FilamentRenderEnginePlugin::FilamentRenderEnginePlugin()
+FilamentRenderEngine::~FilamentRenderEngine()
 {
 }
 
@@ -113,11 +113,6 @@ FilamentRenderEngine::FilamentRenderEngine()
   {
     this->dataPtr->resourcePath = envPath;
   }
-}
-
-//////////////////////////////////////////////////
-FilamentRenderEngine::~FilamentRenderEngine()
-{
 }
 
 //////////////////////////////////////////////////

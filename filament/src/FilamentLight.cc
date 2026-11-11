@@ -52,11 +52,6 @@ FilamentLight::FilamentLight(filament::LightManager::Type _type)
 }
 
 //////////////////////////////////////////////////
-FilamentLight::~FilamentLight()
-{
-}
-
-//////////////////////////////////////////////////
 math::Color FilamentLight::DiffuseColor() const
 {
   return this->diffuse;
@@ -183,8 +178,7 @@ void FilamentLight::Init()
   // Splits computed for a 0.1..100 m camera; Filament takes them
   // per light, not per camera. Map size: Scene::ShadowTextureSize.
   filament::LightManager::ShadowOptions shadows;
-  if (this->type == filament::LightManager::Type::DIRECTIONAL ||
-      this->type == filament::LightManager::Type::SUN)
+  if (this->type == filament::LightManager::Type::DIRECTIONAL)
   {
     shadows.mapSize = this->scene->ShadowTextureSize(LightType::DIRECTIONAL);
     shadows.shadowCascades = 3u;
@@ -202,8 +196,7 @@ void FilamentLight::Init()
 //////////////////////////////////////////////////
 void FilamentLight::SetShadowMapSize(unsigned int _size)
 {
-  if ((this->type != filament::LightManager::Type::DIRECTIONAL &&
-       this->type != filament::LightManager::Type::SUN) ||
+  if (this->type != filament::LightManager::Type::DIRECTIONAL ||
       this->entity.isNull() || !Lights().hasComponent(this->entity))
     return;
   auto &lm = Lights();
@@ -236,8 +229,7 @@ void FilamentLight::UpdateLight()
   // With the camera exposure fixed at 1, a directional light of pi lux gives
   // albedo * cos(theta) (Filament's Lambert diffuse) plus the specular lobe.
   const float power = static_cast<float>(GZ_PI * this->intensity);
-  if (this->type == filament::LightManager::Type::DIRECTIONAL ||
-      this->type == filament::LightManager::Type::SUN)
+  if (this->type == filament::LightManager::Type::DIRECTIONAL)
   {
     lm.setIntensity(inst, power);
   }
@@ -266,11 +258,6 @@ void FilamentLight::UpdateAttenuation(double _spotExponent)
 //////////////////////////////////////////////////
 FilamentDirectionalLight::FilamentDirectionalLight()
   : FilamentLight(filament::LightManager::Type::DIRECTIONAL)
-{
-}
-
-//////////////////////////////////////////////////
-FilamentDirectionalLight::~FilamentDirectionalLight()
 {
 }
 
@@ -305,18 +292,8 @@ FilamentPointLight::FilamentPointLight()
 }
 
 //////////////////////////////////////////////////
-FilamentPointLight::~FilamentPointLight()
-{
-}
-
-//////////////////////////////////////////////////
 FilamentSpotLight::FilamentSpotLight()
   : FilamentLight(filament::LightManager::Type::SPOT)
-{
-}
-
-//////////////////////////////////////////////////
-FilamentSpotLight::~FilamentSpotLight()
 {
 }
 
@@ -380,7 +357,8 @@ void FilamentSpotLight::UpdateLight()
   if (this->entity.isNull() || !lm.hasComponent(this->entity))
     return;
   auto inst = lm.getInstance(this->entity);
-  lm.setDirection(inst, normalize(FilamentConversions::Convert(this->direction)));
+  lm.setDirection(inst,
+      normalize(FilamentConversions::Convert(this->direction)));
   // gz angles are full cone angles; filament wants half angles
   lm.setSpotLightCone(inst,
       static_cast<float>(this->innerAngle.Radian() * 0.5),

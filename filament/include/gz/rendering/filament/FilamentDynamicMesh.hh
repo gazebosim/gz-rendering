@@ -22,7 +22,6 @@
 #include <vector>
 
 #include <gz/math/Color.hh>
-#include <gz/math/Helpers.hh>
 #include <gz/math/Vector3.hh>
 
 #include "gz/rendering/Marker.hh"
@@ -42,20 +41,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentDynamicSubMesh :
       public FilamentSubMesh
     {
-      public: FilamentDynamicSubMesh();
-
       /// \brief Points keep their own material instance, so skip the
       /// lit / unlit rebinding of a gz material
       public: virtual void PreRender() override;
-
-      /// \brief Bind _instance to the primitive
-      public: void Apply(filament::MaterialInstance *_instance);
-
-      /// \brief Tell the base which mesh / buffers this primitive draws
-      public: void Setup(FilamentMesh *_mesh);
-
-      /// \brief Make the submesh destroy its material with itself
-      public: void OwnMaterial() { this->ownsMaterial = true; }
 
       /// \brief Material instance that replaces the gz material (points)
       public: filament::MaterialInstance *custom{nullptr};
@@ -73,9 +61,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentDynamicMesh :
       public FilamentMesh
     {
-      public: FilamentDynamicMesh();
+      public: FilamentDynamicMesh() = default;
 
-      public: virtual ~FilamentDynamicMesh();
+      public: virtual ~FilamentDynamicMesh() = default;
 
       public: virtual void Destroy() override;
 
@@ -105,16 +93,12 @@ namespace gz
       /// \brief MT_POINTS, MT_LINE_*, MT_TRIANGLE_*
       public: void SetOperationType(MarkerType _type);
 
-      public: MarkerType OperationType() const;
-
       public: void AddPoint(const math::Vector3d &_pt,
           const math::Color &_color = math::Color::White);
 
       public: void SetPoint(unsigned int _index, const math::Vector3d &_pt);
 
       public: void SetColor(unsigned int _index, const math::Color &_color);
-
-      public: math::Vector3d Point(unsigned int _index) const;
 
       public: unsigned int PointCount() const;
 

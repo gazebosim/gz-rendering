@@ -17,8 +17,6 @@
 #ifndef GZ_RENDERING_FILAMENT_FILAMENTGIZMOVISUAL_HH_
 #define GZ_RENDERING_FILAMENT_FILAMENTGIZMOVISUAL_HH_
 
-#include <memory>
-#include <vector>
 
 #include "gz/rendering/base/BaseGizmoVisual.hh"
 #include "gz/rendering/filament/FilamentVisual.hh"

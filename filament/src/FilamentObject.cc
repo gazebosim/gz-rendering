@@ -15,22 +15,11 @@
  *
  */
 
-#include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/filament/FilamentObject.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
 
 using namespace gz;
 using namespace rendering;
-
-//////////////////////////////////////////////////
-FilamentObject::FilamentObject()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentObject::~FilamentObject()
-{
-}
 
 //////////////////////////////////////////////////
 ScenePtr FilamentObject::Scene() const

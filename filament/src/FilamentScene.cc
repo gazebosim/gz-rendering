@@ -138,13 +138,13 @@ double Luminance(double _r, double _g, double _b)
 }
 
 //////////////////////////////////////////////////
-FilamentScene::FilamentScene(unsigned int _id, const std::string &_name)
-  : BaseScene(_id, _name)
+FilamentScene::~FilamentScene()
 {
 }
 
 //////////////////////////////////////////////////
-FilamentScene::~FilamentScene()
+FilamentScene::FilamentScene(unsigned int _id, const std::string &_name)
+  : BaseScene(_id, _name)
 {
 }
 
@@ -170,22 +170,12 @@ void FilamentScene::Destroy()
 void FilamentScene::Fini()
 {
   this->probe.reset();
+  this->DestroySkyLight();
   auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
   if (engine && this->ambientLight)
   {
     engine->destroy(this->ambientLight);
     this->ambientLight = nullptr;
-  }
-  if (engine && this->skyLight)
-  {
-    engine->destroy(this->skyLight);
-    this->skyLight = nullptr;
-  }
-  this->DestroyProbeSky();
-  if (engine && this->skyReflections)
-  {
-    engine->destroy(this->skyReflections);
-    this->skyReflections = nullptr;
   }
   if (engine && this->skybox)
   {
@@ -250,17 +240,7 @@ void FilamentScene::SetAmbientLight(const math::Color &_color)
   this->scene->setIndirectLight(this->ambientLight);
   // the sky light and its reflections follow the ambient level: rebuilt
   // by UpdateSkyLight
-  if (this->skyLight)
-  {
-    engine->destroy(this->skyLight);
-    this->skyLight = nullptr;
-  }
-  this->DestroyProbeSky();
-  if (this->skyReflections)
-  {
-    engine->destroy(this->skyReflections);
-    this->skyReflections = nullptr;
-  }
+  this->DestroySkyLight();
 }
 
 //////////////////////////////////////////////////
@@ -405,19 +385,7 @@ void FilamentScene::SetSkyEnabled(bool _enabled)
     this->scene->setSkybox(nullptr);
     fe->destroy(this->skybox);
     this->skybox = nullptr;
-    if (this->skyLight)
-    {
-      if (this->scene->getIndirectLight() == this->skyLight)
-        this->scene->setIndirectLight(this->ambientLight);
-      fe->destroy(this->skyLight);
-      this->skyLight = nullptr;
-    }
-    this->DestroyProbeSky();
-    if (this->skyReflections)
-    {
-      fe->destroy(this->skyReflections);
-      this->skyReflections = nullptr;
-    }
+    this->DestroySkyLight();
   }
   if (!this->skybox)
   {
@@ -533,13 +501,6 @@ const std::vector<FilamentParticleEmitter *> &
     FilamentScene::ParticleEmitters() const
 {
   return this->particleEmitters;
-}
-
-//////////////////////////////////////////////////
-void FilamentScene::SortParticles(const math::Vector3d &_dir)
-{
-  for (FilamentParticleEmitter *e : this->particleEmitters)
-    e->SortFor(_dir);
 }
 
 //////////////////////////////////////////////////
@@ -1045,8 +1006,7 @@ void FilamentScene::BeginReflections(const math::Vector3d &_pos,
   {
     // UpdateSkyLight's reflections without its kReflectionScale: that
     // dims an unoccluded sky for interiors, here the cube's walls occlude
-    // it. Measured on the Cycles sunroom (uniform ambient sky): chrome ball
-    // 81 80 71 vs Cycles 96 93 87; 0.3x: 58 56 48.
+    // it.
     unsigned int cubeSize = 0u;
     std::vector<uint8_t> faces;
     const double skyLum = Luminance(this->skySh[0][0], this->skySh[0][1],
@@ -1107,8 +1067,8 @@ uint64_t FilamentScene::ReflectionsSignature(const math::Vector3d &_pos) const
 {
   // FNV-1a over what the probe's cube shows: mesh world transforms and
   // layers, lights, the probe position.
-  // ponytail: material and sky changes are not hashed; they show up with
-  // the next move of anything
+  // Material and sky changes are not hashed: they show up with the next
+  // move of anything.
   uint64_t h = 1469598103934665603ull;
   auto add = [&h](const void *_p, size_t _n)
   {
@@ -1152,17 +1112,27 @@ uint64_t FilamentScene::ReflectionsSignature(const math::Vector3d &_pos) const
 }
 
 //////////////////////////////////////////////////
-void FilamentScene::DestroyProbeSky()
+void FilamentScene::DestroySkyLight()
 {
   auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
   if (!engine)
     return;
+  if (this->skyLight)
+  {
+    if (this->scene && this->scene->getIndirectLight() == this->skyLight)
+      this->scene->setIndirectLight(this->ambientLight);
+    engine->destroy(this->skyLight);
+  }
   if (this->probeSkybox)
     engine->destroy(this->probeSkybox);
   if (this->probeSkyTexture)
     engine->destroy(this->probeSkyTexture);
+  if (this->skyReflections)
+    engine->destroy(this->skyReflections);
+  this->skyLight = nullptr;
   this->probeSkybox = nullptr;
   this->probeSkyTexture = nullptr;
+  this->skyReflections = nullptr;
 }
 
 //////////////////////////////////////////////////

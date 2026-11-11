@@ -40,7 +40,7 @@ namespace gz
 
       protected: explicit FilamentLight(filament::LightManager::Type _type);
 
-      public: virtual ~FilamentLight();
+      public: virtual ~FilamentLight() = default;
 
       public: virtual math::Color DiffuseColor() const override;
 
@@ -113,7 +113,7 @@ namespace gz
     {
       protected: FilamentDirectionalLight();
 
-      public: virtual ~FilamentDirectionalLight();
+      public: virtual ~FilamentDirectionalLight() = default;
 
       public: virtual math::Vector3d Direction() const override;
 
@@ -131,7 +131,7 @@ namespace gz
     {
       protected: FilamentPointLight();
 
-      public: virtual ~FilamentPointLight();
+      public: virtual ~FilamentPointLight() = default;
 
       private: friend class FilamentScene;
     };
@@ -141,7 +141,7 @@ namespace gz
     {
       protected: FilamentSpotLight();
 
-      public: virtual ~FilamentSpotLight();
+      public: virtual ~FilamentSpotLight() = default;
 
       public: virtual math::Vector3d Direction() const override;
 

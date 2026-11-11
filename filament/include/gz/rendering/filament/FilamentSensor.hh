@@ -32,7 +32,7 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentSensor :
       public BaseSensor<FilamentNode>
     {
-      protected: FilamentSensor();
+      protected: FilamentSensor() = default;
 
       public: virtual ~FilamentSensor();
 

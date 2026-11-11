@@ -17,7 +17,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cmath>
 #include <vector>
 
 #include <filament/Engine.h>
@@ -47,25 +46,15 @@ FilamentMaterial::FilamentMaterial()
 }
 
 //////////////////////////////////////////////////
-FilamentMaterial::~FilamentMaterial()
-{
-}
-
-//////////////////////////////////////////////////
 void FilamentMaterial::Destroy()
 {
   BaseMaterial::Destroy();
-  for (auto *mi : {this->lit, this->litTransparent, this->litMasked,
-      this->unlit, this->unlitTransparent, this->custom})
+  for (auto **mi : {&this->lit, &this->litTransparent, &this->litMasked,
+      &this->unlit, &this->unlitTransparent, &this->custom})
   {
-    this->DestroyInstance(mi);
+    this->DestroyInstance(*mi);
+    *mi = nullptr;
   }
-  this->lit = nullptr;
-  this->unlit = nullptr;
-  this->unlitTransparent = nullptr;
-  this->litTransparent = nullptr;
-  this->litMasked = nullptr;
-  this->custom = nullptr;
   this->customSource.clear();
 }
 
@@ -420,7 +409,8 @@ std::string FilamentMaterial::EnvironmentMap() const
 }
 
 //////////////////////////////////////////////////
-std::shared_ptr<const common::Image> FilamentMaterial::EnvironmentMapData() const
+std::shared_ptr<const common::Image>
+    FilamentMaterial::EnvironmentMapData() const
 {
   return this->maps[ENVIRONMENT].data;
 }
@@ -549,7 +539,6 @@ void FilamentMaterial::Update(filament::MaterialInstance *_instance)
       filament::TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
       filament::TextureSampler::MagFilter::LINEAR,
       filament::TextureSampler::WrapMode::REPEAT);
-  sampler.setAnisotropy(this->anisotropy);
   auto *engine = FilamentRenderEngine::Instance();
   _instance->setParameter("baseColorMap", this->texture ? this->texture :
       engine->Texture(""), sampler);

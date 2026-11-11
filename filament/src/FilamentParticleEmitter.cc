@@ -81,11 +81,6 @@ namespace
 }
 
 //////////////////////////////////////////////////
-FilamentParticleEmitter::FilamentParticleEmitter()
-{
-}
-
-//////////////////////////////////////////////////
 FilamentParticleEmitter::~FilamentParticleEmitter()
 {
   // never leave a dangling pointer in the registry sensors iterate

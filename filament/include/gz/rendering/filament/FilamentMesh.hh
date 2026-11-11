@@ -163,9 +163,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentSubMesh :
       public BaseSubMesh<FilamentObject>
     {
-      protected: FilamentSubMesh();
+      protected: FilamentSubMesh() = default;
 
-      public: virtual ~FilamentSubMesh();
+      public: virtual ~FilamentSubMesh() = default;
 
       public: virtual void Destroy() override;
 
@@ -209,6 +209,7 @@ namespace gz
 
       private: friend class FilamentScene;
       private: friend class FilamentMesh;
+      private: friend class FilamentDynamicMesh;
       private: friend class FilamentMeshFactory;
     };
     }

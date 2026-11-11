@@ -21,8 +21,6 @@
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
 #include <filament/IndexBuffer.h>
-#include <filament/Material.h>
-#include <filament/MaterialInstance.h>
 #include <filament/RenderableManager.h>
 #include <filament/Scene.h>
 #include <filament/TextureSampler.h>
@@ -207,16 +205,6 @@ void FilamentMesh::Init()
   this->entity = ::utils::EntityManager::get().create();
   Engine()->getTransformManager().create(this->entity);
   this->scene->RegisterMesh(this);
-}
-
-//////////////////////////////////////////////////
-FilamentSubMesh::FilamentSubMesh()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentSubMesh::~FilamentSubMesh()
-{
 }
 
 //////////////////////////////////////////////////

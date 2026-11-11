@@ -16,8 +16,6 @@
  */
 #include <cmath>
 
-#include <filament/Camera.h>
-#include <filament/Engine.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
 #include <filament/Texture.h>
@@ -26,10 +24,8 @@
 
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
-#include <gz/common/Image.hh>
 #include <gz/math/Matrix4.hh>
 
-#include "gz/rendering/Utils.hh"
 #include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentProjector.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
@@ -115,24 +111,12 @@ void FilamentProjector::LoadTexture()
 }
 
 //////////////////////////////////////////////////
-bool FilamentProjector::CreateResources()
-{
-  if (this->pass)
-    return true;
-  filament::Material *mat =
-      FilamentRenderEngine::Instance()->Material("gz_projector");
-  if (!mat)
-    return false;
-  this->pass = std::make_unique<FilamentFullscreenPass>(*mat);
-  return true;
-}
-
-//////////////////////////////////////////////////
 filament::View *FilamentProjector::DecalView(
     const filament::math::mat4f &_invViewProj, filament::Texture *_depth)
 {
   this->LoadTexture();
-  if (!this->texture || !this->CreateResources())
+  if (!this->texture ||
+      !FilamentFullscreenPass::Create(this->pass, "gz_projector"))
     return nullptr;
 
   // ogre2's decal volume: the box around the frustum, from the near to the

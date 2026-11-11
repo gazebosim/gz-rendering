@@ -32,9 +32,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentVisual :
       public BaseVisual<FilamentNode>
     {
-      protected: FilamentVisual();
+      protected: FilamentVisual() = default;
 
-      public: virtual ~FilamentVisual();
+      public: virtual ~FilamentVisual() = default;
 
       public: virtual void SetVisible(bool _visible) override;
 

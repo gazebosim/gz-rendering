@@ -68,7 +68,7 @@ namespace gz
         double height;
       };
 
-      protected: FilamentParticleEmitter();
+      protected: FilamentParticleEmitter() = default;
 
       public: virtual ~FilamentParticleEmitter();
 

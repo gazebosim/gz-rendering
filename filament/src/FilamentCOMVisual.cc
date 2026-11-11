@@ -14,10 +14,8 @@
  * limitations under the License.
  *
  */
-#include <gz/common/Console.hh>
 
 #include "gz/rendering/filament/FilamentCOMVisual.hh"
-#include "gz/rendering/filament/FilamentMaterial.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
 #include "FilamentUtils.hh"
 
@@ -29,12 +27,6 @@ FilamentCOMVisual::FilamentCOMVisual() = default;
 
 //////////////////////////////////////////////////
 FilamentCOMVisual::~FilamentCOMVisual() = default;
-
-//////////////////////////////////////////////////
-void FilamentCOMVisual::Init()
-{
-  BaseCOMVisual::Init();
-}
 
 //////////////////////////////////////////////////
 void FilamentCOMVisual::PreRender()

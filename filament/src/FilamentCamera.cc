@@ -389,11 +389,15 @@ void FilamentCamera::Render()
     // post-processing (the quality-mode GUI camera) renders the scene into
     // its own buffers and leaves the target's depth alone, and filament's
     // Vulkan backend resolves only the colour of a multisampled target:
-    // fill the depth for the decals with a plain single-sample pass
+    // fill the depth for the decals with a plain single-sample pass. View
+    // MSAA goes off too: with it on, filament renders into an intermediate
+    // buffer and only blits its colour, the target's depth stays empty.
     if (post)
     {
       this->view->setPostProcessingEnabled(false);
+      this->view->setMultiSampleAntiAliasingOptions({});
       this->renderTexture->RenderDepth(this->view);
+      this->view->setMultiSampleAntiAliasingOptions(msaa);
       this->view->setPostProcessingEnabled(true);
     }
     else if (aa > 1u && FilamentRenderEngine::Instance()->FilamentEngine()

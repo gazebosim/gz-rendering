@@ -279,8 +279,8 @@ void FilamentDynamicMesh::ApplyMaterial()
   }
   if (!instance)
   {
-    instance = FilamentRenderEngine::Instance()->Material("gz_unlit")
-        ->getDefaultInstance();
+    if (auto *unlit = FilamentRenderEngine::Instance()->Material("gz_unlit"))
+      instance = unlit->getDefaultInstance();
   }
   this->sub->ApplyInstance(instance);
 }

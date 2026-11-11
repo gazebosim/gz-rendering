@@ -116,6 +116,7 @@ namespace gz
       /// \brief Get (and lazily load) a compiled material package by name,
       /// e.g. "gz_lit", looked up under the engine resource path. A path
       /// ending in ".mat" is a material source, compiled at runtime.
+      /// \return Null (and an error, logged once) if it can not be loaded
       public: filament::Material *Material(const std::string &_name);
 
       /// \brief Compile a filament material source (.mat) with filamat

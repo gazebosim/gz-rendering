@@ -277,32 +277,34 @@ filament::Material *FilamentRenderEngine::Material(const std::string &_name)
     return it->second;
 
   // A path to a filament material source (Material::SetFragmentShader with
-  // a .mat file): compiled at runtime, cached under its path.
+  // a .mat file): compiled at runtime, cached under its path. Failures are
+  // cached too (null), so that they are reported once.
   if (common::EndsWith(_name, ".mat"))
   {
     filament::Material *mat = this->CompileMaterial(_name);
-    if (mat)
-      this->dataPtr->materials[_name] = mat;
+    this->dataPtr->materials[_name] = mat;
     return mat;
   }
 
   std::string path = common::joinPaths(this->dataPtr->resourcePath,
       "materials", _name + ".filamat");
   const std::vector<uint8_t> data = ReadFile(path);
+  filament::Material *mat = nullptr;
   if (data.empty())
   {
     gzerr << "Unable to open filament material package [" << path << "]"
           << std::endl;
-    return nullptr;
   }
-  filament::Material *mat = filament::Material::Builder()
-      .package(data.data(), data.size())
-      .build(*this->dataPtr->engine);
-  if (!mat)
+  else
   {
-    gzerr << "Failed to build filament material [" << _name << "]"
-          << std::endl;
-    return nullptr;
+    mat = filament::Material::Builder()
+        .package(data.data(), data.size())
+        .build(*this->dataPtr->engine);
+    if (!mat)
+    {
+      gzerr << "Failed to build filament material [" << _name << "]"
+            << std::endl;
+    }
   }
   this->dataPtr->materials[_name] = mat;
   return mat;

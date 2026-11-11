@@ -17,9 +17,12 @@
 #ifndef GZ_RENDERING_FILAMENT_FILAMENTSCENE_HH_
 #define GZ_RENDERING_FILAMENT_FILAMENTSCENE_HH_
 
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
+
+#include <math/vec3.h>
 
 #include "gz/rendering/config.hh"
 #include "gz/rendering/base/BaseScene.hh"
@@ -42,6 +45,7 @@ namespace gz
     //
     class FilamentDynamicMesh;
     class FilamentProjector;
+    namespace filament_probe { class ReflectionProbe; }
 
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentScene :
       public BaseScene
@@ -252,6 +256,20 @@ namespace gz
 
       protected: virtual bool InitImpl() override;
 
+      /// \brief Quality-mode GUI camera, around its render: reflections of
+      /// the scene around _pos (a cube map rendered there, see
+      /// filament_probe::ReflectionProbe) as the IBL's reflections, with the
+      /// scene IBL's irradiance. Other cameras keep the scene IBL.
+      /// \param[in] _visibilityMask The camera's visibility mask
+      public: void BeginReflections(const math::Vector3d &_pos,
+          uint32_t _visibilityMask, double _near, double _far);
+
+      /// \brief Hash of the scene state the reflections depend on
+      private: uint64_t ReflectionsSignature(const math::Vector3d &_pos) const;
+
+      /// \brief Back to the scene IBL after BeginReflections
+      public: void EndReflections();
+
       protected: bool InitObject(FilamentObjectPtr _object, unsigned int _id,
                      const std::string &_name);
 
@@ -270,6 +288,10 @@ namespace gz
       /// sensors that draw with unlit override materials (depth, thermal,
       /// segmentation, lidar) are unaffected.
       private: void UpdateSkyLight();
+
+      /// \brief Irradiance of the sky light: the sky's directional
+      /// irradiance in the ambient light's colour and level, 3-band SH
+      private: void SkyLightSh(filament::math::float3 _sh[9]) const;
 
       protected: filament::Scene *scene{nullptr};
 
@@ -292,6 +314,25 @@ namespace gz
       private: std::string skyCubemap;
 
       protected: math::Color ambient;
+
+      /// \brief Scene reflections of the GUI camera (BeginReflections)
+      private: std::unique_ptr<filament_probe::ReflectionProbe> probe;
+
+      /// \brief Scene IBL during BeginReflections
+      private: filament::IndirectLight *probeSavedLight{nullptr};
+
+      /// \brief The sky at the ambient light's level, drawn by the
+      /// reflection probe instead of the skybox
+      private: filament::Skybox *probeSkybox{nullptr};
+
+      /// \brief Cube map of probeSkybox
+      private: filament::Texture *probeSkyTexture{nullptr};
+
+      /// \brief Destroy probeSkybox (rebuilt with the sky lighting)
+      private: void DestroyProbeSky();
+
+      /// \brief Between BeginReflections and EndReflections
+      private: bool probeActive{false};
 
       /// \brief Shadow map size of the directional lights
       protected: unsigned int dirTexSize{2048u};

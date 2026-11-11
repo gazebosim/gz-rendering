@@ -136,6 +136,16 @@ namespace gz
 
       protected: FilamentRenderTexturePtr renderTexture;
 
+      /// \brief Where the GUI camera's scene reflections are rendered from
+      /// (FilamentScene::BeginReflections): 1 m short of what it looks at
+      private: math::Vector3d ReflectionProbePosition();
+
+      /// \brief Camera pose of the last ReflectionProbePosition
+      private: math::Pose3d probeCameraPose{math::Pose3d::Zero};
+
+      /// \brief Last ReflectionProbePosition
+      private: math::Vector3d probePosition;
+
       private: friend class FilamentScene;
     };
     }

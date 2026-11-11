@@ -1,6 +1,9 @@
-// Depth sensor material: writes the linear view-space depth (distance along
-// the camera's optical axis, in meters) into the red channel of a float
-// render target.
+// Depth sensor material: the linear view-space depth (distance along the
+// camera's optical axis, in meters) as the 4 bytes of its float bits, least
+// significant in red, into an RGBA8 render target (see
+// filament_utils::kPackedInf). A float target would not do: filament's GLES
+// shaders write their color at mediump, which drivers may round to half
+// precision (Mesa's llvmpipe does).
 material {
     name : gz_depth,
     shadingModel : unlit,
@@ -22,7 +25,10 @@ fragment {
                 materialParams.alphaThreshold) {
             discard;
         }
-        vec4 viewPos = getViewFromWorldMatrix() * vec4(getWorldPosition(), 1.0);
-        material.baseColor = vec4(-viewPos.z, 0.0, 0.0, 1.0);
+        highp vec4 viewPos =
+            getViewFromWorldMatrix() * vec4(getWorldPosition(), 1.0);
+        highp uint bits = floatBitsToUint(-viewPos.z);
+        material.baseColor =
+            vec4((uvec4(bits) >> uvec4(0u, 8u, 16u, 24u)) & 0xffu) / 255.0;
     }
 }

@@ -83,7 +83,7 @@ namespace gz
       /// \brief Fullscreen pass drawing gz_noise, created on first use
       private: std::unique_ptr<FilamentFullscreenPass> pass;
 
-      /// \brief R32F target for Samples()
+      /// \brief RGBA8 target for Samples(): the float bits of z
       private: FilamentRenderTexturePtr samples;
 
       /// \brief Samples() read back for ApplyDepth, reused

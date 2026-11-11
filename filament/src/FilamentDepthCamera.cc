@@ -91,30 +91,22 @@ void FilamentDepthCamera::Destroy()
 //////////////////////////////////////////////////
 void FilamentDepthCamera::CreateDepthTexture()
 {
-  // packed: the depth's float bits as RGBA8, see PackedFloatTargets.
+  // the depth's float bits as RGBA8, see filament_utils::kPackedInf.
   // RenderTarget()->Copy() of a depth camera then reads the packed bytes;
   // nothing (gz-sensors, tests) copies it.
-  const bool packed = FilamentRenderEngine::Instance()->PackedFloatTargets();
   if (!this->depthInstance)
   {
-    filament::Material *mat = FilamentRenderEngine::Instance()->Material(
-        packed ? "gz_depth_packed" : "gz_depth");
-    filament::Material *clampMat = FilamentRenderEngine::Instance()->Material(
-        packed ? "gz_depth_clamp_packed" : "gz_depth_clamp");
+    filament::Material *mat =
+        FilamentRenderEngine::Instance()->Material("gz_depth");
+    filament::Material *clampMat =
+        FilamentRenderEngine::Instance()->Material("gz_depth_clamp");
     if (!mat || !clampMat)
       return;
     this->depthInstance = mat->createInstance();
     this->clampInstance = clampMat->createInstance();
   }
-  if (packed)
-  {
-    this->renderTexture->SetFormat(PF_R8G8B8A8);
-    this->renderTexture->SetSrgb(false);
-  }
-  else
-  {
-    this->renderTexture->SetFormat(PF_FLOAT32_R);
-  }
+  this->renderTexture->SetFormat(PF_R8G8B8A8);
+  this->renderTexture->SetSrgb(false);
   this->renderTexture->SetWidth(this->ImageWidth());
   this->renderTexture->SetHeight(this->ImageHeight());
 }
@@ -389,12 +381,7 @@ void FilamentDepthCamera::Render()
   // far".
   this->view->setVisibleLayers(0xff,
       FilamentConversions::ToSensorLayers(this->VisibilityMask()));
-  // packed: the bytes of +inf (0x7f800000), least significant first
-  if (FilamentRenderEngine::Instance()->PackedFloatTargets())
-    this->renderTexture->SetClearColor(
-        {0.0f, 0.0f, 128.0f / 255.0f, 127.0f / 255.0f});
-  else
-    this->renderTexture->SetClearColor({inf, inf, inf, 1.0f});
+  this->renderTexture->SetClearColor(filament_utils::kPackedInf);
   const auto &meshes = this->scene->Meshes();
   bool alphaTested = false;
   for (FilamentMesh *m : meshes)
@@ -429,16 +416,11 @@ void FilamentDepthCamera::PostRender()
   auto *renderer = FilamentRenderEngine::Instance()->Renderer();
   if (!this->gpuClamped)
     this->depthRaw.resize(len);
-  const bool packedTarget =
-      FilamentRenderEngine::Instance()->PackedFloatTargets();
   renderer->readPixels(this->renderTexture->Native(), 0, 0, width, height,
       filament::backend::PixelBufferDescriptor(this->gpuClamped ?
       this->depthImage.data() : this->depthRaw.data(),
-      len * sizeof(float),
-      packedTarget ? filament::backend::PixelDataFormat::RGBA :
-          filament::backend::PixelDataFormat::R,
-      packedTarget ? filament::backend::PixelDataType::UBYTE :
-                    filament::backend::PixelDataType::FLOAT));
+      len * sizeof(float), filament::backend::PixelDataFormat::RGBA,
+      filament::backend::PixelDataType::UBYTE));
   const unsigned char *rgba = nullptr;
   if (wantCloud && this->colorTexture)
   {

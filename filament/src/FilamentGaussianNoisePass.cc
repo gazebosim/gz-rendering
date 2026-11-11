@@ -95,7 +95,9 @@ void FilamentGaussianNoisePass::Samples(const ScenePtr &_scene,
   {
     this->samples = std::dynamic_pointer_cast<FilamentRenderTexture>(
         _scene->CreateRenderTexture());
-    this->samples->SetFormat(PF_FLOAT32_R);
+    // z as float bits in RGBA8, see filament_utils::kPackedInf
+    this->samples->SetFormat(PF_R8G8B8A8);
+    this->samples->SetSrgb(false);
   }
   if (this->samples->Width() != _width || this->samples->Height() != _height)
   {
@@ -111,8 +113,8 @@ void FilamentGaussianNoisePass::Samples(const ScenePtr &_scene,
   FilamentRenderEngine::Instance()->Renderer()->readPixels(
       this->samples->Native(), 0, 0, _width, _height,
       filament::backend::PixelBufferDescriptor(_out.data(),
-      _out.size() * sizeof(float), filament::backend::PixelDataFormat::R,
-      filament::backend::PixelDataType::FLOAT));
+      _out.size() * sizeof(float), filament::backend::PixelDataFormat::RGBA,
+      filament::backend::PixelDataType::UBYTE));
   FilamentRenderEngine::Instance()->FilamentEngine()->flushAndWait();
 }
 

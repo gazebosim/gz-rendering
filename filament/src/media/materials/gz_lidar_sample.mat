@@ -1,6 +1,7 @@
 // GPU lidar second pass: one fragment per ray. `rays` holds, per ray, the
 // atlas texel to read (x, y) and 1 / cos of the angle between that texel's
 // direction and its face axis (z); the output is the range along the ray.
+// The atlas (gz_depth) and the output are packed floats, see gz_depth.
 // Drawn as a fullscreen triangle in device (clip) space.
 material {
     name : gz_lidar_sample,
@@ -17,10 +18,21 @@ material {
 }
 
 fragment {
+    // the float whose 4 bytes are _c (gz_depth's packing)
+    highp float unpackFloat(highp vec4 _c)
+    {
+        highp uvec4 b = uvec4(round(_c * 255.0));
+        return uintBitsToFloat(
+            b.r | (b.g << 8u) | (b.b << 16u) | (b.a << 24u));
+    }
+
     void material(inout MaterialInputs material) {
         prepareMaterial(material);
         highp vec4 ray = texelFetch(materialParams_rays, ivec2(gl_FragCoord.xy), 0);
-        highp float depth = texelFetch(materialParams_atlas, ivec2(ray.xy), 0).r;
-        material.baseColor = vec4(depth * ray.z, 0.0, 0.0, 1.0);
+        highp float depth =
+            unpackFloat(texelFetch(materialParams_atlas, ivec2(ray.xy), 0));
+        highp uint bits = floatBitsToUint(depth * ray.z);
+        material.baseColor =
+            vec4((uvec4(bits) >> uvec4(0u, 8u, 16u, 24u)) & 0xffu) / 255.0;
     }
 }

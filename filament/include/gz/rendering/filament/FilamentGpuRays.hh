@@ -114,7 +114,7 @@ namespace gz
       /// \brief RGBA32F, one texel per ray: atlas x, atlas y, 1/cos
       private: filament::Texture *rayTexture{nullptr};
 
-      /// \brief R32F, one texel per ray: the range
+      /// \brief RGBA8, one texel per ray: the range's float bits
       private: FilamentRenderTexturePtr scanTexture;
 
       private: unsigned int faceCount{0u};

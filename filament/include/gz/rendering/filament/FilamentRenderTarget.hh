@@ -114,8 +114,9 @@ namespace gz
       /// image top row first (row 0 at the top, like ogre2's), 0 unless the
       /// engine shares the caller's context or renders for it (see
       /// FilamentRenderEngine::SharesCallerGLContext and
-      /// UsesCallerGLContext) and the target is 8 bit colour. Filled by
-      /// UpdateSharedTexture.
+      /// UsesCallerGLContext), the target is 8 bit colour and the caller
+      /// shows it (UpdateSharedTexture creates and fills it; sensor targets
+      /// never get one).
       public: unsigned int SharedGLId() const;
 
       /// \brief Copy the rendered image into SharedGLId's texture, top row
@@ -167,6 +168,10 @@ namespace gz
 
       /// \brief See SetSamples
       private: uint8_t samples{1};
+
+      /// \brief UpdateSharedTexture was called: the caller shows this
+      /// target, RebuildImpl recreates glColorId
+      private: bool presented{false};
 
       /// \brief Colour texture created in the caller's GL context (see
       /// SharedGLId), 0 if none; imported into filament if shared

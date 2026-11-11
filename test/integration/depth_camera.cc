@@ -1050,7 +1050,6 @@ TEST_F(DepthCameraTest,
 /////////////////////////////////////////////////
 TEST_F(DepthCameraTest, DepthCameraMarkerPoints)
 {
-  // ogre2 draws marker points as 1 pixel dots in sensors, whatever their size
   CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   constexpr unsigned int kSize = 256u;
@@ -1090,16 +1089,29 @@ TEST_F(DepthCameraTest, DepthCameraMarkerPoints)
   depthCamera->Update();
   ASSERT_EQ(1u, g_depthCounter);
 
-  unsigned int dots = 0u;
-  for (float d : scan)
+  // Every point is seen at 3 m. The dot size in sensors differs: filament
+  // draws 1 pixel, ogre2 1 pixel or the marker size depending on GL state.
+  // A dot's top-left pixel has no finite neighbour to its left or above.
+  auto hit = [&scan](unsigned int _x, unsigned int _y)
   {
-    if (std::isfinite(d))
+    return std::isfinite(scan[_y * kSize + _x]);
+  };
+  unsigned int pixels = 0u;
+  unsigned int dots = 0u;
+  for (unsigned int y = 0u; y < kSize; ++y)
+  {
+    for (unsigned int x = 0u; x < kSize; ++x)
     {
-      EXPECT_NEAR(3.0, d, 1e-3);
-      ++dots;
+      if (!hit(x, y))
+        continue;
+      EXPECT_NEAR(3.0, scan[y * kSize + x], 1e-3);
+      ++pixels;
+      if ((x == 0u || !hit(x - 1u, y)) && (y == 0u || !hit(x, y - 1u)))
+        ++dots;
     }
   }
   EXPECT_EQ(3u, dots);
+  EXPECT_LE(pixels, 3u * 5u * 5u);
 
   // Clean up
   connection.reset();

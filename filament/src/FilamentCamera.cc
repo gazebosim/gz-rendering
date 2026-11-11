@@ -395,13 +395,19 @@ void FilamentCamera::Render()
   if (!this->scene->Projectors().empty())
   {
     // post-processing (the quality-mode GUI camera) renders the scene into
-    // its own buffers and leaves the target's depth alone: fill it for the
-    // decals with a plain pass
+    // its own buffers and leaves the target's depth alone, and filament's
+    // Vulkan backend resolves only the colour of a multisampled target:
+    // fill the depth for the decals with a plain single-sample pass
     if (post)
     {
       this->view->setPostProcessingEnabled(false);
       this->renderTexture->RenderDepth(this->view);
       this->view->setPostProcessingEnabled(true);
+    }
+    else if (aa > 1u && FilamentRenderEngine::Instance()->FilamentEngine()
+        ->getBackend() == filament::Engine::Backend::VULKAN)
+    {
+      this->renderTexture->RenderDepth(this->view);
     }
     // projected textures go on the scene, before the render passes
     const filament::math::mat4f invViewProj(FilamentConversions::Convert(

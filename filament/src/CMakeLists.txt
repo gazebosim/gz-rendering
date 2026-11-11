@@ -114,3 +114,7 @@ install(DIRECTORY "${filament_media_dir}" DESTINATION ${GZ_RENDERING_RELATIVE_RE
 gz_build_tests(TYPE UNIT
                SOURCES ${gtest_sources}
                LIB_DEPS ${filament_target})
+# FilamentRenderTarget_TEST plays the caller sharing its EGL context
+if (BUILD_TESTING AND TARGET OpenGL::EGL)
+  target_link_libraries(UNIT_FilamentRenderTarget_TEST OpenGL::EGL)
+endif()

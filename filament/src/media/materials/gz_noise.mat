@@ -36,13 +36,24 @@ fragment {
         return v;
     }
 
+    // m / 2^24 for m in [0, 2^24], exactly, built from the float's bits.
+    // NVIDIA's GLES compiler evaluates arithmetic on float(uint) at 16 bits
+    // here (in spite of highp), which overflowed the 24 bit hash to inf.
+    highp float unorm24(highp uint m)
+    {
+        highp float lo = uintBitsToFloat(0x3f800000u | (m & 0x7fffffu)) - 1.0;
+        highp uint hi = m >= 0x1000000u ? 0x40000000u :
+            (m >= 0x800000u ? 0x3f800000u : 0u);  // 2.0, 1.0, 0.0
+        return (lo + uintBitsToFloat(hi)) * 0.5;
+    }
+
     void material(inout MaterialInputs material) {
         prepareMaterial(material);
         highp ivec2 px = ivec2(gl_FragCoord.xy);
         highp uvec3 h = pcg3d(uvec3(uvec2(px), materialParams.seed));
         // Box-Muller; u1 in (0, 1] keeps log() finite
-        highp float u1 = (float(h.x >> 8u) + 1.0) * (1.0 / 16777216.0);
-        highp float u2 = float(h.y >> 8u) * (1.0 / 16777216.0);
+        highp float u1 = unorm24((h.x >> 8u) + 1u);
+        highp float u2 = unorm24(h.y >> 8u);
         // gaussian_noise_depth_fs.glsl clamps its uniforms to >= 0.001,
         // which bounds |N(0, 1)| by 3.72
         if (materialParams.mode == 1)

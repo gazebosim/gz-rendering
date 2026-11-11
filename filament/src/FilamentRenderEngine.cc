@@ -877,8 +877,13 @@ bool FilamentRenderEngine::InitImpl()
   if (this->dataPtr->backend == rendering::GraphicsAPI::VULKAN)
     backend = filament::Engine::Backend::VULKAN;
 
+  // The default handle arena (4 MB on GL) fills up with a few thousand
+  // visuals (gz-sim's 3k_shapes world): Filament then prints a PanicLog and
+  // falls back to slower heap allocations.
+  filament::Engine::Config config;
+  config.driverHandleArenaSizeMB = 32;
   filament::Engine::Builder builder;
-  builder.backend(backend);
+  builder.backend(backend).config(&config);
   if (backend == filament::Engine::Backend::OPENGL &&
       this->dataPtr->eglDisplay != EGL_NO_DISPLAY &&
       this->dataPtr->eglContext != EGL_NO_CONTEXT)
@@ -897,7 +902,7 @@ bool FilamentRenderEngine::InitImpl()
            << "using its own" << std::endl;
     this->dataPtr->platform.reset();
     this->dataPtr->engine = filament::Engine::Builder().backend(backend)
-        .build();
+        .config(&config).build();
   }
   if (!this->dataPtr->engine && backend == filament::Engine::Backend::VULKAN)
   {
@@ -908,7 +913,7 @@ bool FilamentRenderEngine::InitImpl()
     SetGlYield();
     this->dataPtr->engine = filament::Engine::Builder()
         .backend(filament::Engine::Backend::OPENGL)
-        .build();
+        .config(&config).build();
   }
   if (!this->dataPtr->engine)
   {

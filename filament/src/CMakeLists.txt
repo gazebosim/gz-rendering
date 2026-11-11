@@ -92,7 +92,7 @@ target_include_directories(${filament_target}
 
 # Filament ships static archives only; link them all as one group so the
 # linker resolves their mutual dependencies.
-file(GLOB filament_archives "${FILAMENT_ROOT}/lib/x86_64/*.a")
+file(GLOB filament_archives "${FILAMENT_LIB_DIR}/*.a")
 target_link_libraries(${filament_target}
   PUBLIC
     ${gz-common_LIBRARIES}

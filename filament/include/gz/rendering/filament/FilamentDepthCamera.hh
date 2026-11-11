@@ -17,6 +17,8 @@
 #ifndef GZ_RENDERING_FILAMENT_FILAMENTDEPTHCAMERA_HH_
 #define GZ_RENDERING_FILAMENT_FILAMENTDEPTHCAMERA_HH_
 
+#include <array>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -31,6 +33,7 @@
 namespace filament
 {
   class MaterialInstance;
+  class Texture;
 }
 
 namespace gz
@@ -39,8 +42,10 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    /// \brief Depth camera: renders every mesh with the gz_depth material
-    /// (linear view depth) into an R32F target, then reads it back.
+    /// \brief Depth camera: renders every mesh with the gz_depth_clamp
+    /// material (linear view depth, clamped like ogre2's) into an R32F
+    /// target, then reads it back. With particles in view it renders the
+    /// raw depth (gz_depth) and PostRender clamps.
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentDepthCamera :
       public BaseDepthCamera<FilamentCamera>
     {
@@ -80,7 +85,27 @@ namespace gz
 
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
+      /// \brief Update cachedColK / cachedRowK to the current pinhole
+      /// \return The pinhole: fx, fy, cx, cy
+      private: std::array<double, 4> UpdateRays();
+
+      /// \brief gz_depth(_packed): the raw depth, for particles
       protected: filament::MaterialInstance *depthInstance{nullptr};
+
+      /// \brief gz_depth_clamp(_packed): the depth clamped in the shader
+      protected: filament::MaterialInstance *clampInstance{nullptr};
+
+      /// \brief clampInstance's per pixel far thresholds (R32F), the
+      /// least depth whose range along the pixel ray is beyond far
+      protected: filament::Texture *farMap{nullptr};
+
+      /// \brief cachedRayKey and the far range farMap was computed for
+      protected: std::array<double, 7> farMapKey{
+          std::numeric_limits<double>::quiet_NaN()};
+
+      /// \brief This frame's target holds the clamped depth (set in Render;
+      /// false while particles are in view)
+      protected: bool gpuClamped{false};
 
       /// \brief Color pass target, created on demand for the point cloud
       protected: FilamentRenderTexturePtr colorTexture;

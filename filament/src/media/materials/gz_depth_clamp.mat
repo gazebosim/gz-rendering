@@ -1,0 +1,38 @@
+// gz_depth with ogre2's clamping (FilamentDepthCamera), so the readback is
+// the depth image: +inf beyond far, -inf nearer than near. `farMap` holds
+// each pixel's least depth whose range along the pixel ray is beyond far,
+// computed on the CPU with the CPU path's double test (FarThreshold), and
+// `nearT` the least float >= near + tol, so both decisions are the CPU's,
+// bit for bit. Texel rows follow gl_FragCoord (bottom first on OpenGL).
+material {
+    name : gz_depth_clamp,
+    shadingModel : unlit,
+    requires : [ uv0 ],
+    blending : opaque,
+    depthWrite : true,
+    parameters : [
+        { type : sampler2d, name : alphaMap, precision : high },
+        { type : float, name : alphaThreshold, precision : high },
+        { type : sampler2d, name : farMap, precision : high, filterable : false },
+        { type : float, name : nearT, precision : high },
+        { type : float, name : inf, precision : high }
+    ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        // alpha tested meshes, as in gz_depth
+        if (texture(materialParams_alphaMap, getUV0()).a <
+                materialParams.alphaThreshold) {
+            discard;
+        }
+        vec4 viewPos = getViewFromWorldMatrix() * vec4(getWorldPosition(), 1.0);
+        highp float depth = -viewPos.z;
+        if (depth >= texelFetch(materialParams_farMap, ivec2(gl_FragCoord.xy), 0).r)
+            depth = materialParams.inf;
+        else if (depth < materialParams.nearT)
+            depth = -materialParams.inf;
+        material.baseColor = vec4(depth, 0.0, 0.0, 1.0);
+    }
+}

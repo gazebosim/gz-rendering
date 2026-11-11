@@ -9,8 +9,9 @@ ogre2. Load it as engine `filament`.
 ## Building Filament
 
 The plugin builds against an unpatched Filament. It is tested with commit
-`0643fd0f` and release `v1.80.0`. The patches in
-[patches/](patches/README.md) are optional:
+`0643fd0f`. Release `v1.80.0` builds and runs with the same recipe and
+passes the tests except picking (`Camera::VisualAt` finds no visual). The
+patches in [patches/](patches/README.md) are optional:
 
 - 0004 gives lights gz's attenuation and specular colour (see
   [Lighting without patch 0004](#lighting-without-patch-0004)).

@@ -18,6 +18,7 @@
 #define GZ_RENDERING_FILAMENT_FILAMENTRENDERTARGET_HH_
 
 #include <map>
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -45,6 +46,7 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
+    class FilamentFullscreenPass;
     class FilamentProjector;
 
     /// \brief Offscreen color+depth attachment pair. Rendering goes through
@@ -54,9 +56,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentRenderTarget :
       public virtual BaseRenderTarget<FilamentObject>
     {
-      protected: FilamentRenderTarget() = default;
+      protected: FilamentRenderTarget();
 
-      public: virtual ~FilamentRenderTarget() = default;
+      public: virtual ~FilamentRenderTarget();
 
       public: virtual void Destroy() override;
 
@@ -108,10 +110,17 @@ namespace gz
       /// false stores values as is (e.g. segmentation labels)
       public: void SetSrgb(bool _srgb);
 
-      /// \brief GL name of the colour texture in the caller's GL context, 0
-      /// unless the engine shares it (FilamentRenderEngine::
-      /// SharesCallerGLContext) and the target is 8 bit colour
+      /// \brief GL name of a texture in the caller's GL context holding the
+      /// image top row first (row 0 at the top, like ogre2's), 0 unless the
+      /// engine shares the caller's context (FilamentRenderEngine::
+      /// SharesCallerGLContext) and the target is 8 bit colour. Filled by
+      /// UpdateSharedTexture.
       public: unsigned int SharedGLId() const;
+
+      /// \brief Copy the rendered image into SharedGLId's texture, upside
+      /// down (filament renders bottom row first), and wait for the GPU, so
+      /// the caller can sample it. Does nothing without a shared texture.
+      public: void UpdateSharedTexture();
 
       protected: virtual void RebuildImpl() override;
 
@@ -125,10 +134,14 @@ namespace gz
 
       /// \brief Create a color + depth attachment pair for the current
       /// size and format
-      /// \param[in] _main The main attachments (multisampled, possibly in
-      /// the caller's GL context), else the scratch ones of render passes
+      /// \param[in] _main The main attachments (multisampled), else the
+      /// scratch ones of render passes
       private: void BuildAttachments(filament::RenderTarget *&_target,
           filament::Texture *&_color, filament::Texture *&_depth, bool _main);
+
+      /// \brief Create SharedGLId's texture in the caller's GL context, if
+      /// the engine shares it, the context is current and the colour is 8 bit
+      private: void BuildSharedTexture();
 
       protected: filament::Texture *colorTexture{nullptr};
 
@@ -157,6 +170,12 @@ namespace gz
 
       /// \brief The filament texture wrapping glColorId
       private: filament::Texture *glColor{nullptr};
+
+      /// \brief Colour-only target on glColor, for UpdateSharedTexture
+      private: filament::RenderTarget *glColorTarget{nullptr};
+
+      /// \brief Draws the colour attachment upside down into glColorTarget
+      private: std::unique_ptr<FilamentFullscreenPass> flipPass;
 
       /// \brief Targets with just a color attachment, for drawing over what
       /// the scene rendered while sampling its depth (ApplyProjectors), or

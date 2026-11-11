@@ -1,0 +1,26 @@
+// Copies colorIn upside down (output row y = input row height - 1 - y),
+// drawn as a fullscreen triangle in device (clip) space. The last pass of a
+// GUI camera into the texture it shares with the GUI: filament renders
+// bottom row first, the GUI (Qt) shows row 0 at the top.
+material {
+    name : gz_flip,
+    shadingModel : unlit,
+    blending : opaque,
+    depthWrite : false,
+    depthCulling : false,
+    culling : none,
+    vertexDomain : device,
+    parameters : [
+        { type : sampler2d, name : colorIn, precision : high }
+    ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        highp ivec2 px = ivec2(gl_FragCoord.xy);
+        highp int h = textureSize(materialParams_colorIn, 0).y;
+        material.baseColor = texelFetch(materialParams_colorIn,
+            ivec2(px.x, h - 1 - px.y), 0);
+    }
+}

@@ -198,7 +198,9 @@ VisualPtr FilamentCamera::VisualAt(const math::Vector2i &_mousePos)
   // lives in a shared state rather than on the stack.
   struct Result { ::utils::Entity entity; bool done{false}; };
   auto result = std::make_shared<Result>();
-  // filament picking coordinates have their origin at the bottom-left
+  // filament picking coordinates have their origin at the bottom-left, as
+  // the view renders (only the GUI's shared texture is turned top row
+  // first, UpdateSharedTexture)
   this->view->pick(static_cast<uint32_t>(_mousePos.X()),
       this->ImageHeight() - 1u - static_cast<uint32_t>(_mousePos.Y()),
       [result](const filament::View::PickingQueryResult &_r)
@@ -406,10 +408,8 @@ void FilamentCamera::Render()
         invViewProj, this->VisibilityMask());
   }
   this->renderTexture->ApplyRenderPasses(this->renderTexture->RenderPasses());
-  // A target shared with the caller's GL context (a GUI) is sampled next,
-  // as rendered: bottom row first, the GUI mirrors it. Finish the frame.
-  if (this->renderTexture->SharedGLId() != 0)
-    FilamentRenderEngine::Instance()->FilamentEngine()->flushAndWait();
+  // a GUI sharing its GL context samples the image next, top row first
+  this->renderTexture->UpdateSharedTexture();
 }
 
 //////////////////////////////////////////////////

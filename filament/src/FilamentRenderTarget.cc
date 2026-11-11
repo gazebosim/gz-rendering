@@ -26,6 +26,7 @@
 #include <filament/RenderTarget.h>
 #include <filament/Renderer.h>
 #include <filament/Texture.h>
+#include <filament/TextureSampler.h>
 #include <filament/View.h>
 #include <filament/Viewport.h>
 #include <backend/PixelBufferDescriptor.h>
@@ -44,6 +45,7 @@
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/Utils.hh"
 #include "gz/rendering/filament/FilamentRenderTarget.hh"
+#include "FilamentFullscreenPass.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -64,9 +66,16 @@ namespace
 }
 
 //////////////////////////////////////////////////
+FilamentRenderTarget::FilamentRenderTarget() = default;
+
+//////////////////////////////////////////////////
+FilamentRenderTarget::~FilamentRenderTarget() = default;
+
+//////////////////////////////////////////////////
 void FilamentRenderTarget::Destroy()
 {
   this->DestroyTarget();
+  this->flipPass.reset();
   BaseRenderTarget::Destroy();
 }
 
@@ -76,13 +85,13 @@ void FilamentRenderTarget::DestroyTarget()
   auto *engine = Engine();
   if (!engine)
     return;
-  for (auto *t : {this->target, this->scratchTarget})
+  for (auto *t : {this->target, this->scratchTarget, this->glColorTarget})
   {
     if (t)
       engine->destroy(t);
   }
   for (auto *t : {this->colorTexture, this->depthTexture,
-                  this->scratchColor, this->scratchDepth})
+                  this->scratchColor, this->scratchDepth, this->glColor})
   {
     if (t)
       engine->destroy(t);
@@ -100,6 +109,7 @@ void FilamentRenderTarget::DestroyTarget()
     this->glColor = nullptr;
   }
   this->target = nullptr;
+  this->glColorTarget = nullptr;
   this->colorTexture = nullptr;
   this->depthTexture = nullptr;
   this->scratchTarget = nullptr;
@@ -141,8 +151,7 @@ void FilamentRenderTarget::RebuildImpl()
     return;
   this->BuildAttachments(this->target, this->colorTexture,
       this->depthTexture, true);
-  if (this->colorTexture && this->glColorId)
-    this->glColor = this->colorTexture;
+  this->BuildSharedTexture();
   // readPixels must not read the multisampled target: on GL with
   // EXT_multisampled_render_to_texture (NVIDIA) filament resolves the colour
   // implicitly but the depth through a sidecar FBO, and readPixels reads
@@ -161,9 +170,72 @@ void FilamentRenderTarget::RebuildImpl()
 //////////////////////////////////////////////////
 unsigned int FilamentRenderTarget::SharedGLId() const
 {
-  // render passes may have swapped in a scratch texture
-  return this->glColor && this->glColor == this->colorTexture ?
-      this->glColorId : 0u;
+  return this->glColorId;
+}
+
+//////////////////////////////////////////////////
+void FilamentRenderTarget::BuildSharedTexture()
+{
+  if (!this->colorTexture ||
+      !FilamentRenderEngine::Instance()->SharesCallerGLContext() ||
+      eglGetCurrentContext() == EGL_NO_CONTEXT)
+  {
+    return;
+  }
+  const auto format = this->colorTexture->getFormat();
+  if (format != filament::Texture::InternalFormat::RGBA8 &&
+      format != filament::Texture::InternalFormat::SRGB8_A8)
+  {
+    return;
+  }
+  // The caller's context is current here: allocate the texture in it, so
+  // the caller can sample it, and import it into filament to draw into
+  GLuint id = 0;
+  CallerGL<decltype(&glGenTextures)>("glGenTextures")(1, &id);
+  CallerGL<decltype(&glBindTexture)>("glBindTexture")(GL_TEXTURE_2D, id);
+  CallerGL<PFNGLTEXSTORAGE2DPROC>("glTexStorage2D")(GL_TEXTURE_2D, 1,
+      format == filament::Texture::InternalFormat::RGBA8 ?
+          GL_RGBA8 : GL_SRGB8_ALPHA8,
+      static_cast<GLsizei>(this->width), static_cast<GLsizei>(this->height));
+  CallerGL<decltype(&glBindTexture)>("glBindTexture")(GL_TEXTURE_2D, 0);
+  // filament's context must see the storage before it imports the name
+  CallerGL<decltype(&glFlush)>("glFlush")();
+  this->glColorId = id;
+  auto *engine = Engine();
+  this->glColor = filament::Texture::Builder()
+      .width(this->width).height(this->height).levels(1)
+      .format(format)
+      .usage(filament::Texture::Usage::COLOR_ATTACHMENT |
+             filament::Texture::Usage::SAMPLEABLE)
+      .import(static_cast<intptr_t>(id))
+      .build(*engine);
+  this->glColorTarget = filament::RenderTarget::Builder()
+      .texture(filament::RenderTarget::AttachmentPoint::COLOR, this->glColor)
+      .build(*engine);
+  gzdbg << "Filament colour target in the caller's GL context: texture "
+        << id << " (" << this->width << "x" << this->height << ")"
+        << std::endl;
+}
+
+//////////////////////////////////////////////////
+void FilamentRenderTarget::UpdateSharedTexture()
+{
+  if (!this->glColorTarget || !this->target)
+    return;
+  if (!FilamentFullscreenPass::Create(this->flipPass, "gz_flip"))
+    return;
+  // Filament renders bottom row first, like any GL render; the caller
+  // shows row 0 at the top. Flipping the scene's projection instead would
+  // break filament's screen-space effects (ambient occlusion, shadow
+  // filtering, front faces), so copy the finished image upside down.
+  this->flipPass->instance->setParameter("colorIn", this->colorTexture,
+      filament::TextureSampler());
+  filament::RenderTarget *scene = this->target;
+  this->target = this->glColorTarget;
+  this->Render(this->flipPass->view);
+  this->target = scene;
+  // the caller samples the texture next
+  Engine()->flushAndWait();
 }
 
 //////////////////////////////////////////////////
@@ -198,33 +270,6 @@ void FilamentRenderTarget::BuildAttachments(filament::RenderTarget *&_target,
       .usage(filament::Texture::Usage::COLOR_ATTACHMENT |
              filament::Texture::Usage::SAMPLEABLE |
              filament::Texture::Usage::BLIT_SRC);
-  // Main 8 bit colour target of an engine sharing the caller's GL context
-  // (a GUI): allocate it in the caller's context, which is current here, so
-  // the caller can sample it (SharedGLId).
-  const bool callerTexture = _main &&
-      this->glColorId == 0 &&
-      (colorFormat == filament::Texture::InternalFormat::RGBA8 ||
-       colorFormat == filament::Texture::InternalFormat::SRGB8_A8) &&
-      FilamentRenderEngine::Instance()->SharesCallerGLContext() &&
-      eglGetCurrentContext() != EGL_NO_CONTEXT;
-  if (callerTexture)
-  {
-    GLuint id = 0;
-    CallerGL<decltype(&glGenTextures)>("glGenTextures")(1, &id);
-    CallerGL<decltype(&glBindTexture)>("glBindTexture")(GL_TEXTURE_2D, id);
-    CallerGL<PFNGLTEXSTORAGE2DPROC>("glTexStorage2D")(GL_TEXTURE_2D, 1,
-        colorFormat == filament::Texture::InternalFormat::RGBA8 ?
-            GL_RGBA8 : GL_SRGB8_ALPHA8,
-        static_cast<GLsizei>(this->width), static_cast<GLsizei>(this->height));
-    CallerGL<decltype(&glBindTexture)>("glBindTexture")(GL_TEXTURE_2D, 0);
-    // filament's context must see the storage before it imports the name
-    CallerGL<decltype(&glFlush)>("glFlush")();
-    this->glColorId = id;
-    colorBuilder.import(static_cast<intptr_t>(id));
-    gzdbg << "Filament colour target in the caller's GL context: texture "
-          << id << " (" << this->width << "x" << this->height << ")"
-          << std::endl;
-  }
   _color = colorBuilder.build(*engine);
   _depth = filament::Texture::Builder()
       .width(this->width).height(this->height).levels(1)

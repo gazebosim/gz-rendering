@@ -792,8 +792,21 @@ bool FilamentRenderEngine::LoadImpl(
   if (it != _params.end() && it->second == "1")
     this->dataPtr->backend = kOpenGL;
   // e.g. gz-gui's MinimalScene, when Qt renders with EGL
-  return PointerParam(_params, "egl_display", this->dataPtr->eglDisplay) &&
-      PointerParam(_params, "egl_context", this->dataPtr->eglContext);
+  if (!PointerParam(_params, "egl_display", this->dataPtr->eglDisplay) ||
+      !PointerParam(_params, "egl_context", this->dataPtr->eglContext))
+  {
+    return false;
+  }
+  // gz-gui asks for the GL context current on its render thread (ogre2
+  // renders in it): share it when it is an EGL one
+  it = _params.find("useCurrentGLContext");
+  if (this->dataPtr->eglContext == EGL_NO_CONTEXT &&
+      it != _params.end() && it->second == "1")
+  {
+    this->dataPtr->eglDisplay = eglGetCurrentDisplay();
+    this->dataPtr->eglContext = eglGetCurrentContext();
+  }
+  return true;
 }
 
 //////////////////////////////////////////////////

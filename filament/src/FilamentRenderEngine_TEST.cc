@@ -18,6 +18,7 @@
 #include <gtest/gtest.h>
 
 #include <memory>
+#include <string>
 
 #include <gz/common/Image.hh>
 
@@ -25,6 +26,20 @@
 
 using namespace gz;
 using namespace rendering;
+
+/////////////////////////////////////////////////
+// egl_display / egl_context are pointers as decimal integers: anything else
+// fails Load instead of throwing
+TEST(FilamentRenderEngineTest, InvalidEglParams)
+{
+  FilamentRenderEngine *engine = FilamentRenderEngine::Instance();
+  for (const std::string &value : {"", "abc", "12abc", "-1", "0x10",
+      "99999999999999999999999"})
+  {
+    EXPECT_FALSE(engine->Load({{"egl_display", value}})) << value;
+    EXPECT_FALSE(engine->Load({{"egl_context", value}})) << value;
+  }
+}
 
 /////////////////////////////////////////////////
 // 16 bit PNGs (e.g. Fuel's Lake House albedo/normal/roughness maps) load:

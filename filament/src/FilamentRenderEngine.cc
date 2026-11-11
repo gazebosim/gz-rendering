@@ -16,6 +16,7 @@
  */
 
 #include <algorithm>
+#include <charconv>
 #include <cstring>
 #include <fstream>
 #include <iterator>
@@ -720,13 +721,28 @@ bool FilamentRenderEngine::SharesCallerGLContext() const
 //////////////////////////////////////////////////
 namespace
 {
-void *PointerParam(const std::map<std::string, std::string> &_params,
-    const std::string &_key)
+/// \brief Pointer passed as a decimal integer in engine parameter _key
+/// \param[out] _ptr The pointer, null if the parameter is not set
+/// \return False if the value is not a decimal integer
+bool PointerParam(const std::map<std::string, std::string> &_params,
+    const std::string &_key, void *&_ptr)
 {
+  _ptr = nullptr;
   auto it = _params.find(_key);
   if (it == _params.end())
-    return nullptr;
-  return reinterpret_cast<void *>(std::stoull(it->second));
+    return true;
+  const std::string &str = it->second;
+  uintptr_t value = 0;
+  const auto [end, ec] =
+      std::from_chars(str.data(), str.data() + str.size(), value);
+  if (ec != std::errc() || end != str.data() + str.size())
+  {
+    gzerr << "Invalid engine parameter [" << _key << "]: [" << str
+          << "], expected a pointer as a decimal integer" << std::endl;
+    return false;
+  }
+  _ptr = reinterpret_cast<void *>(value);
+  return true;
 }
 }
 
@@ -750,9 +766,8 @@ bool FilamentRenderEngine::LoadImpl(
   if (it != _params.end() && it->second == "1")
     this->dataPtr->backend = kOpenGL;
   // e.g. gz-gui's MinimalScene, when Qt renders with EGL
-  this->dataPtr->eglDisplay = PointerParam(_params, "egl_display");
-  this->dataPtr->eglContext = PointerParam(_params, "egl_context");
-  return true;
+  return PointerParam(_params, "egl_display", this->dataPtr->eglDisplay) &&
+      PointerParam(_params, "egl_context", this->dataPtr->eglContext);
 }
 
 //////////////////////////////////////////////////

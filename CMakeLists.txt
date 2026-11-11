@@ -160,7 +160,19 @@ endif()
 # prefix produced by filament's own CMake build (see filament/README.md).
 set(FILAMENT_ROOT "$ENV{FILAMENT_ROOT}" CACHE PATH
   "Filament install prefix; enables the experimental filament component")
-if (FILAMENT_ROOT AND EXISTS "${FILAMENT_ROOT}/include/filament/Engine.h")
+# Filament installs its archives in lib/<arch>, <arch> being the processor
+# name in lower case with amd64 as x86_64 (DIST_ARCH in its CMakeLists.txt)
+string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" filament_arch)
+string(REPLACE "amd64" "x86_64" filament_arch "${filament_arch}")
+set(FILAMENT_LIB_DIR "${FILAMENT_ROOT}/lib/${filament_arch}")
+if (NOT FILAMENT_ROOT)
+  message(STATUS "Skipping component [filament]: FILAMENT_ROOT not set")
+elseif (NOT EXISTS "${FILAMENT_ROOT}/include/filament/Engine.h" OR
+    NOT EXISTS "${FILAMENT_LIB_DIR}/libfilament.a")
+  message(WARNING "Skipping component [filament]: no Filament install at "
+    "FILAMENT_ROOT=${FILAMENT_ROOT} (expected include/filament/Engine.h "
+    "and lib/${filament_arch}/libfilament.a)")
+else()
   # gz light semantics (specular scale, attenuation) need filament/patches/0004
   file(STRINGS "${FILAMENT_ROOT}/include/filament/LightManager.h"
     filament_has_0004 REGEX "setPolynomialAttenuation")
@@ -170,8 +182,6 @@ if (FILAMENT_ROOT AND EXISTS "${FILAMENT_ROOT}/include/filament/Engine.h")
   endif()
   message(STATUS "Found Filament at ${FILAMENT_ROOT}")
   set(GZ_RENDERING_HAVE_FILAMENT TRUE)
-else()
-  message(STATUS "Skipping component [filament]: FILAMENT_ROOT not set")
 endif()
 
 # Plugin install dirs

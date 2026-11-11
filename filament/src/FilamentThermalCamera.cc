@@ -128,6 +128,8 @@ filament::MaterialInstance *FilamentThermalCamera::TexturedInstance(
     return it->second;
   filament::Material *mat =
       FilamentRenderEngine::Instance()->Material("gz_unlit");
+  if (!mat)
+    return nullptr;
   filament::MaterialInstance *mi = mat->createInstance();
   // alpha 0 marks "color, not an id" (ids and the background have alpha 1)
   mi->setParameter("baseColor", filament::math::float4{

@@ -83,6 +83,35 @@ GeometryStorePtr FilamentVisual::Geometries() const
 }
 
 //////////////////////////////////////////////////
+namespace
+{
+/// \brief Add _geometry's renderables to (or remove them from) _scene: its
+/// entity and, for a wireframe mesh, its hidden surface
+void SetGeometryInScene(filament::Scene &_scene,
+    const FilamentGeometryPtr &_geometry, bool _inScene)
+{
+  const ::utils::Entity e = _geometry->Entity();
+  if (e.isNull())
+    return;
+  auto mesh = std::dynamic_pointer_cast<FilamentMesh>(_geometry);
+  const ::utils::Entity hidden = mesh ? mesh->HiddenSurface() :
+      ::utils::Entity();
+  if (_inScene)
+  {
+    _scene.addEntity(e);
+    if (!hidden.isNull())
+      _scene.addEntity(hidden);
+  }
+  else
+  {
+    _scene.remove(e);
+    if (!hidden.isNull())
+      _scene.remove(hidden);
+  }
+}
+}
+
+//////////////////////////////////////////////////
 bool FilamentVisual::AttachGeometry(GeometryPtr _geometry)
 {
   if (!_geometry)
@@ -111,7 +140,7 @@ bool FilamentVisual::AttachGeometry(GeometryPtr _geometry)
                tm.getInstance(this->entity));
   // like ogre2: drawn only once the visual is in the scene graph
   if (this->InSceneGraph())
-    this->scene->Native()->addEntity(derived->Entity());
+    SetGeometryInScene(*this->scene->Native(), derived, true);
   derived->SetLayers(this->visible ?
       FilamentConversions::ToLayers(this->VisibilityFlags()) : 0u);
   return true;
@@ -133,7 +162,7 @@ bool FilamentVisual::DetachGeometry(GeometryPtr _geometry)
     auto &tm = FilamentRenderEngine::Instance()->FilamentEngine()
         ->getTransformManager();
     tm.setParent(tm.getInstance(derived->Entity()), {});
-    this->scene->Native()->remove(derived->Entity());
+    SetGeometryInScene(*this->scene->Native(), derived, false);
   }
   derived->SetParent(nullptr);
   return true;
@@ -146,27 +175,7 @@ void FilamentVisual::SetInScene(bool _inScene)
   if (!native)
     return;
   for (auto it = this->geometries->Begin(); it != this->geometries->End(); ++it)
-  {
-    const ::utils::Entity e = (*it)->Entity();
-    if (e.isNull())
-      continue;
-    // a wireframe mesh's hidden surface goes with it
-    auto mesh = std::dynamic_pointer_cast<FilamentMesh>(*it);
-    const ::utils::Entity hidden = mesh ? mesh->HiddenSurface() :
-        ::utils::Entity();
-    if (_inScene)
-    {
-      native->addEntity(e);
-      if (!hidden.isNull())
-        native->addEntity(hidden);
-    }
-    else
-    {
-      native->remove(e);
-      if (!hidden.isNull())
-        native->remove(hidden);
-    }
-  }
+    SetGeometryInScene(*native, *it, _inScene);
   FilamentNode::SetInScene(_inScene);
 }
 

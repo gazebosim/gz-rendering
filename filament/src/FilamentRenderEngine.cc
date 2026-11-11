@@ -16,6 +16,7 @@
  */
 
 #include <algorithm>
+#include <charconv>
 #include <cstring>
 #include <fstream>
 #include <iterator>
@@ -44,6 +45,7 @@
 #include <gz/plugin/Register.hh>
 
 #include "gz/rendering/GraphicsAPI.hh"
+#include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
 #include "FilamentUtils.hh"
@@ -104,15 +106,6 @@ RenderEngine *FilamentRenderEnginePlugin::Engine() const
 FilamentRenderEngine::FilamentRenderEngine()
   : dataPtr(new FilamentRenderEnginePrivate)
 {
-#ifdef FILAMENT_RESOURCE_PATH
-  this->dataPtr->resourcePath = FILAMENT_RESOURCE_PATH;
-#endif
-  std::string envPath;
-  if (common::env("GZ_RENDERING_FILAMENT_RESOURCE_PATH", envPath) &&
-      !envPath.empty())
-  {
-    this->dataPtr->resourcePath = envPath;
-  }
 }
 
 //////////////////////////////////////////////////
@@ -225,13 +218,36 @@ void FilamentRenderEngine::EndFrame()
 }
 
 //////////////////////////////////////////////////
-// TODO: utils::JobSystem::adopt() / emancipate() by their mangled names
-// (Itanium ABI, `this` first): filament doesn't install utils/JobSystem.h.
-// Call getJobSystem().adopt() etc. once the header is installed.
+namespace
+{
+// Filament has no public API to hand its job system's slot for outside
+// threads from one thread to another (Engine::create adopts the creating
+// thread, every thread that renders must be adopted), and it does not
+// install utils/JobSystem.h, which declares utils::JobSystem::adopt() and
+// emancipate(). Call them by their Itanium C++ ABI names (GCC and Clang;
+// `this` is the first argument), exported by libutils.a.
+// TODO: call engine.getJobSystem().adopt() / emancipate() once filament
+// installs the header.
 extern "C" void _ZN5utils9JobSystem5adoptEv(::utils::JobSystem *_jobSystem);
 extern "C" void _ZN5utils9JobSystem10emancipateEv(
     ::utils::JobSystem *_jobSystem);
 
+/// \brief utils::JobSystem::adopt(): the calling thread takes _engine's
+/// job system slot for outside threads
+void AdoptJobSystemThread(filament::Engine &_engine)
+{
+  _ZN5utils9JobSystem5adoptEv(&_engine.getJobSystem());
+}
+
+/// \brief utils::JobSystem::emancipate(): the calling thread frees that
+/// slot
+void EmancipateJobSystemThread(filament::Engine &_engine)
+{
+  _ZN5utils9JobSystem10emancipateEv(&_engine.getJobSystem());
+}
+}
+
+//////////////////////////////////////////////////
 void FilamentRenderEngine::AdoptThread()
 {
   const std::thread::id self = std::this_thread::get_id();
@@ -242,7 +258,7 @@ void FilamentRenderEngine::AdoptThread()
     gzerr << "Filament renders from one thread at a time: its job system "
           << "has a single slot for threads it did not create" << std::endl;
   }
-  _ZN5utils9JobSystem5adoptEv(&this->dataPtr->engine->getJobSystem());
+  AdoptJobSystemThread(*this->dataPtr->engine);
   this->dataPtr->jobThread = self;
 }
 
@@ -285,32 +301,34 @@ filament::Material *FilamentRenderEngine::Material(const std::string &_name)
     return it->second;
 
   // A path to a filament material source (Material::SetFragmentShader with
-  // a .mat file): compiled at runtime, cached under its path.
+  // a .mat file): compiled at runtime, cached under its path. Failures are
+  // cached too (null), so that they are reported once.
   if (common::EndsWith(_name, ".mat"))
   {
     filament::Material *mat = this->CompileMaterial(_name);
-    if (mat)
-      this->dataPtr->materials[_name] = mat;
+    this->dataPtr->materials[_name] = mat;
     return mat;
   }
 
   std::string path = common::joinPaths(this->dataPtr->resourcePath,
       "materials", _name + ".filamat");
   const std::vector<uint8_t> data = ReadFile(path);
+  filament::Material *mat = nullptr;
   if (data.empty())
   {
     gzerr << "Unable to open filament material package [" << path << "]"
           << std::endl;
-    return nullptr;
   }
-  filament::Material *mat = filament::Material::Builder()
-      .package(data.data(), data.size())
-      .build(*this->dataPtr->engine);
-  if (!mat)
+  else
   {
-    gzerr << "Failed to build filament material [" << _name << "]"
-          << std::endl;
-    return nullptr;
+    mat = filament::Material::Builder()
+        .package(data.data(), data.size())
+        .build(*this->dataPtr->engine);
+    if (!mat)
+    {
+      gzerr << "Failed to build filament material [" << _name << "]"
+            << std::endl;
+    }
   }
   this->dataPtr->materials[_name] = mat;
   return mat;
@@ -714,8 +732,11 @@ filament::Texture *FilamentRenderEngine::CubeTexture(const std::string &_path,
   return tex;
 }
 
-/// \brief FilamentSharedEglPlatform.cc
+namespace gz::rendering::filament_utils
+{
+/// \brief Defined in FilamentSharedEglPlatform.cc (built without RTTI)
 filament::backend::Platform *CreateSharedEglPlatform(void *_eglDisplay);
+}
 
 //////////////////////////////////////////////////
 bool FilamentRenderEngine::SharesCallerGLContext() const
@@ -726,13 +747,28 @@ bool FilamentRenderEngine::SharesCallerGLContext() const
 //////////////////////////////////////////////////
 namespace
 {
-void *PointerParam(const std::map<std::string, std::string> &_params,
-    const std::string &_key)
+/// \brief Pointer passed as a decimal integer in engine parameter _key
+/// \param[out] _ptr The pointer, null if the parameter is not set
+/// \return False if the value is not a decimal integer
+bool PointerParam(const std::map<std::string, std::string> &_params,
+    const std::string &_key, void *&_ptr)
 {
+  _ptr = nullptr;
   auto it = _params.find(_key);
   if (it == _params.end())
-    return nullptr;
-  return reinterpret_cast<void *>(std::stoull(it->second));
+    return true;
+  const std::string &str = it->second;
+  uintptr_t value = 0;
+  const auto [end, ec] =
+      std::from_chars(str.data(), str.data() + str.size(), value);
+  if (ec != std::errc() || end != str.data() + str.size())
+  {
+    gzerr << "Invalid engine parameter [" << _key << "]: [" << str
+          << "], expected a pointer as a decimal integer" << std::endl;
+    return false;
+  }
+  _ptr = reinterpret_cast<void *>(value);
+  return true;
 }
 }
 
@@ -756,27 +792,68 @@ bool FilamentRenderEngine::LoadImpl(
   if (it != _params.end() && it->second == "1")
     this->dataPtr->backend = kOpenGL;
   // e.g. gz-gui's MinimalScene, when Qt renders with EGL
-  this->dataPtr->eglDisplay = PointerParam(_params, "egl_display");
-  this->dataPtr->eglContext = PointerParam(_params, "egl_context");
-  return true;
+  return PointerParam(_params, "egl_display", this->dataPtr->eglDisplay) &&
+      PointerParam(_params, "egl_context", this->dataPtr->eglContext);
+}
+
+//////////////////////////////////////////////////
+namespace
+{
+/// \brief Directory of the compiled materials and textures:
+/// GZ_RENDERING_FILAMENT_RESOURCE_PATH if set, else <resources>/filament/media
+/// like ogre2 (<resources>: GZ_RENDERING_RESOURCE_PATH or the install's),
+/// else the build tree's, where they are compiled.
+std::string MediaPath()
+{
+  std::string path;
+  if (common::env("GZ_RENDERING_FILAMENT_RESOURCE_PATH", path) &&
+      !path.empty())
+  {
+    return path;
+  }
+  if (!common::env("GZ_RENDERING_RESOURCE_PATH", path) || path.empty())
+    path = getResourcePath();
+  // install path
+  const std::string media = common::joinPaths(path, "filament", "media");
+  if (common::exists(media))
+    return media;
+  // build path
+  return FILAMENT_BUILD_MEDIA_PATH;
+}
+
+/// \brief Every sensor readback ends in flushAndWait(), i.e. glFinish() on
+/// the driver thread, which NVIDIA's GL driver spins on (sched_yield) by
+/// default. __GL_YIELD=USLEEP makes it usleep between polls instead: the
+/// GPU work takes a few 100 us, the CPU goes to physics meanwhile (6-9%
+/// less CPU in gz-sim with RGB or depth sensors on NVIDIA). Only for the
+/// OpenGL backend, read when the driver loads (so it also applies to other
+/// GL users in the process loaded later); a value the user set wins. Other
+/// drivers ignore the variable.
+void SetGlYield()
+{
+  setenv("__GL_YIELD", "USLEEP", 0);
+}
 }
 
 //////////////////////////////////////////////////
 bool FilamentRenderEngine::InitImpl()
 {
+  this->dataPtr->resourcePath = MediaPath();
+  if (!common::isDirectory(
+      common::joinPaths(this->dataPtr->resourcePath, "materials")))
+  {
+    gzerr << "Filament materials not found in ["
+          << this->dataPtr->resourcePath << "]. Set "
+          << "GZ_RENDERING_RESOURCE_PATH to the gz-rendering resource "
+          << "directory." << std::endl;
+  }
+
   // OpenGL by default: sensors are readback bound and filament's Vulkan
   // readPixels allocates a staging buffer per call (~4 ms per readback on
   // NVIDIA, vs ~0.3 ms on OpenGL). Vulkan stays available on request.
   filament::Engine::Backend backend = filament::Engine::Backend::OPENGL;
   if (this->dataPtr->backend == rendering::GraphicsAPI::VULKAN)
     backend = filament::Engine::Backend::VULKAN;
-
-  // Every sensor readback ends in flushAndWait(), i.e. glFinish() on the
-  // driver thread, which NVIDIA's GL driver spins on (sched_yield) by default.
-  // usleep between polls instead: the GPU work takes a few 100 us, the CPU
-  // goes to physics meanwhile. Must be set before the driver loads; a value
-  // the user set wins.
-  setenv("__GL_YIELD", "USLEEP", 0);
 
   filament::Engine::Builder builder;
   builder.backend(backend);
@@ -785,10 +862,12 @@ bool FilamentRenderEngine::InitImpl()
       this->dataPtr->eglContext != EGL_NO_CONTEXT)
   {
     this->dataPtr->platform.reset(
-        CreateSharedEglPlatform(this->dataPtr->eglDisplay));
+        filament_utils::CreateSharedEglPlatform(this->dataPtr->eglDisplay));
     builder.platform(this->dataPtr->platform.get())
         .sharedContext(this->dataPtr->eglContext);
   }
+  if (backend == filament::Engine::Backend::OPENGL)
+    SetGlYield();
   this->dataPtr->engine = builder.build();
   if (!this->dataPtr->engine && this->dataPtr->platform)
   {
@@ -804,6 +883,7 @@ bool FilamentRenderEngine::InitImpl()
     gzwarn << "Filament Vulkan backend unavailable, falling back to OpenGL"
            << std::endl;
     this->dataPtr->backend = rendering::GraphicsAPI::OPENGL;
+    SetGlYield();
     this->dataPtr->engine = filament::Engine::Builder()
         .backend(filament::Engine::Backend::OPENGL)
         .build();
@@ -818,7 +898,7 @@ bool FilamentRenderEngine::InitImpl()
   // The engine adopts its creator into its job system, which has one slot
   // for such threads. Free it: the first thread that renders takes it (gz-gui
   // creates the engine on Qt's scene graph thread, renders on its own).
-  _ZN5utils9JobSystem10emancipateEv(&this->dataPtr->engine->getJobSystem());
+  EmancipateJobSystemThread(*this->dataPtr->engine);
 
   this->dataPtr->renderer = this->dataPtr->engine->createRenderer();
   this->dataPtr->scenes = FilamentSceneStorePtr(new FilamentSceneStore);

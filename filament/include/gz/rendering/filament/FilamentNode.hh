@@ -81,8 +81,13 @@ namespace gz
 
       protected: virtual void Init() override;
 
-      /// \brief Push pose * scale into the filament transform component
+      /// \brief Push pose * scale into the filament transform component,
+      /// without the parent's scale if this node does not inherit it
       protected: void UpdateTransform();
+
+      /// \brief UpdateTransform the descendants that do not inherit scale
+      /// and whose parent's world scale depends on this node's
+      protected: void UpdateScaleDependents();
 
       protected: FilamentNodePtr parent;
 

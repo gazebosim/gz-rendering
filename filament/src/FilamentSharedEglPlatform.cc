@@ -42,8 +42,12 @@ class SharedEglPlatform : public filament::backend::PlatformEGLHeadless
 };
 }
 
-/// \brief Used by FilamentRenderEngine
+namespace gz::rendering::filament_utils
+{
+/// \brief Filament platform sharing objects with the caller's EGL contexts
+/// on _eglDisplay, owned by the caller. Used by FilamentRenderEngine.
 filament::backend::Platform *CreateSharedEglPlatform(void *_eglDisplay)
 {
   return new SharedEglPlatform(static_cast<EGLDisplay>(_eglDisplay));
+}
 }

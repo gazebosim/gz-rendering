@@ -8,14 +8,20 @@ ogre2. Load it as engine `filament`.
 
 ## Building Filament
 
-The plugin needs a Filament install built from commit `0643fd0f` with the
-patches in [patches/](patches/README.md) applied:
+The plugin needs a Filament install built from commit `0643fd0f` with
+patches 0001 (build fixes) and 0004 (gz light semantics) from
+[patches/](patches/README.md) applied. 0002 and 0003 are optional: they
+make Vulkan readback faster (3-7x per sensor capture on NVIDIA) without
+changing its output.
 
 ```bash
 git clone https://github.com/google/filament.git
 cd filament
 git checkout 0643fd0f
-git apply /path/to/gz-rendering/filament/patches/*.patch
+P=/path/to/gz-rendering/filament/patches
+git apply $P/0001-*.patch $P/0004-*.patch
+# optional, faster Vulkan readback:
+git apply $P/0002-*.patch $P/0003-*.patch
 
 cmake -S . -B build -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
@@ -25,9 +31,16 @@ cmake -S . -B build -G Ninja \
   -DFILAMENT_SUPPORTS_VULKAN=ON \
   -DFILAMENT_BUILD_FILAMAT=ON \
   -DFILAMENT_SKIP_SAMPLES=ON \
+  -DFILAMENT_BUILD_TESTING=OFF \
+  -DFILAMENT_SKIP_SDL2=ON \
+  -DCMAKE_CXX_STANDARD_LIBRARIES=-lGL \
   -DUSE_STATIC_LIBCXX=ON
 cmake --build build --target install
 ```
+
+With EGL, Filament's own executables (e.g. `benchmark_filament`) miss the
+GL library at link time, hence `-lGL`. The bundled SDL2 doesn't build with
+GCC 15 (`FILAMENT_SKIP_SDL2=ON`); the tests aren't needed.
 
 Then configure gz-rendering with `FILAMENT_ROOT` pointing at the install
 prefix, as a CMake variable or an environment variable:

@@ -161,6 +161,13 @@ endif()
 set(FILAMENT_ROOT "$ENV{FILAMENT_ROOT}" CACHE PATH
   "Filament install prefix; enables the experimental filament component")
 if (FILAMENT_ROOT AND EXISTS "${FILAMENT_ROOT}/include/filament/Engine.h")
+  # gz light semantics (specular scale, attenuation) need filament/patches/0004
+  file(STRINGS "${FILAMENT_ROOT}/include/filament/LightManager.h"
+    filament_has_0004 REGEX "setPolynomialAttenuation")
+  if (NOT filament_has_0004)
+    message(FATAL_ERROR "Filament at ${FILAMENT_ROOT} lacks patch "
+      "filament/patches/0004 (see filament/README.md)")
+  endif()
   message(STATUS "Found Filament at ${FILAMENT_ROOT}")
   set(GZ_RENDERING_HAVE_FILAMENT TRUE)
 else()

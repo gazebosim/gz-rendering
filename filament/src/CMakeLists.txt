@@ -6,8 +6,9 @@ gz_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME filament_targ
 # Filament's public headers need C++20
 target_compile_features(${filament_target} PUBLIC cxx_std_20)
 
-# Compile .mat sources into .filamat packages next to the build tree.
-# The engine looks them up under FILAMENT_RESOURCE_PATH/materials.
+# Compile .mat sources into .filamat packages in the build tree. The
+# engine looks them up in <resources>/filament/media/materials once
+# installed, else here (FILAMENT_BUILD_MEDIA_PATH).
 set(FILAMENT_MATC "${FILAMENT_ROOT}/bin/matc")
 set(filament_media_dir "${CMAKE_CURRENT_BINARY_DIR}/media")
 set(filament_material_dir "${filament_media_dir}/materials")
@@ -82,7 +83,7 @@ set_property(SOURCE FilamentSharedEglPlatform.cc FilamentColorGrading.cc
 set_property(
   SOURCE FilamentRenderEngine.cc
   PROPERTY COMPILE_DEFINITIONS
-  FILAMENT_RESOURCE_PATH="${filament_media_dir}"
+  FILAMENT_BUILD_MEDIA_PATH="${filament_media_dir}"
 )
 
 target_include_directories(${filament_target}

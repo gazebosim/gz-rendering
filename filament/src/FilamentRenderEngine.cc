@@ -44,6 +44,7 @@
 #include <gz/plugin/Register.hh>
 
 #include "gz/rendering/GraphicsAPI.hh"
+#include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
 #include "FilamentUtils.hh"
@@ -104,15 +105,6 @@ RenderEngine *FilamentRenderEnginePlugin::Engine() const
 FilamentRenderEngine::FilamentRenderEngine()
   : dataPtr(new FilamentRenderEnginePrivate)
 {
-#ifdef FILAMENT_RESOURCE_PATH
-  this->dataPtr->resourcePath = FILAMENT_RESOURCE_PATH;
-#endif
-  std::string envPath;
-  if (common::env("GZ_RENDERING_FILAMENT_RESOURCE_PATH", envPath) &&
-      !envPath.empty())
-  {
-    this->dataPtr->resourcePath = envPath;
-  }
 }
 
 //////////////////////////////////////////////////
@@ -762,8 +754,44 @@ bool FilamentRenderEngine::LoadImpl(
 }
 
 //////////////////////////////////////////////////
+namespace
+{
+/// \brief Directory of the compiled materials and textures:
+/// GZ_RENDERING_FILAMENT_RESOURCE_PATH if set, else <resources>/filament/media
+/// like ogre2 (<resources>: GZ_RENDERING_RESOURCE_PATH or the install's),
+/// else the build tree's, where they are compiled.
+std::string MediaPath()
+{
+  std::string path;
+  if (common::env("GZ_RENDERING_FILAMENT_RESOURCE_PATH", path) &&
+      !path.empty())
+  {
+    return path;
+  }
+  if (!common::env("GZ_RENDERING_RESOURCE_PATH", path) || path.empty())
+    path = getResourcePath();
+  // install path
+  const std::string media = common::joinPaths(path, "filament", "media");
+  if (common::exists(media))
+    return media;
+  // build path
+  return FILAMENT_BUILD_MEDIA_PATH;
+}
+}
+
+//////////////////////////////////////////////////
 bool FilamentRenderEngine::InitImpl()
 {
+  this->dataPtr->resourcePath = MediaPath();
+  if (!common::isDirectory(
+      common::joinPaths(this->dataPtr->resourcePath, "materials")))
+  {
+    gzerr << "Filament materials not found in ["
+          << this->dataPtr->resourcePath << "]. Set "
+          << "GZ_RENDERING_RESOURCE_PATH to the gz-rendering resource "
+          << "directory." << std::endl;
+  }
+
   // OpenGL by default: sensors are readback bound and filament's Vulkan
   // readPixels allocates a staging buffer per call (~4 ms per readback on
   // NVIDIA, vs ~0.3 ms on OpenGL). Vulkan stays available on request.

@@ -67,6 +67,12 @@ that install's `matc`. Filament refuses materials from a different
   `backend=vulkan`) selects Vulkan, falling back to OpenGL when no Vulkan
   driver is available. `egl_display` / `egl_context` share an existing EGL
   context (e.g. gz-gui).
+- With OpenGL the engine sets `__GL_YIELD=USLEEP` before the driver
+  loads, unless `__GL_YIELD` is already set: NVIDIA's driver then sleeps
+  instead of spinning while it waits for the GPU, which every sensor
+  readback does (6-9% less CPU in gz-sim with an RGB or depth sensor).
+  It is a process-wide setting: set `__GL_YIELD` yourself to choose
+  another mode. Other drivers ignore it.
 - Look: every view uses Filament's lighting model. The GUI camera also
   uses tone mapping, ambient occlusion, anti-aliasing and sky lighting;
   RGB camera sensors use sky lighting only (no post-processing, so they

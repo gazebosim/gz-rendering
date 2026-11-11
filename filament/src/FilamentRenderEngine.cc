@@ -794,6 +794,19 @@ std::string MediaPath()
   // build path
   return FILAMENT_BUILD_MEDIA_PATH;
 }
+
+/// \brief Every sensor readback ends in flushAndWait(), i.e. glFinish() on
+/// the driver thread, which NVIDIA's GL driver spins on (sched_yield) by
+/// default. __GL_YIELD=USLEEP makes it usleep between polls instead: the
+/// GPU work takes a few 100 us, the CPU goes to physics meanwhile (6-9%
+/// less CPU in gz-sim with RGB or depth sensors on NVIDIA). Only for the
+/// OpenGL backend, read when the driver loads (so it also applies to other
+/// GL users in the process loaded later); a value the user set wins. Other
+/// drivers ignore the variable.
+void SetGlYield()
+{
+  setenv("__GL_YIELD", "USLEEP", 0);
+}
 }
 
 //////////////////////////////////////////////////
@@ -816,13 +829,6 @@ bool FilamentRenderEngine::InitImpl()
   if (this->dataPtr->backend == rendering::GraphicsAPI::VULKAN)
     backend = filament::Engine::Backend::VULKAN;
 
-  // Every sensor readback ends in flushAndWait(), i.e. glFinish() on the
-  // driver thread, which NVIDIA's GL driver spins on (sched_yield) by default.
-  // usleep between polls instead: the GPU work takes a few 100 us, the CPU
-  // goes to physics meanwhile. Must be set before the driver loads; a value
-  // the user set wins.
-  setenv("__GL_YIELD", "USLEEP", 0);
-
   filament::Engine::Builder builder;
   builder.backend(backend);
   if (backend == filament::Engine::Backend::OPENGL &&
@@ -834,6 +840,8 @@ bool FilamentRenderEngine::InitImpl()
     builder.platform(this->dataPtr->platform.get())
         .sharedContext(this->dataPtr->eglContext);
   }
+  if (backend == filament::Engine::Backend::OPENGL)
+    SetGlYield();
   this->dataPtr->engine = builder.build();
   if (!this->dataPtr->engine && this->dataPtr->platform)
   {
@@ -849,6 +857,7 @@ bool FilamentRenderEngine::InitImpl()
     gzwarn << "Filament Vulkan backend unavailable, falling back to OpenGL"
            << std::endl;
     this->dataPtr->backend = rendering::GraphicsAPI::OPENGL;
+    SetGlYield();
     this->dataPtr->engine = filament::Engine::Builder()
         .backend(filament::Engine::Backend::OPENGL)
         .build();

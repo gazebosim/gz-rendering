@@ -17,6 +17,7 @@
 #ifndef GZ_RENDERING_FILAMENT_FILAMENTUTILS_HH_
 #define GZ_RENDERING_FILAMENT_FILAMENTUTILS_HH_
 
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -28,6 +29,7 @@
 #include <math/vec3.h>
 
 #include <gz/common/Console.hh>
+#include <gz/math/Color.hh>
 
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/filament/FilamentMaterial.hh"
@@ -44,13 +46,18 @@ namespace gz::rendering::filament_utils
     delete[] static_cast<T *>(_buf);
   }
 
-  /// \brief gz_flat instance drawing the colour 0xRRGGBB (_rgb), created on
-  /// first use and kept in _cache. Null if the material is missing.
+  /// \brief gz_flat instance drawing _color, created on first use and kept
+  /// in _cache by its 8 bit color (0xRRGGBB). Null if the material is
+  /// missing.
   inline filament::MaterialInstance *FlatInstance(
       std::unordered_map<uint32_t, filament::MaterialInstance *> &_cache,
-      uint32_t _rgb)
+      const math::Color &_color)
   {
-    auto it = _cache.find(_rgb);
+    const uint32_t rgb =
+        (static_cast<uint32_t>(std::lround(_color.R() * 255)) << 16) |
+        (static_cast<uint32_t>(std::lround(_color.G() * 255)) << 8) |
+        static_cast<uint32_t>(std::lround(_color.B() * 255));
+    auto it = _cache.find(rgb);
     if (it != _cache.end())
       return it->second;
     filament::Material *mat =
@@ -59,10 +66,16 @@ namespace gz::rendering::filament_utils
       return nullptr;
     filament::MaterialInstance *mi = mat->createInstance();
     mi->setParameter("color", filament::math::float3{
-        ((_rgb >> 16) & 0xff) / 255.0f, ((_rgb >> 8) & 0xff) / 255.0f,
-        (_rgb & 0xff) / 255.0f});
-    _cache[_rgb] = mi;
+        _color.R(), _color.G(), _color.B()});
+    _cache[rgb] = mi;
     return mi;
+  }
+
+  /// \brief The color whose 8 bit channels are _rgb (0xRRGGBB)
+  inline math::Color ColorFromRgb(uint32_t _rgb)
+  {
+    return math::Color(((_rgb >> 16) & 0xff) / 255.0f,
+        ((_rgb >> 8) & 0xff) / 255.0f, (_rgb & 0xff) / 255.0f);
   }
 
   /// \brief Destroy the instances of a FlatInstance cache and clear it

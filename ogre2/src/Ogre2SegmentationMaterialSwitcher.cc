@@ -28,6 +28,7 @@
 #include "gz/rendering/ogre2/Ogre2Heightmap.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2SegmentationCamera.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 #include "gz/rendering/RenderTypes.hh"
 
@@ -50,7 +51,7 @@ using namespace rendering;
 
 /////////////////////////////////////////////////
 Ogre2SegmentationMaterialSwitcher::Ogre2SegmentationMaterialSwitcher(
-  Ogre2ScenePtr _scene, SegmentationCamera *_camera)
+  Ogre2ScenePtr _scene, Ogre2SegmentationCamera *_camera)
 {
   this->scene = _scene;
   this->segmentationCamera = _camera;
@@ -62,181 +63,12 @@ Ogre2SegmentationMaterialSwitcher::~Ogre2SegmentationMaterialSwitcher()
   this->segmentationCamera = nullptr;
 }
 
-/////////////////////////////////////////////////
-bool Ogre2SegmentationMaterialSwitcher::IsTakenColor(const math::Color &_color)
-{
-  // Get the int value of the 24 bit color
-  // Multiply by 255 as color values are normalized
-  int64_t colorId = static_cast<int64_t>((_color.R() * 255) * 256 * 256 +
-    (_color.G() * 255) * 256 + (_color.B() * 255));
-
-  if (this->takenColors.count(colorId))
-  {
-    return true;
-  }
-  else
-  {
-    this->takenColors.insert(colorId);
-    return false;
-  }
-}
-
-/////////////////////////////////////////////////
-Ogre::Vector4 Ogre2SegmentationMaterialSwitcher::ColorForVisual(
-  const VisualPtr &_visual, std::string &_prevParentName)
-{
-  GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::ColorForVisual");
-  // get class user data
-  Variant labelAny = _visual->UserData("label");
-  int label;
-  if (const int* labelPtr = std::get_if<int>(&labelAny))
-  {
-    label = *labelPtr;
-  }
-  else
-  {
-    // items with no class are considered background
-    label = this->segmentationCamera->BackgroundLabel();
-  }
-
-  // sub item custom parameter to set the pixel color material
-  Ogre::Vector4 customParameter;
-
-  // Material Switching
-  if (this->segmentationCamera->Type() == SegmentationType::ST_SEMANTIC)
-  {
-    if (this->segmentationCamera->IsColoredMap())
-    {
-      // semantic material (each pixel has item's color)
-      math::Color color = this->LabelToColor(label);
-      customParameter = Ogre::Vector4(color.R(), color.G(), color.B(), 1.0);
-    }
-    else
-    {
-      // labels ids material (each pixel has item's label)
-      float labelColor = label / 255.0f;
-      customParameter = Ogre::Vector4(labelColor, labelColor, labelColor, 1.0);
-    }
-  }
-  else if (this->segmentationCamera->Type() == SegmentationType::ST_PANOPTIC)
-  {
-    auto itemName = _visual->Name();
-    std::string parentName = this->TopLevelModelVisual(_visual)->Name();
-
-    auto it = this->instancesCount.find(label);
-    if (it == this->instancesCount.end())
-      it = this->instancesCount.insert(std::make_pair(label, 0)).first;
-
-    // Multi link model has many links with the same first name and should
-    // have the same pixels color
-    bool isMultiLink = false;
-    if (parentName == _prevParentName)
-    {
-      isMultiLink = true;
-    }
-    else
-    {
-      it->second++;
-      _prevParentName = parentName;
-    }
-
-    const int instanceCount = it->second;
-
-    if (this->segmentationCamera->IsColoredMap())
-    {
-      math::Color color;
-      if (label == this->segmentationCamera->BackgroundLabel())
-      {
-        color = this->LabelToColor(label, isMultiLink);
-      }
-      else
-      {
-        // convert 24 bit number to int64
-        const int compositeId = label * 256 * 256 + instanceCount;
-        color = this->LabelToColor(compositeId, isMultiLink);
-      }
-
-      customParameter = Ogre::Vector4(color.R(), color.G(), color.B(), 1.0);
-    }
-    else
-    {
-      // 256 => 8 bits .. 255 => color percentage
-      float labelColor = label / 255.0f;
-      float instanceColor1 = (instanceCount / 256) / 255.0f;
-      float instanceColor2 = (instanceCount % 256) / 255.0f;
-
-      customParameter =
-        Ogre::Vector4(instanceColor2, instanceColor1, labelColor, 1.0);
-    }
-  }
-
-  return customParameter;
-}
-
-/////////////////////////////////////////////////
-math::Color Ogre2SegmentationMaterialSwitcher::LabelToColor(int64_t _label,
-  bool _isMultiLink)
-{
-  GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::LabelToColor");
-  if (_label == this->segmentationCamera->BackgroundLabel())
-    return this->segmentationCamera->BackgroundColor();
-
-  // use label as seed to generate the same color for the label
-  this->generator.seed(_label);
-  std::uniform_int_distribution<int> distribution(0, 255);
-
-  // random color
-  int r = distribution(this->generator);
-  int g = distribution(this->generator);
-  int b = distribution(this->generator);
-
-  math::Color color(
-    static_cast<float>(r / 255.0f),
-    static_cast<float>(g / 255.0f),
-    static_cast<float>(b / 255.0f));
-
-  // if the label is colored before return the color
-  // don't check for taken colors in that case, all items
-  // with the same label will have the same color
-  if (this->segmentationCamera->Type() == SegmentationType::ST_SEMANTIC &&
-    this->coloredLabel.count(_label))
-    return color;
-
-  if (_isMultiLink)
-    return color;
-
-  // loop recursively till finding a unique color
-  if (this->IsTakenColor(color))
-      return this->LabelToColor(_label);
-
-  this->coloredLabel.insert(_label);
-
-  // We don't multiply by 255 here as (r,g,b) are in [0-255] range
-  int64_t colorId = r * 256 * 256 + g * 256 + b;
-  this->colorToLabel[colorId] = _label;
-
-  return color;
-}
-
-////////////////////////////////////////////////
-VisualPtr Ogre2SegmentationMaterialSwitcher::TopLevelModelVisual(
-    VisualPtr _visual) const
-{
-  GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::TopLevelModelVisual");
-  if (!_visual)
-    return _visual;
-  VisualPtr p = _visual;
-  while (p->Parent() && p->Parent() != _visual->Scene()->RootVisual())
-    p = std::dynamic_pointer_cast<Visual>(p->Parent());
-  return p;
-}
-
 ////////////////////////////////////////////////
 void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
     Ogre::Camera * /*_cam*/)
 {
   GZ_PROFILE("Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene");
-  this->colorToLabel.clear();
+  this->segmentationCamera->ClearLabelColors();
   auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
       Ogre::ItemFactory::FACTORY_TYPE_NAME);
 
@@ -298,8 +130,10 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
         gzerr << "Ogre Error:" << e.getFullDescription() << "\n";
       }
 
-      const Ogre::Vector4 customParameter =
-        ColorForVisual(visual, prevParentName);
+      const math::Color color =
+        this->segmentationCamera->ColorForVisual(visual, prevParentName);
+      const Ogre::Vector4 customParameter(
+        color.R(), color.G(), color.B(), 1.0);
 
       const size_t numSubItems = item->getNumSubItems();
       for (size_t i = 0; i < numSubItems; ++i)
@@ -380,19 +214,16 @@ void Ogre2SegmentationMaterialSwitcher::cameraPreRenderScene(
       // TODO(anyone): Retrieve datablock and make sure it's not blending
       // like we do with Items (it should be impossible?)
       VisualPtr visual = heightmap->Parent();
-      const Ogre::Vector4 customParameter =
-        ColorForVisual(visual, prevParentName);
+      const math::Color color =
+        this->segmentationCamera->ColorForVisual(visual, prevParentName);
+      const Ogre::Vector4 customParameter(
+        color.R(), color.G(), color.B(), 1.0);
       heightmap->Terra()->SetSolidColor(1u, customParameter);
     }
   }
 
   // Remove the reference count on noBlend we created
   hlmsManager->destroyBlendblock(noBlend);
-
-  // reset the count & colors tracking
-  this->instancesCount.clear();
-  this->takenColors.clear();
-  this->coloredLabel.clear();
 }
 
 ////////////////////////////////////////////////
@@ -452,11 +283,4 @@ void Ogre2SegmentationMaterialSwitcher::cameraPostRenderScene(
   }
 
   engine->SetGzOgreRenderingMode(GORM_NORMAL);
-}
-
-////////////////////////////////////////////////
-const std::unordered_map<int64_t, int64_t> &
-Ogre2SegmentationMaterialSwitcher::ColorToLabel() const
-{
-  return this->colorToLabel;
 }

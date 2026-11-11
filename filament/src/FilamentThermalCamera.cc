@@ -364,7 +364,8 @@ void FilamentThermalCamera::Render()
       const uint32_t id = static_cast<uint32_t>(this->idValue.size());
       this->idValue.push_back(this->Encode(rgba));
       mesh->OverrideMaterial(i,
-          filament_utils::FlatInstance(this->idInstances, id));
+          filament_utils::FlatInstance(this->idInstances,
+              filament_utils::ColorFromRgb(id)));
     }
     this->overridden.push_back(mesh);
   }

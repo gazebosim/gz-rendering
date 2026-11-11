@@ -17,12 +17,8 @@
 #ifndef GZ_RENDERING_FILAMENT_FILAMENTSEGMENTATIONCAMERA_HH_
 #define GZ_RENDERING_FILAMENT_FILAMENTSEGMENTATIONCAMERA_HH_
 
-#include <map>
-#include <random>
-#include <set>
 #include <string>
 #include <unordered_map>
-#include <vector>
 
 #include <gz/common/Event.hh>
 
@@ -43,8 +39,7 @@ namespace gz
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
     /// \brief Segmentation camera: every mesh is drawn with a flat label
-    /// color into a linear RGB8 target. Labels, instance counting and colors
-    /// follow Ogre2SegmentationMaterialSwitcher so outputs are comparable.
+    /// color into a linear RGB8 target.
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentSegmentationCamera :
       public BaseSegmentationCamera<FilamentCamera>
     {
@@ -82,37 +77,14 @@ namespace gz
 
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
-      /// \brief Label color of a visual, see Ogre2's ColorForVisual
-      private: math::Color ColorForVisual(const VisualPtr &_visual,
-          std::string &_prevParentName);
-
-      /// \brief Seeded random color of a label, see Ogre2's LabelToColor
-      private: math::Color LabelToColor(int64_t _label,
-          bool _isMultiLink = false);
-
-      /// \brief Shared material instance for a flat color
-      private: filament::MaterialInstance *FlatInstance(
-          const math::Color &_color);
-
+      /// \brief gz_flat instances by color (0xRRGGBB)
       private: std::unordered_map<uint32_t, filament::MaterialInstance *>
           flatInstances;
 
       private: bool textureCreated{false};
 
-      private: std::vector<uint8_t> buffer;
-
-      /// \brief Readback image of PostRender, reused
+      /// \brief Segmentation data of the last frame, RGB8
       private: Image image;
-
-      private: std::default_random_engine generator;
-
-      private: std::map<int64_t, int64_t> colorToLabel;
-
-      private: std::set<int64_t> takenColors;
-
-      private: std::set<int64_t> coloredLabel;
-
-      private: std::map<int, int> instancesCount;
 
       private: common::EventT<void(const uint8_t *, unsigned int,
           unsigned int, unsigned int, const std::string &)>

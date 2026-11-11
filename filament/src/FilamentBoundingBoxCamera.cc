@@ -15,11 +15,6 @@
  *
  */
 
-// The box computations are a port of ogre2/src/Ogre2BoundingBoxCamera.cc,
-// kept line-for-line where possible so both engines report the same boxes.
-// TODO: the CPU half is duplicated from ogre2; move it into
-// BaseBoundingBoxCamera if the filament engine is ever merged.
-
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -58,9 +53,6 @@ namespace
 {
   /// \brief Same value and channel as ogre2's material switcher
   const uint32_t kBackgroundLabel = 255u;
-
-  /// \brief MarkVisibleBoxes entry of an item without a visible pixel
-  const uint32_t kNotVisible = 0xffffffffu;
 
   using FilamentConversions::Transform;
 
@@ -132,114 +124,6 @@ namespace
     }
   }
 
-  // Cohen-Sutherland line clipping, as in ogre2
-  const int kInside = 0;
-  const int kLeft = 1;
-  const int kRight = 2;
-  const int kBottom = 4;
-  const int kTop = 8;
-
-  int LocationRelativeToViewPort(const math::Vector4d &_bounds, double _x,
-      double _y)
-  {
-    int relativeLocation = kInside;
-    if (_x < _bounds[0])
-      relativeLocation |= kLeft;
-    else if (_x > _bounds[2])
-      relativeLocation |= kRight;
-    if (_y < _bounds[1])
-      relativeLocation |= kBottom;
-    else if (_y > _bounds[3])
-      relativeLocation |= kTop;
-    return relativeLocation;
-  }
-
-  void AddToViewportLines(const math::Vector4d &_bounds,
-      const math::Vector2d &_p0, const math::Vector2d &_p1,
-      std::vector<math::Vector2d> &_lines)
-  {
-    const double xmin = _bounds[0];
-    const double ymin = _bounds[1];
-    const double xmax = _bounds[2];
-    const double ymax = _bounds[3];
-    double x0 = _p0.X();
-    double y0 = _p0.Y();
-    double x1 = _p1.X();
-    double y1 = _p1.Y();
-    int location0 = LocationRelativeToViewPort(_bounds, x0, y0);
-    int location1 = LocationRelativeToViewPort(_bounds, x1, y1);
-    while (true)
-    {
-      if (!(location0 | location1))
-      {
-        _lines.push_back(math::Vector2d(x0, y0));
-        _lines.push_back(math::Vector2d(x1, y1));
-        return;
-      }
-      if (location0 & location1)
-        return;
-      double x = 0.0;
-      double y = 0.0;
-      const int outerLocation = location1 > location0 ? location1 : location0;
-      if (outerLocation & kTop)
-      {
-        x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0);
-        y = ymax;
-      }
-      else if (outerLocation & kBottom)
-      {
-        x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0);
-        y = ymin;
-      }
-      else if (outerLocation & kRight)
-      {
-        y = y0 + (y1 - y0) * (xmax - x0) / (x1 - x0);
-        x = xmax;
-      }
-      else
-      {
-        y = y0 + (y1 - y0) * (xmin - x0) / (x1 - x0);
-        x = xmin;
-      }
-      if (outerLocation == location0)
-      {
-        x0 = x;
-        y0 = y;
-        location0 = LocationRelativeToViewPort(_bounds, x0, y0);
-      }
-      else
-      {
-        x1 = x;
-        y1 = y;
-        location1 = LocationRelativeToViewPort(_bounds, x1, y1);
-      }
-    }
-  }
-
-  /// \brief ogre2's MergeBoxes2D, including its maxX/maxY start at 0
-  BoundingBox MergeBoxes2D(const std::vector<BoundingBox> &_boxes)
-  {
-    if (_boxes.size() == 1)
-      return _boxes[0];
-    double minX = std::numeric_limits<double>::max();
-    double maxX = 0.0;
-    double minY = std::numeric_limits<double>::max();
-    double maxY = 0.0;
-    for (const auto &box : _boxes)
-    {
-      minX = std::min(minX, box.Center().X() - box.Size().X() * 0.5);
-      maxX = std::max(maxX, box.Center().X() + box.Size().X() * 0.5);
-      minY = std::min(minY, box.Center().Y() - box.Size().Y() * 0.5);
-      maxY = std::max(maxY, box.Center().Y() + box.Size().Y() * 0.5);
-    }
-    BoundingBox merged;
-    const double width = maxX - minX;
-    const double height = maxY - minY;
-    merged.SetSize({width, height, 0});
-    merged.SetCenter({minX + width * 0.5, minY + height * 0.5, 0});
-    merged.SetLabel(_boxes[0].Label());
-    return merged;
-  }
 }
 
 //////////////////////////////////////////////////
@@ -322,8 +206,10 @@ void FilamentBoundingBoxCamera::Render()
     const int *labelPtr = std::get_if<int>(&labelAny);
     if (labelPtr && !this->items[i].mesh->terrain)
       label = static_cast<uint32_t>(*labelPtr) & 0xffu;
-    const uint32_t key = ((i % 256u) << 16) | ((i / 256u) << 8) | label;
-    if (filament::MaterialInstance *mi = filament_utils::FlatInstance(this->flatInstances, key))
+    const math::Color color((i % 256u) / 255.0f, (i / 256u) / 255.0f,
+        label / 255.0f);
+    if (filament::MaterialInstance *mi =
+        filament_utils::FlatInstance(this->flatInstances, color))
     {
       // ogre2's plain_color material has no alpha test
       this->items[i].mesh->OverrideMaterial(mi, false);
@@ -351,8 +237,6 @@ void FilamentBoundingBoxCamera::PostRender()
   if (this->image.Width() != width || this->image.Height() != height)
     this->image = Image(width, height, PF_R8G8B8);
   this->renderTexture->Copy(this->image);
-  const uint8_t *src = this->image.Data<uint8_t>();
-  this->buffer.assign(src, src + static_cast<size_t>(width) * height * 3u);
 
   this->boundingBoxes.clear();
   if (this->type == BoundingBoxType::BBT_VISIBLEBOX2D)
@@ -366,102 +250,34 @@ void FilamentBoundingBoxCamera::PostRender()
 }
 
 //////////////////////////////////////////////////
-std::vector<uint32_t> FilamentBoundingBoxCamera::MarkVisibleBoxes() const
+std::string FilamentBoundingBoxCamera::ParentName(uint32_t _itemId) const
 {
-  std::vector<uint32_t> visible(this->items.size(), kNotVisible);
-  for (size_t index = 0; index + 2 < this->buffer.size(); index += 3)
-  {
-    const uint32_t label = this->buffer[index + 2];
-    if (label == kBackgroundLabel)
-      continue;
-    const uint32_t itemId = this->buffer[index + 1] * 256u + this->buffer[index];
-    // the first pixel's label, like a map emplace
-    if (itemId < visible.size() && visible[itemId] == kNotVisible)
-      visible[itemId] = label;
-  }
-  return visible;
+  // ids past the items come from meshes drawn without the flat material
+  return _itemId < this->items.size() ?
+      this->items[_itemId].parentName : std::string();
 }
 
 //////////////////////////////////////////////////
 void FilamentBoundingBoxCamera::VisibleBoundingBoxes()
 {
-  const uint32_t width = this->ImageWidth();
-  const uint32_t height = this->ImageHeight();
-  struct Boundary
-  {
-    uint32_t minX, minY, maxX, maxY, label;
-    bool seen;
-  };
-  // by item index; ids past the items (meshes drawn without an override)
-  // in a map. Both iterate in id order.
-  std::vector<Boundary> bounds(this->items.size(),
-      Boundary{width, height, 0, 0, 0, false});
-  std::map<uint32_t, Boundary> others;
-  for (uint32_t y = 0; y < height; ++y)
-  {
-    for (uint32_t x = 0; x < width; ++x)
-    {
-      const size_t index = (static_cast<size_t>(y) * width + x) * 3u;
-      const uint32_t label = this->buffer[index + 2];
-      if (label == kBackgroundLabel)
-        continue;
-      const uint32_t itemId =
-          this->buffer[index + 1] * 256u + this->buffer[index];
-      Boundary &b = itemId < bounds.size() ? bounds[itemId] :
-          others.try_emplace(itemId,
-              Boundary{width, height, 0, 0, label, true}).first->second;
-      if (!b.seen)
-      {
-        b.label = label;
-        b.seen = true;
-      }
-      b.minX = std::min(b.minX, x);
-      b.minY = std::min(b.minY, y);
-      b.maxX = std::max(b.maxX, x);
-      b.maxY = std::max(b.maxY, y);
-    }
-  }
-
-  // merge multi-link models (grouped by top level visual name)
-  std::map<std::string, std::vector<BoundingBox>> parentToBoxes;
-  auto addBox = [&](uint32_t itemId, const Boundary &b)
-  {
-    BoundingBox box;
-    box.SetLabel(b.label);
-    const uint32_t boxWidth = b.maxX - b.minX;
-    const uint32_t boxHeight = b.maxY - b.minY;
-    box.SetCenter({b.minX + boxWidth * 0.5, b.minY + boxHeight * 0.5, 0});
-    box.SetSize({static_cast<double>(boxWidth),
-        static_cast<double>(boxHeight), 0.0});
-    const std::string parentName = itemId < this->items.size() ?
-        this->items[itemId].parentName : std::string();
-    parentToBoxes[parentName].push_back(box);
-  };
-  for (uint32_t itemId = 0; itemId < bounds.size(); ++itemId)
-  {
-    if (bounds[itemId].seen)
-      addBox(itemId, bounds[itemId]);
-  }
-  for (const auto &[itemId, b] : others)
-    addBox(itemId, b);
-  for (const auto &kv : parentToBoxes)
-    this->boundingBoxes.push_back(MergeBoxes2D(kv.second));
-  std::reverse(this->boundingBoxes.begin(), this->boundingBoxes.end());
+  this->MergeMultiLinksModels2D(
+      this->VisibleBoxes2D(this->image.Data<uint8_t>(), kBackgroundLabel),
+      [this](uint32_t _itemId) { return this->ParentName(_itemId); },
+      this->boundingBoxes);
 }
 
 //////////////////////////////////////////////////
 void FilamentBoundingBoxCamera::FullBoundingBoxes()
 {
-  const std::vector<uint32_t> visible = this->MarkVisibleBoxes();
   const math::Matrix4d pv = this->ProjectionMatrix() * this->ViewMatrix();
   const double width = this->ImageWidth();
   const double height = this->ImageHeight();
 
-  std::map<std::string, std::vector<BoundingBox>> parentToBoxes;
-  for (uint32_t itemId = 0; itemId < visible.size(); ++itemId)
+  std::map<uint32_t, BoundingBox> boxes;
+  for (const auto &[itemId, label] :
+      this->VisibleBoxesLabel(this->image.Data<uint8_t>(), kBackgroundLabel))
   {
-    const uint32_t label = visible[itemId];
-    if (label == kNotVisible)
+    if (itemId >= this->items.size())
       continue;
     const Item &item = this->items[itemId];
     math::AxisAlignedBox local, world;
@@ -469,7 +285,7 @@ void FilamentBoundingBoxCamera::FullBoundingBoxes()
         !InFrustum(world, pv))
       continue;
 
-    // MeshMinimalBox: projected extents of every vertex
+    // projected extents of every vertex
     math::Vector2d minV(std::numeric_limits<double>::max(),
         std::numeric_limits<double>::max());
     math::Vector2d maxV(-std::numeric_limits<double>::max(),
@@ -490,7 +306,7 @@ void FilamentBoundingBoxCamera::FullBoundingBoxes()
         (std::abs(minV.Y()) > 1 && std::abs(maxV.Y()) > 1))
       continue;
 
-    // ConvertToScreenCoord
+    // clip to the frustum, convert to pixels and clip to the image
     minV.X(std::clamp(minV.X(), -1.0, 1.0));
     minV.Y(std::clamp(minV.Y(), -1.0, 1.0));
     maxV.X(std::clamp(maxV.X(), -1.0, 1.0));
@@ -504,33 +320,31 @@ void FilamentBoundingBoxCamera::FullBoundingBoxes()
     maxV.X(std::min(maxV.X(), width - 1.0));
     maxV.Y(std::min(maxV.Y(), height - 1.0));
 
-    BoundingBox box;
+    BoundingBox &box = boxes[itemId];
     const double boxWidth = maxV.X() - minV.X();
     const double boxHeight = minV.Y() - maxV.Y();
     box.SetCenter({minV.X() + boxWidth / 2, maxV.Y() + boxHeight / 2, 0});
     box.SetSize({boxWidth, boxHeight, 0});
     box.SetLabel(label);
-    parentToBoxes[item.parentName].push_back(box);
   }
-  for (const auto &kv : parentToBoxes)
-    this->boundingBoxes.push_back(MergeBoxes2D(kv.second));
-  std::reverse(this->boundingBoxes.begin(), this->boundingBoxes.end());
+  this->MergeMultiLinksModels2D(boxes,
+      [this](uint32_t _itemId) { return this->ParentName(_itemId); },
+      this->boundingBoxes);
 }
 
 //////////////////////////////////////////////////
 void FilamentBoundingBoxCamera::BoundingBoxes3D()
 {
-  const std::vector<uint32_t> visible = this->MarkVisibleBoxes();
   const math::Matrix4d viewMatrix = this->ViewMatrix();
   const math::Matrix4d pv = this->ProjectionMatrix() * viewMatrix;
   const math::Quaterniond worldCameraRotation = viewMatrix.Rotation();
 
   std::map<std::string, std::vector<uint32_t>> parentToIds;
   std::map<uint32_t, BoundingBox> boxes;
-  for (uint32_t itemId = 0; itemId < visible.size(); ++itemId)
+  for (const auto &[itemId, label] :
+      this->VisibleBoxesLabel(this->image.Data<uint8_t>(), kBackgroundLabel))
   {
-    const uint32_t label = visible[itemId];
-    if (label == kNotVisible)
+    if (itemId >= this->items.size())
       continue;
     const Item &item = this->items[itemId];
     math::AxisAlignedBox local, world;
@@ -548,7 +362,7 @@ void FilamentBoundingBoxCamera::BoundingBoxes3D()
     parentToIds[item.parentName].push_back(itemId);
   }
 
-  // MergeMultiLinksModels3D
+  // merge multi-link models into the oriented box of all their vertices
   for (const auto &kv : parentToIds)
   {
     const std::vector<uint32_t> &ids = kv.second;
@@ -590,108 +404,21 @@ common::ConnectionPtr FilamentBoundingBoxCamera::ConnectNewBoundingBoxes(
 void FilamentBoundingBoxCamera::DrawBoundingBox(unsigned char *_data,
     const math::Color &_color, const BoundingBox &_box) const
 {
-  const uint32_t width = this->ImageWidth();
-  const uint32_t height = this->ImageHeight();
-  auto plot = [&](int _x, int _y)
+  if (this->Type() != BoundingBoxType::BBT_BOX3D)
   {
-    const size_t index = (static_cast<size_t>(_y) * width + _x) * 3u;
-    _data[index] = static_cast<unsigned char>(255 * _color.R());
-    _data[index + 1] = static_cast<unsigned char>(255 * _color.G());
-    _data[index + 2] = static_cast<unsigned char>(255 * _color.B());
-  };
-
-  if (this->Type() == BoundingBoxType::BBT_BOX3D)
-  {
-    const math::Matrix4d proj = this->ProjectionMatrix();
-    std::vector<math::Vector2d> vertices2d;
-    for (const auto &vertex : _box.Vertices3D())
-    {
-      // skip boxes with any vertex behind the camera
-      if (vertex.Z() > 0)
-        return;
-      const math::Vector4d p = Transform(proj, vertex);
-      vertices2d.push_back({p[0] / p[3], p[1] / p[3]});
-    }
-
-    // edges: top 0-1-2-3, bottom 4-5-6-7, pillars i-(i+4)
-    static const int kEdges[12][2] = {{0, 1}, {1, 2}, {2, 3}, {3, 0},
-        {4, 5}, {5, 6}, {6, 7}, {7, 4}, {0, 4}, {1, 5}, {2, 6}, {3, 7}};
-    std::vector<math::Vector2d> clipped;
-    const math::Vector4d bounds(-1.0, -1.0, 1.0, 1.0);
-    for (const auto &edge : kEdges)
-    {
-      AddToViewportLines(bounds, vertices2d[edge[0]], vertices2d[edge[1]],
-          clipped);
-    }
-
-    std::vector<math::Vector2i> pts;
-    for (auto &v : clipped)
-    {
-      double x = uint32_t((v.X() + 1.0) / 2 * width);
-      double y = uint32_t((1.0 - v.Y()) / 2 * height);
-      x = std::min<double>(std::max(0.0, x), width - 1.0);
-      y = std::min<double>(std::max(0.0, y), height - 1.0);
-      pts.push_back(math::Vector2i(static_cast<int>(x), static_cast<int>(y)));
-    }
-
-    // Bresenham, as in ogre2 (the last pixel is not drawn)
-    for (size_t k = 0; k + 1 < pts.size(); k += 2)
-    {
-      math::Vector2i p1 = pts[k];
-      math::Vector2i p2 = pts[k + 1];
-      const bool shallow =
-          std::abs(p2.Y() - p1.Y()) < std::abs(p2.X() - p1.X());
-      // walk along the major axis, from low to high
-      const bool swap = shallow ? p1.X() > p2.X() : p1.Y() > p2.Y();
-      if (swap)
-        std::swap(p1, p2);
-      int major0 = shallow ? p1.X() : p1.Y();
-      int major1 = shallow ? p2.X() : p2.Y();
-      int minor = shallow ? p1.Y() : p1.X();
-      int dMajor = major1 - major0;
-      int dMinor = shallow ? p2.Y() - p1.Y() : p2.X() - p1.X();
-      int step = 1;
-      if (dMinor < 0)
-      {
-        step = -1;
-        dMinor = -dMinor;
-      }
-      int d = 2 * dMinor - dMajor;
-      for (int m = major0; m < major1; ++m)
-      {
-        if (shallow)
-          plot(m, minor);
-        else
-          plot(minor, m);
-        if (d > 0)
-        {
-          minor += step;
-          d += 2 * (dMinor - dMajor);
-        }
-        else
-        {
-          d += 2 * dMinor;
-        }
-      }
-    }
+    this->DrawBoundingBox2D(_data, _color, _box);
     return;
   }
 
-  // 2D box
-  const math::Vector2i minV(
-      static_cast<int>(_box.Center().X() - _box.Size().X() / 2),
-      static_cast<int>(_box.Center().Y() - _box.Size().Y() / 2));
-  const math::Vector2i maxV(
-      static_cast<int>(_box.Center().X() + _box.Size().X() / 2),
-      static_cast<int>(_box.Center().Y() + _box.Size().Y() / 2));
-  const uint32_t xValues[2] = {uint32_t(minV.X()),
-      std::min(width - 1, uint32_t(maxV.X()))};
-  const uint32_t yValues[2] = {uint32_t(minV.Y()),
-      std::min(height - 1, uint32_t(maxV.Y()))};
-  for (int i = minV.Y(); i < maxV.Y(); ++i)
-    for (uint32_t j : xValues)
-      plot(static_cast<int>(j), i);
-  for (uint32_t i : yValues)
-    for (int j = minV.X(); j < maxV.X(); ++j)
-      plot(j, static_cast<int>(i));
+  const math::Matrix4d proj = this->ProjectionMatrix();
+  std::vector<math::Vector2d> vertices2d;
+  for (const auto &vertex : _box.Vertices3D())
+  {
+    // skip boxes with any vertex behind the camera
+    if (vertex.Z() > 0)
+      return;
+    const math::Vector4d p = Transform(proj, vertex);
+    vertices2d.push_back({p[0] / p[3], p[1] / p[3]});
+  }
+  this->DrawBoundingBox3D(_data, _color, vertices2d);
 }

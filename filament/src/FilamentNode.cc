@@ -15,6 +15,8 @@
  *
  */
 
+#include <cmath>
+
 #include <filament/Engine.h>
 #include <filament/TransformManager.h>
 #include <utils/EntityManager.h>
@@ -78,8 +80,8 @@ bool FilamentNode::InheritScale() const
 //////////////////////////////////////////////////
 void FilamentNode::SetInheritScale(bool _inherit)
 {
-  // Filament always composes parent scale; flag is stored only
   this->inheritScale = _inherit;
+  this->UpdateTransform();
 }
 
 //////////////////////////////////////////////////
@@ -87,6 +89,7 @@ void FilamentNode::SetLocalScaleImpl(const math::Vector3d &_scale)
 {
   this->scale = _scale;
   this->UpdateTransform();
+  this->UpdateScaleDependents();
 }
 
 //////////////////////////////////////////////////
@@ -109,8 +112,44 @@ void FilamentNode::UpdateTransform()
     return;
   auto &tm = FilamentRenderEngine::Instance()->FilamentEngine()
       ->getTransformManager();
-  tm.setTransform(tm.getInstance(this->entity),
-      FilamentConversions::Convert(this->pose, this->scale));
+  filament::math::mat4f m = FilamentConversions::Convert(this->pose,
+      this->scale);
+  if (!this->inheritScale && this->parent)
+  {
+    // filament composes the parent's world transform: undo its scale on
+    // the rotation and scale part, like ogre's inherit scale off (the
+    // position stays in the parent's scaled frame).
+    // TODO: exact for parents whose world transform has no shear only
+    const math::Vector3d parentScale = this->parent->WorldScale();
+    for (int r = 0; r < 3; ++r)
+    {
+      if (std::abs(parentScale[r]) < 1e-9)
+        continue;
+      const float inv = static_cast<float>(1.0 / parentScale[r]);
+      for (int c = 0; c < 3; ++c)
+        m[c][r] *= inv;
+    }
+  }
+  tm.setTransform(tm.getInstance(this->entity), m);
+}
+
+//////////////////////////////////////////////////
+void FilamentNode::UpdateScaleDependents()
+{
+  if (!this->children)
+    return;
+  for (auto it = this->children->Begin(); it != this->children->End(); ++it)
+  {
+    auto child = std::dynamic_pointer_cast<FilamentNode>(*it);
+    if (!child)
+      continue;
+    // a child that does not inherit scale cancels this node's: its own
+    // children see only its local scale
+    if (child->inheritScale)
+      child->UpdateScaleDependents();
+    else
+      child->UpdateTransform();
+  }
 }
 
 //////////////////////////////////////////////////
@@ -143,6 +182,8 @@ bool FilamentNode::AttachChild(NodePtr _child)
   auto &tm = FilamentRenderEngine::Instance()->FilamentEngine()
       ->getTransformManager();
   tm.setParent(tm.getInstance(derived->entity), tm.getInstance(this->entity));
+  derived->UpdateTransform();
+  derived->UpdateScaleDependents();
   derived->SetInScene(this->InSceneGraph());
   return true;
 }
@@ -162,6 +203,8 @@ bool FilamentNode::DetachChild(NodePtr _child)
   if (!derived->entity.isNull())
     tm.setParent(tm.getInstance(derived->entity), {});
   derived->SetParent(nullptr);
+  derived->UpdateTransform();
+  derived->UpdateScaleDependents();
   derived->SetInScene(false);
   return true;
 }

@@ -218,13 +218,36 @@ void FilamentRenderEngine::EndFrame()
 }
 
 //////////////////////////////////////////////////
-// TODO: utils::JobSystem::adopt() / emancipate() by their mangled names
-// (Itanium ABI, `this` first): filament doesn't install utils/JobSystem.h.
-// Call getJobSystem().adopt() etc. once the header is installed.
+namespace
+{
+// Filament has no public API to hand its job system's slot for outside
+// threads from one thread to another (Engine::create adopts the creating
+// thread, every thread that renders must be adopted), and it does not
+// install utils/JobSystem.h, which declares utils::JobSystem::adopt() and
+// emancipate(). Call them by their Itanium C++ ABI names (GCC and Clang;
+// `this` is the first argument), exported by libutils.a.
+// TODO: call engine.getJobSystem().adopt() / emancipate() once filament
+// installs the header.
 extern "C" void _ZN5utils9JobSystem5adoptEv(::utils::JobSystem *_jobSystem);
 extern "C" void _ZN5utils9JobSystem10emancipateEv(
     ::utils::JobSystem *_jobSystem);
 
+/// \brief utils::JobSystem::adopt(): the calling thread takes _engine's
+/// job system slot for outside threads
+void AdoptJobSystemThread(filament::Engine &_engine)
+{
+  _ZN5utils9JobSystem5adoptEv(&_engine.getJobSystem());
+}
+
+/// \brief utils::JobSystem::emancipate(): the calling thread frees that
+/// slot
+void EmancipateJobSystemThread(filament::Engine &_engine)
+{
+  _ZN5utils9JobSystem10emancipateEv(&_engine.getJobSystem());
+}
+}
+
+//////////////////////////////////////////////////
 void FilamentRenderEngine::AdoptThread()
 {
   const std::thread::id self = std::this_thread::get_id();
@@ -235,7 +258,7 @@ void FilamentRenderEngine::AdoptThread()
     gzerr << "Filament renders from one thread at a time: its job system "
           << "has a single slot for threads it did not create" << std::endl;
   }
-  _ZN5utils9JobSystem5adoptEv(&this->dataPtr->engine->getJobSystem());
+  AdoptJobSystemThread(*this->dataPtr->engine);
   this->dataPtr->jobThread = self;
 }
 
@@ -709,8 +732,11 @@ filament::Texture *FilamentRenderEngine::CubeTexture(const std::string &_path,
   return tex;
 }
 
-/// \brief FilamentSharedEglPlatform.cc
+namespace gz::rendering::filament_utils
+{
+/// \brief Defined in FilamentSharedEglPlatform.cc (built without RTTI)
 filament::backend::Platform *CreateSharedEglPlatform(void *_eglDisplay);
+}
 
 //////////////////////////////////////////////////
 bool FilamentRenderEngine::SharesCallerGLContext() const
@@ -836,7 +862,7 @@ bool FilamentRenderEngine::InitImpl()
       this->dataPtr->eglContext != EGL_NO_CONTEXT)
   {
     this->dataPtr->platform.reset(
-        CreateSharedEglPlatform(this->dataPtr->eglDisplay));
+        filament_utils::CreateSharedEglPlatform(this->dataPtr->eglDisplay));
     builder.platform(this->dataPtr->platform.get())
         .sharedContext(this->dataPtr->eglContext);
   }
@@ -872,7 +898,7 @@ bool FilamentRenderEngine::InitImpl()
   // The engine adopts its creator into its job system, which has one slot
   // for such threads. Free it: the first thread that renders takes it (gz-gui
   // creates the engine on Qt's scene graph thread, renders on its own).
-  _ZN5utils9JobSystem10emancipateEv(&this->dataPtr->engine->getJobSystem());
+  EmancipateJobSystemThread(*this->dataPtr->engine);
 
   this->dataPtr->renderer = this->dataPtr->engine->createRenderer();
   this->dataPtr->scenes = FilamentSceneStorePtr(new FilamentSceneStore);

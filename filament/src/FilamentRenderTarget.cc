@@ -176,12 +176,16 @@ unsigned int FilamentRenderTarget::SharedGLId() const
 //////////////////////////////////////////////////
 void FilamentRenderTarget::BuildSharedTexture()
 {
-  if (!this->colorTexture ||
-      !FilamentRenderEngine::Instance()->SharesCallerGLContext() ||
-      eglGetCurrentContext() == EGL_NO_CONTEXT)
-  {
+  auto *gzEngine = FilamentRenderEngine::Instance();
+  const bool shared = gzEngine->SharesCallerGLContext() &&
+      eglGetCurrentContext() != EGL_NO_CONTEXT;
+  // Not shared, e.g. Qt on GLX: the texture is filled from a readback, in
+  // the context current on this thread (any API: the entry points dispatch
+  // to it)
+  const bool copied = !shared && gzEngine->UsesCallerGLContext() &&
+      CallerGL<decltype(&glGetString)>("glGetString")(GL_VERSION) != nullptr;
+  if (!this->colorTexture || (!shared && !copied))
     return;
-  }
   const auto format = this->colorTexture->getFormat();
   if (format != filament::Texture::InternalFormat::RGBA8 &&
       format != filament::Texture::InternalFormat::SRGB8_A8)
@@ -201,6 +205,13 @@ void FilamentRenderTarget::BuildSharedTexture()
   // filament's context must see the storage before it imports the name
   CallerGL<decltype(&glFlush)>("glFlush")();
   this->glColorId = id;
+  if (copied)
+  {
+    gzdbg << "Filament colour target copied to the caller's GL context: "
+          << "texture " << id << " (" << this->width << "x" << this->height
+          << ")" << std::endl;
+    return;
+  }
   auto *engine = Engine();
   this->glColor = filament::Texture::Builder()
       .width(this->width).height(this->height).levels(1)
@@ -220,8 +231,29 @@ void FilamentRenderTarget::BuildSharedTexture()
 //////////////////////////////////////////////////
 void FilamentRenderTarget::UpdateSharedTexture()
 {
-  if (!this->glColorTarget || !this->target)
+  if (!this->glColorId || !this->target)
     return;
+  if (!this->glColorTarget)
+  {
+    // not shared: read back (top row first) and upload
+    if (this->glColorImage.Width() != this->width ||
+        this->glColorImage.Height() != this->height)
+    {
+      this->glColorImage = Image(this->width, this->height, PF_R8G8B8A8);
+    }
+    this->Copy(this->glColorImage);
+    CallerGL<decltype(&glBindTexture)>("glBindTexture")(GL_TEXTURE_2D,
+        this->glColorId);
+    CallerGL<PFNGLBINDBUFFERPROC>("glBindBuffer")(GL_PIXEL_UNPACK_BUFFER, 0);
+    CallerGL<decltype(&glPixelStorei)>("glPixelStorei")(
+        GL_UNPACK_ALIGNMENT, 4);
+    CallerGL<decltype(&glTexSubImage2D)>("glTexSubImage2D")(GL_TEXTURE_2D,
+        0, 0, 0, static_cast<GLsizei>(this->width),
+        static_cast<GLsizei>(this->height), GL_RGBA, GL_UNSIGNED_BYTE,
+        this->glColorImage.Data<unsigned char>());
+    CallerGL<decltype(&glBindTexture)>("glBindTexture")(GL_TEXTURE_2D, 0);
+    return;
+  }
   if (!FilamentFullscreenPass::Create(this->flipPass, "gz_flip"))
     return;
   // Filament renders bottom row first, like any GL render; the caller

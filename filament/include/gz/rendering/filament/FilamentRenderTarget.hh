@@ -112,14 +112,17 @@ namespace gz
 
       /// \brief GL name of a texture in the caller's GL context holding the
       /// image top row first (row 0 at the top, like ogre2's), 0 unless the
-      /// engine shares the caller's context (FilamentRenderEngine::
-      /// SharesCallerGLContext) and the target is 8 bit colour. Filled by
+      /// engine shares the caller's context or renders for it (see
+      /// FilamentRenderEngine::SharesCallerGLContext and
+      /// UsesCallerGLContext) and the target is 8 bit colour. Filled by
       /// UpdateSharedTexture.
       public: unsigned int SharedGLId() const;
 
-      /// \brief Copy the rendered image into SharedGLId's texture, upside
-      /// down (filament renders bottom row first), and wait for the GPU, so
-      /// the caller can sample it. Does nothing without a shared texture.
+      /// \brief Copy the rendered image into SharedGLId's texture, top row
+      /// first, and wait for the GPU, so the caller can sample it: upside
+      /// down with a last pass (filament renders bottom row first) if the
+      /// context is shared, else read back and uploaded in the caller's
+      /// context, which must be current. Does nothing without the texture.
       public: void UpdateSharedTexture();
 
       protected: virtual void RebuildImpl() override;
@@ -140,7 +143,8 @@ namespace gz
           filament::Texture *&_color, filament::Texture *&_depth, bool _main);
 
       /// \brief Create SharedGLId's texture in the caller's GL context, if
-      /// the engine shares it, the context is current and the colour is 8 bit
+      /// the engine shares it or renders for it, the context is current and
+      /// the colour is 8 bit
       private: void BuildSharedTexture();
 
       protected: filament::Texture *colorTexture{nullptr};
@@ -164,8 +168,8 @@ namespace gz
       /// \brief See SetSamples
       private: uint8_t samples{1};
 
-      /// \brief Colour texture created in the caller's GL context and
-      /// imported into filament (see SharedGLId), 0 if none
+      /// \brief Colour texture created in the caller's GL context (see
+      /// SharedGLId), 0 if none; imported into filament if shared
       private: unsigned int glColorId{0};
 
       /// \brief The filament texture wrapping glColorId
@@ -176,6 +180,10 @@ namespace gz
 
       /// \brief Draws the colour attachment upside down into glColorTarget
       private: std::unique_ptr<FilamentFullscreenPass> flipPass;
+
+      /// \brief Readback uploaded to glColorId when the caller's context
+      /// is not shared, kept across frames
+      private: Image glColorImage;
 
       /// \brief Targets with just a color attachment, for drawing over what
       /// the scene rendered while sampling its depth (ApplyProjectors), or

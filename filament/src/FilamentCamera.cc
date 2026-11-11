@@ -408,7 +408,7 @@ void FilamentCamera::Render()
         invViewProj, this->VisibilityMask());
   }
   this->renderTexture->ApplyRenderPasses(this->renderTexture->RenderPasses());
-  // a GUI sharing its GL context samples the image next, top row first
+  // a GUI showing SharedGLId samples the image next, top row first
   this->renderTexture->UpdateSharedTexture();
 }
 

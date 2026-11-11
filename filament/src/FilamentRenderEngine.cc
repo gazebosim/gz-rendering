@@ -77,6 +77,8 @@ namespace gz
       /// "egl_context"): filament's GL context then shares their objects
       public: EGLDisplay eglDisplay{EGL_NO_DISPLAY};
       public: EGLContext eglContext{EGL_NO_CONTEXT};
+      /// \brief Load param "useCurrentGLContext"
+      public: bool callerGLContext{false};
       public: std::unique_ptr<filament::backend::Platform> platform;
       /// \brief Thread in filament's job system, see AdoptThread()
       public: std::thread::id jobThread;
@@ -745,6 +747,12 @@ bool FilamentRenderEngine::SharesCallerGLContext() const
 }
 
 //////////////////////////////////////////////////
+bool FilamentRenderEngine::UsesCallerGLContext() const
+{
+  return this->dataPtr->callerGLContext;
+}
+
+//////////////////////////////////////////////////
 namespace
 {
 /// \brief Pointer passed as a decimal integer in engine parameter _key
@@ -800,8 +808,9 @@ bool FilamentRenderEngine::LoadImpl(
   // gz-gui asks for the GL context current on its render thread (ogre2
   // renders in it): share it when it is an EGL one
   it = _params.find("useCurrentGLContext");
+  this->dataPtr->callerGLContext = it != _params.end() && it->second == "1";
   if (this->dataPtr->eglContext == EGL_NO_CONTEXT &&
-      it != _params.end() && it->second == "1")
+      this->dataPtr->callerGLContext)
   {
     this->dataPtr->eglDisplay = eglGetCurrentDisplay();
     this->dataPtr->eglContext = eglGetCurrentContext();

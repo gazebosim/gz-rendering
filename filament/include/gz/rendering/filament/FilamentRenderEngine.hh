@@ -101,6 +101,13 @@ namespace gz
       /// colour targets are then GL textures the caller can sample.
       public: bool SharesCallerGLContext() const;
 
+      /// \brief True when the caller asked for the GL context current on
+      /// its thread (load param "useCurrentGLContext", e.g. gz-gui): camera
+      /// colour targets then come as a texture in that context
+      /// (FilamentRenderTarget::SharedGLId), shared if it is an EGL one,
+      /// else copied every frame.
+      public: bool UsesCallerGLContext() const;
+
       /// \brief Open a frame on a headless swap chain: until EndFrame,
       /// FilamentRenderTarget::Render records into this one frame instead
       /// of submitting a standalone frame per call. Several passes then

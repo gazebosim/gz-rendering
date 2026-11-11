@@ -66,7 +66,14 @@ that install's `matc`. Filament refuses materials from a different
 - Backend: OpenGL (EGL) by default. The engine parameter `vulkan=1` (or
   `backend=vulkan`) selects Vulkan, falling back to OpenGL when no Vulkan
   driver is available. `egl_display` / `egl_context` share an existing EGL
-  context (e.g. gz-gui).
+  context.
+- GUI: stock gz-gui works as it is, no gz-gui change is needed. gz-gui
+  passes `useCurrentGLContext=1`; when Qt's context is an EGL one the
+  engine shares it and draws each frame into a texture in it
+  (`RenderTextureGLId`), with no copy through the CPU. Otherwise (Qt on
+  GLX) the frame is read back and uploaded into that texture. Either way
+  the texture holds the image top row first, like ogre2's, so gz-gui must
+  not mirror it.
 - With OpenGL the engine sets `__GL_YIELD=USLEEP` before the driver
   loads, unless `__GL_YIELD` is already set: NVIDIA's driver then sleeps
   instead of spinning while it waits for the GPU, which every sensor

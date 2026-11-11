@@ -49,6 +49,8 @@
 // PARITY_USERCAM=<n>: also prints its ms per capture over n captures
 // PARITY_GUI=1: only gui.png, the gz-sim GUI overlays (gizmo, grid, light
 // visual, transparent and wireframe visuals), see GuiOverlays()
+// PARITY_DEPTHEDGE=1: only depth cameras crossing both clip ranges with
+//   off-center intrinsics: _depth, _cloud and _depthonly (see DepthEdges)
 // PARITY_PROJECTION=1: only custom (off-center intrinsics) and orthographic
 // projections on depth, bbox and RGB cameras, see Projection()
 // PARITY_ALPHATEST=1: adds an alpha tested (alpha from texture) checker
@@ -1670,6 +1672,57 @@ namespace
         0, 0, -1, 0);
   }
 
+  /// \brief PARITY_DEPTHEDGE=1 outputs: depth cameras whose views cross
+  /// both clip ranges (floor nearer than near and beyond far), with
+  /// off-center intrinsics and odd sizes; per camera <name>_depth and
+  /// <name>_cloud of one frame with a point cloud subscriber, and
+  /// <name>_depthonly of one without. The depth clamping must give the
+  /// same bytes whichever way an engine computes it (compare dumps of two
+  /// builds), and _depthonly must equal _depth.
+  void DepthEdges(ScenePtr _scene, const std::string &_dir,
+      std::ofstream &_index)
+  {
+    struct Cfg { std::string name; math::Pose3d pose; unsigned int w, h;
+        double nearClip, farClip, fx, fy, cx, cy; };
+    for (const Cfg &c : {
+        Cfg{"edgeA", {0, 0, 1, 0, 0.9, 0}, 321, 239, 1.1, 2.5,
+            150, 160, 60, 200},
+        Cfg{"edgeB", {0.5, 0.3, 1.2, 0.2, 0.7, 0.4}, 255, 257, 1.3, 3.0,
+            200, 180, 230, 30},
+        Cfg{"edgeC", {-1, 0, 0.8, 0, 0.5, -0.3}, 317, 211, 0.9, 2.0,
+            160, 160, 158.5, 105.5}})
+    {
+      DepthCameraPtr cam = _scene->CreateDepthCamera(c.name);
+      cam->SetLocalPose(c.pose);
+      cam->SetImageWidth(c.w);
+      cam->SetImageHeight(c.h);
+      cam->SetAspectRatio(static_cast<double>(c.w) / c.h);
+      cam->SetHFOV(2.0 * std::atan(c.w * 0.5 / c.fx));
+      cam->SetNearClipPlane(c.nearClip);
+      cam->SetFarClipPlane(c.farClip);
+      cam->CreateDepthTexture();
+      cam->SetProjectionMatrix(Intrinsics(c.w, c.h, c.fx, c.fy, c.cx, c.cy,
+          c.nearClip, c.farClip));
+      _scene->RootVisual()->AddChild(cam);
+      std::vector<float> depth(c.w * c.h), cloud(c.w * c.h * 4);
+      auto dc = cam->ConnectNewDepthFrame(
+          [&](const float *_d, unsigned int, unsigned int, unsigned int,
+              const std::string &) {
+            std::memcpy(depth.data(), _d, depth.size() * sizeof(float)); });
+      auto pc = cam->ConnectNewRgbPointCloud(
+          [&](const float *_d, unsigned int, unsigned int, unsigned int,
+              const std::string &) {
+            std::memcpy(cloud.data(), _d, cloud.size() * sizeof(float)); });
+      cam->Update();
+      Write(_dir, c.name + "_depth", depth.data(), c.w, c.h, 1, _index);
+      Write(_dir, c.name + "_cloud", cloud.data(), c.w, c.h, 4, _index);
+      pc.reset();
+      cam->Update();
+      Write(_dir, c.name + "_depthonly", depth.data(), c.w, c.h, 1, _index);
+      dc.reset();
+    }
+  }
+
   /// \brief PARITY_PROJECTION=1 outputs. proj_*: depthA with an off-center
   /// intrinsics matrix; ortho_*: depthB set to CPT_ORTHOGRAPHIC (ogre2
   /// renders sensor cameras perspective whatever the type);
@@ -1967,6 +2020,13 @@ int main(int _argc, char **_argv)
   if (std::getenv("PARITY_WIDEANGLE"))
   {
     WideAngle(engine, scene, dir, index, timing, frames);
+    std::cout << "wrote " << dir << std::endl;
+    return 0;
+  }
+
+  if (std::getenv("PARITY_DEPTHEDGE"))
+  {
+    DepthEdges(scene, dir, index);
     std::cout << "wrote " << dir << std::endl;
     return 0;
   }

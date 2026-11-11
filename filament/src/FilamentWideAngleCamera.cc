@@ -196,9 +196,13 @@ void FilamentWideAngleCamera::Render()
       this->FarClipPlane(), filament::Camera::Fov::HORIZONTAL);
   this->view->setVisibleLayers(0xff,
       FilamentConversions::MaskToLayers(this->VisibilityMask()));
-  if (this->atlas->Width() != 6u * n || this->atlas->Height() != n)
+  // 8 slots wide, 6 used: with a power of two face size the texture
+  // coordinates the second pass divides by the atlas width stay exact, so
+  // mirrored pixels get mirrored bilinear weights (NVIDIA rounded x / 6n
+  // into 1-2 levels of left/right asymmetry on box edges)
+  if (this->atlas->Width() != 8u * n || this->atlas->Height() != n)
   {
-    this->atlas->SetWidth(6u * n);
+    this->atlas->SetWidth(8u * n);
     this->atlas->SetHeight(n);
   }
   this->atlas->PreRender();

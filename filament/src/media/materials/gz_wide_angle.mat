@@ -1,7 +1,8 @@
 // Wide-angle camera second pass: maps each output pixel to a direction with
 // the lens model and samples the cube faces rendered side by side into
-// `atlas` (+X -X +Y -Y +Z -Z, each faceRes wide, sensor frame X forward,
-// Y left, Z up). The lens math is ogre2's wide_lens_map_vs/fp.glsl verbatim.
+// `atlas` (+X -X +Y -Y +Z -Z, each faceRes wide, in an atlas 8 faces wide;
+// sensor frame X forward, Y left, Z up). The lens math is ogre2's
+// wide_lens_map_vs/fp.glsl verbatim.
 // flip: 1 when texture rows start at the bottom (OpenGL), 0 at the top.
 // Drawn as a fullscreen triangle in device (clip) space.
 material {
@@ -96,7 +97,7 @@ fragment {
         if (materialParams.flip > 0.5)
           y = n - y;
         highp vec3 color = textureLod(materialParams_atlas,
-            vec2(x / (6.0 * n), y / n), 0.0).rgb;
+            vec2(x / (8.0 * n), y / n), 0.0).rgb;
 
         // limit to visible fov
         highp float param2 = cutOffAngle/c2+c3;

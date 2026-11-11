@@ -215,6 +215,7 @@ void FilamentLight::UpdateLight()
   auto inst = lm.getInstance(this->entity);
   lm.setColor(inst, FilamentConversions::ToFloat3(this->diffuse));
   lm.setShadowCaster(inst, this->castShadows);
+#ifdef GZ_FILAMENT_POLYNOMIAL_ATTENUATION
   // ogre2's PBS multiplies the specular lobe by the light's specular colour
   // and the diffuse lobe by its diffuse colour; filament lights have one
   // colour (the diffuse), so scale the specular lobe by specular / diffuse.
@@ -226,6 +227,7 @@ void FilamentLight::UpdateLight()
       (this->specular.R() + this->specular.G() + this->specular.B()) / 3.0;
   lm.setSpecularScale(inst, diffuseMean > 0.0 ?
       static_cast<float>(specularMean / diffuseMean) : 0.0f);
+#endif
   // With the camera exposure fixed at 1, a directional light of pi lux gives
   // albedo * cos(theta) (Filament's Lambert diffuse) plus the specular lobe.
   const float power = static_cast<float>(GZ_PI * this->intensity);
@@ -244,6 +246,7 @@ void FilamentLight::UpdateLight()
 //////////////////////////////////////////////////
 void FilamentLight::UpdateAttenuation(double _spotExponent)
 {
+#ifdef GZ_FILAMENT_POLYNOMIAL_ATTENUATION
   // ogre-next's light loops attenuate as 1 / (0.5 + l*d + q*d^2): the gz
   // constant term is ignored, and nothing is lit past the range. Lights
   // without a shadow map go through its forward clustered loop, which also
@@ -253,6 +256,11 @@ void FilamentLight::UpdateAttenuation(double _spotExponent)
       static_cast<float>(this->attenLinear),
       static_cast<float>(this->attenQuadratic), !this->castShadows,
       static_cast<float>(_spotExponent));
+#else
+  // Filament without patch 0004: its inverse-square falloff, windowed to the
+  // range set in UpdateLight, and its squared spot cone ramp
+  (void)_spotExponent;
+#endif
 }
 
 //////////////////////////////////////////////////

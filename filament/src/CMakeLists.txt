@@ -58,6 +58,11 @@ add_dependencies(${filament_target} filament_materials)
 set_property(SOURCE FilamentSharedEglPlatform.cc FilamentColorGrading.cc
   PROPERTY COMPILE_OPTIONS -fno-rtti)
 
+if (GZ_FILAMENT_POLYNOMIAL_ATTENUATION)
+  target_compile_definitions(${filament_target}
+    PRIVATE GZ_FILAMENT_POLYNOMIAL_ATTENUATION)
+endif()
+
 set_property(
   SOURCE FilamentRenderEngine.cc
   PROPERTY COMPILE_DEFINITIONS

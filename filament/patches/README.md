@@ -1,24 +1,25 @@
 Patches on top of Filament commit 0643fd0f, applied in order with
 `git apply`. See ../README.md for the full build.
 
-Required:
+None of them is required: the plugin builds against an unpatched Filament
+with the configure options in ../README.md.
 
-- 0001 Build fixes: builds with GCC (`-fstrict-vtable-pointers` is clang
-  only) and compiles the built-in materials for all platforms when EGL is
-  used on Linux, since EGL selects the GLES backend, which needs the mobile
-  shader variants (without it the OpenGL backend crashes on Filament's
-  default material). Upstream main still needs both (2026-11-11).
+Optional, lighting:
+
 - 0004 gz light semantics: `LightManager::setSpecularScale` scales the
   specular lobe (gz lights have a specular colour; ogre2 multiplies the
   lobe by it) and `setPolynomialAttenuation` gives point and spot lights
   gz's attenuation, 1 / (c + l*d + q*d^2) cut at the range, and the spot
   falloff exponent. The values travel in unused uniform fields, so the UBO
   size is unchanged. Bumps MATERIAL_VERSION to 80. gz-rendering's CMake
-  refuses a Filament install without it. Filament's extension points can't
-  replace it: `customSurfaceShading` only sees the light's colour,
+  detects it; without it lights use Filament's inverse-square falloff and
+  ignore specular colours (see ../README.md). Filament's extension points
+  can't replace it: `customSurfaceShading` only sees the light's colour,
   direction, position and Filament's own attenuation (no light identity,
   spot direction or cone, and at mediump precision in the GLES shaders),
   and an inverse-square falloff can't be fitted to gz's polynomial.
+  Applies to 0643fd0f; on v1.80.0 everything but the MATERIAL_VERSION
+  line applies (v1.80.0 is at 80 already, so use 81 there).
 
 Optional (performance only; the output is the same without them). Without
 them each Vulkan sensor capture costs about 0.7-1 ms more on an RTX 4070
@@ -34,9 +35,11 @@ Iris Xe; recommended for Vulkan on NVIDIA:
   type and channel count, no swizzle, zero offset). Output bytes are
   unchanged.
 
-Removed: 0005 (ogre2's diffuse lobe) and 0007 (per-view switch back to
-Filament's diffuse); 0006 was never published. Every view uses Filament's
-stock diffuse.
+Removed: 0001 (build fixes, replaced by configure options: GCC in a
+non-Release build type, and `MATC_OPT_FLAGS=--platform=all`), 0005
+(ogre2's diffuse lobe) and 0007 (per-view switch back to Filament's
+diffuse); 0006 was never published. Every view uses Filament's stock
+diffuse.
 
 Rebuild gz-rendering after changing patches: its materials are compiled
 with the patched `matc`.

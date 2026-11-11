@@ -173,12 +173,15 @@ elseif (NOT EXISTS "${FILAMENT_ROOT}/include/filament/Engine.h" OR
     "FILAMENT_ROOT=${FILAMENT_ROOT} (expected include/filament/Engine.h "
     "and lib/${filament_arch}/libfilament.a)")
 else()
-  # gz light semantics (specular scale, attenuation) need filament/patches/0004
+  # gz light attenuation and specular colour need filament/patches/0004;
+  # without it lights use Filament's own falloff and specular lobe
   file(STRINGS "${FILAMENT_ROOT}/include/filament/LightManager.h"
-    filament_has_0004 REGEX "setPolynomialAttenuation")
-  if (NOT filament_has_0004)
-    message(FATAL_ERROR "Filament at ${FILAMENT_ROOT} lacks patch "
-      "filament/patches/0004 (see filament/README.md)")
+    GZ_FILAMENT_POLYNOMIAL_ATTENUATION REGEX "setPolynomialAttenuation")
+  if (NOT GZ_FILAMENT_POLYNOMIAL_ATTENUATION)
+    message(WARNING "Filament at ${FILAMENT_ROOT} lacks patch "
+      "filament/patches/0004: point and spot lights use Filament's "
+      "inverse-square falloff instead of gz attenuation, and light specular "
+      "colours are ignored (see filament/README.md)")
   endif()
   message(STATUS "Found Filament at ${FILAMENT_ROOT}")
   set(GZ_RENDERING_HAVE_FILAMENT TRUE)

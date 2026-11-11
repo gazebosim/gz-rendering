@@ -59,9 +59,14 @@ static std::map<std::string, std::string>
 GetEngineParams(const std::string &_engine, const std::string &_backend, const std::string &_headless)
 {
   std::map<std::string, std::string> engineParams;
-  if (_backend == "vulkan")
+  if (_engine == "ogre2" && _backend == "vulkan")
   {
-    gzdbg << "Using " << _engine << "-VULKAN backend to test" << std::endl;
+    gzdbg << "Using OGRE2-VULKAN backend to test" << std::endl;
+    engineParams["vulkan"] = "1";
+  }
+  else if (_engine == "filament" && _backend == "vulkan")
+  {
+    gzdbg << "Using FILAMENT-VULKAN backend to test" << std::endl;
     engineParams["vulkan"] = "1";
   }
   else if (_engine == "ogre2" && _backend == "metal")

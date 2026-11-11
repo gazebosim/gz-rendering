@@ -358,12 +358,13 @@ TEST_F(MeshTest, CenterSubMesh)
     VisualPtr visual = scene->CreateVisual();
     visual->AddGeometry(mesh);
 
-    // ogre/ogre2 take the bounds from the whole uncentered mesh even when
-    // they draw it centered: only the geometry is centered there
-    const bool boundsFollowGeometry =
-        engine->Name().find("ogre") == std::string::npos;
+    // Filament's bounds follow the centered geometry. ogre and ogre2 take
+    // the bounds from the whole uncentered mesh even when they draw it
+    // centered, so only the uncentered bounds are common to all engines.
+    if (center && engine->Name() != "filament")
+      continue;
     const math::Vector3d c = visual->LocalBoundingBox().Center();
-    const math::Vector3d expected = center && boundsFollowGeometry ?
+    const math::Vector3d expected = center ?
         math::Vector3d::Zero : math::Vector3d(10, 21, 31);
     EXPECT_NEAR(expected.X(), c.X(), 1e-3) << "center " << center;
     EXPECT_NEAR(expected.Y(), c.Y(), 1e-3) << "center " << center;

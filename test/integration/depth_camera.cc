@@ -474,6 +474,7 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
 /////////////////////////////////////////////////
 TEST_F(DepthCameraTest, DepthCameraParticles)
 {
+  // particle emitter is only supported in ogre2 and filament
   CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   int imgWidth_ = 256;

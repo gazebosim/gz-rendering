@@ -927,6 +927,12 @@ bool FilamentScene::InitImpl()
     return false;
   }
   this->scene = engine->createScene();
+#ifndef GZ_FILAMENT_POLYNOMIAL_ATTENUATION
+  gzwarn << "Filament is built without gz-rendering's patch 0004: point "
+         << "and spot lights use Filament's inverse-square falloff instead "
+         << "of their attenuation, and light specular colours are ignored "
+         << "(see filament/README.md)" << std::endl;
+#endif
   this->CreateStores();
   this->CreateRootVisual();
   this->meshFactory = FilamentMeshFactoryPtr(

@@ -188,7 +188,7 @@ void FilamentCamera::UpdateQualityMode()
   View::AmbientOcclusionOptions ao;
   ao.enabled = true;
   ao.aoType = View::AmbientOcclusionOptions::AmbientOcclusionType::GTAO;
-  ao.radius = 0.3f;
+  ao.radius = 2.0f;
   ao.quality = View::QualityLevel::MEDIUM;
   ao.lowPassFilter = View::QualityLevel::HIGH;
   ao.upsampling = View::QualityLevel::MEDIUM;

@@ -261,8 +261,7 @@ namespace gz
 
       private: FilamentScenePtr SharedThis();
 
-      /// \brief Quality mode (the default; GZ_FILAMENT_QUALITY=0 keeps
-      /// ogre2's lighting): the sky, when enabled, lights the scene (image
+      /// \brief Quality mode: the sky, when enabled, lights the scene (image
       /// based lighting): its prefiltered cube map as reflections and its
       /// irradiance (3-band SH, scaled to the ambient light's level) as the
       /// ambient term, instead of SetAmbientLight's uniform ambient with

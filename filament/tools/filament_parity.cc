@@ -45,7 +45,7 @@
 // .mat port on filament), shader.png and shader_updated.png (new params);
 // PARITY_SHADER=waves: the Gerstner waves of test/integration/waves.cc
 // PARITY_USERCAM=1: the rgb camera is flagged as the GUI's user camera
-// (user data "user-camera", 8x AA), see GZ_FILAMENT_QUALITY in FilamentCamera;
+// (user data "user-camera", 8x AA), see UpdateQualityMode in FilamentCamera;
 // PARITY_USERCAM=<n>: also prints its ms per capture over n captures
 // PARITY_GUI=1: only gui.png, the gz-sim GUI overlays (gizmo, grid, light
 // visual, transparent and wireframe visuals), see GuiOverlays()
@@ -2080,8 +2080,8 @@ int main(int _argc, char **_argv)
     CameraPtr cam = scene->CreateCamera("rgb");
     if (std::getenv("PARITY_USERCAM"))
     {
-      // like gz-gui's MinimalScene: with GZ_FILAMENT_QUALITY=1 filament
-      // renders this one in its GUI quality mode
+      // like gz-gui's MinimalScene: filament renders this one in its GUI
+      // quality mode
       cam->SetUserData("user-camera", true);
       cam->SetAntiAliasing(8);
     }

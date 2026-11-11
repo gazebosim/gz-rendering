@@ -50,9 +50,8 @@ that install's `matc`. Filament refuses materials from a different
   `backend=vulkan`) selects Vulkan, falling back to OpenGL when no Vulkan
   driver is available. `egl_display` / `egl_context` share an existing EGL
   context (e.g. gz-gui).
-- Look: by default the GUI camera uses tone mapping, ambient occlusion,
-  anti-aliasing, sky lighting and Filament's diffuse model; RGB camera
-  sensors use Filament's diffuse model and sky lighting only (no
-  post-processing, so they cost about the same). Depth, lidar,
-  segmentation, thermal and bounding box output is not affected.
-  `GZ_FILAMENT_QUALITY=0` selects a look tuned to match ogre2 instead.
+- Look: every view uses Filament's lighting model. The GUI camera also
+  uses tone mapping, ambient occlusion, anti-aliasing and sky lighting;
+  RGB camera sensors use sky lighting only (no post-processing, so they
+  cost about the same). Depth, lidar, segmentation, thermal and bounding
+  box output is not affected.

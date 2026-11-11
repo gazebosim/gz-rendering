@@ -17,7 +17,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <cstdlib>
 #include <cstring>
 #include <vector>
 
@@ -72,18 +71,6 @@ using namespace rendering;
 
 namespace
 {
-/// \brief Quality mode, the default; GZ_FILAMENT_QUALITY=0 turns it off
-/// (ogre2's look)
-bool QualityMode()
-{
-  static const bool on = []
-  {
-    const char *env = std::getenv("GZ_FILAMENT_QUALITY");
-    return !env || std::strcmp(env, "0") != 0;
-  }();
-  return on;
-}
-
 /// \brief Irradiance of a cube map (RGBA8 faces as CubeFaces gives them,
 /// read as linear values) as 3-band SH in filament's shader form, i.e.
 /// irradiance / pi = sum_i _sh[i] * poly_i(n), poly_i as in filament's
@@ -273,8 +260,7 @@ void FilamentScene::SetAmbientLight(const math::Color &_color)
 void FilamentScene::PreRender()
 {
   BaseScene::PreRender();
-  if (QualityMode())
-    this->UpdateSkyLight();
+  this->UpdateSkyLight();
 }
 
 //////////////////////////////////////////////////

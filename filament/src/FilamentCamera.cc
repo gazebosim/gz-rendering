@@ -16,8 +16,6 @@
  */
 
 #include <algorithm>
-#include <cstdlib>
-#include <cstring>
 
 #include <filament/Camera.h>
 #include <filament/ColorGrading.h>
@@ -135,21 +133,11 @@ void FilamentCamera::Init()
 //////////////////////////////////////////////////
 void FilamentCamera::UpdateQualityMode()
 {
-  static const bool requested = []
-  {
-    const char *env = std::getenv("GZ_FILAMENT_QUALITY");
-    return !env || std::strcmp(env, "0") != 0;
-  }();
-  if (!requested || this->qualityChecked)
+  if (this->qualityChecked)
     return;
   this->qualityChecked = true;
 
   using namespace filament;
-  // Filament's stock diffuse for this view (Filament patch 0007; the other
-  // views keep patch 0005's ogre2 diffuse). Lights: FilamentScene::
-  // PhysicalLights. Shader only: no cost.
-  this->view->setMaterialGlobal(3, {0.0f, 0.0f, 1.0f, 1.0f});
-
   // Sensors stop here: post-processing (tone mapping, GTAO, view MSAA)
   // cost +23..36% CPU on 6 cameras. gz-gui tags its camera before the
   // first render.

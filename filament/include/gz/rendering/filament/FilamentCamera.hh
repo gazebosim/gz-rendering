@@ -105,15 +105,11 @@ namespace gz
       /// SetProjectionType)
       private: bool Orthographic() const;
 
-      /// \brief Quality mode (default; GZ_FILAMENT_QUALITY=0 keeps ogre2's
-      /// look), decided at the first render. Every RGB view (GUI, RGB camera
-      /// sensors, the depth camera's RGBD colour pass) gets Filament's stock
-      /// diffuse. The GUI camera (user data "user-camera", set by gz-gui
-      /// before its first render) also gets post-processing: tone mapping,
-      /// GTAO, MSAA or FXAA, dithering. Sensors stay without post-processing
-      /// (render target MSAA, plain values): its cost is per camera. Depth,
-      /// thermal, segmentation, bounding box, wide angle and lidar cameras
-      /// never call it.
+      /// \brief Quality mode, decided at the first render: the GUI camera
+      /// (user data "user-camera", set by gz-gui before its first render)
+      /// gets post-processing: tone mapping, GTAO, MSAA or FXAA, dithering.
+      /// Sensors stay without post-processing (render target MSAA, plain
+      /// values): its cost is per camera.
       protected: void UpdateQualityMode();
 
       /// \brief UpdateQualityMode ran

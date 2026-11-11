@@ -234,9 +234,7 @@ void FilamentLight::UpdateLight()
   lm.setSpecularScale(inst, diffuseMean > 0.0 ?
       static_cast<float>(specularMean / diffuseMean) : 0.0f);
   // With the camera exposure fixed at 1, a directional light of pi lux gives
-  // albedo * cos(theta) * ogre2's diffuse factor (energy factor
-  // lerp(1, 1/1.51, roughness), scatter and 1 - Fresnel: Filament patch 0005;
-  // ~0.8 at roughness 0.5) and ogre2's specular lobe.
+  // albedo * cos(theta) (Filament's Lambert diffuse) plus the specular lobe.
   const float power = static_cast<float>(GZ_PI * this->intensity);
   if (this->type == filament::LightManager::Type::DIRECTIONAL ||
       this->type == filament::LightManager::Type::SUN)

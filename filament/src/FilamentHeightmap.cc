@@ -318,7 +318,7 @@ void FilamentHeightmap::Init()
   // map reads 0, so gz heightmaps (which have no roughness maps) shade as a
   // mirror there. ogre2 hides it behind a pin-point lobe (alpha floor
   // 0.001) and no sky reflections; here it shows as sun glints over the
-  // grass and a sky sheen in quality mode. Use the intended start value.
+  // grass and a sky sheen. Use the intended start value.
   mi->setParameter("roughness", 1.0f);
   // owned and destroyed by the material like a custom shader instance
   mat->custom = mi;

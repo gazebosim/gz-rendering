@@ -17,11 +17,8 @@
 #ifndef GZ_RENDERING_FILAMENT_FILAMENTJOINTVISUAL_HH_
 #define GZ_RENDERING_FILAMENT_FILAMENTJOINTVISUAL_HH_
 
-#include <memory>
-#include <vector>
 
 #include "gz/rendering/base/BaseJointVisual.hh"
-#include "gz/rendering/filament/FilamentDynamicMesh.hh"
 #include "gz/rendering/filament/FilamentVisual.hh"
 #include "gz/rendering/filament/Export.hh"
 

@@ -57,16 +57,6 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-FilamentDepthCamera::FilamentDepthCamera()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentDepthCamera::~FilamentDepthCamera()
-{
-}
-
-//////////////////////////////////////////////////
 void FilamentDepthCamera::Init()
 {
   FilamentCamera::Init();
@@ -193,7 +183,8 @@ namespace
     // BeyondFar(lo) is false, BeyondFar(hi) true. Start next to the root of
     // d^2 (1 + ku^2 + kv^2) = farSq when it brackets the answer.
     auto bits = [](float _f) { uint32_t b; std::memcpy(&b, &_f, 4); return b; };
-    auto value = [](uint32_t _b) { float f; std::memcpy(&f, &_b, 4); return f; };
+    auto value = [](uint32_t _b)
+        { float f; std::memcpy(&f, &_b, 4); return f; };
     uint32_t lo = 0u;
     uint32_t hi = bits(maxF);
     const float guess = static_cast<float>(
@@ -226,11 +217,13 @@ namespace
   /// as R << 24 | G << 16 | B << 8 | 255
   uint32_t BgPacked(const math::Color &_bg)
   {
-    return
-      (static_cast<uint32_t>(std::round(FilamentConversions::LinearToSrgb(_bg.R()) * 255.0)) << 24u) |
-      (static_cast<uint32_t>(std::round(FilamentConversions::LinearToSrgb(_bg.G()) * 255.0)) << 16u) |
-      (static_cast<uint32_t>(std::round(FilamentConversions::LinearToSrgb(_bg.B()) * 255.0)) << 8u) |
-      255u;
+    auto channel = [](float _c)
+    {
+      return static_cast<uint32_t>(
+          std::round(FilamentConversions::LinearToSrgb(_c) * 255.0));
+    };
+    return (channel(_bg.R()) << 24u) | (channel(_bg.G()) << 16u) |
+        (channel(_bg.B()) << 8u) | 255u;
   }
 }
 
@@ -402,7 +395,8 @@ void FilamentDepthCamera::Render()
       FilamentConversions::ToSensorLayers(this->VisibilityMask()));
   // packed: the bytes of +inf (0x7f800000), least significant first
   if (FilamentRenderEngine::Instance()->PackedFloatTargets())
-    this->renderTexture->SetClearColor({0.0f, 0.0f, 128.0f / 255.0f, 127.0f / 255.0f});
+    this->renderTexture->SetClearColor(
+        {0.0f, 0.0f, 128.0f / 255.0f, 127.0f / 255.0f});
   else
     this->renderTexture->SetClearColor({inf, inf, inf, 1.0f});
   const auto &meshes = this->scene->Meshes();

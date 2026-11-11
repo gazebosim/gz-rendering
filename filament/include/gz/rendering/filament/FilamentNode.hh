@@ -35,9 +35,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentNode :
       public BaseNode<FilamentObject>
     {
-      protected: FilamentNode();
+      protected: FilamentNode() = default;
 
-      public: virtual ~FilamentNode();
+      public: virtual ~FilamentNode() = default;
 
       public: virtual bool HasParent() const override;
 

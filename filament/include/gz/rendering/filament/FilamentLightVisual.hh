@@ -18,7 +18,6 @@
 #define GZ_RENDERING_FILAMENT_FILAMENTLIGHTVISUAL_HH_
 
 #include <memory>
-#include <vector>
 
 #include "gz/rendering/base/BaseLightVisual.hh"
 #include "gz/rendering/filament/FilamentDynamicMesh.hh"

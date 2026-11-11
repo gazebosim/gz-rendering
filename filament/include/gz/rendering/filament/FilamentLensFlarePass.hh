@@ -94,10 +94,6 @@ namespace gz
       private: double OcclusionScale(const math::Matrix4d &_viewProj,
           const math::Vector3d &_ndc, const math::Vector3d &_lightPos);
 
-      /// \brief Lazily create the material instance, fullscreen triangle,
-      /// scene and view; false if the material is missing
-      private: bool CreateResources();
-
       private: math::Vector3d color{1.0, 1.0, 1.0};
 
       private: double scale{1.0};

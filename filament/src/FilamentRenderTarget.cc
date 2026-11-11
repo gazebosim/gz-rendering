@@ -64,16 +64,6 @@ namespace
 }
 
 //////////////////////////////////////////////////
-FilamentRenderTarget::FilamentRenderTarget()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentRenderTarget::~FilamentRenderTarget()
-{
-}
-
-//////////////////////////////////////////////////
 void FilamentRenderTarget::Destroy()
 {
   this->DestroyTarget();
@@ -104,7 +94,8 @@ void FilamentRenderTarget::DestroyTarget()
   {
     // filament releases the import on its driver thread: wait for that
     engine->flushAndWait();
-    CallerGL<decltype(&glDeleteTextures)>("glDeleteTextures")(1, &this->glColorId);
+    CallerGL<decltype(&glDeleteTextures)>("glDeleteTextures")(
+        1, &this->glColorId);
     this->glColorId = 0;
     this->glColor = nullptr;
   }
@@ -395,8 +386,8 @@ namespace
       filament::LightManager::ShadowOptions o = lm.getShadowOptions(inst);
       const bool sameFar = !(o.shadowFar < fit.shadowFar) &&
           !(o.shadowFar > fit.shadowFar);
-      if (sameFar && std::equal(o.cascadeSplitPositions, o.cascadeSplitPositions + 3,
-              fit.cascadeSplitPositions))
+      if (sameFar && std::equal(o.cascadeSplitPositions,
+              o.cascadeSplitPositions + 3, fit.cascadeSplitPositions))
         continue;
       o.shadowFar = fit.shadowFar;
       std::copy(fit.cascadeSplitPositions, fit.cascadeSplitPositions + 3,
@@ -546,16 +537,6 @@ void FilamentRenderTarget::Copy(Image &_image) const
       return;
     }
   }
-}
-
-//////////////////////////////////////////////////
-FilamentRenderTexture::FilamentRenderTexture()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentRenderTexture::~FilamentRenderTexture()
-{
 }
 
 //////////////////////////////////////////////////

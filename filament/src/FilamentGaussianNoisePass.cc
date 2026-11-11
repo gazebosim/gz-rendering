@@ -64,19 +64,6 @@ void FilamentGaussianNoisePass::Destroy()
 }
 
 //////////////////////////////////////////////////
-bool FilamentGaussianNoisePass::CreateResources()
-{
-  if (this->pass)
-    return true;
-  filament::Material *mat =
-      FilamentRenderEngine::Instance()->Material("gz_noise");
-  if (!mat)
-    return false;
-  this->pass = std::make_unique<FilamentFullscreenPass>(*mat);
-  return true;
-}
-
-//////////////////////////////////////////////////
 void FilamentGaussianNoisePass::SetParameters(filament::Texture *_colorIn,
     int _mode)
 {
@@ -94,7 +81,7 @@ void FilamentGaussianNoisePass::SetParameters(filament::Texture *_colorIn,
 filament::View *FilamentGaussianNoisePass::ColorView(
     filament::Texture *_colorIn)
 {
-  if (!this->CreateResources())
+  if (!FilamentFullscreenPass::Create(this->pass, "gz_noise"))
     return nullptr;
   this->SetParameters(_colorIn, 0);
   return this->pass->view;
@@ -104,7 +91,7 @@ filament::View *FilamentGaussianNoisePass::ColorView(
 void FilamentGaussianNoisePass::Samples(const ScenePtr &_scene,
     unsigned int _width, unsigned int _height, std::vector<float> &_out)
 {
-  if (!this->CreateResources())
+  if (!FilamentFullscreenPass::Create(this->pass, "gz_noise"))
     return;
   if (!this->samples)
   {

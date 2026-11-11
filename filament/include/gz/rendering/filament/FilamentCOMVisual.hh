@@ -18,7 +18,6 @@
 #define GZ_RENDERING_FILAMENT_FILAMENTCOMVISUAL_HH_
 
 #include <memory>
-#include <vector>
 
 #include "gz/rendering/base/BaseCOMVisual.hh"
 #include "gz/rendering/filament/FilamentDynamicMesh.hh"
@@ -37,8 +36,6 @@ namespace gz
       protected: FilamentCOMVisual();
 
       public: virtual ~FilamentCOMVisual();
-
-      public: virtual void Init() override;
 
       public: virtual void PreRender() override;
 

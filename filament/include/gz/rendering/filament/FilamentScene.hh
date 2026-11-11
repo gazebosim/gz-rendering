@@ -116,10 +116,6 @@ namespace gz
       public: void UnregisterParticleEmitter(
           FilamentParticleEmitter *_emitter);
 
-      /// \brief Sort the particles of every emitter back to front along
-      /// _dir, a camera's forward vector
-      public: void SortParticles(const math::Vector3d &_dir);
-
       /// \brief Projectors of this scene
       public: const std::set<FilamentProjector *> &Projectors() const;
 
@@ -327,8 +323,9 @@ namespace gz
       /// \brief Cube map of probeSkybox
       private: filament::Texture *probeSkyTexture{nullptr};
 
-      /// \brief Destroy probeSkybox (rebuilt with the sky lighting)
-      private: void DestroyProbeSky();
+      /// \brief Destroy the sky light, its reflections and probeSkybox
+      /// (rebuilt lazily by UpdateSkyLight)
+      private: void DestroySkyLight();
 
       /// \brief Between BeginReflections and EndReflections
       private: bool probeActive{false};

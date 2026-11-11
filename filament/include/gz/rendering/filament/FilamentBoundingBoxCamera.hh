@@ -46,9 +46,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentBoundingBoxCamera :
       public BaseBoundingBoxCamera<FilamentCamera>
     {
-      protected: FilamentBoundingBoxCamera();
+      protected: FilamentBoundingBoxCamera() = default;
 
-      public: virtual ~FilamentBoundingBoxCamera();
+      public: virtual ~FilamentBoundingBoxCamera() = default;
 
       // BaseCamera<FilamentCamera> would otherwise win over FilamentCamera
       public: virtual void SetProjectionMatrix(const math::Matrix4d &_matrix)

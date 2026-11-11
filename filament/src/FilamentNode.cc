@@ -30,16 +30,6 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-FilamentNode::FilamentNode()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentNode::~FilamentNode()
-{
-}
-
-//////////////////////////////////////////////////
 bool FilamentNode::HasParent() const
 {
   return this->parent != nullptr;

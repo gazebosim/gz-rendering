@@ -14,10 +14,8 @@
  * limitations under the License.
  *
  */
-#include <gz/common/Console.hh>
 
 #include "gz/rendering/filament/FilamentDynamicGeometry.hh"
-#include "gz/rendering/filament/FilamentMaterial.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
 #include "FilamentUtils.hh"
 

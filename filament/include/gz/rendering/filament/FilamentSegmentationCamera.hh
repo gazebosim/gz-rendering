@@ -43,9 +43,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentSegmentationCamera :
       public BaseSegmentationCamera<FilamentCamera>
     {
-      protected: FilamentSegmentationCamera();
+      protected: FilamentSegmentationCamera() = default;
 
-      public: virtual ~FilamentSegmentationCamera();
+      public: virtual ~FilamentSegmentationCamera() = default;
 
       // BaseCamera<FilamentCamera> would otherwise win over FilamentCamera
       public: virtual void SetProjectionMatrix(const math::Matrix4d &_matrix)

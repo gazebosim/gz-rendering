@@ -37,7 +37,7 @@ namespace gz
     {
       public: explicit FilamentMeshFactory(FilamentScenePtr _scene);
 
-      public: virtual ~FilamentMeshFactory();
+      public: virtual ~FilamentMeshFactory() = default;
 
       /// \brief Fill _mesh (already initialized, with an entity) from _desc
       public: bool Load(FilamentMeshPtr _mesh, const MeshDescriptor &_desc);

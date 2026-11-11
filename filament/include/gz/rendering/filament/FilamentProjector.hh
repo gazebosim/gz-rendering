@@ -74,10 +74,6 @@ namespace gz
       public: filament::View *DecalView(const filament::math::mat4f
           &_invViewProj, filament::Texture *_depth);
 
-      /// \brief Lazily create the material instance, fullscreen triangle,
-      /// scene and view; false if the material is missing
-      private: bool CreateResources();
-
       /// \brief (Re)load the texture if its name changed
       private: void LoadTexture();
 

@@ -23,16 +23,6 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-FilamentObject::FilamentObject()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentObject::~FilamentObject()
-{
-}
-
-//////////////////////////////////////////////////
 ScenePtr FilamentObject::Scene() const
 {
   return this->scene;

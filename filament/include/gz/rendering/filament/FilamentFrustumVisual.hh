@@ -18,7 +18,6 @@
 #define GZ_RENDERING_FILAMENT_FILAMENTFRUSTUMVISUAL_HH_
 
 #include <memory>
-#include <vector>
 
 #include "gz/rendering/base/BaseFrustumVisual.hh"
 #include "gz/rendering/filament/FilamentDynamicMesh.hh"
@@ -37,8 +36,6 @@ namespace gz
       protected: FilamentFrustumVisual();
 
       public: virtual ~FilamentFrustumVisual();
-
-      public: virtual void Init() override;
 
       public: virtual void Destroy() override;
 

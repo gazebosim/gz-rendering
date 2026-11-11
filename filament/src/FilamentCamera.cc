@@ -33,6 +33,7 @@
 #include "gz/rendering/filament/FilamentCamera.hh"
 #include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentMesh.hh"
+#include "gz/rendering/filament/FilamentParticleEmitter.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
 
@@ -41,16 +42,6 @@ using namespace rendering;
 
 /// \brief FilamentColorGrading.cc
 filament::ColorGrading *CreateQualityColorGrading(filament::Engine &_engine);
-
-//////////////////////////////////////////////////
-FilamentCamera::FilamentCamera()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentCamera::~FilamentCamera()
-{
-}
 
 //////////////////////////////////////////////////
 void FilamentCamera::Destroy()
@@ -378,8 +369,11 @@ void FilamentCamera::Render()
   this->renderTexture->SetClearColor(FilamentConversions::ToFloat4(bg));
   this->view->setVisibleLayers(0xff,
       FilamentConversions::MaskToLayers(this->VisibilityMask()));
-  // the camera looks along its +X
-  this->scene->SortParticles(this->WorldPose().Rot() * math::Vector3d::UnitX);
+  // particles are sorted back to front along the camera's forward vector
+  const math::Vector3d forward =
+      this->WorldPose().Rot() * math::Vector3d::UnitX;
+  for (FilamentParticleEmitter *e : this->scene->ParticleEmitters())
+    e->SortFor(forward);
   // the quality-mode GUI camera reflects the scene around it
   if (post)
   {

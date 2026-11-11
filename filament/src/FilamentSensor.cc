@@ -21,11 +21,6 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-FilamentSensor::FilamentSensor()
-{
-}
-
-//////////////////////////////////////////////////
 FilamentSensor::~FilamentSensor()
 {
 }

@@ -51,9 +51,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentThermalCamera :
       public BaseThermalCamera<FilamentCamera>
     {
-      protected: FilamentThermalCamera();
+      protected: FilamentThermalCamera() = default;
 
-      public: virtual ~FilamentThermalCamera();
+      public: virtual ~FilamentThermalCamera() = default;
 
       // BaseCamera<FilamentCamera> would otherwise win over FilamentCamera
       public: virtual void SetProjectionMatrix(const math::Matrix4d &_matrix)

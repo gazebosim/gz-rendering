@@ -181,19 +181,6 @@ double FilamentLensFlarePass::OcclusionScale(const math::Matrix4d &_viewProj,
 }
 
 //////////////////////////////////////////////////
-bool FilamentLensFlarePass::CreateResources()
-{
-  if (this->pass)
-    return true;
-  filament::Material *mat =
-      FilamentRenderEngine::Instance()->Material("gz_lens_flare");
-  if (!mat)
-    return false;
-  this->pass = std::make_unique<FilamentFullscreenPass>(*mat);
-  return true;
-}
-
-//////////////////////////////////////////////////
 filament::View *FilamentLensFlarePass::ColorView(filament::Texture *_colorIn)
 {
   if (!this->enabled || !this->light || !this->currentCamera)
@@ -222,7 +209,8 @@ filament::View *FilamentLensFlarePass::ColorView(filament::Texture *_colorIn)
     aspect = camera->AspectRatio();
   }
   const math::Matrix4d viewProj = proj * camera->ViewMatrix();
-  const math::Vector4d pos = FilamentConversions::Transform(viewProj, this->lightWorldPos);
+  const math::Vector4d pos =
+      FilamentConversions::Transform(viewProj, this->lightWorldPos);
   if (!std::isfinite(pos.W()) || pos.W() == 0.0)
     return nullptr;
   // xy in normalized device coordinates; z > 0: in front of the near plane
@@ -234,7 +222,8 @@ filament::View *FilamentLensFlarePass::ColorView(filament::Texture *_colorIn)
   const double flareScale =
       this->OcclusionScale(viewProj, ndc, this->lightWorldPos);
   // fully occluded: the shader would add nothing
-  if (flareScale <= 0.0 || !this->CreateResources())
+  if (flareScale <= 0.0 ||
+      !FilamentFullscreenPass::Create(this->pass, "gz_lens_flare"))
     return nullptr;
 
   auto *mi = this->pass->instance;

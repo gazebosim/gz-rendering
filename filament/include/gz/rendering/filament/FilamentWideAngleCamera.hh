@@ -103,9 +103,6 @@ namespace gz
       /// \brief Second pass: samples the atlas (gz_wide_angle)
       private: std::unique_ptr<FilamentFullscreenPass> samplePass;
 
-      /// \brief Image handed to newImageFrame, reused across frames
-      private: std::vector<unsigned char> imageData;
-
       /// \brief Readback image of PostRender, reused
       private: Image image;
 

@@ -34,16 +34,6 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-FilamentSegmentationCamera::FilamentSegmentationCamera()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentSegmentationCamera::~FilamentSegmentationCamera()
-{
-}
-
-//////////////////////////////////////////////////
 void FilamentSegmentationCamera::Init()
 {
   FilamentCamera::Init();

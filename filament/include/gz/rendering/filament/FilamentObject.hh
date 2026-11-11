@@ -31,9 +31,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentObject :
       public BaseObject
     {
-      protected: FilamentObject();
+      protected: FilamentObject() = default;
 
-      public: virtual ~FilamentObject();
+      public: virtual ~FilamentObject() = default;
 
       public: virtual ScenePtr Scene() const override;
 

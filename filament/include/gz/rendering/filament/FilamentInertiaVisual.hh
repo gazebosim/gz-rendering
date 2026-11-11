@@ -18,7 +18,6 @@
 #define GZ_RENDERING_FILAMENT_FILAMENTINERTIAVISUAL_HH_
 
 #include <memory>
-#include <vector>
 
 #include "gz/rendering/base/BaseInertiaVisual.hh"
 #include "gz/rendering/filament/FilamentDynamicMesh.hh"
@@ -37,8 +36,6 @@ namespace gz
       protected: FilamentInertiaVisual();
 
       public: virtual ~FilamentInertiaVisual();
-
-      public: virtual void Init() override;
 
       public: virtual void Destroy() override;
 

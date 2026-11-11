@@ -18,6 +18,8 @@
 #define GZ_RENDERING_FILAMENT_FILAMENTFULLSCREENPASS_HH_
 
 #include <cstdint>
+#include <memory>
+#include <string>
 
 #include <filament/Engine.h>
 #include <filament/IndexBuffer.h>
@@ -103,6 +105,23 @@ namespace gz
         engine->destroy(this->scene);
         engine->destroyCameraComponent(this->cameraEntity);
         ::utils::EntityManager::get().destroy(this->cameraEntity);
+      }
+
+      /// \brief Create _pass with the material named _material unless it
+      /// exists
+      /// \return False if the material is missing
+      public: static bool Create(
+          std::unique_ptr<FilamentFullscreenPass> &_pass,
+          const std::string &_material)
+      {
+        if (_pass)
+          return true;
+        filament::Material *mat =
+            FilamentRenderEngine::Instance()->Material(_material);
+        if (!mat)
+          return false;
+        _pass = std::make_unique<FilamentFullscreenPass>(*mat);
+        return true;
       }
 
       public: FilamentFullscreenPass(const FilamentFullscreenPass &) = delete;

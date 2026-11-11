@@ -54,9 +54,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentRenderTarget :
       public virtual BaseRenderTarget<FilamentObject>
     {
-      protected: FilamentRenderTarget();
+      protected: FilamentRenderTarget() = default;
 
-      public: virtual ~FilamentRenderTarget();
+      public: virtual ~FilamentRenderTarget() = default;
 
       public: virtual void Destroy() override;
 
@@ -179,9 +179,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentRenderTexture :
       public virtual BaseRenderTexture<FilamentRenderTarget>
     {
-      protected: FilamentRenderTexture();
+      protected: FilamentRenderTexture() = default;
 
-      public: virtual ~FilamentRenderTexture();
+      public: virtual ~FilamentRenderTexture() = default;
 
       /// \brief SharedGLId()
       public: virtual unsigned int GLId() const override;

@@ -29,12 +29,6 @@ FilamentFrustumVisual::FilamentFrustumVisual() = default;
 FilamentFrustumVisual::~FilamentFrustumVisual() = default;
 
 //////////////////////////////////////////////////
-void FilamentFrustumVisual::Init()
-{
-  BaseFrustumVisual::Init();
-}
-
-//////////////////////////////////////////////////
 void FilamentFrustumVisual::Destroy()
 {
   this->ClearVisualData();

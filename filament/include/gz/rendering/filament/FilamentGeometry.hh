@@ -34,9 +34,9 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentGeometry :
       public BaseGeometry<FilamentObject>
     {
-      protected: FilamentGeometry();
+      protected: FilamentGeometry() = default;
 
-      public: virtual ~FilamentGeometry();
+      public: virtual ~FilamentGeometry() = default;
 
       public: virtual bool HasParent() const override;
 

@@ -127,16 +127,6 @@ namespace
 }
 
 //////////////////////////////////////////////////
-FilamentBoundingBoxCamera::FilamentBoundingBoxCamera()
-{
-}
-
-//////////////////////////////////////////////////
-FilamentBoundingBoxCamera::~FilamentBoundingBoxCamera()
-{
-}
-
-//////////////////////////////////////////////////
 void FilamentBoundingBoxCamera::Init()
 {
   FilamentCamera::Init();
@@ -162,12 +152,6 @@ RenderTargetPtr FilamentBoundingBoxCamera::RenderTarget() const
 //////////////////////////////////////////////////
 void FilamentBoundingBoxCamera::Render()
 {
-  if (this->renderTexture->Width() != this->ImageWidth() ||
-      this->renderTexture->Height() != this->ImageHeight())
-  {
-    this->renderTexture->SetWidth(this->ImageWidth());
-    this->renderTexture->SetHeight(this->ImageHeight());
-  }
   this->renderTexture->PreRender();
   this->UpdateProjection();
   const float bg = kBackgroundLabel / 255.0f;

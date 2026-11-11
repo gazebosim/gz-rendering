@@ -51,7 +51,7 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentRenderEnginePlugin :
       public RenderEnginePlugin
     {
-      public: FilamentRenderEnginePlugin();
+      public: FilamentRenderEnginePlugin() = default;
 
       public: ~FilamentRenderEnginePlugin() = default;
 

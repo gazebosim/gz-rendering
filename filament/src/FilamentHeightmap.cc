@@ -45,13 +45,13 @@ using namespace gz;
 using namespace rendering;
 
 //////////////////////////////////////////////////
-FilamentHeightmap::FilamentHeightmap(const HeightmapDescriptor &_desc)
-  : BaseHeightmap(_desc)
+FilamentHeightmap::~FilamentHeightmap()
 {
 }
 
 //////////////////////////////////////////////////
-FilamentHeightmap::~FilamentHeightmap()
+FilamentHeightmap::FilamentHeightmap(const HeightmapDescriptor &_desc)
+  : BaseHeightmap(_desc)
 {
 }
 

@@ -17,15 +17,19 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
+
 #include "CommonRenderingTest.hh"
 
 #include <gz/common/Image.hh>
+#include <gz/math/Helpers.hh>
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/Scene.hh"
 
+#include <gz/utils/Environment.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
 using namespace gz;
@@ -40,8 +44,9 @@ TEST_F(ShadowsTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Shadows))
 {
   // override and make sure not to look for resources in installed share dir
   std::string projectSrcPath = PROJECT_SOURCE_PATH;
-  std::string env = "GZ_RENDERING_RESOURCE_PATH=" + projectSrcPath;
-  putenv(const_cast<char *>(env.c_str()));
+  // (setenv copies the value: putenv would keep a pointer to a local)
+  ASSERT_TRUE(gz::utils::setenv("GZ_RENDERING_RESOURCE_PATH",
+      projectSrcPath));
 
   // add resources in build dir
   engine->AddResourcePath(
@@ -185,5 +190,84 @@ TEST_F(ShadowsTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Shadows))
   scene->DestroyMaterial(green);
 
   // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+// A very large shadow-casting ground plane (gz-sim worlds use planes of
+// up to 100 km) seen from a camera close to the ground. Nothing occludes
+// the sun, so the ground must be evenly lit: no shadow acne, no dark
+// patch from a badly fitted shadow map.
+TEST_F(ShadowsTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LargeGroundPlane))
+{
+  ScenePtr scene = engine->CreateScene("largeGroundPlane");
+  ASSERT_NE(nullptr, scene);
+  scene->SetAmbientLight(0.4, 0.4, 0.4);
+
+  VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  DirectionalLightPtr light = scene->CreateDirectionalLight();
+  light->SetDirection(-0.5, 0.1, -0.9);
+  light->SetDiffuseColor(1.0, 1.0, 1.0);
+  light->SetSpecularColor(0.5, 0.5, 0.5);
+  light->SetCastShadows(true);
+  root->AddChild(light);
+
+  MaterialPtr grey = scene->CreateMaterial();
+  grey->SetAmbient(0.8, 0.8, 0.8);
+  grey->SetDiffuse(0.8, 0.8, 0.8);
+  grey->SetSpecular(0.8, 0.8, 0.8);
+  grey->SetCastShadows(true);
+
+  // 100 km x 100 m, like gz-sim's plane_propeller_demo world
+  VisualPtr ground = scene->CreateVisual();
+  ground->AddGeometry(scene->CreatePlane());
+  ground->SetLocalScale(100000.0, 100.0, 1.0);
+  ground->SetMaterial(grey);
+  root->AddChild(ground);
+
+  // 1.5 m above the ground, far clip beyond 500 m
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_NE(nullptr, camera);
+  camera->SetImageWidth(320);
+  camera->SetImageHeight(240);
+  camera->SetHFOV(1.347);
+  camera->SetNearClipPlane(0.1);
+  camera->SetFarClipPlane(1000.0);
+  root->AddChild(camera);
+
+  Image image = camera->CreateImage();
+  unsigned int height = camera->ImageHeight();
+  unsigned int width = camera->ImageWidth();
+  unsigned int bpp = PixelUtil::BytesPerPixel(camera->ImageFormat());
+
+  // a few headings: how the shadow map is fit depends on the view
+  for (double yaw : {2.5, 3.0, GZ_PI})
+  {
+    camera->SetLocalPosition(0.0, 0.0, 1.5);
+    camera->SetLocalRotation(0.0, 0.0, yaw);
+    for (unsigned int k = 0; k < 3; ++k)
+      camera->Capture(image);
+
+    // the bottom quarter of the image is ground within 10 m of the camera
+    unsigned char *data = image.Data<unsigned char>();
+    unsigned int minSum = 3 * 255;
+    unsigned int maxSum = 0;
+    for (unsigned int i = height * 3 / 4; i < height; ++i)
+    {
+      for (unsigned int j = 0; j < width; ++j)
+      {
+        unsigned int idx = (i * width + j) * bpp;
+        unsigned int sum = data[idx] + data[idx + 1] + data[idx + 2];
+        minSum = std::min(minSum, sum);
+        maxSum = std::max(maxSum, sum);
+      }
+    }
+    EXPECT_GT(minSum, 0u) << "yaw " << yaw;
+    EXPECT_LT(maxSum - minSum, 30u) << "yaw " << yaw;
+  }
+
+  scene->DestroyMaterial(grey);
   engine->DestroyScene(scene);
 }

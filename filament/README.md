@@ -53,10 +53,6 @@ The materials in `src/media/materials` are compiled at build time with
 that install's `matc`. Filament refuses materials from a different
 `MATERIAL_VERSION`, so rebuild gz-rendering after rebuilding Filament.
 
-`-DGZ_FILAMENT_DEV_TOOLS=ON` also builds `filament_smoke` and
-`filament_parity` (renders a scene with any engine and dumps every sensor;
-`tools/parity_compare.py` compares two dumps).
-
 ## Runtime options
 
 - Backend: OpenGL (EGL) by default. The engine parameter `vulkan=1` (or

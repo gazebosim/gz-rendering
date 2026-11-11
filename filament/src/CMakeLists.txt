@@ -113,25 +113,3 @@ install(DIRECTORY "${filament_media_dir}" DESTINATION ${GZ_RENDERING_RELATIVE_RE
 gz_build_tests(TYPE UNIT
                SOURCES ${gtest_sources}
                LIB_DEPS ${filament_target})
-
-# Developer tools (smoke render, ogre2 parity dumps), not installed
-option(GZ_FILAMENT_DEV_TOOLS "Build the filament_smoke and filament_parity tools" OFF)
-if (GZ_FILAMENT_DEV_TOOLS)
-  # Smoke test tool: renders the demo scene with any engine, saves rgb/depth
-  add_executable(filament_smoke ${CMAKE_CURRENT_SOURCE_DIR}/../tools/filament_smoke.cc)
-  target_link_libraries(filament_smoke
-    PRIVATE
-      ${PROJECT_LIBRARY_TARGET_NAME}
-      gz-plugin::loader
-      gz-common::gz-common
-      gz-common::graphics)
-
-  # Sensor parity dump: raw depth/point cloud/lidar outputs + timings per engine
-  add_executable(filament_parity ${CMAKE_CURRENT_SOURCE_DIR}/../tools/filament_parity.cc)
-  target_link_libraries(filament_parity
-    PRIVATE
-      ${PROJECT_LIBRARY_TARGET_NAME}
-      gz-common::gz-common)
-  target_compile_definitions(filament_parity
-    PRIVATE PROJECT_SOURCE_PATH="${PROJECT_SOURCE_DIR}")
-endif()

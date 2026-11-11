@@ -20,13 +20,17 @@
 #include <utility>
 #include <vector>
 
+#include <filament/Box.h>
 #include <filament/Camera.h>
 #include <filament/Engine.h>
 #include <filament/LightManager.h>
 #include <filament/RenderTarget.h>
+#include <filament/RenderableManager.h>
 #include <filament/Renderer.h>
+#include <filament/Scene.h>
 #include <filament/Texture.h>
 #include <filament/TextureSampler.h>
+#include <filament/TransformManager.h>
 #include <filament/View.h>
 #include <filament/Viewport.h>
 #include <backend/PixelBufferDescriptor.h>
@@ -436,22 +440,60 @@ filament::RenderTarget *FilamentRenderTarget::Native() const
 
 namespace
 {
+  /// \brief Whether a shadow caster in the scene is wider than _size
+  /// metres along any world axis.
+  bool HasHugeShadowCaster(filament::Engine &_engine,
+      const filament::Scene &_scene, float _size)
+  {
+    auto &rm = _engine.getRenderableManager();
+    auto &tm = _engine.getTransformManager();
+    bool huge = false;
+    _scene.forEach([&](::utils::Entity _entity)
+    {
+      auto ri = rm.getInstance(_entity);
+      if (huge || !ri || !rm.isShadowCaster(ri))
+        return;
+      filament::math::float3 extent =
+          rm.getAxisAlignedBoundingBox(ri).halfExtent * 2.0f;
+      auto ti = tm.getInstance(_entity);
+      if (ti)
+      {
+        extent = abs(tm.getWorldTransform(ti).upperLeft()) * extent;
+      }
+      huge = std::max({extent.x, extent.y, extent.z}) > _size;
+    });
+    return huge;
+  }
+
   /// \brief ogre2 ends directional shadows at 500 m (PSSM, 3 splits,
   /// lambda 0.95 over near..min(far, 500)). Filament takes shadowFar per
   /// light and otherwise spreads the cascades to the camera far plane (50 km
   /// in gz-sim's GUI: no visible shadows). Fit every directional light to
   /// the camera about to render; cameras within 500 m keep FilamentLight's
   /// defaults (shadowFar 0, splits for 0.1..100 m).
+  ///
+  /// LiSPSM (Filament's default warp, more resolution near the camera) is
+  /// turned off while the scene has a shadow caster wider than 1 km. The
+  /// warp mis-renders very large casters such as gz-sim's 100 km ground
+  /// planes: one of the plane's two triangles lands in the shadow map with
+  /// wrong depths and shadows itself, a dark noisy patch on the ground near
+  /// the camera. In a sweep of 40 views it showed with 10 km and 100 km
+  /// planes and never up to 5 km. Plain orthographic cascades, as in
+  /// ogre2, have no such failure.
   void FitDirectionalShadows(filament::Engine &_engine,
-      const filament::Camera &_camera)
+      const filament::View &_view)
   {
+    const filament::Camera &camera = _view.getCamera();
+    constexpr float kLispsmMaxCaster = 1000.0f;
+    const bool lispsm = !_view.getScene() || !HasHugeShadowCaster(_engine,
+        *_view.getScene(), kLispsmMaxCaster);
     constexpr float kShadowFar = 500.0f;
-    const bool clipped = _camera.getCullingFar() > kShadowFar;
+    const bool clipped = camera.getCullingFar() > kShadowFar;
     filament::LightManager::ShadowOptions fit;
     fit.shadowFar = clipped ? kShadowFar : 0.0f;
     filament::LightManager::ShadowCascades::computePracticalSplits(
         fit.cascadeSplitPositions, 3u,
-        clipped ? static_cast<float>(_camera.getNear()) : 0.1f,
+        clipped ? static_cast<float>(camera.getNear()) : 0.1f,
         clipped ? kShadowFar : 100.0f, 0.95f);
     auto &lm = _engine.getLightManager();
     const ::utils::Entity *lights = lm.getEntities();
@@ -463,10 +505,12 @@ namespace
       filament::LightManager::ShadowOptions o = lm.getShadowOptions(inst);
       const bool sameFar = !(o.shadowFar < fit.shadowFar) &&
           !(o.shadowFar > fit.shadowFar);
-      if (sameFar && std::equal(o.cascadeSplitPositions,
+      if (sameFar && o.lispsm == lispsm &&
+          std::equal(o.cascadeSplitPositions,
               o.cascadeSplitPositions + 3, fit.cascadeSplitPositions))
         continue;
       o.shadowFar = fit.shadowFar;
+      o.lispsm = lispsm;
       std::copy(fit.cascadeSplitPositions, fit.cascadeSplitPositions + 3,
           o.cascadeSplitPositions);
       lm.setShadowOptions(inst, o);
@@ -494,7 +538,7 @@ void FilamentRenderTarget::Render(filament::View *_view,
       filament::Viewport{0, 0, this->width, this->height});
   auto *engine = FilamentRenderEngine::Instance();
   if (_view->isShadowingEnabled() && _view->hasCamera())
-    FitDirectionalShadows(*engine->FilamentEngine(), _view->getCamera());
+    FitDirectionalShadows(*engine->FilamentEngine(), *_view);
   if (engine->InFrame())
     renderer->render(_view);
   else

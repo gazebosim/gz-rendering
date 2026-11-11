@@ -29,6 +29,7 @@
 #include <gz/math/Helpers.hh>
 #include <gz/math/Matrix4.hh>
 
+#include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/filament/FilamentCamera.hh"
 #include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentMesh.hh"
@@ -175,7 +176,7 @@ void FilamentCamera::UpdateQualityMode()
   View::AmbientOcclusionOptions ao;
   ao.enabled = true;
   ao.aoType = View::AmbientOcclusionOptions::AmbientOcclusionType::GTAO;
-  ao.radius = 0.3f;
+  ao.radius = 2.0f;
   ao.quality = View::QualityLevel::MEDIUM;
   ao.lowPassFilter = View::QualityLevel::HIGH;
   ao.upsampling = View::QualityLevel::MEDIUM;
@@ -379,7 +380,15 @@ void FilamentCamera::Render()
       FilamentConversions::MaskToLayers(this->VisibilityMask()));
   // the camera looks along its +X
   this->scene->SortParticles(this->WorldPose().Rot() * math::Vector3d::UnitX);
+  // the quality-mode GUI camera reflects the scene around it
+  if (post)
+  {
+    this->scene->BeginReflections(this->ReflectionProbePosition(),
+        this->VisibilityMask(), this->NearClipPlane(), this->FarClipPlane());
+  }
   this->renderTexture->Render(this->view);
+  if (post)
+    this->scene->EndReflections();
   if (!this->scene->Projectors().empty())
   {
     // post-processing (the quality-mode GUI camera) renders the scene into
@@ -402,4 +411,28 @@ void FilamentCamera::Render()
   // as rendered: bottom row first, the GUI mirrors it. Finish the frame.
   if (this->renderTexture->SharedGLId() != 0)
     FilamentRenderEngine::Instance()->FilamentEngine()->flushAndWait();
+}
+
+//////////////////////////////////////////////////
+math::Vector3d FilamentCamera::ReflectionProbePosition()
+{
+  const math::Pose3d pose = this->WorldPose();
+  if (pose == this->probeCameraPose)
+    return this->probePosition;
+  this->probeCameraPose = pose;
+  // 1 m short of what the camera looks at (at most half way), where the
+  // reflective things the user looks at are; 5 m ahead if it looks at
+  // nothing. Measured on the Cycles sunroom: 0.5x / 0.75x of the way and
+  // the camera position reflect too much of what is behind the camera.
+  constexpr double kBack = 1.0;
+  constexpr double kNoHit = 5.0;
+  const math::Vector3d dir = pose.Rot() * math::Vector3d::UnitX;
+  RayQueryPtr query = this->scene->CreateRayQuery();
+  query->SetOrigin(pose.Pos());
+  query->SetDirection(dir);
+  const RayQueryResult hit = query->ClosestPoint();
+  const double d = hit ? hit.distance : 0.0;
+  this->probePosition = pose.Pos() + dir *
+      (hit ? std::max(0.5 * d, d - kBack) : kNoHit);
+  return this->probePosition;
 }

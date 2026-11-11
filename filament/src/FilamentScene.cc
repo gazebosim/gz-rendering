@@ -23,7 +23,10 @@
 #include <filament-iblprefilter/IBLPrefilterContext.h>
 #include <filament/Engine.h>
 #include <filament/IndirectLight.h>
+#include <filament/LightManager.h>
+#include <filament/RenderableManager.h>
 #include <filament/Scene.h>
+#include <filament/TransformManager.h>
 #include <filament/Skybox.h>
 #include <filament/Texture.h>
 
@@ -64,6 +67,7 @@
 #include "gz/rendering/filament/FilamentLightVisual.hh"
 #include "gz/rendering/filament/FilamentVisual.hh"
 #include "gz/rendering/filament/FilamentWireBox.hh"
+#include "FilamentReflectionProbe.hh"
 #include "FilamentUtils.hh"
 
 using namespace gz;
@@ -165,6 +169,7 @@ void FilamentScene::Destroy()
 //////////////////////////////////////////////////
 void FilamentScene::Fini()
 {
+  this->probe.reset();
   auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
   if (engine && this->ambientLight)
   {
@@ -176,6 +181,7 @@ void FilamentScene::Fini()
     engine->destroy(this->skyLight);
     this->skyLight = nullptr;
   }
+  this->DestroyProbeSky();
   if (engine && this->skyReflections)
   {
     engine->destroy(this->skyReflections);
@@ -249,6 +255,7 @@ void FilamentScene::SetAmbientLight(const math::Color &_color)
     engine->destroy(this->skyLight);
     this->skyLight = nullptr;
   }
+  this->DestroyProbeSky();
   if (this->skyReflections)
   {
     engine->destroy(this->skyReflections);
@@ -345,18 +352,8 @@ void FilamentScene::UpdateSkyLight()
     // the view keeps ogre2's brightness and tint; a coloured sky SH turned
     // shaded sides and foliage blue). Reflections: the dimmed sky (above).
     // Intensity 1 also keeps the skybox as drawn without sky lighting.
-    const double skyLum = Luminance(this->skySh[0][0], this->skySh[0][1],
-        this->skySh[0][2]);
-    const filament::math::float3 ambient3 =
-        FilamentConversions::ToFloat3(this->ambient) * (1.0f / 3.0f);
     filament::math::float3 sh[9];
-    for (int i = 0; i < 9; ++i)
-    {
-      const double lum = Luminance(this->skySh[i][0], this->skySh[i][1],
-          this->skySh[i][2]);
-      sh[i] = ambient3 * (skyLum > 0.0 ? static_cast<float>(lum / skyLum) :
-          0.0f);
-    }
+    this->SkyLightSh(sh);
     this->skyLight = filament::IndirectLight::Builder()
         .irradiance(3, sh)
         .reflections(this->skyReflections)
@@ -365,6 +362,22 @@ void FilamentScene::UpdateSkyLight()
   }
   if (this->scene->getIndirectLight() != this->skyLight)
     this->scene->setIndirectLight(this->skyLight);
+}
+
+//////////////////////////////////////////////////
+void FilamentScene::SkyLightSh(filament::math::float3 _sh[9]) const
+{
+  const double skyLum = Luminance(this->skySh[0][0], this->skySh[0][1],
+      this->skySh[0][2]);
+  const filament::math::float3 ambient3 =
+      FilamentConversions::ToFloat3(this->ambient) * (1.0f / 3.0f);
+  for (int i = 0; i < 9; ++i)
+  {
+    const double lum = Luminance(this->skySh[i][0], this->skySh[i][1],
+        this->skySh[i][2]);
+    _sh[i] = ambient3 * (skyLum > 0.0 ? static_cast<float>(lum / skyLum) :
+        0.0f);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -399,6 +412,7 @@ void FilamentScene::SetSkyEnabled(bool _enabled)
       fe->destroy(this->skyLight);
       this->skyLight = nullptr;
     }
+    this->DestroyProbeSky();
     if (this->skyReflections)
     {
       fe->destroy(this->skyReflections);
@@ -1000,4 +1014,162 @@ FilamentScenePtr FilamentScene::SharedThis()
 {
   ScenePtr sharedBase = this->shared_from_this();
   return std::dynamic_pointer_cast<FilamentScene>(sharedBase);
+}
+
+//////////////////////////////////////////////////
+void FilamentScene::BeginReflections(const math::Vector3d &_pos,
+    uint32_t _visibilityMask, double _near, double _far)
+{
+  if (!this->scene || FilamentRenderEngine::Instance()->InFrame())
+    return;
+  // 128 px faces, 64 prefilter samples, one face per frame while stale
+  // (the cube catches up 6 frames after a change), sun shadows on: the
+  // cheaper settings measured worse (no shadows) or no faster
+  constexpr uint32_t kSize = 128u;
+  constexpr uint16_t kSamples = 64u;
+  constexpr unsigned int kFacesPerFrame = 1u;
+  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
+  if (!this->probe)
+  {
+    this->probe = std::make_unique<filament_probe::ReflectionProbe>(
+        *engine, this->scene, kSize, kSamples);
+  }
+  // the cube sees the scene IBL: no reflections of reflections
+  filament::IndirectLight *base = this->scene->getIndirectLight();
+  // and the sky at the ambient light's level (the radiance a uniform sky
+  // of the ambient colour would have); without sky lighting, black like the
+  // uniform ambient's reflections
+  filament::Skybox *sky = this->scene->getSkybox();
+  const bool skyLit = base && base == this->skyLight && this->skyReflections;
+  if (skyLit && !this->probeSkybox)
+  {
+    // UpdateSkyLight's reflections without its kReflectionScale: that
+    // dims an unoccluded sky for interiors, here the cube's walls occlude
+    // it. Measured on the Cycles sunroom (uniform ambient sky): chrome ball
+    // 81 80 71 vs Cycles 96 93 87; 0.3x: 58 56 48.
+    unsigned int cubeSize = 0u;
+    std::vector<uint8_t> faces;
+    const double skyLum = Luminance(this->skySh[0][0], this->skySh[0][1],
+        this->skySh[0][2]);
+    if (skyLum > 0.0 && FilamentRenderEngine::Instance()->CubeFaces(
+        this->skyCubemap, cubeSize, faces))
+    {
+      const double scale = std::min(1.0, Luminance(this->ambient.R(),
+          this->ambient.G(), this->ambient.B()) / 3.0 / skyLum);
+      auto *buf = new uint8_t[faces.size()];
+      for (size_t i = 0; i < faces.size(); ++i)
+        buf[i] = static_cast<uint8_t>(std::lround(faces[i] * scale));
+      this->probeSkyTexture = filament::Texture::Builder()
+          .width(cubeSize).height(cubeSize).levels(1)
+          .sampler(filament::Texture::Sampler::SAMPLER_CUBEMAP)
+          .format(filament::Texture::InternalFormat::RGBA8)
+          .build(*engine);
+      this->probeSkyTexture->setImage(*engine, 0, 0, 0, 0, cubeSize,
+          cubeSize, 6, filament::Texture::PixelBufferDescriptor(buf,
+          faces.size(), filament::Texture::Format::RGBA,
+          filament::Texture::Type::UBYTE,
+          &filament_utils::FreeBuffer<uint8_t>));
+      this->probeSkybox = filament::Skybox::Builder()
+          .environment(this->probeSkyTexture).build(*engine);
+      this->probeSkybox->setLayerMask(0xff,
+          FilamentConversions::kParticleLayer);
+    }
+  }
+  this->scene->setSkybox(skyLit ? this->probeSkybox : nullptr);
+  this->probe->Render({_pos.X(), _pos.Y(), _pos.Z()},
+      FilamentConversions::MaskToLayers(_visibilityMask),
+      static_cast<float>(_near), static_cast<float>(_far),
+      {0.0f, 0.0f, 0.0f, 0.0f}, kFacesPerFrame,
+      this->ReflectionsSignature(_pos) ^
+      (reinterpret_cast<uintptr_t>(base) * 0x9e3779b97f4a7c15ull));
+  this->scene->setSkybox(sky);
+  filament::math::float3 sh[9];
+  uint8_t bands = 1u;
+  if (base && base == this->skyLight)
+  {
+    this->SkyLightSh(sh);
+    bands = 3u;
+  }
+  else
+  {
+    sh[0] = FilamentConversions::ToFloat3(this->ambient) * (1.0f / 3.0f);
+  }
+  filament::IndirectLight *light = this->probe->Light(sh, bands);
+  if (!light)
+    return;
+  this->probeSavedLight = base;
+  this->probeActive = true;
+  this->scene->setIndirectLight(light);
+}
+
+//////////////////////////////////////////////////
+uint64_t FilamentScene::ReflectionsSignature(const math::Vector3d &_pos) const
+{
+  // FNV-1a over what the probe's cube shows: mesh world transforms and
+  // layers, lights, the probe position.
+  // ponytail: material and sky changes are not hashed; they show up with
+  // the next move of anything
+  uint64_t h = 1469598103934665603ull;
+  auto add = [&h](const void *_p, size_t _n)
+  {
+    const auto *b = static_cast<const uint8_t *>(_p);
+    for (size_t i = 0; i < _n; ++i)
+      h = (h ^ b[i]) * 1099511628211ull;
+  };
+  const double pos[3] = {_pos.X(), _pos.Y(), _pos.Z()};
+  add(pos, sizeof(pos));
+  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
+  auto &tm = engine->getTransformManager();
+  auto &rm = engine->getRenderableManager();
+  for (FilamentMesh *mesh : this->meshes)
+  {
+    const ::utils::Entity e = mesh->Entity();
+    add(&e, sizeof(e));
+    if (tm.hasComponent(e))
+    {
+      const filament::math::mat4f m =
+          tm.getWorldTransform(tm.getInstance(e));
+      add(&m, sizeof(m));
+    }
+    if (rm.hasComponent(e))
+    {
+      const uint8_t layers = rm.getLayerMask(rm.getInstance(e));
+      add(&layers, 1);
+    }
+  }
+  auto &lm = engine->getLightManager();
+  const ::utils::Entity *lights = lm.getEntities();
+  for (size_t i = 0; i < lm.getComponentCount(); ++i)
+  {
+    auto inst = lm.getInstance(lights[i]);
+    const filament::math::float3 v[3] = {lm.getPosition(inst),
+        lm.getDirection(inst), lm.getColor(inst)};
+    const float intensity = lm.getIntensity(inst);
+    add(v, sizeof(v));
+    add(&intensity, sizeof(intensity));
+  }
+  return h;
+}
+
+//////////////////////////////////////////////////
+void FilamentScene::DestroyProbeSky()
+{
+  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
+  if (!engine)
+    return;
+  if (this->probeSkybox)
+    engine->destroy(this->probeSkybox);
+  if (this->probeSkyTexture)
+    engine->destroy(this->probeSkyTexture);
+  this->probeSkybox = nullptr;
+  this->probeSkyTexture = nullptr;
+}
+
+//////////////////////////////////////////////////
+void FilamentScene::EndReflections()
+{
+  if (!this->probeActive)
+    return;
+  this->scene->setIndirectLight(this->probeSavedLight);
+  this->probeActive = false;
 }

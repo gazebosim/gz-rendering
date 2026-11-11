@@ -76,7 +76,7 @@ void FilamentMaterial::DestroyInstance(filament::MaterialInstance *_instance)
   if (!_instance || !engine)
     return;
   // filament refuses to destroy an instance a renderable still uses
-  // ponytail: scans every mesh of the scene, a per-material user list if
+  // TODO: scans every mesh of the scene, a per-material user list if
   // destroying materials of big scenes ever shows up in profiles
   filament::Material *fallback =
       FilamentRenderEngine::Instance()->Material("gz_unlit");
@@ -146,7 +146,7 @@ filament::MaterialInstance *FilamentMaterial::Instance() const
     if (blended && this->litTransparent)
       return this->litTransparent;
     // alpha from texture: like ogre2, only when the texture has alpha
-    // ponytail: unlit materials ignore it, and an opaque texture also drops
+    // TODO: unlit materials ignore it, and an opaque texture also drops
     // TwoSidedEnabled() (ogre2 keeps two-sided lighting); add an unlit /
     // double-sided-opaque variant if a scene needs them
     if (this->litMasked && this->TextureAlphaEnabled() && this->texture &&
@@ -194,11 +194,11 @@ void FilamentMaterial::PreRender()
     return;
   this->UpdateCustomShader();
 
-  if (this->HasTexture() && this->Texture() != this->loadedTexture)
+  if (this->HasTexture() && this->textureName != this->loadedTexture)
   {
     this->texture = FilamentRenderEngine::Instance()->Texture(
-        this->Texture(), this->TextureData());
-    this->loadedTexture = this->Texture();
+        this->textureName, this->textureData);
+    this->loadedTexture = this->textureName;
   }
   else if (!this->HasTexture())
   {
@@ -564,7 +564,7 @@ void FilamentMaterial::Update(filament::MaterialInstance *_instance)
     // kS): F0 and the grazing Fresnel term alike. gz_lit's specularFactor
     // does the same (F0 = 0.03 * specular, F90 = specular), so a material
     // with a black specular has no grazing highlights, as in ogre2.
-    // ponytail: grey (mean of rgb), a specular hue is lost.
+    // Grey (mean of rgb), a specular hue is lost.
     const math::Color s = this->Specular();
     _instance->setParameter("specular", static_cast<float>(
         std::clamp((s.R() + s.G() + s.B()) / 3.0, 0.0, 1.0)));
@@ -696,6 +696,12 @@ static bool SetUniform(filament::MaterialInstance *_mi,
 //////////////////////////////////////////////////
 void FilamentMaterial::UpdateCustomShader()
 {
+  // nothing set and nothing to release: the usual case, every frame
+  if (this->fragmentShaderPath.empty() && this->vertexShaderPath.empty() &&
+      this->customSource.empty())
+  {
+    return;
+  }
   // Filament takes material definitions, not GLSL: a .mat source given as
   // the fragment (or vertex) shader is compiled into a filament material.
   auto isMat = [](const std::string &_p)
@@ -730,8 +736,12 @@ void FilamentMaterial::UpdateCustomShader()
       this->custom = mat->createInstance();
     fresh = true;
   }
-  if (!this->custom)
+  // like ogre2: only push what changed since the last frame
+  if (!this->custom || (!fresh && !this->vertexShaderParams->IsDirty() &&
+      !this->fragmentShaderParams->IsDirty()))
+  {
     return;
+  }
 
   const filament::Material *mat = this->custom->getMaterial();
   std::vector<filament::Material::ParameterInfo> infos(

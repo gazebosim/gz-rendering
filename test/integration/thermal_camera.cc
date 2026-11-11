@@ -379,7 +379,6 @@ TEST_F(ThermalCameraTest,
 //////////////////////////////////////////////////
 TEST_F(ThermalCameraTest, ThermalCameraBoxes8Bit)
 {
-  // 8 bit image format: ogre2 and filament
   CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   int imgWidth = 50;
@@ -551,7 +550,6 @@ TEST_F(ThermalCameraTest, ThermalCameraBoxes8Bit)
 //////////////////////////////////////////////////
 TEST_F(ThermalCameraTest, ThermalCameraParticles)
 {
-  // 8 bit image format and particles: ogre2 and filament
   CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   int imgWidth = 50;
@@ -820,7 +818,6 @@ TEST_F(ThermalCameraTest, ThermalCameraMaxTemperatureIsClamped)
 //////////////////////////////////////////////////
 TEST_F(ThermalCameraTest, ThermalCameraMinTemperatureUpdate)
 {
-  // Updating the min temperature currently only works with Ogre2
   CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   const unsigned int imgWidth = 50;
@@ -891,7 +888,6 @@ TEST_F(ThermalCameraTest, ThermalCameraMinTemperatureUpdate)
 //////////////////////////////////////////////////
 TEST_F(ThermalCameraTest, ThermalCameraMaxTemperatureUpdate)
 {
-  // Updating the max temperature currently only works with Ogre2
   CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   const unsigned int imgWidth = 50;
@@ -962,7 +958,6 @@ TEST_F(ThermalCameraTest, ThermalCameraMaxTemperatureUpdate)
 //////////////////////////////////////////////////
 TEST_F(ThermalCameraTest, ThermalCameraResolutionUpdate)
 {
-  // Updating the resolution currently only works with Ogre2
   CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   const unsigned int imgWidth = 50;

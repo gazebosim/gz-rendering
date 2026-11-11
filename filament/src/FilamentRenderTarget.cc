@@ -149,7 +149,7 @@ void FilamentRenderTarget::RebuildImpl()
   if (this->width == 0u || this->height == 0u)
     return;
   this->BuildAttachments(this->target, this->colorTexture,
-      this->depthTexture);
+      this->depthTexture, true);
   if (this->colorTexture && this->glColorId)
     this->glColor = this->colorTexture;
   // readPixels must not read the multisampled target: on GL with
@@ -177,7 +177,7 @@ unsigned int FilamentRenderTarget::SharedGLId() const
 
 //////////////////////////////////////////////////
 void FilamentRenderTarget::BuildAttachments(filament::RenderTarget *&_target,
-    filament::Texture *&_color, filament::Texture *&_depth)
+    filament::Texture *&_color, filament::Texture *&_depth, bool _main)
 {
   auto *engine = Engine();
 
@@ -210,7 +210,7 @@ void FilamentRenderTarget::BuildAttachments(filament::RenderTarget *&_target,
   // Main 8 bit colour target of an engine sharing the caller's GL context
   // (a GUI): allocate it in the caller's context, which is current here, so
   // the caller can sample it (SharedGLId).
-  const bool callerTexture = &_color == &this->colorTexture &&
+  const bool callerTexture = _main &&
       this->glColorId == 0 &&
       (colorFormat == filament::Texture::InternalFormat::RGBA8 ||
        colorFormat == filament::Texture::InternalFormat::SRGB8_A8) &&
@@ -249,7 +249,7 @@ void FilamentRenderTarget::BuildAttachments(filament::RenderTarget *&_target,
   _target = filament::RenderTarget::Builder()
       .texture(filament::RenderTarget::AttachmentPoint::COLOR, _color)
       .texture(filament::RenderTarget::AttachmentPoint::DEPTH, _depth)
-      .samples(&_target == &this->target ? this->samples : 1u)
+      .samples(_main ? this->samples : 1u)
       .build(*engine);
 }
 
@@ -279,7 +279,7 @@ void FilamentRenderTarget::ApplyRenderPasses(
     if (!this->scratchTarget)
     {
       this->BuildAttachments(this->scratchTarget, this->scratchColor,
-          this->scratchDepth);
+          this->scratchDepth, false);
     }
     std::swap(this->target, this->scratchTarget);
     std::swap(this->colorTexture, this->scratchColor);
@@ -461,9 +461,13 @@ void FilamentRenderTarget::Copy(Image &_image) const
       dstFormat == PF_BAYER_GBRG8 || dstFormat == PF_BAYER_GRBG8)
   {
     // render target holds RGB: read that back, then mosaic on the CPU
-    Image colorImage(this->width, this->height, PF_R8G8B8);
-    this->Copy(colorImage);
-    convertRGBToBayer(colorImage, PixelBuffer(_image));
+    if (this->bayerSource.Width() != this->width ||
+        this->bayerSource.Height() != this->height)
+    {
+      this->bayerSource = Image(this->width, this->height, PF_R8G8B8);
+    }
+    this->Copy(this->bayerSource);
+    convertRGBToBayer(this->bayerSource, PixelBuffer(_image));
     return;
   }
 
@@ -488,22 +492,27 @@ void FilamentRenderTarget::Copy(Image &_image) const
       break;
   }
 
+  // Offscreen render targets read back top row first on both the Vulkan and
+  // OpenGL backends (verified empirically), matching gz image layout.
   const size_t rowBytes = readBpp * this->width;
+  unsigned char *dst = _image.Data<unsigned char>();
+  const PixelFormat imgFormat = _image.Format();
+  const size_t dstBpp = PixelUtil::BytesPerPixel(imgFormat);
+  // same layout: straight into the image
+  const bool direct = dstBpp == readBpp && _image.Width() == this->width &&
+      _image.Height() == this->height;
   // resize keeps the allocation (and skips zeroing) from frame to frame
   std::vector<unsigned char> &buf = this->readBuffer;
-  buf.resize(rowBytes * this->height);
-  filament::backend::PixelBufferDescriptor desc(buf.data(), buf.size(),
-      readFormat, readType);
+  if (!direct)
+    buf.resize(rowBytes * this->height);
+  filament::backend::PixelBufferDescriptor desc(direct ? dst : buf.data(),
+      rowBytes * this->height, readFormat, readType);
   auto *renderer = FilamentRenderEngine::Instance()->Renderer();
   renderer->readPixels(this->Native(), 0, 0, this->width, this->height,
       std::move(desc));
   Engine()->flushAndWait();
-
-  // Offscreen render targets read back top row first on both the Vulkan and
-  // OpenGL backends (verified empirically), matching gz image layout.
-  unsigned char *dst = _image.Data<unsigned char>();
-  const PixelFormat imgFormat = _image.Format();
-  const size_t dstBpp = PixelUtil::BytesPerPixel(imgFormat);
+  if (direct)
+    return;
   for (unsigned int y = 0; y < this->height; ++y)
   {
     const unsigned char *src =

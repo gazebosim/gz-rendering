@@ -39,12 +39,14 @@
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Image.hh>
+#include <gz/common/StringUtils.hh>
 #include <gz/common/Util.hh>
 #include <gz/plugin/Register.hh>
 
 #include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
+#include "FilamentUtils.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -66,7 +68,8 @@ namespace gz
       public: std::map<std::string, filament::Texture *> textures;
       /// \brief Textures with a texel alpha below 1, see TextureHasAlpha
       public: std::set<const filament::Texture *> alphaTextures;
-      public: std::string backend{"opengl"};
+      /// \brief OPENGL or VULKAN
+      public: rendering::GraphicsAPI backend{rendering::GraphicsAPI::OPENGL};
       public: std::string resourcePath;
       /// \brief Caller's EGL display / context (load params "egl_display",
       /// "egl_context"): filament's GL context then shares their objects
@@ -179,8 +182,13 @@ std::string FilamentRenderEngine::Name() const
 //////////////////////////////////////////////////
 rendering::GraphicsAPI FilamentRenderEngine::GraphicsAPI() const
 {
-  return this->dataPtr->backend == "opengl" ? rendering::GraphicsAPI::OPENGL
-                                            : rendering::GraphicsAPI::VULKAN;
+  return this->dataPtr->backend;
+}
+
+//////////////////////////////////////////////////
+bool FilamentRenderEngine::PackedFloatTargets() const
+{
+  return this->dataPtr->backend == rendering::GraphicsAPI::VULKAN;
 }
 
 //////////////////////////////////////////////////
@@ -222,7 +230,7 @@ void FilamentRenderEngine::EndFrame()
 }
 
 //////////////////////////////////////////////////
-// ponytail: utils::JobSystem::adopt() / emancipate() by their mangled names
+// TODO: utils::JobSystem::adopt() / emancipate() by their mangled names
 // (Itanium ABI, `this` first): filament doesn't install utils/JobSystem.h.
 // Call getJobSystem().adopt() etc. once the header is installed.
 extern "C" void _ZN5utils9JobSystem5adoptEv(::utils::JobSystem *_jobSystem);
@@ -249,10 +257,29 @@ bool FilamentRenderEngine::InFrame() const
   return this->dataPtr->inFrame;
 }
 
-//////////////////////////////////////////////////
-std::string FilamentRenderEngine::ResourcePath() const
+namespace
 {
-  return this->dataPtr->resourcePath;
+  /// \brief The whole file, empty if it can not be read
+  std::vector<uint8_t> ReadFile(const std::string &_path)
+  {
+    std::ifstream in(_path, std::ios::binary);
+    return std::vector<uint8_t>(std::istreambuf_iterator<char>(in),
+        std::istreambuf_iterator<char>());
+  }
+
+  /// \brief Whether _dds starts with a DDS magic and header
+  bool IsDds(const std::vector<uint8_t> &_dds)
+  {
+    return _dds.size() >= 128u &&
+        std::equal(_dds.begin(), _dds.begin() + 4, "DDS ");
+  }
+
+  /// \brief Little endian 32 bit field at byte _offset of a DDS file
+  uint32_t DdsU32(const std::vector<uint8_t> &_dds, size_t _offset)
+  {
+    return static_cast<uint32_t>(_dds[_offset] | (_dds[_offset + 1] << 8u) |
+        (_dds[_offset + 2] << 16u) | (_dds[_offset + 3] << 24u));
+  }
 }
 
 //////////////////////////////////////////////////
@@ -264,7 +291,7 @@ filament::Material *FilamentRenderEngine::Material(const std::string &_name)
 
   // A path to a filament material source (Material::SetFragmentShader with
   // a .mat file): compiled at runtime, cached under its path.
-  if (_name.size() > 4 && _name.compare(_name.size() - 4, 4, ".mat") == 0)
+  if (common::EndsWith(_name, ".mat"))
   {
     filament::Material *mat = this->CompileMaterial(_name);
     if (mat)
@@ -274,15 +301,13 @@ filament::Material *FilamentRenderEngine::Material(const std::string &_name)
 
   std::string path = common::joinPaths(this->dataPtr->resourcePath,
       "materials", _name + ".filamat");
-  std::ifstream in(path, std::ios::binary);
-  if (!in)
+  const std::vector<uint8_t> data = ReadFile(path);
+  if (data.empty())
   {
     gzerr << "Unable to open filament material package [" << path << "]"
           << std::endl;
     return nullptr;
   }
-  std::vector<char> data((std::istreambuf_iterator<char>(in)),
-                          std::istreambuf_iterator<char>());
   filament::Material *mat = filament::Material::Builder()
       .package(data.data(), data.size())
       .build(*this->dataPtr->engine);
@@ -324,21 +349,21 @@ class RuntimeMatConfig : public matp::Config
 filament::Material *FilamentRenderEngine::CompileMaterial(
     const std::string &_path)
 {
-  std::ifstream in(_path, std::ios::binary);
+  std::ifstream in(_path, std::ios::binary | std::ios::ate);
   if (!in)
   {
     gzerr << "Unable to open filament material source [" << _path << "]"
           << std::endl;
     return nullptr;
   }
-  std::string text((std::istreambuf_iterator<char>(in)),
-                    std::istreambuf_iterator<char>());
-  ssize_t size = static_cast<ssize_t>(text.size());
-  std::unique_ptr<char[]> chars(new char[text.size()]);
-  std::memcpy(chars.get(), text.data(), text.size());
+  // the parser takes ownership of the text
+  ssize_t size = static_cast<ssize_t>(in.tellg());
+  std::unique_ptr<char[]> chars(new char[size]);
+  in.seekg(0);
+  in.read(chars.get(), size);
   std::unique_ptr<const char[]> buffer(chars.release());
 
-  // ponytail: compiles on the render thread (~1 s per material, for the
+  // TODO: compiles on the render thread (~1 s per material, for the
   // running backend only), cached per path for the engine's lifetime; an
   // on-disk .filamat cache if startup time matters. No #include support.
   auto *engine = this->dataPtr->engine;
@@ -383,24 +408,12 @@ filament::Material *FilamentRenderEngine::CompileMaterial(
 /// wave_normals.dds), which common::Image can not read. False otherwise.
 static bool LoadUncompressedDds(const std::string &_path, common::Image &_img)
 {
-  if (_path.size() < 4 ||
-      common::lowercase(_path.substr(_path.size() - 4)) != ".dds")
-  {
+  if (!common::EndsWith(common::lowercase(_path), ".dds"))
     return false;
-  }
-  std::ifstream file(_path, std::ios::binary);
-  std::vector<uint8_t> dds((std::istreambuf_iterator<char>(file)),
-      std::istreambuf_iterator<char>());
-  auto u32 = [&](size_t _o)
-  {
-    return static_cast<uint32_t>(dds[_o] | (dds[_o + 1] << 8u) |
-        (dds[_o + 2] << 16u) | (dds[_o + 3] << 24u));
-  };
-  if (dds.size() < 128u || !std::equal(dds.begin(), dds.begin() + 4, "DDS ")
-      || !(u32(80) & 0x40u) || u32(112) != 0u)
-  {
+  const std::vector<uint8_t> dds = ReadFile(_path);
+  auto u32 = [&](size_t _o) { return DdsU32(dds, _o); };
+  if (!IsDds(dds) || !(u32(80) & 0x40u) || u32(112) != 0u)
     return false;
-  }
   const uint32_t h = u32(12), w = u32(16), bits = u32(88);
   const uint32_t bpp = bits / 8u;
   if ((bpp != 3u && bpp != 4u) || dds.size() < 128u + size_t(w) * h * bpp)
@@ -513,7 +526,7 @@ filament::Texture *FilamentRenderEngine::Texture(const std::string &_path,
       .build(engine);
   filament::Texture::PixelBufferDescriptor desc(buf, rgba.size(),
       filament::Texture::Format::RGBA, filament::Texture::Type::UBYTE,
-      [](void *_b, size_t, void *) { delete[] static_cast<unsigned char *>(_b); });
+      &filament_utils::FreeBuffer<unsigned char>);
   tex->setImage(engine, 0, std::move(desc));
   if (levels > 1u)
     tex->generateMipmaps(engine);
@@ -615,16 +628,9 @@ bool FilamentRenderEngine::CubeFaces(const std::string &_path,
     path = common::joinPaths(this->dataPtr->resourcePath, "textures",
         common::basename(_path));
   }
-  std::ifstream file(path, std::ios::binary);
-  std::vector<uint8_t> dds((std::istreambuf_iterator<char>(file)),
-      std::istreambuf_iterator<char>());
-  auto u32 = [&](size_t _o)
-  {
-    return static_cast<uint32_t>(dds[_o] | (dds[_o + 1] << 8u) |
-        (dds[_o + 2] << 16u) | (dds[_o + 3] << 24u));
-  };
-  const bool isDds = dds.size() >= 128u &&
-      std::equal(dds.begin(), dds.begin() + 4, "DDS ");
+  const std::vector<uint8_t> dds = ReadFile(path);
+  auto u32 = [&](size_t _o) { return DdsU32(dds, _o); };
+  const bool isDds = IsDds(dds);
   const std::string fourcc = isDds ?
       std::string(dds.begin() + 84, dds.begin() + 88) : "";
   const bool bc3 = fourcc == "DXT5";
@@ -706,7 +712,7 @@ filament::Texture *FilamentRenderEngine::CubeTexture(const std::string &_path,
   tex->setImage(engine, 0, 0, 0, 0, size, size, 6,
       filament::Texture::PixelBufferDescriptor(buf, faces.size(),
       filament::Texture::Format::RGBA, filament::Texture::Type::UBYTE,
-      [](void *_b, size_t, void *) { delete[] static_cast<uint8_t *>(_b); }));
+      &filament_utils::FreeBuffer<uint8_t>));
   if (levels > 1u)
     tex->generateMipmaps(engine);
   this->dataPtr->textures[key] = tex;
@@ -739,16 +745,21 @@ void *PointerParam(const std::map<std::string, std::string> &_params,
 bool FilamentRenderEngine::LoadImpl(
     const std::map<std::string, std::string> &_params)
 {
+  constexpr auto kVulkan = rendering::GraphicsAPI::VULKAN;
+  constexpr auto kOpenGL = rendering::GraphicsAPI::OPENGL;
   auto it = _params.find("backend");
   if (it != _params.end())
-    this->dataPtr->backend = common::lowercase(it->second);
+  {
+    this->dataPtr->backend =
+        GraphicsAPIUtils::Set(it->second) == kVulkan ? kVulkan : kOpenGL;
+  }
   // Compatibility with the ogre2 style switches used by gz-sim / tests
   it = _params.find("vulkan");
   if (it != _params.end() && it->second == "1")
-    this->dataPtr->backend = "vulkan";
+    this->dataPtr->backend = kVulkan;
   it = _params.find("opengl");
   if (it != _params.end() && it->second == "1")
-    this->dataPtr->backend = "opengl";
+    this->dataPtr->backend = kOpenGL;
   // e.g. gz-gui's MinimalScene, when Qt renders with EGL
   this->dataPtr->eglDisplay = PointerParam(_params, "egl_display");
   this->dataPtr->eglContext = PointerParam(_params, "egl_context");
@@ -762,7 +773,7 @@ bool FilamentRenderEngine::InitImpl()
   // readPixels allocates a staging buffer per call (~4 ms per readback on
   // NVIDIA, vs ~0.3 ms on OpenGL). Vulkan stays available on request.
   filament::Engine::Backend backend = filament::Engine::Backend::OPENGL;
-  if (this->dataPtr->backend == "vulkan")
+  if (this->dataPtr->backend == rendering::GraphicsAPI::VULKAN)
     backend = filament::Engine::Backend::VULKAN;
 
   // Every sensor readback ends in flushAndWait(), i.e. glFinish() on the
@@ -797,7 +808,7 @@ bool FilamentRenderEngine::InitImpl()
     // e.g. no Vulkan loader or ICD on this machine
     gzwarn << "Filament Vulkan backend unavailable, falling back to OpenGL"
            << std::endl;
-    this->dataPtr->backend = "opengl";
+    this->dataPtr->backend = rendering::GraphicsAPI::OPENGL;
     this->dataPtr->engine = filament::Engine::Builder()
         .backend(filament::Engine::Backend::OPENGL)
         .build();
@@ -805,7 +816,8 @@ bool FilamentRenderEngine::InitImpl()
   if (!this->dataPtr->engine)
   {
     gzerr << "Failed to create filament engine (backend: "
-          << this->dataPtr->backend << ")" << std::endl;
+          << common::lowercase(GraphicsAPIUtils::Str(this->dataPtr->backend))
+          << ")" << std::endl;
     return false;
   }
   // The engine adopts its creator into its job system, which has one slot
@@ -817,7 +829,7 @@ bool FilamentRenderEngine::InitImpl()
   this->dataPtr->scenes = FilamentSceneStorePtr(new FilamentSceneStore);
 
   gzmsg << "Filament render engine initialized (backend: "
-        << this->dataPtr->backend
+        << common::lowercase(GraphicsAPIUtils::Str(this->dataPtr->backend))
         << (this->dataPtr->platform ? ", shares caller's EGL context" : "")
         << ", resources: "
         << this->dataPtr->resourcePath << ")" << std::endl;

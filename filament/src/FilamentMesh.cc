@@ -40,6 +40,7 @@
 #include "gz/rendering/filament/FilamentMesh.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
+#include "FilamentUtils.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -165,8 +166,7 @@ void FilamentMesh::RestoreMaterials()
 {
   for (auto it = this->subMeshes->Begin(); it != this->subMeshes->End(); ++it)
   {
-    auto mat = std::dynamic_pointer_cast<FilamentMaterial>(
-        (*it)->Material());
+    FilamentMaterial *mat = (*it)->filamentMaterial;
     (*it)->ApplyInstance(mat ? mat->Instance() : nullptr);
   }
 }
@@ -308,7 +308,7 @@ void FilamentMesh::SetWireframe(bool _wireframe)
         .build(*engine);
     sub->lineBuffer->setBuffer(*engine,
         filament::IndexBuffer::BufferDescriptor(idx, tris * 6u * 4u,
-        [](void *_b, size_t, void *) { delete[] static_cast<uint32_t *>(_b); }));
+        &filament_utils::FreeBuffer<uint32_t>));
     rm.setGeometryAt(inst, sub->index, PT::LINES, sub->vertexBuffer,
         sub->lineBuffer, 0, tris * 6u);
   }
@@ -317,8 +317,9 @@ void FilamentMesh::SetWireframe(bool _wireframe)
   // draw the triangles depth only (pushed back, before the lines) so the
   // back edges are hidden behind the surface. Both go to channel 3, after
   // everything else (sky included, channel 2): the surface hides only the
-  // mesh's own edges, the rest stays visible through the gaps like ogre2. ponytail: not for skinned
-  // meshes (static pose), and open meshes keep the edges seen through holes.
+  // mesh's own edges, the rest stays visible through the gaps like ogre2.
+  // Not for skinned meshes (static pose), and open meshes keep the edges
+  // seen through holes.
   filament::MaterialInstance *depthOnly = nullptr;
   if (auto *m = FilamentRenderEngine::Instance()->Material("gz_depth_only"))
     depthOnly = m->getDefaultInstance();
@@ -362,7 +363,7 @@ void FilamentSubMesh::PreRender()
 {
   BaseSubMesh::PreRender();
   // The gz material may have switched between its lit/unlit instances
-  auto mat = std::dynamic_pointer_cast<FilamentMaterial>(this->Material());
+  FilamentMaterial *mat = this->filamentMaterial;
   if (mat && mat->Instance() != this->bound)
     this->ApplyInstance(mat->Instance());
 }
@@ -376,9 +377,13 @@ void FilamentSubMesh::SetMaterialImpl(MaterialPtr _material)
   {
     gzerr << "Cannot assign material created by another render-engine"
           << std::endl;
+    this->filamentMaterial = nullptr;
     return;
   }
+  // ApplyInstance still sees the previous material, like Material() does
+  // until BaseSubMesh::SetMaterial stores _material
   this->ApplyInstance(derived->Instance());
+  this->filamentMaterial = derived.get();
 }
 
 //////////////////////////////////////////////////
@@ -394,13 +399,13 @@ void FilamentSubMesh::ApplyInstance(filament::MaterialInstance *_instance,
   // passes keep the datablock's alpha test, so sensor overrides discard the
   // cut-out texels too
   filament::MaterialInstance *copy = nullptr;
-  auto mat = std::dynamic_pointer_cast<FilamentMaterial>(this->Material());
+  FilamentMaterial *mat = this->filamentMaterial;
   if (_alphaTest && mat && mat->AlphaTested() && _instance != mat->Instance()
       && _instance->getMaterial()->hasParameter("alphaMap"))
   {
     // a fresh copy per override: sensors change their instances'
     // parameters every frame.
-    // ponytail: one copy per alpha tested submesh and sensor pass, cache per
+    // TODO: one copy per alpha tested submesh and sensor pass, cache per
     // override instance if forests of them show up in sensor profiles
     copy = filament::MaterialInstance::duplicate(_instance);
     copy->setParameter("alphaMap", mat->FilamentTexture(),

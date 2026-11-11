@@ -15,6 +15,7 @@
  *
  */
 
+#include <array>
 #include <cmath>
 #include <cstring>
 #include <limits>
@@ -65,9 +66,9 @@ FilamentDepthCamera::~FilamentDepthCamera()
 void FilamentDepthCamera::Init()
 {
   FilamentCamera::Init();
-  // no shadow maps for the depth pass, nor any screen-space effect
+  // no shadow maps for the depth pass (FilamentCamera::Init already turns
+  // off the screen-space effects)
   this->view->setShadowingEnabled(false);
-  this->view->setPostProcessingEnabled(false);
 }
 
 //////////////////////////////////////////////////
@@ -91,38 +92,22 @@ void FilamentDepthCamera::Destroy()
   FilamentCamera::Destroy();
 }
 
-namespace
-{
-  /// \brief Whether the depth target holds the depth's float bits as RGBA8
-  /// (gz_depth_packed) instead of R32F. Vulkan readPixels converts R32F
-  /// texel by texel but copies RGBA8 rows as they are; OpenGL reads both
-  /// directly, so it keeps R32F.
-  // ponytail: RenderTarget()->Copy() of a depth camera then reads the packed
-  // bytes on Vulkan; nothing (gz-sensors, tests) copies it, unpack if needed
-  bool PackedDepth()
-  {
-    return FilamentRenderEngine::Instance()->FilamentEngine()->getBackend()
-        == filament::Engine::Backend::VULKAN;
-  }
-}
-
 //////////////////////////////////////////////////
 void FilamentDepthCamera::CreateDepthTexture()
 {
+  // packed: the depth's float bits as RGBA8, see PackedFloatTargets.
+  // RenderTarget()->Copy() of a depth camera then reads the packed bytes;
+  // nothing (gz-sensors, tests) copies it.
+  const bool packed = FilamentRenderEngine::Instance()->PackedFloatTargets();
   if (!this->depthInstance)
   {
-    const std::string matName = PackedDepth() ? "gz_depth_packed" :
-        "gz_depth";
-    filament::Material *mat =
-        FilamentRenderEngine::Instance()->Material(matName);
+    filament::Material *mat = FilamentRenderEngine::Instance()->Material(
+        packed ? "gz_depth_packed" : "gz_depth");
     if (!mat)
-    {
-      gzerr << matName << " material not available" << std::endl;
       return;
-    }
     this->depthInstance = mat->createInstance();
   }
-  if (PackedDepth())
+  if (packed)
   {
     this->renderTexture->SetFormat(PF_R8G8B8A8);
     this->renderTexture->SetSrgb(false);
@@ -239,7 +224,7 @@ void FilamentDepthCamera::Render()
       FilamentConversions::ToSensorLayers(this->VisibilityMask()));
   // packed: the bytes of +inf (0x7f800000), least significant first
   const float inf = std::numeric_limits<float>::infinity();
-  if (PackedDepth())
+  if (FilamentRenderEngine::Instance()->PackedFloatTargets())
     this->renderTexture->SetClearColor({0.0f, 0.0f, 128.0f / 255.0f, 127.0f / 255.0f});
   else
     this->renderTexture->SetClearColor({inf, inf, inf, 1.0f});
@@ -275,13 +260,14 @@ void FilamentDepthCamera::PostRender()
   const bool wantCloud = this->newRgbPointCloud.ConnectionCount() > 0u;
   auto *renderer = FilamentRenderEngine::Instance()->Renderer();
   this->depthRaw.resize(len);
-  const bool packedDepth = PackedDepth();
+  const bool packedTarget =
+      FilamentRenderEngine::Instance()->PackedFloatTargets();
   renderer->readPixels(this->renderTexture->Native(), 0, 0, width, height,
       filament::backend::PixelBufferDescriptor(this->depthRaw.data(),
       len * sizeof(float),
-      packedDepth ? filament::backend::PixelDataFormat::RGBA :
+      packedTarget ? filament::backend::PixelDataFormat::RGBA :
           filament::backend::PixelDataFormat::R,
-      packedDepth ? filament::backend::PixelDataType::UBYTE :
+      packedTarget ? filament::backend::PixelDataType::UBYTE :
                     filament::backend::PixelDataType::FLOAT));
   const unsigned char *rgba = nullptr;
   if (wantCloud && this->colorTexture)
@@ -337,7 +323,7 @@ void FilamentDepthCamera::PostRender()
         world.Rot().XAxis(), world.Rot().YAxis(), world.Rot().ZAxis(),
         fx * pw / width, fy * ph / height, pw, ph,
         nearClip * kNearScale, this->particleDepth.data());
-    // ponytail: particles assume a centered principal point, off-center
+    // TODO: particles assume a centered principal point, off-center
     // custom matrices shift them by (cx, cy) - center; pass both if needed
   }
   // per frame seed, like ogre2's rnd uniform (gz::math::Rand stays seedable)
@@ -350,12 +336,22 @@ void FilamentDepthCamera::PostRender()
   std::uniform_real_distribution<double> uniform(0.0, 1.0);
 
   // ray slopes per column and row: -(u + 0.5 - cx) / fx * d below is
-  // colK[u] * d, the same double operations in the same order
-  std::vector<double> colK(width), rowK(height);
-  for (unsigned int u = 0; u < width; ++u)
-    colK[u] = -(u + 0.5 - cx) / fx;
-  for (unsigned int v = 0; v < height; ++v)
-    rowK[v] = -(v + 0.5 - cy) / fy;
+  // colK[u] * d, the same double operations in the same order. Recomputed
+  // when the pinhole changes.
+  const std::array<double, 6> rayKey{static_cast<double>(width),
+      static_cast<double>(height), cx, cy, fx, fy};
+  if (rayKey != this->cachedRayKey)
+  {
+    this->cachedRayKey = rayKey;
+    this->cachedColK.resize(width);
+    this->cachedRowK.resize(height);
+    for (unsigned int u = 0; u < width; ++u)
+      this->cachedColK[u] = -(u + 0.5 - cx) / fx;
+    for (unsigned int v = 0; v < height; ++v)
+      this->cachedRowK[v] = -(v + 0.5 - cy) / fy;
+  }
+  const std::vector<double> &colK = this->cachedColK;
+  const std::vector<double> &rowK = this->cachedRowK;
 
   // sqrt(r2) > farClip - tol, without the square root
   const double farSq = FarRangeSq(farClip - tol);

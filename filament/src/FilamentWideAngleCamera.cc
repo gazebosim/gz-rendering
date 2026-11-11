@@ -21,17 +21,12 @@
 
 #include <filament/Camera.h>
 #include <filament/Engine.h>
-#include <filament/IndexBuffer.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
-#include <filament/RenderableManager.h>
-#include <filament/Scene.h>
 #include <filament/TextureSampler.h>
 #include <filament/TransformManager.h>
-#include <filament/VertexBuffer.h>
 #include <filament/View.h>
 #include <filament/Viewport.h>
-#include <utils/EntityManager.h>
 
 #include <gz/common/Console.hh>
 #include <gz/math/Helpers.hh>
@@ -45,6 +40,7 @@
 #include "gz/rendering/filament/FilamentScene.hh"
 #include "gz/rendering/filament/FilamentWideAngleCamera.hh"
 #include "FilamentCubeFaces.hh"
+#include "FilamentFullscreenPass.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -69,7 +65,6 @@ FilamentWideAngleCamera::~FilamentWideAngleCamera()
 void FilamentWideAngleCamera::Init()
 {
   FilamentCamera::Init();
-  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
 
   this->atlas = std::dynamic_pointer_cast<FilamentRenderTexture>(
       this->scene->CreateRenderTexture());
@@ -77,86 +72,14 @@ void FilamentWideAngleCamera::Init()
 
   filament::Material *mat =
       FilamentRenderEngine::Instance()->Material("gz_wide_angle");
-  if (!mat)
-  {
-    gzerr << "gz_wide_angle material not available" << std::endl;
-    return;
-  }
-  this->sampleInstance = mat->createInstance();
-  this->sampleScene = engine->createScene();
-  this->sampleView = engine->createView();
-  this->sampleView->setScene(this->sampleScene);
-  this->sampleView->setPostProcessingEnabled(false);
-  this->sampleView->setShadowingEnabled(false);
-  // a view needs a camera; device-domain vertices ignore it
-  this->sampleCameraEntity = ::utils::EntityManager::get().create();
-  this->sampleView->setCamera(engine->createCamera(this->sampleCameraEntity));
-
-  // one triangle covering clip space [-1, 1]^2
-  static const filament::math::float4 kVerts[3] = {
-      {-1.0f, -1.0f, 0.5f, 1.0f}, {3.0f, -1.0f, 0.5f, 1.0f},
-      {-1.0f, 3.0f, 0.5f, 1.0f}};
-  static const uint16_t kIndices[3] = {0, 1, 2};
-  this->triangleVb = filament::VertexBuffer::Builder()
-      .vertexCount(3).bufferCount(1)
-      .attribute(filament::VertexAttribute::POSITION, 0,
-          filament::VertexBuffer::AttributeType::FLOAT4)
-      .build(*engine);
-  this->triangleVb->setBufferAt(*engine, 0,
-      filament::VertexBuffer::BufferDescriptor(kVerts, sizeof(kVerts)));
-  this->triangleIb = filament::IndexBuffer::Builder()
-      .indexCount(3).bufferType(filament::IndexBuffer::IndexType::USHORT)
-      .build(*engine);
-  this->triangleIb->setBuffer(*engine,
-      filament::IndexBuffer::BufferDescriptor(kIndices, sizeof(kIndices)));
-  this->triangle = ::utils::EntityManager::get().create();
-  filament::RenderableManager::Builder(1)
-      .boundingBox({{-1.0f, -1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}})
-      .culling(false)
-      .castShadows(false)
-      .receiveShadows(false)
-      .material(0, this->sampleInstance)
-      .geometry(0, filament::RenderableManager::PrimitiveType::TRIANGLES,
-          this->triangleVb, this->triangleIb)
-      .build(*engine, this->triangle);
-  this->sampleScene->addEntity(this->triangle);
+  if (mat)
+    this->samplePass = std::make_unique<FilamentFullscreenPass>(*mat);
 }
 
 //////////////////////////////////////////////////
 void FilamentWideAngleCamera::Destroy()
 {
-  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
-  if (engine)
-  {
-    if (this->sampleView)
-      engine->destroy(this->sampleView);
-    // the renderable goes before its material instance
-    if (!this->triangle.isNull())
-    {
-      engine->getRenderableManager().destroy(this->triangle);
-      ::utils::EntityManager::get().destroy(this->triangle);
-    }
-    if (this->sampleInstance)
-      engine->destroy(this->sampleInstance);
-    if (this->triangleVb)
-      engine->destroy(this->triangleVb);
-    if (this->triangleIb)
-      engine->destroy(this->triangleIb);
-    if (this->sampleScene)
-      engine->destroy(this->sampleScene);
-    if (!this->sampleCameraEntity.isNull())
-    {
-      engine->destroyCameraComponent(this->sampleCameraEntity);
-      ::utils::EntityManager::get().destroy(this->sampleCameraEntity);
-    }
-  }
-  this->sampleView = nullptr;
-  this->triangle = ::utils::Entity();
-  this->sampleInstance = nullptr;
-  this->triangleVb = nullptr;
-  this->triangleIb = nullptr;
-  this->sampleScene = nullptr;
-  this->sampleCameraEntity = ::utils::Entity();
+  this->samplePass.reset();
   if (this->atlas)
   {
     this->atlas->Destroy();
@@ -203,7 +126,7 @@ void FilamentWideAngleCamera::UpdateFaces()
   const unsigned int w = this->ImageWidth();
   const unsigned int h = this->ImageHeight();
   const float f = this->FocalLength();
-  const std::vector<double> key = {static_cast<double>(w),
+  const std::array<double, 11> key = {static_cast<double>(w),
       static_cast<double>(h), f, cl.C1(), cl.C2(), cl.C3(),
       fun.X(), fun.Y(), fun.Z(), cl.CutOffAngle(),
       static_cast<double>(this->envTextureSize)};
@@ -263,7 +186,7 @@ void FilamentWideAngleCamera::UpdateFaces()
 //////////////////////////////////////////////////
 void FilamentWideAngleCamera::Render()
 {
-  if (!this->sampleInstance)
+  if (!this->samplePass)
     return;
   this->UpdateFaces();
   const unsigned int n = this->envTextureSize;
@@ -303,7 +226,7 @@ void FilamentWideAngleCamera::Render()
   std::vector<RenderPassPtr> facePasses, finalPasses;
   for (const RenderPassPtr &pass : this->renderTexture->RenderPasses())
   {
-    // ponytail: the lens flare always goes on the stitched image
+    // The lens flare always goes on the stitched image
     const bool final = pass->WideAngleCameraAfterStitching() ||
         std::dynamic_pointer_cast<LensFlarePass>(pass);
     (final ? finalPasses : facePasses).push_back(pass);
@@ -312,8 +235,7 @@ void FilamentWideAngleCamera::Render()
 
   // second pass: lens mapping into the output image
   const CameraLens &cl = this->Lens();
-  const math::Vector3d fun = cl.MappingFunctionAsVector3d();
-  auto *mi = this->sampleInstance;
+  auto *mi = this->samplePass->instance;
   mi->setParameter("atlas", this->atlas->ColorTexture(),
       filament::TextureSampler(filament::TextureSampler::MinFilter::LINEAR,
       filament::TextureSampler::MagFilter::LINEAR));
@@ -322,8 +244,8 @@ void FilamentWideAngleCamera::Render()
   mi->setParameter("c1", static_cast<float>(cl.C1()));
   mi->setParameter("c2", static_cast<float>(cl.C2()));
   mi->setParameter("c3", static_cast<float>(cl.C3()));
-  mi->setParameter("fun", filament::math::float3{static_cast<float>(fun.X()),
-      static_cast<float>(fun.Y()), static_cast<float>(fun.Z())});
+  mi->setParameter("fun",
+      FilamentConversions::Convert(cl.MappingFunctionAsVector3d()));
   mi->setParameter("ratio", static_cast<float>(
       static_cast<double>(this->ImageWidth()) / this->ImageHeight()));
   mi->setParameter("faceRes", static_cast<float>(n));
@@ -331,7 +253,7 @@ void FilamentWideAngleCamera::Render()
   // bottom on OpenGL (see FilamentGpuRays::UploadRays)
   mi->setParameter("flip",
       engine->getBackend() == filament::Engine::Backend::OPENGL ? 1.0f : 0.0f);
-  this->renderTexture->Render(this->sampleView);
+  this->renderTexture->Render(this->samplePass->view);
   this->renderTexture->ApplyRenderPasses(finalPasses);
 }
 
@@ -342,7 +264,13 @@ void FilamentWideAngleCamera::PostRender()
   if (this->newImageFrame.ConnectionCount() <= 0u)
     return;
 
-  Image image = this->CreateImage();
+  Image &image = this->image;
+  if (image.Width() != this->ImageWidth() ||
+      image.Height() != this->ImageHeight() ||
+      image.Format() != this->ImageFormat())
+  {
+    image = this->CreateImage();
+  }
   this->Copy(image);
   const PixelFormat format = image.Format();
   const unsigned char *data = image.Data<unsigned char>();
@@ -372,15 +300,18 @@ void FilamentWideAngleCamera::Copy(Image &_image) const
   // Ogre::PixelFormatGpuUtils::bulkPixelConversion: red, sRGB decoded
   Image rgb(_image.Width(), _image.Height(), PF_R8G8B8);
   this->renderTexture->Copy(rgb);
-  const float maxVal = 65535.0f;
-  uint16_t lut[256];
-  for (int i = 0; i < 256; ++i)
+  static const std::array<uint16_t, 256> lut = []
   {
-    const float x = i / 255.0f;
-    const float lin = x <= 0.040449907f ? x / 12.92f :
-        std::pow((x + 0.055f) / 1.055f, 2.4f);
-    lut[i] = static_cast<uint16_t>(std::round(lin * maxVal));
-  }
+    std::array<uint16_t, 256> l;
+    for (int i = 0; i < 256; ++i)
+    {
+      const float x = i / 255.0f;
+      const float lin = x <= 0.040449907f ? x / 12.92f :
+          std::pow((x + 0.055f) / 1.055f, 2.4f);
+      l[i] = static_cast<uint16_t>(std::round(lin * 65535.0f));
+    }
+    return l;
+  }();
   const unsigned char *src = rgb.Data<unsigned char>();
   const size_t count = static_cast<size_t>(_image.Width()) * _image.Height();
   uint16_t *dst = _image.Data<uint16_t>();

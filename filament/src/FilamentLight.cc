@@ -180,7 +180,7 @@ void FilamentLight::Init()
   // Directional shadows like ogre2's PSSM: 3 cascades, 2048 maps, practical
   // splits with lambda 0.95. Filament's default (one 1024 map over the
   // whole view) blurs thin casters into nothing a few metres away.
-  // ponytail: splits computed for a 0.1..100 m camera; Filament takes them
+  // Splits computed for a 0.1..100 m camera; Filament takes them
   // per light, not per camera. Map size: Scene::ShadowTextureSize.
   filament::LightManager::ShadowOptions shadows;
   if (this->type == filament::LightManager::Type::DIRECTIONAL ||
@@ -225,7 +225,7 @@ void FilamentLight::UpdateLight()
   // ogre2's PBS multiplies the specular lobe by the light's specular colour
   // and the diffuse lobe by its diffuse colour; filament lights have one
   // colour (the diffuse), so scale the specular lobe by specular / diffuse.
-  // ponytail: grey ratio (mean of rgb); a specular hue unlike the diffuse
+  // TODO: grey ratio (mean of rgb); a specular hue unlike the diffuse
   // one is lost. Per-channel needs an rgb scale in the light UBO.
   const double diffuseMean =
       (this->diffuse.R() + this->diffuse.G() + this->diffuse.B()) / 3.0;

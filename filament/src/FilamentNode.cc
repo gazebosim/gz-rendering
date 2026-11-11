@@ -88,7 +88,7 @@ bool FilamentNode::InheritScale() const
 //////////////////////////////////////////////////
 void FilamentNode::SetInheritScale(bool _inherit)
 {
-  // ponytail: filament always composes parent scale; flag is stored only
+  // Filament always composes parent scale; flag is stored only
   this->inheritScale = _inherit;
 }
 

@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 #include <tuple>
+#include <unordered_map>
 #include <vector>
 
 #include <gz/common/Event.hh>
@@ -86,9 +87,6 @@ namespace gz
       /// would be _rgba (8 bit), see thermal_camera_fs.glsl
       private: uint16_t Encode(const float _rgba[4]) const;
 
-      /// \brief Flat material instance for id _id (0 is the background)
-      private: filament::MaterialInstance *IdInstance(uint32_t _id);
-
       /// \brief Instance drawing diffuse x _texture, unlit, alpha 0
       private: filament::MaterialInstance *TexturedInstance(
           filament::Texture *_texture, const math::Color &_diffuse);
@@ -98,10 +96,17 @@ namespace gz
       private: filament::MaterialInstance *HeatSignatureInstance(
           const VisualPtr &_visual, const std::string &_texture);
 
-      private: std::vector<filament::MaterialInstance *> idInstances;
+      /// \brief gz_flat instances by id (0 is the background), the id as
+      /// the colour 0xRRGGBB
+      private: std::unordered_map<uint32_t, filament::MaterialInstance *>
+          idInstances;
 
-      /// \brief Heat signature textures by path (R8, one level, linear)
+      /// \brief Heat signature textures (R8, one level, linear) by
+      /// "temperature" user data string
       private: std::map<std::string, filament::Texture *> heatTextures;
+
+      /// \brief Meshes Render overrode this frame, reused
+      private: std::vector<FilamentMesh *> overridden;
 
       /// \brief Heat signature instances keyed by (path, min, max,
       /// bit depth, resolution)

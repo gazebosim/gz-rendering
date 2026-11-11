@@ -19,15 +19,10 @@
 
 #include <filament/Camera.h>
 #include <filament/Engine.h>
-#include <filament/IndexBuffer.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
-#include <filament/RenderableManager.h>
-#include <filament/Scene.h>
 #include <filament/TextureSampler.h>
-#include <filament/VertexBuffer.h>
 #include <filament/View.h>
-#include <utils/EntityManager.h>
 
 #include <gz/common/Console.hh>
 #include <gz/math/Matrix4.hh>
@@ -39,25 +34,14 @@
 #include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/WideAngleCamera.hh"
+#include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentLensFlarePass.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
+#include "FilamentFullscreenPass.hh"
 
 using namespace gz;
 using namespace rendering;
-
-namespace
-{
-  /// \brief a * v, with the homogeneous w that gz-math leaves out
-  math::Vector4d Transform(const math::Matrix4d &_m, const math::Vector3d &_v)
-  {
-    return {
-        _m(0, 0) * _v.X() + _m(0, 1) * _v.Y() + _m(0, 2) * _v.Z() + _m(0, 3),
-        _m(1, 0) * _v.X() + _m(1, 1) * _v.Y() + _m(1, 2) * _v.Z() + _m(1, 3),
-        _m(2, 0) * _v.X() + _m(2, 1) * _v.Y() + _m(2, 2) * _v.Z() + _m(2, 3),
-        _m(3, 0) * _v.X() + _m(3, 1) * _v.Y() + _m(3, 2) * _v.Z() + _m(3, 3)};
-  }
-}
 
 //////////////////////////////////////////////////
 FilamentLensFlarePass::FilamentLensFlarePass()
@@ -77,38 +61,7 @@ void FilamentLensFlarePass::Destroy()
 {
   this->rayQuery.reset();
   this->currentCamera.reset();
-  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
-  if (engine)
-  {
-    if (this->view)
-      engine->destroy(this->view);
-    // the renderable goes before its material instance
-    if (!this->triangle.isNull())
-    {
-      engine->getRenderableManager().destroy(this->triangle);
-      ::utils::EntityManager::get().destroy(this->triangle);
-    }
-    if (this->instance)
-      engine->destroy(this->instance);
-    if (this->triangleVb)
-      engine->destroy(this->triangleVb);
-    if (this->triangleIb)
-      engine->destroy(this->triangleIb);
-    if (this->passScene)
-      engine->destroy(this->passScene);
-    if (!this->cameraEntity.isNull())
-    {
-      engine->destroyCameraComponent(this->cameraEntity);
-      ::utils::EntityManager::get().destroy(this->cameraEntity);
-    }
-  }
-  this->view = nullptr;
-  this->triangle = ::utils::Entity();
-  this->instance = nullptr;
-  this->triangleVb = nullptr;
-  this->triangleIb = nullptr;
-  this->passScene = nullptr;
-  this->cameraEntity = ::utils::Entity();
+  this->pass.reset();
 }
 
 //////////////////////////////////////////////////
@@ -189,8 +142,8 @@ double FilamentLensFlarePass::OcclusionScale(const math::Matrix4d &_viewProj,
   {
     const math::Vector3d nearPt(_x, _y, -1.0);
     const math::Vector3d farPt(_x, _y, 0.0);
-    const math::Vector4d s = Transform(inv, nearPt);
-    const math::Vector4d e = Transform(inv, farPt);
+    const math::Vector4d s = FilamentConversions::Transform(inv, nearPt);
+    const math::Vector4d e = FilamentConversions::Transform(inv, farPt);
     const math::Vector3d start = math::Vector3d(s.X(), s.Y(), s.Z()) / s.W();
     const math::Vector3d end = math::Vector3d(e.X(), e.Y(), e.Z()) / e.W();
     this->rayQuery->SetOrigin(start);
@@ -230,54 +183,13 @@ double FilamentLensFlarePass::OcclusionScale(const math::Matrix4d &_viewProj,
 //////////////////////////////////////////////////
 bool FilamentLensFlarePass::CreateResources()
 {
-  if (this->view)
+  if (this->pass)
     return true;
   filament::Material *mat =
       FilamentRenderEngine::Instance()->Material("gz_lens_flare");
   if (!mat)
-  {
-    gzerr << "gz_lens_flare material not available" << std::endl;
     return false;
-  }
-  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
-  this->instance = mat->createInstance();
-  this->passScene = engine->createScene();
-  this->view = engine->createView();
-  this->view->setScene(this->passScene);
-  this->view->setPostProcessingEnabled(false);
-  this->view->setShadowingEnabled(false);
-  // a view needs a camera; device-domain vertices ignore it
-  this->cameraEntity = ::utils::EntityManager::get().create();
-  this->view->setCamera(engine->createCamera(this->cameraEntity));
-
-  // one triangle covering clip space [-1, 1]^2
-  static const filament::math::float4 kVerts[3] = {
-      {-1.0f, -1.0f, 0.5f, 1.0f}, {3.0f, -1.0f, 0.5f, 1.0f},
-      {-1.0f, 3.0f, 0.5f, 1.0f}};
-  static const uint16_t kIndices[3] = {0, 1, 2};
-  this->triangleVb = filament::VertexBuffer::Builder()
-      .vertexCount(3).bufferCount(1)
-      .attribute(filament::VertexAttribute::POSITION, 0,
-          filament::VertexBuffer::AttributeType::FLOAT4)
-      .build(*engine);
-  this->triangleVb->setBufferAt(*engine, 0,
-      filament::VertexBuffer::BufferDescriptor(kVerts, sizeof(kVerts)));
-  this->triangleIb = filament::IndexBuffer::Builder()
-      .indexCount(3).bufferType(filament::IndexBuffer::IndexType::USHORT)
-      .build(*engine);
-  this->triangleIb->setBuffer(*engine,
-      filament::IndexBuffer::BufferDescriptor(kIndices, sizeof(kIndices)));
-  this->triangle = ::utils::EntityManager::get().create();
-  filament::RenderableManager::Builder(1)
-      .boundingBox({{-1.0f, -1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}})
-      .culling(false)
-      .castShadows(false)
-      .receiveShadows(false)
-      .material(0, this->instance)
-      .geometry(0, filament::RenderableManager::PrimitiveType::TRIANGLES,
-          this->triangleVb, this->triangleIb)
-      .build(*engine, this->triangle);
-  this->passScene->addEntity(this->triangle);
+  this->pass = std::make_unique<FilamentFullscreenPass>(*mat);
   return true;
 }
 
@@ -310,7 +222,7 @@ filament::View *FilamentLensFlarePass::ColorView(filament::Texture *_colorIn)
     aspect = camera->AspectRatio();
   }
   const math::Matrix4d viewProj = proj * camera->ViewMatrix();
-  const math::Vector4d pos = Transform(viewProj, this->lightWorldPos);
+  const math::Vector4d pos = FilamentConversions::Transform(viewProj, this->lightWorldPos);
   if (!std::isfinite(pos.W()) || pos.W() == 0.0)
     return nullptr;
   // xy in normalized device coordinates; z > 0: in front of the near plane
@@ -325,7 +237,7 @@ filament::View *FilamentLensFlarePass::ColorView(filament::Texture *_colorIn)
   if (flareScale <= 0.0 || !this->CreateResources())
     return nullptr;
 
-  auto *mi = this->instance;
+  auto *mi = this->pass->instance;
   mi->setParameter("colorIn", _colorIn, filament::TextureSampler());
   mi->setParameter("vpAspectRatio", static_cast<float>(aspect));
   mi->setParameter("lightPos", filament::math::float2{
@@ -335,7 +247,7 @@ filament::View *FilamentLensFlarePass::ColorView(filament::Texture *_colorIn)
       static_cast<float>(this->color.X()),
       static_cast<float>(this->color.Y()),
       static_cast<float>(this->color.Z())});
-  return this->view;
+  return this->pass->view;
 }
 
 GZ_RENDERING_REGISTER_RENDER_PASS(FilamentLensFlarePass, LensFlarePass)

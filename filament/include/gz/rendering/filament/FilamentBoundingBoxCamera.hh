@@ -89,11 +89,11 @@ namespace gz
 
       private: void BoundingBoxes3D();
 
-      /// \brief Item index -> label of every item with a visible pixel.
-      private: std::map<uint32_t, uint32_t> MarkVisibleBoxes() const;
+      /// \brief Label of every item with a visible pixel by item index,
+      /// 0xffffffff for the others
+      private: std::vector<uint32_t> MarkVisibleBoxes() const;
 
-      private: filament::MaterialInstance *FlatInstance(uint32_t _key);
-
+      /// \brief gz_flat instances by colour (0xRRGGBB)
       private: std::unordered_map<uint32_t, filament::MaterialInstance *>
           flatInstances;
 
@@ -102,6 +102,9 @@ namespace gz
 
       /// \brief Last ID image, RGB8: R,G = item index (low, high), B = label
       private: std::vector<uint8_t> buffer;
+
+      /// \brief Readback image of PostRender, reused
+      private: Image image;
 
       private: common::EventT<void(const std::vector<BoundingBox> &)>
           newBoundingBoxes;

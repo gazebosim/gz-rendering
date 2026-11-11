@@ -18,11 +18,12 @@
 #define GZ_RENDERING_FILAMENT_FILAMENTWIDEANGLECAMERA_HH_
 
 #include <array>
+#include <limits>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include <gz/common/Event.hh>
-#include <utils/Entity.h>
 
 #include "gz/rendering/config.hh"
 #include "gz/rendering/base/BaseWideAngleCamera.hh"
@@ -32,10 +33,6 @@
 
 namespace filament
 {
-  class IndexBuffer;
-  class MaterialInstance;
-  class Scene;
-  class VertexBuffer;
   class View;
 }
 
@@ -45,12 +42,12 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
+    class FilamentFullscreenPass;
+
     /// \brief Wide-angle camera: renders the cube faces the lens sees side by
     /// side into one atlas, then a fullscreen pass maps every output pixel to
     /// a direction with ogre2's lens shader and samples the atlas. Only the
     /// final image is read back.
-    /// ponytail: no render passes (noise, lens flare) and no sky background
-    /// material, like the rest of the filament plugin.
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentWideAngleCamera :
       public BaseWideAngleCamera<FilamentCamera>
     {
@@ -96,29 +93,21 @@ namespace gz
 
       private: std::array<bool, 6> faceUsed{};
 
-      /// \brief Configuration faceUsed was computed for
-      private: std::vector<double> faceKey;
+      /// \brief Configuration faceUsed was computed for (NaN: none yet)
+      private: std::array<double, 11> faceKey{
+          std::numeric_limits<double>::quiet_NaN()};
 
       /// \brief The used faces, each in its slot (face index * size)
       private: FilamentRenderTexturePtr atlas;
 
-      /// \brief Second pass: its own scene holding a fullscreen triangle
-      private: filament::Scene *sampleScene{nullptr};
-
-      private: filament::View *sampleView{nullptr};
-
-      private: ::utils::Entity sampleCameraEntity;
-
-      private: ::utils::Entity triangle;
-
-      private: filament::VertexBuffer *triangleVb{nullptr};
-
-      private: filament::IndexBuffer *triangleIb{nullptr};
-
-      private: filament::MaterialInstance *sampleInstance{nullptr};
+      /// \brief Second pass: samples the atlas (gz_wide_angle)
+      private: std::unique_ptr<FilamentFullscreenPass> samplePass;
 
       /// \brief Image handed to newImageFrame, reused across frames
       private: std::vector<unsigned char> imageData;
+
+      /// \brief Readback image of PostRender, reused
+      private: Image image;
 
       private: common::EventT<void(const unsigned char *, unsigned int,
           unsigned int, unsigned int, const std::string &)> newImageFrame;

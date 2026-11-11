@@ -65,6 +65,7 @@
 #include "gz/rendering/filament/FilamentLightVisual.hh"
 #include "gz/rendering/filament/FilamentVisual.hh"
 #include "gz/rendering/filament/FilamentWireBox.hh"
+#include "FilamentUtils.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -306,12 +307,10 @@ void FilamentScene::UpdateSkyLight()
     // Reflections: the sky at 0.3x the diffuse SH's scale (ambient over
     // sky luminance, see below). Nothing occludes them, so at the sky's own
     // brightness every glossy dielectric indoors mirrors a bright sky at
-    // grazing angles: Harmonic's interior went from ogre2's grey 151 to 210
-    // on the ceiling, its exterior hazy. 0.3 (0.21 of the sky there) keeps
-    // the interior within ~5 grey levels of the default mode and a sky tint
-    // on water and rocks. The IndirectLight intensity can't scale them: it
-    // also scales the skybox.
-    // ponytail: tuned on Harmonic; reflection probes or SSR for real
+    // grazing angles. 0.3 keeps interiors within a few grey levels of the
+    // default mode and a sky tint on water and rocks. The IndirectLight
+    // intensity can't scale them: it also scales the skybox.
+    // TODO: tuned on Harmonic; reflection probes or SSR for real
     // indoor occlusion
     constexpr double kReflectionScale = 0.3;
     const double skyLum = Luminance(this->skySh[0][0], this->skySh[0][1],
@@ -336,8 +335,7 @@ void FilamentScene::UpdateSkyLight()
     scaled->setImage(*engine, 0, 0, 0, 0, size, size, 6,
         filament::Texture::PixelBufferDescriptor(buf, faces.size(),
         filament::Texture::Format::RGBA, filament::Texture::Type::UBYTE,
-        [](void *_b, size_t, void *)
-        { delete[] static_cast<uint8_t *>(_b); }));
+        &filament_utils::FreeBuffer<uint8_t>));
     {
       // GGX prefiltered mip chain on the GPU (5 roughness levels, 256 px,
       // filament's iblprefilter), from the scaled copy's mipmaps
@@ -435,7 +433,7 @@ void FilamentScene::SetSkyEnabled(bool _enabled)
         .intensity(1.0f).build(*engine->FilamentEngine());
     // drawn by color views only: the sensor views (depth, thermal,
     // segmentation, lidar) leave the particle layer out
-    // ponytail: shares the particle layer, a layer of its own if a camera
+    // TODO: shares the particle layer, a layer of its own if a camera
     // ever hides particles but wants the sky
     this->skybox->setLayerMask(0xff, FilamentConversions::kParticleLayer);
   }

@@ -18,9 +18,8 @@
 #define GZ_RENDERING_FILAMENT_FILAMENTGAUSSIANNOISEPASS_HH_
 
 #include <cstdint>
+#include <memory>
 #include <vector>
-
-#include <utils/Entity.h>
 
 #include "gz/rendering/config.hh"
 #include "gz/rendering/base/BaseGaussianNoisePass.hh"
@@ -31,11 +30,7 @@
 
 namespace filament
 {
-  class IndexBuffer;
-  class MaterialInstance;
-  class Scene;
   class Texture;
-  class VertexBuffer;
   class View;
 }
 
@@ -45,6 +40,8 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
+    class FilamentFullscreenPass;
+
     /// \brief Gaussian noise with ogre2's semantics (gz_noise.mat).
     /// RGB and wide-angle cameras: FilamentRenderTarget::ApplyRenderPasses
     /// draws ColorView over the color attachment on the GPU. Depth cameras:
@@ -87,22 +84,14 @@ namespace gz
       /// \brief Set the per draw uniforms
       private: void SetParameters(filament::Texture *_colorIn, int _mode);
 
-      private: filament::MaterialInstance *instance{nullptr};
-
-      private: filament::VertexBuffer *triangleVb{nullptr};
-
-      private: filament::IndexBuffer *triangleIb{nullptr};
-
-      private: ::utils::Entity triangle;
-
-      private: filament::Scene *passScene{nullptr};
-
-      private: filament::View *view{nullptr};
-
-      private: ::utils::Entity cameraEntity;
+      /// \brief Fullscreen pass drawing gz_noise, created on first use
+      private: std::unique_ptr<FilamentFullscreenPass> pass;
 
       /// \brief R32F target for Samples()
       private: FilamentRenderTexturePtr samples;
+
+      /// \brief Samples() read back for ApplyDepth, reused
+      private: std::vector<float> depthSamples;
     };
     }
   }

@@ -54,7 +54,6 @@ void FilamentSegmentationCamera::Init()
 {
   FilamentCamera::Init();
   this->view->setShadowingEnabled(false);
-  this->view->setPostProcessingEnabled(false);
 }
 
 //////////////////////////////////////////////////
@@ -110,10 +109,7 @@ filament::MaterialInstance *FilamentSegmentationCamera::FlatInstance(
   filament::Material *mat =
       FilamentRenderEngine::Instance()->Material("gz_flat");
   if (!mat)
-  {
-    gzerr << "gz_flat material not available" << std::endl;
     return nullptr;
-  }
   filament::MaterialInstance *mi = mat->createInstance();
   mi->setParameter("color", filament::math::float3{
       _color.R(), _color.G(), _color.B()});
@@ -252,9 +248,10 @@ void FilamentSegmentationCamera::PostRender()
     return;
   const unsigned int width = this->ImageWidth();
   const unsigned int height = this->ImageHeight();
-  Image image(width, height, PF_R8G8B8);
-  this->renderTexture->Copy(image);
-  const uint8_t *src = image.Data<uint8_t>();
+  if (this->image.Width() != width || this->image.Height() != height)
+    this->image = Image(width, height, PF_R8G8B8);
+  this->renderTexture->Copy(this->image);
+  const uint8_t *src = this->image.Data<uint8_t>();
   this->buffer.assign(src, src + static_cast<size_t>(width) * height * 3u);
   this->newSegmentationFrame(this->buffer.data(), width, height, 3u,
       PixelUtil::Name(PF_R8G8B8));

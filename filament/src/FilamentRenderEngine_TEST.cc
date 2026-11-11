@@ -27,8 +27,8 @@ using namespace gz;
 using namespace rendering;
 
 /////////////////////////////////////////////////
-// 16 bit PNGs (e.g. Fuel's Lake House albedo/normal/roughness maps) used to
-// be rejected: common::Image returns 8 bytes per RGBA pixel for them
+// 16 bit PNGs (e.g. Fuel's Lake House albedo/normal/roughness maps) load:
+// common::Image returns 8 bytes per RGBA pixel for them
 TEST(FilamentRenderEngineTest, Texture16Bit)
 {
   // 2x2 16 bit grayscale and RGB PNGs (RGBA comes out of the same path)

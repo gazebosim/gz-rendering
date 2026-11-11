@@ -101,7 +101,7 @@ FilamentRayQuery::~FilamentRayQuery() = default;
 void FilamentRayQuery::SetFromCamera(const WideAngleCameraPtr &,
     uint32_t, const math::Vector2d &)
 {
-  // ponytail: ogre2 shoots through one face of the wide angle camera's
+  // TODO: ogre2 shoots through one face of the wide angle camera's
   // cube; add it when something picks through that sensor
   gzwarn << "FilamentRayQuery does not support wide angle cameras"
          << std::endl;

@@ -24,6 +24,7 @@
 #include "gz/rendering/filament/FilamentMesh.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
 #include "gz/rendering/filament/FilamentVisual.hh"
+#include "FilamentUtils.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -50,9 +51,8 @@ void FilamentCapsule::Destroy()
     this->mesh.reset();
   }
   // after the mesh: filament panics on destroying a material in use
-  if (this->material && this->ownsMaterial && this->Scene())
-    this->Scene()->DestroyMaterial(this->material);
-  this->material.reset();
+  filament_utils::ReplaceMaterial(this->Scene(), this->material,
+      this->ownsMaterial, nullptr, false);
   FilamentGeometry::Destroy();
 }
 
@@ -94,13 +94,11 @@ void FilamentCapsule::SetMaterial(MaterialPtr _material, bool _unique)
   // rebuilds along with any edit made through Material()
   if (!_material)
     return;
-  MaterialPtr old = this->ownsMaterial ? this->material : nullptr;
-  this->material = _unique ? _material->Clone() : _material;
-  this->ownsMaterial = _unique;
+  _material = _unique ? _material->Clone() : _material;
   if (this->mesh)
-    this->mesh->SetMaterial(this->material, false);
-  if (old && old != this->material && this->Scene())
-    this->Scene()->DestroyMaterial(old);
+    this->mesh->SetMaterial(_material, false);
+  filament_utils::ReplaceMaterial(this->Scene(), this->material,
+      this->ownsMaterial, _material, _unique);
 }
 
 //////////////////////////////////////////////////

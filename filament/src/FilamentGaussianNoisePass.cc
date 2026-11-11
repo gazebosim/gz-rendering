@@ -23,16 +23,11 @@
 #include <backend/PixelBufferDescriptor.h>
 #include <filament/Camera.h>
 #include <filament/Engine.h>
-#include <filament/IndexBuffer.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
-#include <filament/RenderableManager.h>
 #include <filament/Renderer.h>
-#include <filament/Scene.h>
 #include <filament/TextureSampler.h>
-#include <filament/VertexBuffer.h>
 #include <filament/View.h>
-#include <utils/EntityManager.h>
 
 #include <gz/common/Console.hh>
 #include <gz/math/Rand.hh>
@@ -43,6 +38,7 @@
 #include "gz/rendering/filament/FilamentGaussianNoisePass.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentRenderTarget.hh"
+#include "FilamentFullscreenPass.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -61,94 +57,22 @@ FilamentGaussianNoisePass::~FilamentGaussianNoisePass()
 //////////////////////////////////////////////////
 void FilamentGaussianNoisePass::Destroy()
 {
-  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
-  if (engine)
-  {
-    if (this->view)
-      engine->destroy(this->view);
-    // the renderable goes before its material instance
-    if (!this->triangle.isNull())
-    {
-      engine->getRenderableManager().destroy(this->triangle);
-      ::utils::EntityManager::get().destroy(this->triangle);
-    }
-    if (this->instance)
-      engine->destroy(this->instance);
-    if (this->triangleVb)
-      engine->destroy(this->triangleVb);
-    if (this->triangleIb)
-      engine->destroy(this->triangleIb);
-    if (this->passScene)
-      engine->destroy(this->passScene);
-    if (!this->cameraEntity.isNull())
-    {
-      engine->destroyCameraComponent(this->cameraEntity);
-      ::utils::EntityManager::get().destroy(this->cameraEntity);
-    }
-    if (this->samples)
-      this->samples->Destroy();
-  }
-  this->view = nullptr;
-  this->triangle = ::utils::Entity();
-  this->instance = nullptr;
-  this->triangleVb = nullptr;
-  this->triangleIb = nullptr;
-  this->passScene = nullptr;
-  this->cameraEntity = ::utils::Entity();
+  this->pass.reset();
+  if (this->samples && FilamentRenderEngine::Instance()->FilamentEngine())
+    this->samples->Destroy();
   this->samples.reset();
 }
 
 //////////////////////////////////////////////////
 bool FilamentGaussianNoisePass::CreateResources()
 {
-  if (this->view)
+  if (this->pass)
     return true;
   filament::Material *mat =
       FilamentRenderEngine::Instance()->Material("gz_noise");
   if (!mat)
-  {
-    gzerr << "gz_noise material not available" << std::endl;
     return false;
-  }
-  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
-  this->instance = mat->createInstance();
-  this->passScene = engine->createScene();
-  this->view = engine->createView();
-  this->view->setScene(this->passScene);
-  this->view->setPostProcessingEnabled(false);
-  this->view->setShadowingEnabled(false);
-  // a view needs a camera; device-domain vertices ignore it
-  this->cameraEntity = ::utils::EntityManager::get().create();
-  this->view->setCamera(engine->createCamera(this->cameraEntity));
-
-  // one triangle covering clip space [-1, 1]^2
-  static const filament::math::float4 kVerts[3] = {
-      {-1.0f, -1.0f, 0.5f, 1.0f}, {3.0f, -1.0f, 0.5f, 1.0f},
-      {-1.0f, 3.0f, 0.5f, 1.0f}};
-  static const uint16_t kIndices[3] = {0, 1, 2};
-  this->triangleVb = filament::VertexBuffer::Builder()
-      .vertexCount(3).bufferCount(1)
-      .attribute(filament::VertexAttribute::POSITION, 0,
-          filament::VertexBuffer::AttributeType::FLOAT4)
-      .build(*engine);
-  this->triangleVb->setBufferAt(*engine, 0,
-      filament::VertexBuffer::BufferDescriptor(kVerts, sizeof(kVerts)));
-  this->triangleIb = filament::IndexBuffer::Builder()
-      .indexCount(3).bufferType(filament::IndexBuffer::IndexType::USHORT)
-      .build(*engine);
-  this->triangleIb->setBuffer(*engine,
-      filament::IndexBuffer::BufferDescriptor(kIndices, sizeof(kIndices)));
-  this->triangle = ::utils::EntityManager::get().create();
-  filament::RenderableManager::Builder(1)
-      .boundingBox({{-1.0f, -1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}})
-      .culling(false)
-      .castShadows(false)
-      .receiveShadows(false)
-      .material(0, this->instance)
-      .geometry(0, filament::RenderableManager::PrimitiveType::TRIANGLES,
-          this->triangleVb, this->triangleIb)
-      .build(*engine, this->triangle);
-  this->passScene->addEntity(this->triangle);
+  this->pass = std::make_unique<FilamentFullscreenPass>(*mat);
   return true;
 }
 
@@ -156,7 +80,7 @@ bool FilamentGaussianNoisePass::CreateResources()
 void FilamentGaussianNoisePass::SetParameters(filament::Texture *_colorIn,
     int _mode)
 {
-  auto *mi = this->instance;
+  auto *mi = this->pass->instance;
   mi->setParameter("colorIn", _colorIn, filament::TextureSampler());
   // per frame randomness, like the offsets ogre2 draws in PreRender
   mi->setParameter("seed", static_cast<uint32_t>(
@@ -173,7 +97,7 @@ filament::View *FilamentGaussianNoisePass::ColorView(
   if (!this->CreateResources())
     return nullptr;
   this->SetParameters(_colorIn, 0);
-  return this->view;
+  return this->pass->view;
 }
 
 //////////////////////////////////////////////////
@@ -196,7 +120,7 @@ void FilamentGaussianNoisePass::Samples(const ScenePtr &_scene,
   this->samples->PreRender();
   // the sampler is unused in mode 1 but has to be bound
   this->SetParameters(FilamentRenderEngine::Instance()->Texture(""), 1);
-  this->samples->Render(this->view);
+  this->samples->Render(this->pass->view);
 
   _out.resize(static_cast<size_t>(_width) * _height);
   FilamentRenderEngine::Instance()->Renderer()->readPixels(
@@ -214,13 +138,13 @@ void FilamentGaussianNoisePass::ApplyDepth(const Camera &_camera,
   const unsigned int width = _camera.ImageWidth();
   const unsigned int height = _camera.ImageHeight();
   const size_t len = static_cast<size_t>(width) * height;
-  std::vector<float> z;
   for (unsigned int k = 0; k < _camera.RenderPassCount(); ++k)
   {
     auto *pass = dynamic_cast<FilamentGaussianNoisePass *>(
         _camera.RenderPassByIndex(k).get());
     if (!pass || !pass->IsEnabled())
       continue;
+    std::vector<float> &z = pass->depthSamples;
     pass->Samples(_camera.Scene(), width, height, z);
     if (z.size() != len)
       continue;

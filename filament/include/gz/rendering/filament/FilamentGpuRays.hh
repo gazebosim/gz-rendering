@@ -18,6 +18,7 @@
 #define GZ_RENDERING_FILAMENT_FILAMENTGPURAYS_HH_
 
 #include <array>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -33,11 +34,8 @@
 namespace filament
 {
   class Camera;
-  class IndexBuffer;
   class MaterialInstance;
-  class Scene;
   class Texture;
-  class VertexBuffer;
   class View;
 }
 
@@ -47,6 +45,8 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
+    class FilamentFullscreenPass;
+
     /// \brief GPU lidar: renders the cube faces the rays need with the
     /// linear-depth material into one atlas, then a second pass samples one
     /// texel per ray on the GPU so only the scan is read back (like ogre2).
@@ -108,20 +108,8 @@ namespace gz
       /// \brief Half resolution particle depth of the six faces, reused
       private: std::vector<float> particleDepth;
 
-      /// \brief Second pass: its own scene holding a fullscreen triangle
-      private: filament::Scene *sampleScene{nullptr};
-
-      private: filament::View *sampleView{nullptr};
-
-      private: ::utils::Entity sampleCameraEntity;
-
-      private: ::utils::Entity triangle;
-
-      private: filament::VertexBuffer *triangleVb{nullptr};
-
-      private: filament::IndexBuffer *triangleIb{nullptr};
-
-      private: filament::MaterialInstance *sampleInstance{nullptr};
+      /// \brief Second pass: one fragment per ray (gz_lidar_sample)
+      private: std::unique_ptr<FilamentFullscreenPass> samplePass;
 
       /// \brief RGBA32F, one texel per ray: atlas x, atlas y, 1/cos
       private: filament::Texture *rayTexture{nullptr};

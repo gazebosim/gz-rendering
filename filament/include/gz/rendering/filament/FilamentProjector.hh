@@ -17,8 +17,9 @@
 #ifndef GZ_RENDERING_FILAMENT_FILAMENTPROJECTOR_HH_
 #define GZ_RENDERING_FILAMENT_FILAMENTPROJECTOR_HH_
 
+#include <memory>
+
 #include <math/mat4.h>
-#include <utils/Entity.h>
 
 #include "gz/rendering/config.hh"
 #include "gz/rendering/base/BaseProjector.hh"
@@ -28,11 +29,7 @@
 
 namespace filament
 {
-  class IndexBuffer;
-  class MaterialInstance;
-  class Scene;
   class Texture;
-  class VertexBuffer;
   class View;
 }
 
@@ -42,6 +39,8 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
+    class FilamentFullscreenPass;
+
     /// \brief Screen space decal like ogre2's: the texture is projected onto
     /// whatever lies inside the box that bounds the projector's frustum
     /// (x from the near to the far plane, as wide and tall as the frustum
@@ -82,19 +81,8 @@ namespace gz
       /// \brief (Re)load the texture if its name changed
       private: void LoadTexture();
 
-      private: filament::MaterialInstance *instance{nullptr};
-
-      private: filament::VertexBuffer *triangleVb{nullptr};
-
-      private: filament::IndexBuffer *triangleIb{nullptr};
-
-      private: ::utils::Entity triangle;
-
-      private: filament::Scene *passScene{nullptr};
-
-      private: filament::View *view{nullptr};
-
-      private: ::utils::Entity cameraEntity;
+      /// \brief Fullscreen pass drawing gz_projector, created on first use
+      private: std::unique_ptr<FilamentFullscreenPass> pass;
 
       private: filament::Texture *texture{nullptr};
 

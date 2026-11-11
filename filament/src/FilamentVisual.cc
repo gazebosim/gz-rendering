@@ -214,7 +214,7 @@ math::AxisAlignedBox FilamentVisual::BoundingBox() const
 void FilamentVisual::BoundsHelper(math::AxisAlignedBox &_box, bool _local,
     const math::Pose3d &_pose) const
 {
-  // ponytail: lights get no box (ogre2 gives attached lights a unit box)
+  // Lights get no box (ogre2 gives attached lights a unit box)
   auto &rm = FilamentRenderEngine::Instance()->FilamentEngine()
       ->getRenderableManager();
   if (this->visible && this->VisibilityFlags() != GZ_VISIBILITY_GUI)

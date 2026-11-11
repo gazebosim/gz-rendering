@@ -97,6 +97,15 @@ namespace gz
       /// \brief Half resolution particle depth, reused
       protected: std::vector<float> particleDepth;
 
+      /// \brief Ray slope per column and row of PostRender, and the
+      /// width, height, cx, cy, fx, fy they were computed for (NaN: none)
+      protected: std::vector<double> cachedColK;
+
+      protected: std::vector<double> cachedRowK;
+
+      protected: std::array<double, 6> cachedRayKey{
+          std::numeric_limits<double>::quiet_NaN()};
+
       protected: common::EventT<void(const float *, unsigned int,
           unsigned int, unsigned int, const std::string &)> newDepthFrame;
 

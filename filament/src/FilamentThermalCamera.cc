@@ -43,6 +43,7 @@
 #include "gz/rendering/filament/FilamentRenderTarget.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
 #include "gz/rendering/filament/FilamentThermalCamera.hh"
+#include "FilamentUtils.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -56,16 +57,15 @@ namespace
         255.0f) / 255.0f;
   }
 
-  /// \brief "temperature" user data as Kelvin, -1 when absent or a string
-  /// (heat signature texture, see HeatSignatureInstance)
-  float Temperature(const VisualPtr &_visual)
+  /// \brief "temperature" user data _v as Kelvin, -1 when absent or a
+  /// string (heat signature texture, see HeatSignatureInstance)
+  float Temperature(const Variant &_v)
   {
-    Variant v = _visual->UserData("temperature");
-    if (const float *f = std::get_if<float>(&v))
+    if (const float *f = std::get_if<float>(&_v))
       return std::max(*f, 0.0f);
-    if (const double *d = std::get_if<double>(&v))
+    if (const double *d = std::get_if<double>(&_v))
       return std::max(static_cast<float>(*d), 0.0f);
-    if (const int *i = std::get_if<int>(&v))
+    if (const int *i = std::get_if<int>(&_v))
       return std::max(static_cast<float>(*i), 0.0f);
     return -1.0f;
   }
@@ -86,7 +86,6 @@ void FilamentThermalCamera::Init()
 {
   FilamentCamera::Init();
   this->view->setShadowingEnabled(false);
-  this->view->setPostProcessingEnabled(false);
 }
 
 //////////////////////////////////////////////////
@@ -95,8 +94,6 @@ void FilamentThermalCamera::Destroy()
   auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
   if (engine)
   {
-    for (auto *mi : this->idInstances)
-      engine->destroy(mi);
     for (auto &it : this->texturedInstances)
       engine->destroy(it.second);
     for (auto &it : this->heatInstances)
@@ -107,7 +104,7 @@ void FilamentThermalCamera::Destroy()
         engine->destroy(it.second);
     }
   }
-  this->idInstances.clear();
+  filament_utils::DestroyFlatInstances(this->idInstances);
   this->texturedInstances.clear();
   this->heatInstances.clear();
   this->heatTextures.clear();
@@ -131,30 +128,6 @@ void FilamentThermalCamera::SetImageFormat(PixelFormat _format, bool)
 RenderTargetPtr FilamentThermalCamera::RenderTarget() const
 {
   return this->renderTexture;
-}
-
-//////////////////////////////////////////////////
-filament::MaterialInstance *FilamentThermalCamera::IdInstance(uint32_t _id)
-{
-  if (_id < this->idInstances.size())
-    return this->idInstances[_id];
-  filament::Material *mat =
-      FilamentRenderEngine::Instance()->Material("gz_flat");
-  if (!mat)
-  {
-    gzerr << "gz_flat material not available" << std::endl;
-    return nullptr;
-  }
-  while (this->idInstances.size() <= _id)
-  {
-    const uint32_t id = static_cast<uint32_t>(this->idInstances.size());
-    filament::MaterialInstance *mi = mat->createInstance();
-    mi->setParameter("color", filament::math::float3{
-        ((id >> 16) & 0xff) / 255.0f, ((id >> 8) & 0xff) / 255.0f,
-        (id & 0xff) / 255.0f});
-    this->idInstances.push_back(mi);
-  }
-  return this->idInstances[_id];
 }
 
 //////////////////////////////////////////////////
@@ -186,11 +159,12 @@ filament::MaterialInstance *FilamentThermalCamera::HeatSignatureInstance(
     const VisualPtr &_visual, const std::string &_texture)
 {
   // ogre2 adds the texture's directory as a resource path and loads it by
-  // name: as a linear (not sRGB) texture without mipmaps
-  const std::string path = common::findFile(_texture);
-  auto texIt = this->heatTextures.find(path);
+  // name: as a linear (not sRGB) texture without mipmaps. Cached by the
+  // user data string, resolved once.
+  auto texIt = this->heatTextures.find(_texture);
   if (texIt == this->heatTextures.end())
   {
+    const std::string path = common::findFile(_texture);
     filament::Texture *tex = nullptr;
     common::Image img;
     if (!path.empty())
@@ -218,8 +192,7 @@ filament::MaterialInstance *FilamentThermalCamera::HeatSignatureInstance(
       filament::Texture::PixelBufferDescriptor desc(buf,
           static_cast<size_t>(w) * h, filament::Texture::Format::R,
           filament::Texture::Type::UBYTE,
-          [](void *_b, size_t, void *)
-          { delete[] static_cast<unsigned char *>(_b); });
+          &filament_utils::FreeBuffer<unsigned char>);
       tex->setImage(engine, 0, std::move(desc));
     }
     else
@@ -227,7 +200,7 @@ filament::MaterialInstance *FilamentThermalCamera::HeatSignatureInstance(
       gzerr << "Unable to load heat signature texture [" << _texture
             << "]" << std::endl;
     }
-    texIt = this->heatTextures.emplace(path, tex).first;
+    texIt = this->heatTextures.emplace(_texture, tex).first;
   }
   if (!texIt->second)
     return nullptr;
@@ -247,7 +220,7 @@ filament::MaterialInstance *FilamentThermalCamera::HeatSignatureInstance(
     maxT = std::min(*maxF, static_cast<float>(((1 << bitDepth) - 1.0) *
         static_cast<double>(this->resolution)));
   }
-  const auto key = std::make_tuple(path, minT, maxT, bitDepth,
+  const auto key = std::make_tuple(_texture, minT, maxT, bitDepth,
       this->resolution);
   auto it = this->heatInstances.find(key);
   if (it != this->heatInstances.end())
@@ -331,15 +304,15 @@ void FilamentThermalCamera::Render()
   const float bg[4] = {0.0f, 0.0f, 0.0f, 1.0f};
   this->idValue.push_back(this->Encode(bg));
 
-  std::vector<FilamentMesh *> overridden;
+  this->overridden.clear();
   for (FilamentMesh *mesh : this->scene->Meshes())
   {
     VisualPtr visual = mesh->Parent();
     if (!visual)
       continue;
-    const float temp = Temperature(visual);
-    filament::MaterialInstance *heatSig = nullptr;
     const Variant tempV = visual->UserData("temperature");
+    const float temp = Temperature(tempV);
+    filament::MaterialInstance *heatSig = nullptr;
     if (const auto *tex = std::get_if<std::string>(&tempV))
     {
       // ogre2's Terra has no heat signature support
@@ -390,12 +363,13 @@ void FilamentThermalCamera::Render()
       }
       const uint32_t id = static_cast<uint32_t>(this->idValue.size());
       this->idValue.push_back(this->Encode(rgba));
-      mesh->OverrideMaterial(i, this->IdInstance(id));
+      mesh->OverrideMaterial(i,
+          filament_utils::FlatInstance(this->idInstances, id));
     }
-    overridden.push_back(mesh);
+    this->overridden.push_back(mesh);
   }
   this->renderTexture->Render(this->view);
-  for (FilamentMesh *m : overridden)
+  for (FilamentMesh *m : this->overridden)
     m->RestoreMaterials();
 }
 

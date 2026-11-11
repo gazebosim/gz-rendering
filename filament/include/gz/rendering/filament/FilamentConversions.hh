@@ -26,8 +26,10 @@
 #include <math/vec4.h>
 
 #include <gz/math/Color.hh>
+#include <gz/math/Matrix4.hh>
 #include <gz/math/Pose3.hh>
 #include <gz/math/Vector3.hh>
+#include <gz/math/Vector4.hh>
 
 #include "gz/rendering/config.hh"
 
@@ -50,6 +52,31 @@ namespace gz
       {
         return {static_cast<float>(_q.W()), static_cast<float>(_q.X()),
                 static_cast<float>(_q.Y()), static_cast<float>(_q.Z())};
+      }
+
+      /// \brief gz-math matrices index (row, column), filament's
+      /// [column][row]
+      inline filament::math::mat4 Convert(const math::Matrix4d &_m)
+      {
+        filament::math::mat4 out;
+        for (int c = 0; c < 4; ++c)
+          for (int r = 0; r < 4; ++r)
+            out[c][r] = _m(r, c);
+        return out;
+      }
+
+      /// \brief _m * (_v, 1), with the homogeneous w that gz-math's
+      /// Matrix4 * Vector3 drops
+      inline math::Vector4d Transform(const math::Matrix4d &_m,
+          const math::Vector3d &_v)
+      {
+        math::Vector4d r;
+        for (int i = 0; i < 4; ++i)
+        {
+          r[i] = _m(i, 0) * _v.X() + _m(i, 1) * _v.Y() + _m(i, 2) * _v.Z() +
+              _m(i, 3);
+        }
+        return r;
       }
 
       /// \brief Local transform matrix T * R * S.
@@ -82,7 +109,7 @@ namespace gz
 
       /// \brief Distinct visual flag values in use; entry i is the value
       /// drawn on filament layer i. Entry 7 is the particle value.
-      /// ponytail: process-wide and first come; a value past the 7th distinct
+      /// Process-wide and first come; a value past the 7th distinct
       /// one shares layer 6 (its entry becomes the OR of the values), so
       /// scenes with more than 7 distinct visual flag values can
       /// over-render. Upgrade to a per-scene table with re-layering if that

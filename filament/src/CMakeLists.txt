@@ -35,6 +35,27 @@ string(REPLACE "name : gz_lit," "name : gz_lit_masked,
 set(lit_masked_mat "${CMAKE_CURRENT_BINARY_DIR}/gz_lit_masked.mat")
 file(CONFIGURE OUTPUT ${lit_masked_mat} CONTENT "${lit_masked_src}" @ONLY)
 list(APPEND filament_mat_sources ${lit_masked_mat})
+# <base>_packed: <base> writing its float output _value into an RGBA8 target
+# as the 4 bytes of its bits, least significant in red, so the readback is a
+# plain copy (FilamentRenderEngine::PackedFloatTargets)
+function(filament_packed_material base value)
+  set(base_mat "${CMAKE_CURRENT_SOURCE_DIR}/media/materials/${base}.mat")
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${base_mat})
+  file(READ ${base_mat} src)
+  string(REPLACE "name : ${base}," "name : ${base}_packed," src "${src}")
+  string(REPLACE "material.baseColor = vec4(${value}, 0.0, 0.0, 1.0);"
+    "highp uint bits = floatBitsToUint(${value});
+        material.baseColor = vec4((uvec4(bits) >> uvec4(0u, 8u, 16u, 24u)) & 0xffu) / 255.0;"
+    src "${src}")
+  if (NOT src MATCHES "floatBitsToUint")
+    message(FATAL_ERROR "${base}.mat: no output line to pack")
+  endif()
+  set(packed_mat "${CMAKE_CURRENT_BINARY_DIR}/${base}_packed.mat")
+  file(CONFIGURE OUTPUT ${packed_mat} CONTENT "${src}" @ONLY)
+  set(filament_mat_sources ${filament_mat_sources} ${packed_mat} PARENT_SCOPE)
+endfunction()
+filament_packed_material(gz_depth "-viewPos.z")
+filament_packed_material(gz_lidar_sample "depth * ray.z")
 foreach(mat ${filament_mat_sources})
   get_filename_component(mat_name ${mat} NAME_WE)
   set(mat_out "${filament_material_dir}/${mat_name}.filamat")

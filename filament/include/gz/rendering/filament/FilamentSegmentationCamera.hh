@@ -101,6 +101,9 @@ namespace gz
 
       private: std::vector<uint8_t> buffer;
 
+      /// \brief Readback image of PostRender, reused
+      private: Image image;
+
       private: std::default_random_engine generator;
 
       private: std::map<int64_t, int64_t> colorToLabel;

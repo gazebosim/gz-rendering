@@ -47,8 +47,6 @@ namespace gz
 
       public: virtual VisualPtr BoxVisual() const override;
 
-      public: virtual MaterialPtr Material() const override;
-
       /// \brief Only the cross takes the material, like ogre2
       public: virtual void SetMaterial(MaterialPtr _material,
                                        bool _unique) override;
@@ -56,8 +54,6 @@ namespace gz
       private: std::shared_ptr<FilamentDynamicMesh> crossLines;
 
       private: VisualPtr boxVis;
-
-      private: MaterialPtr material;
 
       private: bool ownsMaterial{false};
 

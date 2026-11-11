@@ -49,7 +49,7 @@ namespace gz::rendering::filament_particles
 
   /// \brief Noise of the first emitter with live particles, like ogre2's
   /// (which takes the first one in view). False when there are none.
-  /// ponytail: one emitter's noise for all particles, as in ogre2
+  /// One emitter's noise for all particles, as in ogre2
   inline bool FindNoise(const FilamentScene &_scene, Noise &_noise)
   {
     for (const FilamentParticleEmitter *e : _scene.ParticleEmitters())

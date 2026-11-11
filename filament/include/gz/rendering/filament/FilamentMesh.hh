@@ -203,6 +203,10 @@ namespace gz
       /// \brief Alpha tested copy of the last override, owned
       protected: filament::MaterialInstance *alphaCopy{nullptr};
 
+      /// \brief Material() as a FilamentMaterial (null if it is none), kept
+      /// by SetMaterialImpl so the per frame paths skip the cast
+      protected: FilamentMaterial *filamentMaterial{nullptr};
+
       private: friend class FilamentScene;
       private: friend class FilamentMesh;
       private: friend class FilamentMeshFactory;

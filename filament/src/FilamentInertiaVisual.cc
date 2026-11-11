@@ -19,6 +19,7 @@
 #include "gz/rendering/filament/FilamentInertiaVisual.hh"
 #include "gz/rendering/filament/FilamentMaterial.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
+#include "FilamentUtils.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -49,9 +50,8 @@ void FilamentInertiaVisual::Destroy()
     this->crossLines.reset();
   }
   // after the renderable: filament panics on destroying a material in use
-  if (this->material && this->ownsMaterial && this->Scene())
-    this->Scene()->DestroyMaterial(this->material);
-  this->material.reset();
+  filament_utils::ReplaceMaterial(this->Scene(), this->material,
+      this->ownsMaterial, nullptr, false);
   BaseInertiaVisual::Destroy();
 }
 
@@ -108,29 +108,11 @@ VisualPtr FilamentInertiaVisual::BoxVisual() const
 //////////////////////////////////////////////////
 void FilamentInertiaVisual::SetMaterial(MaterialPtr _material, bool _unique)
 {
+  _material = filament_utils::MaterialToAssign(_material, _unique);
   if (!_material)
-  {
-    gzerr << "Cannot assign null material" << std::endl;
     return;
-  }
-  _material = _unique ? _material->Clone() : _material;
-  if (!std::dynamic_pointer_cast<FilamentMaterial>(_material))
-  {
-    gzerr << "Cannot assign material created by another render-engine"
-          << std::endl;
-    return;
-  }
   if (this->crossLines)
     this->crossLines->SetLineMaterial(_material);
-  MaterialPtr old = this->ownsMaterial ? this->material : nullptr;
-  this->material = _material;
-  this->ownsMaterial = _unique;
-  if (old && old != _material)
-    this->Scene()->DestroyMaterial(old);
-}
-
-//////////////////////////////////////////////////
-MaterialPtr FilamentInertiaVisual::Material() const
-{
-  return this->material;
+  filament_utils::ReplaceMaterial(this->Scene(), this->material,
+      this->ownsMaterial, _material, _unique);
 }

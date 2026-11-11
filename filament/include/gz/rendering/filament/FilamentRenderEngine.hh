@@ -62,7 +62,7 @@ namespace gz
 
     /// \brief Render engine backed by Google Filament.
     /// Experimental: supports visuals, meshes, lights, cameras and depth
-    /// cameras rendered offscreen (Vulkan by default, OpenGL/EGL optional).
+    /// cameras rendered offscreen (OpenGL/EGL by default, Vulkan optional).
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentRenderEngine :
       public virtual BaseRenderEngine,
       public common::SingletonT<FilamentRenderEngine>
@@ -78,6 +78,12 @@ namespace gz
       public: virtual std::string Name() const override;
 
       public: virtual rendering::GraphicsAPI GraphicsAPI() const override;
+
+      /// \brief Whether float sensor targets (depth, lidar ranges) hold
+      /// their float bits as RGBA8 instead of R32F: on Vulkan, whose
+      /// readPixels converts R32F texel by texel but copies RGBA8 rows as
+      /// they are. OpenGL reads both directly and keeps R32F.
+      public: bool PackedFloatTargets() const;
 
       /// \brief Native filament engine
       public: filament::Engine *FilamentEngine() const;
@@ -143,9 +149,6 @@ namespace gz
       /// \return false if the file can not be loaded
       public: bool CubeFaces(const std::string &_path, unsigned int &_size,
           std::vector<uint8_t> &_faces);
-
-      /// \brief Get the resource path used to find compiled materials
-      public: std::string ResourcePath() const;
 
       protected: virtual bool LoadImpl(
           const std::map<std::string, std::string> &_params) override;

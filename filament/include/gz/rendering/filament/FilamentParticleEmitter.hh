@@ -91,7 +91,7 @@ namespace gz
       /// \brief Draw the particles back to front along _dir, a camera's
       /// forward vector, like ogre2's per camera sort. Re-uploads the
       /// billboards when _dir changed; cameras call it before rendering.
-      /// ponytail: one direction for all cameras, the one that rendered
+      /// One direction for all cameras, the one that rendered
       /// last; cameras that don't call this (wide angle faces) draw in the
       /// order of the last call
       public: void SortFor(const math::Vector3d &_dir);

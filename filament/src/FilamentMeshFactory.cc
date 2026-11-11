@@ -41,11 +41,13 @@
 #include <gz/common/SubMesh.hh>
 
 #include "gz/rendering/Material.hh"
+#include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentMaterial.hh"
 #include "gz/rendering/filament/FilamentMesh.hh"
 #include "gz/rendering/filament/FilamentMeshFactory.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
+#include "FilamentUtils.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -74,7 +76,7 @@ namespace
     }
   };
 
-  // ponytail: keyed by SubMesh address (and centering, which changes the
+  // TODO: keyed by SubMesh address (and centering, which changes the
   // vertices), so editing a common::SubMesh in place after a visual was built
   // from it is not picked up by later visuals; key on a content hash if that
   // ever matters
@@ -91,12 +93,7 @@ namespace
   using filament::math::quatf;
   using filament::math::uint3;
   using filament::math::ushort4;
-
-  template <typename T>
-  void FreeBuffer(void *_buf, size_t, void *)
-  {
-    delete[] static_cast<T *>(_buf);
-  }
+  using filament_utils::FreeBuffer;
 
   bool PrimitiveType(common::SubMesh::PrimitiveType _in,
       filament::RenderableManager::PrimitiveType &_out)
@@ -211,9 +208,7 @@ bool FilamentMeshFactory::Load(FilamentMeshPtr _mesh,
       auto *pos = new float3[nv];
       for (unsigned int j = 0; j < nv; ++j)
       {
-        math::Vector3d v = s->Vertex(j) - center;
-        pos[j] = {static_cast<float>(v.X()), static_cast<float>(v.Y()),
-                  static_cast<float>(v.Z())};
+        pos[j] = FilamentConversions::Convert(s->Vertex(j) - center);
         geom->bmin = min(geom->bmin, pos[j]);
         geom->bmax = max(geom->bmax, pos[j]);
       }
@@ -258,11 +253,7 @@ bool FilamentMeshFactory::Load(FilamentMeshPtr _mesh,
         {
           normals.resize(nv);
           for (unsigned int j = 0; j < nv; ++j)
-          {
-            math::Vector3d n = s->Normal(j);
-            normals[j] = {static_cast<float>(n.X()), static_cast<float>(n.Y()),
-                          static_cast<float>(n.Z())};
-          }
+            normals[j] = FilamentConversions::Convert(s->Normal(j));
           builder.normals(normals.data());
           // with UVs, tangents follow them (normal maps)
           if (hasUv &&

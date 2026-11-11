@@ -18,15 +18,11 @@
 
 #include <filament/Camera.h>
 #include <filament/Engine.h>
-#include <filament/IndexBuffer.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
-#include <filament/RenderableManager.h>
-#include <filament/Scene.h>
+#include <filament/Texture.h>
 #include <filament/TextureSampler.h>
-#include <filament/VertexBuffer.h>
 #include <filament/View.h>
-#include <utils/EntityManager.h>
 
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
@@ -34,9 +30,11 @@
 #include <gz/math/Matrix4.hh>
 
 #include "gz/rendering/Utils.hh"
+#include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentProjector.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
+#include "FilamentFullscreenPass.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -62,38 +60,7 @@ void FilamentProjector::Destroy()
 {
   if (this->scene)
     this->scene->UnregisterProjector(this);
-  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
-  if (engine)
-  {
-    if (this->view)
-      engine->destroy(this->view);
-    // the renderable goes before its material instance
-    if (!this->triangle.isNull())
-    {
-      engine->getRenderableManager().destroy(this->triangle);
-      ::utils::EntityManager::get().destroy(this->triangle);
-    }
-    if (this->instance)
-      engine->destroy(this->instance);
-    if (this->triangleVb)
-      engine->destroy(this->triangleVb);
-    if (this->triangleIb)
-      engine->destroy(this->triangleIb);
-    if (this->passScene)
-      engine->destroy(this->passScene);
-    if (!this->cameraEntity.isNull())
-    {
-      engine->destroyCameraComponent(this->cameraEntity);
-      ::utils::EntityManager::get().destroy(this->cameraEntity);
-    }
-  }
-  this->view = nullptr;
-  this->triangle = ::utils::Entity();
-  this->instance = nullptr;
-  this->triangleVb = nullptr;
-  this->triangleIb = nullptr;
-  this->passScene = nullptr;
-  this->cameraEntity = ::utils::Entity();
+  this->pass.reset();
   BaseProjector::Destroy();
 }
 
@@ -139,65 +106,24 @@ void FilamentProjector::LoadTexture()
           << this->textureName << std::endl;
     return;
   }
-  common::Image image(this->textureName);
-  if (image.Height() == 0u)
-    return;
-  this->aspect = static_cast<double>(image.Width()) /
-      static_cast<double>(image.Height());
   this->texture = FilamentRenderEngine::Instance()->Texture(this->textureName);
+  if (this->texture)
+  {
+    this->aspect = static_cast<double>(this->texture->getWidth()) /
+        static_cast<double>(this->texture->getHeight());
+  }
 }
 
 //////////////////////////////////////////////////
 bool FilamentProjector::CreateResources()
 {
-  if (this->view)
+  if (this->pass)
     return true;
   filament::Material *mat =
       FilamentRenderEngine::Instance()->Material("gz_projector");
   if (!mat)
-  {
-    gzerr << "gz_projector material not available" << std::endl;
     return false;
-  }
-  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
-  this->instance = mat->createInstance();
-  this->passScene = engine->createScene();
-  this->view = engine->createView();
-  this->view->setScene(this->passScene);
-  this->view->setPostProcessingEnabled(false);
-  this->view->setShadowingEnabled(false);
-  // a view needs a camera; device-domain vertices ignore it
-  this->cameraEntity = ::utils::EntityManager::get().create();
-  this->view->setCamera(engine->createCamera(this->cameraEntity));
-
-  // one triangle covering clip space [-1, 1]^2
-  static const filament::math::float4 kVerts[3] = {
-      {-1.0f, -1.0f, 0.5f, 1.0f}, {3.0f, -1.0f, 0.5f, 1.0f},
-      {-1.0f, 3.0f, 0.5f, 1.0f}};
-  static const uint16_t kIndices[3] = {0, 1, 2};
-  this->triangleVb = filament::VertexBuffer::Builder()
-      .vertexCount(3).bufferCount(1)
-      .attribute(filament::VertexAttribute::POSITION, 0,
-          filament::VertexBuffer::AttributeType::FLOAT4)
-      .build(*engine);
-  this->triangleVb->setBufferAt(*engine, 0,
-      filament::VertexBuffer::BufferDescriptor(kVerts, sizeof(kVerts)));
-  this->triangleIb = filament::IndexBuffer::Builder()
-      .indexCount(3).bufferType(filament::IndexBuffer::IndexType::USHORT)
-      .build(*engine);
-  this->triangleIb->setBuffer(*engine,
-      filament::IndexBuffer::BufferDescriptor(kIndices, sizeof(kIndices)));
-  this->triangle = ::utils::EntityManager::get().create();
-  filament::RenderableManager::Builder(1)
-      .boundingBox({{-1.0f, -1.0f, -1.0f}, {1.0f, 1.0f, 1.0f}})
-      .culling(false)
-      .castShadows(false)
-      .receiveShadows(false)
-      .material(0, this->instance)
-      .geometry(0, filament::RenderableManager::PrimitiveType::TRIANGLES,
-          this->triangleVb, this->triangleIb)
-      .build(*engine, this->triangle);
-  this->passScene->addEntity(this->triangle);
+  this->pass = std::make_unique<FilamentFullscreenPass>(*mat);
   return true;
 }
 
@@ -223,14 +149,10 @@ filament::View *FilamentProjector::DecalView(
       0.0, 0.0, 1.0 / height, 0.0,
       0.0, 0.0, 0.0, 1.0);
   unitFromWorld = unitFromProjector * unitFromWorld;
-  filament::math::mat4f unit;
-  for (int c = 0; c < 4; ++c)
-  {
-    for (int r = 0; r < 4; ++r)
-      unit[c][r] = static_cast<float>(unitFromWorld(r, c));
-  }
+  const filament::math::mat4f unit(
+      FilamentConversions::Convert(unitFromWorld));
 
-  auto *mi = this->instance;
+  auto *mi = this->pass->instance;
   mi->setParameter("depthIn", _depth, filament::TextureSampler());
   mi->setParameter("decalMap", this->texture, filament::TextureSampler(
       filament::TextureSampler::MinFilter::LINEAR,
@@ -238,5 +160,5 @@ filament::View *FilamentProjector::DecalView(
       filament::TextureSampler::WrapMode::CLAMP_TO_EDGE));
   mi->setParameter("invViewProj", _invViewProj);
   mi->setParameter("unitFromWorld", unit);
-  return this->view;
+  return this->pass->view;
 }

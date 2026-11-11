@@ -39,6 +39,7 @@
 #include "gz/rendering/filament/FilamentParticleEmitter.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
+#include "FilamentUtils.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -132,7 +133,7 @@ void FilamentParticleEmitter::Init()
       .build(*engine);
   this->ib->setBuffer(*engine, filament::IndexBuffer::BufferDescriptor(
       indices, kQuota * 6u * sizeof(uint16_t),
-      [](void *_buf, size_t, void *) { delete[] static_cast<uint16_t *>(_buf); }));
+      &filament_utils::FreeBuffer<uint16_t>));
   this->mi = mat->createInstance();
 
   // world space particles: no transform component, hidden until emitted
@@ -403,8 +404,7 @@ void FilamentParticleEmitter::Upload()
   }
   this->vb->setBufferAt(*engine, 0, filament::VertexBuffer::BufferDescriptor(
       data, count * 4u * sizeof(Vertex),
-      [](void *_buf, size_t, void *)
-      { delete[] static_cast<Vertex *>(_buf); }));
+      &filament_utils::FreeBuffer<Vertex>));
   rm.setGeometryAt(rm.getInstance(this->renderable), 0,
       filament::RenderableManager::PrimitiveType::TRIANGLES, this->vb,
       this->ib, 0, count * 6u);

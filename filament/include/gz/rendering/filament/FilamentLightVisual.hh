@@ -44,16 +44,12 @@ namespace gz
 
       public: virtual void Destroy() override;
 
-      public: virtual MaterialPtr Material() const override;
-
       public: virtual void SetMaterial(MaterialPtr _material,
                                        bool _unique) override;
 
       private: void CreateVisual();
 
       private: std::shared_ptr<FilamentDynamicMesh> lines;
-
-      private: MaterialPtr material;
 
       private: bool ownsMaterial{false};
 

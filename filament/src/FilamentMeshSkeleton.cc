@@ -42,6 +42,7 @@
 #include <gz/common/SkeletonAnimation.hh>
 #include <gz/common/SkeletonNode.hh>
 
+#include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentMesh.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 
@@ -65,6 +66,9 @@ struct gz::rendering::FilamentMesh::SkeletonState
     math::Matrix4d invBind;
   };
   std::vector<Bone> bones;
+
+  /// \brief Index of the first bone of each name
+  std::unordered_map<std::string, int> boneIndex;
 
   struct Anim
   {
@@ -91,10 +95,8 @@ struct gz::rendering::FilamentMesh::SkeletonState
 
   int Find(const std::string &_name) const
   {
-    for (size_t i = 0; i < this->bones.size(); ++i)
-      if (this->bones[i].name == _name)
-        return static_cast<int>(i);
-    return -1;
+    auto it = this->boneIndex.find(_name);
+    return it == this->boneIndex.end() ? -1 : it->second;
   }
 
   /// \brief ogre's Quaternion::nlerpShortest(_w, IDENTITY, _q)
@@ -126,7 +128,7 @@ struct gz::rendering::FilamentMesh::SkeletonState
       for (size_t j = 0; j < this->bones.size(); ++j)
       {
         Bone &b = this->bones[j];
-        // ponytail: ogre-next also adds animations on top of manual bones,
+        // Ogre-next also adds animations on top of manual bones,
         // which accumulates every frame; skipped here
         if (!a.tracks[j] || b.manual)
           continue;
@@ -174,6 +176,7 @@ void FilamentMesh::InitSkeleton(common::SkeletonPtr _skeleton, bool _gpu)
     const math::Matrix4d tf = node->Transform();
     b.bindPos = b.pos = tf.Translation();
     b.bindRot = b.rot = tf.Rotation();
+    state->boneIndex.emplace(b.name, static_cast<int>(state->bones.size()));
     state->bones.push_back(b);
   }
   const std::vector<math::Matrix4d> bind = state->World(true);
@@ -218,10 +221,8 @@ void FilamentMesh::UpdateBones()
   std::vector<filament::math::mat4f> m(world.size());
   for (size_t i = 0; i < world.size(); ++i)
   {
-    const math::Matrix4d skin = world[i] * s.bones[i].invBind;
-    for (int c = 0; c < 4; ++c)
-      for (int r = 0; r < 4; ++r)
-        m[i][c][r] = static_cast<float>(skin(r, c));
+    m[i] = filament::math::mat4f(
+        FilamentConversions::Convert(world[i] * s.bones[i].invBind));
   }
   rm.setBones(rm.getInstance(this->entity), m.data(), m.size(), 0);
 }

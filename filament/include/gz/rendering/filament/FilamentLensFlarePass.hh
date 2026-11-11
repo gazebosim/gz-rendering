@@ -18,10 +18,9 @@
 #define GZ_RENDERING_FILAMENT_FILAMENTLENSFLAREPASS_HH_
 
 #include <cstdint>
+#include <memory>
 
 #include <gz/math/Vector3.hh>
-
-#include <utils/Entity.h>
 
 #include "gz/rendering/config.hh"
 #include "gz/rendering/base/BaseLensFlarePass.hh"
@@ -32,11 +31,7 @@
 
 namespace filament
 {
-  class IndexBuffer;
-  class MaterialInstance;
-  class Scene;
   class Texture;
-  class VertexBuffer;
   class View;
 }
 
@@ -46,6 +41,8 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
+    class FilamentFullscreenPass;
+
     /// \brief Lens flare with ogre2's semantics: the light is projected with
     /// the camera, occluded by sparse RayQuery casts around it and drawn
     /// over the image by gz_lens_flare.mat (ogre2's lens_flare_fs.glsl).
@@ -116,19 +113,8 @@ namespace gz
 
       private: RayQueryPtr rayQuery;
 
-      private: filament::MaterialInstance *instance{nullptr};
-
-      private: filament::VertexBuffer *triangleVb{nullptr};
-
-      private: filament::IndexBuffer *triangleIb{nullptr};
-
-      private: ::utils::Entity triangle;
-
-      private: filament::Scene *passScene{nullptr};
-
-      private: filament::View *view{nullptr};
-
-      private: ::utils::Entity cameraEntity;
+      /// \brief Fullscreen pass drawing gz_lens_flare, created on first use
+      private: std::unique_ptr<FilamentFullscreenPass> pass;
     };
     }
   }

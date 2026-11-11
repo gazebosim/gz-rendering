@@ -31,7 +31,7 @@ class SharedEglPlatform : public filament::backend::PlatformEGLHeadless
     this->setEglDisplay(_display);
   }
 
-  // ponytail: the display belongs to the caller, so no eglTerminate; filament's
+  // The display belongs to the caller, so no eglTerminate; filament's
   // contexts leak when the engine is destroyed (at process exit in a GUI).
   protected: void terminate() noexcept override
   {

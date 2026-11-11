@@ -28,10 +28,12 @@
 
 #include <gz/common/Console.hh>
 
+#include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentDynamicMesh.hh"
 #include "gz/rendering/filament/FilamentMaterial.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
+#include "FilamentUtils.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -47,11 +49,7 @@ namespace
   constexpr size_t kFloatsPerVertex = 11u;
   constexpr uint8_t kStride = kFloatsPerVertex * sizeof(float);
 
-  template <typename T>
-  void FreeArray(void *_buf, size_t, void *)
-  {
-    delete[] static_cast<T *>(_buf);
-  }
+  using filament_utils::FreeBuffer;
 }
 
 //////////////////////////////////////////////////
@@ -433,11 +431,10 @@ void FilamentDynamicMesh::Update()
   for (size_t i = 0; i < vertexCount; ++i)
   {
     const size_t src = points ? i / 4u : i;
-    const math::Vector3d &p = this->vertices[src];
     const math::Color c = src < this->colors.size() ? this->colors[src] :
         math::Color::White;
-    const filament::math::float3 pf{static_cast<float>(p.X()),
-        static_cast<float>(p.Y()), static_cast<float>(p.Z())};
+    const filament::math::float3 pf =
+        FilamentConversions::Convert(this->vertices[src]);
     lo = min(lo, pf);
     hi = max(hi, pf);
     // corner of the square: (-1,-1) (1,-1) (-1,1) (1,1)
@@ -464,13 +461,13 @@ void FilamentDynamicMesh::Update()
       .attribute(VA::CUSTOM0, 0, AT::FLOAT2, 36, kStride)
       .build(*engine);
   this->vb->setBufferAt(*engine, 0, filament::VertexBuffer::BufferDescriptor(
-      data, vertexCount * kStride, &FreeArray<float>));
+      data, vertexCount * kStride, &FreeBuffer<float>));
   this->ib = filament::IndexBuffer::Builder()
       .indexCount(static_cast<uint32_t>(idx.size()))
       .bufferType(filament::IndexBuffer::IndexType::UINT)
       .build(*engine);
   this->ib->setBuffer(*engine, filament::IndexBuffer::BufferDescriptor(
-      indices, idx.size() * sizeof(uint32_t), &FreeArray<uint32_t>));
+      indices, idx.size() * sizeof(uint32_t), &FreeBuffer<uint32_t>));
   this->indexCount = idx.size();
   if (points)
   {
@@ -483,7 +480,7 @@ void FilamentDynamicMesh::Update()
         .bufferType(filament::IndexBuffer::IndexType::UINT)
         .build(*engine);
     this->dotIb->setBuffer(*engine, filament::IndexBuffer::BufferDescriptor(
-        dots, n * sizeof(uint32_t), &FreeArray<uint32_t>));
+        dots, n * sizeof(uint32_t), &FreeBuffer<uint32_t>));
   }
 
   // keep a flat box from culling away
@@ -492,7 +489,7 @@ void FilamentDynamicMesh::Update()
   box.set(lo - pad, hi + pad);
   filament::RenderableManager::Builder(1)
       .boundingBox(box)
-      // ponytail: the point squares grow past the box, so points are never
+      // TODO: the point squares grow past the box, so points are never
       // culled; a pixel-size margin would need the camera
       .culling(!points)
       .castShadows(false)

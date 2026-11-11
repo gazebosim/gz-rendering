@@ -43,20 +43,6 @@ using namespace rendering;
 /// \brief FilamentColorGrading.cc
 filament::ColorGrading *CreateQualityColorGrading(filament::Engine &_engine);
 
-namespace
-{
-  /// \brief gz matrices are row-major accessors, filament mat4 is indexed
-  /// [column][row]
-  filament::math::mat4 ToFilament(const math::Matrix4d &_m)
-  {
-    filament::math::mat4 out;
-    for (int c = 0; c < 4; ++c)
-      for (int r = 0; r < 4; ++r)
-        out[c][r] = _m(r, c);
-    return out;
-  }
-}
-
 //////////////////////////////////////////////////
 FilamentCamera::FilamentCamera()
 {
@@ -345,8 +331,8 @@ void FilamentCamera::SetClampedProjection(double _renderNear,
     // depth row from its clip distances as well)
     const math::Matrix4d m = this->ProjectionMatrix();
     this->camera->setCustomProjection(
-        ToFilament(WithDepthRows(m, _renderNear, _renderFar)),
-        ToFilament(WithDepthRows(m, this->NearClipPlane(),
+        FilamentConversions::Convert(WithDepthRows(m, _renderNear, _renderFar)),
+        FilamentConversions::Convert(WithDepthRows(m, this->NearClipPlane(),
             this->FarClipPlane())),
         this->NearClipPlane(), this->FarClipPlane());
     return;
@@ -418,14 +404,8 @@ void FilamentCamera::Render()
       this->view->setPostProcessingEnabled(true);
     }
     // projected textures go on the scene, before the render passes
-    const math::Matrix4d inverse =
-        (this->ProjectionMatrix() * this->ViewMatrix()).Inverse();
-    filament::math::mat4f invViewProj;
-    for (int c = 0; c < 4; ++c)
-    {
-      for (int r = 0; r < 4; ++r)
-        invViewProj[c][r] = static_cast<float>(inverse(r, c));
-    }
+    const filament::math::mat4f invViewProj(FilamentConversions::Convert(
+        (this->ProjectionMatrix() * this->ViewMatrix()).Inverse()));
     this->renderTexture->ApplyProjectors(this->scene->Projectors(),
         invViewProj, this->VisibilityMask());
   }

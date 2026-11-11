@@ -17,7 +17,7 @@
 
 // The box computations are a port of ogre2/src/Ogre2BoundingBoxCamera.cc,
 // kept line-for-line where possible so both engines report the same boxes.
-// ponytail: the CPU half is duplicated from ogre2; move it into
+// TODO: the CPU half is duplicated from ogre2; move it into
 // BaseBoundingBoxCamera if the filament engine is ever merged.
 
 #include <algorithm>
@@ -49,6 +49,7 @@
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentRenderTarget.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
+#include "FilamentUtils.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -58,17 +59,10 @@ namespace
   /// \brief Same value and channel as ogre2's material switcher
   const uint32_t kBackgroundLabel = 255u;
 
-  /// \brief _m * (_v, 1)
-  math::Vector4d Mul(const math::Matrix4d &_m, const math::Vector3d &_v)
-  {
-    math::Vector4d r;
-    for (int i = 0; i < 4; ++i)
-    {
-      r[i] = _m(i, 0) * _v.X() + _m(i, 1) * _v.Y() + _m(i, 2) * _v.Z() +
-          _m(i, 3);
-    }
-    return r;
-  }
+  /// \brief MarkVisibleBoxes entry of an item without a visible pixel
+  const uint32_t kNotVisible = 0xffffffffu;
+
+  using FilamentConversions::Transform;
 
   /// \brief Frustum test of a world box (what Ogre::Camera::isVisible does):
   /// invisible when all 8 corners are outside the same clip plane.
@@ -83,7 +77,7 @@ namespace
           (i & 1) ? _box.Max().X() : _box.Min().X(),
           (i & 2) ? _box.Max().Y() : _box.Min().Y(),
           (i & 4) ? _box.Max().Z() : _box.Min().Z());
-      const math::Vector4d c = Mul(_pv, corner);
+      const math::Vector4d c = Transform(_pv, corner);
       for (int axis = 0; axis < 3; ++axis)
       {
         if (c[axis] < -c[3])
@@ -263,7 +257,6 @@ void FilamentBoundingBoxCamera::Init()
 {
   FilamentCamera::Init();
   this->view->setShadowingEnabled(false);
-  this->view->setPostProcessingEnabled(false);
   // ids and labels must be written as is, not sRGB encoded
   this->renderTexture->SetSrgb(false);
 }
@@ -271,13 +264,7 @@ void FilamentBoundingBoxCamera::Init()
 //////////////////////////////////////////////////
 void FilamentBoundingBoxCamera::Destroy()
 {
-  auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
-  if (engine)
-  {
-    for (auto &kv : this->flatInstances)
-      engine->destroy(kv.second);
-  }
-  this->flatInstances.clear();
+  filament_utils::DestroyFlatInstances(this->flatInstances);
   this->items.clear();
   FilamentCamera::Destroy();
 }
@@ -286,28 +273,6 @@ void FilamentBoundingBoxCamera::Destroy()
 RenderTargetPtr FilamentBoundingBoxCamera::RenderTarget() const
 {
   return this->renderTexture;
-}
-
-//////////////////////////////////////////////////
-filament::MaterialInstance *FilamentBoundingBoxCamera::FlatInstance(
-    uint32_t _key)
-{
-  auto it = this->flatInstances.find(_key);
-  if (it != this->flatInstances.end())
-    return it->second;
-  filament::Material *mat =
-      FilamentRenderEngine::Instance()->Material("gz_flat");
-  if (!mat)
-  {
-    gzerr << "gz_flat material not available" << std::endl;
-    return nullptr;
-  }
-  filament::MaterialInstance *mi = mat->createInstance();
-  mi->setParameter("color", filament::math::float3{
-      ((_key >> 16) & 0xff) / 255.0f, ((_key >> 8) & 0xff) / 255.0f,
-      (_key & 0xff) / 255.0f});
-  this->flatInstances[_key] = mi;
-  return mi;
 }
 
 //////////////////////////////////////////////////
@@ -358,7 +323,7 @@ void FilamentBoundingBoxCamera::Render()
     if (labelPtr && !this->items[i].mesh->terrain)
       label = static_cast<uint32_t>(*labelPtr) & 0xffu;
     const uint32_t key = ((i % 256u) << 16) | ((i / 256u) << 8) | label;
-    if (filament::MaterialInstance *mi = this->FlatInstance(key))
+    if (filament::MaterialInstance *mi = filament_utils::FlatInstance(this->flatInstances, key))
     {
       // ogre2's plain_color material has no alpha test
       this->items[i].mesh->OverrideMaterial(mi, false);
@@ -383,9 +348,10 @@ void FilamentBoundingBoxCamera::PostRender()
 
   const unsigned int width = this->ImageWidth();
   const unsigned int height = this->ImageHeight();
-  Image image(width, height, PF_R8G8B8);
-  this->renderTexture->Copy(image);
-  const uint8_t *src = image.Data<uint8_t>();
+  if (this->image.Width() != width || this->image.Height() != height)
+    this->image = Image(width, height, PF_R8G8B8);
+  this->renderTexture->Copy(this->image);
+  const uint8_t *src = this->image.Data<uint8_t>();
   this->buffer.assign(src, src + static_cast<size_t>(width) * height * 3u);
 
   this->boundingBoxes.clear();
@@ -400,17 +366,18 @@ void FilamentBoundingBoxCamera::PostRender()
 }
 
 //////////////////////////////////////////////////
-std::map<uint32_t, uint32_t> FilamentBoundingBoxCamera::MarkVisibleBoxes()
-    const
+std::vector<uint32_t> FilamentBoundingBoxCamera::MarkVisibleBoxes() const
 {
-  std::map<uint32_t, uint32_t> visible;
+  std::vector<uint32_t> visible(this->items.size(), kNotVisible);
   for (size_t index = 0; index + 2 < this->buffer.size(); index += 3)
   {
     const uint32_t label = this->buffer[index + 2];
     if (label == kBackgroundLabel)
       continue;
     const uint32_t itemId = this->buffer[index + 1] * 256u + this->buffer[index];
-    visible.emplace(itemId, label);
+    // the first pixel's label, like a map emplace
+    if (itemId < visible.size() && visible[itemId] == kNotVisible)
+      visible[itemId] = label;
   }
   return visible;
 }
@@ -423,8 +390,13 @@ void FilamentBoundingBoxCamera::VisibleBoundingBoxes()
   struct Boundary
   {
     uint32_t minX, minY, maxX, maxY, label;
+    bool seen;
   };
-  std::map<uint32_t, Boundary> bounds;
+  // by item index; ids past the items (meshes drawn without an override)
+  // in a map. Both iterate in id order.
+  std::vector<Boundary> bounds(this->items.size(),
+      Boundary{width, height, 0, 0, 0, false});
+  std::map<uint32_t, Boundary> others;
   for (uint32_t y = 0; y < height; ++y)
   {
     for (uint32_t x = 0; x < width; ++x)
@@ -435,9 +407,14 @@ void FilamentBoundingBoxCamera::VisibleBoundingBoxes()
         continue;
       const uint32_t itemId =
           this->buffer[index + 1] * 256u + this->buffer[index];
-      auto it = bounds.try_emplace(itemId, Boundary{width, height, 0, 0, label})
-          .first;
-      Boundary &b = it->second;
+      Boundary &b = itemId < bounds.size() ? bounds[itemId] :
+          others.try_emplace(itemId,
+              Boundary{width, height, 0, 0, label, true}).first->second;
+      if (!b.seen)
+      {
+        b.label = label;
+        b.seen = true;
+      }
       b.minX = std::min(b.minX, x);
       b.minY = std::min(b.minY, y);
       b.maxX = std::max(b.maxX, x);
@@ -447,7 +424,7 @@ void FilamentBoundingBoxCamera::VisibleBoundingBoxes()
 
   // merge multi-link models (grouped by top level visual name)
   std::map<std::string, std::vector<BoundingBox>> parentToBoxes;
-  for (const auto &[itemId, b] : bounds)
+  auto addBox = [&](uint32_t itemId, const Boundary &b)
   {
     BoundingBox box;
     box.SetLabel(b.label);
@@ -459,7 +436,14 @@ void FilamentBoundingBoxCamera::VisibleBoundingBoxes()
     const std::string parentName = itemId < this->items.size() ?
         this->items[itemId].parentName : std::string();
     parentToBoxes[parentName].push_back(box);
+  };
+  for (uint32_t itemId = 0; itemId < bounds.size(); ++itemId)
+  {
+    if (bounds[itemId].seen)
+      addBox(itemId, bounds[itemId]);
   }
+  for (const auto &[itemId, b] : others)
+    addBox(itemId, b);
   for (const auto &kv : parentToBoxes)
     this->boundingBoxes.push_back(MergeBoxes2D(kv.second));
   std::reverse(this->boundingBoxes.begin(), this->boundingBoxes.end());
@@ -468,15 +452,16 @@ void FilamentBoundingBoxCamera::VisibleBoundingBoxes()
 //////////////////////////////////////////////////
 void FilamentBoundingBoxCamera::FullBoundingBoxes()
 {
-  const std::map<uint32_t, uint32_t> visible = this->MarkVisibleBoxes();
+  const std::vector<uint32_t> visible = this->MarkVisibleBoxes();
   const math::Matrix4d pv = this->ProjectionMatrix() * this->ViewMatrix();
   const double width = this->ImageWidth();
   const double height = this->ImageHeight();
 
   std::map<std::string, std::vector<BoundingBox>> parentToBoxes;
-  for (const auto &[itemId, label] : visible)
+  for (uint32_t itemId = 0; itemId < visible.size(); ++itemId)
   {
-    if (itemId >= this->items.size())
+    const uint32_t label = visible[itemId];
+    if (label == kNotVisible)
       continue;
     const Item &item = this->items[itemId];
     math::AxisAlignedBox local, world;
@@ -492,7 +477,7 @@ void FilamentBoundingBoxCamera::FullBoundingBoxes()
     ForEachWorldVertex(item.mesh, item.visual,
         [&](const math::Vector3d &_p)
         {
-          const math::Vector4d c = Mul(pv, _p);
+          const math::Vector4d c = Transform(pv, _p);
           const double x = c[0] / c[3];
           const double y = c[1] / c[3];
           minV.X(std::min(minV.X(), x));
@@ -535,16 +520,17 @@ void FilamentBoundingBoxCamera::FullBoundingBoxes()
 //////////////////////////////////////////////////
 void FilamentBoundingBoxCamera::BoundingBoxes3D()
 {
-  const std::map<uint32_t, uint32_t> visible = this->MarkVisibleBoxes();
+  const std::vector<uint32_t> visible = this->MarkVisibleBoxes();
   const math::Matrix4d viewMatrix = this->ViewMatrix();
   const math::Matrix4d pv = this->ProjectionMatrix() * viewMatrix;
   const math::Quaterniond worldCameraRotation = viewMatrix.Rotation();
 
   std::map<std::string, std::vector<uint32_t>> parentToIds;
   std::map<uint32_t, BoundingBox> boxes;
-  for (const auto &[itemId, label] : visible)
+  for (uint32_t itemId = 0; itemId < visible.size(); ++itemId)
   {
-    if (itemId >= this->items.size())
+    const uint32_t label = visible[itemId];
+    if (label == kNotVisible)
       continue;
     const Item &item = this->items[itemId];
     math::AxisAlignedBox local, world;
@@ -553,7 +539,7 @@ void FilamentBoundingBoxCamera::BoundingBoxes3D()
       continue;
 
     BoundingBox box;
-    const math::Vector4d c = Mul(viewMatrix, world.Center());
+    const math::Vector4d c = Transform(viewMatrix, world.Center());
     box.SetCenter({c[0], c[1], c[2]});
     box.SetSize(local.Size());
     box.SetOrientation(worldCameraRotation * item.visual->WorldPose().Rot());
@@ -577,7 +563,7 @@ void FilamentBoundingBoxCamera::BoundingBoxes3D()
       ForEachWorldVertex(this->items[itemId].mesh, this->items[itemId].visual,
           [&](const math::Vector3d &_p)
           {
-            const math::Vector4d v = Mul(viewMatrix, _p);
+            const math::Vector4d v = Transform(viewMatrix, _p);
             vertices.emplace_back(v[0], v[1], v[2]);
           });
     }
@@ -623,7 +609,7 @@ void FilamentBoundingBoxCamera::DrawBoundingBox(unsigned char *_data,
       // skip boxes with any vertex behind the camera
       if (vertex.Z() > 0)
         return;
-      const math::Vector4d p = Mul(proj, vertex);
+      const math::Vector4d p = Transform(proj, vertex);
       vertices2d.push_back({p[0] / p[3], p[1] / p[3]});
     }
 

@@ -25,6 +25,7 @@
 #include <math/vec4.h>
 
 #include "gz/rendering/config.hh"
+#include "gz/rendering/Image.hh"
 #include "gz/rendering/base/BaseRenderTarget.hh"
 #include "gz/rendering/filament/FilamentObject.hh"
 #include "gz/rendering/filament/FilamentRenderTypes.hh"
@@ -124,8 +125,10 @@ namespace gz
 
       /// \brief Create a color + depth attachment pair for the current
       /// size and format
+      /// \param[in] _main The main attachments (multisampled, possibly in
+      /// the caller's GL context), else the scratch ones of render passes
       private: void BuildAttachments(filament::RenderTarget *&_target,
-          filament::Texture *&_color, filament::Texture *&_depth);
+          filament::Texture *&_color, filament::Texture *&_depth, bool _main);
 
       protected: filament::Texture *colorTexture{nullptr};
 
@@ -167,6 +170,10 @@ namespace gz
 
       /// \brief Readback staging buffer of Copy(), kept across frames
       private: mutable std::vector<unsigned char> readBuffer;
+
+      /// \brief RGB readback of Copy() into a Bayer image, kept across
+      /// frames
+      private: mutable Image bayerSource;
     };
 
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentRenderTexture :

@@ -545,6 +545,8 @@ bool Ogre2RenderTarget::IsRenderWindow() const
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::DestroyTargetImpl()
 {
+  // Render windows own no texture but may have read back
+  this->dataPtr->readback.Destroy();
   if (nullptr == this->dataPtr->ogreTexture[0])
     return;
 
@@ -1115,6 +1117,8 @@ Ogre::TextureGpu *Ogre2RenderWindow::RenderTarget() const
 void Ogre2RenderWindow::Destroy()
 {
   this->RemoveAllRenderPasses();
+  // Only the readback staging buffer: the window texture is not ours
+  Ogre2RenderTarget::DestroyTargetImpl();
   // TODO(anyone)
 }
 

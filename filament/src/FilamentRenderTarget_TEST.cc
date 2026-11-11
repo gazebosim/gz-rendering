@@ -25,6 +25,7 @@
 #include <GL/glext.h>
 
 #include "gz/rendering/Camera.hh"
+#include "gz/rendering/DepthCamera.hh"
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
@@ -143,6 +144,16 @@ TEST(FilamentRenderTargetTest, SharedTextureTopRowFirst)
   ASSERT_NE(nullptr, top);
   EXPECT_EQ(box->Name(), top->Name());
   EXPECT_EQ(nullptr, camera->VisualAt(math::Vector2i(width / 2, height - 5)));
+
+  // sensor targets are not shown by the caller: no texture in its context
+  // (a depth camera's RGBA8 target holds packed float bits)
+  DepthCameraPtr depth = scene->CreateDepthCamera("depth");
+  ASSERT_NE(nullptr, depth);
+  depth->SetImageWidth(width);
+  depth->SetImageHeight(height);
+  scene->RootVisual()->AddChild(depth);
+  depth->Update();
+  EXPECT_EQ(0u, depth->RenderTextureGLId());
 
   rendering::unloadEngine(engine->Name());
   eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);

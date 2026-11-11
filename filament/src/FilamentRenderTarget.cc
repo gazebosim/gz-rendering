@@ -151,7 +151,8 @@ void FilamentRenderTarget::RebuildImpl()
     return;
   this->BuildAttachments(this->target, this->colorTexture,
       this->depthTexture, true);
-  this->BuildSharedTexture();
+  if (this->presented)
+    this->BuildSharedTexture();
   // readPixels must not read the multisampled target: on GL with
   // EXT_multisampled_render_to_texture (NVIDIA) filament resolves the colour
   // implicitly but the depth through a sidecar FBO, and readPixels reads
@@ -231,6 +232,13 @@ void FilamentRenderTarget::BuildSharedTexture()
 //////////////////////////////////////////////////
 void FilamentRenderTarget::UpdateSharedTexture()
 {
+  // only targets the caller shows get a texture in its context: not the
+  // sensor targets (8 bit ids, packed float bits), which never come here
+  if (!this->presented && this->target)
+  {
+    this->presented = true;
+    this->BuildSharedTexture();
+  }
   if (!this->glColorId || !this->target)
     return;
   if (!this->glColorTarget)

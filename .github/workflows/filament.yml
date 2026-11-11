@@ -1,0 +1,94 @@
+name: Filament
+
+# Builds the experimental filament engine, which the main CI skips because
+# it needs a Filament install (FILAMENT_ROOT), and runs the rendering tests
+# on it with software rendering: Mesa llvmpipe (OpenGL) and lavapipe
+# (Vulkan). Runs only when the plugin or this workflow changes. Runs on
+# main too, so pull requests find the Filament build in main's cache.
+on:
+  pull_request:
+    paths:
+      - 'filament/**'
+      - '.github/workflows/filament.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'filament/**'
+      - '.github/workflows/filament.yml'
+  workflow_dispatch:
+
+jobs:
+  filament:
+    runs-on: ubuntu-latest
+    container: ubuntu:resolute
+    name: Filament engine (software rendering)
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      FILAMENT_ROOT: /opt/filament
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Install tools
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends build-essential \
+            ca-certificates cmake git gnupg lsb-release ninja-build \
+            python3 python3-pip wget zstd
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Install dependencies
+        # As gazebo-tooling/action-gz-ci, without ogre (not tested here)
+        run: |
+          git clone --depth 1 https://github.com/osrf/gzdev /tmp/gzdev
+          pip3 install -r /tmp/gzdev/requirements.txt --break-system-packages
+          /tmp/gzdev/gzdev.py repository enable --project=rotary
+          apt-get update
+          apt-get install -y $(grep -v ogre .github/ci/packages.apt) \
+            libegl-dev libgles-dev mesa-vulkan-drivers
+      - name: Cache Filament
+        id: cache-filament
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.FILAMENT_ROOT }}
+          key: filament-${{ hashFiles('filament/ci/install_filament.sh', 'filament/patches/*.patch') }}-resolute
+      - name: Build Filament
+        if: steps.cache-filament.outputs.cache-hit != 'true'
+        run: filament/ci/install_filament.sh "$FILAMENT_ROOT" /tmp/filament
+      - name: Build
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_TESTING=ON
+          cmake --build build
+      - name: Test
+        env:
+          GZ_ENGINE_TO_TEST: filament
+          LIBGL_ALWAYS_SOFTWARE: 1
+          EGL_PLATFORM: surfaceless
+        run: |
+          export GZ_RENDERING_PLUGIN_PATH=$PWD/build/lib
+          export GZ_RENDERING_RESOURCE_PATH=$PWD
+          export VK_DRIVER_FILES=$(ls /usr/share/vulkan/icd.d/lvp_icd*.json)
+          failed=()
+          echo "| backend | test | passed | skipped | result |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|---|---|---|" >> $GITHUB_STEP_SUMMARY
+          for backend in gl vulkan; do
+            export GZ_ENGINE_BACKEND=$backend
+            for t in $(ls build/bin | grep -E '^(UNIT|INTEGRATION)_' | grep -vi ogre); do
+              echo "::group::$backend $t"
+              rc=0
+              timeout 900 build/bin/$t 2>&1 | tee /tmp/test.log || rc=$?
+              echo "::endgroup::"
+              passed=$(grep -oP '^\[  PASSED  \] \K[0-9]+' /tmp/test.log || true)
+              skipped=$(grep -oP '^\[  SKIPPED \] \K[0-9]+(?= test)' /tmp/test.log || true)
+              result=ok
+              if [ $rc -ne 0 ]; then
+                result="FAILED ($rc)"
+                failed+=("$backend $t")
+                echo "::error::$backend $t failed ($rc)"
+              fi
+              echo "| $backend | $t | ${passed:-0} | ${skipped:-0} | $result |" >> $GITHUB_STEP_SUMMARY
+            done
+          done
+          [ ${#failed[@]} -eq 0 ] || { printf '%s\n' "${failed[@]}"; exit 1; }

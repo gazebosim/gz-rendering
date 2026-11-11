@@ -29,7 +29,6 @@
 #include <filament/Viewport.h>
 
 #include <gz/common/Console.hh>
-#include <gz/math/Helpers.hh>
 
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/PixelFormat.hh"

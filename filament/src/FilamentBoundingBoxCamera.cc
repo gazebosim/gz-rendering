@@ -197,8 +197,8 @@ void FilamentBoundingBoxCamera::Render()
     {
       // ogre2's plain_color material has no alpha test
       this->items[i].mesh->OverrideMaterial(mi, false);
-      // ogre2's bounding box camera sees no marker points (measured with
-      // filament_parity PARITY_MARKERS=1), unlike the other sensors
+      // ogre2's bounding box camera sees no marker points, unlike the
+      // other sensors
       if (auto *dyn = dynamic_cast<FilamentDynamicMesh *>(
           this->items[i].mesh))
         dyn->UseDots(false);

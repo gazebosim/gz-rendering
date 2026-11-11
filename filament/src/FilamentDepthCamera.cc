@@ -29,7 +29,6 @@
 #endif
 
 #include <backend/PixelBufferDescriptor.h>
-#include <filament/Camera.h>
 #include <filament/Engine.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
@@ -38,11 +37,8 @@
 #include <filament/TextureSampler.h>
 #include <filament/View.h>
 
-#include <gz/common/Console.hh>
-#include <gz/math/Helpers.hh>
 #include <gz/math/Rand.hh>
 
-#include "gz/rendering/Image.hh"
 #include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentDepthCamera.hh"
 #include "gz/rendering/filament/FilamentGaussianNoisePass.hh"

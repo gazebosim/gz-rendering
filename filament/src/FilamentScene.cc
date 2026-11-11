@@ -1006,8 +1006,7 @@ void FilamentScene::BeginReflections(const math::Vector3d &_pos,
   {
     // UpdateSkyLight's reflections without its kReflectionScale: that
     // dims an unoccluded sky for interiors, here the cube's walls occlude
-    // it. Measured on the Cycles sunroom (uniform ambient sky): chrome ball
-    // 81 80 71 vs Cycles 96 93 87; 0.3x: 58 56 48.
+    // it.
     unsigned int cubeSize = 0u;
     std::vector<uint8_t> faces;
     const double skyLum = Luminance(this->skySh[0][0], this->skySh[0][1],

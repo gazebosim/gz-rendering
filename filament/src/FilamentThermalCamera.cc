@@ -25,7 +25,6 @@
 #include <filament/TextureSampler.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
-#include <filament/Camera.h>
 #include <filament/Texture.h>
 #include <filament/View.h>
 
@@ -33,7 +32,6 @@
 #include <gz/common/Image.hh>
 #include <gz/common/Util.hh>
 
-#include "gz/rendering/Image.hh"
 #include "gz/rendering/Material.hh"
 #include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/filament/FilamentConversions.hh"
@@ -168,8 +166,7 @@ filament::MaterialInstance *FilamentThermalCamera::HeatSignatureInstance(
       auto &engine = *FilamentRenderEngine::Instance()->FilamentEngine();
       // the shader reads red only. Rows flipped like
       // FilamentRenderEngine::Texture (bottom row first), so heat
-      // signatures and diffuse textures share the mesh UVs (checked with
-      // filament_parity PARITY_HEATSIG=1)
+      // signatures and diffuse textures share the mesh UVs
       auto *buf = new unsigned char[static_cast<size_t>(w) * h];
       for (size_t y = 0; y < h; ++y)
         for (size_t x = 0; x < w; ++x)

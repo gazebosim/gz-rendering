@@ -15,7 +15,6 @@
  *
  */
 
-#include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/filament/FilamentObject.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
 

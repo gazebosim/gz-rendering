@@ -354,7 +354,6 @@ namespace gz
       private: friend class FilamentRenderEngine;
       private: friend class FilamentMesh;
 
-      private: friend class FilamentParticleEmitter;
     };
     }
   }

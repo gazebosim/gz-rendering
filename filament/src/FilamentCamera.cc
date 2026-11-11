@@ -20,7 +20,6 @@
 #include <filament/Camera.h>
 #include <filament/ColorGrading.h>
 #include <filament/Engine.h>
-#include <filament/Scene.h>
 #include <filament/TransformManager.h>
 #include <filament/View.h>
 #include <utils/EntityManager.h>
@@ -422,8 +421,8 @@ math::Vector3d FilamentCamera::ReflectionProbePosition()
   this->probeCameraPose = pose;
   // 1 m short of what the camera looks at (at most half way), where the
   // reflective things the user looks at are; 5 m ahead if it looks at
-  // nothing. Measured on the Cycles sunroom: 0.5x / 0.75x of the way and
-  // the camera position reflect too much of what is behind the camera.
+  // nothing. Closer to the camera, the probe reflects too much of what is
+  // behind the camera.
   constexpr double kBack = 1.0;
   constexpr double kNoHit = 5.0;
   const math::Vector3d dir = pose.Rot() * math::Vector3d::UnitX;

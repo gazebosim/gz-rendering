@@ -16,8 +16,6 @@
  */
 #include <cmath>
 
-#include <filament/Camera.h>
-#include <filament/Engine.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
 #include <filament/Texture.h>
@@ -26,10 +24,8 @@
 
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
-#include <gz/common/Image.hh>
 #include <gz/math/Matrix4.hh>
 
-#include "gz/rendering/Utils.hh"
 #include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentProjector.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"

@@ -71,8 +71,11 @@ set_property(
 )
 
 target_include_directories(${filament_target}
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
-  SYSTEM PUBLIC ${FILAMENT_ROOT}/include)
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+# SYSTEM goes right after the target: Filament's headers are not ours to warn
+# about
+target_include_directories(${filament_target} SYSTEM
+  PUBLIC ${FILAMENT_ROOT}/include)
 
 # Filament ships static archives only; link them all as one group so the
 # linker resolves their mutual dependencies.

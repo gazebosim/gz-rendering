@@ -31,9 +31,9 @@
 #include "gz/rendering/ShaderParams.hh"
 #include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentMaterial.hh"
+#include "gz/rendering/filament/FilamentMesh.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
-#include "gz/rendering/filament/FilamentMesh.hh"
 
 using namespace gz;
 using namespace rendering;

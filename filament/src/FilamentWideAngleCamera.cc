@@ -31,8 +31,8 @@
 #include <gz/common/Console.hh>
 
 #include "gz/rendering/Image.hh"
-#include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/LensFlarePass.hh"
+#include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentRenderTarget.hh"

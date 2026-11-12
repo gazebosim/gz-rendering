@@ -22,14 +22,14 @@
 #include <random>
 #include <string>
 
+#include <backend/PixelBufferDescriptor.h>
 #include <filament/Camera.h>
 #include <filament/Engine.h>
-#include <filament/Texture.h>
-#include <filament/TextureSampler.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
-#include <backend/PixelBufferDescriptor.h>
 #include <filament/Renderer.h>
+#include <filament/Texture.h>
+#include <filament/TextureSampler.h>
 #include <filament/TransformManager.h>
 #include <filament/View.h>
 #include <filament/Viewport.h>

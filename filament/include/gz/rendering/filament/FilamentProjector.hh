@@ -18,6 +18,7 @@
 #define GZ_RENDERING_FILAMENT_FILAMENTPROJECTOR_HH_
 
 #include <memory>
+#include <string>
 
 #include <math/mat4.h>
 

@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <memory>
 #include <unordered_map>
+#include <utility>
 
 #include <filament/Engine.h>
 #include <filament/Material.h>

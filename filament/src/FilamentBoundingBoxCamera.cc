@@ -21,10 +21,10 @@
 #include <map>
 #include <variant>
 
+#include <filament/Box.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
 #include <filament/RenderableManager.h>
-#include <filament/Box.h>
 #include <filament/View.h>
 
 #include <gz/common/Console.hh>

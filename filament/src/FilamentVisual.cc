@@ -23,13 +23,13 @@
 
 #include <gz/common/Console.hh>
 
+#include "gz/rendering/Utils.hh"
 #include "gz/rendering/filament/FilamentConversions.hh"
 #include "gz/rendering/filament/FilamentGeometry.hh"
 #include "gz/rendering/filament/FilamentMesh.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 #include "gz/rendering/filament/FilamentScene.hh"
 #include "gz/rendering/filament/FilamentVisual.hh"
-#include "gz/rendering/Utils.hh"
 
 using namespace gz;
 using namespace rendering;

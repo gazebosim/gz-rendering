@@ -18,6 +18,7 @@
 #define GZ_RENDERING_FILAMENT_FILAMENTLIDARVISUAL_HH_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "gz/rendering/base/BaseLidarVisual.hh"

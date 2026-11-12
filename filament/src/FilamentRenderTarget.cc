@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 
+#include <backend/PixelBufferDescriptor.h>
 #include <filament/Box.h>
 #include <filament/Camera.h>
 #include <filament/Engine.h>
@@ -33,7 +34,6 @@
 #include <filament/TransformManager.h>
 #include <filament/View.h>
 #include <filament/Viewport.h>
-#include <backend/PixelBufferDescriptor.h>
 
 #include <EGL/egl.h>
 #include <GL/gl.h>
@@ -43,11 +43,11 @@
 
 #include "gz/rendering/Image.hh"
 #include "gz/rendering/PixelFormat.hh"
+#include "gz/rendering/Utils.hh"
 #include "gz/rendering/filament/FilamentGaussianNoisePass.hh"
 #include "gz/rendering/filament/FilamentLensFlarePass.hh"
 #include "gz/rendering/filament/FilamentProjector.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
-#include "gz/rendering/Utils.hh"
 #include "gz/rendering/filament/FilamentRenderTarget.hh"
 #include "FilamentFullscreenPass.hh"
 

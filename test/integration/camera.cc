@@ -519,7 +519,7 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
   root->AddChild(cameraC);
   Image imageC = cameraC->CreateImage();
   cameraC->Capture(imageC);
-  unsigned char *dataC = imageC.Data<unsigned char>();
+  const unsigned char *dataC = imageC.Data<unsigned char>();
   unsigned int rCSum = 0u;
   unsigned int gCSum = 0u;
   for (unsigned int i = 0; i < height * step; i += bpp)

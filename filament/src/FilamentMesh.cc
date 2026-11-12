@@ -18,9 +18,9 @@
 #include <vector>
 
 #include <filament/Engine.h>
+#include <filament/IndexBuffer.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
-#include <filament/IndexBuffer.h>
 #include <filament/RenderableManager.h>
 #include <filament/Scene.h>
 #include <filament/TextureSampler.h>

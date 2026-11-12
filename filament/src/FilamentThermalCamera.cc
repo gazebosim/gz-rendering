@@ -21,11 +21,11 @@
 
 #include <backend/PixelBufferDescriptor.h>
 #include <filament/Engine.h>
-#include <filament/Renderer.h>
-#include <filament/TextureSampler.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
+#include <filament/Renderer.h>
 #include <filament/Texture.h>
+#include <filament/TextureSampler.h>
 #include <filament/View.h>
 
 #include <gz/common/Console.hh>

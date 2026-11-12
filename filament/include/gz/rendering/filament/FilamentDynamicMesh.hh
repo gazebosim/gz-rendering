@@ -63,7 +63,7 @@ namespace gz
     {
       public: FilamentDynamicMesh() = default;
 
-      public: virtual ~FilamentDynamicMesh() = default;
+      public: virtual ~FilamentDynamicMesh() override = default;
 
       public: virtual void Destroy() override;
 

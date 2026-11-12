@@ -34,7 +34,7 @@ namespace gz
     {
       protected: FilamentDynamicGeometry();
 
-      public: virtual ~FilamentDynamicGeometry();
+      public: virtual ~FilamentDynamicGeometry() override;
 
       public: virtual void Init() override;
 

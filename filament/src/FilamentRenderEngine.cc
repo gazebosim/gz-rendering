@@ -25,17 +25,17 @@
 #include <thread>
 #include <vector>
 
+#include <EGL/egl.h>
+#include <backend/PixelBufferDescriptor.h>
+#include <filamat/MaterialBuilder.h>
+#include <filamat/Package.h>
+#include <filament-matp/Config.h>
+#include <filament-matp/MaterialParser.h>
 #include <filament/Engine.h>
 #include <filament/Material.h>
 #include <filament/Renderer.h>
 #include <filament/SwapChain.h>
 #include <filament/Texture.h>
-#include <backend/PixelBufferDescriptor.h>
-#include <EGL/egl.h>
-#include <filamat/MaterialBuilder.h>
-#include <filamat/Package.h>
-#include <filament-matp/Config.h>
-#include <filament-matp/MaterialParser.h>
 
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>

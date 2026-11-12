@@ -254,7 +254,7 @@ TEST_F(ShadowsTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LargeGroundPlane))
       camera->Capture(image);
 
     // the bottom quarter of the image is ground within 10 m of the camera
-    unsigned char *data = image.Data<unsigned char>();
+    const unsigned char *data = image.Data<unsigned char>();
     unsigned int minSum = 3 * 255;
     unsigned int maxSum = 0;
     for (unsigned int i = height * 3 / 4; i < height; ++i)

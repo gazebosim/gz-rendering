@@ -18,6 +18,7 @@
 #define GZ_RENDERING_FILAMENT_FILAMENTMATERIAL_HH_
 
 #include <array>
+#include <memory>
 #include <string>
 
 #include "gz/rendering/config.hh"

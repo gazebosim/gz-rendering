@@ -108,14 +108,31 @@ namespace gz
 
       /// \brief Output value of a pixel whose color pass value in ogre2
       /// would be _rgba (8 bit), see thermal_camera_fs.glsl
+      /// \param[in] _rgba Color pass value as red, green, blue, alpha, each
+      /// in [0, 1]. If green, blue and alpha are all 0, red is the
+      /// normalized temperature of a heat source; otherwise the luminance of
+      /// the color selects a temperature within the ambient range.
+      /// \return Output value of the pixel, in [0, 255] for an L8 image and
+      /// [0, 65535] for an L16 image.
       private: uint16_t Encode(const float _rgba[4]) const;
 
       /// \brief Instance drawing diffuse x _texture, unlit, alpha 0
+      /// \param[in] _texture Diffuse texture of the material.
+      /// \param[in] _diffuse Diffuse color, multiplied with the texture.
+      /// \return The instance, cached per texture and diffuse color. Null
+      /// if the gz_unlit material can not be loaded.
       private: filament::MaterialInstance *TexturedInstance(
           filament::Texture *_texture, const math::Color &_diffuse);
 
       /// \brief Heat signature instance for _visual, whose "temperature"
       /// user data is the texture _texture; nullptr if it cannot be loaded
+      /// \param[in] _visual Visual whose "minTemp" and "maxTemp" user data
+      /// give the temperature range, when both are floats.
+      /// \param[in] _texture Heat signature texture, as given by the
+      /// visual's "temperature" user data.
+      /// \return The instance, cached per texture, temperature range, bit
+      /// depth and resolution. Null if the texture or the gz_heat_signature
+      /// material can not be loaded.
       private: filament::MaterialInstance *HeatSignatureInstance(
           const VisualPtr &_visual, const std::string &_texture);
 

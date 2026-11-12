@@ -124,6 +124,7 @@ namespace gz
 
       /// \brief Advance the simulation by _dt seconds (ogre2's
       /// ParticleSystem::_update order: expire, grow, move, emit)
+      /// \param[in] _dt Time to advance, in seconds.
       private: void Step(double _dt);
 
       /// \brief Set the renderable's layers and material, upload the

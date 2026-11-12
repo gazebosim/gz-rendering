@@ -98,6 +98,7 @@ namespace gz
 
       /// \brief Get the render target of this camera: its colour render
       /// texture.
+      /// \return The colour render texture.
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
       /// \brief Create the filament camera and view, then the render texture.
@@ -110,6 +111,8 @@ namespace gz
       /// camera's own clip planes. With a closer near plane this emulates
       /// ogre2's depth clamp: geometry crossing the near plane is drawn,
       /// objects entirely in front of it are culled.
+      /// \param[in] _renderNear Near plane the geometry is rendered with.
+      /// \param[in] _renderFar Far plane the geometry is rendered with.
       protected: void SetClampedProjection(double _renderNear,
                      double _renderFar);
 
@@ -119,11 +122,17 @@ namespace gz
 
       /// \brief _matrix with the depth rows replaced to encode [_near, _far],
       /// perspective or orthographic depending on _matrix's last row
+      /// \param[in] _matrix Projection matrix to take the image plane rows
+      /// from.
+      /// \param[in] _near Near clip distance to encode.
+      /// \param[in] _far Far clip distance to encode.
+      /// \return The modified copy of _matrix.
       protected: static math::Matrix4d WithDepthRows(math::Matrix4d _matrix,
                      double _near, double _far);
 
       /// \brief Whether the projection type is CPT_ORTHOGRAPHIC (only the
       /// RGB camera can be set to it, see SetProjectionType).
+      /// \return True if the projection type is CPT_ORTHOGRAPHIC.
       private: bool Orthographic() const;
 
       /// \brief Quality mode, decided at the first render: the GUI camera
@@ -158,6 +167,7 @@ namespace gz
 
       /// \brief Where the GUI camera's scene reflections are rendered from
       /// (FilamentScene::BeginReflections): 1 m short of what it looks at
+      /// \return The probe position in the world frame.
       private: math::Vector3d ReflectionProbePosition();
 
       /// \brief Camera pose of the last ReflectionProbePosition

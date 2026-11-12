@@ -59,6 +59,7 @@ namespace gz
 
       /// \brief Store the parent visual. FilamentVisual calls it when the
       /// geometry is attached or detached.
+      /// \param[in] _parent New parent visual, null when detached.
       protected: virtual void SetParent(FilamentVisualPtr _parent);
 
       /// \brief Visual this geometry is attached to, null if there is none.

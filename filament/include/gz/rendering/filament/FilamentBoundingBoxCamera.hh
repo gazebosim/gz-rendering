@@ -117,6 +117,9 @@ namespace gz
 
       /// \brief Name of the top level visual of an item, to merge the
       /// boxes of multi-link models
+      /// \param[in] _itemId Item index, as decoded from the ID image.
+      /// \return Name of the top level visual the item belongs to, or an
+      /// empty string if _itemId is past the items of the last render.
       private: std::string ParentName(uint32_t _itemId) const;
 
       /// \brief gz_flat instances by colour (0xRRGGBB)

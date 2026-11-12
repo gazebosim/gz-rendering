@@ -69,30 +69,41 @@ namespace gz
 
       /// \brief Get the local pose of this node as stored, relative to the
       /// parent and without the origin offset that LocalPose adds.
+      /// \return The stored local pose.
       protected: virtual math::Pose3d RawLocalPose() const override;
 
       /// \brief Store the local pose of this node, without the origin
       /// offset, and push it into the filament transform component.
+      /// \param[in] _pose Local pose relative to the parent, without the
+      /// origin offset.
       protected: virtual void SetRawLocalPose(const math::Pose3d &_pose)
                      override;
 
       /// \brief Get the store of children of this node.
+      /// \return The store of children, null before Init.
       protected: virtual NodeStorePtr Children() const override;
 
       /// \brief Parent _child's entity to this node's. Fails with an error
       /// if _child was created by another render engine or is an ancestor
       /// of this node.
+      /// \param[in] _child Node to attach.
+      /// \return True if _child was attached, false otherwise.
       protected: virtual bool AttachChild(NodePtr _child) override;
 
       /// \brief Unparent _child's entity from this node's. Fails with an
       /// error if _child was created by another render engine.
+      /// \param[in] _child Node to detach.
+      /// \return True if _child was detached, false otherwise.
       protected: virtual bool DetachChild(NodePtr _child) override;
 
       /// \brief Store the parent node. The filament parenting is done by
       /// AttachChild and DetachChild.
+      /// \param[in] _parent New parent node, null when detached.
       protected: virtual void SetParent(FilamentNodePtr _parent);
 
       /// \brief True if the parent chain reaches the scene's root visual
+      /// \return True if this node, or one of its ancestors, is the scene's
+      /// root visual. False if it has no scene.
       protected: bool InSceneGraph() const;
 
       /// \brief Add (or remove) the renderables of this node's visual
@@ -133,6 +144,7 @@ namespace gz
       protected: FilamentNodeStorePtr children;
 
       /// \brief Get a shared pointer to this node.
+      /// \return Shared pointer to this node.
       private: FilamentNodePtr SharedThis();
 
       private: friend class FilamentScene;

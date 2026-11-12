@@ -67,6 +67,10 @@ namespace gz
       private: void ClearVisualData();
 
       /// \brief A mesh of the given type, attached to this visual
+      /// \param[in] _type Marker type, used as the mesh's operation type.
+      /// \param[in] _material Name of a scene material to draw the mesh
+      /// with, empty to keep the mesh's default material.
+      /// \return The new dynamic mesh.
       private: std::shared_ptr<FilamentDynamicMesh> NewMesh(MarkerType _type,
                   const std::string &_material);
 

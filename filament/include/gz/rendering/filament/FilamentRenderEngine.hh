@@ -140,6 +140,9 @@ namespace gz
       public: filament::Material *Material(const std::string &_name);
 
       /// \brief Compile a filament material source (.mat) with filamat.
+      /// \param[in] _path Path of the .mat source file.
+      /// \return The compiled material, or null (and an error is logged) if
+      /// the file can not be read, parsed or compiled.
       private: filament::Material *CompileMaterial(const std::string &_path);
 
       /// \brief Get a cached texture. It is loaded from _data when given,
@@ -194,13 +197,18 @@ namespace gz
       /// \brief Create the filament engine and renderer. OpenGL is used
       /// unless Vulkan was requested, and Vulkan falls back to OpenGL when
       /// it is unavailable.
+      /// \return True if the engine was created, false otherwise.
       protected: virtual bool InitImpl() override;
 
       /// \brief Get the store of scenes managed by the render engine, null
       /// before Init and after Destroy.
+      /// \return The store of scenes.
       protected: virtual SceneStorePtr Scenes() const override;
 
       /// \brief Create a scene and add it to the engine's scene store.
+      /// \param[in] _id Id of the new scene.
+      /// \param[in] _name Name of the new scene.
+      /// \return The new scene.
       protected: virtual ScenePtr CreateSceneImpl(unsigned int _id,
                      const std::string &_name) override;
 

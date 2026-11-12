@@ -163,6 +163,7 @@ namespace gz
       public: bool terrain{false};
 
       /// \brief Get the store of submeshes of this mesh.
+      /// \return The store of submeshes.
       protected: virtual SubMeshStorePtr SubMeshes() const override;
 
       /// \brief Create the mesh entity (with a transform) and register the
@@ -218,6 +219,11 @@ namespace gz
       /// \brief Bind _instance as the primitive's material instance. An
       /// override (not the material's own instance) of an alpha tested
       /// material is bound as an alpha tested copy, see OverrideMaterial.
+      /// Does nothing if the submesh has no mesh, _instance is null or the
+      /// mesh has no renderable.
+      /// \param[in] _instance Material instance to bind.
+      /// \param[in] _alphaTest False to bind _instance as given, without
+      /// the alpha tested copy.
       protected: void ApplyInstance(filament::MaterialInstance *_instance,
           bool _alphaTest = true);
 

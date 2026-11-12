@@ -43,6 +43,8 @@ namespace gz
       public BaseHeightmap<FilamentGeometry>
     {
       /// \brief Constructor
+      /// \param[in] _desc Descriptor of the heightmap (data, sampling,
+      /// position and size).
       protected: explicit FilamentHeightmap(const HeightmapDescriptor &_desc);
 
       /// \brief Destructor
@@ -77,6 +79,7 @@ namespace gz
       protected: virtual void Init() override;
 
       /// \brief Store the parent visual, also on the internal mesh.
+      /// \param[in] _parent New parent visual, null when detached.
       protected: virtual void SetParent(FilamentVisualPtr _parent) override;
 
       /// \brief Source grid, referenced by the mesh descriptor

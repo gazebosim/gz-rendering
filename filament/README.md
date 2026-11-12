@@ -78,15 +78,16 @@ that install's `matc`. Filament refuses materials from a different
 - Resources: the compiled materials and textures are installed to
   `<prefix>/share/gz/gz-rendering<N>/filament/media`. Like ogre2, the
   engine looks for them under `$GZ_RENDERING_RESOURCE_PATH/filament/media`
-  if that variable is set, else under the install prefix, and falls back
-  to the build tree. `GZ_RENDERING_FILAMENT_RESOURCE_PATH` overrides all
-  of these with a `media` directory of its own (it holds `materials/` and
-  `textures/`).
+  if that variable is set, else under the install prefix, and uses the
+  copy in the build tree when that directory doesn't exist.
+  `GZ_RENDERING_FILAMENT_RESOURCE_PATH` overrides all of these with a
+  `media` directory of its own (it holds `materials/` and `textures/`).
 
 - Backend: OpenGL (EGL) by default. The engine parameter `vulkan=1` (or
   `backend=vulkan`) selects Vulkan, falling back to OpenGL when no Vulkan
-  driver is available. `egl_display` / `egl_context` share an existing EGL
-  context.
+  driver is available; `opengl=1` (or `backend=opengl`) selects OpenGL.
+  `egl_display` / `egl_context` (pointers as decimal integers) share an
+  existing EGL context.
 - GUI: stock gz-gui works as it is, no gz-gui change is needed. gz-gui
   passes `useCurrentGLContext=1`; when Qt's context is an EGL one the
   engine shares it and draws each frame into a texture in it
@@ -128,3 +129,18 @@ Only lit output changes (RGB cameras, the GUI camera, wide-angle cameras,
 the colour of depth camera point clouds). Depth, lidar, segmentation,
 thermal and bounding box output doesn't depend on lights.
 
+## Tests
+
+The engine runs the common rendering tests and its own unit tests
+(`UNIT_Filament*_TEST`). Run a test binary with `GZ_ENGINE_TO_TEST=filament`
+(and `GZ_ENGINE_BACKEND=vulkan` for Vulkan; OpenGL is the default), with
+`GZ_RENDERING_PLUGIN_PATH` pointing at the build's `lib` directory and
+`GZ_RENDERING_RESOURCE_PATH` at the source tree:
+
+```bash
+GZ_ENGINE_TO_TEST=filament GZ_RENDERING_PLUGIN_PATH=$PWD/build/lib \
+  GZ_RENDERING_RESOURCE_PATH=$PWD build/bin/INTEGRATION_camera
+```
+
+`.github/workflows/filament.yml` does this for every test with software
+rendering (Mesa llvmpipe and lavapipe).

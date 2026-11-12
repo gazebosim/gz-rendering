@@ -23,7 +23,7 @@ Optional, lighting:
 
 Optional (performance only; the output is the same without them). Without
 them each Vulkan sensor capture costs about 0.7-1 ms more on an RTX 4070
-(3-7x slower per capture, default parity scene) and about 5% more on Intel
+(3-7x slower per capture, in a simple scene) and about 5% more on Intel
 Iris Xe; recommended for Vulkan on NVIDIA:
 
 - 0002 Vulkan readPixels reuses its staging buffers instead of allocating
@@ -35,11 +35,10 @@ Iris Xe; recommended for Vulkan on NVIDIA:
   type and channel count, no swizzle, zero offset). Output bytes are
   unchanged.
 
-Removed: 0001 (build fixes, replaced by configure options: GCC in a
-non-Release build type, and `MATC_OPT_FLAGS=--platform=all`), 0005
-(ogre2's diffuse lobe) and 0007 (per-view switch back to Filament's
-diffuse); 0006 was never published. Every view uses Filament's stock
-diffuse.
+The numbering has gaps: the patches that are not in this directory were
+dropped. Build fixes that used to be a patch are configure options now (GCC
+in a non-Release build type, and `MATC_OPT_FLAGS=--platform=all`, see
+../README.md), and every view uses Filament's stock diffuse.
 
 Rebuild gz-rendering after changing patches: its materials are compiled
 with the patched `matc`.

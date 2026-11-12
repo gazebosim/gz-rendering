@@ -902,6 +902,16 @@ bool FilamentRenderEngine::InitImpl()
   // falls back to slower heap allocations.
   filament::Engine::Config config;
   config.driverHandleArenaSizeMB = 32;
+  // Filament's frame graph takes shadow maps and other per-view textures
+  // from a cache. Every ended frame (Renderer::endFrame) ages it and frees
+  // one texture left unused for resourceAllocatorCacheMaxAge frames, 1 by
+  // default. Most sensors render standalone views, outside frames; the
+  // depth camera and the GPU rays end one each. With both, the shadow atlas
+  // of the RGB and depth colour views (2048 px DEPTH16 layers, ~40 MB with
+  // the sun and a point light) was freed and allocated again every sensor
+  // cycle, and the kernel zeroed its pages: half of the cycle on Iris Xe.
+  // Keep unused textures for 30 ended frames instead, so they are reused.
+  config.resourceAllocatorCacheMaxAge = 30;
   filament::Engine::Builder builder;
   builder.backend(backend).config(&config);
   if (backend == filament::Engine::Backend::OPENGL &&

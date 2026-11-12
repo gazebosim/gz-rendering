@@ -108,7 +108,8 @@ void FilamentRayQuery::SetFromCamera(const WideAngleCameraPtr &,
 }
 
 //////////////////////////////////////////////////
-RayQueryResult FilamentRayQuery::ClosestPoint(bool /*_forceSceneUpdate*/)
+RayQueryResult FilamentRayQuery::ClosestPoint(
+    [[maybe_unused]] bool _forceSceneUpdate)
 {
   RayQueryResult result;
   auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();

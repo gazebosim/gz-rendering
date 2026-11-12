@@ -36,6 +36,9 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
+    /// \brief Base implementation of the segmentation camera class: the
+    /// segmentation type, background and label maps, and the assignment of
+    /// the label colors that engines share
     template <class T>
     class BaseSegmentationCamera :
       public virtual SegmentationCamera,

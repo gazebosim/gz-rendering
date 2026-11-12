@@ -38,6 +38,9 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
+    /// \brief Base implementation of the bounding box camera class: the
+    /// bounding box type and the helpers engines share to find the visible
+    /// items in an id map, to compute, merge and draw their boxes
     template <class T>
     class BaseBoundingBoxCamera:
       public virtual BoundingBoxCamera,

@@ -65,6 +65,8 @@ namespace gz
       /// \brief 1x1 headless swap chain for BeginFrame/EndFrame, lazy
       public: filament::SwapChain *headless{nullptr};
       public: bool inFrame{false};
+      /// \brief CollectGarbage calls since the last frame ended
+      public: unsigned int callsWithoutFrame{0u};
       public: FilamentSceneStorePtr scenes;
       public: std::map<std::string, filament::Material *> materials;
       public: std::map<std::string, filament::Texture *> textures;
@@ -211,6 +213,24 @@ void FilamentRenderEngine::EndFrame()
     return;
   this->dataPtr->renderer->endFrame();
   this->dataPtr->inFrame = false;
+  this->dataPtr->callsWithoutFrame = 0u;
+}
+
+//////////////////////////////////////////////////
+void FilamentRenderEngine::CollectGarbage()
+{
+  // an empty frame every kInterval calls: each one also ages filament's
+  // render target cache, which then drops the targets of cameras that
+  // render less often (as many frames per call cost ~3 ms per call on
+  // Vulkan in a churn test of 7 cameras)
+  constexpr unsigned int kInterval = 30u;
+  if (!this->dataPtr->renderer || this->dataPtr->inFrame ||
+      ++this->dataPtr->callsWithoutFrame < kInterval)
+  {
+    return;
+  }
+  this->BeginFrame();
+  this->EndFrame();
 }
 
 //////////////////////////////////////////////////

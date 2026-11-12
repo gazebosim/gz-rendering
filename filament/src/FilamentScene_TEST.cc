@@ -25,9 +25,11 @@
 #include <filament/Engine.h>
 #include <utils/EntityManager.h>
 
+#include "gz/rendering/Camera.hh"
 #include "gz/rendering/RenderEngine.hh"
 #include "gz/rendering/RenderingIface.hh"
 #include "gz/rendering/Scene.hh"
+#include "gz/rendering/filament/FilamentMesh.hh"
 #include "gz/rendering/filament/FilamentRenderEngine.hh"
 
 using namespace gz;
@@ -70,5 +72,38 @@ TEST(FilamentSceneTest, DestroyScene)
   EXPECT_EQ(scenes, native->getSceneCount());
   EXPECT_EQ(lights, native->getIndirectLightCount());
   EXPECT_EQ(entities, ::utils::EntityManager::get().getEntityCount());
+  rendering::unloadEngine(engine->Name());
+}
+
+/////////////////////////////////////////////////
+// Filament has 2^17 entity ids and recycles them at the end of a frame.
+// Cameras render outside of frames: Scene::PreRender ends one, else
+// visuals can no longer be created once 2^17 entities were created in total
+TEST(FilamentSceneTest, EntityIdsRecycled)
+{
+  RenderEngine *engine = LoadEngine();
+  ASSERT_NE(nullptr, engine);
+  {
+    ScenePtr scene = engine->CreateScene("scene");
+    ASSERT_NE(nullptr, scene);
+    CameraPtr camera = scene->CreateCamera();
+    camera->SetImageWidth(8u);
+    camera->SetImageHeight(8u);
+    scene->RootVisual()->AddChild(camera);
+    // two entities per visual: its node and its mesh
+    for (int i = 0; i < 70000; ++i)
+    {
+      VisualPtr visual = scene->CreateVisual();
+      auto box = std::dynamic_pointer_cast<FilamentMesh>(scene->CreateBox());
+      ASSERT_NE(nullptr, box);
+      ASSERT_FALSE(box->Entity().isNull()) << "after " << i << " visuals";
+      visual->AddGeometry(box);
+      scene->RootVisual()->AddChild(visual);
+      scene->DestroyVisual(visual, true);
+      if (i % 100 == 0)
+        camera->Update();
+    }
+    engine->DestroyScene(scene);
+  }
   rendering::unloadEngine(engine->Name());
 }

@@ -251,6 +251,10 @@ void FilamentScene::SetAmbientLight(const math::Color &_color)
 //////////////////////////////////////////////////
 void FilamentScene::PreRender()
 {
+  // without it, a process whose cameras all render outside of frames (no
+  // depth camera or GPU rays) runs out of filament entity ids after 2^17
+  // entities created in total
+  FilamentRenderEngine::Instance()->CollectGarbage();
   BaseScene::PreRender();
   this->UpdateSkyLight();
 }

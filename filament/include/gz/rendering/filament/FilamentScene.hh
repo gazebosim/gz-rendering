@@ -90,8 +90,10 @@ namespace gz
       // Documentation inherited.
       public: virtual void SetSkyEnabled(bool _enabled) override;
 
-      /// \brief Prepare the scene for rendering, as BaseScene does, then
-      /// update the sky lighting (UpdateSkyLight).
+      /// \brief Prepare the scene for rendering, as BaseScene does, after
+      /// running filament's garbage collection
+      /// (FilamentRenderEngine::CollectGarbage), then update the sky
+      /// lighting (UpdateSkyLight).
       public: virtual void PreRender() override;
 
       // Documentation inherited.

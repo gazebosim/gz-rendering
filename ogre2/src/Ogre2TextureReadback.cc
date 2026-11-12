@@ -16,6 +16,8 @@
  */
 #include "Ogre2TextureReadback.hh"
 
+#include <algorithm>
+
 #include <gz/common/Console.hh>
 
 #include "gz/rendering/GpuWaitTime.hh"
@@ -23,10 +25,12 @@
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
+#include <OgreAsyncTextureTicket.h>
 #include <OgreImage2.h>
 #include <OgrePixelFormatGpuUtils.h>
 #include <OgreTextureBox.h>
 #include <OgreTextureGpu.h>
+#include <OgreTextureGpuManager.h>
 #ifdef _MSC_VER
   #pragma warning(pop)
 #endif
@@ -59,6 +63,99 @@ Ogre::TextureBox textureBoxFor(Ogre::TextureGpu *_texture,
 }
 
 //////////////////////////////////////////////////
+bool rendering::Ogre2CopyTextureToMemory(Ogre::TextureGpu *_texture,
+    const Ogre::TextureBox &_dst, Ogre::PixelFormatGpu _dstFormat)
+{
+  if (_texture->getResidencyStatus() != Ogre::GpuResidency::Resident &&
+      _texture->getNextResidencyStatus() != Ogre::GpuResidency::Resident)
+  {
+    gzerr << "Texture [" << _texture->getNameStr() << "] is not resident, "
+          << "it can't be read back" << std::endl;
+    return false;
+  }
+  const Ogre::TextureBox srcBox = _texture->getEmptyBox(0u);
+  if (!_dst.equalSize(srcBox))
+  {
+    gzerr << "Memory box is not the size of texture ["
+          << _texture->getNameStr() << "], it can't be read back"
+          << std::endl;
+    return false;
+  }
+  _texture->waitForData();
+
+  // What Ogre::Image2::copyContentsToMemory() does, so that the copy out of
+  // the mapped buffer is left out of the GPU wait.
+  Ogre::TextureGpuManager *textureManager = _texture->getTextureManager();
+  Ogre::TextureGpu *resolvedTexture = _texture;
+  if (_texture->isMultisample() && _texture->hasMsaaExplicitResolves() &&
+      !_texture->isOpenGLRenderWindow())
+  {
+    resolvedTexture = textureManager->createTexture(
+        _texture->getNameStr() + "/Tmp/__ResolveTex",
+        Ogre::GpuPageOutStrategy::Discard, Ogre::TextureFlags::RenderToTexture,
+        _texture->getTextureType());
+    resolvedTexture->copyParametersFrom(_texture);
+    resolvedTexture->setPixelFormat(_texture->getPixelFormat());
+    resolvedTexture->setSampleDescription(1u);
+    resolvedTexture->_transitionTo(Ogre::GpuResidency::Resident, nullptr);
+    _texture->_resolveTo(resolvedTexture);
+  }
+
+  Ogre::AsyncTextureTicket *ticket = textureManager->createAsyncTextureTicket(
+      srcBox.width, srcBox.height, srcBox.getDepthOrSlices(),
+      _texture->getTextureType(), _texture->getPixelFormat());
+  Ogre::TextureBox srcCopy = srcBox;
+  {
+    ScopedGpuWait gpuWait;
+    // With accurate tracking the first map() waits on a fence for the
+    // download to finish.
+    ticket->download(resolvedTexture, 0u, true, &srcCopy);
+  }
+
+  const auto mapSlice = [&](uint32_t _slice)
+  {
+    ScopedGpuWait gpuWait;
+    return ticket->map(_slice);
+  };
+  Ogre::TextureBox dst = _dst;
+  if (ticket->canMapMoreThanOneSlice())
+  {
+    Ogre::PixelFormatGpuUtils::bulkPixelConversion(
+        mapSlice(0u), _texture->getPixelFormat(), dst, _dstFormat);
+    ticket->unmap();
+  }
+  else
+  {
+    Ogre::TextureBox dstSlice = dst;
+    dstSlice.numSlices = 1u;
+    for (uint32_t i = 0u; i < ticket->getNumSlices(); ++i)
+    {
+      Ogre::PixelFormatGpuUtils::bulkPixelConversion(
+          mapSlice(i), _texture->getPixelFormat(), dstSlice, _dstFormat);
+      dstSlice.data = dstSlice.at(0u, 0u, 1u);
+      ticket->unmap();
+    }
+  }
+
+  textureManager->destroyAsyncTextureTicket(ticket);
+  if (resolvedTexture != _texture)
+    textureManager->destroyTexture(resolvedTexture);
+  return true;
+}
+
+//////////////////////////////////////////////////
+bool rendering::Ogre2ConvertFromTexture(Ogre::Image2 &_image,
+    Ogre::TextureGpu *_texture)
+{
+  _image.createEmptyImage(_texture->getInternalWidth(),
+      _texture->getInternalHeight(),
+      std::max({1u, _texture->getDepth(), _texture->getNumSlices()}),
+      _texture->getTextureType(), _texture->getPixelFormat(), 1u);
+  return Ogre2CopyTextureToMemory(_texture, _image.getData(0u),
+      _texture->getPixelFormat());
+}
+
+//////////////////////////////////////////////////
 bool Ogre2TextureReadback::ReadBack(Ogre::TextureGpu *_texture,
     Ogre::PixelFormatGpu _dstFormat, const PixelBuffer &_dst)
 {
@@ -75,15 +172,13 @@ bool Ogre2TextureReadback::ReadBack(Ogre::TextureGpu *_texture,
   const Ogre::PixelFormatGpu texFormat = _texture->getPixelFormat();
   if (texFormat == _dstFormat)
   {
-    // Same format: Ogre copies the rows with a plain memcpy.
-    ScopedGpuWait gpuWait;
-    Ogre::Image2::copyContentsToMemory(
-        _texture, _texture->getEmptyBox(0u), dstBox, _dstFormat);
+    // Same format: the rows are copied with a plain memcpy.
+    return Ogre2CopyTextureToMemory(_texture, dstBox, _dstFormat);
   }
   else
   {
     // Formats differ: read back unconverted into regular memory, then
-    // convert there. Image2::copyContentsToMemory() would otherwise convert
+    // convert there. Converting while copying would otherwise convert
     // straight out of the mapped GPU buffer, one byte at a time. Where the
     // driver maps that buffer uncached (Mesa freedreno on Adreno) that costs
     // ~40 ms per 848x480 RGB frame. The buffer is kept across calls so it is
@@ -92,11 +187,8 @@ bool Ogre2TextureReadback::ReadBack(Ogre::TextureGpu *_texture,
     this->conversionBuffer.resize(rawBox.getSizeBytes());
     rawBox.data = this->conversionBuffer.data();
 
-    {
-      ScopedGpuWait gpuWait;
-      Ogre::Image2::copyContentsToMemory(
-          _texture, _texture->getEmptyBox(0u), rawBox, texFormat);
-    }
+    if (!Ogre2CopyTextureToMemory(_texture, rawBox, texFormat))
+      return false;
     Ogre::PixelFormatGpuUtils::bulkPixelConversion(
         rawBox, texFormat, dstBox, _dstFormat);
   }

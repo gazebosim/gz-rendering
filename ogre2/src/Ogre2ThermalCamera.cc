@@ -47,7 +47,6 @@
 #include <gz/math/Helpers.hh>
 #include <gz/math/Matrix4.hh>
 
-#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2Heightmap.hh"
@@ -61,6 +60,8 @@
 #include "gz/rendering/ogre2/Ogre2Sensor.hh"
 #include "gz/rendering/ogre2/Ogre2ThermalCamera.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
+
+#include "Ogre2TextureReadback.hh"
 
 #include <gz/common/Image.hh>
 
@@ -1160,10 +1161,8 @@ void Ogre2ThermalCamera::PostRender()
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
 
   Ogre::Image2 image;
-  {
-    ScopedGpuWait gpuWait;
-    image.convertFromTexture(this->dataPtr->ogreThermalTexture, 0u, 0u);
-  }
+  if (!Ogre2ConvertFromTexture(image, this->dataPtr->ogreThermalTexture))
+    return;
 
   if (!this->dataPtr->thermalImage)
   {

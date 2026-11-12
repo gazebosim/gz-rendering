@@ -34,6 +34,8 @@
 
 namespace Ogre
 {
+  class Image2;
+  struct TextureBox;
   class TextureGpu;
 }
 
@@ -43,6 +45,29 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Copy the first mip of a texture into memory, converting it to
+    /// another format, like Ogre::Image2::copyContentsToMemory(). Only the
+    /// download, and the map that waits for it to finish, count as GPU wait
+    /// (see ScopedGpuWait). Copying out of the mapped buffer is CPU work.
+    /// \param[in] _texture Texture to copy
+    /// \param[in] _dst Memory to copy to, the same size as the texture
+    /// \param[in] _dstFormat Pixel format to write to _dst
+    /// \return True if the texture was copied, false with an error printed if
+    /// it isn't resident or _dst is not the size of the texture
+    GZ_RENDERING_OGRE2_HIDDEN
+    bool Ogre2CopyTextureToMemory(Ogre::TextureGpu *_texture,
+        const Ogre::TextureBox &_dst, Ogre::PixelFormatGpu _dstFormat);
+
+    /// \brief Read the first mip of a texture back into an image in the
+    /// texture's own format, like Ogre::Image2::convertFromTexture(_texture,
+    /// 0, 0), counting only the GPU wait as Ogre2CopyTextureToMemory() does.
+    /// \param[out] _image Image to read into
+    /// \param[in] _texture Texture to read
+    /// \return True if the texture was read back
+    GZ_RENDERING_OGRE2_HIDDEN
+    bool Ogre2ConvertFromTexture(Ogre::Image2 &_image,
+        Ogre::TextureGpu *_texture);
+
     /// \brief Reads a texture back into memory, converting it to another
     /// format.
     class GZ_RENDERING_OGRE2_HIDDEN Ogre2TextureReadback

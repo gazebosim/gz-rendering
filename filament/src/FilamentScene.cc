@@ -949,6 +949,7 @@ bool FilamentScene::InitObject(FilamentObjectPtr _object, unsigned int _id,
   _object->scene = this->SharedThis();
   _object->Load();
   _object->Init();
+  // Load and Init report no failure, as in Ogre2Scene::InitObject
   return true;
 }
 

@@ -387,7 +387,7 @@ namespace gz
       /// \param[in] _object Object to set up
       /// \param[in] _id Unique id to give the object
       /// \param[in] _name Name to give the object
-      /// \return True
+      /// \return True, always: Load and Init report no failure
       protected: bool InitObject(FilamentObjectPtr _object, unsigned int _id,
                      const std::string &_name);
 

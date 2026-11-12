@@ -66,6 +66,24 @@ namespace gz
       /// \return Mapped TextureBox; box.data is nullptr on failure.
       public: Ogre::TextureBox DownloadAndMap(Ogre::TextureGpu *_texture);
 
+      /// \brief First half of DownloadAndMap(): issue the download of
+      /// \p _texture without waiting for it.
+      /// \param[in] _texture Source GPU texture.
+      /// \param[in] _issuedAhead True when the caller maps the download only
+      /// after it has issued more GPU work (Camera::IssueReadback()). With
+      /// Vulkan the download is then submitted without a fence of its own,
+      /// because OGRE-Next waits for the GPU inside every download that has
+      /// one; see UntrackedAheadDownload().
+      /// \return False on failure (no texture or ticket).
+      public: bool Download(Ogre::TextureGpu *_texture,
+                            bool _issuedAhead = false);
+
+      /// \brief Second half of DownloadAndMap(): wait for the last
+      /// Download() and map it, with the same wait as DownloadAndMap().
+      /// \return Mapped TextureBox; box.data is nullptr if nothing was
+      /// downloaded since the last map.
+      public: Ogre::TextureBox MapDownloaded();
+
       /// \brief Unmap the ticket previously mapped by DownloadAndMap().
       /// Safe to call when nothing is mapped.
       public: void Unmap();
@@ -90,6 +108,9 @@ namespace gz
 
       /// \brief True while the ticket is currently mapped.
       private: bool mapped{false};
+
+      /// \brief True from Download() until MapDownloaded().
+      private: bool downloaded{false};
     };
 
     /// \brief Whether to use the legacy Ogre::Image2::convertFromTexture

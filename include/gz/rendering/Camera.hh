@@ -154,6 +154,16 @@ namespace gz
       /// successfully been executed.
       public: virtual void PostRender() = 0;
 
+      /// \brief Issue the GPU readback of the frame that Render() just drew,
+      /// without waiting for it. Call it between Render() and PostRender();
+      /// PostRender() then waits for that readback instead of issuing its
+      /// own. This lets a caller render several cameras before it waits for
+      /// any of their readbacks, so the readbacks overlap. The data that
+      /// PostRender() delivers is the same either way.
+      /// \return True if the readback was issued. False if the camera
+      /// doesn't support it (the default); PostRender() then works as usual.
+      public: virtual bool IssueReadback();
+
       /// \brief Get the visual for a given mouse position
       /// param[in] _mousePos mouse position
       //  \return visual for that position, null if no visual was found

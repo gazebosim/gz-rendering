@@ -92,9 +92,9 @@ void FilamentCapsule::SetMaterial(MaterialPtr _material, bool _unique)
 {
   // the capsule owns the clone (not the inner mesh) so it survives mesh
   // rebuilds along with any edit made through Material()
+  _material = filament_utils::MaterialToAssign(_material, _unique);
   if (!_material)
     return;
-  _material = _unique ? _material->Clone() : _material;
   if (this->mesh)
     this->mesh->SetMaterial(_material, false);
   filament_utils::ReplaceMaterial(this->Scene(), this->material,

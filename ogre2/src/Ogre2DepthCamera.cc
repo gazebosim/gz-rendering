@@ -1331,7 +1331,7 @@ bool Ogre2DepthCamera::IssueReadback()
   if (Ogre2UseLegacyReadback())
     return false;
   this->dataPtr->readbackIssued = this->dataPtr->depthReadback.Download(
-      this->dataPtr->ogreDepthTexture[1]);
+      this->dataPtr->ogreDepthTexture[1], true);
   return this->dataPtr->readbackIssued;
 }
 

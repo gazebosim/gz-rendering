@@ -1431,7 +1431,7 @@ bool Ogre2GpuRays::IssueReadback()
   if (Ogre2UseLegacyReadback())
     return false;
   this->dataPtr->readbackIssued = this->dataPtr->gpuRaysReadback.Download(
-      this->dataPtr->secondPassTexture);
+      this->dataPtr->secondPassTexture, true);
   return this->dataPtr->readbackIssued;
 }
 

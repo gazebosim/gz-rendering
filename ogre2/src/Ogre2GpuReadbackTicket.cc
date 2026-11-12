@@ -81,6 +81,29 @@ bool PollReadback()
 }
 
 //////////////////////////////////////////////////
+/// \brief Whether a download issued ahead (Camera::IssueReadback()) is
+/// issued without accurate tracking and submitted at once. Vulkan only.
+/// With accurate tracking, OGRE-Next's Vulkan render system (2.3 to 3.0)
+/// submits the download with a fence that it adds to the current frame's
+/// fences, and then, to start the next command buffer, waits for all of the
+/// current frame's fences (VulkanQueue::newCommandBuffer() ->
+/// VulkanVaoManager::waitForTailFrameToFinish()), the new one included: every
+/// accurately tracked download waits until the GPU has finished all the work
+/// submitted so far, so issuing it ahead gains nothing. Untracked plus
+/// flushCommands() submits the same commands without a fence, so nothing
+/// waits; map() then waits for the frame that carried the download, or, if
+/// that frame has not ended yet, for the device to go idle
+/// (VulkanVaoManager::waitForSpecificFrameToFinish()). Not for OpenGL:
+/// there accurate tracking costs only a glFenceSync, an untracked map() in
+/// the same frame is a glFinish(), and WaitForDownload() polls the fence.
+/// \return True if issued-ahead downloads are untracked.
+bool UntrackedAheadDownload()
+{
+  auto engine = Ogre2RenderEngine::Instance();
+  return engine && engine->GraphicsAPI() == GraphicsAPI::VULKAN;
+}
+
+//////////////////////////////////////////////////
 /// \brief Whether the env var GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT
 /// forces the wait in map(). Read on every call so tests can compare both
 /// waits.
@@ -229,7 +252,8 @@ Ogre::TextureBox Ogre2GpuReadbackTicket::DownloadAndMap(
 }
 
 //////////////////////////////////////////////////
-bool Ogre2GpuReadbackTicket::Download(Ogre::TextureGpu *_texture)
+bool Ogre2GpuReadbackTicket::Download(Ogre::TextureGpu *_texture,
+    bool _issuedAhead)
 {
   if (!_texture)
     return false;
@@ -274,8 +298,18 @@ bool Ogre2GpuReadbackTicket::Download(Ogre::TextureGpu *_texture)
     this->mapped = false;
   }
 
-  // accurateTracking=true: the download gets its own fence.
-  this->ticket->download(_texture, 0u, true);
+  if (_issuedAhead && UntrackedAheadDownload())
+  {
+    // No fence, so no wait here (see UntrackedAheadDownload()); submit now
+    // so that the GPU runs the download while the caller renders on.
+    this->ticket->download(_texture, 0u, false);
+    ReadbackRenderSystem()->flushCommands();
+  }
+  else
+  {
+    // accurateTracking=true: the download gets its own fence.
+    this->ticket->download(_texture, 0u, true);
+  }
   this->downloaded = true;
   return true;
 }

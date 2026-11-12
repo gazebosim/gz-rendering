@@ -50,7 +50,8 @@ fragment {
         highp vec2 fragPos = clip * vec2(-1.0, -1.0 / materialParams.ratio);
 
         highp float r = length(fragPos);
-        // calculate angle from optical axis based on the mapping function specified
+        // calculate angle from optical axis based on the mapping function
+        // specified
         highp float param = r/(c1*f);
         highp float theta = 0.0;
         if (fun.x > 0.0)
@@ -61,7 +62,8 @@ fragment {
           theta = param;
         theta = (theta-c3)*c2;
 
-        // compute the direction vector that will be used to sample from the cubemap
+        // compute the direction vector that will be used to sample from the
+        // cubemap
         highp vec3 tc = map(theta, fragPos, r);
 
         // tc is ogre2's cubemap lookup vector: (right, down, forward) in the
@@ -101,7 +103,8 @@ fragment {
 
         // limit to visible fov
         highp float param2 = cutOffAngle/c2+c3;
-        highp float cutRadius = c1*f*(fun.x*sin(param2)+fun.y*tan(param2)+fun.z*param2);
+        highp float cutRadius =
+            c1*f*(fun.x*sin(param2)+fun.y*tan(param2)+fun.z*param2);
 
         // smooth edges
         color *= 1.0-smoothstep(cutRadius-0.02,cutRadius,r);

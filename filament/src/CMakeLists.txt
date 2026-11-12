@@ -1,7 +1,8 @@
 gz_get_libsources_and_unittests(sources gtest_sources)
 
 set(engine_name "filament")
-gz_add_component(${engine_name} SOURCES ${sources} GET_TARGET_NAME filament_target)
+gz_add_component(${engine_name} SOURCES ${sources}
+  GET_TARGET_NAME filament_target)
 
 # Filament's public headers need C++20
 target_compile_features(${filament_target} PUBLIC cxx_std_20)
@@ -91,8 +92,10 @@ if (TARGET OpenGL::EGL)
   target_link_libraries(${filament_target} PRIVATE OpenGL::EGL)
 endif()
 
-install(TARGETS ${filament_target} DESTINATION ${GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR})
-install(DIRECTORY "${filament_media_dir}" DESTINATION ${GZ_RENDERING_RELATIVE_RESOURCE_PATH}/filament)
+install(TARGETS ${filament_target}
+  DESTINATION ${GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR})
+install(DIRECTORY "${filament_media_dir}"
+  DESTINATION ${GZ_RENDERING_RELATIVE_RESOURCE_PATH}/filament)
 
 gz_build_tests(TYPE UNIT
                SOURCES ${gtest_sources}

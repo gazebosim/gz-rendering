@@ -16,7 +16,8 @@ material {
 
 vertex {
     void materialVertex(inout MaterialVertexInputs material) {
-        material.clipPosition = getClipFromWorldMatrix() * material.worldPosition;
+        material.clipPosition =
+            getClipFromWorldMatrix() * material.worldPosition;
     }
 }
 

@@ -12,8 +12,10 @@ material {
     culling : none,
     vertexDomain : device,
     parameters : [
-        { type : sampler2d, name : atlas, precision : high, filterable : false },
-        { type : sampler2d, name : rays, precision : high, filterable : false }
+        { type : sampler2d, name : atlas, precision : high,
+          filterable : false },
+        { type : sampler2d, name : rays, precision : high,
+          filterable : false }
     ]
 }
 
@@ -28,7 +30,8 @@ fragment {
 
     void material(inout MaterialInputs material) {
         prepareMaterial(material);
-        highp vec4 ray = texelFetch(materialParams_rays, ivec2(gl_FragCoord.xy), 0);
+        highp vec4 ray =
+            texelFetch(materialParams_rays, ivec2(gl_FragCoord.xy), 0);
         highp float depth =
             unpackFloat(texelFetch(materialParams_atlas, ivec2(ray.xy), 0));
         highp uint bits = floatBitsToUint(depth * ray.z);

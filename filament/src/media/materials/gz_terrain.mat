@@ -48,21 +48,24 @@ fragment {
             texture(materialParams_normal0, layerUv(uv, 0)).xy * 2.0 - 1.0 :
             vec2(0.0);
         if (n > 1) {
-            c = mix(c, texture(materialParams_diffuse1, layerUv(uv, 1)).rgb, w.y);
+            c = mix(c,
+                texture(materialParams_diffuse1, layerUv(uv, 1)).rgb, w.y);
             vec2 t = (nf & 2) != 0 ?
                 texture(materialParams_normal1, layerUv(uv, 1)).xy * 2.0 - 1.0 :
                 vec2(0.0);
             nxy = mix(nxy, t, w.y);
         }
         if (n > 2) {
-            c = mix(c, texture(materialParams_diffuse2, layerUv(uv, 2)).rgb, w.z);
+            c = mix(c,
+                texture(materialParams_diffuse2, layerUv(uv, 2)).rgb, w.z);
             vec2 t = (nf & 4) != 0 ?
                 texture(materialParams_normal2, layerUv(uv, 2)).xy * 2.0 - 1.0 :
                 vec2(0.0);
             nxy = mix(nxy, t, w.z);
         }
         if (n > 3) {
-            c = mix(c, texture(materialParams_diffuse3, layerUv(uv, 3)).rgb, w.w);
+            c = mix(c,
+                texture(materialParams_diffuse3, layerUv(uv, 3)).rgb, w.w);
             vec2 t = (nf & 8) != 0 ?
                 texture(materialParams_normal3, layerUv(uv, 3)).xy * 2.0 - 1.0 :
                 vec2(0.0);

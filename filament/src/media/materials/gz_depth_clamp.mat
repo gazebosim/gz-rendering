@@ -14,7 +14,8 @@ material {
     parameters : [
         { type : sampler2d, name : alphaMap, precision : high },
         { type : float, name : alphaThreshold, precision : high },
-        { type : sampler2d, name : farMap, precision : high, filterable : false },
+        { type : sampler2d, name : farMap, precision : high,
+          filterable : false },
         { type : float, name : nearT, precision : high },
         { type : float, name : inf, precision : high }
     ]
@@ -31,7 +32,8 @@ fragment {
         highp vec4 viewPos =
             getViewFromWorldMatrix() * vec4(getWorldPosition(), 1.0);
         highp float depth = -viewPos.z;
-        if (depth >= texelFetch(materialParams_farMap, ivec2(gl_FragCoord.xy), 0).r)
+        if (depth >= texelFetch(materialParams_farMap,
+                                ivec2(gl_FragCoord.xy), 0).r)
             depth = materialParams.inf;
         else if (depth < materialParams.nearT)
             depth = -materialParams.inf;

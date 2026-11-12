@@ -59,12 +59,9 @@ namespace gz
       /// \brief Destructor
       public: virtual ~FilamentScene();
 
-      /// \brief Release the filament objects of the scene: the reflection
-      /// probe, the sky and ambient lighting, the skybox and the
-      /// filament::Scene.
-      public: virtual void Fini() override;
-
-      /// \brief Completely destroy the scene and all its resources. Meshes
+      /// \brief Completely destroy the scene and all its resources,
+      /// including its filament objects: the reflection probe, the sky and
+      /// ambient lighting, the skybox and the filament::Scene. Meshes
       /// detached from every visual but still referenced by the user are
       /// destroyed too, like ogre2 does with its scene manager.
       public: virtual void Destroy() override;
@@ -93,8 +90,10 @@ namespace gz
       // Documentation inherited.
       public: virtual void SetSkyEnabled(bool _enabled) override;
 
-      /// \brief Prepare the scene for rendering, as BaseScene does, then
-      /// update the sky lighting (UpdateSkyLight).
+      /// \brief Prepare the scene for rendering, as BaseScene does, after
+      /// running filament's garbage collection
+      /// (FilamentRenderEngine::CollectGarbage), then update the sky
+      /// lighting (UpdateSkyLight).
       public: virtual void PreRender() override;
 
       // Documentation inherited.

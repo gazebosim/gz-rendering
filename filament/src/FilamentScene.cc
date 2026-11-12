@@ -164,11 +164,16 @@ void FilamentScene::Destroy()
     mesh->Destroy();
   }
   BaseScene::Destroy();
-}
+  // the root visual is in no store: Clear() only emptied it. It and the
+  // mesh factory hold the scene, which is freed once they are released
+  if (this->rootVisual)
+  {
+    this->rootVisual->Destroy();
+    this->rootVisual.reset();
+  }
+  this->meshFactory.reset();
 
-//////////////////////////////////////////////////
-void FilamentScene::Fini()
-{
+  // the filament scene and what it owns, once nothing renders it any more
   this->probe.reset();
   this->DestroySkyLight();
   auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
@@ -246,6 +251,10 @@ void FilamentScene::SetAmbientLight(const math::Color &_color)
 //////////////////////////////////////////////////
 void FilamentScene::PreRender()
 {
+  // without it, a process whose cameras all render outside of frames (no
+  // depth camera or GPU rays) runs out of filament entity ids after 2^17
+  // entities created in total
+  FilamentRenderEngine::Instance()->CollectGarbage();
   BaseScene::PreRender();
   this->UpdateSkyLight();
 }
@@ -720,7 +729,7 @@ MeshPtr FilamentScene::CreateMeshImpl(unsigned int _id,
   FilamentMeshPtr mesh(new FilamentMesh);
   if (!this->InitObject(mesh, _id, _name))
     return nullptr;
-  if (!this->meshFactory->Load(mesh, _desc))
+  if (!this->meshFactory || !this->meshFactory->Load(mesh, _desc))
   {
     mesh->Destroy();
     return nullptr;

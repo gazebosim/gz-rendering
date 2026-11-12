@@ -130,6 +130,14 @@ namespace gz
       /// \return True between BeginFrame and EndFrame.
       public: bool InFrame() const;
 
+      /// \brief Let filament run its end of frame garbage collection: it
+      /// destroys the components of destroyed entities, recycles their ids
+      /// and trims its render target cache in Renderer::endFrame only.
+      /// Cameras render outside of frames: when no frame ended
+      /// (BeginFrame/EndFrame, e.g. a depth camera) over the last 30 calls,
+      /// this submits an empty one. Called by FilamentScene::PreRender.
+      public: void CollectGarbage();
+
       /// \brief Get (and lazily load) a compiled material package by name,
       /// e.g. "gz_lit", looked up under the engine resource path. A path
       /// ending in ".mat" is a material source, compiled at runtime.

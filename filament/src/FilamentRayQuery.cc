@@ -111,6 +111,8 @@ void FilamentRayQuery::SetFromCamera(const WideAngleCameraPtr &,
 RayQueryResult FilamentRayQuery::ClosestPoint(
     [[maybe_unused]] bool _forceSceneUpdate)
 {
+  // nothing to update: poses go to filament's TransformManager as they are
+  // set, so the transforms read below are always current
   RayQueryResult result;
   auto *engine = FilamentRenderEngine::Instance()->FilamentEngine();
   if (!engine || !this->scene)

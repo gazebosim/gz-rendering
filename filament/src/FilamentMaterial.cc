@@ -65,7 +65,7 @@ void FilamentMaterial::DestroyInstance(filament::MaterialInstance *_instance)
   if (!_instance || !engine)
     return;
   // filament refuses to destroy an instance a renderable still uses
-  // TODO: scans every mesh of the scene, a per-material user list if
+  // TODO(anyone): scans every mesh of the scene, a per-material user list if
   // destroying materials of big scenes ever shows up in profiles
   filament::Material *fallback =
       FilamentRenderEngine::Instance()->Material("gz_unlit");
@@ -135,7 +135,7 @@ filament::MaterialInstance *FilamentMaterial::Instance() const
     if (blended && this->litTransparent)
       return this->litTransparent;
     // alpha from texture: like ogre2, only when the texture has alpha
-    // TODO: unlit materials ignore it, and an opaque texture also drops
+    // TODO(anyone): unlit materials ignore it, and an opaque texture also drops
     // TwoSidedEnabled() (ogre2 keeps two-sided lighting); add an unlit /
     // double-sided-opaque variant if a scene needs them
     if (this->litMasked && this->TextureAlphaEnabled() && this->texture &&

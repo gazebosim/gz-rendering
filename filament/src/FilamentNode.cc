@@ -119,7 +119,7 @@ void FilamentNode::UpdateTransform()
     // filament composes the parent's world transform: undo its scale on
     // the rotation and scale part, like ogre's inherit scale off (the
     // position stays in the parent's scaled frame).
-    // TODO: exact for parents whose world transform has no shear only
+    // TODO(anyone): exact for parents whose world transform has no shear only
     const math::Vector3d parentScale = this->parent->WorldScale();
     for (int r = 0; r < 3; ++r)
     {

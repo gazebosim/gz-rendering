@@ -219,7 +219,7 @@ void FilamentLight::UpdateLight()
   // ogre2's PBS multiplies the specular lobe by the light's specular colour
   // and the diffuse lobe by its diffuse colour; filament lights have one
   // colour (the diffuse), so scale the specular lobe by specular / diffuse.
-  // TODO: grey ratio (mean of rgb); a specular hue unlike the diffuse
+  // TODO(anyone): grey ratio (mean of rgb); a specular hue unlike the diffuse
   // one is lost. Per-channel needs an rgb scale in the light UBO.
   const double diffuseMean =
       (this->diffuse.R() + this->diffuse.G() + this->diffuse.B()) / 3.0;

@@ -289,7 +289,7 @@ void FilamentDepthCamera::Render()
         world.Rot().XAxis(), world.Rot().YAxis(), world.Rot().ZAxis(),
         pinhole[0] * pw / width, pinhole[1] * ph / height, pw, ph,
         this->NearClipPlane() * kNearScale, this->particleDepth.data());
-    // TODO: particles assume a centered principal point, off-center
+    // TODO(anyone): particles assume a centered principal point, off-center
     // custom matrices shift them by (cx, cy) - center; pass both if needed
   }
   const float inf = std::numeric_limits<float>::infinity();

@@ -74,7 +74,7 @@ namespace
     }
   };
 
-  // TODO: keyed by SubMesh address (and centering, which changes the
+  // TODO(anyone): keyed by SubMesh address (and centering, which changes the
   // vertices), so editing a common::SubMesh in place after a visual was built
   // from it is not picked up by later visuals; key on a content hash if that
   // ever matters

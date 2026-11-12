@@ -222,7 +222,7 @@ namespace
 // install utils/JobSystem.h, which declares utils::JobSystem::adopt() and
 // emancipate(). Call them by their Itanium C++ ABI names (GCC and Clang;
 // `this` is the first argument), exported by libutils.a.
-// TODO: call engine.getJobSystem().adopt() / emancipate() once filament
+// TODO(anyone): call engine.getJobSystem().adopt() / emancipate() once filament
 // installs the header.
 extern "C" void _ZN5utils9JobSystem5adoptEv(::utils::JobSystem *_jobSystem);
 extern "C" void _ZN5utils9JobSystem10emancipateEv(
@@ -372,7 +372,7 @@ filament::Material *FilamentRenderEngine::CompileMaterial(
   in.read(chars.get(), size);
   std::unique_ptr<const char[]> buffer(chars.release());
 
-  // TODO: compiles on the render thread (~1 s per material, for the
+  // TODO(anyone): compiles on the render thread (~1 s per material, for the
   // running backend only), cached per path for the engine's lifetime; an
   // on-disk .filamat cache if startup time matters. No #include support.
   auto *engine = this->dataPtr->engine;
@@ -431,7 +431,11 @@ static bool LoadUncompressedDds(const std::string &_path, common::Image &_img)
   auto shift = [&](uint32_t _mask)
   {
     uint32_t b = 0;
-    while (_mask && !(_mask & 0xffu)) { _mask >>= 8u; ++b; }
+    while (_mask && !(_mask & 0xffu))
+    {
+      _mask >>= 8u;
+      ++b;
+    }
     return b;
   };
   const uint32_t r = shift(u32(92)), g = shift(u32(96)), b = shift(u32(100));

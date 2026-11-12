@@ -189,7 +189,8 @@ void FilamentHeightmap::Init()
   auto sub = std::make_unique<common::SubMesh>();
   sub->SetName(this->Name());
   sub->SetPrimitiveType(common::SubMesh::TRIANGLES);
-  auto at = [&](int _x, int _y) {
+  auto at = [&](int _x, int _y)
+  {
     _x = std::clamp(_x, 0, static_cast<int>(w) - 1);
     _y = std::clamp(_y, 0, static_cast<int>(w) - 1);
     return z[static_cast<size_t>(_y) * w + _x];

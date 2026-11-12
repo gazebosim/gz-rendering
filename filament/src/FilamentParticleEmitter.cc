@@ -291,12 +291,20 @@ void FilamentParticleEmitter::Step(double _dt)
         x = sym(); y = sym(); z = sym();
         break;
       case EM_CYLINDER:
-        do { x = sym(); y = sym(); } while (x * x + y * y > 1.0);
+        do
+        {
+          x = sym();
+          y = sym();
+        } while (x * x + y * y > 1.0);
         z = sym();
         break;
       case EM_ELLIPSOID:
-        do { x = sym(); y = sym(); z = sym(); }
-        while (x * x + y * y + z * z > 1.0);
+        do
+        {
+          x = sym();
+          y = sym();
+          z = sym();
+        } while (x * x + y * y + z * z > 1.0);
         break;
       default:
         break;

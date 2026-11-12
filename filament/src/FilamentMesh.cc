@@ -393,8 +393,8 @@ void FilamentSubMesh::ApplyInstance(filament::MaterialInstance *_instance,
   {
     // a fresh copy per override: sensors change their instances'
     // parameters every frame.
-    // TODO: one copy per alpha tested submesh and sensor pass, cache per
-    // override instance if forests of them show up in sensor profiles
+    // TODO(anyone): one copy per alpha tested submesh and sensor pass, cache
+    // per override instance if forests of them show up in sensor profiles
     copy = filament::MaterialInstance::duplicate(_instance);
     copy->setParameter("alphaMap", mat->FilamentTexture(),
         filament::TextureSampler(

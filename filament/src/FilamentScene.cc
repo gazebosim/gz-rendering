@@ -281,9 +281,9 @@ void FilamentScene::UpdateSkyLight()
     // sky luminance, see below). Nothing occludes them, so at the sky's own
     // brightness every glossy dielectric indoors mirrors a bright sky at
     // grazing angles. 0.3 keeps interiors within a few grey levels of the
-    // default mode and a sky tint on water and rocks. The IndirectLight
-    // intensity can't scale them: it also scales the skybox.
-    // TODO: tuned on Harmonic; reflection probes or SSR for real
+    // uniform ambient (no sky) and a sky tint on water and rocks. The
+    // IndirectLight intensity can't scale them: it also scales the skybox.
+    // TODO(anyone): tuned on Harmonic; reflection probes or SSR for real
     // indoor occlusion
     constexpr double kReflectionScale = 0.3;
     const double skyLum = Luminance(this->skySh[0][0], this->skySh[0][1],
@@ -401,7 +401,7 @@ void FilamentScene::SetSkyEnabled(bool _enabled)
         .intensity(1.0f).build(*engine->FilamentEngine());
     // drawn by color views only: the sensor views (depth, thermal,
     // segmentation, lidar) leave the particle layer out
-    // TODO: shares the particle layer, a layer of its own if a camera
+    // TODO(anyone): shares the particle layer, a layer of its own if a camera
     // ever hides particles but wants the sky
     this->skybox->setLayerMask(0xff, FilamentConversions::kParticleLayer);
   }

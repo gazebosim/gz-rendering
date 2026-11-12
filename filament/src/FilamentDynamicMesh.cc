@@ -442,7 +442,7 @@ void FilamentDynamicMesh::Update()
   box.set(lo - pad, hi + pad);
   filament::RenderableManager::Builder(1)
       .boundingBox(box)
-      // TODO: the point squares grow past the box, so points are never
+      // TODO(anyone): the point squares grow past the box, so points are never
       // culled; a pixel-size margin would need the camera
       .culling(!points)
       .castShadows(false)

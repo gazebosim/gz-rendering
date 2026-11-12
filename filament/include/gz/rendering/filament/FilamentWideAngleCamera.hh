@@ -21,7 +21,6 @@
 #include <limits>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include <gz/common/Event.hh>
 

@@ -17,7 +17,6 @@
 #ifndef GZ_RENDERING_FILAMENT_FILAMENTBOUNDINGBOXCAMERA_HH_
 #define GZ_RENDERING_FILAMENT_FILAMENTBOUNDINGBOXCAMERA_HH_
 
-#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>

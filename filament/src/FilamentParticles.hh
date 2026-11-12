@@ -20,7 +20,6 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
-#include <vector>
 
 #include <gz/math/Helpers.hh>
 #include <gz/math/Vector3.hh>

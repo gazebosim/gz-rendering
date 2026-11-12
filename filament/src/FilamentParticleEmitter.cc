@@ -16,7 +16,6 @@
  */
 
 #include <algorithm>
-#include <cmath>
 
 #include <filament/Engine.h>
 #include <filament/IndexBuffer.h>

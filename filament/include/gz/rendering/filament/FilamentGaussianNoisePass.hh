@@ -17,7 +17,6 @@
 #ifndef GZ_RENDERING_FILAMENT_FILAMENTGAUSSIANNOISEPASS_HH_
 #define GZ_RENDERING_FILAMENT_FILAMENTGAUSSIANNOISEPASS_HH_
 
-#include <cstdint>
 #include <memory>
 #include <vector>
 

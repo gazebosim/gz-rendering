@@ -1,6 +1,6 @@
 # Gazebo Rendering: Rendering library for robot applications
 
-**Maintainer:** ichen [AT] openrobotics [DOT] org
+**Maintainer:** iche [AT] intrinsic [DOT] ai
 
 [![GitHub open issues](https://img.shields.io/github/issues-raw/gazebosim/gz-rendering.svg)](https://github.com/gazebosim/gz-rendering/issues)
 [![GitHub open pull requests](https://img.shields.io/github/issues-pr-raw/gazebosim/gz-rendering.svg)](https://github.com/gazebosim/gz-rendering/pulls)

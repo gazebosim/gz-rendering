@@ -157,7 +157,11 @@ namespace gz
       public: virtual std::shared_ptr<const common::Image> EnvironmentMapData()
           const override;
 
-      // Documentation inherited
+      /// \brief Set the environment map. Unlike the other maps, the image
+      /// is not used to build the texture, only stored for
+      /// EnvironmentMapData(): the cube map is always loaded from _name.
+      /// \param[in] _name Path of a DXT1 or DXT5 DDS cube map file
+      /// \param[in] _img Stored, not rendered
       public: virtual void SetEnvironmentMap(const std::string &_name,
           const std::shared_ptr<const common::Image> &_img) override;
 

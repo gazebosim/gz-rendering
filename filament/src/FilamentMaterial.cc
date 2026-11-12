@@ -419,6 +419,8 @@ std::shared_ptr<const common::Image>
 void FilamentMaterial::SetEnvironmentMap(const std::string &_name,
     const std::shared_ptr<const common::Image> &_img)
 {
+  // _img is only kept for EnvironmentMapData(): the cube map is loaded by
+  // name (CubeTexture), and a common::Image has no six faces to build it
   this->SetMap(ENVIRONMENT, _name, _img);
 }
 

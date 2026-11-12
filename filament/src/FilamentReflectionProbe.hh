@@ -52,7 +52,8 @@ namespace filament_probe
   /// surfaces and metals reflect the room they are in instead of a sky the
   /// walls hide. The diffuse term (the SH irradiance) stays the scene's.
   /// The cube is refreshed a few faces per frame, so moving objects and a
-  /// moving camera catch up within a few frames.
+  /// moving camera catch up within a few frames; while the scene keeps
+  /// changing, a new cube is prefiltered every 6 / _faces frames.
   class ReflectionProbe
   {
     /// \param[in] _scene Scene to render
@@ -63,11 +64,11 @@ namespace filament_probe
 
     public: ~ReflectionProbe();
 
-    /// \brief Render the next _faces cube faces from _pos (round robin),
-    /// while faces rendered before the last change of _signature (a hash
-    /// of the scene state the cube depends on, _pos included) remain;
-    /// prefilter the cube once 6 fresh faces are in. Static scenes cost
-    /// nothing.
+    /// \brief Render the next _faces cube faces from _pos (round robin)
+    /// after a change of _signature (a hash of the scene state the cube
+    /// depends on, _pos included), and prefilter the cube once 6 faces are
+    /// in. A change during a refresh starts the next refresh when this one
+    /// is done. Static scenes cost nothing.
     /// \param[in] _layers Visible layers (the GUI camera's)
     /// \param[in] _clear Background colour (no sky)
     /// \return True when the reflections were updated
@@ -118,6 +119,9 @@ namespace filament_probe
 
     /// \brief Faces to render before the cube is up to date
     private: unsigned int staleFaces{6u};
+
+    /// \brief _signature changed during the current refresh
+    private: bool changed{false};
 
     /// \brief _signature of the last Render
     private: uint64_t signature{0u};

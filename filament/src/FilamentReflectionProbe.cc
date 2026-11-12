@@ -131,7 +131,18 @@ bool ReflectionProbe::Render(const double3 &_pos, uint8_t _layers,
   if (_signature != this->signature)
   {
     this->signature = _signature;
+    // a change during a refresh lets it finish first: restarting it would
+    // never complete a cube in a scene that changes every frame. Before
+    // its first face, the refresh simply starts over.
+    if (this->staleFaces > 0u && this->staleFaces < 6u)
+      this->changed = true;
+    else
+      this->staleFaces = 6u;
+  }
+  if (this->staleFaces == 0u && this->changed)
+  {
     this->staleFaces = 6u;
+    this->changed = false;
   }
   if (this->staleFaces == 0u)
     return false;

@@ -990,7 +990,8 @@ void FilamentScene::BeginReflections(const math::Vector3d &_pos,
   if (!this->scene || FilamentRenderEngine::Instance()->InFrame())
     return;
   // 128 px faces, 64 prefilter samples, one face per frame while stale
-  // (the cube catches up 6 frames after a change), sun shadows on: the
+  // (a change is in the reflections 5 frames later, up to 10 if a refresh
+  // was under way), sun shadows on: the
   // cheaper settings measured worse (no shadows) or no faster
   constexpr uint32_t kSize = 128u;
   constexpr uint16_t kSamples = 64u;

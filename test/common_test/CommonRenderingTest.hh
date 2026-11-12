@@ -64,6 +64,11 @@ GetEngineParams(const std::string &_engine, const std::string &_backend, const s
     gzdbg << "Using OGRE2-VULKAN backend to test" << std::endl;
     engineParams["vulkan"] = "1";
   }
+  else if (_engine == "filament" && _backend == "vulkan")
+  {
+    gzdbg << "Using FILAMENT-VULKAN backend to test" << std::endl;
+    engineParams["vulkan"] = "1";
+  }
   else if (_engine == "ogre2" && _backend == "metal")
   {
     gzdbg << "Using OGRE2-METAL backend to test" << std::endl;

@@ -1,0 +1,80 @@
+/*
+ * Copyright (C) 2026 Open Source Robotics Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#include <gtest/gtest.h>
+
+#include <memory>
+#include <string>
+
+#include <gz/common/Image.hh>
+
+#include "gz/rendering/filament/FilamentRenderEngine.hh"
+
+using namespace gz;
+using namespace rendering;
+
+/////////////////////////////////////////////////
+// egl_display / egl_context are pointers as decimal integers: anything else
+// fails Load instead of throwing
+TEST(FilamentRenderEngineTest, InvalidEglParams)
+{
+  FilamentRenderEngine *engine = FilamentRenderEngine::Instance();
+  for (const char *value : {"", "abc", "12abc", "-1", "0x10",
+      "99999999999999999999999"})
+  {
+    EXPECT_FALSE(engine->Load({{"egl_display", value}})) << value;
+    EXPECT_FALSE(engine->Load({{"egl_context", value}})) << value;
+  }
+}
+
+/////////////////////////////////////////////////
+// 16 bit PNGs (e.g. Fuel's Lake House albedo/normal/roughness maps) load:
+// common::Image returns 8 bytes per RGBA pixel for them
+TEST(FilamentRenderEngineTest, Texture16Bit)
+{
+  // 2x2 16 bit grayscale and RGB PNGs (RGBA comes out of the same path)
+  unsigned char gray[] = {
+    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d,
+    0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02,
+    0x10, 0x00, 0x00, 0x00, 0x00, 0x07, 0x4d, 0x8e, 0xbb, 0x00, 0x00, 0x00,
+    0x0f, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0x68, 0x60, 0x98, 0xc0,
+    0xc0, 0x00, 0x22, 0x00, 0x0b, 0x9a, 0x02, 0x21, 0xf6, 0x1f, 0xbb, 0xda,
+    0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82};
+  unsigned char rgb[] = {
+    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d,
+    0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x02,
+    0x10, 0x02, 0x00, 0x00, 0x00, 0xad, 0x44, 0x46, 0x30, 0x00, 0x00, 0x00,
+    0x18, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0x68, 0x60, 0x98, 0xc0,
+    0xb0, 0x80, 0x61, 0x03, 0xc3, 0x01, 0x86, 0x0b, 0x0c, 0x0c, 0xc8, 0x1c,
+    0x00, 0x66, 0x0a, 0x07, 0xe1, 0x55, 0x4a, 0x1c, 0x33, 0x00, 0x00, 0x00,
+    0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82};
+  auto grayImg = std::make_shared<common::Image>();
+  grayImg->SetFromCompressedData(gray, sizeof(gray),
+      common::Image::COMPRESSED_PNG);
+  ASSERT_EQ(common::Image::L_INT16, grayImg->PixelFormat());
+  auto rgbImg = std::make_shared<common::Image>();
+  rgbImg->SetFromCompressedData(rgb, sizeof(rgb),
+      common::Image::COMPRESSED_PNG);
+  ASSERT_EQ(common::Image::RGB_INT16, rgbImg->PixelFormat());
+
+  FilamentRenderEngine *engine = FilamentRenderEngine::Instance();
+  ASSERT_TRUE(engine->Load({}));
+  ASSERT_TRUE(engine->Init());
+  EXPECT_NE(nullptr, engine->Texture("gray16", grayImg, false));
+  EXPECT_NE(nullptr, engine->Texture("rgb16", rgbImg));
+  engine->Fini();
+}

@@ -93,6 +93,12 @@ TEST_F(WavesTest, Waves)
     vertexShaderFile = vertexShaderGLSLFile;
     fragmentShaderFile = fragmentShaderGLSLFile;
   }
+  else if (this->engine->Name() == "filament")
+  {
+    // filament takes material definitions, one .mat for both stages
+    vertexShaderFile = "GerstnerWaves.mat";
+    fragmentShaderFile = "GerstnerWaves.mat";
+  }
   else
   {
     vertexShaderFile = vertexShaderGLSL330File;

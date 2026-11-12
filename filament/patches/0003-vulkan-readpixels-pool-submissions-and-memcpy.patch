@@ -1,0 +1,235 @@
+diff --git a/filament/backend/src/DataReshaper.h b/filament/backend/src/DataReshaper.h
+index e9b2c34c..27215395 100644
+--- a/filament/backend/src/DataReshaper.h
++++ b/filament/backend/src/DataReshaper.h
+@@ -256,16 +256,16 @@ public:
+         constexpr auto HALF = PixelDataType::HALF;
+         constexpr auto UINT_10F_11F_11F_REV = PixelDataType::UINT_10F_11F_11F_REV;
+ 
++        // Same layout on both sides: reshapeImageImpl<T, T> would copy texel by texel, a row
++        // memcpy gives the same bytes. copyImage ignores top/left, hence the zero-offset check.
++        bool const sameLayout = dst->type == srcType && dstChannelCount == srcChannelCount &&
++                !swizzle && dst->top == 0 && dst->left == 0;
++
+         switch (dst->type) {
+             case UBYTE:
+                 switch (srcType) {
+                     case UBYTE:
+-                        reshaper = reshapeImageImpl<uint8_t, uint8_t>;
+-                        if (dst->format == PixelDataFormat::RGBA &&
+-                                dstChannelCount == srcChannelCount && !swizzle && dst->top == 0 &&
+-                                dst->left == 0) {
+-                            reshaper = copyImage;
+-                        }
++                        reshaper = sameLayout ? copyImage : reshapeImageImpl<uint8_t, uint8_t>;
+                         break;
+                     case FLOAT: reshaper = reshapeImageImpl<uint8_t, float>; break;
+                     case INT: reshaper = reshapeImageImpl<uint8_t, int32_t>; break;
+@@ -284,7 +284,9 @@ public:
+             case FLOAT:
+                 switch (srcType) {
+                     case UBYTE: reshaper = reshapeImageImpl<float, uint8_t>; break;
+-                    case FLOAT: reshaper = reshapeImageImpl<float, float>; break;
++                    case FLOAT:
++                        reshaper = sameLayout ? copyImage : reshapeImageImpl<float, float>;
++                        break;
+                     case HALF: reshaper = reshapeImageImpl<float, math::half>; break;
+                     case INT: reshaper = reshapeImageImpl<float, int32_t>; break;
+                     case UINT: reshaper = reshapeImageImpl<float, uint32_t>; break;
+@@ -303,7 +305,9 @@ public:
+                     case UBYTE: reshaper = reshapeImageImpl<int32_t, uint8_t>; break;
+                     case FLOAT: reshaper = reshapeImageImpl<int32_t, float>; break;
+                     case HALF: reshaper = reshapeImageImpl<int32_t, math::half>; break;
+-                    case INT: reshaper = reshapeImageImpl<int32_t, int32_t>; break;
++                    case INT:
++                        reshaper = sameLayout ? copyImage : reshapeImageImpl<int32_t, int32_t>;
++                        break;
+                     case UINT: reshaper = reshapeImageImpl<int32_t, uint32_t>; break;
+                     case UINT_10F_11F_11F_REV:
+                         if (swizzle) reshaper = reshapeImagePacked<int32_t, UnpackerR11G11B10, true>;
+@@ -321,7 +325,9 @@ public:
+                     case FLOAT: reshaper = reshapeImageImpl<uint32_t, float>; break;
+                     case HALF: reshaper = reshapeImageImpl<uint32_t, math::half>; break;
+                     case INT: reshaper = reshapeImageImpl<uint32_t, int32_t>; break;
+-                    case UINT: reshaper = reshapeImageImpl<uint32_t, uint32_t>; break;
++                    case UINT:
++                        reshaper = sameLayout ? copyImage : reshapeImageImpl<uint32_t, uint32_t>;
++                        break;
+                     case UINT_10F_11F_11F_REV:
+                         if (swizzle) reshaper = reshapeImagePacked<uint32_t, UnpackerR11G11B10, true>;
+                         else reshaper = reshapeImagePacked<uint32_t, UnpackerR11G11B10, false>;
+diff --git a/filament/backend/src/vulkan/VulkanReadPixels.cpp b/filament/backend/src/vulkan/VulkanReadPixels.cpp
+index 06408782..b0918771 100644
+--- a/filament/backend/src/vulkan/VulkanReadPixels.cpp
++++ b/filament/backend/src/vulkan/VulkanReadPixels.cpp
+@@ -67,6 +67,11 @@ void VulkanReadPixels::terminate() noexcept {
+         vkFreeMemory(mDevice, staging.memory, VKALLOC);
+     }
+     mFreeStaging.clear();
++    // The command buffers go with the pool.
++    for (FreeSubmission const& submission: mFreeSubmissions) {
++        vkDestroyFence(mDevice, submission.fence, VKALLOC);
++    }
++    mFreeSubmissions.clear();
+ 
+     vkDestroyCommandPool(mDevice, mCommandPool, VKALLOC);
+     mCommandPool = VK_NULL_HANDLE;
+@@ -103,14 +108,16 @@ void VulkanReadPixels::gc() {
+         }
+         // Keep the staging buffer for the next readback; drop the oldest past the cap.
+         mFreeStaging.push_back({ pos->stagingBuffer, pos->stagingMemory, pos->stagingSize,
+-                pos->hostCached });
++                pos->hostCached, pos->mapped });
+         if (mFreeStaging.size() > MAX_FREE_STAGING) {
+             vkDestroyBuffer(mDevice, mFreeStaging.front().buffer, VKALLOC);
+             vkFreeMemory(mDevice, mFreeStaging.front().memory, VKALLOC);
+             mFreeStaging.erase(mFreeStaging.begin());
+         }
+-        vkDestroyFence(mDevice, pos->fence, VKALLOC);
+-        vkFreeCommandBuffers(mDevice, mCommandPool, 1, &pos->cmdbuffer);
++        // Keep the fence and the command buffer too: the pool was created with
++        // RESET_COMMAND_BUFFER_BIT, so vkBeginCommandBuffer() resets the latter implicitly.
++        vkResetFences(mDevice, 1, &pos->fence);
++        mFreeSubmissions.push_back({ pos->fence, pos->cmdbuffer });
+         // This releases our reference to the source image, possibly destroying the VkImage. It is
+         // only safe here because the handler thread waited on the fence before retiring, so the
+         // copy we recorded is known to have completed.
+@@ -244,11 +251,13 @@ void VulkanReadPixels::run(fvkmemory::resource_ptr<VulkanTexture> srcTexture, ui
+         }
+     }
+     VkDeviceSize stagingCapacity = stagingSize;
++    uint8_t const* stagingMapped = nullptr;
+     if (reuse != mFreeStaging.end()) {
+         stagingBuffer = reuse->buffer;
+         stagingMemory = reuse->memory;
+         stagingCapacity = reuse->size;
+         hostCachedStaging = reuse->hostCached;
++        stagingMapped = reuse->mapped;
+         mFreeStaging.erase(reuse);
+     } else {
+         VkBufferCreateInfo bufferInfo = {
+@@ -293,16 +302,32 @@ void VulkanReadPixels::run(fvkmemory::resource_ptr<VulkanTexture> srcTexture, ui
+ 
+         vkAllocateMemory(device, &allocInfo, VKALLOC, &stagingMemory);
+         vkBindBufferMemory(device, stagingBuffer, stagingMemory, 0);
++        // Mapped for the buffer's whole life (vkFreeMemory unmaps); the handler thread only reads
++        // through the pointer after the fence signaled, and the memory is HOST_COHERENT.
++        void* mapped = nullptr;
++        vkMapMemory(device, stagingMemory, 0, VK_WHOLE_SIZE, 0, &mapped);
++        stagingMapped = static_cast<uint8_t const*>(mapped);
+     }
+ 
+     VkCommandBuffer cmdbuffer;
+-    VkCommandBufferAllocateInfo const allocateInfo = {
+-        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+-        .commandPool = mCommandPool,
+-        .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+-        .commandBufferCount = 1,
+-    };
+-    vkAllocateCommandBuffers(device, &allocateInfo, &cmdbuffer);
++    VkFence readCompleteFence;
++    if (!mFreeSubmissions.empty()) {
++        cmdbuffer = mFreeSubmissions.back().cmdbuffer;
++        readCompleteFence = mFreeSubmissions.back().fence;
++        mFreeSubmissions.pop_back();
++    } else {
++        VkCommandBufferAllocateInfo const allocateInfo = {
++            .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
++            .commandPool = mCommandPool,
++            .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
++            .commandBufferCount = 1,
++        };
++        vkAllocateCommandBuffers(device, &allocateInfo, &cmdbuffer);
++        VkFenceCreateInfo const fenceCreateInfo{
++                .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
++        };
++        vkCreateFence(device, &fenceCreateInfo, VKALLOC, &readCompleteFence);
++    }
+ 
+     VkCommandBufferBeginInfo const binfo{
+             .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+@@ -372,11 +397,6 @@ void VulkanReadPixels::run(fvkmemory::resource_ptr<VulkanTexture> srcTexture, ui
+ 
+     vkEndCommandBuffer(cmdbuffer);
+ 
+-    VkFence readCompleteFence;
+-    VkFenceCreateInfo const fenceCreateInfo{
+-            .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+-    };
+-    vkCreateFence(device, &fenceCreateInfo, VKALLOC, &readCompleteFence);
+     VkSubmitInfo const submitInfo{
+             .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+             .waitSemaphoreCount = 0,
+@@ -398,13 +418,15 @@ void VulkanReadPixels::run(fvkmemory::resource_ptr<VulkanTexture> srcTexture, ui
+         .cmdbuffer = cmdbuffer,
+         .stagingSize = stagingCapacity,
+         .hostCached = hostCachedStaging,
++        .mapped = stagingMapped,
+         .srcTexture = std::move(srcTexture),
+     });
+ 
+     // Note that the task owns `pbd` and the right to retire the request: whether or not it gets to
+     // run, it must give both back (to the client, and to us respectively).
+     mTaskHandler->post([this, device, width, height, swizzle, bpp, componentType, componentCount,
+-                               hostCachedStaging, stagingMemory, fence = readCompleteFence,
++                               hostCachedStaging, srcPixels = stagingMapped,
++                               fence = readCompleteFence,
+                                pbd = std::move(pbd)](bool const executed) mutable {
+         // The command buffer was submitted before this task was posted, so the GPU may still be
+         // using the request's resources. We must wait for the fence even when the task was
+@@ -414,10 +436,6 @@ void VulkanReadPixels::run(fvkmemory::resource_ptr<VulkanTexture> srcTexture, ui
+         // has already been submitted.
+         VkResult const status = vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX);
+         if (UTILS_LIKELY(executed && status == VK_SUCCESS)) {
+-            // Map memory so that we can start copying from it.
+-            uint8_t const* srcPixels;
+-            vkMapMemory(device, stagingMemory, 0, VK_WHOLE_SIZE, 0, (void**) &srcPixels);
+-
+             // If MSAA, MoltenVK returns samples in planar layout (Sample 0 is the first
+             // width * height pixels). So we can simply ask DataReshaper to read width * height
+             // elements with standard row pitch!
+@@ -439,8 +457,6 @@ void VulkanReadPixels::run(fvkmemory::resource_ptr<VulkanTexture> srcTexture, ui
+                         rowPitch, static_cast<int>(width), static_cast<int>(height), swizzle)) {
+                 FVK_LOGE << "Unsupported PixelDataFormat or PixelDataType";
+             }
+-
+-            vkUnmapMemory(device, stagingMemory);
+         } else if (status != VK_SUCCESS) {
+             FVK_LOGE << "Failed to wait for readPixels fence";
+         } else {
+diff --git a/filament/backend/src/vulkan/VulkanReadPixels.h b/filament/backend/src/vulkan/VulkanReadPixels.h
+index d0069b75..1590b685 100644
+--- a/filament/backend/src/vulkan/VulkanReadPixels.h
++++ b/filament/backend/src/vulkan/VulkanReadPixels.h
+@@ -91,9 +91,10 @@ private:
+         VkDeviceMemory stagingMemory = VK_NULL_HANDLE;
+         VkFence fence = VK_NULL_HANDLE;
+         VkCommandBuffer cmdbuffer = VK_NULL_HANDLE;
+-        // Staging buffer size and memory kind, so gc() can recycle it.
++        // Staging buffer size, memory kind and persistent mapping, so gc() can recycle it.
+         VkDeviceSize stagingSize = 0;
+         bool hostCached = true;
++        uint8_t const* mapped = nullptr;
+         // Nothing else keeps the source image alive while the copy is in flight: `run()`'s argument
+         // dies when it returns, and, unlike the command buffers recorded through
+         // VulkanCommandBuffer, ours does not acquire() the resources it references. Dropping this
+@@ -128,10 +129,19 @@ private:
+         VkDeviceMemory memory;
+         VkDeviceSize size;
+         bool hostCached;
++        uint8_t const* mapped;
+     };
+     std::vector<FreeStaging> mFreeStaging;
+     static constexpr size_t MAX_FREE_STAGING = 8;
+ 
++    // Command buffers and (unsignaled) fences of collected requests. Creating and destroying them
++    // per readback costs a few driver ioctls each on NVIDIA. Backend thread only.
++    struct FreeSubmission {
++        VkFence fence;
++        VkCommandBuffer cmdbuffer;
++    };
++    std::vector<FreeSubmission> mFreeSubmissions;
++
+     utils::Mutex mRetiredFencesMutex;
+     std::vector<VkFence> mRetiredFences UTILS_GUARDED_BY(mRetiredFencesMutex);
+ 

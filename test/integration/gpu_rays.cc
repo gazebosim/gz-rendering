@@ -370,7 +370,7 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(RaysUnitBox))
 TEST_F(GpuRaysTest,
     GZ_UTILS_TEST_DISABLED_ON_WIN32(CubemapEndpointSampling))
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
   #ifdef __APPLE__
     GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif
@@ -885,8 +885,8 @@ TEST_F(GpuRaysTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(UpsampledZeroVerticalFov))
 /// \brief Test detection of particles
 TEST_F(GpuRaysTest, RaysParticles)
 {
-  // Ogre2 is the only engine with particle effects
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  // particle effects: ogre2 and filament
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
   #ifdef __APPLE__
     GTEST_SKIP() << "Unsupported on apple, see issue #35.";
   #endif

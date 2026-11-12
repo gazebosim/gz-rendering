@@ -1,0 +1,113 @@
+// Wide-angle camera second pass: maps each output pixel to a direction with
+// the lens model and samples the cube faces rendered side by side into
+// `atlas` (+X -X +Y -Y +Z -Z, each faceRes wide, in an atlas 8 faces wide;
+// sensor frame X forward, Y left, Z up). The lens math is ogre2's
+// wide_lens_map_vs/fp.glsl verbatim.
+// flip: 1 when texture rows start at the bottom (OpenGL), 0 at the top.
+// Drawn as a fullscreen triangle in device (clip) space.
+material {
+    name : gz_wide_angle,
+    shadingModel : unlit,
+    blending : opaque,
+    depthWrite : false,
+    depthCulling : false,
+    culling : none,
+    vertexDomain : device,
+    parameters : [
+        { type : sampler2d, name : atlas, precision : high },
+        { type : float, name : cutOffAngle, precision : high },
+        { type : float, name : focal, precision : high },
+        { type : float, name : c1, precision : high },
+        { type : float, name : c2, precision : high },
+        { type : float, name : c3, precision : high },
+        { type : float3, name : fun, precision : high },
+        { type : float, name : ratio, precision : high },
+        { type : float, name : faceRes, precision : high },
+        { type : float, name : flip, precision : high }
+    ]
+}
+
+fragment {
+    highp vec3 map(highp float th, highp vec2 fragPos, highp float r)
+    {
+      // spherical to cartesian conversion
+      return vec3(-sin(th)*fragPos.x/r, sin(th)*fragPos.y/r, cos(th));
+    }
+
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        highp float cutOffAngle = materialParams.cutOffAngle;
+        highp float f = materialParams.focal;
+        highp float c1 = materialParams.c1;
+        highp float c2 = materialParams.c2;
+        highp float c3 = materialParams.c3;
+        highp vec3 fun = materialParams.fun;
+
+        // vertex shader: clip-space position * (-1, -1 / ratio). The
+        // viewport coordinate has its origin at the bottom left on every
+        // backend, like OpenGL clip space.
+        highp vec2 clip = getNormalizedViewportCoord().xy * 2.0 - 1.0;
+        highp vec2 fragPos = clip * vec2(-1.0, -1.0 / materialParams.ratio);
+
+        highp float r = length(fragPos);
+        // calculate angle from optical axis based on the mapping function
+        // specified
+        highp float param = r/(c1*f);
+        highp float theta = 0.0;
+        if (fun.x > 0.0)
+          theta = asin(param);
+        else if (fun.y > 0.0)
+          theta = atan(param);
+        else if (fun.z > 0.0)
+          theta = param;
+        theta = (theta-c3)*c2;
+
+        // compute the direction vector that will be used to sample from the
+        // cubemap
+        highp vec3 tc = map(theta, fragPos, r);
+
+        // tc is ogre2's cubemap lookup vector: (right, down, forward) in the
+        // camera. In the sensor frame (X forward, Y left, Z up):
+        highp vec3 d = r > 0.0 ? vec3(tc.z, -tc.x, -tc.y) : vec3(1.0, 0.0, 0.0);
+
+        // cube face of d; face bases as in FilamentCubeFaces.hh
+        highp vec3 ad = abs(d);
+        int face;
+        highp vec3 fwd;
+        highp vec3 up = vec3(0.0, 0.0, 1.0);
+        if (ad.x >= ad.y && ad.x >= ad.z) {
+          face = d.x < 0.0 ? 1 : 0;
+          fwd = vec3(sign(d.x), 0.0, 0.0);
+        } else if (ad.z >= ad.y) {
+          face = d.z < 0.0 ? 5 : 4;
+          fwd = vec3(0.0, 0.0, sign(d.z));
+          up = vec3(-sign(d.z), 0.0, 0.0);
+        } else {
+          face = d.y < 0.0 ? 3 : 2;
+          fwd = vec3(0.0, sign(d.y), 0.0);
+        }
+        highp float depth = dot(d, fwd);
+        highp float a = dot(d, cross(fwd, up)) / depth;
+        highp float b = dot(d, up) / depth;
+
+        // face texel, clamped to the face so bilinear filtering never reads
+        // the neighbouring atlas slot; rows counted from the top
+        highp float n = materialParams.faceRes;
+        highp float x = clamp((a * 0.5 + 0.5) * n, 0.5, n - 0.5)
+            + float(face) * n;
+        highp float y = clamp((0.5 - b * 0.5) * n, 0.5, n - 0.5);
+        if (materialParams.flip > 0.5)
+          y = n - y;
+        highp vec3 color = textureLod(materialParams_atlas,
+            vec2(x / (8.0 * n), y / n), 0.0).rgb;
+
+        // limit to visible fov
+        highp float param2 = cutOffAngle/c2+c3;
+        highp float cutRadius =
+            c1*f*(fun.x*sin(param2)+fun.y*tan(param2)+fun.z*param2);
+
+        // smooth edges
+        color *= 1.0-smoothstep(cutRadius-0.02,cutRadius,r);
+        material.baseColor = vec4(color, 1.0);
+    }
+}

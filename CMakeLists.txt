@@ -155,6 +155,38 @@ if (UNIX AND NOT APPLE)
   endif()
 endif()
 
+#--------------------------------------
+# Find Filament (experimental engine). Point FILAMENT_ROOT at an install
+# prefix produced by filament's own CMake build (see filament/README.md).
+set(FILAMENT_ROOT "$ENV{FILAMENT_ROOT}" CACHE PATH
+  "Filament install prefix; enables the experimental filament component")
+# Filament installs its archives in lib/<arch>, <arch> being the processor
+# name in lower case with amd64 as x86_64 (DIST_ARCH in its CMakeLists.txt)
+string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" filament_arch)
+string(REPLACE "amd64" "x86_64" filament_arch "${filament_arch}")
+set(FILAMENT_LIB_DIR "${FILAMENT_ROOT}/lib/${filament_arch}")
+if (NOT FILAMENT_ROOT)
+  message(STATUS "Skipping component [filament]: FILAMENT_ROOT not set")
+elseif (NOT EXISTS "${FILAMENT_ROOT}/include/filament/Engine.h" OR
+    NOT EXISTS "${FILAMENT_LIB_DIR}/libfilament.a")
+  message(WARNING "Skipping component [filament]: no Filament install at "
+    "FILAMENT_ROOT=${FILAMENT_ROOT} (expected include/filament/Engine.h "
+    "and lib/${filament_arch}/libfilament.a)")
+else()
+  # gz light attenuation and specular colour need filament/patches/0004;
+  # without it lights use Filament's own falloff and specular lobe
+  file(STRINGS "${FILAMENT_ROOT}/include/filament/LightManager.h"
+    GZ_FILAMENT_POLYNOMIAL_ATTENUATION REGEX "setPolynomialAttenuation")
+  if (NOT GZ_FILAMENT_POLYNOMIAL_ATTENUATION)
+    message(WARNING "Filament at ${FILAMENT_ROOT} lacks patch "
+      "filament/patches/0004: point and spot lights use Filament's "
+      "inverse-square falloff instead of gz attenuation, and light specular "
+      "colours are ignored (see filament/README.md)")
+  endif()
+  message(STATUS "Found Filament at ${FILAMENT_ROOT}")
+  set(GZ_RENDERING_HAVE_FILAMENT TRUE)
+endif()
+
 # Plugin install dirs
 set(GZ_RENDERING_ENGINE_RELATIVE_INSTALL_DIR
   ${GZ_LIB_INSTALL_DIR}/gz-${GZ_DESIGNATION}/engine-plugins
@@ -188,6 +220,10 @@ endif()
 
 if (GZ_RENDERING_HAVE_OGRE2)
   list(APPEND RENDERING_COMPONENTS ogre2)
+endif()
+
+if (GZ_RENDERING_HAVE_FILAMENT)
+  list(APPEND RENDERING_COMPONENTS filament)
 endif()
 
 configure_file("${PROJECT_SOURCE_DIR}/cppcheck.suppress.in"

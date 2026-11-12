@@ -1,0 +1,38 @@
+// Marker / lidar points: every point is a camera-facing square of pointSize
+// pixels (ogre2 sets gl_PointSize in its PointCloudPoint shader; filament has
+// no gl_PointSize). Each vertex carries the point position, its corner in
+// custom0 (+-1) and its color.
+material {
+    name : gz_marker_points,
+    shadingModel : unlit,
+    culling : none,
+    blending : opaque,
+    requires : [ color, custom0 ],
+    parameters : [
+        { type : float, name : pointSize }
+    ]
+}
+
+vertex {
+    void materialVertex(inout MaterialVertexInputs material) {
+        vec2 c = getCustom0().xy;
+        mat4 viewToWorld = getWorldFromViewMatrix();
+        vec4 viewPos = getViewFromWorldMatrix() * material.worldPosition;
+        mat4 proj = getClipFromViewMatrix();
+        float pixel = 2.0 / (abs(proj[1][1]) * getResolution().y);
+        // perspective: the world size of a pixel grows with depth
+        if (proj[2][3] != 0.0) {
+            pixel *= abs(viewPos.z);
+        }
+        material.worldPosition.xyz +=
+            (viewToWorld[0].xyz * c.x + viewToWorld[1].xyz * c.y) *
+            (0.5 * materialParams.pointSize * pixel);
+    }
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        material.baseColor = vec4(getColor().rgb, 1.0);
+    }
+}

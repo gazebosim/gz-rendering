@@ -492,6 +492,12 @@ void RenderEngineManagerPrivate::RegisterDefaultEngines()
   registerStaticOrSolibPlugin(ogre2EngineName, ogre2StaticFilename,
       /*_solibFilename=*/"");
 #endif
+
+#if GZ_RENDERING_HAVE_FILAMENT
+  // Register Filament (experimental)
+  registerStaticOrSolibPlugin("filament",
+      "static://gz::rendering::filament::Plugin", libNamePrefix + "filament");
+#endif
 }
 
 //////////////////////////////////////////////////

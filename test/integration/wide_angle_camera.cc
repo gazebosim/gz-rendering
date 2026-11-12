@@ -431,7 +431,13 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Projection))
   auto screenPt = camera->Project3d(worldPoint);
   EXPECT_FLOAT_EQ(camera->ImageWidth() * 0.5, screenPt.X());
   EXPECT_FLOAT_EQ(camera->ImageHeight() * 0.5, screenPt.Y());
-  EXPECT_GT(screenPt.Z(), 0.0);
+  // On the optical axis the distance from the image center is 0. Filament
+  // computes it in double precision and returns exactly 0, ogre2 returns
+  // single precision noise slightly above it.
+  if (this->engine->Name() == "filament")
+    EXPECT_GE(screenPt.Z(), 0.0);
+  else
+    EXPECT_GT(screenPt.Z(), 0.0);
   EXPECT_LT(screenPt.Z(), 1.0);
 
   // point behind camera

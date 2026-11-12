@@ -30,14 +30,19 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentWireBox :
       public BaseWireBox<FilamentDynamicGeometry>
     {
+      /// \brief Constructor
       protected: FilamentWireBox();
 
+      /// \brief Destructor
       public: virtual ~FilamentWireBox();
 
+      // Documentation inherited
       public: virtual void Init() override;
 
+      // Documentation inherited
       public: virtual void PreRender() override;
 
+      /// \brief Rebuild the 12 lines of the box from its extents
       private: void Create();
 
       private: friend class FilamentScene;

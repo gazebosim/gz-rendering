@@ -42,20 +42,28 @@ namespace gz
     /// \brief Conversion helpers between gz-math and filament::math types.
     namespace FilamentConversions
     {
+      /// \brief Convert a gz-math vector to a filament float3.
+      /// \param[in] _v Vector to convert.
+      /// \return The vector, narrowed to float.
       inline filament::math::float3 Convert(const math::Vector3d &_v)
       {
         return {static_cast<float>(_v.X()), static_cast<float>(_v.Y()),
                 static_cast<float>(_v.Z())};
       }
 
+      /// \brief Convert a gz-math quaternion to a filament quatf.
+      /// \param[in] _q Quaternion to convert.
+      /// \return The quaternion, narrowed to float.
       inline filament::math::quatf Convert(const math::Quaterniond &_q)
       {
         return {static_cast<float>(_q.W()), static_cast<float>(_q.X()),
                 static_cast<float>(_q.Y()), static_cast<float>(_q.Z())};
       }
 
-      /// \brief gz-math matrices index (row, column), filament's
-      /// [column][row]
+      /// \brief Convert a gz-math matrix to a filament mat4. gz-math
+      /// matrices index (row, column), filament's [column][row].
+      /// \param[in] _m Matrix to convert.
+      /// \return The same transform as a filament matrix.
       inline filament::math::mat4 Convert(const math::Matrix4d &_m)
       {
         filament::math::mat4 out;
@@ -65,8 +73,11 @@ namespace gz
         return out;
       }
 
-      /// \brief _m * (_v, 1), with the homogeneous w that gz-math's
-      /// Matrix4 * Vector3 drops
+      /// \brief Compute _m * (_v, 1), with the homogeneous w that gz-math's
+      /// Matrix4 * Vector3 drops.
+      /// \param[in] _m Transform matrix.
+      /// \param[in] _v Point to transform.
+      /// \return The transformed homogeneous point (x, y, z, w).
       inline math::Vector4d Transform(const math::Matrix4d &_m,
           const math::Vector3d &_v)
       {
@@ -80,6 +91,9 @@ namespace gz
       }
 
       /// \brief Local transform matrix T * R * S.
+      /// \param[in] _pose Translation (T) and rotation (R).
+      /// \param[in] _scale Scale (S).
+      /// \return The combined local transform as a filament matrix.
       inline filament::math::mat4f Convert(const math::Pose3d &_pose,
           const math::Vector3d &_scale)
       {
@@ -88,13 +102,19 @@ namespace gz
                filament::math::mat4f::scaling(Convert(_scale));
       }
 
-      /// \brief gz colors are linear: ogre2 feeds them to the shaders as-is
-      /// and renders into an sRGB target, so do the same here.
+      /// \brief Convert a gz color to a filament float3 (RGB). gz colors are
+      /// linear: ogre2 feeds them to the shaders as-is and renders into an
+      /// sRGB target, so do the same here.
+      /// \param[in] _c Color to convert; alpha is dropped.
+      /// \return The RGB components, unchanged.
       inline filament::math::float3 ToFloat3(const math::Color &_c)
       {
         return {_c.R(), _c.G(), _c.B()};
       }
 
+      /// \brief Convert a gz color to a filament float4 (RGBA), unchanged.
+      /// \param[in] _c Color to convert.
+      /// \return The RGBA components.
       inline filament::math::float4 ToFloat4(const math::Color &_c)
       {
         return {_c.R(), _c.G(), _c.B(), _c.A()};
@@ -114,6 +134,7 @@ namespace gz
       /// scenes with more than 7 distinct visual flag values can
       /// over-render. Upgrade to a per-scene table with re-layering if that
       /// ever matters.
+      /// \return The process-wide table of visual flag values.
       inline std::array<uint32_t, 8> &LayerValues()
       {
         static std::array<uint32_t, 8> values = [] {
@@ -128,6 +149,8 @@ namespace gz
       /// gz draws a visual when (flags & cameraMask) != 0; giving each
       /// distinct flag value its own layer keeps that test exact for any
       /// mask, including masks with most bits set such as ~GZ_VISIBILITY_GUI.
+      /// \param[in] _flags gz visibility flags of the visual.
+      /// \return The filament layer bit of the visual.
       inline uint8_t ToLayers(uint32_t _flags)
       {
         if (_flags == 0u)
@@ -152,6 +175,8 @@ namespace gz
       /// \brief Filament layers a camera with gz visibility mask _mask sees:
       /// every layer whose visual flag value intersects the mask. Call it
       /// per render, after visuals have registered their flags.
+      /// \param[in] _mask gz visibility mask of the camera.
+      /// \return The filament layer mask of the camera.
       inline uint8_t MaskToLayers(uint32_t _mask)
       {
         const auto &values = LayerValues();
@@ -163,14 +188,18 @@ namespace gz
       }
 
       /// \brief Layers seen by sensors that do not render particles as
-      /// geometry (depth, lidar, thermal, segmentation, bounding boxes)
+      /// geometry (depth, lidar, thermal, segmentation, bounding boxes).
+      /// \param[in] _mask gz visibility mask of the sensor.
+      /// \return The filament layer mask, without the particle layer.
       inline uint8_t ToSensorLayers(uint32_t _mask)
       {
         return MaskToLayers(_mask) & static_cast<uint8_t>(~kParticleLayer);
       }
 
       /// \brief sRGB transfer function, for values written outside of a
-      /// filament render pass (e.g. background-colored point cloud entries)
+      /// filament render pass (e.g. background-colored point cloud entries).
+      /// \param[in] _x Linear value, normally in [0, 1].
+      /// \return The sRGB-encoded value.
       inline double LinearToSrgb(double _x)
       {
         return _x < 0.0031308 ? _x * 12.92
@@ -180,6 +209,7 @@ namespace gz
       /// \brief Rotation from the gz camera frame (X forward, Z up) to the
       /// filament camera frame (-Z forward, Y up). Same matrix as the one
       /// used by BaseCamera::ViewMatrix().
+      /// \return The camera frame rotation as a 4x4 matrix.
       inline filament::math::mat4f CameraFix()
       {
         return filament::math::mat4f(

@@ -42,27 +42,41 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentHeightmap :
       public BaseHeightmap<FilamentGeometry>
     {
+      /// \brief Constructor
       protected: explicit FilamentHeightmap(const HeightmapDescriptor &_desc);
 
+      /// \brief Destructor
       public: virtual ~FilamentHeightmap();
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
+      /// \brief Update the terrain mesh. Like ogre2's Terra, the terrain
+      /// ignores its scene node (the descriptor's position and size are
+      /// world coordinates), so the parent visual's transform is cancelled.
       public: virtual void PreRender() override;
 
+      // Documentation inherited
       public: virtual ::utils::Entity Entity() const override;
 
+      // Documentation inherited
       public: virtual void SetLayers(uint8_t _layers) override;
 
-      /// \brief No-op, like ogre2: the terrain keeps its own material
+      /// \brief No-op, like ogre2: the terrain keeps its own material.
+      /// \param[in] _material Ignored.
+      /// \param[in] _unique Ignored.
       public: virtual void SetMaterial(MaterialPtr _material,
                   bool _unique) override;
 
-      /// \brief nullptr, like ogre2
+      /// \brief Always null, like ogre2.
+      /// \return Null.
       public: virtual MaterialPtr Material() const override;
 
+      /// \brief Build the terrain grid from the descriptor's data, the mesh
+      /// that draws it and its terrain material.
       protected: virtual void Init() override;
 
+      /// \brief Store the parent visual, also on the internal mesh.
       protected: virtual void SetParent(FilamentVisualPtr _parent) override;
 
       /// \brief Source grid, referenced by the mesh descriptor

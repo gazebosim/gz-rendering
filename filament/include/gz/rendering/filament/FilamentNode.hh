@@ -35,39 +35,61 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentNode :
       public BaseNode<FilamentObject>
     {
+      /// \brief Constructor
       protected: FilamentNode() = default;
 
+      /// \brief Destructor
       public: virtual ~FilamentNode() = default;
 
+      // Documentation inherited
       public: virtual bool HasParent() const override;
 
+      // Documentation inherited
       public: virtual NodePtr Parent() const override;
 
-      /// \brief Entity carrying this node's transform component
+      /// \brief Get the entity carrying this node's transform component.
+      /// \return The entity, null before Init and after Destroy.
       public: ::utils::Entity Entity() const;
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
       public: virtual math::Vector3d LocalScale() const override;
 
+      // Documentation inherited
       public: virtual bool InheritScale() const override;
 
+      // Documentation inherited
       public: virtual void SetInheritScale(bool _inherit) override;
 
+      // Documentation inherited
       protected: virtual void SetLocalScaleImpl(
                      const math::Vector3d &_scale) override;
 
+      /// \brief Get the local pose of this node as stored, relative to the
+      /// parent and without the origin offset that LocalPose adds.
       protected: virtual math::Pose3d RawLocalPose() const override;
 
+      /// \brief Store the local pose of this node, without the origin
+      /// offset, and push it into the filament transform component.
       protected: virtual void SetRawLocalPose(const math::Pose3d &_pose)
                      override;
 
+      /// \brief Get the store of children of this node.
       protected: virtual NodeStorePtr Children() const override;
 
+      /// \brief Parent _child's entity to this node's. Fails with an error
+      /// if _child was created by another render engine or is an ancestor
+      /// of this node.
       protected: virtual bool AttachChild(NodePtr _child) override;
 
+      /// \brief Unparent _child's entity from this node's. Fails with an
+      /// error if _child was created by another render engine.
       protected: virtual bool DetachChild(NodePtr _child) override;
 
+      /// \brief Store the parent node. The filament parenting is done by
+      /// AttachChild and DetachChild.
       protected: virtual void SetParent(FilamentNodePtr _parent);
 
       /// \brief True if the parent chain reaches the scene's root visual
@@ -79,6 +101,8 @@ namespace gz
       /// \param[in] _inScene True to add, false to remove
       protected: virtual void SetInScene(bool _inScene);
 
+      /// \brief Create the entity with its transform component and the
+      /// store of children.
       protected: virtual void Init() override;
 
       /// \brief Push pose * scale into the filament transform component,
@@ -89,18 +113,26 @@ namespace gz
       /// and whose parent's world scale depends on this node's
       protected: void UpdateScaleDependents();
 
+      /// \brief Parent node, null if there is none.
       protected: FilamentNodePtr parent;
 
+      /// \brief Entity carrying the transform component, null before Init
+      /// and after Destroy.
       protected: ::utils::Entity entity;
 
+      /// \brief Local pose relative to the parent, see RawLocalPose.
       protected: math::Pose3d pose;
 
+      /// \brief Local scale.
       protected: math::Vector3d scale = math::Vector3d::One;
 
+      /// \brief Whether the parent's scale applies to this node.
       protected: bool inheritScale = true;
 
+      /// \brief Child nodes, created in Init.
       protected: FilamentNodeStorePtr children;
 
+      /// \brief Get a shared pointer to this node.
       private: FilamentNodePtr SharedThis();
 
       private: friend class FilamentScene;

@@ -51,45 +51,60 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentMesh :
       public BaseMesh<FilamentGeometry>
     {
+      /// \brief Constructor
       protected: FilamentMesh();
 
+      /// \brief Destructor
       public: virtual ~FilamentMesh();
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
       public: virtual ::utils::Entity Entity() const override;
 
+      // Documentation inherited
       public: virtual void SetLayers(uint8_t _layers) override;
 
+      // Documentation inherited
       public: virtual void PreRender() override;
 
       // Documentation inherited (skeleton API, FilamentMeshSkeleton.cc)
       public: virtual bool HasSkeleton() const override;
 
+      // Documentation inherited
       public: virtual std::map<std::string, math::Matrix4d>
           SkeletonLocalTransforms() const override;
 
+      // Documentation inherited
       public: virtual void SetSkeletonLocalTransforms(
           const std::map<std::string, math::Matrix4d> &_tfs) override;
 
+      // Documentation inherited
       public: virtual std::unordered_map<std::string, float>
           SkeletonWeights() const override;
 
+      // Documentation inherited
       public: virtual void SetSkeletonWeights(
           const std::unordered_map<std::string, float> &_weights) override;
 
+      // Documentation inherited
       public: virtual void SetSkeletonAnimationEnabled(
           const std::string &_name, bool _enabled, bool _loop = true,
           float _weight = 1.0) override;
 
+      // Documentation inherited
       public: virtual bool SkeletonAnimationEnabled(
           const std::string &_name) const override;
 
+      // Documentation inherited
       public: virtual void UpdateSkeletonAnimation(
           std::chrono::steady_clock::duration _time) override;
 
-      /// \brief Set up the bone state of a skinned mesh (mesh factory);
-      /// _gpu: the renderable was built with skinning(bone count)
+      /// \brief Set up the bone state of a skinned mesh (mesh factory).
+      /// \param[in] _skeleton Skeleton of the mesh.
+      /// \param[in] _gpu True if the renderable was built with
+      /// skinning(bone count), so the bone matrices are uploaded to the GPU.
       public: void InitSkeleton(common::SkeletonPtr _skeleton, bool _gpu);
 
       /// \brief Upload the bone matrices if the pose changed
@@ -99,36 +114,47 @@ namespace gz
       /// _alphaTest, alpha tested submeshes discard their cut-out texels in
       /// it too (when its material has the alphaMap / alphaThreshold
       /// parameters), like ogre2's sensor passes.
+      /// \param[in] _instance Material instance to render with.
+      /// \param[in] _alphaTest Whether alpha tested submeshes keep their
+      /// alpha test in _instance.
       public: virtual void OverrideMaterial(
           filament::MaterialInstance *_instance, bool _alphaTest = true);
 
-      /// \brief Temporarily render submesh _index with _instance
+      /// \brief Temporarily render submesh _index with _instance.
+      /// \param[in] _index Index of the submesh.
+      /// \param[in] _instance Material instance to render with.
       public: virtual void OverrideMaterial(unsigned int _index,
                   filament::MaterialInstance *_instance);
 
       /// \brief Whether a submesh draws an alpha tested copy of the
       /// override instance. Copies are new instances: their parameters
       /// reach the GPU when the next frame begins.
+      /// \return True if a submesh draws an alpha tested copy.
       public: bool HasAlphaTestedOverride() const;
 
-      /// \brief Undo OverrideMaterial
+      /// \brief Undo OverrideMaterial.
       public: virtual void RestoreMaterials();
 
       /// \brief Rebind the submeshes bound to _old to _new: the material
       /// owning _old is destroyed while still in use (ogre2 falls back to
-      /// its default datablock the same way)
+      /// its default datablock the same way).
+      /// \param[in] _old Material instance to replace.
+      /// \param[in] _new Material instance to bind instead.
       public: void ReplaceInstance(filament::MaterialInstance *_old,
           filament::MaterialInstance *_new);
 
       /// \brief Draw the triangle submeshes as their edges (LINES), or back
       /// as triangles. ogre2's wireframe polygon mode, which filament lacks.
+      /// \param[in] _wireframe True to draw edges, false to draw triangles.
       public: void SetWireframe(bool _wireframe);
 
       /// \brief Depth-only copy of the triangles drawn while in wireframe
-      /// (null otherwise): it hides the back edges
+      /// (null otherwise): it hides the back edges.
+      /// \return The entity of the depth-only copy, null if there is none.
       public: ::utils::Entity HiddenSurface() const;
 
-      /// \brief Register a submesh built by the mesh factory
+      /// \brief Register a submesh built by the mesh factory.
+      /// \param[in] _subMesh Submesh to add to this mesh.
       public: void AddSubMesh(FilamentSubMeshPtr _subMesh);
 
       /// \brief Heightmap terrain, which ogre2 draws with Terra rather than
@@ -136,10 +162,15 @@ namespace gz
       /// the bounding box camera treats it as an unlabeled occluder.
       public: bool terrain{false};
 
+      /// \brief Get the store of submeshes of this mesh.
       protected: virtual SubMeshStorePtr SubMeshes() const override;
 
+      /// \brief Create the mesh entity (with a transform) and register the
+      /// mesh with the scene.
       protected: virtual void Init() override;
 
+      /// \brief Filament entity of the renderable, null before Init and
+      /// after Destroy.
       protected: ::utils::Entity entity;
 
       /// \brief See HiddenSurface()
@@ -148,11 +179,15 @@ namespace gz
       /// \brief Destroy hiddenSurface
       private: void DestroyHiddenSurface();
 
+      /// \brief Store of the submeshes of this mesh.
       protected: FilamentSubMeshStorePtr subMeshes;
 
-      /// \brief Bone and animation state, null without a skeleton
+      /// \brief Bone and animation state of a skinned mesh, defined in
+      /// FilamentMeshSkeleton.cc.
       private: struct SkeletonState;
-      /// (shared_ptr: deletable where SkeletonState is incomplete)
+
+      /// \brief Bone and animation state, null without a skeleton
+      /// (shared_ptr: deletable where SkeletonState is incomplete).
       private: std::shared_ptr<SkeletonState> skeleton;
 
       private: friend class FilamentScene;
@@ -160,17 +195,24 @@ namespace gz
       private: friend class FilamentSubMesh;
     };
 
+    /// \brief Filament implementation of a submesh: one primitive of the
+    /// renderable of its FilamentMesh.
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentSubMesh :
       public BaseSubMesh<FilamentObject>
     {
+      /// \brief Constructor
       protected: FilamentSubMesh() = default;
 
+      /// \brief Destructor
       public: virtual ~FilamentSubMesh() = default;
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
       public: virtual void PreRender() override;
 
+      // Documentation inherited
       protected: virtual void SetMaterialImpl(MaterialPtr _material) override;
 
       /// \brief Bind _instance as the primitive's material instance. An
@@ -179,12 +221,16 @@ namespace gz
       protected: void ApplyInstance(filament::MaterialInstance *_instance,
           bool _alphaTest = true);
 
+      /// \brief Mesh this submesh belongs to.
       protected: FilamentMesh *mesh{nullptr};
 
+      /// \brief Index of this submesh's primitive in the mesh's renderable.
       protected: size_t index{0u};
 
+      /// \brief Vertex buffer of the primitive, owned by geometry.
       protected: filament::VertexBuffer *vertexBuffer{nullptr};
 
+      /// \brief Index buffer of the primitive, owned by geometry.
       protected: filament::IndexBuffer *indexBuffer{nullptr};
 
       /// \brief Owns vertexBuffer / indexBuffer, which are shared by every

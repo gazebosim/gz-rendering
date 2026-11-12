@@ -33,23 +33,33 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentLightVisual :
       public BaseLightVisual<FilamentVisual>
     {
+      /// \brief Constructor
       protected: FilamentLightVisual();
 
+      /// \brief Destructor
       public: virtual ~FilamentLightVisual();
 
+      /// \brief Initialize the visual and create its lines.
       public: virtual void Init() override;
 
+      // Documentation inherited
       public: virtual void PreRender() override;
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
       public: virtual void SetMaterial(MaterialPtr _material,
                                        bool _unique) override;
 
+      /// \brief Build the lines from CreateVisualLines(), creating the
+      /// dynamic mesh on first use.
       private: void CreateVisual();
 
+      /// \brief Dynamic mesh of the light's lines.
       private: std::shared_ptr<FilamentDynamicMesh> lines;
 
+      /// \brief True when material is a clone this visual owns and destroys.
       private: bool ownsMaterial{false};
 
       private: friend class FilamentScene;

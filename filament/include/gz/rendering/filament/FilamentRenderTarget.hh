@@ -56,43 +56,57 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentRenderTarget :
       public virtual BaseRenderTarget<FilamentObject>
     {
+      /// \brief Constructor
       protected: FilamentRenderTarget();
 
+      /// \brief Destructor
       public: virtual ~FilamentRenderTarget();
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
       public: virtual void Copy(Image &_image) const override;
 
       /// \brief Render _view into this target: a standalone frame (its own
       /// submit), or a pass of the frame opened by
       /// FilamentRenderEngine::BeginFrame
+      /// \param[in] _view View to render
       /// \param[in] _viewport Region to draw into; nullptr: whole target
       /// \param[in] _clear Clear the color attachment first (the whole
       /// attachment, on every backend); false keeps what is there
       public: void Render(filament::View *_view,
           const filament::Viewport *_viewport = nullptr, bool _clear = true);
 
-      /// \brief Raw clear color written to the attachment before rendering
+      /// \brief Set the raw clear color written to the attachment before
+      /// rendering.
+      /// \param[in] _color RGBA clear color
       public: void SetClearColor(const filament::math::float4 &_color);
 
       /// \brief Single-sample target holding the colour, for readPixels
       /// (the main target when it is not multisampled)
+      /// \return The target to read the colour from
       public: filament::RenderTarget *Native() const;
 
       /// \brief Color attachment, e.g. to sample it in a later pass
+      /// \return The current color attachment
       public: filament::Texture *ColorTexture() const;
 
-      /// \brief Run the enabled filament passes of _passes (Gaussian noise)
-      /// over the color attachment, in order. Afterwards Native() and
-      /// ColorTexture() name the attachments holding the result.
+      /// \brief Run the enabled filament passes of _passes (Gaussian noise
+      /// and lens flare; other passes are skipped) over the color
+      /// attachment, in order. Afterwards Native() and ColorTexture() name
+      /// the attachments holding the result.
+      /// \param[in] _passes Passes to run
       public: void ApplyRenderPasses(const std::vector<RenderPassPtr> &_passes);
 
       /// \brief Blend the projectors' textures over the color attachment,
       /// for the projectors visible to _visibilityMask. Call right after
       /// rendering the scene: the scene depth is still in the depth
       /// attachment.
+      /// \param[in] _projectors Projectors to blend
       /// \param[in] _invViewProj Camera clip space to world
+      /// \param[in] _visibilityMask Visibility mask of the camera, only the
+      /// projectors visible to it are blended
       public: void ApplyProjectors(
           const std::set<FilamentProjector *> &_projectors,
           const filament::math::mat4f &_invViewProj,
@@ -101,22 +115,27 @@ namespace gz
       /// \brief Render _view's depth alone into the depth attachment, for
       /// ApplyProjectors after a post-processed render (which leaves it
       /// untouched)
+      /// \param[in] _view View to render
       public: void RenderDepth(filament::View *_view);
 
       /// \brief Passes added with AddRenderPass
+      /// \return The passes, in the order they were added
       public: const std::vector<RenderPassPtr> &RenderPasses() const;
 
-      /// \brief 8 bit formats are sRGB encoded by default (camera images);
-      /// false stores values as is (e.g. segmentation labels)
+      /// \brief Set whether 8 bit formats are sRGB encoded. They are by
+      /// default (camera images); false stores values as is (e.g.
+      /// segmentation labels). Takes effect on the next Rebuild.
+      /// \param[in] _srgb True for sRGB encoded 8 bit formats
       public: void SetSrgb(bool _srgb);
 
       /// \brief GL name of a texture in the caller's GL context holding the
-      /// image top row first (row 0 at the top, like ogre2's), 0 unless the
-      /// engine shares the caller's context or renders for it (see
-      /// FilamentRenderEngine::SharesCallerGLContext and
+      /// image top row first (row 0 at the top, like ogre2's). There is one
+      /// only if the engine shares the caller's context or renders for it
+      /// (see FilamentRenderEngine::SharesCallerGLContext and
       /// UsesCallerGLContext), the target is 8 bit colour and the caller
       /// shows it (UpdateSharedTexture creates and fills it; sensor targets
       /// never get one).
+      /// \return The GL texture name, 0 if there is none
       public: unsigned int SharedGLId() const;
 
       /// \brief Copy the rendered image into SharedGLId's texture, top row
@@ -126,18 +145,28 @@ namespace gz
       /// context, which must be current. Does nothing without the texture.
       public: void UpdateSharedTexture();
 
+      /// \brief Implementation of the Rebuild function: destroy the
+      /// attachments and build them again for the current size, format,
+      /// sample count and sRGB setting. A target that was presented
+      /// (UpdateSharedTexture) gets its caller's GL context texture again.
       protected: virtual void RebuildImpl() override;
 
+      /// \brief Destroy the attachments, the filament targets built on them
+      /// and the texture in the caller's GL context.
       protected: void DestroyTarget();
 
       /// \brief MSAA sample count of the main colour + depth target (the
       /// driver clamps it to what the device supports; 1 = off). Also
       /// makes the main attachments current again after a render pass
       /// swapped in the scratch ones. Takes effect on the next Rebuild.
+      /// \param[in] _samples Sample count, at least 1
       public: void SetSamples(uint8_t _samples);
 
       /// \brief Create a color + depth attachment pair for the current
       /// size and format
+      /// \param[out] _target Render target on the new attachments
+      /// \param[out] _color Color attachment
+      /// \param[out] _depth Depth attachment, sampleable
       /// \param[in] _main The main attachments (multisampled), else the
       /// scratch ones of render passes
       private: void BuildAttachments(filament::RenderTarget *&_target,
@@ -148,18 +177,26 @@ namespace gz
       /// the colour is 8 bit
       private: void BuildSharedTexture();
 
+      /// \brief Color attachment of target. Swapped with scratchColor by
+      /// ApplyRenderPasses.
       protected: filament::Texture *colorTexture{nullptr};
 
+      /// \brief Depth attachment of target, sampled by the projectors.
+      /// Swapped with scratchDepth by ApplyRenderPasses.
       protected: filament::Texture *depthTexture{nullptr};
 
+      /// \brief Target the scene is rendered into. Swapped with
+      /// scratchTarget by ApplyRenderPasses.
       protected: filament::RenderTarget *target{nullptr};
 
       /// \brief Second attachment set for ApplyRenderPasses, built on
       /// first use
       private: filament::RenderTarget *scratchTarget{nullptr};
 
+      /// \brief Color attachment of scratchTarget
       private: filament::Texture *scratchColor{nullptr};
 
+      /// \brief Depth attachment of scratchTarget
       private: filament::Texture *scratchDepth{nullptr};
 
       /// \brief True while ApplyRenderPasses left the scratch attachments
@@ -196,8 +233,11 @@ namespace gz
       private: std::map<filament::Texture *, filament::RenderTarget *>
           colorTargets;
 
+      /// \brief Color the color attachment is cleared to before rendering,
+      /// see SetClearColor
       protected: filament::math::float4 clearColor{0.0f, 0.0f, 0.0f, 1.0f};
 
+      /// \brief True when 8 bit formats are sRGB encoded, see SetSrgb
       protected: bool srgb{true};
 
       /// \brief Readback staging buffer of Copy(), kept across frames
@@ -208,14 +248,18 @@ namespace gz
       private: mutable Image bayerSource;
     };
 
+    /// \brief Filament implementation of the render texture class
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentRenderTexture :
       public virtual BaseRenderTexture<FilamentRenderTarget>
     {
+      /// \brief Constructor
       protected: FilamentRenderTexture() = default;
 
+      /// \brief Destructor
       public: virtual ~FilamentRenderTexture() = default;
 
-      /// \brief SharedGLId()
+      /// \brief Same as SharedGLId
+      /// \return The GL texture name, 0 if there is none
       public: virtual unsigned int GLId() const override;
 
       private: friend class FilamentScene;

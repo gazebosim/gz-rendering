@@ -43,45 +43,67 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    /// \brief Thermal camera. Every submesh is drawn with a flat id color;
-    /// the temperature of each id is computed on the CPU with the same
-    /// formula and 8 bit intermediate quantization as ogre2's thermal
-    /// shader, so outputs are comparable. Heat signature textures (a string
-    /// "temperature" with "minTemp" / "maxTemp") are mapped on the GPU like
-    /// ogre2's heat_signature_fs.glsl.
+    /// \brief Thermal camera. Submeshes are drawn with a flat id color
+    /// (textured ones unlit as diffuse x texture); the temperature of each
+    /// id is computed on the CPU with the same formula and 8 bit
+    /// intermediate quantization as ogre2's thermal shader, so outputs are
+    /// comparable. Heat signature textures (a string "temperature" with
+    /// "minTemp" / "maxTemp") are mapped on the GPU like ogre2's
+    /// heat_signature_fs.glsl.
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentThermalCamera :
       public BaseThermalCamera<FilamentCamera>
     {
+      /// \brief Constructor
       protected: FilamentThermalCamera() = default;
 
+      /// \brief Destructor
       public: virtual ~FilamentThermalCamera() = default;
 
-      // BaseCamera<FilamentCamera> would otherwise win over FilamentCamera
+      /// \brief Forwards to FilamentCamera::SetProjectionMatrix, which
+      /// BaseCamera<FilamentCamera> would otherwise override.
+      /// \param[in] _matrix Custom projection matrix.
       public: virtual void SetProjectionMatrix(const math::Matrix4d &_matrix)
           override { FilamentCamera::SetProjectionMatrix(_matrix); }
 
+      /// \brief Forwards to FilamentCamera::ProjectionMatrix, which
+      /// BaseCamera<FilamentCamera> would otherwise override.
+      /// \return The projection matrix.
       public: virtual math::Matrix4d ProjectionMatrix() const override
           { return FilamentCamera::ProjectionMatrix(); }
 
+      /// \brief Draws every submesh with a flat id color, an unlit textured
+      /// color or a heat signature material.
       public: virtual void Render() override;
 
+      /// \brief Reads the id image back, converts every pixel to a
+      /// temperature value and sends the image to the new frame subscribers.
+      /// Does nothing without subscribers.
       public: virtual void PostRender() override;
 
+      // Documentation inherited
       public: virtual common::ConnectionPtr ConnectNewThermalFrame(
           std::function<void(const uint16_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)> _subscriber) override;
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
       /// \brief Output format, L16 (default) or L8. The render target
       /// itself holds RGB8 ids.
+      /// \return The output format.
       public: virtual PixelFormat ImageFormat() const override;
 
+      /// \brief Selects the output format: L8 for PF_L8, L16 for any other
+      /// format, as ogre2 only has 8 and 16 bit outputs.
+      /// \param[in] _format Requested output format.
+      /// \param[in] _reinterpretable Ignored.
       public: virtual void SetImageFormat(PixelFormat _format,
                   bool _reinterpretable = false) override;
 
+      // Documentation inherited
       protected: virtual void Init() override;
 
+      // Documentation inherited
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
       /// \brief Output value of a pixel whose color pass value in ogre2
@@ -125,15 +147,21 @@ namespace gz
       /// \brief Output value per id, index 0 is the background
       private: std::vector<uint16_t> idValue;
 
+      /// \brief Thermal image sent to subscribers, one value per pixel.
       private: std::vector<uint16_t> thermalImage;
 
+      /// \brief True once Render has set the format and size of the render
+      /// target.
       private: bool textureCreated{false};
 
+      /// \brief Output format, PF_L16 or PF_L8.
       private: PixelFormat format{PF_L16};
 
+      /// \brief Event triggered with every new thermal image.
       private: common::EventT<void(const uint16_t *, unsigned int,
           unsigned int, unsigned int, const std::string &)> newThermalFrame;
 
+      /// \brief Only the scene can create this class.
       private: friend class FilamentScene;
     };
     }

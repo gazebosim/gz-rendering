@@ -27,12 +27,14 @@ namespace gz
   namespace rendering
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
-    /// \brief Joint axes and parent axes, built by BaseJointVisual
+    /// \brief Joint axes and parent axes, built by BaseJointVisual.
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentJointVisual :
       public BaseJointVisual<FilamentVisual>
     {
+      /// \brief Constructor
       protected: FilamentJointVisual();
 
+      /// \brief Destructor
       public: virtual ~FilamentJointVisual();
 
 

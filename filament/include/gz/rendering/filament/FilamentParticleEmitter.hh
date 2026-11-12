@@ -57,27 +57,39 @@ namespace gz
       /// \brief One live particle, in the world frame
       public: struct Particle
       {
+        /// \brief Position in meters.
         math::Vector3d pos;
+        /// \brief Velocity in meters per second.
         math::Vector3d vel;
+        /// \brief Remaining lifetime in seconds.
         double ttl;
-        /// \brief Lifetime at emission
+        /// \brief Lifetime at emission, in seconds.
         double life;
         /// \brief Colour (rgba) from the colour image at the current age
         math::Color color;
+        /// \brief Billboard width in meters.
         double width;
+        /// \brief Billboard height in meters.
         double height;
       };
 
+      /// \brief Constructor
       protected: FilamentParticleEmitter() = default;
 
+      /// \brief Destructor
       public: virtual ~FilamentParticleEmitter();
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
+      /// \brief Advances the simulation by the scene time elapsed since the
+      /// last rendered frame, then updates the billboards.
       public: virtual void PreRender() override;
 
       /// \brief Like ogre2, where this is disabled (gz-rendering#902): warns
-      /// and does nothing
+      /// and does nothing.
+      /// \param[in] _colorStart Ignored.
+      /// \param[in] _colorEnd Ignored.
       public: virtual void SetColorRange(const math::Color &_colorStart,
                   const math::Color &_colorEnd) override;
 
@@ -85,6 +97,7 @@ namespace gz
       /// their lifetime, left to right, with the image alpha as particle
       /// alpha (ogre2's ColourImage affector). Particles are white without
       /// an image.
+      /// \param[in] _image Path of the colour image.
       public: virtual void SetColorRangeImage(const std::string &_image)
                   override;
 
@@ -93,16 +106,20 @@ namespace gz
       /// billboards when _dir changed; cameras call it before rendering.
       /// One direction for all cameras, the one that rendered
       /// last; cameras that don't call this (wide angle faces) draw in the
-      /// order of the last call
+      /// order of the last call.
+      /// \param[in] _dir Direction to sort along, a camera's forward vector.
       public: void SortFor(const math::Vector3d &_dir);
 
       /// \brief Live particles; empty when the emitter is hidden
+      /// \return The particles, in emission order.
       public: const std::vector<Particle> &Particles() const;
 
       /// \brief World box of the particles padded by half their size,
       /// round-tripped through the emitter frame like ogre2's local AABB
+      /// \return The box, empty if there are no particles.
       public: math::AxisAlignedBox ParticleBounds() const;
 
+      // Documentation inherited
       protected: virtual void Init() override;
 
       /// \brief Advance the simulation by _dt seconds (ogre2's
@@ -117,6 +134,7 @@ namespace gz
       /// buffer
       private: void Upload();
 
+      /// \brief Live particles, in emission order.
       private: std::vector<Particle> particles;
 
       /// \brief First row of the colour image; empty: no colour affector
@@ -134,16 +152,22 @@ namespace gz
       /// \brief Scene time of the last step
       private: std::chrono::steady_clock::duration lastTime{0};
 
+      /// \brief True after the first PreRender, which sets lastTime.
       private: bool stepped{false};
 
+      /// \brief Entity of the billboard renderable, null before Init.
       private: ::utils::Entity renderable;
 
+      /// \brief Vertex buffer, four vertices per billboard.
       private: filament::VertexBuffer *vb{nullptr};
 
+      /// \brief Index buffer, two triangles per billboard.
       private: filament::IndexBuffer *ib{nullptr};
 
+      /// \brief Instance of the gz_particle material.
       private: filament::MaterialInstance *mi{nullptr};
 
+      /// \brief Only the scene can create this class.
       private: friend class FilamentScene;
     };
     }

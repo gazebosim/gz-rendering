@@ -35,19 +35,30 @@ namespace gz
     /// and builds the renderable component of a FilamentMesh.
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentMeshFactory
     {
+      /// \brief Constructor
+      /// \param[in] _scene Scene the meshes are loaded into
       public: explicit FilamentMeshFactory(FilamentScenePtr _scene);
 
+      /// \brief Destructor
       public: virtual ~FilamentMeshFactory() = default;
 
-      /// \brief Fill _mesh (already initialized, with an entity) from _desc
+      /// \brief Fill _mesh (already initialized, with an entity) from _desc.
+      /// \param[in] _mesh Mesh to fill
+      /// \param[in] _desc Descriptor of the mesh to load
+      /// \return True on success, false (with an error logged) if the
+      /// descriptor has no mesh or none of its submeshes can be drawn
       public: bool Load(FilamentMeshPtr _mesh, const MeshDescriptor &_desc);
 
-      /// \brief What to subtract from the vertices of _sub: its bounding box
-      /// center if _desc.centerSubMesh (common::SubMesh::Center, as ogre2),
-      /// else zero
+      /// \brief Get what to subtract from the vertices of _sub: its bounding
+      /// box center if _desc.centerSubMesh (common::SubMesh::Center, as
+      /// ogre2), else zero.
+      /// \param[in] _sub Submesh whose vertices are placed
+      /// \param[in] _desc Descriptor the submesh was loaded with
+      /// \return The center of _sub, or zero if not centering
       public: static math::Vector3d SubMeshCenter(const common::SubMesh &_sub,
           const MeshDescriptor &_desc);
 
+      /// \brief Scene the meshes are loaded into
       protected: FilamentScenePtr scene;
     };
     }

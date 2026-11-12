@@ -39,193 +39,235 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
-    /// \brief A gz material is one instance each of the gz_lit, gz_unlit and
-    /// gz_unlit_transparent filament materials; parameters are pushed in
-    /// PreRender.
+    /// \brief Filament implementation of the material class. A gz material
+    /// holds one instance each of the gz_lit, gz_unlit and
+    /// gz_unlit_transparent filament materials, plus gz_lit_transparent and
+    /// gz_lit_masked instances created once needed, and an instance compiled
+    /// from a .mat shader source if one is set. Parameters are pushed to them
+    /// in PreRender.
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentMaterial :
       public BaseMaterial<FilamentObject>
     {
+      /// \brief Constructor
       protected: FilamentMaterial();
 
+      /// \brief Destructor
       public: virtual ~FilamentMaterial() = default;
 
+      /// \brief Destroy the filament material instances. Meshes still
+      /// drawing with them are first rebound to the default instance of
+      /// gz_unlit.
       public: virtual void Destroy() override;
 
+      /// \brief Load the textures, create the blended and alpha tested
+      /// instances once they are needed and, if anything changed, push the
+      /// parameters to the instances.
       public: virtual void PreRender() override;
 
+      // Documentation inherited
       public: virtual bool HasTexture() const override;
 
+      // Documentation inherited
       public: virtual std::string Texture() const override;
 
+      // Documentation inherited
       public: virtual void SetTexture(const std::string &_texture) override;
 
+      // Documentation inherited
       public: virtual void SetTexture(const std::string &_texture,
           const std::shared_ptr<const common::Image> &_img) override;
 
+      // Documentation inherited
       public: virtual std::shared_ptr<const common::Image> TextureData()
           const override;
 
+      // Documentation inherited
       public: virtual void ClearTexture() override;
 
+      // Documentation inherited
       public: virtual void SetRoughness(const float _roughness) override;
 
+      // Documentation inherited
       public: virtual float Roughness() const override;
 
+      // Documentation inherited
       public: virtual void SetMetalness(const float _metalness) override;
 
+      // Documentation inherited
       public: virtual float Metalness() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual bool HasNormalMap() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::string NormalMap() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::shared_ptr<const common::Image> NormalMapData()
           const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual void SetNormalMap(const std::string &_name,
           const std::shared_ptr<const common::Image> &_img) override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual void ClearNormalMap() override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual bool HasRoughnessMap() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::string RoughnessMap() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::shared_ptr<const common::Image> RoughnessMapData()
           const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual void SetRoughnessMap(const std::string &_name,
           const std::shared_ptr<const common::Image> &_img) override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual void ClearRoughnessMap() override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual bool HasMetalnessMap() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::string MetalnessMap() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::shared_ptr<const common::Image> MetalnessMapData()
           const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual void SetMetalnessMap(const std::string &_name,
           const std::shared_ptr<const common::Image> &_img) override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual void ClearMetalnessMap() override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual bool HasEnvironmentMap() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::string EnvironmentMap() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::shared_ptr<const common::Image> EnvironmentMapData()
           const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual void SetEnvironmentMap(const std::string &_name,
           const std::shared_ptr<const common::Image> &_img) override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual void ClearEnvironmentMap() override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual bool HasEmissiveMap() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::string EmissiveMap() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::shared_ptr<const common::Image> EmissiveMapData()
           const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual void SetEmissiveMap(const std::string &_name,
           const std::shared_ptr<const common::Image> &_img) override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual void ClearEmissiveMap() override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual bool HasLightMap() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::string LightMap() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual unsigned int LightMapTexCoordSet() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::shared_ptr<const common::Image> LightMapData()
           const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual void SetLightMap(const std::string &_name,
           const std::shared_ptr<const common::Image> &_img,
           unsigned int _uvSet = 0u) override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual void ClearLightMap() override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual enum MaterialType Type() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::string VertexShader() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual ShaderParamsPtr VertexShaderParams() override;
 
-      // documentation inherited
+      /// \brief Set the vertex shader path. Handled like the fragment shader,
+      /// see SetFragmentShader: it is only used when the fragment shader path
+      /// is not a .mat source.
+      /// \param[in] _path Path of the shader.
       public: virtual void SetVertexShader(const std::string &_path) override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual std::string FragmentShader() const override;
 
-      // documentation inherited
+      // Documentation inherited
       public: virtual ShaderParamsPtr FragmentShaderParams() override;
 
-      // documentation inherited
+      /// \brief Set the fragment shader path. Filament does not take GLSL: a
+      /// path ending in .mat names a filament material source, which is
+      /// compiled and drawn instead of the regular instances. Any other path
+      /// is ignored with a warning and the regular material is drawn.
+      /// \param[in] _path Path of the shader.
       public: virtual void SetFragmentShader(const std::string &_path)
           override;
 
-      /// \brief Alpha of the drawn color: (1 - transparency) * diffuse alpha
+      /// \brief Alpha of the drawn color: (1 - transparency) * diffuse alpha.
+      /// \return Opacity, 1 for a fully opaque material.
       public: double Opacity() const;
 
-      /// \brief Active material instance (lit, unlit, their transparent
-      /// variants, or alpha tested lit)
+      /// \brief Active material instance: the custom shader instance if there
+      /// is one, else the lit or unlit instance, in its blended or alpha
+      /// tested variant, that fits the current settings.
+      /// \return The instance to draw with, nullptr if the base instances
+      /// could not be created.
       public: filament::MaterialInstance *Instance() const;
 
       /// \brief Whether the alpha tested (alpha from texture) instance is in
-      /// use
+      /// use.
+      /// \return True if Instance() is the alpha tested one.
       public: bool AlphaTested() const;
 
-      /// \brief Diffuse texture on the GPU, nullptr if none
+      /// \brief Diffuse texture on the GPU, nullptr if none.
+      /// \return Texture owned by the render engine.
       public: filament::Texture *FilamentTexture() const;
 
+      /// \brief Create the lit, unlit and unlit transparent instances and
+      /// push the initial parameters to them.
       protected: virtual void Init() override;
 
+      /// \brief Push the parameters of the material to an instance: color,
+      /// texture and depth flags, and for the lit instances also roughness,
+      /// metalness, specular, emissive and the PBR maps.
+      /// \param[in] _instance Instance to update.
       protected: void Update(filament::MaterialInstance *_instance);
 
-      /// \brief Rebind meshes using _instance to a default one, destroy it
+      /// \brief Rebind meshes using _instance to the default instance of
+      /// gz_unlit, then destroy it.
+      /// \param[in] _instance Instance to destroy, may be nullptr.
       protected: void DestroyInstance(filament::MaterialInstance *_instance);
 
       /// \brief Create, switch or drop the custom shader instance, push the
-      /// shader params to it
+      /// shader params to it.
       protected: void UpdateCustomShader();
 
       /// \brief Instance of the filament material compiled from the .mat
@@ -235,20 +277,30 @@ namespace gz
       /// \brief .mat source of the custom instance
       protected: std::string customSource;
 
+      /// \brief Vertex shader path set by SetVertexShader
       protected: std::string vertexShaderPath;
 
+      /// \brief Fragment shader path set by SetFragmentShader
       protected: std::string fragmentShaderPath;
 
+      /// \brief Parameters of the vertex shader, pushed to the custom
+      /// instance when they change
       protected: ShaderParamsPtr vertexShaderParams;
 
+      /// \brief Parameters of the fragment shader, pushed to the custom
+      /// instance when they change
       protected: ShaderParamsPtr fragmentShaderParams;
 
+      /// \brief Instance of gz_lit, used when lighting is enabled and no
+      /// other lit instance applies
       protected: filament::MaterialInstance *lit{nullptr};
 
+      /// \brief Instance of gz_unlit, used when lighting is disabled and the
+      /// material is opaque
       protected: filament::MaterialInstance *unlit{nullptr};
 
       /// \brief gz_unlit with alpha blending, used instead of unlit while
-      /// Transparency() > 0
+      /// Opacity() < 1.
       protected: filament::MaterialInstance *unlitTransparent{nullptr};
 
       /// \brief Instance of gz_lit_transparent, used when lighting is
@@ -260,21 +312,31 @@ namespace gz
       /// first use.
       protected: filament::MaterialInstance *litMasked{nullptr};
 
+      /// \brief Diffuse texture loaded for textureName, nullptr if none. It
+      /// is owned by the render engine.
       protected: filament::Texture *texture{nullptr};
 
+      /// \brief Name of the texture last loaded into texture, empty to load
+      /// it again
       protected: std::string loadedTexture;
 
+      /// \brief Name of the diffuse texture, as set by SetTexture
       protected: std::string textureName;
 
-      /// \brief Last values pushed to the instances, to skip redundant
-      /// uniform uploads
+      /// \brief True once the parameters were pushed to the instances. With
+      /// pushedKey, pushedTexture and pushedMaps it skips redundant uniform
+      /// uploads.
       protected: bool pushed{false};
 
+      /// \brief Values of the material parameters last pushed to the
+      /// instances
       protected: std::array<float, 18> pushedKey{};
 
+      /// \brief Diffuse texture last pushed to the instances
       protected: filament::Texture *pushedTexture{nullptr};
 
-      /// \brief PBR texture maps, in MapSlot order
+      /// \brief Slot of a PBR texture map: its index in maps and pushedMaps,
+      /// and its bit in the mapFlags parameter of the lit instances.
       protected: enum MapSlot { NORMAL, ROUGHNESS, METALNESS, EMISSIVE, LIGHT,
           ENVIRONMENT, MAP_COUNT };
 
@@ -282,17 +344,26 @@ namespace gz
       /// the filament texture loaded from them in PreRender
       protected: struct Map
       {
+        /// \brief Name of the map, empty if the slot is not set
         std::string name;
+        /// \brief In-memory image of the map, nullptr to load it by name
         std::shared_ptr<const common::Image> data;
+        /// \brief Filament texture loaded in PreRender, owned by the render
+        /// engine. nullptr until then.
         filament::Texture *texture{nullptr};
+        /// \brief True once texture was loaded for the current name
         bool loaded{false};
       };
 
       /// \brief Set a map slot (empty name clears it)
+      /// \param[in] _slot Slot to set.
+      /// \param[in] _name Name of the map, empty to clear the slot.
+      /// \param[in] _img Image of the map, nullptr to load it by name. The
+      /// environment map is always loaded by name.
       protected: void SetMap(MapSlot _slot, const std::string &_name,
           const std::shared_ptr<const common::Image> &_img);
 
-      /// \brief Texture maps
+      /// \brief PBR texture maps, indexed by MapSlot
       protected: std::array<Map, MAP_COUNT> maps;
 
       /// \brief Light map texture coordinate set
@@ -301,11 +372,16 @@ namespace gz
       /// \brief Map textures last pushed to the instances
       protected: std::array<filament::Texture *, MAP_COUNT> pushedMaps{};
 
+      /// \brief Image of the diffuse texture as set by SetTexture, nullptr to
+      /// load it by textureName
       protected: std::shared_ptr<const common::Image> textureData;
 
-      /// \brief gz::common::Pbr defaults, like ogre2 after Reset()
+      /// \brief Roughness, the gz::common::Pbr default until set, like ogre2
+      /// after Reset()
       protected: float roughness{0.5f};
 
+      /// \brief Metalness, the gz::common::Pbr default until set, like ogre2
+      /// after Reset()
       protected: float metalness{0.0f};
 
       private: friend class FilamentScene;

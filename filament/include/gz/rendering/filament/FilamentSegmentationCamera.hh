@@ -43,49 +43,69 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentSegmentationCamera :
       public BaseSegmentationCamera<FilamentCamera>
     {
+      /// \brief Constructor
       protected: FilamentSegmentationCamera() = default;
 
+      /// \brief Destructor
       public: virtual ~FilamentSegmentationCamera() = default;
 
-      // BaseCamera<FilamentCamera> would otherwise win over FilamentCamera
+      /// \brief Forward to FilamentCamera, which BaseCamera<FilamentCamera>
+      /// would otherwise win over (same for ProjectionMatrix()).
+      /// \param[in] _matrix New projection matrix
       public: virtual void SetProjectionMatrix(const math::Matrix4d &_matrix)
           override { FilamentCamera::SetProjectionMatrix(_matrix); }
 
+      /// \brief Forward to FilamentCamera, see SetProjectionMatrix().
+      /// \return The projection matrix
       public: virtual math::Matrix4d ProjectionMatrix() const override
           { return FilamentCamera::ProjectionMatrix(); }
 
+      // Documentation inherited
       public: virtual void CreateSegmentationTexture() override;
 
+      // Documentation inherited
       public: virtual void Render() override;
 
+      // Documentation inherited
       public: virtual void PostRender() override;
 
+      // Documentation inherited
       public: virtual uint8_t *SegmentationData() const override;
 
+      // Documentation inherited
       public: virtual common::ConnectionPtr ConnectNewSegmentationFrame(
           std::function<void(const uint8_t *, unsigned int, unsigned int,
           unsigned int, const std::string &)> _subscriber) override;
 
+      // Documentation inherited
       public: virtual void SetBackgroundLabel(int _label) override;
 
+      // Documentation inherited
       public: virtual void LabelMapFromColoredBuffer(
           uint8_t *_labelBuffer) const override;
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
+      /// \brief Initialize the camera with shadows turned off.
       protected: virtual void Init() override;
 
+      /// \brief Get the target the label colors are rendered to.
+      /// \return The camera's render texture
       protected: virtual RenderTargetPtr RenderTarget() const override;
 
       /// \brief gz_flat instances by color (0xRRGGBB)
       private: std::unordered_map<uint32_t, filament::MaterialInstance *>
           flatInstances;
 
+      /// \brief True once CreateSegmentationTexture configured the render
+      /// texture.
       private: bool textureCreated{false};
 
       /// \brief Segmentation data of the last frame, RGB8
       private: Image image;
 
+      /// \brief Event fired by PostRender with the new segmentation image.
       private: common::EventT<void(const uint8_t *, unsigned int,
           unsigned int, unsigned int, const std::string &)>
           newSegmentationFrame;

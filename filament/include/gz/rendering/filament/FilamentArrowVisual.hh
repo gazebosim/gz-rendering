@@ -26,12 +26,14 @@ namespace gz
   namespace rendering
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
-    /// \brief Cone, cylinder and rotation tube, all built by BaseArrowVisual
+    /// \brief Cone, cylinder and rotation tube, all built by BaseArrowVisual.
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentArrowVisual :
       public BaseArrowVisual<FilamentVisual>
     {
+      /// \brief Constructor
       protected: FilamentArrowVisual();
 
+      /// \brief Destructor
       public: virtual ~FilamentArrowVisual();
 
       private: friend class FilamentScene;

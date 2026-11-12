@@ -52,32 +52,46 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentGaussianNoisePass :
       public BaseGaussianNoisePass<BaseRenderPass<FilamentObject>>
     {
+      /// \brief Constructor
       public: FilamentGaussianNoisePass();
 
+      /// \brief Destructor
       public: virtual ~FilamentGaussianNoisePass();
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
       /// \brief View drawing _colorIn plus noise (ogre2's
       /// gaussian_noise_fs.glsl) into whatever target it is rendered to,
       /// which must have _colorIn's size. A new pattern every call.
+      /// \param[in] _colorIn Color texture to add the noise to
+      /// \return View to render, or nullptr if the pass could not be
+      /// created
       public: filament::View *ColorView(filament::Texture *_colorIn);
 
       /// \brief ogre2's depth camera noise (gaussian_noise_depth_fs.glsl)
       /// applied to the clamped outputs of a depth camera, for each of its
       /// enabled noise passes: the same sample is added to x, y, z (meters)
       /// and, as sign(z) |z|^2.1, to the cloud's packed sRGB color.
+      /// \param[in] _camera Depth camera whose render passes are applied
       /// \param[in,out] _depth ImageWidth x ImageHeight depth image
       /// \param[in,out] _cloud x, y, z, rgba per pixel, or nullptr
       public: static void ApplyDepth(const Camera &_camera, float *_depth,
           float *_cloud);
 
-      /// \brief Draw and read back w x h noise samples (mean and stddev
-      /// applied), a new pattern every call
+      /// \brief Draw and read back _width x _height noise samples (mean
+      /// and stddev applied), a new pattern every call.
+      /// \param[in] _scene Scene that creates the render texture
+      /// \param[in] _width Number of samples per row
+      /// \param[in] _height Number of rows of samples
+      /// \param[out] _out The samples, resized to _width x _height
       private: void Samples(const ScenePtr &_scene, unsigned int _width,
           unsigned int _height, std::vector<float> &_out);
 
-      /// \brief Set the per draw uniforms
+      /// \brief Set the per draw uniforms.
+      /// \param[in] _colorIn Texture the pass samples
+      /// \param[in] _mode 0 draws _colorIn plus noise (ColorView), 1 draws
+      /// the noise samples (Samples)
       private: void SetParameters(filament::Texture *_colorIn, int _mode);
 
       /// \brief Fullscreen pass drawing gz_noise, created on first use

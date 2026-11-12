@@ -33,31 +33,46 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentCapsule :
       public BaseCapsule<FilamentGeometry>
     {
+      /// \brief Constructor
       protected: FilamentCapsule();
 
+      /// \brief Destructor
       public: virtual ~FilamentCapsule();
 
+      /// \brief Initialize the capsule and build its mesh.
       public: virtual void Init() override;
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
       public: virtual void PreRender() override;
 
+      // Documentation inherited
       public: virtual ::utils::Entity Entity() const override;
 
+      // Documentation inherited
       public: virtual void SetLayers(uint8_t _layers) override;
 
+      // Documentation inherited
       public: virtual MaterialPtr Material() const override;
 
+      // Documentation inherited
       public: virtual void SetMaterial(MaterialPtr _material,
                                        bool _unique) override;
 
+      /// \brief Set the parent visual of this capsule and of its mesh.
+      /// \param[in] _parent Parent visual, nullptr for none
       protected: virtual void SetParent(FilamentVisualPtr _parent) override;
 
+      /// \brief Rebuild the mesh from the radius and length and re-attach
+      /// it under the parent visual.
       private: void Update();
 
+      /// \brief Mesh holding the capsule's renderable.
       private: FilamentMeshPtr mesh;
 
+      /// \brief Material of the capsule, kept when the mesh is rebuilt.
       private: MaterialPtr material;
 
       /// \brief True when material is a clone made by SetMaterial

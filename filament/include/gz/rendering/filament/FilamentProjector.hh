@@ -52,26 +52,37 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentProjector :
       public BaseProjector<FilamentVisual>
     {
+      /// \brief Constructor
       protected: FilamentProjector();
 
+      /// \brief Destructor
       public: virtual ~FilamentProjector();
 
+      /// \brief Initialize the projector and register it with the scene.
       public: virtual void Init() override;
 
+      // Documentation inherited
       public: virtual void PreRender() override;
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
       public: virtual void SetEnabled(bool _enabled) override;
 
       /// \brief Is the projector's texture drawn on a camera with
-      /// _visibilityMask
+      /// _visibilityMask.
+      /// \param[in] _visibilityMask Visibility mask of the camera
+      /// \return True if the projector is enabled, visible and its
+      /// visibility flags match _visibilityMask
       public: bool VisibleTo(uint32_t _visibilityMask) const;
 
-      /// \brief View blending the texture over a target the size of the
-      /// camera image, or nullptr if there is nothing to draw.
+      /// \brief Blend the texture over a target the size of the camera
+      /// image.
       /// \param[in] _invViewProj Camera clip space to world
       /// \param[in] _depth Scene depth of the target
+      /// \return View to render, or nullptr if there is nothing to draw
+      /// (texture missing or not loaded)
       public: filament::View *DecalView(const filament::math::mat4f
           &_invViewProj, filament::Texture *_depth);
 
@@ -81,13 +92,17 @@ namespace gz
       /// \brief Fullscreen pass drawing gz_projector, created on first use
       private: std::unique_ptr<FilamentFullscreenPass> pass;
 
+      /// \brief Projected texture, owned by the render engine, nullptr if it
+      /// could not be loaded.
       private: filament::Texture *texture{nullptr};
 
+      /// \brief Name of the texture LoadTexture last tried to load.
       private: std::string loadedTexture;
 
       /// \brief Width over height of the texture
       private: double aspect{1.0};
 
+      /// \brief True once PreRender enabled the projector.
       private: bool initialized{false};
 
       private: friend class FilamentScene;

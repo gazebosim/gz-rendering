@@ -33,26 +33,38 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentCOMVisual :
       public BaseCOMVisual<FilamentVisual>
     {
+      /// \brief Constructor
       protected: FilamentCOMVisual();
 
+      /// \brief Destructor
       public: virtual ~FilamentCOMVisual();
 
+      // Documentation inherited
       public: virtual void PreRender() override;
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
       public: virtual VisualPtr SphereVisual() const override;
 
-      /// \brief Only the cross takes the material, like ogre2
+      /// \brief Only the cross takes the material, like ogre2.
+      /// \param[in] _material Material of the cross lines
+      /// \param[in] _unique True to use a clone of _material
       public: virtual void SetMaterial(MaterialPtr _material,
                                        bool _unique) override;
 
+      /// \brief Build the sphere and the cross of lines through the center of
+      /// mass. The cross reaches the parent visual's local bounding box.
       private: void CreateVisual();
 
+      /// \brief Dynamic mesh of the cross lines.
       private: std::shared_ptr<FilamentDynamicMesh> crossLines;
 
+      /// \brief Child visual drawing the sphere.
       private: VisualPtr sphereVis;
 
+      /// \brief True when material is a clone this visual owns and destroys.
       private: bool ownsMaterial{false};
 
       private: friend class FilamentScene;

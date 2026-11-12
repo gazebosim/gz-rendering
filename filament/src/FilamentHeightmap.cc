@@ -261,9 +261,9 @@ void FilamentHeightmap::Init()
   if (!terrain)
     return;
   filament::MaterialInstance *mi = terrain->createInstance();
-  // like Ogre2Heightmap: texture i > 0 fades in over blend i - 1; Terra
-  // takes four layers (five when the first is a base map without normals)
-  // Four layers at most, a fifth base map is dropped
+  // like Ogre2Heightmap: texture i > 0 fades in over blend i - 1. Four
+  // layers at most (Terra takes five when the first is a base map without
+  // normals): a fifth texture is dropped
   const unsigned int layers = static_cast<unsigned int>(
       std::min<uint64_t>(this->descriptor.TextureCount(), 4u));
   filament::math::float4 tileU(1.0f), tileV(1.0f), minH(0.0f), maxH(0.0f);

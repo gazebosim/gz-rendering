@@ -29,11 +29,14 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Filament implementation of the sensor class
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentSensor :
       public BaseSensor<FilamentNode>
     {
+      /// \brief Constructor
       protected: FilamentSensor() = default;
 
+      /// \brief Destructor
       public: virtual ~FilamentSensor();
 
       private: friend class FilamentScene;

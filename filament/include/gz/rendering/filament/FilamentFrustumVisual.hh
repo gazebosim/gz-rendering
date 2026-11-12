@@ -33,16 +33,22 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentFrustumVisual :
       public BaseFrustumVisual<FilamentVisual>
     {
+      /// \brief Constructor
       protected: FilamentFrustumVisual();
 
+      /// \brief Destructor
       public: virtual ~FilamentFrustumVisual();
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
       public: virtual void Update() override;
 
+      /// \brief Destroy the line mesh of the frustum
       private: void ClearVisualData();
 
+      /// \brief The 12 edges of the frustum, as lines
       private: std::shared_ptr<FilamentDynamicMesh> rayLines;
 
       private: friend class FilamentScene;

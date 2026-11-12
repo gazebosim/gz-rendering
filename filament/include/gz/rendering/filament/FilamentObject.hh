@@ -28,15 +28,21 @@ namespace gz
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     //
+    /// \brief Filament implementation of the Object class
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentObject :
       public BaseObject
     {
+      /// \brief Constructor
       protected: FilamentObject() = default;
 
+      /// \brief Destructor
       public: virtual ~FilamentObject() = default;
 
+      /// \brief Get the scene that created this object.
+      /// \return The scene
       public: virtual ScenePtr Scene() const override;
 
+      /// \brief Scene that created this object, set by FilamentScene
       protected: FilamentScenePtr scene;
 
       private: friend class FilamentScene;

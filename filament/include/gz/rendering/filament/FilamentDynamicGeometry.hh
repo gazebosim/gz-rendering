@@ -32,32 +32,51 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentDynamicGeometry :
       public FilamentGeometry
     {
+      /// \brief Constructor
       protected: FilamentDynamicGeometry();
 
+      /// \brief Destructor
       public: virtual ~FilamentDynamicGeometry() override;
 
+      /// \brief Create the FilamentDynamicMesh that draws the lines, as a
+      /// line list.
       public: virtual void Init() override;
 
+      // Documentation inherited
       public: virtual void Destroy() override;
 
+      // Documentation inherited
       public: virtual void PreRender() override;
 
+      // Documentation inherited
       public: virtual ::utils::Entity Entity() const override;
 
+      // Documentation inherited
       public: virtual void SetLayers(uint8_t _layers) override;
 
+      // Documentation inherited
       public: virtual MaterialPtr Material() const override;
 
+      /// \brief Set the material of the lines. Lighting and shadows are
+      /// turned off on the material that gets assigned.
+      /// \param[in] _material Material to assign. A null material, or one
+      /// from another render engine, is rejected with an error.
+      /// \param[in] _unique True if _material should be cloned. The clone
+      /// belongs to this geometry and is destroyed when it is replaced.
       public: virtual void SetMaterial(MaterialPtr _material,
                                        bool _unique) override;
 
+      /// \brief Set the parent visual of this geometry and of its line mesh.
+      /// \param[in] _parent New parent, nullptr for none.
       protected: virtual void SetParent(FilamentVisualPtr _parent) override;
 
+      /// \brief Mesh that draws the lines, created by Init
       protected: FilamentDynamicMeshPtr lines;
 
+      /// \brief Material of the lines
       private: MaterialPtr material;
 
-      /// \brief True when material is a clone made by SetMaterial
+      /// \brief True when material is a clone made by SetMaterial.
       private: bool ownsMaterial{false};
     };
     }

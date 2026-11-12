@@ -26,12 +26,14 @@ namespace gz
   namespace rendering
   {
     inline namespace GZ_RENDERING_VERSION_NAMESPACE {
-    /// \brief Three arrows, all built by BaseAxisVisual
+    /// \brief Three arrows, all built by BaseAxisVisual.
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentAxisVisual :
       public BaseAxisVisual<FilamentVisual>
     {
+      /// \brief Constructor
       protected: FilamentAxisVisual();
 
+      /// \brief Destructor
       public: virtual ~FilamentAxisVisual();
 
       private: friend class FilamentScene;

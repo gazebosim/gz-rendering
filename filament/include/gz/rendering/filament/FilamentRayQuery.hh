@@ -33,19 +33,27 @@ namespace gz
     class GZ_RENDERING_FILAMENT_VISIBLE FilamentRayQuery :
       public BaseRayQuery<FilamentObject>
     {
+      /// \brief Constructor
       protected: FilamentRayQuery();
 
+      /// \brief Destructor
       public: virtual ~FilamentRayQuery();
 
       public: using BaseRayQuery<FilamentObject>::SetFromCamera;
 
-      // Documentation inherited
+      /// \brief Not supported: logs a warning and leaves the ray as it was.
+      /// \param[in] _camera Ignored
+      /// \param[in] _faceIdx Ignored
+      /// \param[in] _coord Ignored
       public: virtual void SetFromCamera(const WideAngleCameraPtr &_camera,
                                          uint32_t _faceIdx,
                                          const math::Vector2d &_coord)
                                          override;
 
-      // Documentation inherited
+      /// \brief Find the closest front face hit by the ray.
+      /// \param[in] _forceSceneUpdate Ignored, the query reads the meshes'
+      /// current Filament transforms
+      /// \return The hit, not valid when nothing was hit
       public: virtual RayQueryResult ClosestPoint(
             bool _forceSceneUpdate = true) override;
 

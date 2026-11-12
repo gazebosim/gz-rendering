@@ -912,6 +912,15 @@ bool FilamentRenderEngine::InitImpl()
   // cycle, and the kernel zeroed its pages: half of the cycle on Iris Xe.
   // Keep unused textures for 30 ended frames instead, so they are reused.
   config.resourceAllocatorCacheMaxAge = 30;
+  // Filament's job system starts one worker per hardware thread minus two
+  // (18 on a 20 thread CPU). Sensor views are small, so their culling and
+  // light binning jobs are short, and waking and parking that many workers
+  // for each costs more CPU than the jobs (mostly futex calls). Two workers
+  // use 4 to 13% less CPU per sensor cycle at the same speed (within 2%),
+  // from 1 to 7 sensors, up to 1920x1080 and 1000 visuals.
+  config.jobSystemThreadCount = static_cast<uint32_t>(
+      std::clamp(static_cast<int>(std::thread::hardware_concurrency()) - 2,
+                 1, 2));
   filament::Engine::Builder builder;
   builder.backend(backend).config(&config);
   if (backend == filament::Engine::Backend::OPENGL &&

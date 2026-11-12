@@ -1093,7 +1093,7 @@ TEST_F(DepthCameraTest, DepthCameraMarkerPoints)
   // Every point is seen at 3 m. The dot size in sensors differs: filament
   // draws 1 pixel, ogre2 1 pixel or the marker size depending on GL state.
   // A dot's top-left pixel has no finite neighbour to its left or above.
-  auto hit = [&scan](unsigned int _x, unsigned int _y)
+  auto hit = [&](unsigned int _x, unsigned int _y)
   {
     return std::isfinite(scan[_y * kSize + _x]);
   };

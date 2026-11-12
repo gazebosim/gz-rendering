@@ -108,7 +108,9 @@ PixelFormat FilamentThermalCamera::ImageFormat() const
 //////////////////////////////////////////////////
 void FilamentThermalCamera::SetImageFormat(PixelFormat _format, bool)
 {
-  // only 8 and 16 bit outputs, like ogre2
+  // only 8 and 16 bit outputs, like ogre2. _reinterpretable is for an
+  // Ogre texture's UNORM/sRGB views: nothing here uses it, and in ogre2's
+  // thermal camera it only reaches a 1x1 placeholder target
   this->format = _format == PF_L8 ? PF_L8 : PF_L16;
 }
 

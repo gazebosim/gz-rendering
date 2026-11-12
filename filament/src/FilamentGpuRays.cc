@@ -384,10 +384,10 @@ void FilamentGpuRays::PostRender()
 {
   const unsigned int hCount = std::max(this->RangeCount(), 1);
   const unsigned int vCount = std::max(this->VerticalRangeCount(), 1);
-  const unsigned int channels = this->Channels();
+  const unsigned int channelCount = this->Channels();
   // only the range channel changes from frame to frame: zero the scan
   // when its size changes, then write ranges over the old ones
-  const size_t scanSize = static_cast<size_t>(hCount) * vCount * channels;
+  const size_t scanSize = static_cast<size_t>(hCount) * vCount * channelCount;
   if (this->scan.size() != scanSize)
     this->scan.assign(scanSize, 0.0f);
   if (this->rays.size() != static_cast<size_t>(hCount) * vCount)
@@ -430,8 +430,8 @@ void FilamentGpuRays::PostRender()
   std::uniform_real_distribution<double> uniform(0.0, 1.0);
   const unsigned int stride = n * this->faceCount;
 
-  const float nearClip = static_cast<float>(this->NearClipPlane());
-  const float farClip = static_cast<float>(this->FarClipPlane());
+  const float nearPlane = static_cast<float>(this->NearClipPlane());
+  const float farPlane = static_cast<float>(this->FarClipPlane());
   const float maxVal = this->dataMaxVal;
   const float minVal = this->dataMinVal;
   if (!particles && this->ranges.size() >= this->rays.size())
@@ -444,10 +444,10 @@ void FilamentGpuRays::PostRender()
     for (size_t k = 0; k < count; ++k)
     {
       const float range = src[k];
-      dst[k * channels] = !std::isfinite(range) || range > farClip ?
-          maxVal : (range < nearClip ? minVal : range);
+      dst[k * channelCount] = !std::isfinite(range) || range > farPlane ?
+          maxVal : (range < nearPlane ? minVal : range);
     }
-    this->newFrame(this->scan.data(), hCount, vCount, channels,
+    this->newFrame(this->scan.data(), hCount, vCount, channelCount,
         "PF_FLOAT32_RGB");
     return;
   }
@@ -468,13 +468,13 @@ void FilamentGpuRays::PostRender()
             pd * ray.invCos, range));
       }
     }
-    if (!std::isfinite(range) || range > farClip)
+    if (!std::isfinite(range) || range > farPlane)
       range = this->dataMaxVal;
-    else if (range < nearClip)
+    else if (range < nearPlane)
       range = this->dataMinVal;
-    this->scan[k * channels] = range;
+    this->scan[k * channelCount] = range;
   }
-  this->newFrame(this->scan.data(), hCount, vCount, channels,
+  this->newFrame(this->scan.data(), hCount, vCount, channelCount,
       "PF_FLOAT32_RGB");
 }
 

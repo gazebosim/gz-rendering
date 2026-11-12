@@ -593,7 +593,9 @@ namespace
             alpha[p] = static_cast<uint8_t>(a[(bits >> (3 * p)) & 7u]);
           b += 8;
         }
-        const unsigned int c[2] = {b[0] | (b[1] << 8u), b[2] | (b[3] << 8u)};
+        const unsigned int c[2] = {
+            static_cast<unsigned int>(b[0] | (b[1] << 8u)),
+            static_cast<unsigned int>(b[2] | (b[3] << 8u))};
         int pal[4][4];
         for (int i = 0; i < 2; ++i)
         {

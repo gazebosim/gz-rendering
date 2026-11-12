@@ -350,11 +350,11 @@ void FilamentThermalCamera::Render()
         rgba[2] = Unorm8(c.B());
         rgba[3] = 1.0f;
       }
-      const uint32_t id = static_cast<uint32_t>(this->idValue.size());
+      const uint32_t itemId = static_cast<uint32_t>(this->idValue.size());
       this->idValue.push_back(this->Encode(rgba));
       mesh->OverrideMaterial(i,
           filament_utils::FlatInstance(this->idInstances,
-              filament_utils::ColorFromRgb(id)));
+              filament_utils::ColorFromRgb(itemId)));
     }
     this->overridden.push_back(mesh);
   }
@@ -398,10 +398,11 @@ void FilamentThermalCamera::PostRender()
       this->thermalImage[i] = this->Encode(rgba);
       continue;
     }
-    const uint32_t id = (static_cast<uint32_t>(p[0]) << 16) |
+    const uint32_t itemId = (static_cast<uint32_t>(p[0]) << 16) |
         (static_cast<uint32_t>(p[1]) << 8) | p[2];
     this->thermalImage[i] =
-        id < this->idValue.size() ? this->idValue[id] : this->idValue[0];
+        itemId < this->idValue.size() ?
+            this->idValue[itemId] : this->idValue[0];
   }
   this->newThermalFrame(this->thermalImage.data(), width, height, 1u,
       PixelUtil::Name(this->ImageFormat()));

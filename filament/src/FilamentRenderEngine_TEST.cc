@@ -33,7 +33,7 @@ using namespace rendering;
 TEST(FilamentRenderEngineTest, InvalidEglParams)
 {
   FilamentRenderEngine *engine = FilamentRenderEngine::Instance();
-  for (const std::string &value : {"", "abc", "12abc", "-1", "0x10",
+  for (const char *value : {"", "abc", "12abc", "-1", "0x10",
       "99999999999999999999999"})
   {
     EXPECT_FALSE(engine->Load({{"egl_display", value}})) << value;

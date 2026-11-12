@@ -121,10 +121,10 @@ filament::View *FilamentProjector::DecalView(
 
   // ogre2's decal volume: the box around the frustum, from the near to the
   // far plane along the projector's X axis
-  const double hfov = this->hfov.Radian();
-  const double vfov = 2.0 * std::atan(std::tan(hfov / 2.0) / this->aspect);
+  const double hfovRad = this->hfov.Radian();
+  const double vfov = 2.0 * std::atan(std::tan(hfovRad / 2.0) / this->aspect);
   const double depth = this->farClip - this->nearClip;
-  const double width = 2.0 * std::tan(hfov / 2.0) * this->farClip;
+  const double width = 2.0 * std::tan(hfovRad / 2.0) * this->farClip;
   const double height = 2.0 * std::tan(vfov / 2.0) * this->farClip;
   math::Matrix4d unitFromWorld(this->WorldPose().Inverse());
   const math::Matrix4d unitFromProjector(

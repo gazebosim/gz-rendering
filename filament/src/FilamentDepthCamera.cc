@@ -527,7 +527,7 @@ void FilamentDepthCamera::PostRender()
     // distance.
     const float minVal = -std::numeric_limits<float>::infinity();
     const float maxVal = std::numeric_limits<float>::infinity();
-    const double nearClip = this->NearClipPlane();
+    const double nearPlane = this->NearClipPlane();
     // sqrt(r2) > farClip - tol, without the square root
     const double farSq = FarRangeSq(this->FarClipPlane() - kTol);
     const float *src = this->depthRaw.data();
@@ -577,7 +577,7 @@ void FilamentDepthCamera::PostRender()
           p[0] = p[1] = p[2] = maxVal;
           clamped = true;
         }
-        else if (d < nearClip + kTol)
+        else if (d < nearPlane + kTol)
         {
           p[0] = p[1] = p[2] = minVal;
           clamped = true;

@@ -264,17 +264,17 @@ void FilamentWideAngleCamera::PostRender()
   if (this->newImageFrame.ConnectionCount() <= 0u)
     return;
 
-  Image &image = this->image;
-  if (image.Width() != this->ImageWidth() ||
-      image.Height() != this->ImageHeight() ||
-      image.Format() != this->ImageFormat())
+  Image &img = this->image;
+  if (img.Width() != this->ImageWidth() ||
+      img.Height() != this->ImageHeight() ||
+      img.Format() != this->ImageFormat())
   {
-    image = this->CreateImage();
+    img = this->CreateImage();
   }
-  this->Copy(image);
-  const PixelFormat format = image.Format();
-  this->newImageFrame(image.Data<unsigned char>(), image.Width(),
-      image.Height(),
+  this->Copy(img);
+  const PixelFormat format = img.Format();
+  this->newImageFrame(img.Data<unsigned char>(), img.Width(),
+      img.Height(),
       PixelUtil::ChannelCount(format), PixelUtil::Name(format));
 }
 

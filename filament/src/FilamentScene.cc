@@ -1105,10 +1105,10 @@ uint64_t FilamentScene::ReflectionsSignature(const math::Vector3d &_pos) const
     }
   }
   auto &lm = engine->getLightManager();
-  const ::utils::Entity *lights = lm.getEntities();
+  const ::utils::Entity *lightEntities = lm.getEntities();
   for (size_t i = 0; i < lm.getComponentCount(); ++i)
   {
-    auto inst = lm.getInstance(lights[i]);
+    auto inst = lm.getInstance(lightEntities[i]);
     const filament::math::float3 v[3] = {lm.getPosition(inst),
         lm.getDirection(inst), lm.getColor(inst)};
     const float intensity = lm.getIntensity(inst);

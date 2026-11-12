@@ -115,13 +115,13 @@ void FilamentCapsule::Update()
 {
   // same mesh name and tessellation as ogre2, so both engines share it
   common::MeshManager *meshMgr = common::MeshManager::Instance();
-  const std::string name = "capsule_mesh_" + std::to_string(this->radius) +
+  const std::string meshName = "capsule_mesh_" + std::to_string(this->radius) +
       "_" + std::to_string(this->length);
-  if (!meshMgr->HasMesh(name))
-    meshMgr->CreateCapsule(name, this->radius, this->length, 32, 32);
+  if (!meshMgr->HasMesh(meshName))
+    meshMgr->CreateCapsule(meshName, this->radius, this->length, 32, 32);
 
   MeshDescriptor desc;
-  desc.mesh = meshMgr->MeshByName(name);
+  desc.mesh = meshMgr->MeshByName(meshName);
   if (!desc.mesh)
   {
     gzerr << "Capsule mesh is unavailable in the Mesh Manager" << std::endl;

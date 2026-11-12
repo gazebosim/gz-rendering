@@ -512,9 +512,10 @@ filament::Texture *FilamentMaterial::FilamentTexture() const
 //////////////////////////////////////////////////
 void FilamentMaterial::Update(filament::MaterialInstance *_instance)
 {
-  math::Color diffuse = this->Diffuse();
-  diffuse.A(static_cast<float>(this->Opacity()));
-  _instance->setParameter("baseColor", FilamentConversions::ToFloat4(diffuse));
+  math::Color diffuseColor = this->Diffuse();
+  diffuseColor.A(static_cast<float>(this->Opacity()));
+  _instance->setParameter("baseColor",
+      FilamentConversions::ToFloat4(diffuseColor));
   _instance->setParameter("hasTexture", this->texture ? 1 : 0);
   // overlays (gizmo, ...): ogre2 neither tests nor writes depth. The
   // transparent materials never write depth.
@@ -593,12 +594,12 @@ void FilamentMaterial::Update(filament::MaterialInstance *_instance)
     _instance->setParameter("lightMapUvSet",
         static_cast<int>(this->lightMapUvSet));
     const math::Color e = this->Emissive();
-    filament::math::float3 emissive = {e.R(), e.G(), e.B()};
+    filament::math::float3 emissiveColor = {e.R(), e.G(), e.B()};
     // ogre2 only applies the emissive color when it is not black
     const bool emissiveConstant = e.R() > 0 || e.G() > 0 || e.B() > 0;
-    filament::math::float3 mapTint = emissiveConstant ? emissive :
+    filament::math::float3 mapTint = emissiveConstant ? emissiveColor :
         filament::math::float3{1.0f, 1.0f, 1.0f};
-    _instance->setParameter("emissive", emissive);
+    _instance->setParameter("emissive", emissiveColor);
     _instance->setParameter("emissiveMapTint", mapTint);
   }
 }
@@ -761,11 +762,11 @@ void FilamentMaterial::UpdateCustomShader()
       continue;
     for (const auto &kv : *params)
     {
-      const std::string &name = kv.first;
+      const std::string &paramName = kv.first;
       const ShaderParam &param = kv.second;
       auto info = std::find_if(infos.begin(), infos.end(),
           [&](const filament::Material::ParameterInfo &_i)
-          { return name == _i.name; });
+          { return paramName == _i.name; });
       if (info == infos.end())
         continue;
       bool ok = false;
@@ -814,7 +815,7 @@ void FilamentMaterial::UpdateCustomShader()
       }
       if (!ok)
       {
-        gzwarn << "Shader param [" << name << "] could not be set: type "
+        gzwarn << "Shader param [" << paramName << "] could not be set: type "
                << "mismatch with [" << this->customSource << "] or texture "
                << "not loaded" << std::endl;
       }

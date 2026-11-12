@@ -191,45 +191,45 @@ void FilamentRenderTarget::BuildSharedTexture()
       CallerGL<decltype(&glGetString)>("glGetString")(GL_VERSION) != nullptr;
   if (!this->colorTexture || (!shared && !copied))
     return;
-  const auto format = this->colorTexture->getFormat();
-  if (format != filament::Texture::InternalFormat::RGBA8 &&
-      format != filament::Texture::InternalFormat::SRGB8_A8)
+  const auto colorFormat = this->colorTexture->getFormat();
+  if (colorFormat != filament::Texture::InternalFormat::RGBA8 &&
+      colorFormat != filament::Texture::InternalFormat::SRGB8_A8)
   {
     return;
   }
   // The caller's context is current here: allocate the texture in it, so
   // the caller can sample it, and import it into filament to draw into
-  GLuint id = 0;
-  CallerGL<decltype(&glGenTextures)>("glGenTextures")(1, &id);
-  CallerGL<decltype(&glBindTexture)>("glBindTexture")(GL_TEXTURE_2D, id);
+  GLuint glId = 0;
+  CallerGL<decltype(&glGenTextures)>("glGenTextures")(1, &glId);
+  CallerGL<decltype(&glBindTexture)>("glBindTexture")(GL_TEXTURE_2D, glId);
   CallerGL<PFNGLTEXSTORAGE2DPROC>("glTexStorage2D")(GL_TEXTURE_2D, 1,
-      format == filament::Texture::InternalFormat::RGBA8 ?
+      colorFormat == filament::Texture::InternalFormat::RGBA8 ?
           GL_RGBA8 : GL_SRGB8_ALPHA8,
       static_cast<GLsizei>(this->width), static_cast<GLsizei>(this->height));
   CallerGL<decltype(&glBindTexture)>("glBindTexture")(GL_TEXTURE_2D, 0);
   // filament's context must see the storage before it imports the name
   CallerGL<decltype(&glFlush)>("glFlush")();
-  this->glColorId = id;
+  this->glColorId = glId;
   if (copied)
   {
     gzdbg << "Filament colour target copied to the caller's GL context: "
-          << "texture " << id << " (" << this->width << "x" << this->height
+          << "texture " << glId << " (" << this->width << "x" << this->height
           << ")" << std::endl;
     return;
   }
   auto *engine = Engine();
   this->glColor = filament::Texture::Builder()
       .width(this->width).height(this->height).levels(1)
-      .format(format)
+      .format(colorFormat)
       .usage(filament::Texture::Usage::COLOR_ATTACHMENT |
              filament::Texture::Usage::SAMPLEABLE)
-      .import(static_cast<intptr_t>(id))
+      .import(static_cast<intptr_t>(glId))
       .build(*engine);
   this->glColorTarget = filament::RenderTarget::Builder()
       .texture(filament::RenderTarget::AttachmentPoint::COLOR, this->glColor)
       .build(*engine);
   gzdbg << "Filament colour target in the caller's GL context: texture "
-        << id << " (" << this->width << "x" << this->height << ")"
+        << glId << " (" << this->width << "x" << this->height << ")"
         << std::endl;
 }
 
@@ -274,10 +274,10 @@ void FilamentRenderTarget::UpdateSharedTexture()
   // filtering, front faces), so copy the finished image upside down.
   this->flipPass->instance->setParameter("colorIn", this->colorTexture,
       filament::TextureSampler());
-  filament::RenderTarget *scene = this->target;
+  filament::RenderTarget *sceneTarget = this->target;
   this->target = this->glColorTarget;
   this->Render(this->flipPass->view);
-  this->target = scene;
+  this->target = sceneTarget;
   // the caller samples the texture next
   Engine()->flushAndWait();
 }
@@ -383,10 +383,10 @@ void FilamentRenderTarget::RenderDepth(filament::View *_view)
                 this->depthTexture)
             .build(*Engine())).first;
   }
-  filament::RenderTarget *scene = this->target;
+  filament::RenderTarget *sceneTarget = this->target;
   this->target = it->second;
   this->Render(_view);
-  this->target = scene;
+  this->target = sceneTarget;
 }
 
 //////////////////////////////////////////////////
@@ -419,10 +419,10 @@ void FilamentRenderTarget::ApplyProjectors(
       colorOnly = it->second;
     }
     // blend over the scene: no clear, the depth is only sampled
-    filament::RenderTarget *scene = this->target;
+    filament::RenderTarget *sceneTarget = this->target;
     this->target = colorOnly;
     this->Render(view, nullptr, false);
-    this->target = scene;
+    this->target = sceneTarget;
   }
 }
 

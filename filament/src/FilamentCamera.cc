@@ -320,11 +320,11 @@ void FilamentCamera::SetClampedProjection(double _renderNear,
   }
   using filament::Camera;
   const double hfovDeg = this->HFOV().Degree();
-  const double aspect = this->AspectRatio();
+  const double aspectRatio = this->AspectRatio();
   this->camera->setCustomProjection(
-      Camera::projection(Camera::Fov::HORIZONTAL, hfovDeg, aspect,
+      Camera::projection(Camera::Fov::HORIZONTAL, hfovDeg, aspectRatio,
           _renderNear, _renderFar),
-      Camera::projection(Camera::Fov::HORIZONTAL, hfovDeg, aspect,
+      Camera::projection(Camera::Fov::HORIZONTAL, hfovDeg, aspectRatio,
           this->NearClipPlane(), this->FarClipPlane()),
       this->NearClipPlane(), this->FarClipPlane());
 }
@@ -339,9 +339,9 @@ void FilamentCamera::UpdateProjection()
     this->SetClampedProjection(this->NearClipPlane(), this->FarClipPlane());
     return;
   }
-  const double aspect = this->AspectRatio();
+  const double aspectRatio = this->AspectRatio();
   const double hfovDeg = this->HFOV().Degree();
-  this->camera->setProjection(hfovDeg, aspect, this->NearClipPlane(),
+  this->camera->setProjection(hfovDeg, aspectRatio, this->NearClipPlane(),
       this->FarClipPlane(), filament::Camera::Fov::HORIZONTAL);
 }
 
@@ -419,23 +419,23 @@ void FilamentCamera::Render()
 //////////////////////////////////////////////////
 math::Vector3d FilamentCamera::ReflectionProbePosition()
 {
-  const math::Pose3d pose = this->WorldPose();
-  if (pose == this->probeCameraPose)
+  const math::Pose3d worldPose = this->WorldPose();
+  if (worldPose == this->probeCameraPose)
     return this->probePosition;
-  this->probeCameraPose = pose;
+  this->probeCameraPose = worldPose;
   // 1 m short of what the camera looks at (at most half way), where the
   // reflective things the user looks at are; 5 m ahead if it looks at
   // nothing. Closer to the camera, the probe reflects too much of what is
   // behind the camera.
   constexpr double kBack = 1.0;
   constexpr double kNoHit = 5.0;
-  const math::Vector3d dir = pose.Rot() * math::Vector3d::UnitX;
+  const math::Vector3d dir = worldPose.Rot() * math::Vector3d::UnitX;
   RayQueryPtr query = this->scene->CreateRayQuery();
-  query->SetOrigin(pose.Pos());
+  query->SetOrigin(worldPose.Pos());
   query->SetDirection(dir);
   const RayQueryResult hit = query->ClosestPoint();
   const double d = hit ? hit.distance : 0.0;
-  this->probePosition = pose.Pos() + dir *
+  this->probePosition = worldPose.Pos() + dir *
       (hit ? std::max(0.5 * d, d - kBack) : kNoHit);
   return this->probePosition;
 }

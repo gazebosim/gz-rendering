@@ -217,7 +217,7 @@ void FilamentVisual::BoundsHelper(math::AxisAlignedBox &_box, bool _local,
       ->getRenderableManager();
   if (this->visible && this->VisibilityFlags() != GZ_VISIBILITY_GUI)
   {
-    const math::Vector3d scale = this->WorldScale();
+    const math::Vector3d worldScale = this->WorldScale();
     math::Pose3d transform = _pose;
     if (_local)
     {
@@ -237,8 +237,8 @@ void FilamentVisual::BoundsHelper(math::AxisAlignedBox &_box, bool _local,
           rm.getInstance(e));
       const filament::math::float3 lo = bb.getMin();
       const filament::math::float3 hi = bb.getMax();
-      math::AxisAlignedBox box(scale * math::Vector3d(lo.x, lo.y, lo.z),
-          scale * math::Vector3d(hi.x, hi.y, hi.z));
+      math::AxisAlignedBox box(worldScale * math::Vector3d(lo.x, lo.y, lo.z),
+          worldScale * math::Vector3d(hi.x, hi.y, hi.z));
       _box.Merge(transformAxisAlignedBox(box, transform));
     }
   }

@@ -259,9 +259,9 @@ void FilamentMesh::SetSkeletonLocalTransforms(
 {
   if (!this->skeleton)
     return;
-  for (const auto &[name, tf] : _tfs)
+  for (const auto &[boneName, tf] : _tfs)
   {
-    const int i = this->skeleton->Find(name);
+    const int i = this->skeleton->Find(boneName);
     if (i < 0)
       continue;
     auto &b = this->skeleton->bones[i];
@@ -293,9 +293,9 @@ void FilamentMesh::SetSkeletonWeights(
     return;
   for (auto &a : this->skeleton->anims)
   {
-    for (const auto &[name, weight] : _weights)
+    for (const auto &[boneName, weight] : _weights)
     {
-      const int i = this->skeleton->Find(name);
+      const int i = this->skeleton->Find(boneName);
       if (i >= 0)
         a.boneWeights[i] = weight;
     }

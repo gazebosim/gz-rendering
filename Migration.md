@@ -26,6 +26,15 @@ release will remove the deprecated code.
   rotation visuals that joint visuals show for revolute, revolute2, universal
   and gearbox joints are no longer hidden by those calls.
 
+* Added the virtual `Camera::IssueReadback()` (ABI break). Called between
+  `Render()` and `PostRender()`, it issues the GPU readback of the frame
+  without waiting for it, and `PostRender()` then waits for that readback
+  instead of issuing its own. Rendering several cameras and issuing their
+  readbacks before the first `PostRender()` lets the readbacks overlap; the
+  delivered data is the same. The default implementation returns false and
+  does nothing; the ogre2 depth camera and GPU rays implement it, except
+  with `GZ_RENDERING_OGRE2_LEGACY_READBACK`.
+
 ### Optimizations
 
 * A Persistent GPU->CPU readback to avoid duplicate copies was introduced

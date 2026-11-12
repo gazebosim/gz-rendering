@@ -87,6 +87,7 @@ void FilamentDynamicGeometry::SetMaterial(MaterialPtr _material, bool _unique)
   _material->SetReceiveShadows(false);
   _material->SetCastShadows(false);
   _material->SetLightingEnabled(false);
+  // lines exists from Init, which the scene runs on creation, to Destroy
   this->lines->SetLineMaterial(_material);
 
   filament_utils::ReplaceMaterial(this->Scene(), this->material,

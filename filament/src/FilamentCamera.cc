@@ -178,7 +178,7 @@ void FilamentCamera::UpdateQualityMode()
   // smaller penumbra search. 1.79 has no PCF filter size (DPCF is gone).
 
   gzmsg << "Filament quality mode on for camera [" << this->Name()
-        << "]: tone mapping, GTAO, physical lights, "
+        << "]: tone mapping, GTAO, "
         << (msaa ? "MSAA " + std::to_string(std::min(this->AntiAliasing(),
             8u)) + "x" : std::string("FXAA")) << std::endl;
 }

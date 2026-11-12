@@ -323,7 +323,7 @@ void FilamentScene::UpdateSkyLight()
     }
     engine->flushAndWait();
     engine->destroy(scaled);
-    gzdbg << "Filament quality mode: sky lighting ready" << std::endl;
+    gzdbg << "Filament sky lighting ready" << std::endl;
   }
   if (!this->skyLight)
   {

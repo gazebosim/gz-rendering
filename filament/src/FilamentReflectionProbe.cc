@@ -94,8 +94,6 @@ ReflectionProbe::ReflectionProbe(filament::Engine &_engine,
   // linear radiance, like the sensors; the GUI camera tone maps the
   // reflections with everything else
   this->view->setPostProcessingEnabled(false);
-  // Filament's stock diffuse, like the quality-mode cameras
-  this->view->setMaterialGlobal(3, {0.0f, 0.0f, 1.0f, 1.0f});
   this->view->setViewport({0, 0, this->size, this->size});
 
   this->context = std::make_unique<IBLPrefilterContext>(this->engine);

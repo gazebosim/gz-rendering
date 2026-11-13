@@ -383,7 +383,10 @@ void OgreDepthCamera::UpdateRenderTarget(OgreRenderTexturePtr _target,
   // Which normally equates to infinite distance. We don't want this. So
   // we have to set the distance every time.
   double farPlane = std::max(this->FarClipPlane(), this->DepthFarClipPlane());
-  double nearPlane = this->hasDepthNearClip ? this->NearClipPlane() : 1e-4;
+  double minNearClip = std::min(this->NearClipPlane(),
+      this->DepthNearClipPlane());
+  double nearPlane = this->hasDepthNearClip ?
+      minNearClip : this->NearClipPlane() * 0.9;
   this->ogreCamera->setFarClipDistance(farPlane);
   this->ogreCamera->setNearClipDistance(nearPlane);
 

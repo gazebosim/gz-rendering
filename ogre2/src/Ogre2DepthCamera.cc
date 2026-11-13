@@ -500,11 +500,15 @@ void Ogre2DepthCamera::CreateDepthTexture()
 
   // Widen the ogre clip range (see kDepthNearClipScale); the configured
   // depth near / far range is enforced in the depth camera shaders.
-  // When a separate depth near clip plane is set, NearClipPlane() acts as
-  // the frustum near clip plane and is not scaled down.
+  // When a separate depth near clip plane is set, min(NearClipPlane(),
+  // DepthNearClipPlane()) acts as the frustum near clip plane and is not
+  // scaled down.
+  double minNearClip = std::min(this->NearClipPlane(),
+      this->DepthNearClipPlane());
+  double maxFarClip = std::max(this->FarClipPlane(),
+      this->DepthFarClipPlane());
   double nearPlane = this->hasDepthNearClip ?
-      this->NearClipPlane() : this->NearClipPlane() * kDepthNearClipScale;
-  double maxFarClip = std::max(this->FarClipPlane(), this->DepthFarClipPlane());
+      minNearClip : this->NearClipPlane() * kDepthNearClipScale;
   double farPlane = maxFarClip * kDepthFarClipScale;
   this->ogreCamera->setNearClipDistance(nearPlane);
   this->ogreCamera->setFarClipDistance(farPlane);
@@ -522,9 +526,9 @@ void Ogre2DepthCamera::CreateDepthTexture()
   psParams->setNamedConstant("projectionParams",
       Ogre::Vector2(projectionA, projectionB));
   psParams->setNamedConstant("near",
-      static_cast<float>(this->NearClipPlane()));
+      static_cast<float>(minNearClip));
   psParams->setNamedConstant("far",
-      static_cast<float>(this->FarClipPlane()));
+      static_cast<float>(maxFarClip));
   psParams->setNamedConstant("max",
       static_cast<float>(this->dataPtr->dataMaxVal));
   psParams->setNamedConstant("min",
@@ -1083,8 +1087,10 @@ void Ogre2DepthCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
   // camera, otherwise the depth pipeline (e.g. point cloud reconstruction
   // from view space corners) would be inconsistent with the frustum.
   math::Matrix4d ogreMatrix = _matrix;
+  double minNearClip = std::min(this->NearClipPlane(),
+      this->DepthNearClipPlane());
   double nearPlane = this->hasDepthNearClip ?
-      this->NearClipPlane() : this->NearClipPlane() * kDepthNearClipScale;
+      minNearClip : this->NearClipPlane() * kDepthNearClipScale;
   double farPlane = std::max(this->FarClipPlane(),
       this->DepthFarClipPlane()) * kDepthFarClipScale;
   SetProjectionDepthRows(ogreMatrix, nearPlane, farPlane);
@@ -1121,6 +1127,48 @@ void Ogre2DepthCamera::PreRender()
 
   if (!this->dataPtr->ogreCompositorWorkspace)
     this->CreateWorkspaceInstance();
+
+  if (this->dataPtr->depthMaterial && this->dataPtr->depthFinalMaterial)
+  {
+    double minNearClip = std::min(this->NearClipPlane(),
+        this->DepthNearClipPlane());
+    double maxFarClip = std::max(this->FarClipPlane(),
+        this->DepthFarClipPlane());
+    double nearPlane = this->hasDepthNearClip ?
+        minNearClip : this->NearClipPlane() * kDepthNearClipScale;
+    double farPlane = maxFarClip * kDepthFarClipScale;
+    this->ogreCamera->setNearClipDistance(nearPlane);
+    this->ogreCamera->setFarClipDistance(farPlane);
+    if (this->ogreCamera->isCustomProjectionMatrixEnabled())
+    {
+      math::Matrix4d ogreMatrix = this->projectionMatrix;
+      SetProjectionDepthRows(ogreMatrix, nearPlane, farPlane);
+      this->ogreCamera->setCustomProjectionMatrix(
+          true, Ogre2Conversions::Convert(ogreMatrix));
+    }
+
+    Ogre::Vector2 projectionAB = this->ogreCamera->getProjectionParamsAB();
+    double projectionA = projectionAB.x;
+    double projectionB = projectionAB.y / farPlane;
+
+    Ogre::Pass *pass =
+        this->dataPtr->depthMaterial->getTechnique(0)->getPass(0);
+    Ogre::GpuProgramParametersSharedPtr psParams =
+        pass->getFragmentProgramParameters();
+    psParams->setNamedConstant("projectionParams",
+        Ogre::Vector2(projectionA, projectionB));
+    psParams->setNamedConstant("near", static_cast<float>(minNearClip));
+    psParams->setNamedConstant("far", static_cast<float>(maxFarClip));
+
+    Ogre::Pass *passFinal =
+        this->dataPtr->depthFinalMaterial->getTechnique(0)->getPass(0);
+    Ogre::GpuProgramParametersSharedPtr psParamsFinal =
+        passFinal->getFragmentProgramParameters();
+    psParamsFinal->setNamedConstant("near",
+        static_cast<float>(this->DepthNearClipPlane()));
+    psParamsFinal->setNamedConstant("far",
+        static_cast<float>(this->DepthFarClipPlane()));
+  }
 
   // Disable color target (set to clear pass) if there are no rgb point cloud
   // connections

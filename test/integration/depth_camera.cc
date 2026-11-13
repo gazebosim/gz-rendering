@@ -1179,6 +1179,20 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraClip))
     EXPECT_GT(*mrgba >> 8 & 0xFF, 0u);
   }
 
+  // 4. Update depth clip planes after CreateDepthTexture() / first frames,
+  // including depthFarClip (12.0m) > farDist (10.0m): box at 6.0m is now
+  // inside [depthNear, depthFar] and should be detected at 6.0m.
+  depthCamera->SetDepthNearClipPlane(0.2);
+  depthCamera->SetDepthFarClipPlane(12.0);
+  g_depthCounter = 0u;
+  g_pointCloudCounter = 0u;
+  depthCamera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+  EXPECT_EQ(1u, g_depthCounter);
+  EXPECT_EQ(1u, g_pointCloudCounter);
+  EXPECT_NEAR(6.0, scan[mid], DEPTH_TOL);
+  EXPECT_NEAR(6.0, points[pcMid], DEPTH_TOL);
+
   c1.reset();
   c2.reset();
   engine->DestroyScene(scene);

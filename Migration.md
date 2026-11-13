@@ -34,6 +34,15 @@ release will remove the deprecated code.
   in the presence of errors setting their environment variable
   `GZ_RENDERING_OGRE2_LEGACY_READBACK`.
 
+* With OpenGL, that readback now waits for the GPU by polling the download's
+  fence with short sleeps instead of inside `map()`, where some drivers
+  (NVIDIA) busy-wait for the whole GPU latency, whenever the render thread
+  has idle time outside the readback waits. A render thread without idle
+  time is the bottleneck and keeps waiting inside `map()`, because sleeping
+  would slow the readback down. The data is the same. Platforms without a
+  per-thread CPU clock (Windows) always wait inside `map()`. Set
+  `GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT` to always wait inside `map()`.
+
 * The number of ogre threads spawn by default has changed from being the
   number of cores of the host computer to zero to reduce the CPU usage
   in https://github.com/gazebosim/gz-rendering/pull/1302. It can be

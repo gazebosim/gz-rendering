@@ -1,5 +1,5 @@
 # Bazel targets for Ogre2 render engine plugin.
-load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 load("@rules_gazebo//gazebo:headers.bzl", "gz_export_header")
 load("//bazel:gz_rendering_engine_libraries.bzl", "gz_rendering_engine_libraries")
 
@@ -62,11 +62,14 @@ cc_library(
 # Also, the `OGRE2_RESOURCE_PATH` env variable must be set from the runfiles
 # path.
 gz_rendering_engine_libraries(
-    srcs = glob([
-        "include/gz/rendering/ogre2/*.hh",
-        "src/*.cc",
-        "src/*.hh",
-    ]) + [
+    srcs = glob(
+        [
+            "include/gz/rendering/ogre2/*.hh",
+            "src/*.cc",
+            "src/*.hh",
+        ],
+        exclude = ["src/*_TEST.cc"],
+    ) + [
         "include/gz/rendering/ogre2/Export.hh",
     ],
     copts = [
@@ -106,3 +109,21 @@ gz_rendering_engine_libraries(
         "//conditions:default": ["@egl-registry//:EGL_headers"],
     }),
 )
+
+test_sources = glob(["src/*_TEST.cc"])
+
+[
+    cc_test(
+        name = src.replace("/", "_").replace(".cc", "").replace("src_", ""),
+        srcs = [src] + glob(
+            [src.replace("_TEST.cc", ".hh")],
+            allow_empty = True,
+        ),
+        deps = [
+            "//:gz-rendering",
+            "@googletest//:gtest",
+            "@googletest//:gtest_main",
+        ],
+    )
+    for src in test_sources
+]

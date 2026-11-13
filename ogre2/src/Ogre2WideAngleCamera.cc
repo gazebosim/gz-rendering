@@ -17,6 +17,7 @@
 
 #include "gz/rendering/ogre2/Ogre2WideAngleCamera.hh"
 
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/CameraLens.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -1106,8 +1107,11 @@ void Ogre2WideAngleCamera::Copy(Image &_image) const
       dstOgrePf, 1u)));
   dstBox.data = _image.Data();
 
-  Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u), dstBox,
-                                     dstOgrePf);
+  {
+    ScopedGpuWait gpuWait;
+    Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u),
+                                       dstBox, dstOgrePf);
+  }
 }
 
 //////////////////////////////////////////////////
@@ -1266,8 +1270,11 @@ void Ogre2WideAngleCamera::PostRender()
 
   // blit data from gpu to cpu
   Ogre::Image2 image;
-  image.convertFromTexture(this->dataPtr->ogreStitchTexture[kStichFinalTexture],
-                           0u, 0u);
+  {
+    ScopedGpuWait gpuWait;
+    image.convertFromTexture(
+        this->dataPtr->ogreStitchTexture[kStichFinalTexture], 0u, 0u);
+  }
   Ogre::TextureBox box = image.getData(0u);
 
   // Convert in-place from RGBA32 to RGB24 reusing the same memory region.

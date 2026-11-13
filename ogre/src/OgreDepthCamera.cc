@@ -23,6 +23,7 @@
   #include <windows.h>
 #endif
 #include <gz/math/Helpers.hh>
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/ogre/OgreDepthCamera.hh"
 #include "gz/rendering/ogre/OgreMaterial.hh"
@@ -458,8 +459,11 @@ void OgreDepthCamera::PostRender()
 
     Ogre::PixelBox ogrePixelBox(width, height, 1,
         OgreConversions::Convert(colorFormat), this->dataPtr->colorBuffer);
-    this->dataPtr->colorTexture->RenderTarget()->copyContentsToMemory(
-        ogrePixelBox);
+    {
+      ScopedGpuWait gpuWait;
+      this->dataPtr->colorTexture->RenderTarget()->copyContentsToMemory(
+          ogrePixelBox);
+    }
   }
 
   // fill depthBuffer and clamp values

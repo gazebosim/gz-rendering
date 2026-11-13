@@ -21,6 +21,7 @@
 #include <gz/common/Console.hh>
 #include <gz/math/Helpers.hh>
 
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2GpuRays.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -1308,7 +1309,10 @@ void Ogre2GpuRays::PostRender()
 
   // blit data from gpu to cpu
   Ogre::Image2 image;
-  image.convertFromTexture(this->dataPtr->secondPassTexture, 0u, 0u);
+  {
+    ScopedGpuWait gpuWait;
+    image.convertFromTexture(this->dataPtr->secondPassTexture, 0u, 0u);
+  }
   Ogre::TextureBox box = image.getData(0u);
   float *bufferTmp = static_cast<float *>(box.data);
 

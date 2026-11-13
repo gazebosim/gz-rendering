@@ -36,6 +36,7 @@
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Util.hh>
 
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/RenderEngineManager.hh"
 #include "gz/rendering/ogre/OgreIncludes.hh"
@@ -818,6 +819,15 @@ void OgreRenderEngine::InitAttempt()
   OgreRTShaderSystem::Instance()->Init();
 
   this->scenes = OgreSceneStorePtr(new OgreSceneStore);
+
+  // Tell users of the GPU wait counter whether the GPU is really the CPU.
+  if (this->ogreRoot && this->ogreRoot->getRenderSystem())
+  {
+    const auto *capabilities =
+        this->ogreRoot->getRenderSystem()->getCapabilities();
+    SetSoftwareRenderer(this, capabilities &&
+        IsSoftwareDeviceName(capabilities->getDeviceName()));
+  }
 }
 
 /////////////////////////////////////////////////

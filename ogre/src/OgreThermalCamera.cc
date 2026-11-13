@@ -26,6 +26,7 @@
 #include <limits>
 
 #include <gz/math/Helpers.hh>
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/ShaderParams.hh"
 #include "gz/rendering/ogre/OgreThermalCamera.hh"
 #include "gz/rendering/ogre/OgreMaterial.hh"
@@ -567,7 +568,10 @@ void OgreThermalCamera::PostRender()
       this->dataPtr->ogreThermalTexture->getBuffer()->getRenderTarget();
   Ogre::PixelBox ogrePixelBox(width, height, 1,
       OgreConversions::Convert(format), this->dataPtr->thermalBuffer);
-  rt->copyContentsToMemory(ogrePixelBox);
+  {
+    ScopedGpuWait gpuWait;
+    rt->copyContentsToMemory(ogrePixelBox);
+  }
 
   // fill thermal data
   memcpy(this->dataPtr->thermalImage, this->dataPtr->thermalBuffer,

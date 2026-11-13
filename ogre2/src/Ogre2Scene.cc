@@ -17,6 +17,7 @@
 
 #include <gz/common/Console.hh>
 
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/base/SceneExt.hh"
 #include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/RenderTypes.hh"
@@ -387,6 +388,7 @@ void Ogre2Scene::FlushGpuCommandsAndStartNewFrame(uint8_t _numPasses,
 //////////////////////////////////////////////////
 void Ogre2Scene::FlushGpuCommandsOnly()
 {
+  ScopedGpuWait gpuWait;
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   Ogre::CompositorManager2 *ogreCompMgr = ogreRoot->getCompositorManager2();

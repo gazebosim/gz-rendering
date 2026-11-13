@@ -35,6 +35,7 @@
 
 #include <gz/common/Console.hh>
 
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/Material.hh"
 
 #include "gz/rendering/ogre/OgreRenderEngine.hh"
@@ -94,7 +95,10 @@ void OgreRenderTarget::Copy(Image &_image) const
     void *data =  colorImage.Data();
     Ogre::PixelBox ogrePixelBox(
         this->width, this->height, 1, imageFormat, data);
-    this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+    {
+      ScopedGpuWait gpuWait;
+      this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+    }
     // convert color image to bayer image
     _image = gz::rendering::convertRGBToBayer(colorImage, _image.Format());
   }
@@ -104,7 +108,10 @@ void OgreRenderTarget::Copy(Image &_image) const
     void *data = _image.Data();
     Ogre::PixelBox ogrePixelBox(
         this->width, this->height, 1, imageFormat, data);
-    this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+    {
+      ScopedGpuWait gpuWait;
+      this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+    }
   }
 }
 
@@ -470,7 +477,10 @@ void OgreRenderTexture::Buffer(float *_buffer)
 
   Ogre::PixelBox ogrePixelBox(this->width, this->height, 1,
       imageFormat, _buffer);
-  this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+  {
+    ScopedGpuWait gpuWait;
+    this->RenderTarget()->copyContentsToMemory(ogrePixelBox);
+  }
 }
 
 

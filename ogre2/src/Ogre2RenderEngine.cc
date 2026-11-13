@@ -28,6 +28,7 @@
 
 #include <gz/plugin/Register.hh>
 
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/InstallationDirectories.hh"
 #include "gz/rendering/RenderEngineManager.hh"
@@ -1426,6 +1427,15 @@ void Ogre2RenderEngine::InitAttempt()
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups(false);
 
   this->scenes = Ogre2SceneStorePtr(new Ogre2SceneStore);
+
+  // Tell users of the GPU wait counter whether the GPU is really the CPU.
+  if (this->ogreRoot && this->ogreRoot->getRenderSystem())
+  {
+    const auto *capabilities =
+        this->ogreRoot->getRenderSystem()->getCapabilities();
+    SetSoftwareRenderer(this, capabilities &&
+        IsSoftwareDeviceName(capabilities->getDeviceName()));
+  }
 }
 
 /////////////////////////////////////////////////

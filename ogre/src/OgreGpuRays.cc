@@ -22,6 +22,7 @@
 #include <gz/math/Helpers.hh>
 #include <gz/math/Vector3.hh>
 
+#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/ogre/OgreCamera.hh"
 #include "gz/rendering/ogre/OgreGpuRays.hh"
@@ -696,7 +697,10 @@ void OgreGpuRays::PostRender()
         1, Ogre::PF_FLOAT32_RGB, this->dataPtr->gpuRaysBuffer);
 
   auto pixelBuffer = this->dataPtr->secondPassTexture->getBuffer();
-  pixelBuffer->blitToMemory(dstBox);
+  {
+    ScopedGpuWait gpuWait;
+    pixelBuffer->blitToMemory(dstBox);
+  }
 
   if (!this->dataPtr->gpuRaysScan)
   {

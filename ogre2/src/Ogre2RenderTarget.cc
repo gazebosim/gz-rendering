@@ -17,7 +17,6 @@
 
 #include <gz/common/Console.hh>
 
-#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/Material.hh"
 
 #include "gz/rendering/ogre2/Ogre2Includes.hh"
@@ -28,6 +27,8 @@
 #include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 #include "gz/rendering/Utils.hh"
+
+#include "Ogre2TextureCopy.hh"
 
 #include <string.h>
 
@@ -424,22 +425,15 @@ void Ogre2RenderTarget::Copy(Image &_image) const
     // create tmp color image to get data from gpu
     Image colorImage(this->width, this->height, PF_R8G8B8);
     dstBox.data = colorImage.Data();
-    {
-      ScopedGpuWait gpuWait;
-      Ogre::Image2::copyContentsToMemory(
-          texture, texture->getEmptyBox(0u), dstBox, dstOgrePf);
-    }
+    if (!Ogre2CopyTextureToMemory(texture, dstBox, dstOgrePf))
+      return;
     // convert color image to bayer image
     _image = gz::rendering::convertRGBToBayer(colorImage, _image.Format());
   }
   else
   {
     dstBox.data = _image.Data();
-    {
-      ScopedGpuWait gpuWait;
-      Ogre::Image2::copyContentsToMemory(
-          texture, texture->getEmptyBox(0u), dstBox, dstOgrePf);
-    }
+    Ogre2CopyTextureToMemory(texture, dstBox, dstOgrePf);
   }
 }
 

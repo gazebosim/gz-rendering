@@ -17,7 +17,6 @@
 
 #include "gz/rendering/ogre2/Ogre2WideAngleCamera.hh"
 
-#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/CameraLens.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -25,6 +24,8 @@
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 
 #include "gz/common/Util.hh"
+
+#include "Ogre2TextureCopy.hh"
 
 #ifdef _MSC_VER
 #  pragma warning(push, 0)
@@ -1107,11 +1108,7 @@ void Ogre2WideAngleCamera::Copy(Image &_image) const
       dstOgrePf, 1u)));
   dstBox.data = _image.Data();
 
-  {
-    ScopedGpuWait gpuWait;
-    Ogre::Image2::copyContentsToMemory(texture, texture->getEmptyBox(0u),
-                                       dstBox, dstOgrePf);
-  }
+  Ogre2CopyTextureToMemory(texture, dstBox, dstOgrePf);
 }
 
 //////////////////////////////////////////////////
@@ -1270,10 +1267,10 @@ void Ogre2WideAngleCamera::PostRender()
 
   // blit data from gpu to cpu
   Ogre::Image2 image;
+  if (!Ogre2ConvertFromTexture(image,
+        this->dataPtr->ogreStitchTexture[kStichFinalTexture]))
   {
-    ScopedGpuWait gpuWait;
-    image.convertFromTexture(
-        this->dataPtr->ogreStitchTexture[kStichFinalTexture], 0u, 0u);
+    return;
   }
   Ogre::TextureBox box = image.getData(0u);
 

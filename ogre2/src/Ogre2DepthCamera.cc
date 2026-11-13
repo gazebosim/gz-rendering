@@ -28,7 +28,6 @@
 #include <gz/math/Helpers.hh>
 #include <gz/math/Matrix4.hh>
 
-#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
 #include "gz/rendering/ogre2/Ogre2DepthCamera.hh"
@@ -41,6 +40,7 @@
 #include "gz/rendering/ogre2/Ogre2Sensor.hh"
 
 #include "Ogre2ParticleNoiseListener.hh"
+#include "Ogre2TextureCopy.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -1166,10 +1166,8 @@ void Ogre2DepthCamera::PostRender()
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
 
   Ogre::Image2 image;
-  {
-    ScopedGpuWait gpuWait;
-    image.convertFromTexture(this->dataPtr->ogreDepthTexture[1], 0u, 0u);
-  }
+  if (!Ogre2ConvertFromTexture(image, this->dataPtr->ogreDepthTexture[1]))
+    return;
   Ogre::TextureBox box = image.getData(0);
   float *depthBufferTmp = static_cast<float *>(box.data);
   if (!this->dataPtr->depthBuffer)

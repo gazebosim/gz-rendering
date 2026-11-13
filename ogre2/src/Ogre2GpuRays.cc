@@ -21,7 +21,6 @@
 #include <gz/common/Console.hh>
 #include <gz/math/Helpers.hh>
 
-#include "gz/rendering/GpuWaitTime.hh"
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2GpuRays.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -37,6 +36,7 @@
 
 #include "Ogre2GzHlmsSphericalClipMinDistance.hh"
 #include "Ogre2ParticleNoiseListener.hh"
+#include "Ogre2TextureCopy.hh"
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 
 #include "Terra/Terra.h"
@@ -1309,10 +1309,8 @@ void Ogre2GpuRays::PostRender()
 
   // blit data from gpu to cpu
   Ogre::Image2 image;
-  {
-    ScopedGpuWait gpuWait;
-    image.convertFromTexture(this->dataPtr->secondPassTexture, 0u, 0u);
-  }
+  if (!Ogre2ConvertFromTexture(image, this->dataPtr->secondPassTexture))
+    return;
   Ogre::TextureBox box = image.getData(0u);
   float *bufferTmp = static_cast<float *>(box.data);
 

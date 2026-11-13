@@ -38,7 +38,10 @@ namespace gz
     /// Render engines add to this counter around each point where the CPU
     /// has to stop and wait for the GPU, such as reading back a rendered image
     /// or waiting for a frame to finish. For a readback that includes the time
-    /// to transfer the image out of GPU memory.
+    /// the GPU takes to transfer the image out of its memory. Copying the image
+    /// on the CPU after that is not waiting on the GPU, and ogre2 leaves it
+    /// out. The ogre engine counts it, since Ogre 1 transfers and copies the
+    /// image in one call.
     ///
     /// It is a per thread monotonic counter: sample it before and after a
     /// piece of work to learn how much of the wall time of that work was spent

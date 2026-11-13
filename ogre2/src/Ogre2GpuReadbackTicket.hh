@@ -57,6 +57,11 @@ namespace gz
       /// width/height/pixel-format changes. The caller MUST read the data out
       /// honoring TextureBox::bytesPerRow and then call Unmap() before the next
       /// frame's DownloadAndMap().
+      /// With OpenGL, the wait for the download either spins inside map() or
+      /// polls its fence with short sleeps; Ogre2ReadbackWaitPolicy chooses,
+      /// per calling thread, from that thread's idle time. The data is the
+      /// same either way. The env var GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT
+      /// forces the wait inside map(); it is read on every call.
       /// \param[in] _texture Source GPU texture.
       /// \return Mapped TextureBox; box.data is nullptr on failure.
       public: Ogre::TextureBox DownloadAndMap(Ogre::TextureGpu *_texture);

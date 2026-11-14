@@ -41,6 +41,14 @@ namespace gz
 
       public: void CreateDepthTexture() override;
 
+      public: void SetDepthNearClipPlane(double _near) override;
+
+      public: double DepthNearClipPlane() const override;
+
+      public: void SetDepthFarClipPlane(double _far) override;
+
+      public: double DepthFarClipPlane() const override;
+
       public: const float *DepthData() const override;
 
       public: gz::common::ConnectionPtr ConnectNewDepthFrame(
@@ -50,6 +58,14 @@ namespace gz
       public: virtual gz::common::ConnectionPtr ConnectNewRGBPointCloud(
           std::function<void(const float *, unsigned int, unsigned int,
           unsigned int, const std::string &)>  _subscriber);
+
+      protected: double depthNearClip = 0.01;
+
+      protected: double depthFarClip = 1000.0;
+
+      protected: bool hasDepthNearClip = false;
+
+      protected: bool hasDepthFarClip = false;
     };
 
     //////////////////////////////////////////////////
@@ -68,6 +84,38 @@ namespace gz
     template <class T>
     void BaseDepthCamera<T>::CreateDepthTexture()
     {
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseDepthCamera<T>::SetDepthNearClipPlane(double _near)
+    {
+      this->depthNearClip = _near;
+      this->hasDepthNearClip = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseDepthCamera<T>::DepthNearClipPlane() const
+    {
+      return this->hasDepthNearClip ?
+          this->depthNearClip : this->NearClipPlane();
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    void BaseDepthCamera<T>::SetDepthFarClipPlane(double _far)
+    {
+      this->depthFarClip = _far;
+      this->hasDepthFarClip = true;
+    }
+
+    //////////////////////////////////////////////////
+    template <class T>
+    double BaseDepthCamera<T>::DepthFarClipPlane() const
+    {
+      return this->hasDepthFarClip ?
+          this->depthFarClip : this->FarClipPlane();
     }
 
     //////////////////////////////////////////////////

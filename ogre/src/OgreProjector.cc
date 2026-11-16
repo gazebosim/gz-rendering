@@ -128,6 +128,16 @@ namespace gz
       /// \param[in] _matSet Name of material
       private: void AddDecalToMaterial(const std::string &_matName);
 
+      /// \brief Build the "projector" scheme technique of a clone material
+      /// from its current passes, then load the clone. Only clones get this
+      /// technique: with the default visibility flags the decal is added to
+      /// the original material and drawn through the scene scheme, and a
+      /// "projector" technique on an original material would stop
+      /// handleSchemeNotFound from being called for it.
+      /// \param[in] _clone Clone material that has been through
+      /// AddDecalToMaterial.
+      private: void UpdateProjectorSchemeTechnique(Ogre::Material *_clone);
+
       /// \brief Attach the hand-written projector GLSL programs to a decal
       /// pass. The programs are created once per process and reused. Sets
       /// the required auto-constants and texture sampler bindings.
@@ -162,7 +172,7 @@ namespace gz
       /// scheme technique is the RTSS-generated shader-based variant that GL3+
       /// core can actually execute.
       /// \param[in] _clone Clone material that has been through
-      /// AddDecalToMaterial.
+      /// UpdateProjectorSchemeTechnique.
       private: Ogre::Technique *ProjectorSchemeTechnique(
                   Ogre::Material *_clone) const;
 
@@ -583,13 +593,20 @@ void OgreProjectorListener::AddDecalToMaterial(
 
   this->projectorTargets[_matName] = pass;
 
+  mat->load();
+}
+
+/////////////////////////////////////////////////
+void OgreProjectorListener::UpdateProjectorSchemeTechnique(
+    Ogre::Material *_clone)
+{
   // Under OGRE 1.12 + GL3+ core, the inherited Default scheme technique has
   // no GPU programs. Ask the RTSS to synthesize a shader-based technique
-  // (for the wall pass only — the decal pass above already carries its own
-  // hand-written GLSL programs) in the "projector" scheme so the viewport's
-  // scheme switch resolves to a fully compiled technique. Without this the
-  // listener returns an unloaded FF technique and GL3+ silently renders
-  // nothing.
+  // (for the wall pass only — the decal pass added by AddDecalToMaterial
+  // already carries its own hand-written GLSL programs) in the "projector"
+  // scheme so the viewport's scheme switch resolves to a fully compiled
+  // technique. Without this the listener returns an unloaded FF technique
+  // and GL3+ silently renders nothing.
   auto *shaderGenerator =
       Ogre::RTShader::ShaderGenerator::getSingletonPtr();
   if (shaderGenerator)
@@ -597,7 +614,7 @@ void OgreProjectorListener::AddDecalToMaterial(
     try
     {
       shaderGenerator->createShaderBasedTechnique(
-          *mat,
+          *_clone,
           Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
           "projector");
       // The RTSS rebuilds every technique in the "projector" scheme when the
@@ -605,17 +622,17 @@ void OgreProjectorListener::AddDecalToMaterial(
       // camera and its shadow texture passes. If that happened while this
       // decal was removed, the technique has no decal pass, so rebuild it
       // from the passes the material has now.
-      shaderGenerator->invalidateMaterial("projector", _matName,
-          mat->getGroup());
-      shaderGenerator->validateMaterial("projector", _matName,
-          mat->getGroup());
+      shaderGenerator->invalidateMaterial("projector", _clone->getName(),
+          _clone->getGroup());
+      shaderGenerator->validateMaterial("projector", _clone->getName(),
+          _clone->getGroup());
     }
     catch (const Ogre::Exception &)
     {
       // Non-fatal; fall back to whatever the clone already has.
     }
   }
-  mat->load();
+  _clone->load();
 }
 
 /////////////////////////////////////////////////
@@ -888,6 +905,7 @@ Ogre::Technique *OgreProjectorListener::handleSchemeNotFound(
   }
 
   this->AddDecalToMaterial(clone->getName());
+  this->UpdateProjectorSchemeTechnique(clone);
   return this->ProjectorSchemeTechnique(clone);
 }
 
@@ -896,9 +914,9 @@ Ogre::Technique *OgreProjectorListener::ProjectorSchemeTechnique(
     Ogre::Material *_clone) const
 {
   // Prefer the RTSS-generated "projector" scheme technique set up in
-  // AddDecalToMaterial. Under GL3+ core this is the only technique that has
-  // GPU programs and can be executed; the inherited Default-scheme technique
-  // is fixed-function only.
+  // UpdateProjectorSchemeTechnique. Under GL3+ core this is the only technique
+  // that has GPU programs and can be executed; the inherited Default-scheme
+  // technique is fixed-function only.
   for (size_t i = 0; i < _clone->getNumTechniques(); ++i)
   {
     Ogre::Technique *t = _clone->getTechnique(i);

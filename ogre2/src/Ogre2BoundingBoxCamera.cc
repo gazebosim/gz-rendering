@@ -432,12 +432,14 @@ void Ogre2BoundingBoxCamera::Destroy()
   {
     ogreCompMgr->removeWorkspace(
         this->dataPtr->ogreCompositorWorkspace);
+    this->dataPtr->ogreCompositorWorkspace = nullptr;
   }
 
   if (!this->dataPtr->workspaceDefinition.empty())
   {
     ogreCompMgr->removeWorkspaceDefinition(
         this->dataPtr->workspaceDefinition);
+    this->dataPtr->workspaceDefinition.clear();
   }
 
   Ogre::SceneManager *ogreSceneManager;
@@ -457,6 +459,10 @@ void Ogre2BoundingBoxCamera::Destroy()
 
   if (this->dataPtr->materialSwitcher)
     this->dataPtr->materialSwitcher.reset();
+
+  // Detaches the camera from its parent. Without this, a destroyed camera
+  // stays in the scene graph and is pre-rendered (and crashes) next frame.
+  BaseBoundingBoxCamera::Destroy();
 }
 
 /////////////////////////////////////////////////

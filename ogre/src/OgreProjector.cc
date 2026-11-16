@@ -600,6 +600,13 @@ void OgreProjectorListener::AddDecalToMaterial(
           *mat,
           Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
           "projector");
+      // The RTSS rebuilds every technique in the "projector" scheme when the
+      // lights it counts change, which also happens between a projector
+      // camera and its shadow texture passes. If that happened while this
+      // decal was removed, the technique has no decal pass, so rebuild it
+      // from the passes the material has now.
+      shaderGenerator->invalidateMaterial("projector", _matName,
+          mat->getGroup());
       shaderGenerator->validateMaterial("projector", _matName,
           mat->getGroup());
     }

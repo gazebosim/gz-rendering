@@ -178,9 +178,22 @@ namespace gz
       /// \brief Ogre scene manager
       public: Ogre::SceneManager *sceneMgr{nullptr};
 
+      /// \brief A material with a decal pass
+      public: struct DecalTarget
+      {
+        /// \brief Material that holds the decal pass. Holding it keeps the
+        /// material and its techniques alive until the decal is removed,
+        /// even if the material is destroyed before: by the scene, or by
+        /// the mesh that owns it.
+        Ogre::MaterialPtr material;
+
+        /// \brief Decal pass
+        Ogre::Pass *pass{nullptr};
+      };
+
       /// \brief A map of targets that has decal texture projected
-      /// onto. Key value pairs are: <material name, material pass>
-      public: std::unordered_map<std::string, Ogre::Pass*> projectorTargets;
+      /// onto. Key value pairs are: <material name, decal target>
+      public: std::unordered_map<std::string, DecalTarget> projectorTargets;
 
       /// \brief Projector's visibility flags
       private: uint32_t visibilityFlags = 0u;
@@ -545,7 +558,7 @@ void OgreProjectorListener::AddDecalToMaterial(
   texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
   texState->setTextureFiltering(Ogre::TFO_NONE);
 
-  this->projectorTargets[_matName] = pass;
+  this->projectorTargets[_matName] = {mat, pass};
 }
 
 /////////////////////////////////////////////////
@@ -555,7 +568,7 @@ void OgreProjectorListener::RemoveDecalFromMaterials()
   for (auto it = this->projectorTargets.begin();
       it != this->projectorTargets.end(); ++it)
   {
-    it->second->getParent()->removePass(it->second->getIndex());
+    it->second.pass->getParent()->removePass(it->second.pass->getIndex());
   }
   this->projectorTargets.clear();
 
@@ -570,8 +583,8 @@ void OgreProjectorListener::RemoveDecalFromMaterial(
   auto projectorTargetIt = this->projectorTargets.find(_matName);
   if (projectorTargetIt != this->projectorTargets.end())
   {
-    projectorTargetIt->second->getParent()->removePass(
-        projectorTargetIt->second->getIndex());
+    Ogre::Pass *pass = projectorTargetIt->second.pass;
+    pass->getParent()->removePass(pass->getIndex());
     this->projectorTargets.erase(projectorTargetIt);
   }
 }

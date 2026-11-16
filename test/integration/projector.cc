@@ -23,6 +23,7 @@
 #include <gz/common/geospatial/ImageHeightmap.hh>
 
 #include "gz/rendering/Camera.hh"
+#include "gz/rendering/Geometry.hh"
 #include "gz/rendering/Heightmap.hh"
 #include "gz/rendering/Material.hh"
 #include "gz/rendering/Projector.hh"
@@ -273,6 +274,114 @@ TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Heightmap))
   // there are no crashes
   Image imageA = cameraA->CreateImage();
   EXPECT_NO_THROW(cameraA->Capture(imageA));
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+// A projector can be released after its scene is destroyed, for example
+// when the application keeps a pointer to it until it shuts down.
+TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ReleasedAfterScene))
+{
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_NE(nullptr, camera);
+  camera->SetWorldPosition(0, 0, -2);
+  camera->SetWorldRotation(0, GZ_PI / 2.0, 0);
+  camera->SetImageWidth(64);
+  camera->SetImageHeight(64);
+  root->AddChild(camera);
+
+  // default visibility flags: the decal is added to the wall's material
+  std::string textureRed = common::joinPaths(
+      TEST_MEDIA_PATH, "materials", "textures", "red_texture.png");
+  ProjectorPtr projector = scene->CreateProjector();
+  ASSERT_NE(nullptr, projector);
+  projector->SetNearClipPlane(1.0);
+  projector->SetFarClipPlane(6.0);
+  projector->SetTexture(textureRed);
+  projector->SetWorldRotation(0, GZ_PI / 2.0, 0);
+  root->AddChild(projector);
+
+  VisualPtr wall = scene->CreateVisual();
+  wall->AddGeometry(scene->CreateBox());
+  wall->SetWorldPosition(0.0, 0.0, -5);
+  wall->SetLocalScale(10.0, 10.0, 1.0);
+  MaterialPtr green = scene->CreateMaterial();
+  green->SetDiffuse(0.0, 1.0, 0.0);
+  wall->SetMaterial(green);
+  root->AddChild(wall);
+
+  // the first frame initializes the projector, the second adds the decal
+  Image image = camera->CreateImage();
+  for (unsigned int i = 0; i < 2u; ++i)
+    camera->Capture(image);
+
+  engine->DestroyScene(scene);
+
+  // must not touch the materials that were destroyed with the scene
+  projector.reset();
+}
+
+/////////////////////////////////////////////////
+// A visual can be destroyed while it has a decal. Its mesh owns its
+// material, so the material is destroyed with it.
+TEST_F(ProjectorTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(DestroyVisualWithDecal))
+{
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_NE(nullptr, camera);
+  camera->SetWorldPosition(0, 0, -2);
+  camera->SetWorldRotation(0, GZ_PI / 2.0, 0);
+  camera->SetImageWidth(64);
+  camera->SetImageHeight(64);
+  root->AddChild(camera);
+
+  std::string textureRed = common::joinPaths(
+      TEST_MEDIA_PATH, "materials", "textures", "red_texture.png");
+  // default visibility flags: the decal is added to the mesh's material
+  ProjectorPtr projector = scene->CreateProjector();
+  ASSERT_NE(nullptr, projector);
+  projector->SetNearClipPlane(1.0);
+  projector->SetFarClipPlane(6.0);
+  projector->SetTexture(textureRed);
+  projector->SetWorldRotation(0, GZ_PI / 2.0, 0);
+  root->AddChild(projector);
+
+  VisualPtr wall = scene->CreateVisual();
+  GeometryPtr box = scene->CreateBox();
+  wall->AddGeometry(box);
+  wall->SetWorldPosition(0.0, 0.0, -5);
+  wall->SetLocalScale(10.0, 10.0, 1.0);
+  MaterialPtr green = scene->CreateMaterial();
+  green->SetDiffuse(0.0, 1.0, 0.0);
+  // the box mesh owns a copy of the material and destroys it with the mesh
+  box->SetMaterial(green);
+  box.reset();
+  root->AddChild(wall);
+
+  // the first frame initializes the projector, the second adds the decal
+  Image image = camera->CreateImage();
+  for (unsigned int i = 0; i < 2u; ++i)
+    camera->Capture(image);
+
+  scene->DestroyVisual(wall);
+  wall.reset();
+
+  // the projector removes its decal from the destroyed material
+  for (unsigned int i = 0; i < 2u; ++i)
+    camera->Capture(image);
 
   // Clean up
   engine->DestroyScene(scene);

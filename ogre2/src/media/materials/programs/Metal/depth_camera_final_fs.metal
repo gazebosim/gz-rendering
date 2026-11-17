@@ -32,6 +32,7 @@ struct Params
   float min;
   float max;
   float4 texResolution;
+  float packXyz;
 };
 
 fragment uint4 main_metal
@@ -41,6 +42,18 @@ fragment uint4 main_metal
   constant Params &params [[buffer(PARAMETER_SLOT)]]
 )
 {
+  if (params.packXyz > 0.5)
+  {
+    int u = int(inPs.uv0.x * params.texResolution.x * 0.75);
+    int v = int(inPs.uv0.y * params.texResolution.y);
+    int p = (4 * u) / 3;
+    int r = u % 3;
+    uint4 a = inputTexture.read(uint2(p, v), 0);
+    uint4 b = inputTexture.read(uint2(p + 1, v), 0);
+    return r == 0 ? uint4(a.xyz, b.x) :
+        (r == 1 ? uint4(a.yz, b.xy) : uint4(a.z, b.xyz));
+  }
+
   float tolerance = 1e-6;
 
   // Note: We use PFG_RGBA32_UINT because p.a contains an uint32 and sampling

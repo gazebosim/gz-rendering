@@ -47,6 +47,14 @@ vulkan( layout( ogre_P0 ) uniform Params { )
 	uniform float particleScatterRatio;
 	// rnd is a random number in the range of [0-1]
 	uniform float rnd;
+
+	// 1 when the pass also does the final pass's job (depth only, no
+	// point cloud): see depth_camera_final_fs.glsl
+	uniform float depthOnly;
+
+	// 0 when the scene has no particles: the particle target is then
+	// neither rendered nor cleared, and reads as empty
+	uniform float hasParticles;
 vulkan( }; )
 
 uint packUnorm4x8Gz(vec4 color)
@@ -116,7 +124,8 @@ void main()
   vec4 color = texture(vkSampler2D(colorTexture, texSampler), inPs.uv0);
 
   // particle mask - color and depth
-  vec4 particle = texture(vkSampler2D(particleTexture,texSampler), inPs.uv0);
+  vec4 particle = hasParticles > 0.5 ?
+      texture(vkSampler2D(particleTexture,texSampler), inPs.uv0) : vec4(0.0);
   float particleDepth = texture(vkSampler2D(particleDepthTexture,texSampler), inPs.uv0).x;
   float pd = projectionParams.y / (particleDepth - projectionParams.x);
 
@@ -194,6 +203,36 @@ void main()
     {
       color = vec4(backgroundColor, 1.0);
     }
+  }
+
+  if (depthOnly > 0.5)
+  {
+    // depth_camera_final_fs.glsl on the same values: the frame is the
+    // depth alone, without an xyz + colour pass in between
+    if (!isinf(point.x) && length(point) > far - tolerance)
+    {
+      if (isinf(max))
+      {
+        point = vec3(max);
+      }
+      else
+      {
+        point.x = max;
+      }
+    }
+    else if (point.x < near + tolerance)
+    {
+      if (isinf(min))
+      {
+        point = vec3(min);
+      }
+      else
+      {
+        point.x = min;
+      }
+    }
+    fragColor = uvec4(floatBitsToUint(point), 0u);
+    return;
   }
 
   // gamma correct

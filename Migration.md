@@ -26,6 +26,26 @@ release will remove the deprecated code.
   rotation visuals that joint visuals show for revolute, revolute2, universal
   and gearbox joints are no longer hidden by those calls.
 
+* Added the virtual `Camera::IssueReadback()` (ABI break). Called between
+  `Render()` and `PostRender()`, it issues the GPU readback of the frame
+  without waiting for it, and `PostRender()` then waits for that readback
+  instead of issuing its own. Rendering several cameras and issuing their
+  readbacks before the first `PostRender()` lets the readbacks overlap; the
+  delivered data is the same. The default implementation returns false and
+  does nothing; the ogre2 depth camera and GPU rays implement it, except
+  with `GZ_RENDERING_OGRE2_LEGACY_READBACK`.
+
+* Added the virtuals `DepthCamera::SetPointCloudFormat()` and
+  `DepthCamera::PointCloudFormat()` (ABI break). Requesting
+  `PF_FLOAT32_RGB` before `CreateDepthTexture()` makes the new rgb point
+  cloud event deliver x, y, z alone (3 floats per point, no colour) instead
+  of `PF_FLOAT32_RGBA`. `PointCloudFormat()` returns the requested format;
+  the event's format argument tells the delivered one, which the ogre2
+  depth camera keeps at `PF_FLOAT32_RGBA` for image widths that are not a
+  multiple of 4. With `GZ_RENDERING_OGRE2_LEGACY_READBACK`,
+  `SetPointCloudFormat(PF_FLOAT32_RGB)` returns false. The default stays
+  `PF_FLOAT32_RGBA`.
+
 ### Optimizations
 
 * A Persistent GPU->CPU readback to avoid duplicate copies was introduced

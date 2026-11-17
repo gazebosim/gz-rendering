@@ -194,12 +194,18 @@ inline namespace GZ_RENDERING_VERSION_NAMESPACE {
     /// \param[in] _size The heightmap's size factor.
     public: void SetSize(const gz::math::Vector3d &_size);
 
-    /// \brief Get the heightmap's position offset.
-    /// \return The heightmap's position offset.
+    /// \brief Get the heightmap's position.
+    /// X and Y are the position of the heightmap's center. Z is the base
+    /// height that the heightmap's height values are added to, so a height
+    /// of 0 sits at Z and negative heights end up below it.
+    /// \return The heightmap's position.
     public: gz::math::Vector3d Position() const;
 
-    /// \brief Set the heightmap's position offset.
-    /// \param[in] _position The heightmap's position offset.
+    /// \brief Set the heightmap's position.
+    /// X and Y are the position of the heightmap's center. Z is the base
+    /// height that the heightmap's height values are added to.
+    /// \param[in] _position The heightmap's position.
+    /// \sa Position()
     public: void SetPosition(const gz::math::Vector3d &_position);
 
     /// \brief Get whether the heightmap uses terrain paging.

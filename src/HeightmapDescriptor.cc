@@ -56,7 +56,8 @@ class gz::rendering::HeightmapDescriptorPrivate
   /// \brief Heightmap XYZ size in meters.
   public: math::Vector3d size{1.0, 1.0, 1.0};
 
-  /// \brief Heightmap XYZ origin in meters.
+  /// \brief Heightmap position in meters. X and Y are the heightmap's
+  /// center, Z is the base height that its height values are added to.
   public: math::Vector3d position{0.0, 0.0, 0.0};
 
   /// \brief Flag that enables/disables the terrain paging

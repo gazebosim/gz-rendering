@@ -139,6 +139,7 @@ namespace gz
     void BaseArrowVisual<T>::ShowArrowRotation(bool _b)
     {
       this->Rotation()->SetVisible(_b);
+      this->rotationVisible = _b;
     }
 
     //////////////////////////////////////////////////

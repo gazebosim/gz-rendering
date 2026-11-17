@@ -15,6 +15,10 @@
  *
 */
 
+#include <array>
+
+#include <gz/common/Console.hh>
+
 #include "gz/math/Plane.hh"
 #include "gz/math/Vector2.hh"
 #include "gz/math/Vector3.hh"
@@ -195,145 +199,76 @@ gz::math::AxisAlignedBox transformAxisAlignedBox(
 }
 
 /////////////////////////////////////////////////
+bool convertRGBToBayer(const Image &_image, const PixelBuffer &_bayer)
+{
+  // Channel of the RGB source sampled at each cell of the 2x2 Bayer tile,
+  // indexed by [row parity][column parity]: 0 red, 1 green, 2 blue.
+  using Tile = std::array<std::array<unsigned int, 2>, 2>;
+  Tile tile;
+  switch (_bayer.Format())
+  {
+    case PF_BAYER_RGGB8:
+      tile = {{{0, 1}, {1, 2}}};
+      break;
+    case PF_BAYER_BGGR8:
+      tile = {{{2, 1}, {1, 0}}};
+      break;
+    case PF_BAYER_GBRG8:
+      tile = {{{1, 2}, {0, 1}}};
+      break;
+    case PF_BAYER_GRBG8:
+      tile = {{{1, 0}, {2, 1}}};
+      break;
+    default:
+      gzerr << "Cannot convert to Bayer: destination format "
+            << _bayer.Format() << " is not a Bayer format" << std::endl;
+      return false;
+  }
+
+  if (_image.Format() != PF_R8G8B8)
+  {
+    gzerr << "Cannot convert to Bayer: source format " << _image.Format()
+          << " is not PF_R8G8B8" << std::endl;
+    return false;
+  }
+
+  const unsigned int width = _image.Width();
+  const unsigned int height = _image.Height();
+  if (_bayer.Width() != width || _bayer.Height() != height)
+  {
+    gzerr << "Cannot convert to Bayer: destination is "
+          << _bayer.Width() << "x" << _bayer.Height()
+          << " but source is " << width << "x" << height << std::endl;
+    return false;
+  }
+
+  if (!_bayer.Valid())
+  {
+    gzerr << "Cannot convert to Bayer: destination buffer holds "
+          << _bayer.Size() << " bytes but " << _bayer.MemorySize()
+          << " are needed" << std::endl;
+    return false;
+  }
+
+  const unsigned char *src = _image.Data<unsigned char>();
+  unsigned char *dst = _bayer.Data();
+  for (unsigned int row = 0; row < height; ++row)
+  {
+    for (unsigned int col = 0; col < width; ++col)
+    {
+      const unsigned int pixel = row * width + col;
+      dst[pixel] = src[pixel * 3 + tile[row % 2][col % 2]];
+    }
+  }
+  return true;
+}
+
+/////////////////////////////////////////////////
 Image convertRGBToBayer(const Image &_image, PixelFormat _bayerFormat)
 {
-  const unsigned char *sourceImageData = _image.Data<unsigned char>();
-
-  unsigned int width = _image.Width();
-  unsigned int height = _image.Height();
-
-  Image destImage(width, height, _bayerFormat);
-  unsigned char *destImageData = destImage.Data<unsigned char>();
-
-  if (_bayerFormat == PF_BAYER_RGGB8)
-  {
-    for (unsigned int i=0; i < width; i++)
-    {
-      for (unsigned int j=0; j < height; j++)
-      {
-        if (j%2)
-        {
-          if (i%2)
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+2];
-          }
-          else
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
-          }
-        }
-        else
-        {
-          if (i%2)
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
-          }
-          else
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+0];
-          }
-        }
-      }
-    }
-  }
-
-  else if (_bayerFormat == PF_BAYER_BGGR8)
-  {
-    for (unsigned int i=0; i < width; i++)
-    {
-      for (unsigned int j=0; j < height; j++)
-      {
-        if (j%2)
-        {
-          if (i%2)
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+0];
-          }
-          else
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
-          }
-        }
-        else
-        {
-          if (i%2)
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
-          }
-          else
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+2];
-          }
-        }
-      }
-    }
-  }
-
-  else if (_bayerFormat == PF_BAYER_GBRG8)
-  {
-    for (unsigned int i=0; i < width; i++)
-    {
-      for (unsigned int j=0; j < height; j++)
-      {
-        if (j%2)
-        {
-          if (i%2)
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
-          }
-          else
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+2];
-          }
-        }
-        else
-        {
-          if (i%2)
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+0];
-          }
-          else
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
-          }
-        }
-      }
-    }
-  }
-
-  else if (_bayerFormat == PF_BAYER_GRBG8)
-  {
-    for (unsigned int i=0; i < width; i++)
-    {
-      for (unsigned int j=0; j < height; j++)
-      {
-        if (j%2)
-        {
-          if (i%2)
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
-          }
-          else
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+0];
-          }
-        }
-        else
-        {
-          if (i%2)
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+2];
-          }
-          else
-          {
-            destImageData[i+j*width] = sourceImageData[i*3+j*width*3+1];
-          }
-        }
-      }
-    }
-  }
-
-  return destImage;
+  Image bayerImage(_image.Width(), _image.Height(), _bayerFormat);
+  convertRGBToBayer(_image, PixelBuffer(bayerImage));
+  return bayerImage;
 }
 
 /////////////////////////////////////////////////

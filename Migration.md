@@ -7,6 +7,25 @@ release will remove the deprecated code.
 
 ## Gazebo Rendering 10.x to 11.x
 
+### Modifications
+
+* `OgreVisual::SetVisible` and `Ogre2Visual::SetVisible` no longer let Ogre
+  cascade the visibility to child visuals. They call `SetVisible` on each
+  child visual instead, so overrides such as `BaseArrowVisual::SetVisible`
+  also apply when a parent visual is shown or hidden. For example, showing
+  the parent of an axis visual no longer shows the arrow rotation visuals.
+  Visuals that keep their own visibility state, such as lidar and frustum
+  visuals, now also receive the call. Child nodes that are not visuals keep
+  the cascading behavior.
+
+* `BaseArrowVisual::ShowArrowRotation` updates the flag used by
+  `BaseArrowVisual::SetVisible` again, as it did before
+  [Pull request #889](https://github.com/gazebosim/gz-rendering/pull/889).
+  A rotation visual shown with `ShowArrowRotation(true)` now stays visible
+  when `SetVisible(true)` is called on the arrow or its parent, so the
+  rotation visuals that joint visuals show for revolute, revolute2, universal
+  and gearbox joints are no longer hidden by those calls.
+
 ### Optimizations
 
 * A Persistent GPU->CPU readback to avoid duplicate copies was introduced
@@ -14,6 +33,15 @@ release will remove the deprecated code.
   although the end result is expected to be the same, it can be reverted
   in the presence of errors setting their environment variable
   `GZ_RENDERING_OGRE2_LEGACY_READBACK`.
+
+* With OpenGL, that readback now waits for the GPU by polling the download's
+  fence with short sleeps instead of inside `map()`, where some drivers
+  (NVIDIA) busy-wait for the whole GPU latency, whenever the render thread
+  has idle time outside the readback waits. A render thread without idle
+  time is the bottleneck and keeps waiting inside `map()`, because sleeping
+  would slow the readback down. The data is the same. Platforms without a
+  per-thread CPU clock (Windows) always wait inside `map()`. Set
+  `GZ_RENDERING_OGRE2_BLOCKING_READBACK_WAIT` to always wait inside `map()`.
 
 * The number of ogre threads spawn by default has changed from being the
   number of cores of the host computer to zero to reduce the CPU usage

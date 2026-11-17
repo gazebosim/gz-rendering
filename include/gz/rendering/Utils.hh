@@ -32,6 +32,7 @@
 #include "gz/rendering/GraphicsAPI.hh"
 #include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/Image.hh"
+#include "gz/rendering/PixelBuffer.hh"
 
 
 namespace gz
@@ -123,6 +124,18 @@ namespace gz
     /// \return Image in bayer format
     GZ_RENDERING_VISIBLE
     Image convertRGBToBayer(const Image &_image, PixelFormat _bayerFormat);
+
+    /// \brief Convert an RGB image into an existing Bayer buffer. Unlike the
+    /// overload that returns a new image, this one writes into memory the
+    /// caller provides, so it also works for buffers the caller owns.
+    /// \param[in] _image Input image in PF_R8G8B8 format
+    /// \param[out] _bayer Destination buffer. It must be valid, have the
+    /// same dimensions as _image and one of the Bayer pixel formats.
+    /// \return True on success. False if the buffer is invalid or the
+    /// formats or dimensions do not match, in which case the destination is
+    /// left untouched.
+    GZ_RENDERING_VISIBLE
+    bool convertRGBToBayer(const Image &_image, const PixelBuffer &_bayer);
 
     /// \brief Convenience function to get the default graphics API based on
     /// current platform

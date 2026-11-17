@@ -18,6 +18,7 @@
 #include <memory>
 
 #include "gz/rendering/Image.hh"
+#include "gz/rendering/PixelBuffer.hh"
 
 /// \brief Shared pointer to raw image buffer
 typedef std::shared_ptr<unsigned char> DataPtr;
@@ -68,6 +69,17 @@ Image::Image(unsigned int _width, unsigned int _height,
   unsigned int size = this->MemorySize();
   this->dataPtr->data =
       DataPtr(new unsigned char[size], ArrayDeleter<unsigned char>());
+}
+
+//////////////////////////////////////////////////
+Image::Image(const PixelBuffer &_buffer)
+  : dataPtr(utils::MakeImpl<Implementation>())
+{
+  this->dataPtr->width = _buffer.Width();
+  this->dataPtr->height = _buffer.Height();
+  this->dataPtr->format = _buffer.Format();
+  // The caller owns the buffer: the deleter does nothing.
+  this->dataPtr->data = DataPtr(_buffer.Data(), [](unsigned char *) {});
 }
 
 //////////////////////////////////////////////////

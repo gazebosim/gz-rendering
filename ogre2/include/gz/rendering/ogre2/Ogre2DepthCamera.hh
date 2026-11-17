@@ -81,10 +81,22 @@ namespace gz
       /// already and the depth texture have already been created
       private: void CreateWorkspaceInstance();
 
-      // Documentation inherited.
+      /// \brief Get the projection matrix for this camera.
+      /// The depth rows of the returned matrix encode the configured near and
+      /// far clip planes (see NearClipPlane and FarClipPlane). Internally the
+      /// depth camera renders with slightly widened clip distances and clamps
+      /// to the configured range in shaders; this is not exposed here.
+      /// \return Camera projection matrix
       public: virtual math::Matrix4d ProjectionMatrix() const override;
 
-      // Documentation inherited.
+      /// \brief Set the projection matrix for this camera.
+      /// Only the image plane rows (0 and 1) of the given matrix, i.e. the
+      /// focal lengths, principal point and skew, are used. The depth rows
+      /// (2 and 3) are derived from the configured near and far clip planes
+      /// so that depth rendering stays consistent with the camera frustum.
+      /// Consequently ProjectionMatrix() returns the given image plane rows
+      /// together with depth rows encoding the configured clip planes.
+      /// \param[in] _matrix Camera projection matrix
       public: virtual void SetProjectionMatrix(
           const math::Matrix4d &_matrix) override;
 

@@ -17,11 +17,14 @@
 
 #include <gtest/gtest.h>
 
+#include <cmath>
+
 #include "CommonRenderingTest.hh"
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/RayQuery.hh"
 #include "gz/rendering/Scene.hh"
+#include "gz/rendering/Visual.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -107,5 +110,38 @@ TEST_F(RayQueryTest, RayQuery)
   EXPECT_FALSE(result2);
 
   // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(RayQueryTest, RayOriginInsideObjectBounds)
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr box = scene->CreateVisual();
+  ASSERT_NE(nullptr, box);
+  box->AddGeometry(scene->CreateBox());
+  // The rotated box's AABB contains the ray origin, but the box itself does
+  // not. The ray should still enter the box through its front face.
+  box->SetLocalRotation(0.0, 0.0, GZ_PI / 4.0);
+  scene->RootVisual()->AddChild(box);
+
+  RayQueryPtr rayQuery = scene->CreateRayQuery();
+  ASSERT_NE(nullptr, rayQuery);
+  rayQuery->SetPreferGpu(false);
+  rayQuery->SetOrigin(math::Vector3d(0.6, 0.6, 0.0));
+  rayQuery->SetDirection(-math::Vector3d::UnitY);
+
+  RayQueryResult result = rayQuery->ClosestPoint(true);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(box->Id(), result.objectId);
+  EXPECT_NEAR(1.2 - std::sqrt(0.5), result.distance, 1e-6);
+  EXPECT_NEAR(0.6, result.point.X(), 1e-6);
+  EXPECT_NEAR(std::sqrt(0.5) - 0.6, result.point.Y(), 1e-6);
+  EXPECT_NEAR(0.0, result.point.Z(), 1e-6);
+
   engine->DestroyScene(scene);
 }

@@ -17,7 +17,7 @@ find_package(gz-cmake REQUIRED)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-gz_configure_project(VERSION_SUFFIX pre1)
+gz_configure_project(VERSION_SUFFIX pre2)
 
 #============================================================================
 # Set project-specific options
@@ -103,6 +103,7 @@ gz_find_package(GzOGRE2 VERSION 2.3.1
 
 if ("${OGRE2-PlanarReflections}" STREQUAL "OGRE2-PlanarReflections-NOTFOUND")
   message(STATUS "PlanarReflections component was not found. Try looking without it:")
+  list(REMOVE_ITEM OGRE2_COMPONENTS PlanarReflections)
   gz_find_package(GzOGRE2 VERSION 2.3.1
     COMPONENTS HlmsPbs HlmsUnlit
     REQUIRED_BY ogre2

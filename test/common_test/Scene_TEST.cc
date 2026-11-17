@@ -29,7 +29,7 @@ class SceneTest : public CommonRenderingTest
 {
   public: const std::string TEST_MEDIA_PATH =
         common::joinPaths(std::string(PROJECT_SOURCE_PATH),
-        "test", "media", "skeleton");
+        "test", "media");
 };
 
 /////////////////////////////////////////////////
@@ -411,7 +411,7 @@ TEST_F(SceneTest, DestroyNodes)
   auto gizmoVisual = scene->CreateGizmoVisual("gizmo_visual");
   auto planeVisual = scene->CreatePlane();
   auto meshVisual = scene->CreateMesh(
-    common::joinPaths(TEST_MEDIA_PATH, "walk.dae"));
+    common::joinPaths(TEST_MEDIA_PATH, "meshes", "walk.dae"));
 
   common::MeshPtr mesh(new common::Mesh());
   meshVisual = scene->CreateMesh(mesh.get());

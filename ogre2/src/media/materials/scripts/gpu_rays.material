@@ -202,30 +202,37 @@ material GpuRaysScan2nd
       texture_unit cubeUVTex
       {
         filtering none
+        tex_address_mode clamp
       }
       texture_unit tex0
       {
         filtering none
+        tex_address_mode clamp
       }
       texture_unit tex1
       {
         filtering none
+        tex_address_mode clamp
       }
       texture_unit tex2
       {
         filtering none
+        tex_address_mode clamp
       }
       texture_unit tex3
       {
         filtering none
+        tex_address_mode clamp
       }
       texture_unit tex4
       {
         filtering none
+        tex_address_mode clamp
       }
       texture_unit tex5
       {
         filtering none
+        tex_address_mode clamp
       }
     }
   }

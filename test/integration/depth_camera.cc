@@ -286,10 +286,10 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
       EXPECT_TRUE(255u == ra || 0u == ra);
     }
 
-    // Check that for a box really close (within [0.9 * nearDist, nearDist))
-    // it returns minVal (-inf)
+    // Check that for a box closer than NearClipPlane() (0.5 * nearDist),
+    // it is clipped by the camera frustum (returns maxVal)
     gz::math::Vector3d boxPositionNear(
-        unitBoxSize * 0.5 + nearDist * 0.95, 0.0, 0.0);
+        unitBoxSize * 0.5 + nearDist * 0.5, 0.0, 0.0);
     box->SetLocalPosition(boxPositionNear);
 
     // update and verify we get new data
@@ -301,14 +301,14 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
     EXPECT_EQ(1u, g_pointCloudCounter);
 
     // Verify Depth
-    // box not detected
-    EXPECT_FLOAT_EQ(minVal, scan[mid]);
-    EXPECT_FLOAT_EQ(minVal, scan[left]);
-    EXPECT_FLOAT_EQ(minVal, scan[right]);
+    // box clipped by near plane so all should return maxVal
+    EXPECT_FLOAT_EQ(maxVal, scan[mid]);
+    EXPECT_FLOAT_EQ(maxVal, scan[left]);
+    EXPECT_FLOAT_EQ(maxVal, scan[right]);
 
     // Verify Point Cloud XYZ
     {
-      // all points should be min val
+      // all points should be maxVal
       for (unsigned int i = 0; i < depthCamera->ImageHeight(); ++i)
       {
         unsigned int step = i*depthCamera->ImageWidth()*pointCloudChannelCount;
@@ -317,9 +317,9 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
           float x = pointCloudData[step + j*pointCloudChannelCount];
           float y = pointCloudData[step + j*pointCloudChannelCount + 1];
           float z = pointCloudData[step + j*pointCloudChannelCount + 2];
-          EXPECT_FLOAT_EQ(minVal, x);
-          EXPECT_FLOAT_EQ(minVal, y);
-          EXPECT_FLOAT_EQ(minVal, z);
+          EXPECT_FLOAT_EQ(maxVal, x);
+          EXPECT_FLOAT_EQ(maxVal, y);
+          EXPECT_FLOAT_EQ(maxVal, z);
          }
       }
 

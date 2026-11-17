@@ -61,14 +61,10 @@
 
 namespace
 {
-/// \brief Scale applied to the configured near clip plane when setting the
-/// ogre camera near clip distance. The ogre frustum is made slightly larger
-/// than the configured range and the exact near / far clamping is handled in
-/// the depth camera shaders.
-constexpr double kDepthNearClipScale = 0.9;
-
 /// \brief Scale applied to the configured far clip plane when setting the
-/// ogre camera far clip distance. See kDepthNearClipScale.
+/// ogre camera far clip distance. The ogre frustum far plane is made slightly
+/// larger than the configured range so background pixels reconstruct beyond
+/// the configured far plane and are clamped to +inf in the depth shaders.
 constexpr double kDepthFarClipScale = 1.1;
 
 /// \brief Overwrite the depth rows (2 and 3) of a perspective projection
@@ -498,17 +494,13 @@ void Ogre2DepthCamera::CreateDepthTexture()
   Ogre::GpuProgramParametersSharedPtr psParams =
       pass->getFragmentProgramParameters();
 
-  // Widen the ogre clip range (see kDepthNearClipScale); the configured
-  // depth near / far range is enforced in the depth camera shaders.
-  // When a separate depth near clip plane is set, min(NearClipPlane(),
-  // DepthNearClipPlane()) acts as the frustum near clip plane and is not
-  // scaled down.
-  double minNearClip = std::min(this->NearClipPlane(),
+  // Use min(NearClipPlane(), DepthNearClipPlane()) as the frustum near clip
+  // plane and widen the far clip plane (see kDepthFarClipScale); the
+  // configured depth near / far range is enforced in the depth camera shaders.
+  double nearPlane = std::min(this->NearClipPlane(),
       this->DepthNearClipPlane());
   double maxFarClip = std::max(this->FarClipPlane(),
       this->DepthFarClipPlane());
-  double nearPlane = this->hasDepthNearClip ?
-      minNearClip : this->NearClipPlane() * kDepthNearClipScale;
   double farPlane = maxFarClip * kDepthFarClipScale;
   this->ogreCamera->setNearClipDistance(nearPlane);
   this->ogreCamera->setFarClipDistance(farPlane);
@@ -526,7 +518,7 @@ void Ogre2DepthCamera::CreateDepthTexture()
   psParams->setNamedConstant("projectionParams",
       Ogre::Vector2(projectionA, projectionB));
   psParams->setNamedConstant("near",
-      static_cast<float>(minNearClip));
+      static_cast<float>(nearPlane));
   psParams->setNamedConstant("far",
       static_cast<float>(maxFarClip));
   psParams->setNamedConstant("max",
@@ -1087,10 +1079,8 @@ void Ogre2DepthCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
   // camera, otherwise the depth pipeline (e.g. point cloud reconstruction
   // from view space corners) would be inconsistent with the frustum.
   math::Matrix4d ogreMatrix = _matrix;
-  double minNearClip = std::min(this->NearClipPlane(),
+  double nearPlane = std::min(this->NearClipPlane(),
       this->DepthNearClipPlane());
-  double nearPlane = this->hasDepthNearClip ?
-      minNearClip : this->NearClipPlane() * kDepthNearClipScale;
   double farPlane = std::max(this->FarClipPlane(),
       this->DepthFarClipPlane()) * kDepthFarClipScale;
   SetProjectionDepthRows(ogreMatrix, nearPlane, farPlane);
@@ -1130,12 +1120,10 @@ void Ogre2DepthCamera::PreRender()
 
   if (this->dataPtr->depthMaterial && this->dataPtr->depthFinalMaterial)
   {
-    double minNearClip = std::min(this->NearClipPlane(),
+    double nearPlane = std::min(this->NearClipPlane(),
         this->DepthNearClipPlane());
     double maxFarClip = std::max(this->FarClipPlane(),
         this->DepthFarClipPlane());
-    double nearPlane = this->hasDepthNearClip ?
-        minNearClip : this->NearClipPlane() * kDepthNearClipScale;
     double farPlane = maxFarClip * kDepthFarClipScale;
     this->ogreCamera->setNearClipDistance(nearPlane);
     this->ogreCamera->setFarClipDistance(farPlane);
@@ -1157,7 +1145,7 @@ void Ogre2DepthCamera::PreRender()
         pass->getFragmentProgramParameters();
     psParams->setNamedConstant("projectionParams",
         Ogre::Vector2(projectionA, projectionB));
-    psParams->setNamedConstant("near", static_cast<float>(minNearClip));
+    psParams->setNamedConstant("near", static_cast<float>(nearPlane));
     psParams->setNamedConstant("far", static_cast<float>(maxFarClip));
 
     Ogre::Pass *passFinal =

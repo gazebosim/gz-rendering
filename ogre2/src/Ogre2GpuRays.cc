@@ -139,6 +139,10 @@ class GZ_RENDERING_OGRE2_HIDDEN gz::rendering::Ogre2GpuRaysPrivate
   /// PostRender path.
   public: Ogre2GpuReadbackTicket gpuRaysReadback;
 
+  /// \brief True if IssueReadback() issued the readback of the last
+  /// Render(), which PostRender() then maps.
+  public: bool readbackIssued = false;
+
   /// \brief Cubemap camera
   public: Ogre::Camera *cubeCam{nullptr};
 
@@ -1258,6 +1262,8 @@ void Ogre2GpuRays::UpdateRenderTarget2ndPass()
 void Ogre2GpuRays::Render()
 {
   GZ_PROFILE("Ogre2GpuRays::Render");
+  // A readback issued for an earlier frame is not this frame's.
+  this->dataPtr->readbackIssued = false;
   this->scene->StartRendering(this->dataPtr->ogreCamera);
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -1382,8 +1388,11 @@ void Ogre2GpuRays::PostRender()
   {
     // Persistent-ticket path: map the staging buffer once and repack RGBA->RGB
     // in a single fused pass.
-    Ogre::TextureBox box = this->dataPtr->gpuRaysReadback.DownloadAndMap(
-        this->dataPtr->secondPassTexture);
+    Ogre::TextureBox box = this->dataPtr->readbackIssued ?
+        this->dataPtr->gpuRaysReadback.MapDownloaded() :
+        this->dataPtr->gpuRaysReadback.DownloadAndMap(
+            this->dataPtr->secondPassTexture);
+    this->dataPtr->readbackIssued = false;
     if (!box.data)
     {
       gzerr << "Ogre2GpuRays: GPU readback failed; dropping frame" << std::endl;
@@ -1414,6 +1423,16 @@ void Ogre2GpuRays::PostRender()
   //   }
   //   std::cerr << std::endl;
   // }
+}
+
+//////////////////////////////////////////////////
+bool Ogre2GpuRays::IssueReadback()
+{
+  if (Ogre2UseLegacyReadback())
+    return false;
+  this->dataPtr->readbackIssued = this->dataPtr->gpuRaysReadback.Download(
+      this->dataPtr->secondPassTexture);
+  return this->dataPtr->readbackIssued;
 }
 
 //////////////////////////////////////////////////

@@ -30,6 +30,8 @@
 #include "gz/rendering/ogre/OgreRTShaderSystem.hh"
 #include "gz/rendering/ogre/OgreScene.hh"
 
+#include "OgreResourcePath.hh"
+
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR >= 11
 // Since OGRE 1.11, the once public
 // Ogre::TerrainMaterialGeneratorA::SM2Profile::ShaderHelper
@@ -625,25 +627,16 @@ void OgreHeightmap::Init()
     defaultimp.layerList.resize(this->descriptor.TextureCount());
 
     // The worldSize decides how big each splat of textures will be.
-    // A smaller value will increase the resolution.
-    //
-    // OGRE's FileSystemArchive indexes files by basename. The
-    // TextureManager::load() lookup performed by stock
-    // TerrainMaterialGeneratorA's SM2Profile asks for a resource by the
-    // exact name pushed here -- an absolute file path never matches an
-    // archive entry, the prepare step logs "Cannot locate resource <abs
-    // path> in resource group General" and the texture unit becomes blank.
-    // Push the basename so the lookup hits the parent directory archive
-    // that AddResourcePath above just registered.
+    // A smaller value will increase the resolution
     for (unsigned int i = 0; i < this->descriptor.TextureCount(); ++i)
     {
       auto texture = this->descriptor.TextureByIndex(i);
 
       defaultimp.layerList[i].worldSize = texture->Size();
       defaultimp.layerList[i].textureNames.push_back(
-          common::basename(texture->Diffuse()));
+          OgreResourcePath(texture->Diffuse()));
       defaultimp.layerList[i].textureNames.push_back(
-          common::basename(texture->Normal()));
+          OgreResourcePath(texture->Normal()));
     }
   }
 
@@ -1035,10 +1028,18 @@ void OgreHeightmap::CreateMaterial()
 
     this->dataPtr->terrainGlobals->setDefaultMaterialGenerator(ptr);
 #else
-    // On OGRE >= 1.11 rely on TerrainGlobalOptions' stock
-    // TerrainMaterialGeneratorA, whose active Profile is an SM2Profile and
-    // therefore accepts SetupShadows' SM2Profile setters without the ABI
-    // mismatch that GzTerrainMatGen exposed against 1.12.10.
+    // On OGRE >= 1.11 use the stock TerrainMaterialGeneratorA, whose active
+    // Profile is an SM2Profile and therefore accepts SetupShadows'
+    // SM2Profile setters without the ABI mismatch that GzTerrainMatGen
+    // exposed against 1.12.10.
+    // Install a new one per heightmap, as the branch above does:
+    // terrainGlobals outlives the render engine, and a generator kept from
+    // a previous Ogre::Root still points to the composite map scene manager
+    // destroyed with it. It also replaces a TerrainMaterial generator
+    // installed by a previous heightmap with a custom material.
+    this->dataPtr->terrainGlobals->setDefaultMaterialGenerator(
+        Ogre::TerrainMaterialGeneratorPtr(
+            OGRE_NEW Ogre::TerrainMaterialGeneratorA()));
 #endif
 
     this->SetupShadows(true);
@@ -1144,6 +1145,18 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
     map->dirty();
     map->update();
   }
+
+  // TerrainLayerBlendMap::update() marks the composite map dirty and defers
+  // its update by 2 seconds. OGRE runs the deferred update from
+  // Terrain::preFindVisibleObjects, i.e. inside the first render pass that
+  // finds the terrain once the delay is over. Rendering the composite map
+  // there leaves its render target and projection active for the rest of
+  // that pass, e.g. a GpuRays first pass then renders nothing.
+  // Update it now, outside any render pass, and cancel the deferred update.
+  // The terrain still updates the composite map itself, outside the render
+  // passes, when its derived data (normals, lightmap) is finalised.
+  _terrain->updateCompositeMap();
+  _terrain->updateCompositeMapWithDelay(0);
 
   return true;
 }

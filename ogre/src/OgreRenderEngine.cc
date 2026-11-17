@@ -39,6 +39,7 @@ typedef khronos_intptr_t GLintptr;
 #include <dlfcn.h>
 
 # include <filesystem>
+# include <fstream>
 # include <sstream>
 
 #include <OgreDynLib.h>
@@ -58,6 +59,63 @@ typedef khronos_intptr_t GLintptr;
 #include "gz/rendering/ogre/OgreScene.hh"
 #include "gz/rendering/ogre/OgreStorage.hh"
 
+/// \brief Lets the OGRE resource system open absolute file paths.
+///
+/// OGRE 1.12 is built with OGRE_RESOURCEMANAGER_STRICT (the upstream default,
+/// also used by the Ubuntu packages), so ResourceGroupManager only resolves
+/// names indexed within a registered resource location. gz-rendering passes
+/// absolute paths for user provided resources (material textures and shaders,
+/// projector and heightmap textures), which the FileSystem archives of OGRE
+/// 1.9 accepted. Registering the parent directory and looking the file up by
+/// its basename instead is ambiguous: basenames are not unique across
+/// resource locations (e.g. fragment_shader.glsl exists both in the
+/// gz-rendering media and in the custom shader examples).
+/// OGRE asks this listener before searching the resource index, so absolute
+/// paths are opened directly and any other name is left to the resource
+/// groups. Relative file paths are made absolute by the callers, see
+/// OgreResourcePath.
+/// The #include directives of a GPU program are opened with the bare name
+/// written in the directive. When the including program was loaded from an
+/// absolute path, the name is first looked up next to that file, as a C
+/// preprocessor does for quoted includes and as registering the shader
+/// directory as a resource location allowed before.
+class AbsolutePathLoadingListener : public Ogre::ResourceLoadingListener
+{
+  // Documentation inherited
+  public: Ogre::DataStreamPtr resourceLoading(const Ogre::String &_name,
+              const Ogre::String &/*_group*/,
+              Ogre::Resource *_resource) override
+  {
+    std::filesystem::path path(_name);
+    if (!path.is_absolute())
+    {
+      auto *program = dynamic_cast<Ogre::GpuProgram *>(_resource);
+      if (!program)
+        return Ogre::DataStreamPtr();
+
+      const std::filesystem::path source(program->getSourceFile());
+      if (!source.is_absolute())
+        return Ogre::DataStreamPtr();
+      path = source.parent_path() / path;
+    }
+
+    const std::string fileName = path.string();
+    if (!gz::common::isFile(fileName))
+      return Ogre::DataStreamPtr();
+
+    auto *file = OGRE_NEW_T(std::ifstream, Ogre::MEMCATEGORY_GENERAL)(
+        fileName.c_str(), std::ios::in | std::ios::binary);
+    if (file->fail())
+    {
+      OGRE_DELETE_T(file, basic_ifstream, Ogre::MEMCATEGORY_GENERAL);
+      return Ogre::DataStreamPtr();
+    }
+    // The data stream takes ownership of the file stream
+    return Ogre::DataStreamPtr(
+        OGRE_NEW Ogre::FileStreamDataStream(fileName, file, true));
+  }
+};
+
 class gz::rendering::OgreRenderEnginePrivate
 {
 #if !defined(__APPLE__) && !defined(_WIN32)
@@ -66,6 +124,9 @@ class gz::rendering::OgreRenderEnginePrivate
 
   /// \brief A list of supported fsaa levels
   public: std::vector<unsigned int> fsaaLevels;
+
+  /// \brief Resolves absolute paths passed to the OGRE resource system
+  public: AbsolutePathLoadingListener absolutePathListener;
 };
 
 using namespace gz;
@@ -172,6 +233,8 @@ void OgreRenderEngine::Destroy()
 
   if (ogreRoot)
   {
+    Ogre::ResourceGroupManager::getSingleton().setLoadingListener(nullptr);
+
     // TODO(anyone): do we need to catch segfault on delete?
     try
     {
@@ -644,6 +707,9 @@ void OgreRenderEngine::CreateRenderSystem()
 //////////////////////////////////////////////////
 void OgreRenderEngine::CreateResources()
 {
+  Ogre::ResourceGroupManager::getSingleton().setLoadingListener(
+      &this->dataPtr->absolutePathListener);
+
   std::vector< std::pair<std::string, std::string> > archNames;
 
   // TODO(anyone) support loading resources from user specified paths

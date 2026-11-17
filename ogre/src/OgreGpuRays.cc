@@ -1013,7 +1013,7 @@ void OgreGpuRays::notifyRenderSingleObject(Ogre::Renderable *_rend,
   autoParamDataSource.setCurrentViewport(vp);
   autoParamDataSource.setCurrentRenderTarget(rt);
   autoParamDataSource.setCurrentSceneManager(this->scene->OgreSceneManager());
-  autoParamDataSource.setCurrentCamera(this->dataPtr->ogreCamera, true);
+  autoParamDataSource.setCurrentCamera(vp->getCamera(), true);
 
   pass->_updateAutoParams(&autoParamDataSource,
       Ogre::GPV_GLOBAL | Ogre::GPV_PER_OBJECT);

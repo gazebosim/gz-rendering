@@ -22,8 +22,6 @@ gz_configure_project(VERSION_SUFFIX pre1)
 #============================================================================
 # Set project-specific options
 #============================================================================
-option(USE_UNOFFICIAL_OGRE_VERSIONS "Accept unsupported Ogre versions in the build" OFF)
-
 option(ENABLE_PROFILER "Enable Gazebo Profiler" FALSE)
 
 if(ENABLE_PROFILER)
@@ -79,17 +77,6 @@ gz_find_package(GzOGRE VERSION 1.12.10
   COMPONENTS ${gz_ogre_components}
   REQUIRED_BY ogre
   PRIVATE_FOR ogre)
-
-# Ogre versions greater than 1.9.x are not officially supported.
-# Display a warning for the users on this setup unless they provide
-# USE_UNOFFICIAL_OGRE_VERSIONS flag
-if (NOT USE_UNOFFICIAL_OGRE_VERSIONS)
-  if (OGRE_VERSION VERSION_GREATER_EQUAL 1.10.0)
-    GZ_BUILD_WARNING("Ogre 1.x versions greater than 1.9 are not officially supported."
-                     "The software might compile and even work but support from upstream"
-                     "could be reduced to accepting patches for newer versions")
-  endif()
-endif()
 
 if (OGRE_FOUND)
   # find boost - mainly needed on macOS and also by the terrain component

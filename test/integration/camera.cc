@@ -17,6 +17,10 @@
 
 #include <gtest/gtest.h>
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "CommonRenderingTest.hh"
 
 #include "gz/rendering/Camera.hh"
@@ -722,6 +726,132 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ShaderSelection))
   {
     ASSERT_EQ(1u, segmentationCamera.use_count());
   }
+}
+
+/////////////////////////////////////////////////
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ShadersWithSameFileName))
+{
+  // Two fragment shaders with the same file name in different directories.
+  // Each material must render its own shader, not the first one loaded with
+  // that file name.
+  CHECK_SUPPORTED_ENGINE("ogre");
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  CameraPtr camera = scene->CreateCamera("camera");
+  ASSERT_NE(nullptr, camera);
+  camera->SetImageWidth(100);
+  camera->SetImageHeight(100);
+  camera->SetAspectRatio(1.0);
+  camera->SetHFOV(GZ_PI / 2);
+  root->AddChild(camera);
+
+  const std::string programsPath = gz::common::joinPaths(
+      TEST_MEDIA_PATH, "materials", "programs");
+  const std::string vertexShaderPath = gz::common::joinPaths(
+      programsPath, "simple_color_vs.glsl");
+
+  // red box on the left, green box on the right
+  const std::vector<std::pair<std::string, double>> boxes = {
+      {gz::common::joinPaths(programsPath, "simple_color_fs.glsl"), 1.0},
+      {gz::common::joinPaths(programsPath, "same_name",
+          "simple_color_fs.glsl"), -1.0}};
+  for (const auto &[shaderPath, y] : boxes)
+  {
+    MaterialPtr shader = scene->CreateMaterial();
+    shader->SetVertexShader(vertexShaderPath);
+    shader->SetFragmentShader(shaderPath);
+
+    VisualPtr visual = scene->CreateVisual();
+    visual->AddGeometry(scene->CreateBox());
+    visual->SetWorldPosition(3.0, y, 0.0);
+    visual->SetMaterial(shader);
+    root->AddChild(visual);
+
+    // visual will clone and create a unique material
+    // so destroy this one
+    scene->DestroyMaterial(shader);
+  }
+
+  Image image = camera->CreateImage();
+  camera->Capture(image);
+
+  unsigned char *data = image.Data<unsigned char>();
+  unsigned int height = camera->ImageHeight();
+  unsigned int width = camera->ImageWidth();
+  unsigned int left = (height / 2 * width + width * 3 / 10) * 3u;
+  unsigned int right = (height / 2 * width + width * 7 / 10) * 3u;
+
+  EXPECT_GT(data[left], 200);
+  EXPECT_LT(data[left + 1], 50);
+  EXPECT_LT(data[left + 2], 50);
+
+  EXPECT_LT(data[right], 50);
+  EXPECT_GT(data[right + 1], 200);
+  EXPECT_LT(data[right + 2], 50);
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ShaderWithBuiltInFileName))
+{
+  // The engine's own media has a fragment_shader.glsl that draws green
+  // (ogre/src/media/materials/programs). A material using another file with
+  // that name must render that file: the box is red.
+  CHECK_SUPPORTED_ENGINE("ogre");
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  const std::string programsPath = gz::common::joinPaths(
+      TEST_MEDIA_PATH, "materials", "programs");
+  MaterialPtr shader = scene->CreateMaterial();
+  shader->SetVertexShader(
+      gz::common::joinPaths(programsPath, "simple_color_vs.glsl"));
+  shader->SetFragmentShader(
+      gz::common::joinPaths(programsPath, "same_name", "fragment_shader.glsl"));
+
+  VisualPtr visual = scene->CreateVisual();
+  visual->AddGeometry(scene->CreateBox());
+  visual->SetWorldPosition(3.0, 0.0, 0.0);
+  visual->SetMaterial(shader);
+  root->AddChild(visual);
+
+  // visual will clone and create a unique material
+  // so destroy this one
+  scene->DestroyMaterial(shader);
+
+  CameraPtr camera = scene->CreateCamera("camera");
+  ASSERT_NE(nullptr, camera);
+  camera->SetImageWidth(100);
+  camera->SetImageHeight(100);
+  camera->SetAspectRatio(1.0);
+  camera->SetHFOV(GZ_PI / 2);
+  root->AddChild(camera);
+
+  Image image = camera->CreateImage();
+  camera->Capture(image);
+
+  unsigned char *data = image.Data<unsigned char>();
+  unsigned int height = camera->ImageHeight();
+  unsigned int width = camera->ImageWidth();
+  unsigned int mid = (height / 2 * width + width / 2) * 3u;
+
+  EXPECT_GT(data[mid], 200);
+  EXPECT_LT(data[mid + 1], 50);
+  EXPECT_LT(data[mid + 2], 50);
+
+  // Clean up
+  engine->DestroyScene(scene);
 }
 
 /////////////////////////////////////////////////

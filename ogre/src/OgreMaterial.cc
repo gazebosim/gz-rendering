@@ -28,6 +28,8 @@
 #include "gz/rendering/ogre/OgreRTShaderSystem.hh"
 #include "gz/rendering/ogre/OgreScene.hh"
 
+#include "OgreResourcePath.hh"
+
 using namespace gz;
 using namespace rendering;
 
@@ -471,35 +473,19 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
     else if (ShaderParam::PARAM_TEXTURE == name_param.second.Type() ||
              ShaderParam::PARAM_TEXTURE_CUBE == name_param.second.Type())
     {
-      // add the textures to the resource path
       std::string value;
       uint32_t uvSetIndex = 0;
       name_param.second.Value(value, uvSetIndex);
       ShaderParam::ParamType type = name_param.second.Type();
 
-      std::string baseName = value;
-      std::string dirPath = value;
-      if (common::isFile(value))
-      {
-        baseName = common::basename(value);
-        size_t idx = value.rfind(baseName);
-        if (idx != std::string::npos)
-        {
-          dirPath = value.substr(0, idx);
-          if (!dirPath.empty() &&
-            !Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
-            dirPath))
-          {
-            Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-                dirPath, "FileSystem", this->ogreGroup);
-          }
-        }
-      }
-      else
+      if (!common::isFile(value))
       {
         gzerr << "Shader param texture not found: " << value << std::endl;
         continue;
       }
+      // The AbsolutePathLoadingListener installed by OgreRenderEngine opens
+      // the absolute path, see OgreResourcePath
+      const std::string texturePath = OgreResourcePath(value);
 
       // get the material and create the texture unit state if it does not exist
       auto texUnit = this->ogrePass->getTextureUnitState(name_param.first);
@@ -519,12 +505,12 @@ void OgreMaterial::UpdateShaderParams(ConstShaderParamsPtr _params,
       // regular 2d texture
       if (type == ShaderParam::ParamType::PARAM_TEXTURE)
       {
-        texUnit->setTextureName(baseName);
+        texUnit->setTextureName(texturePath);
       }
       // cube maps
       else if (type == ShaderParam::ParamType::PARAM_TEXTURE_CUBE)
       {
-        texUnit->setCubicTextureName(baseName, true);
+        texUnit->setCubicTextureName(texturePath, true);
         // must apply this check for Metal rendering to work
         // (i.e. not segfault). See the discussion in:
         // https://github.com/gazebosim/gz-rendering/pull/541
@@ -562,16 +548,10 @@ void OgreMaterial::SetVertexShader(const std::string &_path)
     return;
   }
 
-  std::string shaderDir = common::parentPath(_path);
-  std::string shaderFile = common::basename(_path);
-  if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
-          shaderDir, this->ogreGroup))
-  {
-    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-        shaderDir, "FileSystem", this->ogreGroup);
-  }
-
-  const std::string programName = "__gz_rendering_vertex__" + _path;
+  // The AbsolutePathLoadingListener installed by OgreRenderEngine opens the
+  // absolute path, see OgreResourcePath
+  const std::string path = OgreResourcePath(_path);
+  const std::string programName = "__gz_rendering_vertex__" + path;
   Ogre::HighLevelGpuProgramPtr vertexShader =
     Ogre::HighLevelGpuProgramManager::getSingletonPtr()->getByName(
         programName, this->ogreGroup);
@@ -581,9 +561,12 @@ void OgreMaterial::SetVertexShader(const std::string &_path)
       Ogre::HighLevelGpuProgramManager::getSingletonPtr()->createProgram(
           programName, this->ogreGroup,
           "glsl", Ogre::GpuProgramType::GPT_VERTEX_PROGRAM);
+    vertexShader->setSourceFile(path);
   }
-
-  vertexShader->setSourceFile(shaderFile);
+  // A program found by name (e.g. when a material is cloned) is already
+  // loaded from the same file. setSourceFile() would clear its source
+  // without reloading it, and the GL render system parses that source to
+  // bind vertex attributes when it links the program.
   vertexShader->load();
 
   assert(vertexShader->isLoaded());
@@ -624,16 +607,10 @@ void OgreMaterial::SetFragmentShader(const std::string &_path)
     return;
   }
 
-  std::string shaderDir = common::parentPath(_path);
-  std::string shaderFile = common::basename(_path);
-  if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
-          shaderDir, this->ogreGroup))
-  {
-    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-        shaderDir, "FileSystem", this->ogreGroup);
-  }
-
-  const std::string programName = "__gz_rendering_fragment__" + _path;
+  // The AbsolutePathLoadingListener installed by OgreRenderEngine opens the
+  // absolute path, see OgreResourcePath
+  const std::string path = OgreResourcePath(_path);
+  const std::string programName = "__gz_rendering_fragment__" + path;
   Ogre::HighLevelGpuProgramPtr fragmentShader =
     Ogre::HighLevelGpuProgramManager::getSingleton().getByName(
         programName, this->ogreGroup);
@@ -643,9 +620,11 @@ void OgreMaterial::SetFragmentShader(const std::string &_path)
       Ogre::HighLevelGpuProgramManager::getSingleton().createProgram(
           programName, this->ogreGroup,
           "glsl", Ogre::GpuProgramType::GPT_FRAGMENT_PROGRAM);
+    fragmentShader->setSourceFile(path);
   }
-
-  fragmentShader->setSourceFile(shaderFile);
+  // A program found by name (e.g. when a material is cloned) is already
+  // loaded from the same file. setSourceFile() would clear its source
+  // without reloading it, see SetVertexShader.
   fragmentShader->load();
 
   assert(fragmentShader->isLoaded());
@@ -714,28 +693,9 @@ void OgreMaterial::LoadOneImage(const std::string &_name, Ogre::Image &_image)
 void OgreMaterial::SetTextureImpl(const std::string &_texture)
 {
   GZ_PROFILE("OgreMaterial::SetTextureImpl");
-
-  // OGRE 1.12 resolves textures through a resource group, indexed by basename:
-  // addResourceLocation expects a directory and setTextureName expects the
-  // name as it appears within that directory. Passing the full file path to
-  // both (the previous behaviour) registered a no-op location and then asked
-  // OGRE to look up an absolute path that was never indexed, leaving every
-  // mesh texture blank. Mirror commit 526304ef (the same fix for
-  // SetVertexShader / SetFragmentShader) and split _texture into parent
-  // dir + basename.
-  const std::string textureFile = common::basename(_texture);
-  const std::string textureDir = common::parentPath(_texture);
-  if (!textureDir.empty() && textureDir != _texture)
-  {
-    if (!Ogre::ResourceGroupManager::getSingleton().resourceLocationExists(
-            textureDir, this->ogreGroup))
-    {
-      Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-          textureDir, "FileSystem", this->ogreGroup);
-    }
-  }
-
-  this->ogreTexState->setTextureName(textureFile);
+  // A file path is opened by the AbsolutePathLoadingListener installed by
+  // OgreRenderEngine, any other name is looked up in the resource groups
+  this->ogreTexState->setTextureName(OgreResourcePath(_texture));
   this->UpdateColorOperation();
 }
 

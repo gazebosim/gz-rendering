@@ -32,7 +32,6 @@
 #include <OgreTextureManager.h>
 #include <RTShaderSystem/OgreShaderGenerator.h>
 
-#include <gz/common/Filesystem.hh>
 #include <gz/common/Image.hh>
 #include <gz/common/Profiler.hh>
 #include "gz/rendering/ogre/OgreCamera.hh"
@@ -42,6 +41,8 @@
 #include "gz/rendering/ogre/OgreRTShaderSystem.hh"
 #include "gz/rendering/ogre/OgreScene.hh"
 #include "gz/rendering/Utils.hh"
+
+#include "OgreResourcePath.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -127,6 +128,16 @@ namespace gz
       /// \param[in] _matSet Name of material
       private: void AddDecalToMaterial(const std::string &_matName);
 
+      /// \brief Build the "projector" scheme technique of a clone material
+      /// from its current passes, then load the clone. Only clones get this
+      /// technique: with the default visibility flags the decal is added to
+      /// the original material and drawn through the scene scheme, and a
+      /// "projector" technique on an original material would stop
+      /// handleSchemeNotFound from being called for it.
+      /// \param[in] _clone Clone material that has been through
+      /// AddDecalToMaterial.
+      private: void UpdateProjectorSchemeTechnique(Ogre::Material *_clone);
+
       /// \brief Attach the hand-written projector GLSL programs to a decal
       /// pass. The programs are created once per process and reused. Sets
       /// the required auto-constants and texture sampler bindings.
@@ -161,7 +172,7 @@ namespace gz
       /// scheme technique is the RTSS-generated shader-based variant that GL3+
       /// core can actually execute.
       /// \param[in] _clone Clone material that has been through
-      /// AddDecalToMaterial.
+      /// UpdateProjectorSchemeTechnique.
       private: Ogre::Technique *ProjectorSchemeTechnique(
                   Ogre::Material *_clone) const;
 
@@ -541,10 +552,8 @@ void OgreProjectorListener::AddDecalToMaterial(
 
   Ogre::MaterialPtr mat = static_cast<Ogre::MaterialPtr>(
     Ogre::MaterialManager::getSingleton().getByName(_matName));
-  // OGRE 1.12's MaterialManager::getByName returns a null MaterialPtr on miss
-  // instead of throwing — and this code path is reached from the scheme
-  // listener with a name that has been trimmed (the "_MissingTech_" prefix
-  // stripped), so the lookup *can* legitimately fail. Don't dereference null.
+  // MaterialManager::getByName returns a null MaterialPtr if the material is
+  // not found
   if (!mat)
   {
     gzerr << "OgreProjector: cannot add decal — material '" << _matName
@@ -565,23 +574,10 @@ void OgreProjectorListener::AddDecalToMaterial(
   this->BindProjectorShader(pass);
   pass->setLightingEnabled(false);
 
-  // Attach the decal texture by name. OGRE's STBI codec (loaded in
-  // OgreRenderEngine::LoadPlugins) decodes the PNG/JPG OGRE 1.12 indexes
-  // textures by basename within a resource location, so register the parent
-  // directory and reference the file by basename (see
-  // OgreMaterial::SetTextureImpl for the same fix).
-  const std::string decalFile = common::basename(this->textureName);
-  const std::string decalDir = common::parentPath(this->textureName);
-  auto &rgm = Ogre::ResourceGroupManager::getSingleton();
-  if (!decalDir.empty() && decalDir != this->textureName &&
-      !rgm.resourceLocationExists(decalDir,
-          Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME))
-  {
-    rgm.addResourceLocation(decalDir, "FileSystem",
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-  }
-
-  Ogre::TextureUnitState *texState = pass->createTextureUnitState(decalFile);
+  // A file path is opened by the AbsolutePathLoadingListener installed by
+  // OgreRenderEngine, any other name is looked up in the resource groups
+  Ogre::TextureUnitState *texState =
+      pass->createTextureUnitState(OgreResourcePath(this->textureName));
   texState->setProjectiveTexturing(true, this->frustum.get());
   texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
   texState->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
@@ -597,13 +593,20 @@ void OgreProjectorListener::AddDecalToMaterial(
 
   this->projectorTargets[_matName] = pass;
 
+  mat->load();
+}
+
+/////////////////////////////////////////////////
+void OgreProjectorListener::UpdateProjectorSchemeTechnique(
+    Ogre::Material *_clone)
+{
   // Under OGRE 1.12 + GL3+ core, the inherited Default scheme technique has
   // no GPU programs. Ask the RTSS to synthesize a shader-based technique
-  // (for the wall pass only — the decal pass above already carries its own
-  // hand-written GLSL programs) in the "projector" scheme so the viewport's
-  // scheme switch resolves to a fully compiled technique. Without this the
-  // listener returns an unloaded FF technique and GL3+ silently renders
-  // nothing.
+  // (for the wall pass only — the decal pass added by AddDecalToMaterial
+  // already carries its own hand-written GLSL programs) in the "projector"
+  // scheme so the viewport's scheme switch resolves to a fully compiled
+  // technique. Without this the listener returns an unloaded FF technique
+  // and GL3+ silently renders nothing.
   auto *shaderGenerator =
       Ogre::RTShader::ShaderGenerator::getSingletonPtr();
   if (shaderGenerator)
@@ -611,18 +614,25 @@ void OgreProjectorListener::AddDecalToMaterial(
     try
     {
       shaderGenerator->createShaderBasedTechnique(
-          *mat,
+          *_clone,
           Ogre::MaterialManager::DEFAULT_SCHEME_NAME,
           "projector");
-      shaderGenerator->validateMaterial("projector", _matName,
-          mat->getGroup());
+      // The RTSS rebuilds every technique in the "projector" scheme when the
+      // lights it counts change, which also happens between a projector
+      // camera and its shadow texture passes. If that happened while this
+      // decal was removed, the technique has no decal pass, so rebuild it
+      // from the passes the material has now.
+      shaderGenerator->invalidateMaterial("projector", _clone->getName(),
+          _clone->getGroup());
+      shaderGenerator->validateMaterial("projector", _clone->getName(),
+          _clone->getGroup());
     }
     catch (const Ogre::Exception &)
     {
       // Non-fatal; fall back to whatever the clone already has.
     }
   }
-  mat->load();
+  _clone->load();
 }
 
 /////////////////////////////////////////////////
@@ -895,6 +905,7 @@ Ogre::Technique *OgreProjectorListener::handleSchemeNotFound(
   }
 
   this->AddDecalToMaterial(clone->getName());
+  this->UpdateProjectorSchemeTechnique(clone);
   return this->ProjectorSchemeTechnique(clone);
 }
 
@@ -903,9 +914,9 @@ Ogre::Technique *OgreProjectorListener::ProjectorSchemeTechnique(
     Ogre::Material *_clone) const
 {
   // Prefer the RTSS-generated "projector" scheme technique set up in
-  // AddDecalToMaterial. Under GL3+ core this is the only technique that has
-  // GPU programs and can be executed; the inherited Default-scheme technique
-  // is fixed-function only.
+  // UpdateProjectorSchemeTechnique. Under GL3+ core this is the only technique
+  // that has GPU programs and can be executed; the inherited Default-scheme
+  // technique is fixed-function only.
   for (size_t i = 0; i < _clone->getNumTechniques(); ++i)
   {
     Ogre::Technique *t = _clone->getTechnique(i);

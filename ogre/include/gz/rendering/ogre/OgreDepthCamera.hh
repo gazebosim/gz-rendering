@@ -129,7 +129,8 @@ namespace gz
       public: virtual void notifyRenderSingleObject(Ogre::Renderable *_rend,
                   const Ogre::Pass *_pass,
                   const Ogre::AutoParamDataSource *_source,
-                  const Ogre::LightList *_lights, bool _suppressRSChanges);
+                  const Ogre::LightList *_lights,
+                  bool _suppressRSChanges) override;
 
       /// \brief Set the far clip distance
       /// \param[in] _far far clip distance

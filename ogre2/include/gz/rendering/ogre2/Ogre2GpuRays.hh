@@ -87,6 +87,9 @@ namespace gz
       // Documentation inherited
       public: virtual void PostRender() override;
 
+      // Documentation inherited.
+      public: bool IssueReadback() override;
+
       // Documentation inherited
       public: virtual const float *Data() const override;
 

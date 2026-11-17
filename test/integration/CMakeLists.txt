@@ -3,6 +3,8 @@ set(TEST_TYPE "INTEGRATION")
 set(tests
   axis_visual
   boundingbox_camera
+  boundingbox_camera_accuracy
+  boundingbox_camera_item_ids
   camera
   depth_camera
   gpu_rays

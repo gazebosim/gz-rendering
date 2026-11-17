@@ -17,6 +17,9 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
+#include <memory>
+
 #include "CommonRenderingTest.hh"
 #include "base64.inl"
 
@@ -158,6 +161,101 @@ static bool IsUbuntuFocal()
   }
 
   return false;
+}
+
+/////////////////////////////////////////////////
+TEST_F(HeightmapTest, UntexturedHeightmap)
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+
+  ScenePtr scene = engine->CreateScene("untextured_heightmap");
+  ASSERT_NE(nullptr, scene);
+  scene->SetAmbientLight(0.3, 0.3, 0.3);
+  scene->SetBackgroundColor(1.0, 0.0, 0.0);
+
+  auto root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  // Look down at the terrain, with a red background to detect empty frames.
+  constexpr unsigned int width = 64u;
+  constexpr unsigned int height = 64u;
+  auto camera = scene->CreateCamera();
+  ASSERT_NE(nullptr, camera);
+  camera->SetImageWidth(width);
+  camera->SetImageHeight(height);
+  camera->SetImageFormat(PF_R8G8B8);
+  camera->SetHFOV(GZ_PI / 3.0);
+  camera->SetNearClipPlane(0.1);
+  camera->SetFarClipPlane(100.0);
+  camera->SetLocalPosition(0, 0, 20);
+  camera->SetLocalRotation(0, GZ_PI / 2.0, 0);
+  root->AddChild(camera);
+
+  auto light = scene->CreateDirectionalLight();
+  ASSERT_NE(nullptr, light);
+  light->SetDirection(-0.5, -0.5, -1);
+  light->SetDiffuseColor(0.9, 0.9, 0.9);
+  root->AddChild(light);
+
+  auto background = camera->CreateImage();
+  ASSERT_NO_THROW(camera->Capture(background));
+  ASSERT_EQ(width, background.Width());
+  ASSERT_EQ(height, background.Height());
+  ASSERT_EQ(PF_R8G8B8, background.Format());
+  ASSERT_EQ(width * height * 3u, background.MemorySize());
+  const auto backgroundData = background.Data<unsigned char>();
+  ASSERT_NE(nullptr, backgroundData);
+  for (unsigned int i = 0; i < width * height; ++i)
+  {
+    ASSERT_EQ(255u, backgroundData[3u * i]);
+    ASSERT_EQ(0u, backgroundData[3u * i + 1u]);
+    ASSERT_EQ(0u, backgroundData[3u * i + 2u]);
+  }
+
+  auto data = std::make_shared<common::ImageHeightmap>();
+  const auto heightImage =
+      common::joinPaths(TEST_MEDIA_PATH, "heightmap_bowl.png");
+  ASSERT_EQ(0, data->Load(heightImage));
+
+  HeightmapDescriptor desc;
+  desc.SetData(data);
+  desc.SetSize({17, 17, 7});
+  desc.SetSampling(2u);
+  desc.SetUseTerrainPaging(false);
+  ASSERT_EQ(0u, desc.TextureCount());
+  ASSERT_EQ(0u, desc.BlendCount());
+
+  auto heightmap = scene->CreateHeightmap(desc);
+  ASSERT_NE(nullptr, heightmap);
+  auto visual = scene->CreateVisual();
+  ASSERT_NE(nullptr, visual);
+  visual->AddGeometry(heightmap);
+  root->AddChild(visual);
+
+  auto image = camera->CreateImage();
+  ASSERT_EQ(background.MemorySize(), image.MemorySize());
+  auto imageData = image.Data<unsigned char>();
+  ASSERT_NE(nullptr, imageData);
+  for (unsigned int frame = 0; frame < 3u; ++frame)
+  {
+    SCOPED_TRACE(frame);
+    // An unchanged or unwritten image must not count as a successful render.
+    std::copy_n(backgroundData, background.MemorySize(), imageData);
+    ASSERT_NO_THROW(camera->Capture(image));
+    unsigned int terrainPixels = 0u;
+    for (unsigned int i = 0; i < width * height; ++i)
+    {
+      if (imageData[3u * i] != backgroundData[3u * i] ||
+          imageData[3u * i + 1u] != backgroundData[3u * i + 1u] ||
+          imageData[3u * i + 2u] != backgroundData[3u * i + 2u])
+      {
+        ++terrainPixels;
+      }
+    }
+    EXPECT_GT(terrainPixels, width * height / 4u);
+  }
+
+  engine->DestroyScene(scene);
 }
 
 /////////////////////////////////////////////////

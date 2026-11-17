@@ -90,6 +90,13 @@ namespace gz
     template <class T>
     void BaseDepthCamera<T>::SetDepthNearClipPlane(double _near)
     {
+      if (_near < this->NearClipPlane())
+      {
+        gzwarn << "Depth near clip plane [" << _near
+               << "] is smaller than camera near clip plane ["
+               << this->NearClipPlane() << "]. NearClipPlane() will take "
+               << "priority as the frustum near clip plane." << std::endl;
+      }
       this->depthNearClip = _near;
       this->hasDepthNearClip = true;
     }

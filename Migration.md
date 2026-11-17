@@ -26,12 +26,25 @@ release will remove the deprecated code.
   rotation visuals that joint visuals show for revolute, revolute2, universal
   and gearbox joints are no longer hidden by those calls.
 
-* `OgreDepthCamera` and `Ogre2DepthCamera` now clip geometry closer than the
-  frustum near clip plane (`min(NearClipPlane(), DepthNearClipPlane())`) rather
-  than returning `-inf`. `DepthCamera` now provides `SetDepthNearClipPlane` /
-  `DepthNearClipPlane` and `SetDepthFarClipPlane` / `DepthFarClipPlane` to
-  configure the valid depth range independently of the camera frustum clip
-  planes (`NearClipPlane` / `FarClipPlane`).
+* `DepthCamera` adds `SetDepthNearClipPlane` / `DepthNearClipPlane` and
+  `SetDepthFarClipPlane` / `DepthFarClipPlane` to set the valid depth range
+  separately from the camera clip planes (`NearClipPlane` / `FarClipPlane`).
+  Render engines that implement `DepthCamera` must implement the four new
+  functions; engines based on `BaseDepthCamera` inherit them but must use
+  `DepthNearClipPlane()` / `DepthFarClipPlane()` when producing depth data.
+  The depth far clip plane may be larger than `FarClipPlane()`, and both
+  setters take effect on the next frame.
+
+* `OgreDepthCamera` and `Ogre2DepthCamera` no longer report geometry closer
+  than the frustum near clip plane (`NearClipPlane()`) as `-inf`. That
+  geometry is not rendered and does not occlude: the depth image and point
+  cloud report the surface behind it, or `+inf` if there is none. `-inf` is
+  only reported between `NearClipPlane()` and a larger
+  `DepthNearClipPlane()`, so a camera without a depth near clip plane never
+  reports `-inf`. If `NearClipPlane()` was used as the sensor's minimum
+  range, set it to a small value (e.g. the size of the sensor housing) and
+  pass the minimum range to `SetDepthNearClipPlane()` to keep reporting
+  closer obstacles as `-inf`.
 
 ### Optimizations
 

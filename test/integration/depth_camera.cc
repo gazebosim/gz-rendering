@@ -190,7 +190,6 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
         * (depthCamera->ImageWidth() * pointCloudChannelCount)
         - pointCloudChannelCount;
 
-    float minVal = -gz::math::INF_D;
     float maxVal = gz::math::INF_D;
 
     // Verify Depth

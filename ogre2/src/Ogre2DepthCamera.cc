@@ -494,11 +494,10 @@ void Ogre2DepthCamera::CreateDepthTexture()
   Ogre::GpuProgramParametersSharedPtr psParams =
       pass->getFragmentProgramParameters();
 
-  // Use min(NearClipPlane(), DepthNearClipPlane()) as the frustum near clip
-  // plane and widen the far clip plane (see kDepthFarClipScale); the
-  // configured depth near / far range is enforced in the depth camera shaders.
-  double nearPlane = std::min(this->NearClipPlane(),
-      this->DepthNearClipPlane());
+  // Use NearClipPlane() as the frustum near clip plane and widen the far clip
+  // plane (see kDepthFarClipScale); the configured depth near / far range is
+  // enforced in the depth camera shaders.
+  double nearPlane = this->NearClipPlane();
   double maxFarClip = std::max(this->FarClipPlane(),
       this->DepthFarClipPlane());
   double farPlane = maxFarClip * kDepthFarClipScale;
@@ -1079,8 +1078,7 @@ void Ogre2DepthCamera::SetProjectionMatrix(const math::Matrix4d &_matrix)
   // camera, otherwise the depth pipeline (e.g. point cloud reconstruction
   // from view space corners) would be inconsistent with the frustum.
   math::Matrix4d ogreMatrix = _matrix;
-  double nearPlane = std::min(this->NearClipPlane(),
-      this->DepthNearClipPlane());
+  double nearPlane = this->NearClipPlane();
   double farPlane = std::max(this->FarClipPlane(),
       this->DepthFarClipPlane()) * kDepthFarClipScale;
   SetProjectionDepthRows(ogreMatrix, nearPlane, farPlane);
@@ -1120,8 +1118,7 @@ void Ogre2DepthCamera::PreRender()
 
   if (this->dataPtr->depthMaterial && this->dataPtr->depthFinalMaterial)
   {
-    double nearPlane = std::min(this->NearClipPlane(),
-        this->DepthNearClipPlane());
+    double nearPlane = this->NearClipPlane();
     double maxFarClip = std::max(this->FarClipPlane(),
         this->DepthFarClipPlane());
     double farPlane = maxFarClip * kDepthFarClipScale;

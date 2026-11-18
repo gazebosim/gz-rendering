@@ -64,7 +64,6 @@ static unsigned int DominantPixelCount(Image &_image, unsigned int _channel)
   return result;
 }
 
-
 /////////////////////////////////////////////////
 TEST_F(ProjectorTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Visibility))
 {

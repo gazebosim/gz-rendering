@@ -139,10 +139,6 @@ class Ogre2BoundingBoxMaterialSwitcher : public Ogre::Camera::Listener
   /// \brief User Data Key to set the label
   private: const std::string labelKey = "label";
 
-  /// \brief Labels must be lower than this to be reported. Kept for
-  /// compatibility with the previous 8 bit label encoding, where 255 was
-  /// the background.
-  private: static constexpr int kLabelLimit = 255;
 
   /// \brief Items indexed in the last render, by index.
   private: std::vector<Entry> entries;

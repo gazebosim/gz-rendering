@@ -242,9 +242,8 @@ inline void ExpectRectNear(const Rect &_actual, const Rect &_expected,
 }
 
 /// \brief Tolerance, in pixels, for full 2D boxes: they come from exact
-/// vertex projection. One pixel covers clamping to the last pixel index
-/// (width - 1) instead of the image border (width) at the image edges.
-constexpr double kFullTol = 1.0;
+/// vertex projection, computed in float.
+constexpr double kFullTol = 0.1;
 
 /// \brief Tolerance, in pixels, for visible 2D boxes: they come from the
 /// rasterized image, so each edge can be off by the sampling of one pixel

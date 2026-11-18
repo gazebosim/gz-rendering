@@ -22,6 +22,7 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #ifdef _MSC_VER
@@ -57,9 +58,11 @@
 
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Utils.hh"
+#include "gz/rendering/Visual.hh"
 #include "gz/rendering/ogre2/Ogre2BoundingBoxCamera.hh"
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Geometry.hh"
 #include "gz/rendering/ogre2/Ogre2Includes.hh"
 #include "gz/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
@@ -84,11 +87,18 @@ class gz::rendering::Ogre2BoundingBoxCameraPrivate
 
   /// \brief Get the 3d vertices (in camera coord.) of items that
   /// belong to the same model (only used in multi-links models)
-  /// \param[in] _indices Indices (see Ogre2BoundingBoxMaterialSwitcher) of
-  /// the items
+  /// \param[in] _items The items
   /// \param[out] _vertices vector of 3d vertices of the items
-  public: void MeshVertices(const std::vector<uint32_t> &_indices,
+  public: void MeshVertices(const std::vector<Ogre::Item *> &_items,
               std::vector<math::Vector3d> &_vertices);
+
+  /// \brief Find the labeled, visible items of a model, whether they are
+  /// occluded or not.
+  /// \param[in] _node The model, or one of its descendants
+  /// \param[in] _mask The camera's visibility mask
+  /// \param[out] _items The items found are added here
+  public: static void ModelItems(const Node *_node, uint32_t _mask,
+              std::vector<Ogre::Item *> &_items);
 
   /// \brief Find the extent, in pixels, of each index in an image rendered
   /// by the material switcher. Fills pixelBounds and visibleIndices.
@@ -184,8 +194,20 @@ class gz::rendering::Ogre2BoundingBoxCameraPrivate
   /// \param[in] _points The points
   /// \param[out] _min Minimum x/w, y/w and z
   /// \param[out] _max Maximum x/w, y/w and z
-  /// \return False if a point is not in front of the camera (w <= 0)
+  /// \return False if a point is behind the near plane: the extent is then
+  /// wrong, use ClippedExtent instead.
   public: static bool ProjectedExtent(const Ogre::Matrix4 &_toClip,
+              const std::vector<Ogre::Vector3> &_points,
+              Ogre::Vector3 &_min, Ogre::Vector3 &_max);
+
+  /// \brief Extent of the convex hull of points, projected with a matrix,
+  /// keeping only the part in front of the near plane.
+  /// \param[in] _toClip Points to clip space
+  /// \param[in] _points The points
+  /// \param[out] _min Minimum x/w, y/w and z. Greater than _max if no part
+  /// is in front of the near plane.
+  /// \param[out] _max Maximum x/w, y/w and z
+  public: static void ClippedExtent(const Ogre::Matrix4 &_toClip,
               const std::vector<Ogre::Vector3> &_points,
               Ogre::Vector3 &_min, Ogre::Vector3 &_max);
 
@@ -1309,16 +1331,14 @@ void Ogre2BoundingBoxCameraPrivate::PruneMeshCache()
 
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCameraPrivate::MeshVertices(
-    const std::vector<uint32_t> &_indices,
+    const std::vector<Ogre::Item *> &_items,
     std::vector<math::Vector3d> &_vertices)
 {
   GZ_PROFILE("Ogre2BoundingBoxCameraPrivate::MeshVertices");
   const Ogre::Matrix4 viewMatrix = this->ogreCamera->getViewMatrix();
-  const auto &entries = this->materialSwitcher->Entries();
 
-  for (uint32_t index : _indices)
+  for (Ogre::Item *item : _items)
   {
-    Ogre::Item *item = entries[index].item;
     Ogre::Node *node = item->getParentNode();
 
     // item to camera view coordinates
@@ -1333,6 +1353,35 @@ void Ogre2BoundingBoxCameraPrivate::MeshVertices(
     for (const Ogre::Vector3 &p : points)
       _vertices.push_back(Ogre2Conversions::Convert(toView * p));
   }
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCameraPrivate::ModelItems(const Node *_node,
+    uint32_t _mask, std::vector<Ogre::Item *> &_items)
+{
+  if (auto visual = dynamic_cast<const Visual *>(_node))
+  {
+    // same rule as the material switcher: labels are non-negative ints
+    const Variant labelAny = visual->UserData("label");
+    const int *label = std::get_if<int>(&labelAny);
+    if (label && *label >= 0)
+    {
+      for (unsigned int i = 0; i < visual->GeometryCount(); ++i)
+      {
+        auto geometry = std::dynamic_pointer_cast<Ogre2Geometry>(
+            visual->GeometryByIndex(i));
+        auto item = geometry ?
+            dynamic_cast<Ogre::Item *>(geometry->OgreObject()) : nullptr;
+        if (item && item->isVisible() &&
+            (item->getVisibilityFlags() & _mask) != 0u)
+        {
+          _items.push_back(item);
+        }
+      }
+    }
+  }
+  for (unsigned int i = 0; i < _node->ChildCount(); ++i)
+    ModelItems(_node->ChildByIndex(i).get(), _mask, _items);
 }
 
 /////////////////////////////////////////////////
@@ -1407,12 +1456,26 @@ void Ogre2BoundingBoxCamera::MergeMultiLinksModels3D()
   const auto &indexBoxes = this->dataPtr->indexBoxes;
   const auto &positions = this->dataPtr->groupedPositions;
   this->dataPtr->GroupByModel();
-  std::vector<uint32_t> indices;
+  const auto &entries = this->dataPtr->materialSwitcher->Entries();
+  std::vector<Ogre::Item *> items;
   std::vector<math::Vector3d> vertices;
   for (const auto &[begin, end] : this->dataPtr->groupRanges)
   {
+    // The box covers the whole model, including the links that are hidden
+    // in this frame.
+    items.clear();
+    Ogre2BoundingBoxCameraPrivate::ModelItems(
+        entries[indexBoxes[positions[begin]].first].model,
+        this->VisibilityMask(), items);
+    if (items.size() < 2)
+    {
+      items.clear();
+      for (uint32_t k = begin; k < end; ++k)
+        items.push_back(entries[indexBoxes[positions[k]].first].item);
+    }
+
     // If not a multi-link model, add the 3d box from the OGRE API
-    if (end - begin == 1)
+    if (items.size() == 1)
     {
       this->dataPtr->outputBoxes.push_back(
           indexBoxes[positions[begin]].second);
@@ -1420,11 +1483,8 @@ void Ogre2BoundingBoxCamera::MergeMultiLinksModels3D()
     }
 
     // Get all the 3D vertices of the sub-items(total mesh)
-    indices.clear();
-    for (uint32_t k = begin; k < end; ++k)
-      indices.push_back(indexBoxes[positions[k]].first);
     vertices.clear();
-    this->dataPtr->MeshVertices(indices, vertices);
+    this->dataPtr->MeshVertices(items, vertices);
 
     // Get the oriented bounding box from the mesh using PCA
     math::OrientedBoxd mergedBox = math::eigen3::verticesToOrientedBox(
@@ -1562,16 +1622,17 @@ void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
   const auto &entries = this->dataPtr->materialSwitcher->Entries();
   for (uint32_t index : this->dataPtr->visibleIndices)
   {
+    // Pixel i covers [i, i + 1), so the box ends after the last pixel: the
+    // same convention as the full boxes.
     const auto &boundary = this->dataPtr->pixelBounds[index];
-    auto boxWidth = boundary.maxX - boundary.minX;
-    auto boxHeight = boundary.maxY - boundary.minY;
+    const double boxWidth = boundary.maxX - boundary.minX + 1.0;
+    const double boxHeight = boundary.maxY - boundary.minY + 1.0;
 
     BoundingBox box;
     box.SetLabel(entries[index].label);
     box.SetCenter({boundary.minX + boxWidth * 0.5,
         boundary.minY + boxHeight * 0.5, 0});
-    box.SetSize(
-        {static_cast<double>(boxWidth), static_cast<double>(boxHeight), 0.0});
+    box.SetSize({boxWidth, boxHeight, 0.0});
     this->dataPtr->indexBoxes.emplace_back(index, std::move(box));
   }
 
@@ -1624,14 +1685,13 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
         extent.generation != meshPoints.generation ||
         std::memcmp(&extent.toClip, &toClip, sizeof(toClip)) != 0)
     {
-      // The extreme points give the same extent as all points, as long as
-      // all of them are in front of the camera. Otherwise keep the result
-      // of all points (vertices behind the camera are not handled yet).
+      // The extreme points have the same convex hull as all points, so
+      // they give the same extent, clipped or not.
       if (!Ogre2BoundingBoxCameraPrivate::ProjectedExtent(toClip,
           meshPoints.extremePoints, extent.min, extent.max))
       {
-        Ogre2BoundingBoxCameraPrivate::ProjectedExtent(toClip,
-            meshPoints.points, extent.min, extent.max);
+        Ogre2BoundingBoxCameraPrivate::ClippedExtent(toClip,
+            meshPoints.extremePoints, extent.min, extent.max);
       }
       extent.toClip = toClip;
       extent.generation = meshPoints.generation;
@@ -1640,8 +1700,10 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
     Ogre::Vector3 minVertex = extent.min;
     Ogre::Vector3 maxVertex = extent.max;
 
-    if ((abs(minVertex.x) > 1 && abs(maxVertex.x) > 1) ||
-        (abs(minVertex.y) > 1 && abs(maxVertex.y) > 1))
+    // Nothing inside the view. Objects larger than the view are kept and
+    // clamped to the image.
+    if (minVertex.x > 1 || maxVertex.x < -1 ||
+        minVertex.y > 1 || maxVertex.y < -1)
     {
       continue;
     }
@@ -1701,7 +1763,8 @@ bool Ogre2BoundingBoxCameraPrivate::ProjectedExtent(
   for (const Ogre::Vector3 &p : _points)
   {
     const Ogre::Vector4 clip = _toClip * Ogre::Vector4(p.x, p.y, p.z, 1.0f);
-    inFront = inFront && clip.w > 0.0f;
+    // near plane: z = -w in clip space
+    inFront = inFront && clip.z + clip.w >= 0.0f && clip.w > 0.0f;
 
     // homogeneous
     const float x = clip.x / clip.w;
@@ -1716,6 +1779,52 @@ bool Ogre2BoundingBoxCameraPrivate::ProjectedExtent(
     _max.z = std::max(_max.z, clip.z);
   }
   return inFront;
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCameraPrivate::ClippedExtent(
+    const Ogre::Matrix4 &_toClip, const std::vector<Ogre::Vector3> &_points,
+    Ogre::Vector3 &_min, Ogre::Vector3 &_max)
+{
+  GZ_PROFILE("Ogre2BoundingBoxCameraPrivate::ClippedExtent");
+  _min = Ogre::Vector3(std::numeric_limits<float>::max());
+  _max = Ogre::Vector3(-std::numeric_limits<float>::max());
+
+  // The hull clipped by the near plane is the hull of the points in front
+  // of it plus the intersections of the plane with the segments from those
+  // points to the points behind it.
+  std::vector<Ogre::Vector4> front;
+  std::vector<Ogre::Vector4> behind;
+  for (const Ogre::Vector3 &p : _points)
+  {
+    const Ogre::Vector4 clip = _toClip * Ogre::Vector4(p.x, p.y, p.z, 1.0f);
+    (clip.z + clip.w >= 0.0f ? front : behind).push_back(clip);
+  }
+
+  auto add = [&](const Ogre::Vector4 &_clip)
+  {
+    if (!(_clip.w > 0.0f))
+      return;
+    const float x = _clip.x / _clip.w;
+    const float y = _clip.y / _clip.w;
+    _min.x = std::min(_min.x, x);
+    _min.y = std::min(_min.y, y);
+    _min.z = std::min(_min.z, _clip.z);
+    _max.x = std::max(_max.x, x);
+    _max.y = std::max(_max.y, y);
+    _max.z = std::max(_max.z, _clip.z);
+  };
+
+  for (const Ogre::Vector4 &f : front)
+  {
+    add(f);
+    const float df = f.z + f.w;
+    for (const Ogre::Vector4 &b : behind)
+    {
+      const float db = b.z + b.w;
+      add(f + (b - f) * (df / (df - db)));
+    }
+  }
 }
 
 /////////////////////////////////////////////////
@@ -2104,11 +2213,12 @@ void Ogre2BoundingBoxCamera::ConvertToScreenCoord(
   _maxVertex.x = (_maxVertex.x + 1.0) / 2 * width;
   _maxVertex.y = (1.0 - _maxVertex.y) / 2 * height;
 
-  // clip outside screen boundaries
+  // clip outside screen boundaries: the image spans [0, width] x
+  // [0, height], pixel i covering [i, i + 1)
   _minVertex.x = std::max<float>(0.0, _minVertex.x);
   _minVertex.y = std::max<float>(0.0, _minVertex.y);
-  _maxVertex.x = std::min<float>(_maxVertex.x, width - 1.0);
-  _maxVertex.y = std::min<float>(_maxVertex.y, height - 1.0);
+  _maxVertex.x = std::min<float>(_maxVertex.x, width);
+  _maxVertex.y = std::min<float>(_maxVertex.y, height);
 }
 
 /////////////////////////////////////////////////

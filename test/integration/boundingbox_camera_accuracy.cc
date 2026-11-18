@@ -29,10 +29,6 @@
 // range [center - size/2, center + size/2], with pixel i spanning [i, i+1).
 // So a fully visible object whose projection spans [u0, u1] has a box of
 // width ~= u1 - u0, regardless of the box type.
-//
-// Tests prefixed with DISABLED_ fail on the current implementation because of
-// known bugs; each one names the bug it covers. Remove the prefix once the bug
-// is fixed.
 
 #include "boundingbox_camera_test_utils.hh"
 
@@ -236,12 +232,9 @@ TEST_F(BoundingBoxCameraAccuracyTest, PartiallyOutsideImage)
 }
 
 //////////////////////////////////////////////////
-// Known bug C3: an object whose projection is larger than the image on both
-// sides is dropped by the full 2D box type
-// (Ogre2BoundingBoxCamera::FullBoundingBoxes rejects boxes with
-// |min| > 1 && |max| > 1 in NDC, which is also true for a box that covers
-// the whole view).
-TEST_F(BoundingBoxCameraAccuracyTest, DISABLED_ObjectLargerThanView)
+// An object whose projection is larger than the image on both sides covers
+// the whole image.
+TEST_F(BoundingBoxCameraAccuracyTest, ObjectLargerThanView)
 {
   CHECK_SUPPORTED_ENGINE("ogre2");
   ScenePtr scene = engine->CreateScene("scene");
@@ -270,12 +263,10 @@ TEST_F(BoundingBoxCameraAccuracyTest, DISABLED_ObjectLargerThanView)
 }
 
 //////////////////////////////////////////////////
-// Known bug C4: an object that extends behind the camera gets a wrong full
-// 2D box, because vertices behind the camera are divided by a negative w
-// and land on the wrong side of the image.
-// A long bar on the left of the camera, from behind it to 5 m in front of
-// it, must only cover the left part of the image.
-TEST_F(BoundingBoxCameraAccuracyTest, DISABLED_ObjectCrossingNearPlane)
+// An object that extends behind the camera: only the part in front of the
+// near plane counts. A long bar on the left of the camera, from behind it to
+// 5 m in front of it, must only cover the left part of the image.
+TEST_F(BoundingBoxCameraAccuracyTest, ObjectCrossingNearPlane)
 {
   CHECK_SUPPORTED_ENGINE("ogre2");
   ScenePtr scene = engine->CreateScene("scene");
@@ -306,13 +297,11 @@ TEST_F(BoundingBoxCameraAccuracyTest, DISABLED_ObjectCrossingNearPlane)
 }
 
 //////////////////////////////////////////////////
-// Known bug C5: visible 2D boxes are measured between pixel indices, so they
-// are one pixel narrower and half a pixel off compared to the continuous
-// convention used by the full 2D boxes.
+// Visible 2D boxes use the same continuous convention as full 2D boxes.
 // One box is moved across many sub-pixel positions; on average the visible
 // box must have no bias relative to the true projection. The full box must
 // have no bias either.
-TEST_F(BoundingBoxCameraAccuracyTest, DISABLED_NoSubPixelBias)
+TEST_F(BoundingBoxCameraAccuracyTest, NoSubPixelBias)
 {
   CHECK_SUPPORTED_ENGINE("ogre2");
   ScenePtr scene = engine->CreateScene("scene");
@@ -394,11 +383,9 @@ TEST_F(BoundingBoxCameraAccuracyTest, LowAndHighLabels)
 }
 
 //////////////////////////////////////////////////
-// Known bug C2: label 255 is the internal background value, so objects with
-// that label are never reported. Pending decision on the supported label
-// range (see the review plan): enable this if 255 becomes a valid label, or
-// replace it with a test of the documented limit.
-TEST_F(BoundingBoxCameraAccuracyTest, DISABLED_Label255)
+// Any non-negative label is valid, including 255 (the background value of
+// older versions) and labels that don't fit in 8 or 16 bits.
+TEST_F(BoundingBoxCameraAccuracyTest, LargeLabels)
 {
   CHECK_SUPPORTED_ENGINE("ogre2");
   ScenePtr scene = engine->CreateScene("scene");
@@ -409,11 +396,19 @@ TEST_F(BoundingBoxCameraAccuracyTest, DISABLED_Label255)
       BoundingBoxType::BBT_VISIBLEBOX2D);
   ASSERT_NE(nullptr, camera);
 
-  AddBox(scene, scene->RootVisual(), {5, 0, 0, 0, 0, 0}, {1, 1, 1}, 255);
+  AddBox(scene, scene->RootVisual(), {5, 1.5, 0, 0, 0, 0}, {1, 1, 1}, 255);
+  AddBox(scene, scene->RootVisual(), {5, -1.5, 0, 0, 0, 0}, {1, 1, 1},
+      100000);
 
-  auto result = this->Render(camera);
-  ASSERT_EQ(1u, result.size());
-  EXPECT_EQ(255u, result[0].Label());
+  for (auto type : {BoundingBoxType::BBT_VISIBLEBOX2D,
+      BoundingBoxType::BBT_FULLBOX2D, BoundingBoxType::BBT_BOX3D})
+  {
+    SCOPED_TRACE(static_cast<int>(type));
+    auto result = this->Render(camera, type);
+    EXPECT_EQ(2u, result.size());
+    EXPECT_EQ(1u, WithLabel(result, 255).size());
+    EXPECT_EQ(1u, WithLabel(result, 100000).size());
+  }
 
   engine->DestroyScene(scene);
 }
@@ -667,11 +662,10 @@ TEST_F(BoundingBoxCameraAccuracyTest, MultiLinkModel3DContainsAllLinks)
 }
 
 //////////////////////////////////////////////////
-// Bug C6 / pending decision: the 3D box of a multi-link model only merges
-// the links that are visible in this frame, so hiding one link shrinks the
-// box. Enable once the expected behavior is decided.
+// The 3D box of a multi-link model covers all of its links, including the
+// ones hidden behind other objects.
 TEST_F(BoundingBoxCameraAccuracyTest,
-    DISABLED_MultiLinkModel3DPartiallyOccluded)
+    MultiLinkModel3DPartiallyOccluded)
 {
   CHECK_SUPPORTED_ENGINE("ogre2");
   ScenePtr scene = engine->CreateScene("scene");

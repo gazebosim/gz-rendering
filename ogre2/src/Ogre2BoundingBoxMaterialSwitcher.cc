@@ -210,7 +210,7 @@ void Ogre2BoundingBoxMaterialSwitcher::cameraPreRenderScene(
     {
       Variant labelAny = visual->UserData(this->labelKey);
       const int *label = std::get_if<int>(&labelAny);
-      if (label && *label >= 0 && *label < kLabelLimit)
+      if (label && *label >= 0)
       {
         // Multi-link models: find the top level visual. Walk up the
         // parents by id, cheaper than casting to Visual at every step.

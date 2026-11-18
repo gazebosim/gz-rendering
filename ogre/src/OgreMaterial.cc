@@ -714,7 +714,7 @@ void OgreMaterial::CreateOgreTextureFromImage(const std::string &_name,
   const std::shared_ptr<const common::Image> &_img)
 {
   GZ_PROFILE("OgreMaterial::CreateOgreTextureFromImage");
-  if (!_img)
+  if (!_img || !_img->Valid())
     return;
 
   // Create the texture only if it was not created already.
@@ -724,6 +724,26 @@ void OgreMaterial::CreateOgreTextureFromImage(const std::string &_name,
       Ogre::ResourceGroupManager::getSingleton().resourceExists(
           this->ogreGroup, _name))
     return;
+
+  // RGBAData() returns w*h*4*(bits_per_channel/8) bytes — for a 16-bit-per-
+  // channel source (e.g. embedded 16-bit PNG normal maps in GLB models) it
+  // returns 2x the bytes that fit in PF_BYTE_RGBA. A naive memcpy(data.size())
+  // overflows the OGRE pixel buffer and corrupts the heap, which then crashes
+  // an unrelated GL driver allocator on the next big upload. Match the OGRE
+  // buffer's 8-bit RGBA expectation here, and don't create the texture for
+  // any other size.
+  const auto data = _img->RGBAData();
+  const size_t bytes8 = static_cast<size_t>(_img->Width()) *
+                        static_cast<size_t>(_img->Height()) * 4u;
+  if (data.size() != bytes8 && data.size() != bytes8 * 2u)
+  {
+    gzwarn << "Skipping texture '" << _name
+           << "': RGBAData size " << data.size() << " does not match "
+           << _img->Width() << "x" << _img->Height()
+           << " 8-bit RGBA (" << bytes8 << ") or 16-bit RGBA ("
+           << (bytes8 * 2u) << ")" << std::endl;
+    return;
+  }
 
   // OGRE's PF_R8G8B8A8 is a packed word 0xRRGGBBAA — on little-endian that is
   // memory bytes {A, B, G, R}. RGBAData() is byte-order {R, G, B, A}, so
@@ -741,20 +761,11 @@ void OgreMaterial::CreateOgreTextureFromImage(const std::string &_name,
   pixelBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
   const Ogre::PixelBox &pixelBox = pixelBuffer->getCurrentLock();
 
-  auto data = _img->RGBAData();
-  // RGBAData() returns w*h*4*(bits_per_channel/8) bytes — for a 16-bit-per-
-  // channel source (e.g. embedded 16-bit PNG normal maps in GLB models) it
-  // returns 2x the bytes that fit in PF_BYTE_RGBA. A naive memcpy(data.size())
-  // overflows the OGRE pixel buffer and corrupts the heap, which then crashes
-  // an unrelated GL driver allocator on the next big upload. Match the OGRE
-  // buffer's 8-bit RGBA expectation here.
-  const size_t bytes8 = static_cast<size_t>(_img->Width()) *
-                        static_cast<size_t>(_img->Height()) * 4u;
   if (data.size() == bytes8)
   {
     std::memcpy(pixelBox.data, data.data(), bytes8);
   }
-  else if (data.size() == bytes8 * 2u)
+  else
   {
     // 16-bit per channel: stbi keeps native uint16_t order, so on
     // little-endian hosts the high (most-significant) byte sits at offset 1.
@@ -762,14 +773,6 @@ void OgreMaterial::CreateOgreTextureFromImage(const std::string &_name,
     const auto *src = data.data();
     for (size_t i = 0; i < bytes8; ++i)
       dst[i] = src[i * 2u + 1u];
-  }
-  else
-  {
-    gzwarn << "Skipping texture upload for '" << _name
-           << "': RGBAData size " << data.size() << " does not match "
-           << _img->Width() << "x" << _img->Height()
-           << " 8-bit RGBA (" << bytes8 << ") or 16-bit RGBA ("
-           << (bytes8 * 2u) << ")" << std::endl;
   }
   pixelBuffer->unlock();
 }

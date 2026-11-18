@@ -2,6 +2,41 @@
 
 ### Gazebo Rendering 9.X
 
+### Gazebo Rendering 9.6.1 (2026-11-18)
+
+1. Ogre2: avoid Terra shader failure for untextured heightmaps
+    * [Pull request #1419](https://github.com/gazebosim/gz-rendering/pull/1419)
+
+1. Fix crash after destroying a bounding box camera
+    * [Pull request #1429](https://github.com/gazebosim/gz-rendering/pull/1429)
+
+1. update code owners (#1421)
+    * [Pull request #1425](https://github.com/gazebosim/gz-rendering/pull/1425)
+
+1. Fix OGRE GPU ray mapping for single-row and single-column scans
+    * [Pull request #1400](https://github.com/gazebosim/gz-rendering/pull/1400)
+
+1. Ogre2DepthCamera: fix projection matrix
+    * [Pull request #1390](https://github.com/gazebosim/gz-rendering/pull/1390)
+
+1. Clarify what HeightmapDescriptor::Position means
+    * [Pull request #1397](https://github.com/gazebosim/gz-rendering/pull/1397)
+
+1. Move Ogre2 texture readback into a reusable class
+    * [Pull request #1382](https://github.com/gazebosim/gz-rendering/pull/1382)
+
+1. Refactor texture readback to improve performance on Adreno GPUs
+    * [Pull request #1345](https://github.com/gazebosim/gz-rendering/pull/1345)
+
+1. Respect arrow rotation visibility when a parent visual is shown
+    * [Pull request #1348](https://github.com/gazebosim/gz-rendering/pull/1348)
+
+1. Ogre1 fix receding lidar scans
+    * [Pull request #1378](https://github.com/gazebosim/gz-rendering/pull/1378)
+
+1. Fix ogre1 GpuRays second pass row offset (#1370)
+    * [Pull request #1376](https://github.com/gazebosim/gz-rendering/pull/1376)
+
 ### Gazebo Rendering 9.6.0 (2026-10-08)
 
 1. Copy camera frames into caller owned memory through PixelBuffer

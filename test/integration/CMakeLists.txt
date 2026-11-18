@@ -13,6 +13,7 @@ set(tests
   render_pass
   scene
   segmentation_camera
+  segmentation_camera_accuracy
   shadows
   sky
   thermal_camera

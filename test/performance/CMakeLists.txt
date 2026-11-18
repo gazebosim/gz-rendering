@@ -2,6 +2,7 @@ set(TEST_TYPE "PERFORMANCE")
 
 set(tests
   scene_factory
+  segmentation_camera
 )
 
 foreach(test ${tests})

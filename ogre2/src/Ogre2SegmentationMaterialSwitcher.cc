@@ -155,15 +155,18 @@ Ogre::Vector4 Ogre2SegmentationMaterialSwitcher::KeyColor(int64_t _key)
   std::uniform_int_distribution<int> distribution(0, 255);
   int r, g, b;
   int64_t colorId;
-  do
+  while (true)
   {
     r = distribution(this->generator);
     g = distribution(this->generator);
     b = distribution(this->generator);
     colorId = r * 256 * 256 + g * 256 + b;
+    if (colorId != this->backgroundColorId &&
+        !this->colorToLabel.count(colorId))
+    {
+      break;
+    }
   }
-  while (colorId == this->backgroundColorId ||
-         this->colorToLabel.count(colorId));
 
   this->colorToLabel[colorId] = _key;
   const Ogre::Vector4 color(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);

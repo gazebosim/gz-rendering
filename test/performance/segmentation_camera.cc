@@ -44,6 +44,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cinttypes>
 #include <cmath>
 #include <cstdio>
 #include <fstream>
@@ -398,8 +399,7 @@ TEST_F(SegmentationCameraPerfTest, FrameTime)
           if (mode.colored)
             hash = Hash(labels, hash);
           char hashStr[17];
-          std::snprintf(hashStr, sizeof(hashStr), "%016llx",
-              static_cast<unsigned long long>(hash));
+          std::snprintf(hashStr, sizeof(hashStr), "%016" PRIx64, hash);
 
           const std::string resStr = std::to_string(res.width) + "x" +
               std::to_string(res.height);

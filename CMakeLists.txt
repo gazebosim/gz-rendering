@@ -14,7 +14,12 @@ find_package(gz-cmake REQUIRED)
 #============================================================================
 # Set up the project
 #============================================================================
-set(CMAKE_CXX_STANDARD 17)
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
+if(CMAKE_CXX_STANDARD LESS 17)
+  message(FATAL_ERROR "Gazebo requires C++17 or newer")
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 gz_configure_project(VERSION_SUFFIX pre2)

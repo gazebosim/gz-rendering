@@ -9,6 +9,19 @@ release will remove the deprecated code.
 
 ### Modifications
 
+* The `ogre` render engine now uses OGRE 1.12 instead of OGRE 1.9. It needs
+  OGRE 1.12.10 or newer (`libogre-1.12-dev` on Ubuntu and Debian), and it
+  can't be built with OGRE 1.9 any more. It still uses the OpenGL render
+  system (`RenderSystem_GL`).
+
+* The `USE_UNOFFICIAL_OGRE_VERSIONS` CMake option was removed. It only turned
+  off the build warning for OGRE 1.x versions newer than 1.9.
+
+* The OGRE media that the `ogre` engine needs, the `ShadowVolume` and
+  `Terrain` folders of OGRE 1.12.10, are now installed with gz-rendering in
+  `share/gz/gz-rendering/ogre/media`. The OGRE media installed on the system
+  is not used.
+
 * `OgreVisual::SetVisible` and `Ogre2Visual::SetVisible` no longer let Ogre
   cascade the visibility to child visuals. They call `SetVisible` on each
   child visual instead, so overrides such as `BaseArrowVisual::SetVisible`

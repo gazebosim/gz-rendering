@@ -386,3 +386,98 @@ TEST_F(ProjectorTest,
   // Clean up
   engine->DestroyScene(scene);
 }
+
+/////////////////////////////////////////////////
+// A projector with custom visibility flags can be destroyed and created
+// again with the same name.
+TEST_F(ProjectorTest,
+    GZ_UTILS_TEST_DISABLED_ON_WIN32(RecreateWithCustomVisibilityFlags))
+{
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  scene->SetBackgroundColor(0, 0, 0);
+  scene->SetAmbientLight(1, 1, 1);
+  VisualPtr root = scene->RootVisual();
+  ASSERT_NE(nullptr, root);
+
+  DirectionalLightPtr light = scene->CreateDirectionalLight();
+  light->SetDirection(0.0, 0.0, -1);
+  light->SetDiffuseColor(1.0, 1.0, 1.0);
+  root->AddChild(light);
+
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_NE(nullptr, camera);
+  camera->SetWorldPosition(0, 0, -2);
+  camera->SetWorldRotation(0, GZ_PI / 2.0, 0);
+  camera->SetVisibilityMask(0x01);
+  camera->SetImageWidth(64);
+  camera->SetImageHeight(64);
+  root->AddChild(camera);
+
+  VisualPtr wall = scene->CreateVisual();
+  wall->AddGeometry(scene->CreateBox());
+  wall->SetWorldPosition(0.0, 0.0, -5);
+  wall->SetLocalScale(10.0, 10.0, 1.0);
+  MaterialPtr green = scene->CreateMaterial();
+  green->SetAmbient(0.0, 1.0, 0.0);
+  green->SetDiffuse(0.0, 1.0, 0.0);
+  wall->SetMaterial(green);
+  root->AddChild(wall);
+
+  Image image = camera->CreateImage();
+  const unsigned int pixelCount = camera->ImageWidth() *
+      camera->ImageHeight();
+  const unsigned int bpp = PixelUtil::BytesPerPixel(camera->ImageFormat());
+  ASSERT_GT(pixelCount, 0u);
+  ASSERT_GT(bpp, 0u);
+
+  // capture two frames: ogre needs a frame to update the decal, and
+  // count the pixels that are predominantly red and green
+  unsigned int redCount = 0u;
+  unsigned int greenCount = 0u;
+  auto capture = [&]()
+  {
+    for (unsigned int i = 0; i < 2u; ++i)
+      camera->Capture(image);
+    const unsigned char *data = image.Data<unsigned char>();
+    redCount = 0u;
+    greenCount = 0u;
+    for (unsigned int i = 0; i < pixelCount * bpp; i += bpp)
+    {
+      unsigned int r = data[i];
+      unsigned int g = data[i + 1];
+      unsigned int b = data[i + 2];
+      if (r > g && r > b)
+        ++redCount;
+      else if (g > r && g > b)
+        ++greenCount;
+    }
+  };
+
+  std::string textureRed = common::joinPaths(
+      TEST_MEDIA_PATH, "materials", "textures", "red_texture.png");
+  for (unsigned int round = 0; round < 3u; ++round)
+  {
+    ProjectorPtr projector = scene->CreateProjector("projector");
+    ASSERT_NE(nullptr, projector) << round;
+    projector->SetNearClipPlane(1.0);
+    projector->SetFarClipPlane(6.0);
+    projector->SetTexture(textureRed);
+    projector->SetVisibilityFlags(0x01);
+    projector->SetWorldRotation(0, GZ_PI / 2.0, 0);
+    root->AddChild(projector);
+
+    capture();
+    EXPECT_EQ(pixelCount, redCount) << round;
+
+    scene->DestroyVisual(projector);
+    projector.reset();
+
+    capture();
+    EXPECT_EQ(0u, redCount) << round;
+    EXPECT_EQ(pixelCount, greenCount) << round;
+  }
+
+  // Clean up
+  engine->DestroyScene(scene);
+}

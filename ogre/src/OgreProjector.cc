@@ -242,6 +242,19 @@ OgreProjector::~OgreProjector()
   if (!this->Scene()->IsInitialized())
     return;
   this->SetEnabled(false);
+
+  // Stop the cameras from calling the listener, which is destroyed with
+  // this projector. A camera that was destroyed took its listeners with it.
+  Ogre::SceneManager *sceneMgr = this->scene->OgreSceneManager();
+  for (const auto &ogreCamIt : this->dataPtr->camerasWithListener)
+  {
+    if (!sceneMgr->hasCamera(ogreCamIt.second))
+      continue;
+    sceneMgr->getCamera(ogreCamIt.second)->getViewport()->getTarget()->
+        removeListener(&this->dataPtr->projector);
+  }
+  this->dataPtr->camerasWithListener.clear();
+
   this->dataPtr->projector.Destroy();
 }
 
@@ -334,6 +347,14 @@ void OgreProjectorListener::Init(Ogre::SceneNode *_parent,
 void OgreProjectorListener::Destroy()
 {
   this->RemoveDecalFromMaterials();
+
+  // The clones are only used by this listener. Remove them, or a projector
+  // created later with the same name fails to clone the materials again.
+  for (const auto &matCloneIt : this->matClones)
+  {
+    Ogre::MaterialManager::getSingleton().remove(
+        matCloneIt.second->getHandle());
+  }
 
   if (this->filterNode)
   {

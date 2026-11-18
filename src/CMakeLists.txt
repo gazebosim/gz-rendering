@@ -14,7 +14,7 @@ if (MSVC)
 endif()
 
 # Create the library target.
-gz_create_core_library(SOURCES ${sources})
+gz_create_core_library(SOURCES ${sources} CXX_STANDARD ${CMAKE_CXX_STANDARD})
 gz_add_get_install_prefix_impl(GET_INSTALL_PREFIX_FUNCTION gz::rendering::getInstallPrefix
                                GET_INSTALL_PREFIX_HEADER gz/rendering/InstallationDirectories.hh
                                OVERRIDE_INSTALL_PREFIX_ENV_VARIABLE GZ_RENDERING_INSTALL_PREFIX)

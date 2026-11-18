@@ -31,8 +31,10 @@
 // Environment variables:
 //   GZ_BBOX_BENCH_FRAMES  timed frames per configuration (default 30)
 //   GZ_BBOX_BENCH_CSV     if set, append results as CSV to this file
-//   GZ_BBOX_BENCH_QUICK   if set, only run a small subset (smoke test)
-//   GZ_BBOX_BENCH_FILTER  if set, only run configurations whose
+//   GZ_BBOX_BENCH_FULL    if set, run all configurations. By default only a
+//                         small subset runs (a smoke test, fast enough for
+//                         CI)
+//   GZ_BBOX_BENCH_FILTER  if set, run all configurations whose
 //                         "geometry/objects/WxH/type" contains this text,
 //                         e.g. "multilink4/1000/" or "/1280x720/visible2d"
 //   GZ_BBOX_BENCH_MOVE    if set, turn the camera slightly every frame, so
@@ -234,10 +236,11 @@ TEST_F(BoundingBoxCameraPerfTest, FrameTime)
     frames = std::max(1, std::stoi(value));
   std::string csvPath;
   utils::env("GZ_BBOX_BENCH_CSV", csvPath);
-  const bool quick = utils::env("GZ_BBOX_BENCH_QUICK", value);
-  const bool moveCamera = utils::env("GZ_BBOX_BENCH_MOVE", value);
   std::string filter;
   utils::env("GZ_BBOX_BENCH_FILTER", filter);
+  const bool quick =
+      !utils::env("GZ_BBOX_BENCH_FULL", value) && filter.empty();
+  const bool moveCamera = utils::env("GZ_BBOX_BENCH_MOVE", value);
   auto selected = [&filter](ObjectKind _g, int _count,
       unsigned int _w, unsigned int _h, BoundingBoxType _t)
   {

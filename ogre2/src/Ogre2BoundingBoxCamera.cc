@@ -32,10 +32,10 @@
 #include <OgreBitwise.h>
 #include <OgreDescriptorSetTexture.h>
 #include <OgreDescriptorSetUav.h>
-#include <OgreHlmsSamplerblock.h>
 #include <OgreHlmsCompute.h>
 #include <OgreHlmsComputeJob.h>
 #include <OgreHlmsManager.h>
+#include <OgreHlmsSamplerblock.h>
 #include <OgreRenderSystem.h>
 #include <OgreResourceTransition.h>
 #include <OgreShaderParams.h>
@@ -137,13 +137,15 @@ class gz::rendering::Ogre2BoundingBoxCameraPrivate
   public: std::vector<std::string> groupNames;
   public: std::vector<uint32_t> groupOrder;
 
+  /// \brief Cached vertex positions of a mesh, see LocalMeshPoints.
+  public: struct MeshPoints;
+
   /// \brief Vertex positions of a mesh, in the mesh's frame. Read back
   /// from the GPU the first time the mesh is used and reused afterwards,
   /// unless the mesh's vertices can change (dynamic buffers).
   /// \param[in] _mesh The mesh
   /// \return The positions of all vertices of the first LOD of all
   /// submeshes. Valid until the next call.
-  public: struct MeshPoints;
   public: const MeshPoints &LocalMeshPoints(Ogre::Mesh *_mesh);
 
   /// \brief Drop cached meshes that were not used in the last frame,
@@ -379,7 +381,10 @@ class gz::rendering::Ogre2BoundingBoxCameraPrivate
   /// for the indices in visibleIndices.
   public: std::vector<PixelBounds> pixelBounds;
 
-  /// \brief Indices visible in the last image, in order of appearance.
+  /// \brief Indices visible in the last image. The order depends on how
+  /// they were found (order of appearance in the image for the CPU scan,
+  /// increasing index for the GPU reduction); the boxes are sorted later,
+  /// in GroupByModel, so the output order doesn't depend on it.
   public: std::vector<uint32_t> visibleIndices;
 
   /// \brief Box of each visible item, before merging the items of a
@@ -1079,15 +1084,25 @@ void Ogre2BoundingBoxCameraPrivate::DispatchGpuReduce(uint32_t _width,
   Ogre::Root *root = engine->OgreRoot();
   Ogre::RenderSystem *renderSystem = root->getRenderSystem();
 
+  // The job is shared by all cameras: don't leave it pointing at our
+  // resources, which may be destroyed before it is used again.
+  auto clearSlots = [this]()
+  {
+    this->reduceJob->setTexture(0u,
+        Ogre::DescriptorSetTexture2::TextureSlot::makeEmpty(), nullptr,
+        false);
+    this->reduceJob->_setUavBuffer(0u,
+        Ogre::DescriptorSetUav::BufferSlot::makeEmpty());
+  };
+
   try
   {
     // (re)allocate the extents buffer, and clear it
     if (count > this->reduceCapacity)
     {
       this->DestroyGpuReduce();
-      this->reduceCapacity = std::max<size_t>(count, 256u);
-      this->reduceCapacity = std::max(this->reduceCapacity,
-          this->reduceCapacity * 3u / 2u);
+      // room to grow, so a few more objects don't reallocate every frame
+      this->reduceCapacity = std::max<size_t>(count * 3u / 2u, 256u);
       this->reduceBuffer = renderSystem->getVaoManager()->createUavBuffer(
           this->reduceCapacity * 4u, sizeof(uint32_t), 0u, nullptr, false);
       this->reduceZeros.assign(this->reduceCapacity * 4u, 0u);
@@ -1141,18 +1156,12 @@ void Ogre2BoundingBoxCameraPrivate::DispatchGpuReduce(uint32_t _width,
         Ogre::ResourceAccess::Read, 0u);
     renderSystem->executeResourceTransition(after);
 
-    // The job is shared by all cameras: don't leave it pointing at our
-    // resources, which may be destroyed before it is used again.
-    this->reduceJob->setTexture(0u,
-        Ogre::DescriptorSetTexture2::TextureSlot::makeEmpty(), nullptr,
-        false);
-    this->reduceJob->_setUavBuffer(0u,
-        Ogre::DescriptorSetUav::BufferSlot::makeEmpty());
-
+    clearSlots();
     this->gpuReduced = true;
   }
   catch (Ogre::Exception &e)
   {
+    clearSlots();
     gzwarn << "Bounding box camera: GPU reduction failed ("
            << e.getDescription() << "); using the CPU from now on."
            << std::endl;
@@ -1581,18 +1590,11 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
     Ogre::Vector3 size = item->getLocalAabb().getSize();
     size *= scale;
 
-    Ogre::Aabb aabb = item->getWorldAabb();
-
-    // filter the boxes outside the camera frustum
-    Ogre::AxisAlignedBox worldAabb;
-    worldAabb.setExtents(aabb.getMinimum(), aabb.getMaximum());
-    if (!this->dataPtr->ogreCamera->isVisible(worldAabb))
-      continue;
-
+    // No frustum check needed: the item has pixels in the image.
     BoundingBox box;
 
     // Position in world coord
-    Ogre::Vector3 position = worldAabb.getCenter();
+    Ogre::Vector3 position = item->getWorldAabb().mCenter;
 
     // Position in camera coord
     Ogre::Vector3 viewPosition = viewMatrix * position;
@@ -1665,13 +1667,7 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
     Ogre::Quaternion oreintation = node->_getDerivedOrientation();
     Ogre::Vector3 scale = node->_getDerivedScale();
 
-    Ogre::Aabb aabb = item->getWorldAabb();
-    Ogre::AxisAlignedBox worldAabb;
-    worldAabb.setExtents(aabb.getMinimum(), aabb.getMaximum());
-
-    // filter the boxes outside the camera frustum
-    if (!this->dataPtr->ogreCamera->isVisible(worldAabb))
-      continue;
+    // No frustum check needed: the item has pixels in the image.
 
     // Extent of the projected vertices. Reused from the last frame if
     // neither the item, its mesh nor the camera changed: same inputs, same
@@ -1683,7 +1679,7 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
     auto &extent = this->dataPtr->fullExtents[item->getId()];
     if (extent.lastUsed == 0 ||
         extent.generation != meshPoints.generation ||
-        std::memcmp(&extent.toClip, &toClip, sizeof(toClip)) != 0)
+        extent.toClip != toClip)
     {
       // The extreme points have the same convex hull as all points, so
       // they give the same extent, clipped or not.

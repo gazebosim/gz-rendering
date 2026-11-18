@@ -133,7 +133,7 @@ void Build3dBoxScene(rendering::ScenePtr scene)
 //////////////////////////////////////////////////
 TEST_F(BoundingBoxCameraTest, SimpleBoxes)
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);
@@ -199,7 +199,7 @@ TEST_F(BoundingBoxCameraTest, SimpleBoxes)
 //////////////////////////////////////////////////
 TEST_F(BoundingBoxCameraTest, OccludedBoxes)
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   // accepted error with +/- in pixels in comparing the box coordinates
   int marginError = 2;
@@ -305,7 +305,7 @@ TEST_F(BoundingBoxCameraTest, OccludedBoxes)
 //////////////////////////////////////////////////
 TEST_F(BoundingBoxCameraTest, Oriented3dBoxes)
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   gz::rendering::ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);

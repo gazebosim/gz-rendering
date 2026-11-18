@@ -52,6 +52,8 @@ const std::string fragmentShaderGLSL330File = "fragment_shader_330.glsl";
 const std::string vertexShaderMetalFile = "vertex_shader.metal";
 const std::string fragmentShaderMetalFile = "fragment_shader.metal";
 
+const std::string filamentMaterialFile = "custom_shader.mat";
+
 //! [init shaders variables]
 
 const std::string RESOURCE_PATH =
@@ -88,6 +90,12 @@ void buildScene(ScenePtr _scene,
       vertexShaderFile = vertexShaderGLSL330File;
       fragmentShaderFile = fragmentShaderGLSL330File;
     }
+  }
+  else if (_engineName == "filament")
+  {
+    // filament takes material definitions: one .mat for both stages
+    vertexShaderFile = filamentMaterialFile;
+    fragmentShaderFile = filamentMaterialFile;
   }
   else
   {

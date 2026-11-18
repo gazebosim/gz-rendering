@@ -1,0 +1,383 @@
+diff --git a/filament/include/filament/LightManager.h b/filament/include/filament/LightManager.h
+index 8e0fbeb6..fd772b7b 100644
+--- a/filament/include/filament/LightManager.h
++++ b/filament/include/filament/LightManager.h
+@@ -974,6 +974,34 @@ public:
+      */
+     float getFalloff(Instance i) const noexcept;
+ 
++    /**
++     * Scales the specular lobe of this light (1 by default), like a separate specular colour
++     * in fixed-function / OGRE lighting. Applies to the standard (lit) shading model.
++     *
++     * @param i     Instance of the component obtained from getInstance().
++     * @param scale specular scale, >= 0.
++     */
++    void setSpecularScale(Instance i, float scale) noexcept;
++
++    /** @return the specular scale of this light. */
++    float getSpecularScale(Instance i) const noexcept;
++
++    /**
++     * Replaces the physical inverse-square falloff of a point or spot light by
++     * 1 / (constant + linear * d + quadratic * d^2), cut off at the falloff radius (OGRE style).
++     * With fadeToFalloff it is also scaled by max(1 - d / falloff, 0). For spot lights the
++     * cone ramp is raised to spotExponent instead of being squared.
++     *
++     * @param i             Instance of the component obtained from getInstance().
++     * @param constant      constant term; <= 0 restores the physical falloff (default).
++     * @param linear        linear term (1/m).
++     * @param quadratic     quadratic term (1/m^2).
++     * @param fadeToFalloff fade linearly to zero at the falloff radius.
++     * @param spotExponent  exponent of the spot cone ramp.
++     */
++    void setPolynomialAttenuation(Instance i, float constant, float linear, float quadratic,
++            bool fadeToFalloff, float spotExponent) noexcept;
++
+     /**
+      * Dynamically updates a spot light's cone as angles
+      *
+diff --git a/filament/src/LightManager.cpp b/filament/src/LightManager.cpp
+index 62ba46f5..382c3000 100644
+--- a/filament/src/LightManager.cpp
++++ b/filament/src/LightManager.cpp
+@@ -106,6 +106,21 @@ float LightManager::getFalloff(Instance const i) const noexcept {
+     return downcast(this)->getFalloff(i);
+ }
+ 
++void LightManager::setSpecularScale(Instance const i, float const scale) noexcept {
++    downcast(this)->setSpecularScale(i, scale);
++}
++
++float LightManager::getSpecularScale(Instance const i) const noexcept {
++    return downcast(this)->getSpecularScale(i);
++}
++
++void LightManager::setPolynomialAttenuation(Instance const i, float const constant,
++        float const linear, float const quadratic, bool const fadeToFalloff,
++        float const spotExponent) noexcept {
++    downcast(this)->setPolynomialAttenuation(i,
++            { constant, linear, quadratic, spotExponent, fadeToFalloff });
++}
++
+ void LightManager::setSpotLightCone(Instance const i, float const inner, float const outer) noexcept {
+     downcast(this)->setSpotLightCone(i, inner, outer);
+ }
+diff --git a/filament/src/components/LightManager.cpp b/filament/src/components/LightManager.cpp
+index 24444116..93ffa2cc 100644
+--- a/filament/src/components/LightManager.cpp
++++ b/filament/src/components/LightManager.cpp
+@@ -204,6 +204,8 @@ void FLightManager::create(const Builder& builder, Entity const entity) {
+         lightType.lightCaster = builder->mCastLight;
+ 
+         mManager[i].channels = builder->mChannels;
++        mManager[i].specularScale = 1.0f;
++        mManager[i].polynomialAttenuation = {};
+ 
+         // set default values by calling the setters
+         setShadowOptions(i, builder->mShadowOptions);
+diff --git a/filament/src/components/LightManager.h b/filament/src/components/LightManager.h
+index 6ab41021..34aba508 100644
+--- a/filament/src/components/LightManager.h
++++ b/filament/src/components/LightManager.h
+@@ -140,6 +140,14 @@ public:
+         CANDELA     // intensity specified in candela (only applicable to punctual lights)
+     };
+ 
++    struct PolynomialAttenuation {  // patch 0004, constant <= 0: physical falloff
++        float constant = 0;
++        float linear = 0;
++        float quadratic = 0;
++        float spotExponent = 2;
++        bool fade = false;
++    };
++
+     struct ShadowParams { // TODO: get rid of this struct
+         ShadowOptions options;
+     };
+@@ -236,6 +244,22 @@ public:
+         return mManager[i].sunHaloFalloff;
+     }
+ 
++    void setSpecularScale(Instance const i, float const scale) noexcept {
++        if (i) mManager[i].specularScale = scale;
++    }
++
++    float getSpecularScale(Instance const i) const noexcept {
++        return mManager[i].specularScale;
++    }
++
++    void setPolynomialAttenuation(Instance const i, PolynomialAttenuation const& a) noexcept {
++        if (i) mManager[i].polynomialAttenuation = a;
++    }
++
++    PolynomialAttenuation const& getPolynomialAttenuation(Instance const i) const noexcept {
++        return mManager[i].polynomialAttenuation;
++    }
++
+     float getSquaredFalloffInv(Instance const i) const noexcept {
+         return mManager[i].squaredFallOffInv;
+     }
+@@ -298,6 +322,8 @@ private:
+         INTENSITY,
+         FALLOFF,
+         CHANNELS,
++        SPECULAR_SCALE,
++        POLYNOMIAL_ATTENUATION,
+     };
+ 
+     using Base = utils::SingleInstanceComponentManager<  // 120 bytes
+@@ -312,7 +338,9 @@ private:
+             float,          //  4
+             float,          //  4
+             float,          //  4
+-            uint8_t         //  1
++            uint8_t,        //  1
++            float,          //  4
++            PolynomialAttenuation // 20
+     >;
+ 
+     struct Sim : public Base {
+@@ -340,6 +368,8 @@ private:
+                 Field<INTENSITY>            intensity;
+                 Field<FALLOFF>              squaredFallOffInv;
+                 Field<CHANNELS>             channels;
++                Field<SPECULAR_SCALE>       specularScale;
++                Field<POLYNOMIAL_ATTENUATION> polynomialAttenuation;
+             };
+         };
+ 
+diff --git a/filament/src/details/Scene.cpp b/filament/src/details/Scene.cpp
+index 93af8b39..fb86313d 100644
+--- a/filament/src/details/Scene.cpp
++++ b/filament/src/details/Scene.cpp
+@@ -47,6 +47,7 @@
+ #include <utils/Range.h>
+ #include <utils/Slice.h>
+ 
++#include <math/half.h>
+ #include <math/mat3.h>
+ #include <math/mat4.h>
+ #include <math/vec2.h>
+@@ -721,17 +722,22 @@ void FScene::prepareDynamicLights(const CameraInfo& camera,
+     for (size_t i = DIRECTIONAL_LIGHTS_COUNT, c = size; i < c; ++i) {
+         const size_t gpuIndex = i - DIRECTIONAL_LIGHTS_COUNT;
+         auto const li = lcm.getInstance(entities[i]);
++        // polynomial attenuation is sent divided by its constant term (folded into intensity)
++        auto const& pa = lcm.getPolynomialAttenuation(li);
++        bool const poly = pa.constant > 0.0f;
++        float const invConstant = poly ? 1.0f / pa.constant : 1.0f;
+         lp[gpuIndex].positionFalloff      = { spheres[i].xyz, lcm.getSquaredFalloffInv(li) };
+         lp[gpuIndex].direction            = directions[i];
+-        lp[gpuIndex].reserved1            = {};
+-        lp[gpuIndex].colorIES             = { lcm.getColor(li), 0.0f };
++        lp[gpuIndex].attenuationLinear    = poly ? pa.linear * invConstant : 0.0f;
++        lp[gpuIndex].colorIES             = { lcm.getColor(li), lcm.getSpecularScale(li) };
+         lp[gpuIndex].spotScaleOffset      = lcm.getSpotParams(li).scaleOffset;
+-        lp[gpuIndex].reserved3            = {};
+-        lp[gpuIndex].intensity            = lcm.getIntensity(li);
++        lp[gpuIndex].attenuationQuadratic = poly ? pa.quadratic * invConstant : 0.0f;
++        lp[gpuIndex].intensity            = lcm.getIntensity(li) * invConstant;
+         lp[gpuIndex].typeShadow           = LightsUib::packTypeShadow(
+                 lcm.isPointLight(li) ? 0u : 1u,
+                 shadowInfo[i].contactShadows,
+-                shadowInfo[i].index);
++                shadowInfo[i].index) | (poly ? LightsUib::packPolynomial(pa.fade,
++                        getBits(math::half(pa.spotExponent))) : 0u);
+         lp[gpuIndex].channels             = LightsUib::packChannels(
+                 lcm.getLightChannels(li),
+                 shadowInfo[i].castsShadows);
+diff --git a/filament/src/ds/ColorPassDescriptorSet.cpp b/filament/src/ds/ColorPassDescriptorSet.cpp
+index 37a83337..72391bd6 100644
+--- a/filament/src/ds/ColorPassDescriptorSet.cpp
++++ b/filament/src/ds/ColorPassDescriptorSet.cpp
+@@ -324,6 +324,7 @@ void ColorPassDescriptorSet::prepareDirectionalLight(FEngine& engine,
+ 
+         s.lightDirection = l;
+         s.lightColorIntensity = colorIntensity;
++        s.lightSpecularScale = lcm.getSpecularScale(directionalLight);
+         s.lightChannels = lcm.getLightChannels(directionalLight);
+ 
+         const bool isSun = lcm.isSunLight(directionalLight);
+diff --git a/libs/filabridge/include/filament/MaterialEnums.h b/libs/filabridge/include/filament/MaterialEnums.h
+index 38f372b6..5b78b479 100644
+--- a/libs/filabridge/include/filament/MaterialEnums.h
++++ b/libs/filabridge/include/filament/MaterialEnums.h
+@@ -31,7 +31,7 @@
+ namespace filament {
+ 
+ // update this when a new version of filament wouldn't work with older materials
+-static constexpr size_t MATERIAL_VERSION = 79;
++static constexpr size_t MATERIAL_VERSION = 80; // local patch 0004 (79 + per-light specular scale)
+ 
+ // Those are the api levels that are used in the source material file (.mat)
+ //
+diff --git a/libs/filabridge/include/private/filament/UibStructs.h b/libs/filabridge/include/private/filament/UibStructs.h
+index 8dee29d9..8504da68 100644
+--- a/libs/filabridge/include/private/filament/UibStructs.h
++++ b/libs/filabridge/include/private/filament/UibStructs.h
+@@ -140,7 +140,7 @@ struct PerViewUib { // NOLINT(cppcoreguidelines-pro-type-member-init)
+     // Directional Lighting (controlled via dynamic specialization constants)
+     // --------------------------------------------------------------------------------------------
+     math::float3 lightDirection;                // directional light direction
+-    float padding0;
++    float lightSpecularScale;                   // directional light specular lobe scale
+     math::float4 lightColorIntensity;           // directional light
+     math::float4 sun;                           // cos(sunAngle), sin(sunAngle), 1/(sunAngle*HALO_SIZE-sunAngle), HALO_EXP
+     math::float2 shadowFarAttenuationParams;    // a, a/far (a=1/pct-of-far)
+@@ -290,17 +290,21 @@ struct LightsUib { // NOLINT(cppcoreguidelines-pro-type-member-init)
+     static constexpr std::string_view _name{ "LightsUniforms" };
+     math::float4 positionFalloff;     // { float3(pos), 1/falloff^2 }
+     math::float3 direction;           // dir
+-    float reserved1;                  // 0
+-    math::half4 colorIES;             // { half3(col),  IES index   }
++    float attenuationLinear;          // polynomial attenuation: linear / constant
++    math::half4 colorIES;             // { half3(col),  specular scale }
+     math::float2 spotScaleOffset;     // { scale, offset }
+-    float reserved3;                  // 0
++    float attenuationQuadratic;       // polynomial attenuation: quadratic / constant
+     float intensity;                  // float
+-    uint32_t typeShadow;              // 0x00.00.ii.ct (t: 0=point, 1=spot, c:contact, ii: index)
++    uint32_t typeShadow;              // 0xEEEE.ii.ct (t: 0=point, 1=spot, c: contact | 2: polynomial
++                                      // attenuation | 4: fade to falloff, ii: index, EEEE: half spot exponent)
+     uint32_t channels;                // 0x000c00ll (ll: light channels, c: caster)
+ 
+     static uint32_t packTypeShadow(uint8_t type, bool contactShadow, uint8_t index) noexcept {
+         return (type & 0xF) | (contactShadow ? 0x10 : 0x00) | (index << 8);
+     }
++    static uint32_t packPolynomial(bool fade, uint16_t spotExponentHalf) noexcept {
++        return 0x20 | (fade ? 0x40 : 0x00) | (uint32_t(spotExponentHalf) << 16);
++    }
+     static uint32_t packChannels(uint8_t lightChannels, bool castShadows) noexcept {
+         return lightChannels | (castShadows ? 0x10000 : 0);
+     }
+diff --git a/libs/filamat/src/shaders/UibGenerator.cpp b/libs/filamat/src/shaders/UibGenerator.cpp
+index 59bacb8c..2951b034 100644
+--- a/libs/filamat/src/shaders/UibGenerator.cpp
++++ b/libs/filamat/src/shaders/UibGenerator.cpp
+@@ -160,7 +160,7 @@ BufferInterfaceBlock const& UibGenerator::getPerViewUib() noexcept  {
+             // Directional Lighting (controlled via dynamic specialization constants)
+             // ------------------------------------------------------------------------------------
+             { "lightDirection",         0, Type::FLOAT3, Precision::HIGH },
+-            { "padding0",               0, Type::FLOAT                   },
++            { "lightSpecularScale",     0, Type::FLOAT, Precision::HIGH  },
+             { "lightColorIntensity",    0, Type::FLOAT4, Precision::DEFAULT },
+             { "sun",                    0, Type::FLOAT4, Precision::DEFAULT },
+             { "shadowFarAttenuationParams", 0, Type::FLOAT2, Precision::HIGH },
+diff --git a/shaders/src/surface_light_directional.fs b/shaders/src/surface_light_directional.fs
+index b2eb5d6d..5ba79065 100644
+--- a/shaders/src/surface_light_directional.fs
++++ b/shaders/src/surface_light_directional.fs
+@@ -26,6 +26,7 @@ Light getDirectionalLight() {
+     light.colorIntensity = frameUniforms.lightColorIntensity;
+     light.l = sampleSunAreaLight(frameUniforms.lightDirection);
+     light.attenuation = 1.0;
++    light.specularScale = frameUniforms.lightSpecularScale;
+     light.NoL = saturate(dot(shading_normal, light.l));
+     light.channels = frameUniforms.lightChannels & 0xFF;
+     return light;
+@@ -127,6 +128,7 @@ void evaluateExtraDirectionalLights(const MaterialInputs material,
+             light.colorIntensity = frameUniforms.extraLightColorIntensity[i];
+             light.l = frameUniforms.extraLightDirection[i].xyz;
+             light.attenuation = 1.0;
++            light.specularScale = 1.0; // not carried for extra directional lights
+             light.NoL = saturate(dot(shading_normal, light.l));
+             // the channel mask fits in 8 bits, so the float conversion is exact
+             light.channels = int(frameUniforms.extraLightDirection[i].w);
+diff --git a/shaders/src/surface_light_punctual.fs b/shaders/src/surface_light_punctual.fs
+index 9435c000..1c5933e3 100644
+--- a/shaders/src/surface_light_punctual.fs
++++ b/shaders/src/surface_light_punctual.fs
+@@ -108,6 +108,29 @@ float getDistanceAttenuation(const highp vec3 posToLight, float falloff) {
+     return attenuation / max(distanceSquare, 1e-4);
+ }
+ 
++// 1 / (1 + linear * d + quadratic * d^2) (coefficients and intensity pre-divided by the constant
++// term), zero past the falloff radius, optionally faded linearly to it (patch 0004)
++highp float getPolynomialAttenuation(const highp vec3 posToLight, const highp float falloff,
++        const highp vec2 linearQuadratic, const bool fade) {
++    highp float distanceSquare = dot(posToLight, posToLight);
++    highp float d = sqrt(distanceSquare);
++    highp float attenuation = distanceSquare * falloff <= 1.0 ?
++            1.0 / (1.0 + (linearQuadratic.x + linearQuadratic.y * d) * d) : 0.0;
++    if (fade) {
++        attenuation *= max(1.0 - d * sqrt(falloff), 0.0);
++    }
++    highp vec3 v = getWorldPosition() - getWorldCameraPosition();
++    attenuation *= saturate(frameUniforms.lightFarAttenuationParams.x - dot(v, v) * frameUniforms.lightFarAttenuationParams.y);
++    return attenuation;
++}
++
++// cone ramp raised to an exponent, zero outside the outer cone (patch 0004)
++highp float getAngleAttenuationExponent(const highp vec3 lightDir, const highp vec3 l,
++        const highp vec2 scaleOffset, const highp float exponent) {
++    highp float ramp = dot(lightDir, l) * scaleOffset.x + scaleOffset.y;
++    return ramp >= 0.0 ? pow(min(ramp, 1.0), exponent) : 0.0;
++}
++
+ float getAngleAttenuation(const highp vec3 lightDir, const highp vec3 l, const highp vec2 scaleOffset) {
+     float cd = dot(lightDir, l);
+     float attenuation = saturate(cd * scaleOffset.x + scaleOffset.y);
+@@ -148,7 +171,14 @@ Light getLight(const uint lightIndex) {
+     light.colorIntensity.rgb = colorIES.rgb;
+     light.colorIntensity.w = computePreExposedIntensity(intensity, frameUniforms.exposure);
+     light.l = normalize(posToLight);
+-    light.attenuation = getDistanceAttenuation(posToLight, positionFalloff.w);
++    light.specularScale = colorIES.w;
++    bool polynomial = bool(typeShadow & 0x20u);
++    if (polynomial) {
++        light.attenuation = getPolynomialAttenuation(posToLight, positionFalloff.w,
++                vec2(data[1].w, data[3][0]), bool(typeShadow & 0x40u));
++    } else {
++        light.attenuation = getDistanceAttenuation(posToLight, positionFalloff.w);
++    }
+     light.direction = direction;
+     light.NoL = saturate(dot(shading_normal, light.l));
+     light.worldPosition = positionFalloff.xyz;
+@@ -165,7 +195,12 @@ Light getLight(const uint lightIndex) {
+         }
+ #endif
+         if (light.lightType == LIGHT_TYPE_SPOT) {
+-            light.attenuation *= getAngleAttenuation(-direction, light.l, scaleOffset);
++            if (polynomial) {
++                light.attenuation *= getAngleAttenuationExponent(-direction, light.l, scaleOffset,
++                        unpackHalf2x16(typeShadow >> 16u).x);
++            } else {
++                light.attenuation *= getAngleAttenuation(-direction, light.l, scaleOffset);
++            }
+         }
+     }
+ #endif
+diff --git a/shaders/src/surface_lighting.fs b/shaders/src/surface_lighting.fs
+index 3ff47330..3b896d93 100644
+--- a/shaders/src/surface_lighting.fs
++++ b/shaders/src/surface_lighting.fs
+@@ -2,6 +2,7 @@ struct Light {
+     vec4 colorIntensity;  // rgb, pre-exposed intensity
+     vec3 l;
+     float attenuation;
++    highp float specularScale; // scales the specular lobe (patch 0004)
+     highp vec3 worldPosition;
+     float NoL;
+     highp vec3 direction;
+diff --git a/shaders/src/surface_shading_model_standard.fs b/shaders/src/surface_shading_model_standard.fs
+index d65304e0..8fd6da9b 100644
+--- a/shaders/src/surface_shading_model_standard.fs
++++ b/shaders/src/surface_shading_model_standard.fs
+@@ -134,6 +134,7 @@ vec3 surfaceShading(const PixelParams pixel, const Light light, float occlusion)
+     secondFr *= pixel.secondEnergyCompensation;
+     Fr = mix(Fr, secondFr, pixel.secondRoughnessWeight);
+ #endif
++    Fr *= light.specularScale;
+ 
+     vec3 Fd = diffuseLobe(pixel, NoV, NoL, LoH);
+ #if defined(MATERIAL_HAS_REFRACTION)
+@@ -157,7 +158,7 @@ vec3 surfaceShading(const PixelParams pixel, const Light light, float occlusion)
+ 
+ #if defined(MATERIAL_HAS_CLEAR_COAT)
+     float Fcc;
+-    float clearCoat = clearCoatLobe(pixel, h, NoH, LoH, Fcc);
++    float clearCoat = clearCoatLobe(pixel, h, NoH, LoH, Fcc) * light.specularScale;
+     float attenuation = 1.0 - Fcc;
+ 
+ #if defined(MATERIAL_HAS_NORMAL) || defined(MATERIAL_HAS_CLEAR_COAT_NORMAL)

@@ -1,0 +1,15 @@
+// Depth only, no color: the hidden surface of a wireframe mesh, so its back
+// edges are hidden like with ogre2's wireframe polygon mode (back faces
+// culled). Pushed back by a polygon offset so the front edges stay visible.
+material {
+    name : gz_depth_only,
+    shadingModel : unlit,
+    colorWrite : false,
+    depthWrite : true
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+    }
+}

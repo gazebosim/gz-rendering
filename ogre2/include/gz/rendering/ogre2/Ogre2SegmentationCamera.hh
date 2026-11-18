@@ -116,6 +116,10 @@ namespace gz
 
       /// \brief Make scene our friend so it can create a camera
       private: friend class Ogre2Scene;
+
+      /// \brief Make the material switcher our friend so it can assign
+      /// the colors of the labels
+      private: friend class Ogre2SegmentationMaterialSwitcher;
     };
     }
   }

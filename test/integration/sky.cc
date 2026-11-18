@@ -17,12 +17,15 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdlib>
+
 #include "CommonRenderingTest.hh"
 
 #include <gz/common/Image.hh>
 
 #include "gz/rendering/Camera.hh"
 #include "gz/rendering/Image.hh"
+#include "gz/rendering/Material.hh"
 #include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/Scene.hh"
 #include "gz/rendering/WideAngleCamera.hh"
@@ -39,7 +42,7 @@ class SkyTest: public CommonRenderingTest
 /////////////////////////////////////////////////
 TEST_F(SkyTest, Sky)
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   // add resources in build dir
   engine->AddResourcePath(
@@ -121,9 +124,51 @@ TEST_F(SkyTest, Sky)
 }
 
 /////////////////////////////////////////////////
+TEST_F(SkyTest, CustomCubemap)
+{
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
+
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_NE(nullptr, camera);
+  camera->SetImageWidth(100);
+  camera->SetImageHeight(100);
+  scene->RootVisual()->AddChild(camera);
+
+  // default sky
+  scene->SetSkyEnabled(true);
+  Image image = camera->CreateImage();
+  camera->Capture(image);
+
+  // the sky's cube map is the environment map of the material
+  // "Default/skybox" (e.g. SDF <sky><cubemap_uri>); ogre2 made it above
+  MaterialPtr skyMat = scene->Material("Default/skybox");
+  if (!skyMat)
+    skyMat = scene->CreateMaterial("Default/skybox");
+  ASSERT_NE(nullptr, skyMat);
+  skyMat->SetEnvironmentMap(common::joinPaths(
+      std::string(PROJECT_SOURCE_PATH), "examples", "ogre2_demo", "media",
+      "fort_point.dds"));
+  scene->SetSkyEnabled(false);
+  scene->SetSkyEnabled(true);
+  Image imageCustom = camera->CreateImage();
+  camera->Capture(imageCustom);
+
+  const unsigned char *data = image.Data<unsigned char>();
+  const unsigned char *dataCustom = imageCustom.Data<unsigned char>();
+  double diff = 0.0;
+  for (unsigned int i = 0; i < image.MemorySize(); ++i)
+    diff += std::abs(data[i] - dataCustom[i]);
+  EXPECT_GT(diff / image.MemorySize(), 10.0);
+
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
 TEST_F(SkyTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCamera))
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   // add resources in build dir
   engine->AddResourcePath(

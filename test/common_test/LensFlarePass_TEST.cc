@@ -33,7 +33,7 @@ class LensFlarePassTest : public CommonRenderingTest
 /////////////////////////////////////////////////
 TEST_F(LensFlarePassTest, LensFlare)
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
   CHECK_RENDERPASS_SUPPORTED();
 
   // get the render pass system

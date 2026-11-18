@@ -94,7 +94,7 @@ TEST_F(RenderTargetTest, RenderWindow)
 TEST_F(RenderTargetTest, AddRemoveRenderPass)
 {
   CHECK_RENDERPASS_SUPPORTED();
-  CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre", "ogre2", "filament");
 
   ScenePtr scene = engine->CreateScene("scene");
 

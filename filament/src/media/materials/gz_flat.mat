@@ -1,0 +1,28 @@
+// Flat color, no lighting: label colors for the segmentation camera. Meant
+// for a linear (non-sRGB) target with post-processing off, so the value is
+// written as is.
+material {
+    name : gz_flat,
+    shadingModel : unlit,
+    requires : [ uv0 ],
+    blending : opaque,
+    depthWrite : true,
+    parameters : [
+        { type : float3, name : color },
+        { type : sampler2d, name : alphaMap, precision : high },
+        { type : float, name : alphaThreshold, precision : high }
+    ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        // alpha tested meshes (FilamentSubMesh::ApplyInstance): ogre2's
+        // sensor passes keep the alpha test. Threshold 0 keeps everything.
+        if (texture(materialParams_alphaMap, getUV0()).a <
+                materialParams.alphaThreshold) {
+            discard;
+        }
+        material.baseColor = vec4(materialParams.color, 1.0);
+    }
+}

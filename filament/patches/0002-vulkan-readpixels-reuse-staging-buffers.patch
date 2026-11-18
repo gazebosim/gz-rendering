@@ -1,0 +1,177 @@
+diff --git a/filament/backend/src/vulkan/VulkanReadPixels.cpp b/filament/backend/src/vulkan/VulkanReadPixels.cpp
+index 1c7be9eb..06408782 100644
+--- a/filament/backend/src/vulkan/VulkanReadPixels.cpp
++++ b/filament/backend/src/vulkan/VulkanReadPixels.cpp
+@@ -62,6 +62,11 @@ void VulkanReadPixels::terminate() noexcept {
+     // Every task retired its request above, so gc() collected all of them. Anything left would
+     // outlive the ResourceManager and release its image reference far too late.
+     assert_invariant(mInFlightRequests.empty());
++    for (FreeStaging const& staging: mFreeStaging) {
++        vkDestroyBuffer(mDevice, staging.buffer, VKALLOC);
++        vkFreeMemory(mDevice, staging.memory, VKALLOC);
++    }
++    mFreeStaging.clear();
+ 
+     vkDestroyCommandPool(mDevice, mCommandPool, VKALLOC);
+     mCommandPool = VK_NULL_HANDLE;
+@@ -96,8 +101,14 @@ void VulkanReadPixels::gc() {
+         if (UTILS_UNLIKELY(pos == mInFlightRequests.end())) {
+             continue;
+         }
+-        vkDestroyBuffer(mDevice, pos->stagingBuffer, VKALLOC);
+-        vkFreeMemory(mDevice, pos->stagingMemory, VKALLOC);
++        // Keep the staging buffer for the next readback; drop the oldest past the cap.
++        mFreeStaging.push_back({ pos->stagingBuffer, pos->stagingMemory, pos->stagingSize,
++                pos->hostCached });
++        if (mFreeStaging.size() > MAX_FREE_STAGING) {
++            vkDestroyBuffer(mDevice, mFreeStaging.front().buffer, VKALLOC);
++            vkFreeMemory(mDevice, mFreeStaging.front().memory, VKALLOC);
++            mFreeStaging.erase(mFreeStaging.begin());
++        }
+         vkDestroyFence(mDevice, pos->fence, VKALLOC);
+         vkFreeCommandBuffers(mDevice, mCommandPool, 1, &pos->cmdbuffer);
+         // This releases our reference to the source image, possibly destroying the VkImage. It is
+@@ -222,50 +233,67 @@ void VulkanReadPixels::run(fvkmemory::resource_ptr<VulkanTexture> srcTexture, ui
+     VkMemoryRequirements memReqs;
+ 
+     uint32_t const stagingSize = width * height * bpp * samples;
+-    VkBufferCreateInfo bufferInfo = {
+-        .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+-        .size = stagingSize,
+-        .usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+-    };
+-    // TODO: we could now allocate from VulkanStagePool/VulkanBufferCache: the staging buffer is
+-    // created and destroyed on the backend thread, the handler thread only maps it.
+-    vkCreateBuffer(device, &bufferInfo, VKALLOC, &stagingBuffer);
+-    vkGetBufferMemoryRequirements(device, stagingBuffer, &memReqs);
++    VkDeviceMemory stagingMemory = VK_NULL_HANDLE;
++    bool hostCachedStaging = true;
++
++    // Reuse the smallest free staging buffer that fits.
++    auto reuse = mFreeStaging.end();
++    for (auto it = mFreeStaging.begin(); it != mFreeStaging.end(); ++it) {
++        if (it->size >= stagingSize && (reuse == mFreeStaging.end() || it->size < reuse->size)) {
++            reuse = it;
++        }
++    }
++    VkDeviceSize stagingCapacity = stagingSize;
++    if (reuse != mFreeStaging.end()) {
++        stagingBuffer = reuse->buffer;
++        stagingMemory = reuse->memory;
++        stagingCapacity = reuse->size;
++        hostCachedStaging = reuse->hostCached;
++        mFreeStaging.erase(reuse);
++    } else {
++        VkBufferCreateInfo bufferInfo = {
++            .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
++            .size = stagingSize,
++            .usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
++        };
++        // TODO: we could now allocate from VulkanStagePool/VulkanBufferCache: the staging buffer is
++        // created and destroyed on the backend thread, the handler thread only maps it.
++        vkCreateBuffer(device, &bufferInfo, VKALLOC, &stagingBuffer);
++        vkGetBufferMemoryRequirements(device, stagingBuffer, &memReqs);
+ 
+ #if FVK_ENABLED(FVK_DEBUG_READ_PIXELS)
+-    FVK_LOGD << "readPixels created staging area buffer"
+-             << " to copy from image=" << srcTexture->getVkImage()
+-             << " src-layout=" << srcTexture->getLayout(level, layer);
++        FVK_LOGD << "readPixels created staging area buffer"
++                 << " to copy from image=" << srcTexture->getVkImage()
++                 << " src-layout=" << srcTexture->getLayout(level, layer);
+ #endif
+ 
+-    VkDeviceMemory stagingMemory;
+ 
+-    uint32_t memoryTypeIndex = mContext.selectMemoryType(memReqs.memoryTypeBits,
+-            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |
+-                    VK_MEMORY_PROPERTY_HOST_CACHED_BIT);
+-    bool hostCachedStaging = true;
++        uint32_t memoryTypeIndex = mContext.selectMemoryType(memReqs.memoryTypeBits,
++                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT |
++                        VK_MEMORY_PROPERTY_HOST_CACHED_BIT);
+ 
+-    // If VK_MEMORY_PROPERTY_HOST_CACHED_BIT is not supported, we try only
+-    // HOST_VISIBLE+HOST_COHERENT.  HOST_CACHED helps a lot with readpixels performance.
+-    if (memoryTypeIndex >= VK_MAX_MEMORY_TYPES) {
+-        memoryTypeIndex = mContext.selectMemoryType(memReqs.memoryTypeBits,
+-                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+-        hostCachedStaging = false;
+-        FVK_LOGW << "readPixels: VK_MEMORY_PROPERTY_HOST_CACHED_BIT is not available; "
+-                    "reshaping through a cached bounce copy";
+-    }
++        // If VK_MEMORY_PROPERTY_HOST_CACHED_BIT is not supported, we try only
++        // HOST_VISIBLE+HOST_COHERENT.  HOST_CACHED helps a lot with readpixels performance.
++        if (memoryTypeIndex >= VK_MAX_MEMORY_TYPES) {
++            memoryTypeIndex = mContext.selectMemoryType(memReqs.memoryTypeBits,
++                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
++            hostCachedStaging = false;
++            FVK_LOGW << "readPixels: VK_MEMORY_PROPERTY_HOST_CACHED_BIT is not available; "
++                        "reshaping through a cached bounce copy";
++        }
+ 
+-    FILAMENT_CHECK_POSTCONDITION(memoryTypeIndex < VK_MAX_MEMORY_TYPES)
+-            << "VulkanReadPixels: unable to find a memory type that meets requirements.";
++        FILAMENT_CHECK_POSTCONDITION(memoryTypeIndex < VK_MAX_MEMORY_TYPES)
++                << "VulkanReadPixels: unable to find a memory type that meets requirements.";
+ 
+-    VkMemoryAllocateInfo const allocInfo = {
+-        .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+-        .allocationSize = memReqs.size,
+-        .memoryTypeIndex = memoryTypeIndex,
+-    };
++        VkMemoryAllocateInfo const allocInfo = {
++            .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
++            .allocationSize = memReqs.size,
++            .memoryTypeIndex = memoryTypeIndex,
++        };
+ 
+-    vkAllocateMemory(device, &allocInfo, VKALLOC, &stagingMemory);
+-    vkBindBufferMemory(device, stagingBuffer, stagingMemory, 0);
++        vkAllocateMemory(device, &allocInfo, VKALLOC, &stagingMemory);
++        vkBindBufferMemory(device, stagingBuffer, stagingMemory, 0);
++    }
+ 
+     VkCommandBuffer cmdbuffer;
+     VkCommandBufferAllocateInfo const allocateInfo = {
+@@ -368,6 +396,8 @@ void VulkanReadPixels::run(fvkmemory::resource_ptr<VulkanTexture> srcTexture, ui
+         .stagingMemory = stagingMemory,
+         .fence = readCompleteFence,
+         .cmdbuffer = cmdbuffer,
++        .stagingSize = stagingCapacity,
++        .hostCached = hostCachedStaging,
+         .srcTexture = std::move(srcTexture),
+     });
+ 
+diff --git a/filament/backend/src/vulkan/VulkanReadPixels.h b/filament/backend/src/vulkan/VulkanReadPixels.h
+index d732ecc3..d0069b75 100644
+--- a/filament/backend/src/vulkan/VulkanReadPixels.h
++++ b/filament/backend/src/vulkan/VulkanReadPixels.h
+@@ -91,6 +91,9 @@ private:
+         VkDeviceMemory stagingMemory = VK_NULL_HANDLE;
+         VkFence fence = VK_NULL_HANDLE;
+         VkCommandBuffer cmdbuffer = VK_NULL_HANDLE;
++        // Staging buffer size and memory kind, so gc() can recycle it.
++        VkDeviceSize stagingSize = 0;
++        bool hostCached = true;
+         // Nothing else keeps the source image alive while the copy is in flight: `run()`'s argument
+         // dies when it returns, and, unlike the command buffers recorded through
+         // VulkanCommandBuffer, ours does not acquire() the resources it references. Dropping this
+@@ -118,6 +121,17 @@ private:
+     // The readbacks that have been submitted but not collected yet. Backend thread only.
+     std::vector<Request> mInFlightRequests;
+ 
++    // Staging buffers of collected requests, reused by run() instead of allocating device memory
++    // for every readback (which costs milliseconds on some drivers). Backend thread only.
++    struct FreeStaging {
++        VkBuffer buffer;
++        VkDeviceMemory memory;
++        VkDeviceSize size;
++        bool hostCached;
++    };
++    std::vector<FreeStaging> mFreeStaging;
++    static constexpr size_t MAX_FREE_STAGING = 8;
++
+     utils::Mutex mRetiredFencesMutex;
+     std::vector<VkFence> mRetiredFences UTILS_GUARDED_BY(mRetiredFencesMutex);
+ 

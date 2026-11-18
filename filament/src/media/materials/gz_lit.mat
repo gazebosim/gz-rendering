@@ -1,0 +1,90 @@
+// gz-rendering default lit material: diffuse color (optionally textured),
+// roughness/metallic workflow, and ogre2's (Ogre PBS) texture maps.
+material {
+    name : gz_lit,
+    shadingModel : lit,
+    requires : [ uv0, uv1 ],
+    parameters : [
+        { type : float4,    name : baseColor },
+        { type : float,     name : roughness },
+        { type : float,     name : metallic },
+        // gz specular (grey): scales the whole specular lobe like ogre2's
+        // Rs * kS, F0 (0.03 * specular, Ogre's dielectric F0) and grazing
+        // F90 alike
+        { type : float,     name : specular },
+        { type : int,       name : hasTexture },
+        { type : sampler2d, name : baseColorMap },
+        // bit i set: map i is bound (normal, roughness, metalness,
+        // emissive, light, environment)
+        { type : int,       name : mapFlags },
+        { type : int,       name : lightMapUvSet },
+        { type : float3,    name : emissive },
+        { type : float3,    name : emissiveMapTint },
+        // highest mip level of environmentMap
+        { type : float,     name : environmentMapLod },
+        { type : sampler2d, name : normalMap },
+        { type : sampler2d, name : roughnessMap },
+        { type : sampler2d, name : metalnessMap },
+        { type : sampler2d, name : emissiveMap },
+        { type : sampler2d, name : lightMap },
+        { type : samplerCubemap, name : environmentMap }
+    ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        int flags = materialParams.mapFlags;
+        highp vec2 uv = getUV0();
+        if ((flags & 1) != 0) {
+            // tangent space normal, z rebuilt from xy like Ogre
+            vec2 xy = texture(materialParams_normalMap, uv).xy * 2.0 - 1.0;
+            material.normal = vec3(xy, sqrt(max(1.0 - dot(xy, xy), 0.0)));
+        }
+        prepareMaterial(material);
+        vec4 c = materialParams.baseColor;
+        if (materialParams.hasTexture != 0) {
+            c *= texture(materialParams_baseColorMap, uv);
+        }
+        material.baseColor = c;
+#if defined(BLEND_MODE_TRANSPARENT)
+        // gz_lit_transparent: blending expects premultiplied alpha
+        material.baseColor.rgb *= c.a;
+#endif
+        float roughness = materialParams.roughness;
+        if ((flags & 2) != 0) {
+            roughness *= texture(materialParams_roughnessMap, uv).r;
+        }
+        float metallic = materialParams.metallic;
+        if ((flags & 4) != 0) {
+            metallic *= texture(materialParams_metalnessMap, uv).r;
+        }
+        material.roughness = roughness;
+        material.metallic = metallic;
+        material.specularFactor = materialParams.specular;
+        // 0.75: filament's default dielectric F0 0.04 -> Ogre PBS's 0.03
+        material.specularColorFactor = vec3(0.75);
+
+        vec3 emissive = materialParams.emissive;
+        if ((flags & 8) != 0) {
+            emissive = materialParams.emissiveMapTint *
+                texture(materialParams_emissiveMap, uv).rgb;
+        }
+        if ((flags & 16) != 0) {
+            // ogre2 puts the light map in the emissive slot, modulated by
+            // its diffuse term (the diffuse color over pi)
+            highp vec2 luv = materialParams.lightMapUvSet == 1 ? getUV1() : uv;
+            emissive = materialParams.emissiveMapTint * (1.0 - metallic) *
+                c.rgb * (1.0 / PI) * texture(materialParams_lightMap, luv).rgb;
+        }
+        if ((flags & 32) != 0) {
+            // reflection cube map (Ogre's PBSM_REFLECTION): prefiltered by
+            // mip level, weighted by the specular color at normal incidence
+            float lod = roughness * materialParams.environmentMapLod;
+            vec3 env = textureLod(materialParams_environmentMap,
+                shading_reflected, lod).rgb;
+            vec3 f0 = mix(vec3(0.04), c.rgb, metallic);
+            emissive += env * f0;
+        }
+        material.emissive = vec4(emissive, 0.0);
+    }
+}

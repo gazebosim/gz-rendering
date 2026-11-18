@@ -364,67 +364,8 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
   uint8_t * _labelBuffer) const
 {
   GZ_PROFILE("Ogre2SegmentationCamera::LabelMapFromColoredBuffer");
-  if (!this->isColoredMap)
-    return;
-
-  if (!this->dataPtr->buffer)
-    return;
-
-  auto colorToLabel = this->dataPtr->materialSwitcher->ColorToLabel();
-
-  auto width = this->ImageWidth();
-  auto height = this->ImageHeight();
-
-  for (uint32_t i = 0; i < height; ++i)
-  {
-    for (uint32_t j = 0; j < width; ++j)
-    {
-      auto index = (i * width + j) * 3;
-      auto r = this->dataPtr->buffer[index];
-      auto g = this->dataPtr->buffer[index + 1];
-      auto b = this->dataPtr->buffer[index + 2];
-
-      // get color 24 bit unique id, we don't multiply it by 255 like before
-      // as they are not normalized we read it from the buffer in
-      // range [0-255] already
-      int64_t colorId = r * 256 * 256 + g * 256 + b;
-
-      // initialize the pixel with the background label value
-      _labelBuffer[index] = this->backgroundLabel;
-      _labelBuffer[index + 1] = this->backgroundLabel;
-      _labelBuffer[index + 2] = this->backgroundLabel;
-
-      // skip if not exist
-      auto it = colorToLabel.find(colorId);
-      if (it == colorToLabel.end())
-        continue;
-
-      int64_t label = it->second;
-
-      if (this->type == SegmentationType::ST_SEMANTIC)
-      {
-        uint8_t label8bit = label % 256;
-
-        _labelBuffer[index] = label8bit;
-        _labelBuffer[index + 1] = label8bit;
-        _labelBuffer[index + 2] = label8bit;
-      }
-      else if (this->type == SegmentationType::ST_PANOPTIC)
-      {
-        // get the label and instance counts from the composite label id
-        uint8_t label8bit = label / (256 * 256);
-        // get the rest 16 bit
-        uint16_t instanceCount = label % (256 * 256);
-        // composite that 16 bit count to two 8 bit channels
-        uint8_t instanceCount1 = instanceCount / 256;
-        uint8_t instanceCount2 = instanceCount % 256;
-
-        _labelBuffer[index + 2] = label8bit;
-        _labelBuffer[index + 1] = instanceCount1;
-        _labelBuffer[index] = instanceCount2;
-      }
-    }
-  }
+  BaseSegmentationCamera::LabelMapFromColoredBuffer(
+    this->dataPtr->buffer, _labelBuffer);
 }
 
 //////////////////////////////////////////////////

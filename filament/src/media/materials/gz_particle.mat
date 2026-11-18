@@ -1,0 +1,37 @@
+// Particle billboards: each vertex carries the particle center (position)
+// and its corner offset in camera right / up units (custom0), so every view
+// sees the quads facing it, like ogre2's point billboards. The vertex color is
+// the particle's color over its lifetime (rgba, white without a color image).
+material {
+    name : gz_particle,
+    shadingModel : unlit,
+    blending : transparent,
+    culling : none,
+    requires : [ uv0, color, custom0 ],
+    parameters : [
+        { type : float4,    name : baseColor },
+        { type : int,       name : hasTexture },
+        { type : sampler2d, name : baseColorMap }
+    ]
+}
+
+vertex {
+    void materialVertex(inout MaterialVertexInputs material) {
+        vec2 c = getCustom0().xy;
+        mat4 viewToWorld = getWorldFromViewMatrix();
+        material.worldPosition.xyz +=
+            viewToWorld[0].xyz * c.x + viewToWorld[1].xyz * c.y;
+    }
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        vec4 c = materialParams.baseColor * getColor();
+        if (materialParams.hasTexture != 0) {
+            c *= texture(materialParams_baseColorMap, getUV0());
+        }
+        // transparent blending expects premultiplied alpha
+        material.baseColor = vec4(c.rgb * c.a, c.a);
+    }
+}

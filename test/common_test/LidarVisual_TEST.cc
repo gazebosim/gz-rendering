@@ -32,7 +32,7 @@ class LidarVisualTest : public CommonRenderingTest
 /////////////////////////////////////////////////
 TEST_F(LidarVisualTest, LidarVisual)
 {
-  CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre", "ogre2", "filament");
 
   // check scene creation
   ScenePtr scene = engine->CreateScene("scene");

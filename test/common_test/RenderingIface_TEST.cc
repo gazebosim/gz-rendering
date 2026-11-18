@@ -40,6 +40,12 @@ static bool kHaveOgre2 = true;
 static bool kHaveOgre2 = false;
 #endif
 
+#if GZ_RENDERING_HAVE_FILAMENT
+static bool kHaveFilament = true;
+#else
+static bool kHaveFilament = false;
+#endif
+
 #if GZ_RENDERING_HAVE_OPTIX
 static bool kHaveOptix = true;
 #else
@@ -55,6 +61,7 @@ unsigned int defaultEnginesForTest()
   count += kHaveOgre;
   count += kHaveOgre2;
   count += kHaveOptix;
+  count += kHaveFilament;
   return count;
 }
 

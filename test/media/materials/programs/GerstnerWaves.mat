@@ -1,0 +1,121 @@
+// Filament port of GerstnerWaves_vs_330.glsl + GerstnerWaves_fs_330.glsl, for
+// the filament render engine: pass this file as both vertex and fragment
+// shader. Same parameters; camera_position_object_space and
+// worldviewproj_matrix come from filament's built-ins instead. Works in world
+// space rather than object space (no non-uniform scale on the visual).
+material {
+    name : gz_gerstner_waves,
+    shadingModel : unlit,
+    culling : none,
+    // the GLSL writes alpha 0.9, which ogre2 blends over the background
+    blending : transparent,
+    requires : [ uv0 ],
+    parameters : [
+        { type : int,    name : Nwaves },
+        { type : float,  name : rescale },
+        { type : float2, name : bumpScale },
+        { type : float2, name : bumpSpeed },
+        { type : float,  name : "t" },
+        { type : float3, name : amplitude },
+        { type : float3, name : wavenumber },
+        { type : float3, name : omega },
+        { type : float3, name : steepness },
+        { type : float2, name : dir0 },
+        { type : float2, name : dir1 },
+        { type : float2, name : dir2 },
+        { type : float,  name : tau },
+        { type : float4, name : deepColor },
+        { type : float4, name : shallowColor },
+        { type : float,  name : fresnelPower },
+        { type : float,  name : hdrMultiplier },
+        { type : sampler2d,      name : bumpMap },
+        { type : samplerCubemap, name : cubeMap }
+    ],
+    // columns of the surface to world rotation, the eye vector in their w
+    variables : [
+        { name : rotB, precision : high },
+        { name : rotT, precision : high },
+        { name : rotN, precision : high },
+        bumpCoord
+    ]
+}
+
+vertex {
+    void materialVertex(inout MaterialVertexInputs material) {
+        float k[3] = float[3](materialParams.wavenumber.x,
+            materialParams.wavenumber.y, materialParams.wavenumber.z);
+        float amp[3] = float[3](materialParams.amplitude.x,
+            materialParams.amplitude.y, materialParams.amplitude.z);
+        float om[3] = float[3](materialParams.omega.x, materialParams.omega.y,
+            materialParams.omega.z);
+        float st[3] = float[3](materialParams.steepness.x,
+            materialParams.steepness.y, materialParams.steepness.z);
+        vec2 dir[3] = vec2[3](materialParams.dir0, materialParams.dir1,
+            materialParams.dir2);
+        float t = materialParams.t;
+
+        vec4 P = getPosition();
+        vec3 B = vec3(1.0, 0.0, 0.0);
+        vec3 T = vec3(0.0, 1.0, 0.0);
+        vec3 N = vec3(0.0, 0.0, 1.0);
+        for (int i = 0; i < min(materialParams.Nwaves, 3); ++i) {
+            float a = amp[i] * (1.0 - exp(-1.0 * t / materialParams.tau));
+            float q = st[i];
+            float dx = dir[i].x;
+            float dy = dir[i].y;
+            float theta = dot(dir[i], P.xy) * k[i] - t * om[i];
+            float c = cos(theta);
+            float s = sin(theta);
+            // same displacement as the GLSL version (incl. its P.y term)
+            P.x -= q * a * dx * s;
+            P.y -= q * a * dx * s;
+            P.z += a * c;
+            float ka = a * k[i];
+            float qkac = q * ka * c;
+            float kas = ka * s;
+            float dxy = dx * dy;
+            B += vec3(-qkac * dx * dx, -qkac * dxy, -kas * dx);
+            T += vec3(-qkac * dxy, -qkac * dy * dy, -kas * dy);
+            N += vec3(dx * kas, dy * kas, -qkac);
+        }
+        mat4 model = getWorldFromModelMatrix();
+        mat3 rot = mat3(model);
+        B = rot * normalize(B) * materialParams.rescale;
+        T = rot * normalize(T) * materialParams.rescale;
+        N = rot * normalize(N);
+
+        material.worldPosition = model * vec4(P.xyz, 1.0);
+        vec3 eye = material.worldPosition.xyz - getWorldCameraPosition();
+        material.rotB = vec4(B, eye.x);
+        material.rotT = vec4(T, eye.y);
+        material.rotN = vec4(N, eye.z);
+        material.bumpCoord = vec4(material.uv0 * materialParams.bumpScale +
+            t * materialParams.bumpSpeed, 0.0, 0.0);
+    }
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        mat3 rot = mat3(variable_rotB.xyz, variable_rotT.xyz,
+            variable_rotN.xyz);
+        vec3 eye = vec3(variable_rotB.w, variable_rotT.w, variable_rotN.w);
+        vec4 bump = texture(materialParams_bumpMap, variable_bumpCoord.xy) *
+            2.0 - 1.0;
+        vec3 N = normalize(rot * bump.xyz);
+        vec3 E = normalize(eye);
+        vec3 R = reflect(E, N);
+        // the engine converts cube maps from Ogre's convention: no z flip
+        vec4 envColor = texture(materialParams_cubeMap, R);
+        envColor.rgb *= (envColor.r + envColor.g + envColor.b) *
+            materialParams.hdrMultiplier;
+        float facing = 1.0 - dot(-E, N);
+        float waterEnvRatio = clamp(pow(facing, materialParams.fresnelPower),
+            0.0, 1.0);
+        vec4 waterColor = mix(materialParams.shallowColor,
+            materialParams.deepColor, facing);
+        // premultiplied, as filament's transparent blending expects
+        material.baseColor = vec4(mix(waterColor, envColor,
+            waterEnvRatio).rgb * 0.9, 0.9);
+    }
+}

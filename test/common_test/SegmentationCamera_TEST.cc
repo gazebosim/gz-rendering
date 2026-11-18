@@ -32,7 +32,7 @@ class SegmentationCameraTest : public CommonRenderingTest
 /////////////////////////////////////////////////
 TEST_F(SegmentationCameraTest, SegmentationCamera)
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);

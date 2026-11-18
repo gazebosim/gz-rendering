@@ -116,7 +116,7 @@ TEST_F(RayQueryTest, RayQuery)
 /////////////////////////////////////////////////
 TEST_F(RayQueryTest, RayOriginInsideObjectBounds)
 {
-  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre2", "filament");
 
   ScenePtr scene = engine->CreateScene("scene");
   ASSERT_NE(nullptr, scene);

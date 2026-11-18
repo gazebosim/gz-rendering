@@ -1,0 +1,50 @@
+// Projector (screen space decal), drawn as a fullscreen triangle in device
+// (clip) space over a color attachment, with premultiplied alpha blending.
+// Every pixel's world position is rebuilt from the scene depth; the texture
+// shows where it falls inside the projector's box (unitFromWorld maps the
+// box to [-0.5, 0.5]^3, X along the projection, Y to the left, Z up) and is
+// upright when seen from the projector (textures are uploaded bottom row
+// first, v up).
+material {
+    name : gz_projector,
+    shadingModel : unlit,
+    blending : transparent,
+    depthWrite : false,
+    depthCulling : false,
+    culling : none,
+    vertexDomain : device,
+    parameters : [
+        { type : sampler2d, name : depthIn, precision : high },
+        { type : sampler2d, name : decalMap, precision : high },
+        { type : mat4, name : invViewProj, precision : high },
+        { type : mat4, name : unitFromWorld, precision : high }
+    ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        material.baseColor = vec4(0.0);
+        highp ivec2 px = ivec2(gl_FragCoord.xy);
+        highp float d = texelFetch(materialParams_depthIn, px, 0).r;
+        // filament's depth buffer is reversed: 1 at the near plane, cleared
+        // to 0 (nothing drawn there)
+        if (d <= 0.0) {
+            return;
+        }
+        // the viewport coordinate has its origin at the bottom left on every
+        // backend, like OpenGL clip space
+        highp vec2 vp = getNormalizedViewportCoord().xy;
+        highp vec4 world = materialParams.invViewProj *
+            vec4(vp * 2.0 - 1.0, 1.0 - 2.0 * d, 1.0);
+        world /= world.w;
+        highp vec3 box = (materialParams.unitFromWorld *
+            vec4(world.xyz, 1.0)).xyz;
+        if (abs(box.x) > 0.5 || abs(box.y) > 0.5 || abs(box.z) > 0.5) {
+            return;
+        }
+        highp vec4 t = textureLod(materialParams_decalMap,
+            vec2(0.5 - box.y, 0.5 + box.z), 0.0);
+        material.baseColor = vec4(t.rgb * t.a, t.a);
+    }
+}

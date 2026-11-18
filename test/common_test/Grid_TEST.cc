@@ -32,7 +32,7 @@ class GridTest : public CommonRenderingTest
 /////////////////////////////////////////////////
 TEST_F(GridTest, Grid)
 {
-  CHECK_SUPPORTED_ENGINE("ogre", "ogre2");
+  CHECK_SUPPORTED_ENGINE("ogre", "ogre2", "filament");
 
   ScenePtr scene = engine->CreateScene("scene");
 

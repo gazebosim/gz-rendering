@@ -1,0 +1,30 @@
+// gz-rendering material with lighting disabled: flat color / texture.
+material {
+    name : gz_unlit,
+    shadingModel : unlit,
+    requires : [ uv0 ],
+    parameters : [
+        { type : float4,    name : baseColor },
+        { type : int,       name : hasTexture },
+        { type : sampler2d, name : baseColorMap },
+        { type : sampler2d, name : alphaMap, precision : high },
+        { type : float, name : alphaThreshold, precision : high }
+    ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        // alpha tested meshes (FilamentSubMesh::ApplyInstance): ogre2's
+        // sensor passes keep the alpha test. Threshold 0 keeps everything.
+        if (texture(materialParams_alphaMap, getUV0()).a <
+                materialParams.alphaThreshold) {
+            discard;
+        }
+        vec4 c = materialParams.baseColor;
+        if (materialParams.hasTexture != 0) {
+            c *= texture(materialParams_baseColorMap, getUV0());
+        }
+        material.baseColor = c;
+    }
+}

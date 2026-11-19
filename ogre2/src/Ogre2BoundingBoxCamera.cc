@@ -15,13 +15,33 @@
  *
  */
 
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
 #include <limits>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <variant>
+#include <vector>
 
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:5033)
 #endif
 #include <OgreBitwise.h>
+#include <OgreDescriptorSetTexture.h>
+#include <OgreDescriptorSetUav.h>
+#include <OgreHlmsCompute.h>
+#include <OgreHlmsComputeJob.h>
+#include <OgreHlmsManager.h>
+#include <OgreHlmsSamplerblock.h>
+#include <OgreRenderSystem.h>
+#include <OgreResourceTransition.h>
+#include <OgreShaderParams.h>
+#include <Vao/OgreAsyncTicket.h>
+#include <Vao/OgreUavBufferPacked.h>
+#include <Vao/OgreVaoManager.h>
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -30,6 +50,7 @@
 #include <gz/common/Profiler.hh>
 
 #include <gz/math/Color.hh>
+#include <gz/math/Vector3.hh>
 #include <gz/math/Vector4.hh>
 #include <gz/math/eigen3/Util.hh>
 #include <gz/math/Matrix4.hh>
@@ -37,10 +58,13 @@
 
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Utils.hh"
+#include "gz/rendering/Visual.hh"
 #include "gz/rendering/ogre2/Ogre2BoundingBoxCamera.hh"
 #include "gz/rendering/ogre2/Ogre2Camera.hh"
 #include "gz/rendering/ogre2/Ogre2Conversions.hh"
+#include "gz/rendering/ogre2/Ogre2Geometry.hh"
 #include "gz/rendering/ogre2/Ogre2Includes.hh"
+#include "gz/rendering/ogre2/Ogre2ParticleEmitter.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
@@ -48,24 +72,176 @@
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 
 #include "Ogre2BoundingBoxMaterialSwitcher.hh"
+#include "Ogre2GpuReadbackTicket.hh"
 
 using namespace gz;
 using namespace rendering;
 
 class gz::rendering::Ogre2BoundingBoxCameraPrivate
 {
-  /// \brief Merge a vector of 2D boxes. Used in multi-links model.
-  /// \param[in] _boxes Vector of 2D boxes
+  /// \brief Merge 2D boxes. Used in multi-links model.
+  /// \param[in] _boxes 2D boxes
   /// \return Merged bounding box
   public: BoundingBox MergeBoxes2D(
-    const std::vector<std::shared_ptr<BoundingBox>> &_boxes);
+    const std::vector<const BoundingBox *> &_boxes) const;
 
-  /// \brief Get the 3d vertices (in world coord.) of the item's that
-  /// belongs to the same parent (only used in multi-links models)
-  /// \param[in] _ogreIds vector of ogre ids that belongs to the same model
-  /// \param[out] _vertices vector of 3d vertices of the item
-  public: void MeshVertices(const std::vector<uint32_t> &_ogreIds,
+  /// \brief Get the 3d vertices (in camera coord.) of items that
+  /// belong to the same model (only used in multi-links models)
+  /// \param[in] _items The items
+  /// \param[out] _vertices vector of 3d vertices of the items
+  public: void MeshVertices(const std::vector<Ogre::Item *> &_items,
               std::vector<math::Vector3d> &_vertices);
+
+  /// \brief Find the labeled, visible items of a model, whether they are
+  /// occluded or not.
+  /// \param[in] _node The model, or one of its descendants
+  /// \param[in] _mask The camera's visibility mask
+  /// \param[out] _items The items found are added here
+  public: static void ModelItems(const Node *_node, uint32_t _mask,
+              std::vector<Ogre::Item *> &_items);
+
+  /// \brief Find the extent, in pixels, of each index in an image rendered
+  /// by the material switcher. Fills pixelBounds and visibleIndices.
+  /// \param[in] _data First pixel of the image
+  /// \param[in] _bytesPerRow Bytes between the start of two rows
+  /// \param[in] _bytesPerPixel Bytes per pixel (3 or 4); the first 3 bytes
+  /// of a pixel hold the index.
+  /// \param[in] _width Image width
+  /// \param[in] _height Image height
+  public: void ScanIndexImage(const uint8_t *_data, size_t _bytesPerRow,
+              unsigned int _bytesPerPixel, unsigned int _width,
+              unsigned int _height);
+
+  /// \brief Group indexBoxes by model, in output order: models sorted by
+  /// name, in descending order, and items of a model by ogre id. Fills
+  /// groupedPositions and groupRanges.
+  public: void GroupByModel();
+
+  /// \brief Positions in indexBoxes, grouped by model (see GroupByModel).
+  public: std::vector<uint32_t> groupedPositions;
+
+  /// \brief [begin, end) of each model's group in groupedPositions, in
+  /// output order.
+  public: std::vector<std::pair<uint32_t, uint32_t>> groupRanges;
+
+  /// \brief Scratch buffers of GroupByModel, kept to avoid allocating
+  /// every frame.
+  public: struct GroupKey
+  {
+    unsigned int modelId;
+    Ogre::IdType itemId;
+    uint32_t position;
+  };
+  public: std::vector<GroupKey> groupKeys;
+  public: std::vector<std::pair<uint32_t, uint32_t>> unsortedRanges;
+  public: std::vector<std::string> groupNames;
+  public: std::vector<uint32_t> groupOrder;
+
+  /// \brief Cached vertex positions of a mesh, see LocalMeshPoints.
+  public: struct MeshPoints;
+
+  /// \brief Vertex positions of a mesh, in the mesh's frame. Read back
+  /// from the GPU the first time the mesh is used and reused afterwards,
+  /// unless the mesh's vertices can change (dynamic buffers).
+  /// \param[in] _mesh The mesh
+  /// \return The positions of all vertices of the first LOD of all
+  /// submeshes. Valid until the next call.
+  public: const MeshPoints &LocalMeshPoints(Ogre::Mesh *_mesh);
+
+  /// \brief Drop cached meshes that were not used in the last frame,
+  /// once there are many of them.
+  public: void PruneMeshCache();
+
+  /// \brief Cached vertex positions of a mesh, see LocalMeshPoints.
+  public: struct MeshPoints
+  {
+    /// \brief Handle of the mesh. Handles are never reused, so this tells
+    /// a mesh apart from a later one allocated at the same address.
+    Ogre::ResourceHandle handle{0};
+
+    /// \brief Position buffer of each submesh when the points were read,
+    /// to notice if the mesh's buffers are replaced.
+    std::vector<const Ogre::VertexBufferPacked *> buffers;
+
+    /// \brief Vertex positions, in the mesh's frame.
+    std::vector<Ogre::Vector3> points;
+
+    /// \brief The points that can be the extreme of a projection: points,
+    /// without the ones strictly inside their convex hull (see
+    /// ExtremePoints). Used for full 2D boxes.
+    std::vector<Ogre::Vector3> extremePoints;
+
+    /// \brief Last frame the mesh was used in.
+    uint64_t lastUsed{0};
+
+    /// \brief Changes every time the points are read, and is unique across
+    /// meshes: equal generations mean equal points.
+    uint64_t generation{0};
+  };
+
+  /// \brief Remove points that can't be the extreme of any projection:
+  /// those strictly inside the convex hull of the others. Exact, but not
+  /// minimal: the hull used is the hull of the extreme points along 26
+  /// directions, which is inside the true hull.
+  /// \param[in] _points The points
+  /// \param[out] _out The points that are kept
+  public: static void ExtremePoints(const std::vector<Ogre::Vector3> &_points,
+              std::vector<Ogre::Vector3> &_out);
+
+  /// \brief Source of MeshPoints::generation.
+  public: uint64_t nextGeneration{1};
+
+  /// \brief Extent of points projected with a matrix.
+  /// \param[in] _toClip Points to clip space
+  /// \param[in] _points The points
+  /// \param[out] _min Minimum x/w, y/w and z
+  /// \param[out] _max Maximum x/w, y/w and z
+  /// \return False if a point is behind the near plane: the extent is then
+  /// wrong, use ClippedExtent instead.
+  public: static bool ProjectedExtent(const Ogre::Matrix4 &_toClip,
+              const std::vector<Ogre::Vector3> &_points,
+              Ogre::Vector3 &_min, Ogre::Vector3 &_max);
+
+  /// \brief Extent of the convex hull of points, projected with a matrix,
+  /// keeping only the part in front of the near plane.
+  /// \param[in] _toClip Points to clip space
+  /// \param[in] _points The points
+  /// \param[out] _min Minimum x/w, y/w and z. Greater than _max if no part
+  /// is in front of the near plane.
+  /// \param[out] _max Maximum x/w, y/w and z
+  public: static void ClippedExtent(const Ogre::Matrix4 &_toClip,
+              const std::vector<Ogre::Vector3> &_points,
+              Ogre::Vector3 &_min, Ogre::Vector3 &_max);
+
+  /// \brief Full 2D extent of an item in the last frame it was seen, to
+  /// reuse while neither the item nor the camera move.
+  public: struct FullExtent
+  {
+    /// \brief Item to clip space matrix the extent was computed with.
+    Ogre::Matrix4 toClip;
+
+    /// \brief MeshPoints::generation of the points it was computed from.
+    uint64_t generation{0};
+
+    /// \brief The extent, see ProjectedExtent.
+    Ogre::Vector3 min;
+    Ogre::Vector3 max;
+
+    /// \brief Last frame the item was seen in.
+    uint64_t lastUsed{0};
+  };
+
+  /// \brief Full extents, keyed by Ogre item id (never reused).
+  public: std::unordered_map<Ogre::IdType, FullExtent> fullExtents;
+
+  /// \brief Mesh cache, see LocalMeshPoints.
+  public: std::unordered_map<const Ogre::Mesh *, MeshPoints> meshCache;
+
+  /// \brief Scratch buffer of LocalMeshPoints.
+  public: std::vector<const Ogre::VertexBufferPacked *> meshBuffers;
+
+  /// \brief Number of frames processed so far.
+  public: uint64_t frame{0};
 
   /// \brief Add a line to the viewport. If the line's endpoints are not inside
   /// the viewport, the added line will be a clipped line that fits in the
@@ -121,11 +297,66 @@ class gz::rendering::Ogre2BoundingBoxCameraPrivate
   /// \brief Pointer to the ogre camera
   public: Ogre::Camera *ogreCamera{nullptr};
 
+  /// \brief Definition of the scene pass, to set its visibility mask.
+  public: Ogre::CompositorPassSceneDef *scenePassDef{nullptr};
+
+  /// \brief Set what the scene pass renders: what the camera's visibility
+  /// mask allows, except particles.
+  /// \param[in] _mask The camera's visibility mask
+  public: void UpdateVisibilityMask(uint32_t _mask);
+
   /// \brief Texture to create the render texture from.
   public: Ogre::TextureGpu *ogreRenderTexture {nullptr};
 
-  /// \brief Buffer to store render texture data & to be sent to listeners
-  public: uint8_t *buffer = nullptr;
+  /// \brief Persistent GPU->CPU readback of the render texture.
+  public: Ogre2GpuReadbackTicket readback;
+
+  /// \brief The render texture, read back and mapped during PostRender.
+  /// Null outside PostRender.
+  public: Ogre::TextureBox mapped;
+
+  /// \brief Whether pixelBounds and visibleIndices are up to date for this
+  /// frame (computed on the GPU, or already scanned).
+  public: bool boundsValid{false};
+
+  /// \brief Find the extent of each index on the GPU (see
+  /// BoundingBoxReduce_cs.glsl) instead of reading the image back and
+  /// scanning it. Decided when the render texture is created.
+  public: bool gpuReduce{false};
+
+  /// \brief Whether the GPU reduction was dispatched this frame.
+  public: bool gpuReduced{false};
+
+  /// \brief Compute job of the GPU reduction, shared by all cameras.
+  public: Ogre::HlmsComputeJob *reduceJob{nullptr};
+
+  /// \brief Extents written by the GPU reduction, 4 uint32 per index.
+  public: Ogre::UavBufferPacked *reduceBuffer{nullptr};
+
+  /// \brief Number of indices reduceBuffer can hold.
+  public: size_t reduceCapacity{0};
+
+  /// \brief Zeros, to clear reduceBuffer every frame.
+  public: std::vector<uint32_t> reduceZeros;
+
+  /// \brief Number of indices dispatched this frame.
+  public: size_t reduceCount{0};
+
+  /// \brief Whether the GPU reduction can be used. Sets up the compute job.
+  /// \return False to use the CPU scan.
+  public: bool InitGpuReduce();
+
+  /// \brief Dispatch the GPU reduction on the rendered index image.
+  /// \param[in] _width Image width
+  /// \param[in] _height Image height
+  public: void DispatchGpuReduce(uint32_t _width, uint32_t _height);
+
+  /// \brief Read the GPU reduction back into pixelBounds and
+  /// visibleIndices.
+  public: void ReadGpuReduce();
+
+  /// \brief Release the GPU reduction buffer.
+  public: void DestroyGpuReduce();
 
   /// \brief Dummy render texture to set image dims
   public: Ogre2RenderTexturePtr dummyTexture {nullptr};
@@ -137,31 +368,28 @@ class gz::rendering::Ogre2BoundingBoxCameraPrivate
   /// \brief Image / Render Texture Format
   public: Ogre::PixelFormatGpu format = Ogre::PFG_RGBA8_UNORM;
 
-  /// \brief map ogreId id to bounding box
-  /// Key: ogreId, value: bounding box contains max & min boundaries
-  public: std::map<uint32_t, std::shared_ptr<BoundingBox>> boundingboxes;
+  /// \brief Extent, in pixels, of an index in the rendered image.
+  public: struct PixelBounds
+  {
+    uint32_t minX;
+    uint32_t minY;
+    uint32_t maxX;
+    uint32_t maxY;
+  };
 
-  /// \brief Keep track of the visible bounding boxes (used in filtering)
-  /// Key: ogreId, value: label id
-  public: std::map<uint32_t, uint32_t> visibleBoxesLabel;
+  /// \brief Extent of each index in the last image, by index. Only valid
+  /// for the indices in visibleIndices.
+  public: std::vector<PixelBounds> pixelBounds;
 
-  /// \brief Map parent name of the visual to the boxes in it to merge them.
-  /// Used in multi-link models, as each parent contains many boxes in it.
-  /// Key: parent name, value: vector of boxes that belongs to that model.
-  public: std::map<std::string, std::vector<std::shared_ptr<BoundingBox>>>
-      parentNameToBoxes;
+  /// \brief Indices visible in the last image. The order depends on how
+  /// they were found (order of appearance in the image for the CPU scan,
+  /// increasing index for the GPU reduction); the boxes are sorted later,
+  /// in GroupByModel, so the output order doesn't depend on it.
+  public: std::vector<uint32_t> visibleIndices;
 
-  /// \brief Keep track of the visible bounding boxes (used in filtering)
-  /// Key: parent name, value: vector of ogre ids of it's children
-  public: std::map<std::string, std::vector<uint32_t>> parentNameToOgreIds;
-
-  /// \brief The ogre item's 3d vertices from the vao(used in multi-link models)
-  /// Key: ogre id, value: vector of it's 3d vertices(pointcloud or mesh points)
-  public: std::map<uint32_t, std::vector<math::Vector3d>> itemVertices;
-
-  /// \brief Map ogre id to Ogre::Item (used in multi-link models)
-  /// Key: ogre id, value: ogre item pointer
-  public: std::map<uint32_t, Ogre::Item *> ogreIdToItem;
+  /// \brief Box of each visible item, before merging the items of a
+  /// model. First: the item's index; second: its box.
+  public: std::vector<std::pair<uint32_t, BoundingBox>> indexBoxes;
 
   /// \brief Output bounding boxes to notify listeners
   public: std::vector<BoundingBox> outputBoxes;
@@ -408,11 +636,8 @@ void Ogre2BoundingBoxCamera::Destroy()
 {
   this->RemoveAllRenderPasses();
 
-  if (this->dataPtr->buffer)
-  {
-    delete [] this->dataPtr->buffer;
-    this->dataPtr->buffer = nullptr;
-  }
+  this->dataPtr->readback.Destroy();
+  this->dataPtr->DestroyGpuReduce();
 
   if (!this->dataPtr->ogreCamera)
     return;
@@ -495,6 +720,7 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
   auto ogreRoot = engine->OgreRoot();
   Ogre::TextureGpuManager *textureMgr =
       ogreRoot->getRenderSystem()->getTextureGpuManager();
+  this->dataPtr->gpuReduce = this->dataPtr->InitGpuReduce();
   this->dataPtr->ogreRenderTexture =
       textureMgr->createOrRetrieveTexture(this->Name() + "_boundingbox_cam",
       Ogre::GpuPageOutStrategy::SaveToSystemRam,
@@ -530,9 +756,8 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
   this->dataPtr->workspaceDefinition = "BoundingBoxCameraWorkspace_" +
     this->Name();
 
-  float background = static_cast<float>(
-      this->dataPtr->materialSwitcher->backgroundLabel);
-  auto backgroundColor = Ogre::ColourValue(background, background, background);
+  // index 0 is the background
+  auto backgroundColor = Ogre::ColourValue(0.0f, 0.0f, 0.0f, 1.0f);
 
   // basic workspace consist of clear pass with the givin color &
   // a render scene pass to the givin render texture
@@ -540,6 +765,43 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
     this->dataPtr->workspaceDefinition,
     backgroundColor
     );
+
+  // Find the scene pass, to set what it renders every frame
+  this->dataPtr->scenePassDef = nullptr;
+  Ogre::CompositorWorkspaceDef *workspaceDef =
+      ogreCompositorManager->getWorkspaceDefinitionNoThrow(
+      this->dataPtr->workspaceDefinition);
+  if (workspaceDef)
+  {
+    for (const auto &[alias, nodeName] : workspaceDef->getNodeAliasMap())
+    {
+      Ogre::CompositorNodeDef *nodeDef =
+          ogreCompositorManager->getNodeDefinitionNonConst(nodeName);
+      for (size_t t = 0; t < nodeDef->getNumTargetPasses(); ++t)
+      {
+        for (Ogre::CompositorPassDef *pass :
+             nodeDef->getTargetPass(t)->getCompositorPassesNonConst())
+        {
+          if (pass->getType() == Ogre::PASS_SCENE)
+          {
+            this->dataPtr->scenePassDef =
+                static_cast<Ogre::CompositorPassSceneDef *>(pass);
+          }
+        }
+      }
+    }
+  }
+  if (!this->dataPtr->scenePassDef)
+  {
+    gzerr << "Bounding box camera: scene pass not found" << std::endl;
+    return;
+  }
+  // Objects are drawn in flat colors: no lights needed. Setting up lights
+  // (Forward+ light culling) was most of the cost of the pass in small
+  // scenes.
+  this->dataPtr->scenePassDef->mEnableForwardPlus = false;
+  this->dataPtr->scenePassDef->setLightVisibilityMask(0u);
+  this->dataPtr->UpdateVisibilityMask(this->VisibilityMask());
 
   // connect the compositor with the render texture to render the final output
   this->dataPtr->ogreCompositorWorkspace =
@@ -550,6 +812,18 @@ void Ogre2BoundingBoxCamera::CreateBoundingBoxTexture()
       this->dataPtr->workspaceDefinition,
       false
     );
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCameraPrivate::UpdateVisibilityMask(uint32_t _mask)
+{
+  // Particles are not objects, and their materials can't draw an object
+  // index: leave them out.
+  if (this->scenePassDef)
+  {
+    this->scenePassDef->setVisibilityMask(
+        _mask & ~Ogre2ParticleEmitter::kParticleVisibilityFlags);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -567,8 +841,11 @@ void Ogre2BoundingBoxCamera::Render()
     return;
   }
 
-  // update the compositors
-  this->scene->StartRendering(nullptr);
+  this->dataPtr->UpdateVisibilityMask(this->VisibilityMask());
+
+  // update the compositors; heightmaps are updated for this camera's view,
+  // otherwise they aren't drawn
+  this->scene->StartRendering(this->dataPtr->ogreCamera);
 
   this->dataPtr->ogreCompositorWorkspace->_validateFinalTarget();
   this->dataPtr->ogreCompositorWorkspace->_beginUpdate(false);
@@ -578,6 +855,14 @@ void Ogre2BoundingBoxCamera::Render()
   Ogre::vector<Ogre::TextureGpu *>::type swappedTargets;
   swappedTargets.reserve(2u);
   this->dataPtr->ogreCompositorWorkspace->_swapFinalTarget(swappedTargets);
+
+  // find the boxes' extents on the GPU, if someone is listening
+  this->dataPtr->gpuReduced = false;
+  if (this->dataPtr->gpuReduce &&
+      this->dataPtr->newBoundingBoxes.ConnectionCount() > 0)
+  {
+    this->dataPtr->DispatchGpuReduce(this->ImageWidth(), this->ImageHeight());
+  }
 
   this->scene->FlushGpuCommandsAndStartNewFrame(1u, false);
 }
@@ -596,41 +881,33 @@ void Ogre2BoundingBoxCamera::PostRender()
     return;
   }
 
-  unsigned int width = this->ImageWidth();
-  unsigned int height = this->ImageHeight();
-
-  PixelFormat format = PF_R8G8B8;
-  unsigned int channelCount = PixelUtil::ChannelCount(format);
-  unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
-  // raw gpu texture format is RGBA8
-  unsigned int rawChannelCount = 4u;
-
-  Ogre::Image2 image;
-  image.convertFromTexture(this->dataPtr->ogreRenderTexture, 0u, 0u);
-  Ogre::TextureBox box = image.getData(0);
-  uint8_t *imgBufferTmp = static_cast<uint8_t *>(box.data);
-  if (!this->dataPtr->buffer)
+  this->dataPtr->boundsValid = false;
+  ++this->dataPtr->frame;
+  Ogre::Image2 legacyImage;
+  const bool legacy = Ogre2UseLegacyReadback();
+  if (this->dataPtr->gpuReduced)
   {
-    auto bufferSize = PixelUtil::MemorySize(format, width, height);
-    this->dataPtr->buffer = new uint8_t[bufferSize];
+    // the extents were computed on the GPU; only read those back
+    this->dataPtr->ReadGpuReduce();
   }
-
-  for (unsigned int row = 0; row < height; ++row)
+  // Otherwise map the rendered index image; the box functions scan it
+  // through MarkVisibleBoxes().
+  else if (legacy)
   {
-    // the texture box step size could be larger than our image buffer step
-    // size
-    unsigned int rawDataRowIdx = row * box.bytesPerRow / bytesPerChannel;
-    for (unsigned int column = 0; column < width; ++column)
-    {
-      unsigned int idx = (row * width * channelCount) +
-          column * channelCount;
-      unsigned int rawIdx = rawDataRowIdx +
-          column * rawChannelCount;
-
-      this->dataPtr->buffer[idx] = imgBufferTmp[rawIdx];
-      this->dataPtr->buffer[idx + 1] = imgBufferTmp[rawIdx + 1];
-      this->dataPtr->buffer[idx + 2] = imgBufferTmp[rawIdx + 2];
-    }
+    // Legacy A/B control path: allocates a staging buffer every frame.
+    legacyImage.convertFromTexture(this->dataPtr->ogreRenderTexture, 0u, 0u);
+    this->dataPtr->mapped = legacyImage.getData(0);
+  }
+  else
+  {
+    this->dataPtr->mapped = this->dataPtr->readback.DownloadAndMap(
+        this->dataPtr->ogreRenderTexture);
+  }
+  if (!this->dataPtr->boundsValid && !this->dataPtr->mapped.data)
+  {
+    gzerr << "Ogre2BoundingBoxCamera: GPU readback failed; dropping frame"
+          << std::endl;
+    return;
   }
 
   if (this->dataPtr->type == BoundingBoxType::BBT_VISIBLEBOX2D)
@@ -640,13 +917,12 @@ void Ogre2BoundingBoxCamera::PostRender()
   else if (this->dataPtr->type == BoundingBoxType::BBT_BOX3D)
     this->BoundingBoxes3D();
 
-  this->dataPtr->boundingboxes.clear();
-  this->dataPtr->visibleBoxesLabel.clear();
-  this->dataPtr->parentNameToBoxes.clear();
-  this->dataPtr->parentNameToOgreIds.clear();
-  this->dataPtr->itemVertices.clear();
-  this->dataPtr->ogreIdToItem.clear();
-  this->dataPtr->materialSwitcher->ogreIdName.clear();
+  if (this->dataPtr->mapped.data && !legacy)
+    this->dataPtr->readback.Unmap();
+  this->dataPtr->mapped = Ogre::TextureBox();
+  this->dataPtr->boundsValid = false;
+  this->dataPtr->indexBoxes.clear();
+  this->dataPtr->PruneMeshCache();
 
   this->dataPtr->newBoundingBoxes(this->dataPtr->outputBoxes);
 }
@@ -655,121 +931,530 @@ void Ogre2BoundingBoxCamera::PostRender()
 void Ogre2BoundingBoxCamera::MarkVisibleBoxes()
 {
   GZ_PROFILE("Ogre2BoundingBoxCamera::MarkVisibleBoxes");
-  if (!this->dataPtr->buffer)
+  if (this->dataPtr->boundsValid)
+    return;
+
+  const Ogre::TextureBox &box = this->dataPtr->mapped;
+  if (!box.data)
   {
-    gzerr << "Null buffer" << std::endl;
+    gzerr << "No rendered image to find the visible boxes in" << std::endl;
     return;
   }
 
-  uint32_t width = this->ImageWidth();
-  uint32_t height = this->ImageHeight();
-  uint32_t channelCount = 3;
+  this->dataPtr->ScanIndexImage(static_cast<const uint8_t *>(box.data),
+      box.bytesPerRow, box.bytesPerPixel,
+      std::min<uint32_t>(this->ImageWidth(), box.width),
+      std::min<uint32_t>(this->ImageHeight(), box.height));
+  this->dataPtr->boundsValid = true;
+}
 
-  // Filter bounding boxes by looping over all pixels in ogre ids map
-  for (uint32_t y = 0; y < height; ++y)
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCameraPrivate::ScanIndexImage(const uint8_t *_data,
+    size_t _bytesPerRow, unsigned int _bytesPerPixel, unsigned int _width,
+    unsigned int _height)
+{
+  GZ_PROFILE("Ogre2BoundingBoxCameraPrivate::ScanIndexImage");
+  constexpr uint32_t kUnseen = std::numeric_limits<uint32_t>::max();
+  const size_t count = this->materialSwitcher->Entries().size();
+  this->pixelBounds.assign(count, {kUnseen, kUnseen, 0, 0});
+  this->visibleIndices.clear();
+
+  for (uint32_t y = 0; y < _height; ++y)
   {
-    for (uint32_t x = 0; x < width; ++x)
+    const uint8_t *row = _data + y * _bytesPerRow;
+    uint32_t x = 0;
+    while (x < _width)
     {
-      auto index = (y * width + x) * channelCount;
+      const uint8_t *px = row + x * _bytesPerPixel;
 
-      uint32_t label = this->dataPtr->buffer[index + 2];
+      // the run of pixels with the same index
+      uint32_t last = x;
+      if (_bytesPerPixel == 4u)
+      {
+        // compare whole pixels; the 4th byte (alpha) is the same for all
+        uint32_t current;
+        std::memcpy(&current, px, 4);
+        while (last + 1 < _width)
+        {
+          uint32_t next;
+          std::memcpy(&next, row + (last + 1) * 4u, 4);
+          if (next != current)
+            break;
+          ++last;
+        }
+      }
+      else
+      {
+        while (last + 1 < _width)
+        {
+          const uint8_t *next = row + (last + 1) * _bytesPerPixel;
+          if (next[0] != px[0] || next[1] != px[1] || next[2] != px[2])
+            break;
+          ++last;
+        }
+      }
 
-      if (label == this->dataPtr->materialSwitcher->backgroundLabel)
-        continue;
-
-      // get the ogre id encoded in 16 bit value
-      uint32_t ogreId1 = this->dataPtr->buffer[index + 1];
-      uint32_t ogreId2 = this->dataPtr->buffer[index + 0];
-      uint32_t ogreId = ogreId1 * 256 + ogreId2;
-
-      // mark the ogreId as visible not to filter its bbox
-      if (!this->dataPtr->visibleBoxesLabel.count(ogreId))
-        this->dataPtr->visibleBoxesLabel[ogreId] = label;
+      const uint32_t index =
+          Ogre2BoundingBoxMaterialSwitcher::DecodeIndex(px[0], px[1], px[2]);
+      if (index != 0 && index < count)
+      {
+        PixelBounds &b = this->pixelBounds[index];
+        if (b.minX == kUnseen)
+        {
+          this->visibleIndices.push_back(index);
+          b = {x, y, last, y};
+        }
+        else
+        {
+          b.minX = std::min(b.minX, x);
+          b.maxX = std::max(b.maxX, last);
+          b.maxY = y;
+        }
+      }
+      x = last + 1;
     }
   }
 }
 
 /////////////////////////////////////////////////
+bool Ogre2BoundingBoxCameraPrivate::InitGpuReduce()
+{
+  // A/B control and fallback
+  const char *cpuScan = std::getenv("GZ_RENDERING_OGRE2_BBOX_CPU_SCAN");
+  if ((cpuScan && std::string(cpuScan) != "0") || Ogre2UseLegacyReadback())
+    return false;
+
+  // Only the GLSL shader exists for now
+  auto *engine = Ogre2RenderEngine::Instance();
+  if (engine->GraphicsAPI() != GraphicsAPI::OPENGL)
+    return false;
+  Ogre::Root *root = engine->OgreRoot();
+  if (!root->getRenderSystem()->getCapabilities()->hasCapability(
+        Ogre::RSC_COMPUTE_PROGRAM))
+  {
+    return false;
+  }
+
+  Ogre::HlmsCompute *hlmsCompute = root->getHlmsManager()->getComputeHlms();
+  const std::string jobName = "gz-rendering/BoundingBoxReduce";
+  this->reduceJob = hlmsCompute->findComputeJobNoThrow(jobName);
+  if (!this->reduceJob)
+  {
+    try
+    {
+      this->reduceJob = hlmsCompute->createComputeJob(jobName, jobName,
+          "BoundingBoxReduce_cs", Ogre::StringVector());
+    }
+    catch (Ogre::Exception &e)
+    {
+      gzwarn << "Bounding box camera: can't create the GPU reduction ("
+             << e.getDescription() << "); using the CPU." << std::endl;
+      return false;
+    }
+    this->reduceJob->setThreadsPerGroup(8u, 8u, 1u);
+    this->reduceJob->setNumTexUnits(1u);
+    this->reduceJob->setNumUavUnits(1u);
+    Ogre::ShaderParams &shaderParams =
+        this->reduceJob->getShaderParams("default");
+    Ogre::ShaderParams::Param param;
+    param.name = "params";
+    const uint32_t zeros[4] = {0u, 0u, 0u, 0u};
+    param.setManualValue(zeros, 4u);
+    shaderParams.mParams.push_back(param);
+    shaderParams.setDirty();
+  }
+  return true;
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCameraPrivate::DispatchGpuReduce(uint32_t _width,
+    uint32_t _height)
+{
+  GZ_PROFILE("Ogre2BoundingBoxCameraPrivate::DispatchGpuReduce");
+  const size_t count = this->materialSwitcher->Entries().size();
+  this->reduceCount = count;
+  if (count <= 1u)
+  {
+    // nothing labeled: nothing to reduce
+    this->gpuReduced = true;
+    return;
+  }
+
+  auto *engine = Ogre2RenderEngine::Instance();
+  Ogre::Root *root = engine->OgreRoot();
+  Ogre::RenderSystem *renderSystem = root->getRenderSystem();
+
+  // The job is shared by all cameras: don't leave it pointing at our
+  // resources, which may be destroyed before it is used again.
+  auto clearSlots = [this]()
+  {
+    this->reduceJob->setTexture(0u,
+        Ogre::DescriptorSetTexture2::TextureSlot::makeEmpty(), nullptr,
+        false);
+    this->reduceJob->_setUavBuffer(0u,
+        Ogre::DescriptorSetUav::BufferSlot::makeEmpty());
+  };
+
+  try
+  {
+    // (re)allocate the extents buffer, and clear it
+    if (count > this->reduceCapacity)
+    {
+      this->DestroyGpuReduce();
+      // room to grow, so a few more objects don't reallocate every frame
+      this->reduceCapacity = std::max<size_t>(count * 3u / 2u, 256u);
+      this->reduceBuffer = renderSystem->getVaoManager()->createUavBuffer(
+          this->reduceCapacity * 4u, sizeof(uint32_t), 0u, nullptr, false);
+      this->reduceZeros.assign(this->reduceCapacity * 4u, 0u);
+    }
+    this->reduceBuffer->upload(this->reduceZeros.data(), 0u, count * 4u);
+
+    renderSystem->endRenderPassDescriptor();
+
+    Ogre::BarrierSolver &solver = renderSystem->getBarrierSolver();
+    Ogre::ResourceTransitionArray &before =
+        solver.getNewResourceTransitionsArrayTmp();
+    solver.resolveTransition(before, this->ogreRenderTexture,
+        Ogre::ResourceLayout::Texture, Ogre::ResourceAccess::Read,
+        1u << Ogre::GPT_COMPUTE_PROGRAM);
+    solver.resolveTransition(before, this->reduceBuffer,
+        Ogre::ResourceAccess::ReadWrite, 1u << Ogre::GPT_COMPUTE_PROGRAM);
+    renderSystem->executeResourceTransition(before);
+
+    Ogre::DescriptorSetTexture2::TextureSlot texSlot(
+        Ogre::DescriptorSetTexture2::TextureSlot::makeEmpty());
+    texSlot.texture = this->ogreRenderTexture;
+    Ogre::HlmsSamplerblock pointSampler;
+    pointSampler.setFiltering(Ogre::TFO_NONE);
+    this->reduceJob->setTexture(0u, texSlot, &pointSampler);
+
+    Ogre::DescriptorSetUav::BufferSlot bufSlot(
+        Ogre::DescriptorSetUav::BufferSlot::makeEmpty());
+    bufSlot.buffer = this->reduceBuffer;
+    bufSlot.sizeBytes = count * 4u * sizeof(uint32_t);
+    bufSlot.access = Ogre::ResourceAccess::ReadWrite;
+    this->reduceJob->_setUavBuffer(0u, bufSlot);
+
+    constexpr uint32_t kStrip = 32u;
+    const uint32_t params[4] = {_width, _height,
+        static_cast<uint32_t>(count), kStrip};
+    Ogre::ShaderParams &shaderParams =
+        this->reduceJob->getShaderParams("default");
+    shaderParams.findParameter("params")->setManualValue(params, 4u);
+    shaderParams.setDirty();
+
+    const uint32_t strips = (_width + kStrip - 1u) / kStrip;
+    this->reduceJob->setNumThreadGroups((strips + 7u) / 8u,
+        (_height + 7u) / 8u, 1u);
+    root->getHlmsManager()->getComputeHlms()->dispatch(
+        this->reduceJob, nullptr, nullptr);
+
+    // make the results visible to the readback copy
+    Ogre::ResourceTransitionArray &after =
+        solver.getNewResourceTransitionsArrayTmp();
+    solver.resolveTransition(after, this->reduceBuffer,
+        Ogre::ResourceAccess::Read, 0u);
+    renderSystem->executeResourceTransition(after);
+
+    clearSlots();
+    this->gpuReduced = true;
+  }
+  catch (Ogre::Exception &e)
+  {
+    clearSlots();
+    gzwarn << "Bounding box camera: GPU reduction failed ("
+           << e.getDescription() << "); using the CPU from now on."
+           << std::endl;
+    this->gpuReduce = false;
+  }
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCameraPrivate::ReadGpuReduce()
+{
+  GZ_PROFILE("Ogre2BoundingBoxCameraPrivate::ReadGpuReduce");
+  const size_t count = this->reduceCount;
+  this->pixelBounds.resize(count);
+  this->visibleIndices.clear();
+  this->boundsValid = true;
+  if (count <= 1u)
+    return;
+
+  Ogre::AsyncTicketPtr ticket =
+      this->reduceBuffer->readRequest(0u, count * 4u);
+  const uint32_t *data = static_cast<const uint32_t *>(ticket->map());
+  for (uint32_t index = 1u; index < count; ++index)
+  {
+    const uint32_t *d = data + index * 4u;
+    // 0 means not seen; minimums are stored inverted
+    if (d[0] == 0u)
+      continue;
+    this->pixelBounds[index] = {0xFFFFFFFFu - d[0], 0xFFFFFFFFu - d[1],
+        d[2], d[3]};
+    this->visibleIndices.push_back(index);
+  }
+  ticket->unmap();
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCameraPrivate::DestroyGpuReduce()
+{
+  if (this->reduceBuffer)
+  {
+    Ogre2RenderEngine::Instance()->OgreRoot()->getRenderSystem()->
+        getVaoManager()->destroyUavBuffer(this->reduceBuffer);
+    this->reduceBuffer = nullptr;
+  }
+  this->reduceCapacity = 0u;
+}
+
+/////////////////////////////////////////////////
+const Ogre2BoundingBoxCameraPrivate::MeshPoints &
+    Ogre2BoundingBoxCameraPrivate::LocalMeshPoints(Ogre::Mesh *_mesh)
+{
+  GZ_PROFILE("Ogre2BoundingBoxCameraPrivate::LocalMeshPoints");
+  // Find the position buffer of the first LOD of each submesh. Only
+  // immutable buffers are cached: the others can be rewritten at any time.
+  this->meshBuffers.clear();
+  bool cacheable = true;
+  for (const Ogre::SubMesh *subMesh : _mesh->getSubMeshes())
+  {
+    const Ogre::VertexArrayObjectArray &vaos = subMesh->mVao[0];
+    const Ogre::VertexBufferPacked *positions = nullptr;
+    if (!vaos.empty())
+    {
+      for (const Ogre::VertexBufferPacked *buffer :
+           vaos[0]->getVertexBuffers())
+      {
+        for (const auto &element : buffer->getVertexElements())
+        {
+          if (element.mSemantic == Ogre::VES_POSITION)
+            positions = buffer;
+        }
+        if (positions)
+          break;
+      }
+    }
+    if (positions && positions->getBufferType() != Ogre::BT_IMMUTABLE)
+      cacheable = false;
+    this->meshBuffers.push_back(positions);
+  }
+
+  MeshPoints &cached = this->meshCache[_mesh];
+  cached.lastUsed = this->frame;
+  if (cacheable && cached.handle == _mesh->getHandle() &&
+      cached.buffers == this->meshBuffers)
+  {
+    return cached;
+  }
+
+  cached.handle = cacheable ? _mesh->getHandle() : 0;
+  cached.buffers = this->meshBuffers;
+  cached.generation = this->nextGeneration++;
+  cached.points.clear();
+  for (const Ogre::SubMesh *subMesh : _mesh->getSubMeshes())
+  {
+    const Ogre::VertexArrayObjectArray &vaos = subMesh->mVao[0];
+    if (vaos.empty())
+      continue;
+
+    // Get the first LOD level
+    Ogre::VertexArrayObject *vao = vaos[0];
+
+    // request async read from buffer
+    Ogre::VertexArrayObject::ReadRequestsArray requests;
+    requests.push_back(Ogre::VertexArrayObject::ReadRequests(
+      Ogre::VES_POSITION));
+    vao->readRequests(requests);
+    vao->mapAsyncTickets(requests);
+
+    const size_t count = requests[0].vertexBuffer->getNumElements();
+    const size_t stride = requests[0].vertexBuffer->getBytesPerElement();
+    cached.points.reserve(cached.points.size() + count);
+    for (size_t i = 0; i < count; ++i)
+    {
+      const char *data = requests[0].data + i * stride;
+      Ogre::Vector3 vec;
+      if (requests[0].type == Ogre::VET_HALF4)
+      {
+        const Ogre::uint16 *vertex =
+            reinterpret_cast<const Ogre::uint16 *>(data);
+        vec.x = Ogre::Bitwise::halfToFloat(vertex[0]);
+        vec.y = Ogre::Bitwise::halfToFloat(vertex[1]);
+        vec.z = Ogre::Bitwise::halfToFloat(vertex[2]);
+      }
+      else if (requests[0].type == Ogre::VET_FLOAT3)
+      {
+        const float *vertex = reinterpret_cast<const float *>(data);
+        vec.x = vertex[0];
+        vec.y = vertex[1];
+        vec.z = vertex[2];
+      }
+      else
+      {
+        gzerr << "Vertex Buffer type error" << std::endl;
+        continue;
+      }
+      cached.points.push_back(vec);
+    }
+    vao->unmapAsyncTickets(requests);
+  }
+  // Dynamic meshes are read every frame: not worth reducing them.
+  if (cacheable)
+    ExtremePoints(cached.points, cached.extremePoints);
+  else
+    cached.extremePoints = cached.points;
+  return cached;
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCameraPrivate::PruneMeshCache()
+{
+  // full extents of items not seen in this frame
+  if (this->fullExtents.size() > 2 * this->visibleIndices.size() + 256)
+  {
+    for (auto it = this->fullExtents.begin(); it != this->fullExtents.end();)
+    {
+      if (it->second.lastUsed != this->frame)
+        it = this->fullExtents.erase(it);
+      else
+        ++it;
+    }
+  }
+
+  if (this->meshCache.size() < 256)
+    return;
+  size_t used = 0;
+  for (const auto &cached : this->meshCache)
+    used += cached.second.lastUsed == this->frame ? 1u : 0u;
+  if (this->meshCache.size() < 2 * used + 256)
+    return;
+  for (auto it = this->meshCache.begin(); it != this->meshCache.end();)
+  {
+    if (it->second.lastUsed != this->frame)
+      it = this->meshCache.erase(it);
+    else
+      ++it;
+  }
+}
+
+/////////////////////////////////////////////////
 void Ogre2BoundingBoxCameraPrivate::MeshVertices(
-    const std::vector<uint32_t> &_ogreIds,
+    const std::vector<Ogre::Item *> &_items,
     std::vector<math::Vector3d> &_vertices)
 {
   GZ_PROFILE("Ogre2BoundingBoxCameraPrivate::MeshVertices");
-  auto viewMatrix = this->ogreCamera->getViewMatrix();
+  const Ogre::Matrix4 viewMatrix = this->ogreCamera->getViewMatrix();
 
-  for (const auto &ogreId : _ogreIds)
+  for (Ogre::Item *item : _items)
   {
-    Ogre::Item *item = this->ogreIdToItem[ogreId];
-    Ogre::MeshPtr mesh = item->getMesh();
     Ogre::Node *node = item->getParentNode();
 
-    Ogre::Vector3 position = node->_getDerivedPosition();
-    Ogre::Quaternion oreintation = node->_getDerivedOrientation();
-    Ogre::Vector3 scale = node->_getDerivedScale();
+    // item to camera view coordinates
+    Ogre::Matrix4 world;
+    world.makeTransform(node->_getDerivedPosition(),
+        node->_getDerivedScale(), node->_getDerivedOrientation());
+    const Ogre::Matrix4 toView = viewMatrix * world;
 
-    auto subMeshes = mesh->getSubMeshes();
+    const auto &points =
+        this->LocalMeshPoints(item->getMesh().get()).points;
+    _vertices.reserve(_vertices.size() + points.size());
+    for (const Ogre::Vector3 &p : points)
+      _vertices.push_back(Ogre2Conversions::Convert(toView * p));
+  }
+}
 
-    for (const auto &subMesh : subMeshes)
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCameraPrivate::ModelItems(const Node *_node,
+    uint32_t _mask, std::vector<Ogre::Item *> &_items)
+{
+  if (auto visual = dynamic_cast<const Visual *>(_node))
+  {
+    // same rule as the material switcher: labels are non-negative ints
+    const Variant labelAny = visual->UserData("label");
+    const int *label = std::get_if<int>(&labelAny);
+    if (label && *label >= 0)
     {
-      Ogre::VertexArrayObjectArray vaos = subMesh->mVao[0];
-
-      if (!vaos.empty())
+      for (unsigned int i = 0; i < visual->GeometryCount(); ++i)
       {
-        // Get the first LOD level
-        Ogre::VertexArrayObject *vao = vaos[0];
-
-        // request async read from buffer
-        Ogre::VertexArrayObject::ReadRequestsArray requests;
-        requests.push_back(Ogre::VertexArrayObject::ReadRequests(
-          Ogre::VES_POSITION));
-        vao->readRequests(requests);
-        vao->mapAsyncTickets(requests);
-
-        unsigned int subMeshVerticiesNum =
-          requests[0].vertexBuffer->getNumElements();
-        for (size_t i = 0; i < subMeshVerticiesNum; ++i)
+        auto geometry = std::dynamic_pointer_cast<Ogre2Geometry>(
+            visual->GeometryByIndex(i));
+        auto item = geometry ?
+            dynamic_cast<Ogre::Item *>(geometry->OgreObject()) : nullptr;
+        if (item && item->isVisible() &&
+            (item->getVisibilityFlags() & _mask) != 0u)
         {
-          Ogre::Vector3 vec;
-          if (requests[0].type == Ogre::VET_HALF4)
-          {
-            const Ogre::uint16* vertex = reinterpret_cast<const Ogre::uint16*>
-              (requests[0].data);
-            vec.x = Ogre::Bitwise::halfToFloat(vertex[0]);
-            vec.y = Ogre::Bitwise::halfToFloat(vertex[1]);
-            vec.z = Ogre::Bitwise::halfToFloat(vertex[2]);
-          }
-          else if (requests[0].type == Ogre::VET_FLOAT3)
-          {
-            const float* vertex =
-              reinterpret_cast<const float*>(requests[0].data);
-            vec.x = *vertex++;
-            vec.y = *vertex++;
-            vec.z = *vertex++;
-          }
-          else
-            gzerr << "Vertex Buffer type error" << std::endl;
-
-          // Convert to world coordinates
-          vec = (oreintation * (vec * scale)) + position;
-
-          // Convert to camera view coordinates
-          Ogre::Vector4 vec4(vec.x, vec.y, vec.z, 1);
-          vec4 = viewMatrix * vec4;
-
-          vec.x = vec4.x;
-          vec.y = vec4.y;
-          vec.z = vec4.z;
-
-          // Add the vertex to the vertices of all items that
-          // belongs to the same parent
-          _vertices.push_back(Ogre2Conversions::Convert(vec));
-
-          // get the next element
-          requests[0].data += requests[0].vertexBuffer->getBytesPerElement();
+          _items.push_back(item);
         }
-        vao->unmapAsyncTickets(requests);
       }
     }
+  }
+  for (unsigned int i = 0; i < _node->ChildCount(); ++i)
+    ModelItems(_node->ChildByIndex(i).get(), _mask, _items);
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCameraPrivate::GroupByModel()
+{
+  const auto &entries = this->materialSwitcher->Entries();
+
+  // Group: sort the items by model, then by item id
+  this->groupKeys.clear();
+  for (size_t i = 0; i < this->indexBoxes.size(); ++i)
+  {
+    const auto &entry = entries[this->indexBoxes[i].first];
+    this->groupKeys.push_back({entry.modelId, entry.item->getId(),
+        static_cast<uint32_t>(i)});
+  }
+  std::sort(this->groupKeys.begin(), this->groupKeys.end(),
+      [](const GroupKey &_a, const GroupKey &_b)
+      {
+        return _a.modelId != _b.modelId ? _a.modelId < _b.modelId :
+            _a.itemId < _b.itemId;
+      });
+
+  this->unsortedRanges.clear();
+  size_t names = 0;
+  for (size_t i = 0; i < this->groupKeys.size();)
+  {
+    size_t end = i + 1;
+    while (end < this->groupKeys.size() &&
+           this->groupKeys[end].modelId == this->groupKeys[i].modelId)
+    {
+      ++end;
+    }
+    this->unsortedRanges.emplace_back(static_cast<uint32_t>(i),
+        static_cast<uint32_t>(end));
+    // reuse the strings' storage across frames
+    if (names == this->groupNames.size())
+      this->groupNames.emplace_back();
+    const auto &entry =
+        entries[this->indexBoxes[this->groupKeys[i].position].first];
+    this->groupNames[names++] = entry.model->Name();
+    i = end;
+  }
+
+  // Models in descending name order, the order boxes have always been
+  // reported in.
+  this->groupOrder.resize(this->unsortedRanges.size());
+  for (size_t g = 0; g < this->groupOrder.size(); ++g)
+    this->groupOrder[g] = static_cast<uint32_t>(g);
+  std::sort(this->groupOrder.begin(), this->groupOrder.end(),
+      [this](uint32_t _a, uint32_t _b)
+      {
+        return this->groupNames[_a] > this->groupNames[_b];
+      });
+
+  this->groupedPositions.clear();
+  this->groupRanges.clear();
+  for (uint32_t g : this->groupOrder)
+  {
+    const auto range = this->unsortedRanges[g];
+    const uint32_t begin = static_cast<uint32_t>(this->groupedPositions.size());
+    for (uint32_t k = range.first; k < range.second; ++k)
+      this->groupedPositions.push_back(this->groupKeys[k].position);
+    this->groupRanges.emplace_back(begin,
+        static_cast<uint32_t>(this->groupedPositions.size()));
   }
 }
 
@@ -777,82 +1462,75 @@ void Ogre2BoundingBoxCameraPrivate::MeshVertices(
 void Ogre2BoundingBoxCamera::MergeMultiLinksModels3D()
 {
   GZ_PROFILE("Ogre2BoundingBoxCamera::MergeMultiLinksModels3D");
-  // Combine the boxes with the same parent name together to merge them
-  for (const auto &box : this->dataPtr->boundingboxes)
+  const auto &indexBoxes = this->dataPtr->indexBoxes;
+  const auto &positions = this->dataPtr->groupedPositions;
+  this->dataPtr->GroupByModel();
+  const auto &entries = this->dataPtr->materialSwitcher->Entries();
+  std::vector<Ogre::Item *> items;
+  std::vector<math::Vector3d> vertices;
+  for (const auto &[begin, end] : this->dataPtr->groupRanges)
   {
-    auto ogreId = box.first;
-    auto parentName = this->dataPtr->materialSwitcher->ogreIdName[ogreId];
-    this->dataPtr->parentNameToOgreIds[parentName].push_back(ogreId);
-  }
-
-  // Merge the boxes that is related to the same parent
-  for (const auto &nameToOgreIds : this->dataPtr->parentNameToOgreIds)
-  {
-    auto ogreIds = nameToOgreIds.second;
+    // The box covers the whole model, including the links that are hidden
+    // in this frame.
+    items.clear();
+    Ogre2BoundingBoxCameraPrivate::ModelItems(
+        entries[indexBoxes[positions[begin]].first].model,
+        this->VisibilityMask(), items);
+    if (items.size() < 2)
+    {
+      items.clear();
+      for (uint32_t k = begin; k < end; ++k)
+        items.push_back(entries[indexBoxes[positions[k]].first].item);
+    }
 
     // If not a multi-link model, add the 3d box from the OGRE API
-    if (ogreIds.size() == 1)
+    if (items.size() == 1)
     {
-      auto box = this->dataPtr->boundingboxes[ogreIds[0]];
-      this->dataPtr->outputBoxes.push_back(*box);
+      this->dataPtr->outputBoxes.push_back(
+          indexBoxes[positions[begin]].second);
+      continue;
     }
-    else
-    {
-      std::vector<math::Vector3d> vertices;
 
-      // Get all the 3D vertices of the sub-items(total mesh)
-      this->dataPtr->MeshVertices(ogreIds, vertices);
+    // Get all the 3D vertices of the sub-items(total mesh)
+    vertices.clear();
+    this->dataPtr->MeshVertices(items, vertices);
 
-      // Get the oriented bounding box from the mesh using PCA
-      math::OrientedBoxd mergedBox = math::eigen3::verticesToOrientedBox(
-        vertices);
+    // Get the oriented bounding box from the mesh using PCA
+    math::OrientedBoxd mergedBox = math::eigen3::verticesToOrientedBox(
+      vertices);
 
-      // convert to rendering::BoundingBox format
-      BoundingBox box;
-      auto pose = mergedBox.Pose();
-      box.SetCenter(pose.Pos());
-      box.SetOrientation(pose.Rot());
-      box.SetSize(mergedBox.Size());
-      box.SetLabel(this->dataPtr->visibleBoxesLabel[ogreIds[0]]);
+    // convert to rendering::BoundingBox format
+    BoundingBox box;
+    auto pose = mergedBox.Pose();
+    box.SetCenter(pose.Pos());
+    box.SetOrientation(pose.Rot());
+    box.SetSize(mergedBox.Size());
+    box.SetLabel(indexBoxes[positions[begin]].second.Label());
 
-      this->dataPtr->outputBoxes.push_back(box);
-    }
+    this->dataPtr->outputBoxes.push_back(box);
   }
-
-  // reverse the order of the boxes (useful in testing)
-  std::reverse(this->dataPtr->outputBoxes.begin(),
-    this->dataPtr->outputBoxes.end());
 }
 
 /////////////////////////////////////////////////
 void Ogre2BoundingBoxCamera::MergeMultiLinksModels2D()
 {
   GZ_PROFILE("Ogre2BoundingBoxCamera::MergeMultiLinksModels2D");
-  // Combine the boxes with the same parent name together to merge them
-  for (const auto &box : this->dataPtr->boundingboxes)
+  const auto &indexBoxes = this->dataPtr->indexBoxes;
+  const auto &positions = this->dataPtr->groupedPositions;
+  this->dataPtr->GroupByModel();
+  std::vector<const BoundingBox *> boxes;
+  for (const auto &[begin, end] : this->dataPtr->groupRanges)
   {
-    auto ogreId = box.first;
-    auto parentName = this->dataPtr->materialSwitcher->ogreIdName[ogreId];
-    this->dataPtr->parentNameToBoxes[parentName].push_back(box.second);
+    boxes.clear();
+    for (uint32_t k = begin; k < end; ++k)
+      boxes.push_back(&indexBoxes[positions[k]].second);
+    this->dataPtr->outputBoxes.push_back(this->dataPtr->MergeBoxes2D(boxes));
   }
-
-  // Merge the boxes that is related to the same parent
-  for (const auto &nameToBoxes : this->dataPtr->parentNameToBoxes)
-  {
-    auto mergedBox = this->dataPtr->MergeBoxes2D(nameToBoxes.second);
-
-    // Store boxes in the output vector
-    this->dataPtr->outputBoxes.push_back(mergedBox);
-  }
-
-  // reverse the order of the boxes (usful in testing)
-  std::reverse(this->dataPtr->outputBoxes.begin(),
-    this->dataPtr->outputBoxes.end());
 }
 
 /////////////////////////////////////////////////
 BoundingBox Ogre2BoundingBoxCameraPrivate::MergeBoxes2D(
-        const std::vector<std::shared_ptr<BoundingBox>> &_boxes)
+        const std::vector<const BoundingBox *> &_boxes) const
 {
   if (_boxes.size() == 1)
     return *_boxes[0];
@@ -894,22 +1572,15 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
   // used to filter the hidden boxes
   this->MarkVisibleBoxes();
 
-  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
-      Ogre::ItemFactory::FACTORY_TYPE_NAME);
-  while (itor.hasMoreElements())
+  // Compute the rotation of the boxes from their world rotation & the view
+  // matrix
+  const auto worldCameraRotation = Ogre2Conversions::Convert(
+    viewMatrix.extractQuaternion());
+
+  const auto &entries = this->dataPtr->materialSwitcher->Entries();
+  for (uint32_t index : this->dataPtr->visibleIndices)
   {
-    Ogre::MovableObject *object = itor.peekNext();
-    Ogre::Item *item = static_cast<Ogre::Item *>(object);
-    Ogre::MeshPtr mesh = item->getMesh();
-
-    uint32_t ogreId = item->getId();
-
-    // Skip the items which is hidden from the ogreId map
-    if (!this->dataPtr->visibleBoxesLabel.count(ogreId))
-    {
-      itor.moveNext();
-      continue;
-    }
+    Ogre::Item *item = entries[index].item;
 
     // get attached node
     Ogre::Node *node = item->getParentNode();
@@ -919,52 +1590,25 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
     Ogre::Vector3 size = item->getLocalAabb().getSize();
     size *= scale;
 
-    Ogre::Aabb aabb = item->getWorldAabb();
-
-    // filter the boxes outside the camera frustum
-    Ogre::AxisAlignedBox worldAabb;
-    worldAabb.setExtents(aabb.getMinimum(), aabb.getMaximum());
-    if (!this->dataPtr->ogreCamera->isVisible(worldAabb))
-    {
-      itor.moveNext();
-      continue;
-    }
-
-    // Keep track of mesh, useful in multi-links models
-    this->dataPtr->ogreIdToItem[ogreId] = item;
-
-    auto box = std::make_shared<BoundingBox>();
+    // No frustum check needed: the item has pixels in the image.
+    BoundingBox box;
 
     // Position in world coord
-    Ogre::Vector3 position = worldAabb.getCenter();
+    Ogre::Vector3 position = item->getWorldAabb().mCenter;
 
     // Position in camera coord
     Ogre::Vector3 viewPosition = viewMatrix * position;
 
     // Convert to gz::math
-    box->SetCenter(Ogre2Conversions::Convert(viewPosition));
-    box->SetSize(Ogre2Conversions::Convert(size));
-
-    // Compute the rotation of the box from its world rotation & view matrix
-    auto worldCameraRotation = Ogre2Conversions::Convert(
-      viewMatrix.extractQuaternion());
-    auto bodyWorldRotation = Ogre2Conversions::Convert(orientation);
+    box.SetCenter(Ogre2Conversions::Convert(viewPosition));
+    box.SetSize(Ogre2Conversions::Convert(size));
 
     // Body to camera rotation = body_world * world_camera
-    auto bodyCameraRotation = worldCameraRotation * bodyWorldRotation;
-    box->SetOrientation(bodyCameraRotation);
+    auto bodyWorldRotation = Ogre2Conversions::Convert(orientation);
+    box.SetOrientation(worldCameraRotation * bodyWorldRotation);
+    box.SetLabel(entries[index].label);
 
-    this->dataPtr->boundingboxes[ogreId] = box;
-    itor.moveNext();
-  }
-
-  // Set boxes labels
-  for (const auto &box : this->dataPtr->boundingboxes)
-  {
-    uint32_t ogreId = box.first;
-    uint32_t label = this->dataPtr->visibleBoxesLabel[ogreId];
-
-    box.second->SetLabel(label);
+    this->dataPtr->indexBoxes.emplace_back(index, std::move(box));
   }
 
   // Combine boxes of multi-links model if exists
@@ -975,85 +1619,23 @@ void Ogre2BoundingBoxCamera::BoundingBoxes3D()
 void Ogre2BoundingBoxCamera::VisibleBoundingBoxes()
 {
   GZ_PROFILE("Ogre2BoundingBoxCamera::VisibleBoundingBoxes");
-  if (!this->dataPtr->buffer)
+  this->MarkVisibleBoxes();
+
+  const auto &entries = this->dataPtr->materialSwitcher->Entries();
+  for (uint32_t index : this->dataPtr->visibleIndices)
   {
-    gzerr << "Null buffer" << std::endl;
-    return;
-  }
+    // Pixel i covers [i, i + 1), so the box ends after the last pixel: the
+    // same convention as the full boxes.
+    const auto &boundary = this->dataPtr->pixelBounds[index];
+    const double boxWidth = boundary.maxX - boundary.minX + 1.0;
+    const double boxHeight = boundary.maxY - boundary.minY + 1.0;
 
-  uint32_t width = this->ImageWidth();
-  uint32_t height = this->ImageHeight();
-  uint32_t channelCount = 3;
-
-  struct BoxBoundary
-  {
-    uint32_t minX;
-    uint32_t minY;
-    uint32_t maxX;
-    uint32_t maxY;
-  };
-
-  std::unordered_map<uint32_t, std::shared_ptr<BoxBoundary>> boxesBoundary;
-
-  // find item's boundaries from panoptic BoundingBox
-  for (uint32_t y = 0; y < height; y++)
-  {
-    for (uint32_t x = 0; x < width; x++)
-    {
-      auto index = (y * width + x) * channelCount;
-
-      uint32_t label = this->dataPtr->buffer[index + 2];
-      uint32_t ogreId1 = this->dataPtr->buffer[index + 1];
-      uint32_t ogreId2 = this->dataPtr->buffer[index + 0];
-
-      if (label != this->dataPtr->materialSwitcher->backgroundLabel)
-      {
-        // get the OGRE id of 16 bit value
-        uint32_t ogreId = ogreId1 * 256 + ogreId2;
-
-        std::shared_ptr<BoundingBox> box;
-        std::shared_ptr<BoxBoundary> boundary;
-
-        // create new boxes when its first pixel appears
-        if (!this->dataPtr->boundingboxes.count(ogreId))
-        {
-          box = std::make_shared<BoundingBox>();
-          box->SetLabel(label);
-
-          boundary = std::make_shared<BoxBoundary>();
-          boundary->minX = width;
-          boundary->minY = height;
-          boundary->maxX = 0;
-          boundary->maxY = 0;
-
-          boxesBoundary[ogreId] = boundary;
-          this->dataPtr->boundingboxes[ogreId] = box;
-        }
-        else
-        {
-          boundary = boxesBoundary[ogreId];
-        }
-
-        boundary->minX = std::min<uint32_t>(boundary->minX, x);
-        boundary->minY = std::min<uint32_t>(boundary->minY, y);
-        boundary->maxX = std::max<uint32_t>(boundary->maxX, x);
-        boundary->maxY = std::max<uint32_t>(boundary->maxY, y);
-      }
-    }
-  }
-
-  for (const auto &box : this->dataPtr->boundingboxes)
-  {
-    // Get the box's boundary
-    auto ogreId = box.first;
-    auto boundary = boxesBoundary[ogreId];
-    auto boxWidth = boundary->maxX - boundary->minX;
-    auto boxHeight = boundary->maxY - boundary->minY;
-
-    box.second->SetCenter({boundary->minX + boxWidth * 0.5,
-        boundary->minY + boxHeight * 0.5, 0});
-    box.second->SetSize(
-        {static_cast<double>(boxWidth), static_cast<double>(boxHeight), 0.0});
+    BoundingBox box;
+    box.SetLabel(entries[index].label);
+    box.SetCenter({boundary.minX + boxWidth * 0.5,
+        boundary.minY + boxHeight * 0.5, 0});
+    box.SetSize({boxWidth, boxHeight, 0.0});
+    this->dataPtr->indexBoxes.emplace_back(index, std::move(box));
   }
 
   // Combine boxes of multi-links model if exists
@@ -1067,25 +1649,15 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
   // used to filter the hidden boxes
   this->MarkVisibleBoxes();
 
-  Ogre::Matrix4 viewMatrix = this->dataPtr->ogreCamera->getViewMatrix();
-  Ogre::Matrix4 projMatrix = this->dataPtr->ogreCamera->getProjectionMatrix();
+  const Ogre::Matrix4 viewProj =
+      this->dataPtr->ogreCamera->getProjectionMatrix() *
+      this->dataPtr->ogreCamera->getViewMatrix();
 
-  auto itor = this->scene->OgreSceneManager()->getMovableObjectIterator(
-      Ogre::ItemFactory::FACTORY_TYPE_NAME);
-  while (itor.hasMoreElements())
+  const auto &entries = this->dataPtr->materialSwitcher->Entries();
+  for (uint32_t index : this->dataPtr->visibleIndices)
   {
-    Ogre::MovableObject *object = itor.peekNext();
-    Ogre::Item *item = static_cast<Ogre::Item *>(object);
+    Ogre::Item *item = entries[index].item;
     Ogre::MeshPtr mesh = item->getMesh();
-
-    uint32_t ogreId = item->getId();
-
-    // Skip the items which is hidden in the ogreId map
-    if (!this->dataPtr->visibleBoxesLabel.count(ogreId))
-    {
-      itor.moveNext();
-      continue;
-    }
 
     // get attached node
     Ogre::Node *node = item->getParentNode();
@@ -1095,59 +1667,54 @@ void Ogre2BoundingBoxCamera::FullBoundingBoxes()
     Ogre::Quaternion oreintation = node->_getDerivedOrientation();
     Ogre::Vector3 scale = node->_getDerivedScale();
 
-    Ogre::Aabb aabb = item->getWorldAabb();
-    Ogre::AxisAlignedBox worldAabb;
-    worldAabb.setExtents(aabb.getMinimum(), aabb.getMaximum());
+    // No frustum check needed: the item has pixels in the image.
 
-    // filter the boxes outside the camera frustum
-    if (!this->dataPtr->ogreCamera->isVisible(worldAabb))
+    // Extent of the projected vertices. Reused from the last frame if
+    // neither the item, its mesh nor the camera changed: same inputs, same
+    // result.
+    Ogre::Matrix4 world;
+    world.makeTransform(position, scale, oreintation);
+    const Ogre::Matrix4 toClip = viewProj * world;
+    const auto &meshPoints = this->dataPtr->LocalMeshPoints(mesh.get());
+    auto &extent = this->dataPtr->fullExtents[item->getId()];
+    if (extent.lastUsed == 0 ||
+        extent.generation != meshPoints.generation ||
+        extent.toClip != toClip)
     {
-      itor.moveNext();
-      continue;
+      // The extreme points have the same convex hull as all points, so
+      // they give the same extent, clipped or not.
+      if (!Ogre2BoundingBoxCameraPrivate::ProjectedExtent(toClip,
+          meshPoints.extremePoints, extent.min, extent.max))
+      {
+        Ogre2BoundingBoxCameraPrivate::ClippedExtent(toClip,
+            meshPoints.extremePoints, extent.min, extent.max);
+      }
+      extent.toClip = toClip;
+      extent.generation = meshPoints.generation;
     }
+    extent.lastUsed = this->dataPtr->frame;
+    Ogre::Vector3 minVertex = extent.min;
+    Ogre::Vector3 maxVertex = extent.max;
 
-    Ogre::Vector3 minVertex;
-    Ogre::Vector3 maxVertex;
-
-    this->MeshMinimalBox(
-      mesh,
-      viewMatrix,
-      projMatrix,
-      minVertex,
-      maxVertex,
-      position,
-      oreintation,
-      scale
-    );
-
-    if ((abs(minVertex.x) > 1 && abs(maxVertex.x) > 1) ||
-        (abs(minVertex.y) > 1 && abs(maxVertex.y) > 1))
+    // Nothing inside the view. Objects larger than the view are kept and
+    // clamped to the image.
+    if (minVertex.x > 1 || maxVertex.x < -1 ||
+        minVertex.y > 1 || maxVertex.y < -1)
     {
-      itor.moveNext();
       continue;
     }
 
     this->ConvertToScreenCoord(minVertex, maxVertex);
 
-    auto box = std::make_shared<BoundingBox>();
+    BoundingBox box;
     auto boxWidth = maxVertex.x - minVertex.x;
     auto boxHeight = minVertex.y - maxVertex.y;
-    box->SetCenter(
+    box.SetCenter(
         {minVertex.x + boxWidth / 2, maxVertex.y + boxHeight / 2, 0});
-    box->SetSize({boxWidth, boxHeight, 0});
+    box.SetSize({boxWidth, boxHeight, 0});
+    box.SetLabel(entries[index].label);
 
-    this->dataPtr->boundingboxes[ogreId] = box;
-
-    itor.moveNext();
-  }
-
-  // Set boxes label
-  for (auto &box : this->dataPtr->boundingboxes)
-  {
-    uint32_t ogreId = box.first;
-    uint32_t label = this->dataPtr->visibleBoxesLabel[ogreId];
-
-    box.second->SetLabel(label);
+    this->dataPtr->indexBoxes.emplace_back(index, std::move(box));
   }
 
   // Combine boxes of multi-links model if exists
@@ -1167,78 +1734,211 @@ void Ogre2BoundingBoxCamera::MeshMinimalBox(
   )
 {
   GZ_PROFILE("Ogre2BoundingBoxCamera::MeshMinimalBox");
-  _minVertex.x = std::numeric_limits<float>::max();
-  _minVertex.y = std::numeric_limits<float>::max();
-  _minVertex.z = std::numeric_limits<float>::max();
-  _maxVertex.x = -std::numeric_limits<float>::max();
-  _maxVertex.y = -std::numeric_limits<float>::max();
-  _maxVertex.z = -std::numeric_limits<float>::max();
+  // item to clip space, so each vertex costs one matrix-vector product
+  Ogre::Matrix4 world;
+  world.makeTransform(_position, _scale, _orientation);
+  Ogre2BoundingBoxCameraPrivate::ProjectedExtent(
+      _projMatrix * _viewMatrix * world,
+      this->dataPtr->LocalMeshPoints(_mesh.get()).points,
+      _minVertex, _maxVertex);
+}
 
-  auto subMeshes = _mesh->getSubMeshes();
+/////////////////////////////////////////////////
+bool Ogre2BoundingBoxCameraPrivate::ProjectedExtent(
+    const Ogre::Matrix4 &_toClip, const std::vector<Ogre::Vector3> &_points,
+    Ogre::Vector3 &_min, Ogre::Vector3 &_max)
+{
+  bool inFront = true;
+  _min.x = std::numeric_limits<float>::max();
+  _min.y = std::numeric_limits<float>::max();
+  _min.z = std::numeric_limits<float>::max();
+  _max.x = -std::numeric_limits<float>::max();
+  _max.y = -std::numeric_limits<float>::max();
+  _max.z = -std::numeric_limits<float>::max();
 
-  for (auto subMesh : subMeshes)
+  for (const Ogre::Vector3 &p : _points)
   {
-    Ogre::VertexArrayObjectArray vaos = subMesh->mVao[0];
+    const Ogre::Vector4 clip = _toClip * Ogre::Vector4(p.x, p.y, p.z, 1.0f);
+    // near plane: z = -w in clip space
+    inFront = inFront && clip.z + clip.w >= 0.0f && clip.w > 0.0f;
 
-    if (!vaos.empty())
+    // homogeneous
+    const float x = clip.x / clip.w;
+    const float y = clip.y / clip.w;
+
+    _min.x = std::min(_min.x, x);
+    _min.y = std::min(_min.y, y);
+    _min.z = std::min(_min.z, clip.z);
+
+    _max.x = std::max(_max.x, x);
+    _max.y = std::max(_max.y, y);
+    _max.z = std::max(_max.z, clip.z);
+  }
+  return inFront;
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCameraPrivate::ClippedExtent(
+    const Ogre::Matrix4 &_toClip, const std::vector<Ogre::Vector3> &_points,
+    Ogre::Vector3 &_min, Ogre::Vector3 &_max)
+{
+  GZ_PROFILE("Ogre2BoundingBoxCameraPrivate::ClippedExtent");
+  _min = Ogre::Vector3(std::numeric_limits<float>::max());
+  _max = Ogre::Vector3(-std::numeric_limits<float>::max());
+
+  // The hull clipped by the near plane is the hull of the points in front
+  // of it plus the intersections of the plane with the segments from those
+  // points to the points behind it.
+  std::vector<Ogre::Vector4> front;
+  std::vector<Ogre::Vector4> behind;
+  for (const Ogre::Vector3 &p : _points)
+  {
+    const Ogre::Vector4 clip = _toClip * Ogre::Vector4(p.x, p.y, p.z, 1.0f);
+    (clip.z + clip.w >= 0.0f ? front : behind).push_back(clip);
+  }
+
+  auto add = [&](const Ogre::Vector4 &_clip)
+  {
+    if (!(_clip.w > 0.0f))
+      return;
+    const float x = _clip.x / _clip.w;
+    const float y = _clip.y / _clip.w;
+    _min.x = std::min(_min.x, x);
+    _min.y = std::min(_min.y, y);
+    _min.z = std::min(_min.z, _clip.z);
+    _max.x = std::max(_max.x, x);
+    _max.y = std::max(_max.y, y);
+    _max.z = std::max(_max.z, _clip.z);
+  };
+
+  for (const Ogre::Vector4 &f : front)
+  {
+    add(f);
+    const float df = f.z + f.w;
+    for (const Ogre::Vector4 &b : behind)
     {
-      // Get the first LOD level
-      Ogre::VertexArrayObject *vao = vaos[0];
-
-      // request async read from buffer
-      Ogre::VertexArrayObject::ReadRequestsArray requests;
-      requests.push_back(Ogre::VertexArrayObject::ReadRequests(
-        Ogre::VES_POSITION));
-      vao->readRequests(requests);
-      vao->mapAsyncTickets(requests);
-
-      unsigned int subMeshVerticiesNum =
-        requests[0].vertexBuffer->getNumElements();
-      for (size_t i = 0; i < subMeshVerticiesNum; ++i)
-      {
-        Ogre::Vector3 vec;
-        if (requests[0].type == Ogre::VET_HALF4)
-        {
-          const Ogre::uint16* vertex = reinterpret_cast<const Ogre::uint16*>
-            (requests[0].data);
-          vec.x = Ogre::Bitwise::halfToFloat(vertex[0]);
-          vec.y = Ogre::Bitwise::halfToFloat(vertex[1]);
-          vec.z = Ogre::Bitwise::halfToFloat(vertex[2]);
-        }
-        else if (requests[0].type == Ogre::VET_FLOAT3)
-        {
-          const float* vertex =
-            reinterpret_cast<const float*>(requests[0].data);
-          vec.x = *vertex++;
-          vec.y = *vertex++;
-          vec.z = *vertex++;
-        }
-        else
-          gzerr << "Vertex Buffer type error" << std::endl;
-
-        vec = (_orientation * (vec * _scale)) + _position;
-
-        Ogre::Vector4 vec4(vec.x, vec.y, vec.z, 1);
-        vec4 =  _projMatrix * _viewMatrix * vec4;
-
-        // homogeneous
-        vec.x = vec4.x / vec4.w;
-        vec.y = vec4.y / vec4.w;
-        vec.z = vec4.z;
-
-        _minVertex.x = std::min(_minVertex.x, vec.x);
-        _minVertex.y = std::min(_minVertex.y, vec.y);
-        _minVertex.z = std::min(_minVertex.z, vec.z);
-
-        _maxVertex.x = std::max(_maxVertex.x, vec.x);
-        _maxVertex.y = std::max(_maxVertex.y, vec.y);
-        _maxVertex.z = std::max(_maxVertex.z, vec.z);
-
-        // get the next element
-        requests[0].data += requests[0].vertexBuffer->getBytesPerElement();
-      }
-      vao->unmapAsyncTickets(requests);
+      const float db = b.z + b.w;
+      add(f + (b - f) * (df / (df - db)));
     }
+  }
+}
+
+/////////////////////////////////////////////////
+void Ogre2BoundingBoxCameraPrivate::ExtremePoints(
+    const std::vector<Ogre::Vector3> &_points,
+    std::vector<Ogre::Vector3> &_out)
+{
+  _out = _points;
+  // not worth it for small meshes
+  if (_points.size() < 64u)
+    return;
+
+  // Work in double, around the center
+  using V = math::Vector3d;
+  V center;
+  for (const auto &p : _points)
+    center += V(p.x, p.y, p.z);
+  center /= static_cast<double>(_points.size());
+  std::vector<V> pts;
+  pts.reserve(_points.size());
+  double extent = 0;
+  for (const auto &p : _points)
+  {
+    pts.push_back(V(p.x, p.y, p.z) - center);
+    extent = std::max(extent, pts.back().Abs().Max());
+  }
+  if (!(extent > 0))
+    return;
+
+  // S: the extreme points along 26 directions (cube faces, edges, corners)
+  std::vector<size_t> s;
+  for (int i = -1; i <= 1; ++i)
+  {
+    for (int j = -1; j <= 1; ++j)
+    {
+      for (int k = -1; k <= 1; ++k)
+      {
+        if (i == 0 && j == 0 && k == 0)
+          continue;
+        const V dir(i, j, k);
+        size_t best = 0;
+        for (size_t n = 1; n < pts.size(); ++n)
+        {
+          if (pts[n].Dot(dir) > pts[best].Dot(dir))
+            best = n;
+        }
+        s.push_back(best);
+      }
+    }
+  }
+  std::sort(s.begin(), s.end());
+  s.erase(std::unique(s.begin(), s.end()), s.end());
+  if (s.size() < 4u)
+    return;
+
+  // All the facet planes of the hull of S, by brute force (S is small):
+  // planes through 3 points of S with all of S on their inner side. Every
+  // facet of the hull is found, so the planes enclose exactly that hull.
+  struct Plane
+  {
+    V normal;
+    double d;
+  };
+  std::vector<Plane> planes;
+  const double tol = 1e-9 * extent;
+  for (size_t a = 0; a < s.size(); ++a)
+  {
+    for (size_t b = a + 1; b < s.size(); ++b)
+    {
+      for (size_t c = b + 1; c < s.size(); ++c)
+      {
+        const V &pa = pts[s[a]];
+        V normal = (pts[s[b]] - pa).Cross(pts[s[c]] - pa);
+        if (normal.Length() < 1e-12 * extent * extent)
+          continue;
+        normal.Normalize();
+        const double d = -normal.Dot(pa);
+        bool allBelow = true;
+        bool allAbove = true;
+        for (size_t i : s)
+        {
+          const double side = normal.Dot(pts[i]) + d;
+          allBelow = allBelow && side <= tol;
+          allAbove = allAbove && side >= -tol;
+        }
+        if (allBelow && allAbove)
+        {
+          // S is flat: no inside, keep everything
+          return;
+        }
+        if (allBelow)
+          planes.push_back({normal, d});
+        else if (allAbove)
+          planes.push_back({-normal, -d});
+      }
+    }
+  }
+  if (planes.size() < 4u)
+    return;
+
+  // Drop the points strictly inside all planes, with a margin far larger
+  // than float rounding: they are inside the hull of S, which is inside the
+  // hull of the kept points, so they are never the extreme of a projection.
+  const double margin = 1e-4 * extent;
+  _out.clear();
+  for (size_t n = 0; n < pts.size(); ++n)
+  {
+    bool inside = true;
+    for (const Plane &plane : planes)
+    {
+      if (plane.normal.Dot(pts[n]) + plane.d >= -margin)
+      {
+        inside = false;
+        break;
+      }
+    }
+    if (!inside)
+      _out.push_back(_points[n]);
   }
 }
 
@@ -1509,11 +2209,12 @@ void Ogre2BoundingBoxCamera::ConvertToScreenCoord(
   _maxVertex.x = (_maxVertex.x + 1.0) / 2 * width;
   _maxVertex.y = (1.0 - _maxVertex.y) / 2 * height;
 
-  // clip outside screen boundaries
+  // clip outside screen boundaries: the image spans [0, width] x
+  // [0, height], pixel i covering [i, i + 1)
   _minVertex.x = std::max<float>(0.0, _minVertex.x);
   _minVertex.y = std::max<float>(0.0, _minVertex.y);
-  _maxVertex.x = std::min<float>(_maxVertex.x, width - 1.0);
-  _maxVertex.y = std::min<float>(_maxVertex.y, height - 1.0);
+  _maxVertex.x = std::min<float>(_maxVertex.x, width);
+  _maxVertex.y = std::min<float>(_maxVertex.y, height);
 }
 
 /////////////////////////////////////////////////

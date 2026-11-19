@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2013 Torus Knot Software Ltd
+Copyright (c) 2000-2014 Torus Knot Software Ltd
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -25,40 +25,32 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
+//-----------------------------------------------------------------------------
+// Program Name: SGXLib_NormalMapLighting
+// Program Desc: Normal map lighting functions.
+// Program Type: Vertex/Pixel shader
+// Language: GLSL
+//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// Simple masked reflection map effect.
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-void SGX_ApplyReflectionMap(in sampler2D maskSampler, 
-						    in vec2 maskSamplerTexCoord,
-						    in sampler2D reflectionSampler, 
-						    in vec2 reflectionSamplerTexCoord,						    
-						    in vec3 baseColor,
-						    in float reflectionPower,
-						    out vec3 vOut)
+void SGX_ConstructTBNMatrix(in vec3 vNormal,
+				   in vec3 vTangent,
+				   out mat3 vOut)
 {
-	vec3 maskTexel	   = texture(maskSampler, maskSamplerTexCoord).xyz;
-	reflectionSamplerTexCoord.y = -reflectionSamplerTexCoord.y; // Hack for gl 
-	vec3 reflectionTexel = texture(reflectionSampler, reflectionSamplerTexCoord).xyz;
-	
-	vOut = baseColor + reflectionTexel.xyz*maskTexel.xyz*reflectionPower;
+	vec3 vBinormal = cross(vNormal, vTangent);
+	vOut = mtxFromRows(vTangent, vBinormal, vNormal);
 }
 
 //-----------------------------------------------------------------------------
-void SGX_ApplyReflectionMap(in sampler2D maskSampler, 
-						    in vec2 maskSamplerTexCoord,
-						    in samplerCube reflectionSampler, 
-						    in vec3 reflectionSamplerTexCoord,						   
-						    in vec3 baseColor,
-						    in float reflectionPower,
-						    out vec3 vOut)
+void SGX_Generate_Parallax_Texcoord(in sampler2D normalHeightMap,
+						in vec2 texCoord,
+						in vec3 eyeVec,
+						in vec2 scaleBias,
+						out vec2 newTexCoord)
 {
-	vec3 maskTexel	   = texture(maskSampler, maskSamplerTexCoord).xyz;
-	reflectionSamplerTexCoord.z = -reflectionSamplerTexCoord.z; // Hack for gl 
-	vec3 reflectionTexel = texture(reflectionSampler, reflectionSamplerTexCoord).xyz;
-	
-	vOut = baseColor + reflectionTexel.xyz*maskTexel.xyz*reflectionPower;
+	eyeVec = normalize(eyeVec);
+	float height = texture2D(normalHeightMap, texCoord).a;
+	float displacement = (height * scaleBias.x) + scaleBias.y;
+	vec2 scaledEyeDir = eyeVec.xy * displacement;
+	newTexCoord = scaledEyeDir + texCoord;
 }
-	

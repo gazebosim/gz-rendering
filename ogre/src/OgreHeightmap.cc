@@ -30,6 +30,8 @@
 #include "gz/rendering/ogre/OgreRTShaderSystem.hh"
 #include "gz/rendering/ogre/OgreScene.hh"
 
+#include "OgreResourcePath.hh"
+
 #if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR >= 11
 // Since OGRE 1.11, the once public
 // Ogre::TerrainMaterialGeneratorA::SM2Profile::ShaderHelper
@@ -631,8 +633,10 @@ void OgreHeightmap::Init()
       auto texture = this->descriptor.TextureByIndex(i);
 
       defaultimp.layerList[i].worldSize = texture->Size();
-      defaultimp.layerList[i].textureNames.push_back(texture->Diffuse());
-      defaultimp.layerList[i].textureNames.push_back(texture->Normal());
+      defaultimp.layerList[i].textureNames.push_back(
+          OgreResourcePath(texture->Diffuse()));
+      defaultimp.layerList[i].textureNames.push_back(
+          OgreResourcePath(texture->Normal()));
     }
   }
 
@@ -1024,14 +1028,18 @@ void OgreHeightmap::CreateMaterial()
 
     this->dataPtr->terrainGlobals->setDefaultMaterialGenerator(ptr);
 #else
-    // init custom material generator
-    Ogre::TerrainMaterialGeneratorPtr terrainMaterialGenerator;
-    auto terrainMaterial = OGRE_NEW TerrainMaterial("Default/White");
-    if (this->dataPtr->splitTerrain)
-      terrainMaterial->setGridSize(this->dataPtr->numTerrainSubdivisions);
-    terrainMaterialGenerator.bind(terrainMaterial);
+    // On OGRE >= 1.11 use the stock TerrainMaterialGeneratorA, whose active
+    // Profile is an SM2Profile and therefore accepts SetupShadows'
+    // SM2Profile setters without the ABI mismatch that GzTerrainMatGen
+    // exposed against 1.12.10.
+    // Install a new one per heightmap, as the branch above does:
+    // terrainGlobals outlives the render engine, and a generator kept from
+    // a previous Ogre::Root still points to the composite map scene manager
+    // destroyed with it. It also replaces a TerrainMaterial generator
+    // installed by a previous heightmap with a custom material.
     this->dataPtr->terrainGlobals->setDefaultMaterialGenerator(
-        terrainMaterialGenerator);
+        Ogre::TerrainMaterialGeneratorPtr(
+            OGRE_NEW Ogre::TerrainMaterialGeneratorA()));
 #endif
 
     this->SetupShadows(true);
@@ -1044,20 +1052,12 @@ void OgreHeightmap::SetupShadows(bool _enableShadows)
   GZ_PROFILE("OgreHeightmap::SetupShadows");
   auto matGen = this->dataPtr->terrainGlobals->getDefaultMaterialGenerator();
 
-  // Assume we get a shader model 2 material profile
-  Ogre::TerrainMaterialGeneratorA::SM2Profile *matProfile;
-#if OGRE_VERSION_MAJOR == 1 && OGRE_VERSION_MINOR < 11
-  matProfile = static_cast<GzTerrainMatGen::SM2Profile *>(
-      matGen->getActiveProfile());
-#else
-  // Since OGRE 1.11 the custom GzTerrainMatGen path is disabled and
-  // CreateMaterial() installs our TerrainMaterial generator whose Profile is
-  // not an SM2Profile. Use dynamic_cast so the nullptr guard below skips the
-  // SM2Profile-only setters and avoids writing past the real Profile object
-  // (the static_cast path led to heap corruption during loadAllTerrains).
-  matProfile = dynamic_cast<Ogre::TerrainMaterialGeneratorA::SM2Profile *>(
-      matGen->getActiveProfile());
-#endif
+  // Assume we get a shader model 2 material profile. dynamic_cast guards the
+  // case where CreateMaterial installed our custom TerrainMaterial generator
+  // (when a material name was supplied) whose Profile is not an SM2Profile.
+  Ogre::TerrainMaterialGeneratorA::SM2Profile *matProfile =
+      dynamic_cast<Ogre::TerrainMaterialGeneratorA::SM2Profile *>(
+          matGen->getActiveProfile());
 
   if (nullptr == matProfile)
   {
@@ -1145,6 +1145,18 @@ bool OgreHeightmap::InitBlendMaps(Ogre::Terrain *_terrain)
     map->dirty();
     map->update();
   }
+
+  // TerrainLayerBlendMap::update() marks the composite map dirty and defers
+  // its update by 2 seconds. OGRE runs the deferred update from
+  // Terrain::preFindVisibleObjects, i.e. inside the first render pass that
+  // finds the terrain once the delay is over. Rendering the composite map
+  // there leaves its render target and projection active for the rest of
+  // that pass, e.g. a GpuRays first pass then renders nothing.
+  // Update it now, outside any render pass, and cancel the deferred update.
+  // The terrain still updates the composite map itself, outside the render
+  // passes, when its derived data (normals, lightmap) is finalised.
+  _terrain->updateCompositeMap();
+  _terrain->updateCompositeMapWithDelay(0);
 
   return true;
 }

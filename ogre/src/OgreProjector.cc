@@ -21,11 +21,14 @@
 #include <unordered_set>
 
 #include <OgreEntity.h>
+#include <OgreMaterialManager.h>
 #include <OgrePass.h>
 #include <OgreRenderTargetListener.h>
 #include <OgreSceneManager.h>
 #include <OgreSceneNode.h>
+#include <OgreTechnique.h>
 
+#include <gz/common/Image.hh>
 #include <gz/common/Profiler.hh>
 #include "gz/rendering/ogre/OgreCamera.hh"
 #include "gz/rendering/ogre/OgreConversions.hh"
@@ -34,6 +37,8 @@
 #include "gz/rendering/ogre/OgreRTShaderSystem.hh"
 #include "gz/rendering/ogre/OgreScene.hh"
 #include "gz/rendering/Utils.hh"
+
+#include "OgreResourcePath.hh"
 
 using namespace gz;
 using namespace rendering;
@@ -517,35 +522,42 @@ void OgreProjectorListener::AddDecalToMaterial(
 
   Ogre::MaterialPtr mat = static_cast<Ogre::MaterialPtr>(
     Ogre::MaterialManager::getSingleton().getByName(_matName));
+  // MaterialManager::getByName returns a null MaterialPtr if the material is
+  // not found
+  if (!mat)
+  {
+    gzerr << "OgreProjector: cannot add decal — material '" << _matName
+          << "' not found in MaterialManager" << std::endl;
+    return;
+  }
   Ogre::Pass *pass = mat->getTechnique(0)->createPass();
 
   pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
   pass->setDepthBias(1);
+  pass->setDepthWriteEnabled(false);
   pass->setLightingEnabled(false);
 
-  if (!Ogre::ResourceGroupManager::getSingleton().resourceExists(
-      Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-      this->textureName ))
-  {
-    Ogre::ResourceGroupManager::getSingleton().addResourceLocation(
-        this->textureName, "FileSystem",
-        Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-  }
-
+  // A file path is opened by the AbsolutePathLoadingListener installed by
+  // OgreRenderEngine, any other name is looked up in the resource groups
   Ogre::TextureUnitState *texState =
-      pass->createTextureUnitState(this->textureName);
+      pass->createTextureUnitState(OgreResourcePath(this->textureName));
   texState->setProjectiveTexturing(true, this->frustum.get());
   texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_BORDER);
   texState->setTextureFiltering(Ogre::TFO_ANISOTROPIC);
   texState->setTextureBorderColour(Ogre::ColourValue(0.0, 0.0, 0.0, 0.0));
   texState->setColourOperation(Ogre::LBO_ALPHA_BLEND);
 
+  // projection_filter.png lives in ogre/media/materials/textures, already
+  // registered as a resource location by OgreRenderEngine, so reference it
+  // by name directly.
   texState = pass->createTextureUnitState("projection_filter.png");
   texState->setProjectiveTexturing(true, this->filterFrustum.get());
   texState->setTextureAddressingMode(Ogre::TextureUnitState::TAM_CLAMP);
   texState->setTextureFiltering(Ogre::TFO_NONE);
 
   this->projectorTargets[_matName] = pass;
+
+  mat->load();
 }
 
 /////////////////////////////////////////////////

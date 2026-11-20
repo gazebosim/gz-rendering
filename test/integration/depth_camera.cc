@@ -190,7 +190,6 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
         * (depthCamera->ImageWidth() * pointCloudChannelCount)
         - pointCloudChannelCount;
 
-    float minVal = -gz::math::INF_D;
     float maxVal = gz::math::INF_D;
 
     // Verify Depth
@@ -286,7 +285,8 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
       EXPECT_TRUE(255u == ra || 0u == ra);
     }
 
-    // Check that for a box really close it returns it is not seen
+    // Check that for a box closer than NearClipPlane() (0.5 * nearDist),
+    // it is clipped by the camera frustum (returns maxVal)
     gz::math::Vector3d boxPositionNear(
         unitBoxSize * 0.5 + nearDist * 0.5, 0.0, 0.0);
     box->SetLocalPosition(boxPositionNear);
@@ -300,14 +300,14 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
     EXPECT_EQ(1u, g_pointCloudCounter);
 
     // Verify Depth
-    // box not detected
-    EXPECT_FLOAT_EQ(minVal, scan[mid]);
-    EXPECT_FLOAT_EQ(minVal, scan[left]);
-    EXPECT_FLOAT_EQ(minVal, scan[right]);
+    // box clipped by near plane so all should return maxVal
+    EXPECT_FLOAT_EQ(maxVal, scan[mid]);
+    EXPECT_FLOAT_EQ(maxVal, scan[left]);
+    EXPECT_FLOAT_EQ(maxVal, scan[right]);
 
     // Verify Point Cloud XYZ
     {
-      // all points should be min val
+      // all points should be maxVal
       for (unsigned int i = 0; i < depthCamera->ImageHeight(); ++i)
       {
         unsigned int step = i*depthCamera->ImageWidth()*pointCloudChannelCount;
@@ -316,9 +316,9 @@ TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraBoxes))
           float x = pointCloudData[step + j*pointCloudChannelCount];
           float y = pointCloudData[step + j*pointCloudChannelCount + 1];
           float z = pointCloudData[step + j*pointCloudChannelCount + 2];
-          EXPECT_FLOAT_EQ(minVal, x);
-          EXPECT_FLOAT_EQ(minVal, y);
-          EXPECT_FLOAT_EQ(minVal, z);
+          EXPECT_FLOAT_EQ(maxVal, x);
+          EXPECT_FLOAT_EQ(maxVal, y);
+          EXPECT_FLOAT_EQ(maxVal, z);
          }
       }
 
@@ -1044,6 +1044,156 @@ TEST_F(DepthCameraTest,
   c2.reset();
   c3.reset();
   c4.reset();
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(DepthCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(DepthCameraClip))
+{
+  const int imgWidth = 256;
+  const int imgHeight = 256;
+  const double unitBoxSize = 1.0;
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene_depth_clip");
+  ASSERT_NE(nullptr, scene);
+  scene->SetBackgroundColor(1.0, 0.0, 0.0);
+  scene->SetAmbientLight(1.0, 1.0, 1.0);
+  gz::rendering::VisualPtr root = scene->RootVisual();
+
+  gz::rendering::MaterialPtr blue = scene->CreateMaterial();
+  blue->SetAmbient(0.0, 0.0, 1.0);
+  blue->SetDiffuse(0.0, 0.0, 1.0);
+  blue->SetSpecular(0.0, 0.0, 1.0);
+
+  // Create target box visual
+  gz::rendering::VisualPtr box = scene->CreateVisual();
+  box->AddGeometry(scene->CreateBox());
+  box->SetLocalScale(unitBoxSize, unitBoxSize, unitBoxSize);
+  box->SetMaterial(blue);
+  root->AddChild(box);
+
+  // Create housing box visual closer than the camera frustum near clip plane
+  // (front face at x = 0.05 < nearDist = 0.1)
+  gz::rendering::VisualPtr housingBox = scene->CreateVisual();
+  housingBox->AddGeometry(scene->CreateBox());
+  housingBox->SetLocalScale(0.02, unitBoxSize, unitBoxSize);
+  housingBox->SetLocalPosition(0.04, 0.0, 0.0);
+  root->AddChild(housingBox);
+
+  const double nearDist = 0.1;
+  const double farDist = 10.0;
+  const double depthNearDist = 0.5;
+  const double depthFarDist = 5.0;
+
+  auto depthCamera = scene->CreateDepthCamera("DepthCameraClip");
+  ASSERT_NE(nullptr, depthCamera);
+  depthCamera->SetImageWidth(imgWidth);
+  depthCamera->SetImageHeight(imgHeight);
+  depthCamera->SetAspectRatio(1.0);
+  depthCamera->SetHFOV(1.05);
+
+  depthCamera->SetNearClipPlane(nearDist);
+  depthCamera->SetFarClipPlane(farDist);
+  // Before setting depth clip planes explicitly, they default to
+  // Near/FarClipPlane
+  EXPECT_DOUBLE_EQ(nearDist, depthCamera->DepthNearClipPlane());
+  EXPECT_DOUBLE_EQ(farDist, depthCamera->DepthFarClipPlane());
+
+  depthCamera->SetDepthNearClipPlane(depthNearDist);
+  depthCamera->SetDepthFarClipPlane(depthFarDist);
+  EXPECT_DOUBLE_EQ(nearDist, depthCamera->NearClipPlane());
+  EXPECT_DOUBLE_EQ(farDist, depthCamera->FarClipPlane());
+  EXPECT_DOUBLE_EQ(depthNearDist, depthCamera->DepthNearClipPlane());
+  EXPECT_DOUBLE_EQ(depthFarDist, depthCamera->DepthFarClipPlane());
+
+  depthCamera->CreateDepthTexture();
+  root->AddChild(depthCamera);
+
+  const unsigned int pcChannels = 4u;
+  std::vector<float> scan(imgWidth * imgHeight);
+  std::vector<float> points(imgWidth * imgHeight * pcChannels);
+
+  auto c1 = depthCamera->ConnectNewDepthFrame(
+      std::bind(&::OnNewDepthFrame, scan.data(),
+        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+        std::placeholders::_4, std::placeholders::_5));
+  auto c2 = depthCamera->ConnectNewRgbPointCloud(
+      std::bind(&::OnNewRgbPointCloud, points.data(),
+        std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+        std::placeholders::_4, std::placeholders::_5));
+
+  const int midWidth = static_cast<int>(depthCamera->ImageWidth() * 0.5);
+  const int midHeight = static_cast<int>(depthCamera->ImageHeight() * 0.5);
+  const int mid = midHeight * depthCamera->ImageWidth() + midWidth - 1;
+  const int pcMid = mid * pcChannels;
+
+  // 1. Box at 2.0m (within [depthNearDist, depthFarDist]): camera sees through
+  // housingBox (at 0.05m < nearDist) and detects box at 2.0m.
+  box->SetLocalPosition(unitBoxSize * 0.5 + 2.0, 0.0, 0.0);
+  g_depthCounter = 0u;
+  g_pointCloudCounter = 0u;
+  depthCamera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+  EXPECT_EQ(1u, g_depthCounter);
+  EXPECT_EQ(1u, g_pointCloudCounter);
+  EXPECT_NEAR(2.0, scan[mid], DEPTH_TOL);
+  EXPECT_NEAR(2.0, points[pcMid], DEPTH_TOL);
+
+  // 2. Box at 0.3m (in deadzone [nearDist=0.1, depthNearDist=0.5)):
+  // returns -inf for depth/xyz, while RGB remains blue (inside
+  // [nearDist, farDist]).
+  box->SetLocalPosition(unitBoxSize * 0.5 + 0.3, 0.0, 0.0);
+  g_depthCounter = 0u;
+  g_pointCloudCounter = 0u;
+  depthCamera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+  EXPECT_EQ(1u, g_depthCounter);
+  EXPECT_EQ(1u, g_pointCloudCounter);
+  EXPECT_FLOAT_EQ(-gz::math::INF_F, scan[mid]);
+  EXPECT_FLOAT_EQ(-gz::math::INF_F, points[pcMid]);
+  {
+    float mc = points[pcMid + 3];
+    uint32_t *mrgba = reinterpret_cast<uint32_t *>(&mc);
+    EXPECT_EQ(0u, *mrgba >> 24 & 0xFF);
+    EXPECT_EQ(0u, *mrgba >> 16 & 0xFF);
+    EXPECT_GT(*mrgba >> 8 & 0xFF, 0u);
+  }
+
+  // 3. Box at 6.0m (in (depthFarDist=5.0, farDist=10.0]): returns +inf
+  // for depth/xyz, while RGB remains blue (inside [nearDist, farDist]).
+  box->SetLocalPosition(unitBoxSize * 0.5 + 6.0, 0.0, 0.0);
+  g_depthCounter = 0u;
+  g_pointCloudCounter = 0u;
+  depthCamera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+  EXPECT_EQ(1u, g_depthCounter);
+  EXPECT_EQ(1u, g_pointCloudCounter);
+  EXPECT_FLOAT_EQ(gz::math::INF_F, scan[mid]);
+  EXPECT_FLOAT_EQ(gz::math::INF_F, points[pcMid]);
+  {
+    float mc = points[pcMid + 3];
+    uint32_t *mrgba = reinterpret_cast<uint32_t *>(&mc);
+    EXPECT_EQ(0u, *mrgba >> 24 & 0xFF);
+    EXPECT_EQ(0u, *mrgba >> 16 & 0xFF);
+    EXPECT_GT(*mrgba >> 8 & 0xFF, 0u);
+  }
+
+  // 4. Update depth clip planes after CreateDepthTexture() / first frames,
+  // including depthFarClip (12.0m) > farDist (10.0m): box at 6.0m is now
+  // inside [depthNear, depthFar] and should be detected at 6.0m.
+  depthCamera->SetDepthNearClipPlane(0.2);
+  depthCamera->SetDepthFarClipPlane(12.0);
+  g_depthCounter = 0u;
+  g_pointCloudCounter = 0u;
+  depthCamera->Update();
+  scene->SetTime(scene->Time() + std::chrono::milliseconds(16));
+  EXPECT_EQ(1u, g_depthCounter);
+  EXPECT_EQ(1u, g_pointCloudCounter);
+  EXPECT_NEAR(6.0, scan[mid], DEPTH_TOL);
+  EXPECT_NEAR(6.0, points[pcMid], DEPTH_TOL);
+
+  c1.reset();
+  c2.reset();
   engine->DestroyScene(scene);
 }
 

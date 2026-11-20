@@ -303,6 +303,7 @@ void Ogre2WideAngleCamera::DestroyTextures()
 
   this->DestroyStitchWorkspace();
   this->DestroyFacesWorkspaces();
+  this->dataPtr->readback.Destroy();
 
   for (uint32_t i = 0u; i < 2u; ++i)
   {

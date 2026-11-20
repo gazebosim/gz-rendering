@@ -24,6 +24,8 @@
 #endif
 
 #include <cstdint>
+#include <optional>
+#include <string>
 #include <math.h>
 #include <gz/math/Helpers.hh>
 #include <gz/math/Matrix4.hh>
@@ -43,6 +45,7 @@
 
 #include "Ogre2GpuReadbackTicket.hh"
 #include "Ogre2ParticleNoiseListener.hh"
+#include "Ogre2QuadNodePool.hh"
 #include "Ogre2SharedFullscreenRect.hh"
 
 #ifdef _MSC_VER
@@ -108,12 +111,8 @@ class Ogre2DepthGaussianNoisePass : public Ogre2GaussianNoisePass
   /// \brief Destructor
   public: virtual ~Ogre2DepthGaussianNoisePass()
   {
-    // Remove the cloned material. Ogre may already be gone, e.g. the render
-    // engine was unloaded before the pass was released.
-    Ogre::MaterialManager *materialManager =
-        Ogre::MaterialManager::getSingletonPtr();
-    if (materialManager && !this->gaussianNoiseMatName.empty())
-      materialManager->remove(this->gaussianNoiseMatName);
+    ReleaseQuadNode("GaussianNoiseDepth", {this->ogreCompositorNodeDefName,
+        this->gaussianNoiseMatName});
   }
 
   // Documentation inherited.
@@ -259,6 +258,10 @@ void Ogre2DepthGaussianNoisePass::CreateRenderPass()
   // This function is similar to Ogre2GaussianNoisePass but duplicated here
   // for Ogre2DepthCamera.
 
+  // Called every time the render pass chain is rebuilt: create it once
+  if (!this->ogreCompositorNodeDefName.empty())
+    return;
+
   static int gaussianDepthNodeCounter = 0;
 
   auto engine = Ogre2RenderEngine::Instance();
@@ -284,6 +287,16 @@ void Ogre2DepthGaussianNoisePass::CreateRenderPass()
   }
   if (!ogreMat->isLoaded())
     ogreMat->load();
+
+  // Reuse the node of a destroyed pass, if there is one
+  if (std::optional<Ogre2QuadNode> node = TakeQuadNode(matName))
+  {
+    this->gaussianNoiseMat = ogreMat->clone(node->materialName).get();
+    this->gaussianNoiseMatName = node->materialName;
+    this->ogreCompositorNodeDefName = node->nodeDefName;
+    return;
+  }
+
   std::string materialName = matName + "_" +
       std::to_string(gaussianDepthNodeCounter);
   this->gaussianNoiseMat = ogreMat->clone(materialName).get();

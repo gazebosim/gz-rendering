@@ -31,18 +31,16 @@ THE SOFTWARE.
 // Language: GLSL
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-void SGX_CopyDepth(in vec4 clipSpacePos,
-			 out float oDepth)
-{
-	oDepth = clipSpacePos.z;
-}
+// Gazebo: keeps the interpolated 3x3 PCF and the 0.4 shadow floor of the
+// previous version of this file, with the entry points updated to the
+// signatures that the OGRE 1.12 RTSS IntegratedPSSM3 sub-render state
+// generates calls for.
 
-//-----------------------------------------------------------------------------
-void SGX_ModulateScalar(in float vIn0, in vec4 vIn1, out vec4 vOut)
-{
-	vOut = vIn0 * vIn1;
-}
+#ifdef PSSM_SAMPLE_CMP
+#define SAMPLER_TYPE sampler2DShadow
+#else
+#define SAMPLER_TYPE sampler2D
+#endif
 
 //-----------------------------------------------------------------------------
 void SGX_ApplyShadowFactor_Diffuse(in vec4 ambient,
@@ -55,14 +53,25 @@ void SGX_ApplyShadowFactor_Diffuse(in vec4 ambient,
 }
 
 //-----------------------------------------------------------------------------
-float texture2DCompare(sampler2D depths, vec2 uv, float compare)
+// texture2D/shadow2D instead of texture(): the stock terrain material
+// generator also includes this file from #version 120 programs, and the
+// RTSS defines them to texture() for GLSL >= 130.
+float texture2DCompare(SAMPLER_TYPE depths, vec2 uv, float compare)
 {
-  float depth = texture(depths, uv).r;
+#ifdef PSSM_SAMPLE_CMP
+#ifdef OGRE_GLSLES
+  return mix(0.4, 1.0, shadow2D(depths, vec3(uv, compare)));
+#else
+  return mix(0.4, 1.0, shadow2D(depths, vec3(uv, compare)).r);
+#endif
+#else
+  float depth = texture2D(depths, uv).r;
   return (step(compare, depth) >= 1.0) ? 1.0 : 0.4;
+#endif
 }
 
 //-----------------------------------------------------------------------------
-float _SGX_ShadowPCF4(sampler2D shadowMap, vec4 shadowMapPos, vec2 offset)
+float _SGX_ShadowPCF4(SAMPLER_TYPE shadowMap, vec4 shadowMapPos, vec2 offset)
 {
   // Interpolated 3x3 PCF
   // Adapted from http://www.ogre3d.org/forums/viewtopic.php?f=1&t=78834
@@ -71,6 +80,12 @@ float _SGX_ShadowPCF4(sampler2D shadowMap, vec4 shadowMapPos, vec2 offset)
     return 1.0;
 
   shadowMapPos = shadowMapPos / shadowMapPos.w;
+#if defined(PSSM_SAMPLE_CMP) && !defined(OGRE_REVERSED_Z)
+  // A comparison sampler reads the hardware depth buffer, which holds
+  // window depth in [0, 1]. The gz shadow caster writes NDC depth only for
+  // the colour shadow map read by the default path.
+  shadowMapPos.z = clamp(shadowMapPos.z * 0.5 + 0.5, 0.0, 1.0);
+#endif
   vec2 uv = shadowMapPos.xy;
 
   vec2 texelSize = offset;
@@ -113,32 +128,59 @@ float _SGX_ShadowPCF4(sampler2D shadowMap, vec4 shadowMapPos, vec2 offset)
 }
 
 //-----------------------------------------------------------------------------
+// Called by the RTSS when there is a single shadow texture
+void SGX_ShadowPCF4(in SAMPLER_TYPE shadowMap, in vec4 shadowMapPos,
+                    in vec2 invTexSize, out float c)
+{
+  c = _SGX_ShadowPCF4(shadowMap, shadowMapPos, invTexSize);
+}
+
+//-----------------------------------------------------------------------------
+// The RTSS passes (light position, shadow map, inverse texture size) for
+// each of the PSSM_NUM_SPLITS splits. The last split always uses the
+// "3" parameters.
 void SGX_ComputeShadowFactor_PSSM3(in float fDepth,
 							in vec4 vSplitPoints,
 							in vec4 lightPosition0,
+							in SAMPLER_TYPE shadowMap0,
+							in vec2 invShadowMapSize0,
+#if PSSM_NUM_SPLITS > 2
 							in vec4 lightPosition1,
+							in SAMPLER_TYPE shadowMap1,
+							in vec2 invShadowMapSize1,
+#endif
+#if PSSM_NUM_SPLITS > 3
 							in vec4 lightPosition2,
-							in sampler2D shadowMap0,
-							in sampler2D shadowMap1,
-							in sampler2D shadowMap2,
-							in vec4 invShadowMapSize0,
-							in vec4 invShadowMapSize1,
-							in vec4 invShadowMapSize2,
+							in SAMPLER_TYPE shadowMap2,
+							in vec2 invShadowMapSize2,
+#endif
+							in vec4 lightPosition3,
+							in SAMPLER_TYPE shadowMap3,
+							in vec2 invShadowMapSize3,
 							out float oShadowFactor)
 {
   if (fDepth  <= vSplitPoints.x)
   {
     oShadowFactor =
-      _SGX_ShadowPCF4(shadowMap0, lightPosition0, invShadowMapSize0.xy);
+      _SGX_ShadowPCF4(shadowMap0, lightPosition0, invShadowMapSize0);
   }
+#if PSSM_NUM_SPLITS > 2
   else if (fDepth <= vSplitPoints.y)
   {
     oShadowFactor =
-      _SGX_ShadowPCF4(shadowMap1, lightPosition1, invShadowMapSize1.xy);
+      _SGX_ShadowPCF4(shadowMap1, lightPosition1, invShadowMapSize1);
   }
+#endif
+#if PSSM_NUM_SPLITS > 3
+  else if (fDepth <= vSplitPoints.z)
+  {
+    oShadowFactor =
+      _SGX_ShadowPCF4(shadowMap2, lightPosition2, invShadowMapSize2);
+  }
+#endif
   else
   {
     oShadowFactor =
-      _SGX_ShadowPCF4(shadowMap2, lightPosition2, invShadowMapSize2.xy);
+      _SGX_ShadowPCF4(shadowMap3, lightPosition3, invShadowMapSize3);
   }
 }

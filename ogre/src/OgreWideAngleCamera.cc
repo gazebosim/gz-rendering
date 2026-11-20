@@ -244,12 +244,10 @@ void OgreWideAngleCamera::Destroy()
     this->dataPtr->ogreRenderTexture = nullptr;
   }
 
+  // compMat is retrieved (not created) by getByName - do not remove it
+  // from the MaterialManager as it's owned by the resource system.
   if (!this->dataPtr->compMat.isNull())
-  {
-    Ogre::MaterialManager::getSingleton().remove(
-        this->dataPtr->compMat->getName());
     this->dataPtr->compMat.setNull();
-  }
 
   this->DestroyRenderTexture();
   BaseWideAngleCamera::Destroy();

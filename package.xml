@@ -20,7 +20,7 @@
   <depend>gz-plugin</depend>
   <depend>gz-utils</depend>
   <depend>libglew-dev</depend>
-  <depend>libogre-dev</depend>
+  <depend>libogre-1.12-dev</depend>
   <depend>libogre-next-2.3-dev</depend>
   <depend>libvulkan-dev</depend>
   <depend>libxi-dev</depend>

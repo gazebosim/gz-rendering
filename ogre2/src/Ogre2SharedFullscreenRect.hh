@@ -47,11 +47,8 @@ inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 ///
 /// Call it before removing a material a quad pass used.
 /// \param[in] _material The material that is about to be destroyed
-/// \param[in] _replacement Material for the rectangles to use instead. It
-/// must outlive them, e.g. the material _material was cloned from.
 GZ_RENDERING_OGRE2_HIDDEN
-void ReleaseFromSharedFullscreenRects(const Ogre::MaterialPtr &_material,
-    const Ogre::MaterialPtr &_replacement);
+void ReleaseFromSharedFullscreenRects(const Ogre::MaterialPtr &_material);
 }
 }  // namespace rendering
 }  // namespace gz

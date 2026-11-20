@@ -380,16 +380,14 @@ void Ogre2DepthCamera::Destroy()
 
   if (this->dataPtr->depthMaterial)
   {
-    ReleaseFromSharedFullscreenRects(this->dataPtr->depthMaterial,
-        Ogre::MaterialManager::getSingleton().getByName("DepthCamera"));
+    ReleaseFromSharedFullscreenRects(this->dataPtr->depthMaterial);
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->depthMaterial->getName());
     this->dataPtr->depthMaterial.setNull();
   }
   if (this->dataPtr->depthFinalMaterial)
   {
-    ReleaseFromSharedFullscreenRects(this->dataPtr->depthFinalMaterial,
-        Ogre::MaterialManager::getSingleton().getByName("DepthCameraFinal"));
+    ReleaseFromSharedFullscreenRects(this->dataPtr->depthFinalMaterial);
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->depthFinalMaterial->getName());
     this->dataPtr->depthFinalMaterial.setNull();

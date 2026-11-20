@@ -748,8 +748,7 @@ void Ogre2ThermalCamera::Destroy()
 
   if (this->dataPtr->thermalMaterial)
   {
-    ReleaseFromSharedFullscreenRects(this->dataPtr->thermalMaterial,
-        Ogre::MaterialManager::getSingleton().getByName("ThermalCamera"));
+    ReleaseFromSharedFullscreenRects(this->dataPtr->thermalMaterial);
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->thermalMaterial->getName());
     this->dataPtr->thermalMaterial.setNull();

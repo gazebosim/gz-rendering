@@ -16,12 +16,17 @@
  */
 
 
+#include <optional>
+#include <string>
+
 #include <gz/common/Console.hh>
 #include <gz/common/Profiler.hh>
 
 #include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/ogre2/Ogre2GaussianNoisePass.hh"
 #include "gz/rendering/ogre2/Ogre2RenderEngine.hh"
+
+#include "Ogre2QuadNodePool.hh"
 
 #ifdef _MSC_VER
   #pragma warning(push, 0)
@@ -61,12 +66,8 @@ Ogre2GaussianNoisePass::Ogre2GaussianNoisePass()
 //////////////////////////////////////////////////
 Ogre2GaussianNoisePass::~Ogre2GaussianNoisePass()
 {
-  // Remove the cloned material. Ogre may already be gone, e.g. the render
-  // engine was unloaded before the pass was released.
-  Ogre::MaterialManager *materialManager =
-      Ogre::MaterialManager::getSingletonPtr();
-  if (materialManager && !this->dataPtr->gaussianNoiseMatName.empty())
-    materialManager->remove(this->dataPtr->gaussianNoiseMatName);
+  ReleaseQuadNode("GaussianNoise", {this->ogreCompositorNodeDefName,
+      this->dataPtr->gaussianNoiseMatName});
 }
 
 //////////////////////////////////////////////////
@@ -121,6 +122,15 @@ void Ogre2GaussianNoisePass::CreateRenderPass()
   }
   if (!ogreMat->isLoaded())
     ogreMat->load();
+
+  // Reuse the node of a destroyed pass, if there is one
+  if (std::optional<Ogre2QuadNode> node = TakeQuadNode(matName))
+  {
+    this->dataPtr->gaussianNoiseMat = ogreMat->clone(node->materialName).get();
+    this->dataPtr->gaussianNoiseMatName = node->materialName;
+    this->ogreCompositorNodeDefName = node->nodeDefName;
+    return;
+  }
 
   static int gaussianNodeCounter = 0;
 

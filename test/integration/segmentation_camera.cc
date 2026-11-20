@@ -256,10 +256,17 @@ TEST_F(SegmentationCameraTest, RecreateWithSameName)
             std::placeholders::_1, std::placeholders::_2,
             std::placeholders::_3, std::placeholders::_4,
             std::placeholders::_5));
-    g_counter = 0;
+    {
+      // Drop any earlier frame, so the checks below see this camera's
+      std::lock_guard<std::mutex> lock(g_mutex);
+      delete [] g_buffer;
+      g_buffer = nullptr;
+      g_counter = 0;
+    }
     camera->Update();
     std::lock_guard<std::mutex> lock(g_mutex);
     EXPECT_EQ(1, g_counter);
+    EXPECT_NE(nullptr, g_buffer);
     if (g_buffer)
     {
       EXPECT_EQ(2, g_buffer[middleIndex]);
@@ -287,5 +294,7 @@ TEST_F(SegmentationCameraTest, RecreateWithSameName)
   ASSERT_NE(nullptr, camera);
 
   // Clean up
+  delete [] g_buffer;
+  g_buffer = nullptr;
   engine->DestroyScene(scene);
 }

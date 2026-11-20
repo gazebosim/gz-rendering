@@ -25,6 +25,9 @@
 #endif
 #endif
 
+#include <algorithm>
+#include <initializer_list>
+
 #include <gz/common/Console.hh>
 #include <gz/common/Profiler.hh>
 
@@ -84,6 +87,11 @@ class gz::rendering::Ogre2LidarVisualPrivate
   /// \brief Pointer to point cloud material.
   /// Used when LidarVisualType = LVT_POINTS.
   public: Ogre::MaterialPtr pointsMat;
+
+  /// \brief Remove the points of every renderable, keeping the renderables
+  /// (and their GPU buffers) to fill them again. Leaves them as if they had
+  /// just been created.
+  public: void ResetRenderables();
 };
 
 using namespace gz;
@@ -196,6 +204,21 @@ void Ogre2LidarVisual::ClearVisualData()
 }
 
 //////////////////////////////////////////////////
+void Ogre2LidarVisualPrivate::ResetRenderables()
+{
+  for (auto *renderables : {&this->noHitRayStrips, &this->rayStrips,
+       &this->deadZoneRayFans, &this->rayLines, &this->points})
+  {
+    for (auto &renderable : *renderables)
+      renderable->Clear();
+  }
+
+  // A new dead zone fan starts at the origin, see Ogre2LidarVisual::Update
+  for (auto &fan : this->deadZoneRayFans)
+    fan->AddPoint(gz::math::Vector3d::Zero);
+}
+
+//////////////////////////////////////////////////
 void Ogre2LidarVisual::SetPoints(const std::vector<double> &_points)
 {
   this->dataPtr->lidarPoints = _points;
@@ -219,24 +242,24 @@ void Ogre2LidarVisual::Update()
     return;
   }
 
-  bool clearVisuals = false;
-
-  if (this->lidarVisualType != this->dataPtr->lidarVisType
-        || !this->displayNonHitting)
-  {
-    clearVisuals = true;
-  }
-
-  if (this->displayNonHitting != this->dataPtr->currentDisplayNonHitting)
-  {
-    clearVisuals = true;
-    this->dataPtr->currentDisplayNonHitting = this->displayNonHitting;
-  }
+  const bool typeChanged =
+      this->lidarVisualType != this->dataPtr->lidarVisType;
+  const bool nonHittingChanged =
+      this->displayNonHitting != this->dataPtr->currentDisplayNonHitting;
+  this->dataPtr->currentDisplayNonHitting = this->displayNonHitting;
+  const size_t builtLines = std::max(this->dataPtr->rayLines.size(),
+      this->dataPtr->points.size());
 
   // if visual type is changed, clear all DynamicLines
-  if (clearVisuals)
+  if (typeChanged || nonHittingChanged || builtLines > this->verticalCount)
   {
     this->ClearVisualData();
+  }
+  else if (!this->displayNonHitting)
+  {
+    // Rays that hit nothing aren't drawn, so the points of a line can't be
+    // updated in place: start the lines again, reusing the renderables.
+    this->dataPtr->ResetRenderables();
   }
   this->dataPtr->lidarVisType = this->lidarVisualType;
 

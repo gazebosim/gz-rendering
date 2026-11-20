@@ -30,6 +30,8 @@
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
 #include "gz/rendering/ogre2/Ogre2SelectionBuffer.hh"
 
+#include "Ogre2SharedFullscreenRect.hh"
+
 #ifdef _MSC_VER
   #pragma warning(push, 0)
 #endif
@@ -156,6 +158,8 @@ Ogre2SelectionBuffer::~Ogre2SelectionBuffer()
   // reload the same material every time
   if (!this->dataPtr->selectionMaterial.isNull())
   {
+    ReleaseFromSharedFullscreenRects(this->dataPtr->selectionMaterial,
+        Ogre::MaterialManager::getSingleton().getByName("SelectionBuffer"));
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->selectionMaterial->getName());
     this->dataPtr->selectionMaterial.setNull();

@@ -512,6 +512,58 @@ TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(Projection))
 }
 
 //////////////////////////////////////////////////
+// Copy() returns the frame rendered just before it, checked against the
+// background colour of an empty scene rather than against another copy
+TEST_F(WideAngleCameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyBackground))
+{
+  if (engineToTest != "ogre2")
+    GTEST_SKIP() << "Checked on ogre2 only";
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+
+  const unsigned int width = 65u;
+  const unsigned int height = 33u;
+  auto camera = scene->CreateWideAngleCamera("WideAngleCamera");
+  ASSERT_NE(camera, nullptr);
+  CameraLens lens;
+  lens.SetCustomMappingFunction(1.05, 4.0, AFT_TAN, 1.0, 0.0);
+  lens.SetType(MFT_CUSTOM);
+  lens.SetCutOffAngle(GZ_PI);
+  camera->SetLens(lens);
+  camera->SetHFOV(2.6);
+  camera->SetImageWidth(width);
+  camera->SetImageHeight(height);
+  scene->RootVisual()->AddChild(camera);
+
+  // 0 and 1 map to 0 and 255 whether or not the target is sRGB. Each frame
+  // differs from the one before, so that a stale frame shows.
+  const math::Color colors[] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}, {1, 1, 0}};
+  for (size_t i = 0; i < 4; ++i)
+  {
+    scene->SetBackgroundColor(colors[i]);
+    camera->Update();
+
+    Image image = camera->CreateImage();
+    ASSERT_EQ(PF_R8G8B8, image.Format());
+    camera->Copy(image);
+    const unsigned char *data = image.Data<unsigned char>();
+    const unsigned char expected[3] = {
+        static_cast<unsigned char>(colors[i].R() * 255),
+        static_cast<unsigned char>(colors[i].G() * 255),
+        static_cast<unsigned char>(colors[i].B() * 255)};
+    size_t wrong = 0;
+    for (size_t p = 0; p < width * height; ++p)
+      wrong += memcmp(data + p * 3, expected, 3) != 0;
+    EXPECT_EQ(0u, wrong) << "frame " << i << ": first pixel "
+        << int(data[0]) << " " << int(data[1]) << " " << int(data[2]);
+  }
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+//////////////////////////////////////////////////
 TEST_F(WideAngleCameraTest,
        GZ_UTILS_TEST_DISABLED_ON_WIN32(WideAngleCameraMono))
 {

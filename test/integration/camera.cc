@@ -42,6 +42,13 @@ class CameraTest: public CommonRenderingTest
   public: const std::string TEST_MEDIA_PATH =
           gz::common::joinPaths(std::string(PROJECT_SOURCE_PATH),
                 "test", "media");
+
+  /// \brief Check that every copy returns the frame rendered just before
+  /// it, also across image size changes
+  /// \param[in] _format PF_R8G8B8, or PF_L8
+  /// \param[in] _antiAliasing Camera anti-aliasing (MSAA samples)
+  public: void CheckCopyTracksEveryFrame(PixelFormat _format,
+      unsigned int _antiAliasing);
 };
 
 /////////////////////////////////////////////////
@@ -882,4 +889,86 @@ TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyIntoExternalBuffer))
 
   // Clean up
   engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+/// \brief Every copy returns the frame rendered just before it, also across
+/// image size changes. ogre2 reads the frames back through one staging
+/// buffer that it keeps from frame to frame.
+void CameraTest::CheckCopyTracksEveryFrame(PixelFormat _format,
+    unsigned int _antiAliasing)
+{
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_NE(nullptr, camera);
+  camera->SetImageFormat(_format);
+  camera->SetAntiAliasing(_antiAliasing);
+  scene->RootVisual()->AddChild(camera);
+
+  // An empty scene shows the background colour only. 0 and 1 map to 0 and
+  // 255 whether or not the target is sRGB. A grey (L8) camera gets grey
+  // backgrounds, alternating, so that a stale frame shows.
+  const bool grey = (_format == PF_L8);
+  const unsigned int channels = grey ? 1u : 3u;
+  const math::Color colors[] = {
+      {1, 0, 0}, {0, 1, 0}, {0, 0, 1}, {1, 1, 0}, {0, 1, 1}, {1, 0, 1}};
+  const math::Color greys[] = {
+      {1, 1, 1}, {0, 0, 0}, {1, 1, 1}, {0, 0, 0}, {1, 1, 1}, {0, 0, 0}};
+  // The second size has an odd width (row of 195 bytes in R8G8B8; in L8 a
+  // 65-byte row, which the GPU readback pads), the last frame goes back to
+  // the first size. The size is set only when it changes: setting it
+  // rebuilds the render target, and with it the readback ticket, so frames
+  // 1, 3 and 4 read back through the previous frame's ticket.
+  const unsigned int sizes[][2] = {
+      {64, 48}, {64, 48}, {65, 33}, {65, 33}, {65, 33}, {64, 48}};
+  for (size_t i = 0; i < 6; ++i)
+  {
+    const unsigned int width = sizes[i][0];
+    const unsigned int height = sizes[i][1];
+    if (i == 0 || width != sizes[i - 1][0] || height != sizes[i - 1][1])
+    {
+      camera->SetImageWidth(width);
+      camera->SetImageHeight(height);
+    }
+    const math::Color &color = grey ? greys[i] : colors[i];
+    scene->SetBackgroundColor(color);
+    camera->Update();
+
+    std::vector<unsigned char> buffer(width * height * channels, 0x7F);
+    ASSERT_TRUE(camera->CopyTo(PixelBuffer(width, height, _format,
+        buffer.data(), buffer.size()))) << "frame " << i;
+    const unsigned char expected[3] = {
+        static_cast<unsigned char>(color.R() * 255),
+        static_cast<unsigned char>(color.G() * 255),
+        static_cast<unsigned char>(color.B() * 255)};
+    size_t wrong = 0;
+    for (size_t p = 0; p < buffer.size(); ++p)
+      wrong += buffer[p] != expected[p % channels];
+    EXPECT_EQ(0u, wrong) << "frame " << i << ": first pixel "
+        << int(buffer[0]) << " " << int(buffer[channels - 1]);
+  }
+
+  // Clean up
+  engine->DestroyScene(scene);
+}
+
+/////////////////////////////////////////////////
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyTracksEveryFrame))
+{
+  CheckCopyTracksEveryFrame(PF_R8G8B8, 0u);
+}
+
+/////////////////////////////////////////////////
+// A grey camera renders into a one byte per pixel target, whose readback
+// rows are padded when the width is odd
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyTracksEveryFrameL8))
+{
+  CheckCopyTracksEveryFrame(PF_L8, 0u);
+}
+
+/////////////////////////////////////////////////
+TEST_F(CameraTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(CopyTracksEveryFrameMsaa))
+{
+  CheckCopyTracksEveryFrame(PF_R8G8B8, 4u);
 }

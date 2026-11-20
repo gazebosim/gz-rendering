@@ -32,6 +32,18 @@ foreach(test ${tests})
   )
 endforeach()
 
+# The camera test again, with ogre2 reading textures back through a new
+# staging buffer per copy (GZ_RENDERING_OGRE2_LEGACY_READBACK)
+if (GZ_RENDERING_HAVE_OGRE2 AND NOT APPLE)
+  set(legacy_test INTEGRATION_camera_ogre2_gl3plus_legacy_readback)
+  add_test(NAME ${legacy_test}
+    COMMAND INTEGRATION_camera
+      --gtest_output=xml:${CMAKE_BINARY_DIR}/test_results/${legacy_test}.xml)
+  set_tests_properties(${legacy_test} PROPERTIES
+    TIMEOUT 240
+    ENVIRONMENT "GZ_ENGINE_TO_TEST=ogre2;GZ_ENGINE_BACKEND=gl3plus;GZ_RENDERING_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX};GZ_RENDERING_OGRE2_LEGACY_READBACK=1")
+endif()
+
 # Test symbols having the right name on linux only
 if (UNIX AND NOT APPLE)
   configure_file(all_symbols_have_version.bash.in ${CMAKE_CURRENT_BINARY_DIR}/all_symbols_have_version.bash @ONLY)

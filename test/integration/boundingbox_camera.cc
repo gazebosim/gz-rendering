@@ -426,3 +426,62 @@ TEST_F(BoundingBoxCameraTest, DestroyCamera)
   // Clean up
   engine->DestroyScene(scene);
 }
+
+//////////////////////////////////////////////////
+// A simulation removes a sensor and adds it again with the same name when
+// a model is removed and spawned again. The new camera must work, both in
+// the same scene and in a new scene.
+TEST_F(BoundingBoxCameraTest, RecreateWithSameName)
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+
+  // Creates the camera, renders a frame and checks it sees both boxes
+  auto createAndCheck = [](rendering::ScenePtr _scene)
+  {
+    auto camera = _scene->CreateBoundingBoxCamera("BoundingBoxCamera");
+    EXPECT_NE(nullptr, camera);
+    if (!camera)
+      return camera;
+    camera->SetLocalPosition(0.0, 0.0, 0.0);
+    camera->SetLocalRotation(0.0, 0.0, 0.0);
+    camera->SetImageWidth(320);
+    camera->SetImageHeight(240);
+    camera->SetAspectRatio(1.333);
+    camera->SetHFOV(GZ_PI / 2);
+    camera->SetBoundingBoxType(BoundingBoxType::BBT_VISIBLEBOX2D);
+    _scene->RootVisual()->AddChild(camera);
+
+    {
+      std::lock_guard<std::mutex> lock(g_mutex);
+      g_boxes.clear();
+    }
+    gz::common::ConnectionPtr connection = camera->ConnectNewBoundingBoxes(
+        std::bind(OnNewBoundingBoxes, std::placeholders::_1));
+    camera->Update();
+    std::lock_guard<std::mutex> lock(g_mutex);
+    EXPECT_EQ(std::size_t(2), g_boxes.size());
+    return camera;
+  };
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  BuildSimpleScene(scene);
+  auto camera = createAndCheck(scene);
+  ASSERT_NE(nullptr, camera);
+
+  // same scene
+  scene->DestroySensor(camera);
+  camera = createAndCheck(scene);
+  ASSERT_NE(nullptr, camera);
+
+  // new scene
+  engine->DestroyScene(scene);
+  scene = engine->CreateScene("scene2");
+  ASSERT_NE(nullptr, scene);
+  BuildSimpleScene(scene);
+  camera = createAndCheck(scene);
+  ASSERT_NE(nullptr, camera);
+
+  // Clean up
+  engine->DestroyScene(scene);
+}

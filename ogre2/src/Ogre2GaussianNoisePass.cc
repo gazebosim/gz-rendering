@@ -44,6 +44,9 @@ class gz::rendering::Ogre2GaussianNoisePassPrivate
 {
   /// brief Pointer to the Gaussian noise ogre material
   public: Ogre::Material *gaussianNoiseMat = nullptr;
+
+  /// brief Name of gaussianNoiseMat
+  public: std::string gaussianNoiseMatName;
 };
 
 using namespace gz;
@@ -58,6 +61,12 @@ Ogre2GaussianNoisePass::Ogre2GaussianNoisePass()
 //////////////////////////////////////////////////
 Ogre2GaussianNoisePass::~Ogre2GaussianNoisePass()
 {
+  // Remove the cloned material. Ogre may already be gone, e.g. the render
+  // engine was unloaded before the pass was released.
+  Ogre::MaterialManager *materialManager =
+      Ogre::MaterialManager::getSingletonPtr();
+  if (materialManager && !this->dataPtr->gaussianNoiseMatName.empty())
+    materialManager->remove(this->dataPtr->gaussianNoiseMatName);
 }
 
 //////////////////////////////////////////////////
@@ -118,6 +127,7 @@ void Ogre2GaussianNoisePass::CreateRenderPass()
   std::string materialName = matName + "_" +
       std::to_string(gaussianNodeCounter);
   this->dataPtr->gaussianNoiseMat = ogreMat->clone(materialName).get();
+  this->dataPtr->gaussianNoiseMatName = materialName;
 
   // create the compostior node definition
 

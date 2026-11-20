@@ -106,7 +106,15 @@ class Ogre2DepthGaussianNoisePass : public Ogre2GaussianNoisePass
   public: Ogre2DepthGaussianNoisePass() {}
 
   /// \brief Destructor
-  public: virtual ~Ogre2DepthGaussianNoisePass() {}
+  public: virtual ~Ogre2DepthGaussianNoisePass()
+  {
+    // Remove the cloned material. Ogre may already be gone, e.g. the render
+    // engine was unloaded before the pass was released.
+    Ogre::MaterialManager *materialManager =
+        Ogre::MaterialManager::getSingletonPtr();
+    if (materialManager && !this->gaussianNoiseMatName.empty())
+      materialManager->remove(this->gaussianNoiseMatName);
+  }
 
   // Documentation inherited.
   public: virtual void PreRender(const CameraPtr &_camera) override;
@@ -116,6 +124,9 @@ class Ogre2DepthGaussianNoisePass : public Ogre2GaussianNoisePass
 
   /// brief Pointer to the Gaussian noise ogre material
   private: Ogre::Material *gaussianNoiseMat = nullptr;
+
+  /// brief Name of gaussianNoiseMat
+  private: std::string gaussianNoiseMatName;
 };
 }
 }
@@ -276,6 +287,7 @@ void Ogre2DepthGaussianNoisePass::CreateRenderPass()
   std::string materialName = matName + "_" +
       std::to_string(gaussianDepthNodeCounter);
   this->gaussianNoiseMat = ogreMat->clone(materialName).get();
+  this->gaussianNoiseMatName = materialName;
 
   this->ogreCompositorNodeDefName = nodeDefName;
   gaussianDepthNodeCounter++;

@@ -19,10 +19,20 @@
 
 #include "CommonRenderingTest.hh"
 
+#include <algorithm>
+#include <cstring>
+#include <limits>
+#include <random>
+#include <string>
+#include <vector>
+
 #include <gz/common/Image.hh>
 #include <gz/common/Filesystem.hh>
 
+#include "gz/rendering/Camera.hh"
 #include "gz/rendering/GpuRays.hh"
+#include "gz/rendering/Image.hh"
+#include "gz/rendering/Light.hh"
 #include "gz/rendering/LidarVisual.hh"
 #include "gz/rendering/Scene.hh"
 
@@ -500,4 +510,223 @@ TEST_F(LidarVisualTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LaserVertical))
 
   // Clean up
   engine->DestroyScene(scene);
+}
+
+namespace
+{
+/// \brief A repeatable scan of _horizontal x _vertical rays: 30% hit
+/// nothing (inf), the others hit something 1 to 9 m away.
+std::vector<double> RandomScan(unsigned int _seed, unsigned int _horizontal,
+    unsigned int _vertical)
+{
+  std::mt19937 rng(_seed);
+  std::uniform_real_distribution<double> range(1.0, 9.0);
+  std::uniform_real_distribution<double> unit(0.0, 1.0);
+  std::vector<double> points(_horizontal * _vertical);
+  for (auto &p : points)
+  {
+    const bool hit = unit(rng) >= 0.3;
+    const double r = range(rng);
+    p = hit ? r : std::numeric_limits<double>::infinity();
+  }
+  return points;
+}
+
+/// \brief A scene with a light and a camera looking down at a lidar visual
+/// at the origin.
+struct LidarScene
+{
+  ScenePtr scene;
+  CameraPtr camera;
+  LidarVisualPtr lidar;
+};
+
+/// \brief Create a LidarScene
+LidarScene CreateLidarScene(RenderEngine *_engine, const std::string &_name,
+    LidarVisualType _type, bool _displayNonHitting, unsigned int _horizontal,
+    unsigned int _vertical)
+{
+  LidarScene result;
+  result.scene = _engine->CreateScene(_name);
+  ScenePtr scene = result.scene;
+  scene->SetBackgroundColor(0, 0, 0);
+  scene->SetAmbientLight(0.3, 0.3, 0.3);
+  VisualPtr root = scene->RootVisual();
+
+  DirectionalLightPtr light = scene->CreateDirectionalLight();
+  light->SetDirection(0.2, 0.3, -1);
+  light->SetDiffuseColor(0.8, 0.8, 0.8);
+  root->AddChild(light);
+
+  result.lidar = scene->CreateLidarVisual();
+  result.lidar->SetMinRange(0.1);
+  result.lidar->SetMaxRange(10.0);
+  result.lidar->SetMinHorizontalAngle(-GZ_PI);
+  result.lidar->SetMaxHorizontalAngle(GZ_PI);
+  result.lidar->SetHorizontalRayCount(_horizontal);
+  result.lidar->SetMinVerticalAngle(-0.26);
+  result.lidar->SetMaxVerticalAngle(0.26);
+  result.lidar->SetVerticalRayCount(_vertical);
+  result.lidar->SetType(_type);
+  result.lidar->SetDisplayNonHitting(_displayNonHitting);
+  result.lidar->SetSize(2.0);
+  root->AddChild(result.lidar);
+
+  result.camera = scene->CreateCamera();
+  result.camera->SetImageWidth(320);
+  result.camera->SetImageHeight(240);
+  result.camera->SetHFOV(GZ_PI / 2.0);
+  result.camera->SetLocalPosition(0, 0, 12);
+  result.camera->SetLocalRotation(0, GZ_PI / 2.0, 0);
+  root->AddChild(result.camera);
+  return result;
+}
+
+/// \brief Give the lidar visual a scan and render it.
+/// \return The camera image
+std::vector<unsigned char> UpdateAndCapture(LidarScene &_s,
+    const std::vector<double> &_scan)
+{
+  _s.lidar->SetPoints(_scan);
+  _s.lidar->Update();
+  Image image = _s.camera->CreateImage();
+  _s.camera->Capture(image);
+  const unsigned char *data = image.Data<unsigned char>();
+  return std::vector<unsigned char>(data, data + image.MemorySize());
+}
+
+/// \brief Number of bytes that differ between two images
+size_t DiffBytes(const std::vector<unsigned char> &_a,
+    const std::vector<unsigned char> &_b)
+{
+  if (_a.size() != _b.size())
+    return std::max(_a.size(), _b.size());
+  size_t diff = 0;
+  for (size_t i = 0; i < _a.size(); ++i)
+    diff += _a[i] != _b[i];
+  return diff;
+}
+
+/// \brief Number of bytes that aren't background (black)
+size_t NonBlackBytes(const std::vector<unsigned char> &_a)
+{
+  return static_cast<size_t>(std::count_if(_a.begin(), _a.end(),
+      [](unsigned char _c) { return _c != 0; }));
+}
+
+const LidarVisualType kDrawnTypes[] = {LidarVisualType::LVT_RAY_LINES,
+    LidarVisualType::LVT_TRIANGLE_STRIPS, LidarVisualType::LVT_POINTS};
+}  // namespace
+
+/////////////////////////////////////////////////
+/// \brief A lidar visual updated with several scans must look the same as a
+/// new one given only the last scan, whether non-hitting rays are shown or
+/// not.
+TEST_F(LidarVisualTest,
+       GZ_UTILS_TEST_DISABLED_ON_WIN32(UpdatedVisualMatchesNewVisual))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+#ifdef __APPLE__
+  GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+#endif
+
+  const unsigned int horizontal = 200;
+  const unsigned int vertical = 8;
+  const auto scan0 = RandomScan(1, horizontal, vertical);
+  const auto scan1 = RandomScan(2, horizontal, vertical);
+
+  int sceneCount = 0;
+  for (auto type : kDrawnTypes)
+  {
+    for (bool nonHitting : {true, false})
+    {
+      SCOPED_TRACE("type " + std::to_string(static_cast<int>(type)) +
+          (nonHitting ? ", non hitting shown" : ", non hitting hidden"));
+
+      LidarScene updated = CreateLidarScene(engine,
+          "updated_" + std::to_string(sceneCount), type, nonHitting,
+          horizontal, vertical);
+      for (int i = 0; i < 4; ++i)
+        UpdateAndCapture(updated, i % 2 == 0 ? scan0 : scan1);
+      const auto updatedImage = UpdateAndCapture(updated, scan1);
+
+      LidarScene fresh = CreateLidarScene(engine,
+          "fresh_" + std::to_string(sceneCount), type, nonHitting,
+          horizontal, vertical);
+      const auto freshImage = UpdateAndCapture(fresh, scan1);
+      ++sceneCount;
+
+      EXPECT_GT(NonBlackBytes(freshImage), 0u);
+      EXPECT_EQ(0u, DiffBytes(updatedImage, freshImage));
+
+      engine->DestroyScene(updated.scene);
+      engine->DestroyScene(fresh.scene);
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+/// \brief Changing the number of vertical rays, or whether non-hitting rays
+/// are shown, must give the same image as a new visual with that setting.
+TEST_F(LidarVisualTest,
+       GZ_UTILS_TEST_DISABLED_ON_WIN32(ChangedSettingsMatchNewVisual))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+#ifdef __APPLE__
+  GTEST_SKIP() << "Unsupported on apple, see issue #35.";
+#endif
+
+  const unsigned int horizontal = 200;
+  const auto scan8 = RandomScan(3, horizontal, 8);
+  const auto scan4 = RandomScan(4, horizontal, 4);
+
+  int sceneCount = 0;
+  for (auto type : kDrawnTypes)
+  {
+    SCOPED_TRACE("type " + std::to_string(static_cast<int>(type)));
+    for (bool nonHitting : {true, false})
+    {
+      // fewer vertical rays
+      LidarScene updated = CreateLidarScene(engine,
+          "shrink_" + std::to_string(sceneCount), type, nonHitting,
+          horizontal, 8);
+      UpdateAndCapture(updated, scan8);
+      updated.lidar->SetVerticalRayCount(4);
+      const auto updatedImage = UpdateAndCapture(updated, scan4);
+
+      LidarScene fresh = CreateLidarScene(engine,
+          "shrink_fresh_" + std::to_string(sceneCount), type, nonHitting,
+          horizontal, 4);
+      const auto freshImage = UpdateAndCapture(fresh, scan4);
+      ++sceneCount;
+      EXPECT_EQ(0u, DiffBytes(updatedImage, freshImage))
+          << (nonHitting ? "shown" : "hidden");
+      engine->DestroyScene(updated.scene);
+      engine->DestroyScene(fresh.scene);
+    }
+
+    // shown -> hidden -> shown
+    LidarScene toggled = CreateLidarScene(engine,
+        "toggle_" + std::to_string(sceneCount), type, true, horizontal, 8);
+    LidarScene freshShown = CreateLidarScene(engine,
+        "toggle_shown_" + std::to_string(sceneCount), type, true,
+        horizontal, 8);
+    LidarScene freshHidden = CreateLidarScene(engine,
+        "toggle_hidden_" + std::to_string(sceneCount), type, false,
+        horizontal, 8);
+    ++sceneCount;
+    const auto shownImage = UpdateAndCapture(freshShown, scan8);
+    const auto hiddenImage = UpdateAndCapture(freshHidden, scan8);
+    EXPECT_NE(0u, DiffBytes(shownImage, hiddenImage));
+
+    EXPECT_EQ(0u, DiffBytes(UpdateAndCapture(toggled, scan8), shownImage));
+    toggled.lidar->SetDisplayNonHitting(false);
+    EXPECT_EQ(0u, DiffBytes(UpdateAndCapture(toggled, scan8), hiddenImage));
+    toggled.lidar->SetDisplayNonHitting(true);
+    EXPECT_EQ(0u, DiffBytes(UpdateAndCapture(toggled, scan8), shownImage));
+
+    engine->DestroyScene(toggled.scene);
+    engine->DestroyScene(freshShown.scene);
+    engine->DestroyScene(freshHidden.scene);
+  }
 }

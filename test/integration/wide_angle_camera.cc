@@ -615,3 +615,86 @@ TEST_F(WideAngleCameraTest,
   g_bufferL16 = nullptr;
   engine->DestroyScene(scene);
 }
+
+//////////////////////////////////////////////////
+// A simulation removes a sensor and adds it again with the same name when
+// a model is removed and spawned again. The destroyed camera must leave
+// the scene and the new camera must work, both in the same scene and in a
+// new scene.
+TEST_F(WideAngleCameraTest,
+       GZ_UTILS_TEST_DISABLED_ON_WIN32(RecreateWithSameName))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+
+  const unsigned int width = 320u;
+  const unsigned int height = 240u;
+
+  // Red box in front of the camera
+  auto buildScene = [](rendering::ScenePtr _scene)
+  {
+    _scene->SetAmbientLight(1.0, 1.0, 1.0);
+    _scene->SetBackgroundColor(0.0, 0.0, 0.0);
+    MaterialPtr red = _scene->CreateMaterial();
+    red->SetAmbient(1.0, 0.0, 0.0);
+    red->SetDiffuse(1.0, 0.0, 0.0);
+    VisualPtr box = _scene->CreateVisual();
+    box->AddGeometry(_scene->CreateBox());
+    box->SetLocalPosition(2.0, 0.0, 0.0);
+    box->SetMaterial(red);
+    _scene->RootVisual()->AddChild(box);
+  };
+
+  // Creates the camera, renders a frame and checks it sees the box
+  auto createAndCheck = [&](rendering::ScenePtr _scene)
+  {
+    auto camera = _scene->CreateWideAngleCamera("WideAngleCamera");
+    EXPECT_NE(nullptr, camera);
+    if (!camera)
+      return camera;
+    camera->SetImageWidth(width);
+    camera->SetImageHeight(height);
+    camera->SetHFOV(GZ_PI);
+    _scene->RootVisual()->AddChild(camera);
+
+    gz::common::ConnectionPtr connection =
+        camera->ConnectNewWideAngleFrame(
+            std::bind(OnNewWideAngleFrame,
+            std::placeholders::_1, std::placeholders::_2,
+            std::placeholders::_3, std::placeholders::_4,
+            std::placeholders::_5));
+    g_counter = 0;
+    camera->Update();
+    std::lock_guard<std::mutex> lock(g_mutex);
+    EXPECT_EQ(1, g_counter);
+    if (g_buffer)
+    {
+      const unsigned int center = (height / 2 * width + width / 2) * 3;
+      EXPECT_GT(g_buffer[center], 100);
+      EXPECT_LT(g_buffer[center + 1], 50);
+    }
+    return camera;
+  };
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  buildScene(scene);
+  auto camera = createAndCheck(scene);
+  ASSERT_NE(nullptr, camera);
+
+  // same scene
+  scene->DestroySensor(camera);
+  EXPECT_FALSE(scene->RootVisual()->HasChild(camera));
+  camera = createAndCheck(scene);
+  ASSERT_NE(nullptr, camera);
+
+  // new scene
+  engine->DestroyScene(scene);
+  scene = engine->CreateScene("scene2");
+  ASSERT_NE(nullptr, scene);
+  buildScene(scene);
+  camera = createAndCheck(scene);
+  ASSERT_NE(nullptr, camera);
+
+  // Clean up
+  engine->DestroyScene(scene);
+}

@@ -337,7 +337,7 @@ void Ogre2ThermalCameraMaterialSwitcher::UseSolidMaterial(
     {
       _hlmsManager->addReference(blendblock);
       this->datablockMap[datablock] = blendblock;
-      _subItem->getDatablock()->setBlendblock(_noBlend);
+      datablock->setBlendblock(_noBlend);
     }
   }
 }
@@ -417,6 +417,16 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
   while (itor.hasMoreElements())
   {
     Ogre::Item *item = static_cast<Ogre::Item *>(itor.getNext());
+    if (!ItemInView(*item, planes))
+    {
+      // Keep the heat signature material of an item out of view
+      if (!this->heatSignatureMaterials.empty() &&
+          this->heatSignatureMaterials.count(item->getId()))
+      {
+        this->liveHeatSigItems.insert(item->getId());
+      }
+      continue;
+    }
 
     // get visual
     unsigned int visualId;
@@ -433,9 +443,6 @@ void Ogre2ThermalCameraMaterialSwitcher::cameraPreRenderScene(
     const std::string *heatSignature = std::get_if<std::string>(&tempAny);
     if (heatSignature)
       this->liveHeatSigItems.insert(item->getId());
-
-    if (!ItemInView(*item, planes))
-      continue;
 
     if (tempAny.index() != 0 && !heatSignature)
     {

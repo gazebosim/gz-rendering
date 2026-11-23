@@ -2,6 +2,7 @@ set(TEST_TYPE "PERFORMANCE")
 
 set(tests
   scene_factory
+  thermal_camera
 )
 
 foreach(test ${tests})

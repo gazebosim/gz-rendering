@@ -48,8 +48,9 @@ void main()
   // Gazebo requires rotated cube map lookup.
   // R = vec3(R.x, R.z, R.y);
 
-  // Get environment color of reflected ray:
-  vec4 envColor = textureCube(cubeMap, R, 0.0);
+  // Get environment color of reflected ray (textureCube was removed after
+  // GLSL 140; use the version-agnostic texture() form).
+  vec4 envColor = texture(cubeMap, R, 0.0);
 
   // Cheap hdr effect:
   envColor.rgb *= (envColor.r + envColor.g + envColor.b) * hdrMultiplier;

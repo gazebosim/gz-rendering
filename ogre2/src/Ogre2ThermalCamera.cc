@@ -69,6 +69,7 @@
 
 #include "Ogre2GpuReadbackTicket.hh"
 #include "Ogre2MaterialSwitcherUtils.hh"
+#include "Ogre2SharedFullscreenRect.hh"
 
 namespace gz
 {
@@ -766,6 +767,7 @@ void Ogre2ThermalCamera::Destroy()
 
   if (this->dataPtr->thermalMaterial)
   {
+    ReleaseFromSharedFullscreenRects(this->dataPtr->thermalMaterial);
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->thermalMaterial->getName());
     this->dataPtr->thermalMaterial.setNull();

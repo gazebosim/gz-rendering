@@ -12,6 +12,7 @@ set(tests
   projector
   render_pass
   scene
+  sensor_recreate
   segmentation_camera
   shadows
   sky

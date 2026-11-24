@@ -8,3 +8,5 @@ build_*
 
 # Bazel generated files
 bazel-*
+sanity_check
+wayland_sanity_check

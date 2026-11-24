@@ -65,13 +65,9 @@
 
 #include "Terra/Terra.h"
 
-<<<<<<< HEAD
-=======
-#include "Ogre2GpuReadbackTicket.hh"
 #include "Ogre2MaterialSwitcherUtils.hh"
 #include "Ogre2SharedFullscreenRect.hh"
 
->>>>>>> 35bb26a (Ogre2: speed up the thermal camera and fix a heightmap crash (#1445))
 namespace gz
 {
 namespace rendering
@@ -241,9 +237,6 @@ class gz::rendering::Ogre2ThermalCameraPrivate
 
   /// \brief bit depth of each pixel
   public: unsigned int bitDepth = 16u;
-
-  /// \brief Reused GPU to CPU readback of the thermal texture
-  public: Ogre2GpuReadbackTicket readback;
 };
 
 using namespace gz;
@@ -742,8 +735,6 @@ void Ogre2ThermalCamera::Destroy()
     this->dataPtr->thermalImage = nullptr;
   }
 
-  this->dataPtr->readback.Destroy();
-
   if (!this->ogreCamera)
     return;
 
@@ -766,6 +757,7 @@ void Ogre2ThermalCamera::Destroy()
 
   if (this->dataPtr->thermalMaterial)
   {
+    ReleaseFromSharedFullscreenRects(this->dataPtr->thermalMaterial);
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->thermalMaterial->getName());
     this->dataPtr->thermalMaterial.setNull();
@@ -1178,26 +1170,9 @@ void Ogre2ThermalCamera::PostRender()
   unsigned int channelCount = PixelUtil::ChannelCount(format);
   unsigned int bytesPerChannel = PixelUtil::BytesPerChannel(format);
 
-  // Reuse one readback buffer instead of allocating one every frame
-  const bool legacy = Ogre2UseLegacyReadback();
-  Ogre::Image2 legacyImage;
-  Ogre::TextureBox box;
-  if (legacy)
-  {
-    legacyImage.convertFromTexture(this->dataPtr->ogreThermalTexture, 0u, 0u);
-    box = legacyImage.getData(0u);
-  }
-  else
-  {
-    box = this->dataPtr->readback.DownloadAndMap(
-        this->dataPtr->ogreThermalTexture);
-  }
-  if (!box.data)
-  {
-    gzerr << "Thermal camera: GPU readback failed; dropping frame"
-          << std::endl;
-    return;
-  }
+  Ogre::Image2 image;
+  image.convertFromTexture(this->dataPtr->ogreThermalTexture, 0u, 0u);
+  Ogre::TextureBox box = image.getData(0u);
 
   if (!this->dataPtr->thermalImage)
   {
@@ -1231,9 +1206,6 @@ void Ogre2ThermalCamera::PostRender()
           width * channelCount * bytesPerChannel);
     }
   }
-
-  if (!legacy)
-    this->dataPtr->readback.Unmap();
 
   this->dataPtr->newThermalFrame(
       this->dataPtr->thermalImage, width, height, 1,

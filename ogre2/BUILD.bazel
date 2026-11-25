@@ -123,6 +123,8 @@ test_sources = glob(["src/*_TEST.cc"])
             "//:gz-rendering",
             "@googletest//:gtest",
             "@googletest//:gtest_main",
+            "@gz-utils//:ExtraTestMacros",
+            "@ogre-next//:ogre-main",
         ],
     )
     for src in test_sources

@@ -38,6 +38,7 @@
 #include "gz/rendering/RenderTypes.hh"
 #include "gz/rendering/Utils.hh"
 
+#include "Ogre2CompositorUtils.hh"
 #include "Ogre2GpuReadbackTicket.hh"
 #include "Ogre2SegmentationMaterialSwitcher.hh"
 
@@ -49,9 +50,6 @@ class gz::rendering::Ogre2SegmentationCameraPrivate
 
   /// \brief Workspace Definition
   public: std::string ogreCompositorWorkspaceDef;
-
-  /// \brief Final pass compositor node definition
-  public: std::string ogreCompositorNodeDef;
 
   /// \brief 1st pass compositor workspace
   public: Ogre::CompositorWorkspace *ogreCompositorWorkspace {nullptr};
@@ -143,13 +141,9 @@ void Ogre2SegmentationCamera::Destroy()
     this->dataPtr->ogreCompositorWorkspace = nullptr;
   }
 
-  if (!this->dataPtr->ogreCompositorWorkspaceDef.empty())
-  {
-    ogreCompMgr->removeWorkspaceDefinition(
-        this->dataPtr->ogreCompositorWorkspaceDef);
-    ogreCompMgr->removeNodeDefinition(
-        this->dataPtr->ogreCompositorNodeDef);
-  }
+  RemoveWorkspaceDefinitionAndNodes(ogreCompMgr,
+      this->dataPtr->ogreCompositorWorkspaceDef);
+  this->dataPtr->ogreCompositorWorkspaceDef.clear();
 
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();
@@ -234,6 +228,7 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
 
   std::string wsDefName = "SegmentationCameraWorkspace_" + this->Name();
   ogreCompMgr->createBasicWorkspaceDef(wsDefName, backgroundColor_);
+  this->dataPtr->ogreCompositorWorkspaceDef = wsDefName;
 
   // Objects are drawn in flat colors: no lights needed. Setting up lights
   // (Forward+ light culling) is most of the cost of the pass in small

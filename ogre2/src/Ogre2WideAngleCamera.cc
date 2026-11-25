@@ -291,6 +291,18 @@ void Ogre2WideAngleCamera::Destroy()
   this->RemoveAllRenderPasses();
   this->DestroyTextures();
   this->DestroyRenderTexture();
+
+  if (this->dataPtr->ogreCamera && this->scene &&
+      this->scene->IsInitialized())
+  {
+    Ogre::SceneManager *ogreSceneManager = this->scene->OgreSceneManager();
+    if (ogreSceneManager)
+      ogreSceneManager->destroyCamera(this->dataPtr->ogreCamera);
+    this->dataPtr->ogreCamera = nullptr;
+  }
+
+  // Detaches the camera from its parent and destroys its scene node
+  BaseWideAngleCamera::Destroy();
 }
 
 //////////////////////////////////////////////////

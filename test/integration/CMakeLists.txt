@@ -12,11 +12,13 @@ set(tests
   projector
   render_pass
   scene
+  sensor_recreate
   segmentation_camera
   segmentation_camera_accuracy
   shadows
   sky
   thermal_camera
+  thermal_camera_accuracy
   load_unload
   waves
   wide_angle_camera

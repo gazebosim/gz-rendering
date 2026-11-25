@@ -44,6 +44,33 @@ namespace gz
       /// \brief Create a texture which will hold the depth data
       public: virtual void CreateDepthTexture() = 0;
 
+      /// \brief Set the near limit of the valid depth range, in meters along
+      /// the camera's optical axis. Geometry between NearClipPlane() and this
+      /// distance is reported as -inf in the depth image and point cloud.
+      /// NearClipPlane() remains the frustum near clip plane: closer geometry
+      /// is not rendered and does not hide what is behind it, e.g. a sensor
+      /// housing. Takes effect on the next rendered frame.
+      /// \param[in] _near Depth near clip distance in meters
+      public: virtual void SetDepthNearClipPlane(double _near) = 0;
+
+      /// \brief Get the depth near clip distance. If not explicitly set via
+      /// SetDepthNearClipPlane(), returns NearClipPlane(), so no geometry is
+      /// reported as -inf.
+      /// \return Depth near clip distance in meters
+      public: virtual double DepthNearClipPlane() const = 0;
+
+      /// \brief Set the far limit of the valid depth range, in meters.
+      /// Geometry beyond it is reported as +inf in the depth image and point
+      /// cloud. It may be larger than FarClipPlane(). Takes effect on the
+      /// next rendered frame.
+      /// \param[in] _far Depth far clip distance in meters
+      public: virtual void SetDepthFarClipPlane(double _far) = 0;
+
+      /// \brief Get the depth far clip distance. If not explicitly set via
+      /// SetDepthFarClipPlane(), returns FarClipPlane().
+      /// \return Depth far clip distance in meters
+      public: virtual double DepthFarClipPlane() const = 0;
+
       /// \brief All things needed to get back z buffer for depth data
       /// \return The z-buffer as a float array
       public: virtual const float *DepthData() const = 0;

@@ -435,17 +435,9 @@ void Ogre2BoundingBoxCamera::Destroy()
         this->dataPtr->ogreCompositorWorkspace);
   }
 
-<<<<<<< HEAD
-  if (!this->dataPtr->workspaceDefinition.empty())
-  {
-    ogreCompMgr->removeWorkspaceDefinition(
-        this->dataPtr->workspaceDefinition);
-  }
-=======
   RemoveWorkspaceDefinitionAndNodes(ogreCompMgr,
       this->dataPtr->workspaceDefinition);
   this->dataPtr->workspaceDefinition.clear();
->>>>>>> baadd15 (Ogre2: fix recreating segmentation and bounding box cameras (#1447))
 
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();

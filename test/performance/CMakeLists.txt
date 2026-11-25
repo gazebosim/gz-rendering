@@ -1,6 +1,7 @@
 set(TEST_TYPE "PERFORMANCE")
 
 set(tests
+  lidar_visual
   scene_factory
   segmentation_camera
   thermal_camera

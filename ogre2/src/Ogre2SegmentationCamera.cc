@@ -15,6 +15,9 @@
  *
  */
 
+#include <algorithm>
+#include <array>
+#include <cstring>
 #include <string>
 
 #include <gz/common/Console.hh>
@@ -36,6 +39,7 @@
 #include "gz/rendering/Utils.hh"
 
 #include "Ogre2CompositorUtils.hh"
+#include "Ogre2GpuReadbackTicket.hh"
 #include "Ogre2SegmentationMaterialSwitcher.hh"
 
 /// \brief Private data for the Ogre2SegmentationCamera class
@@ -70,6 +74,9 @@ class gz::rendering::Ogre2SegmentationCameraPrivate
   /// with colored version for segmentation
   public: std::unique_ptr<Ogre2SegmentationMaterialSwitcher>
           materialSwitcher {nullptr};
+
+  /// \brief Persistent GPU->CPU readback of the segmentation texture.
+  public: Ogre2GpuReadbackTicket readback;
 };
 
 using namespace gz;
@@ -117,6 +124,8 @@ void Ogre2SegmentationCamera::Destroy()
   auto engine = Ogre2RenderEngine::Instance();
   auto ogreRoot = engine->OgreRoot();
   auto ogreCompMgr = ogreRoot->getCompositorManager2();
+
+  this->dataPtr->readback.Destroy();
 
   if (this->dataPtr->ogreSegmentationTexture)
   {
@@ -221,6 +230,33 @@ void Ogre2SegmentationCamera::CreateSegmentationTexture()
   ogreCompMgr->createBasicWorkspaceDef(wsDefName, backgroundColor_);
   this->dataPtr->ogreCompositorWorkspaceDef = wsDefName;
 
+  // Objects are drawn in flat colors: no lights needed. Setting up lights
+  // (Forward+ light culling) is most of the cost of the pass in small
+  // scenes.
+  if (Ogre::CompositorWorkspaceDef *workspaceDef =
+      ogreCompMgr->getWorkspaceDefinitionNoThrow(wsDefName))
+  {
+    for (const auto &[alias, nodeName] : workspaceDef->getNodeAliasMap())
+    {
+      Ogre::CompositorNodeDef *nodeDef =
+          ogreCompMgr->getNodeDefinitionNonConst(nodeName);
+      for (size_t t = 0; t < nodeDef->getNumTargetPasses(); ++t)
+      {
+        for (Ogre::CompositorPassDef *pass :
+             nodeDef->getTargetPass(t)->getCompositorPassesNonConst())
+        {
+          if (pass->getType() == Ogre::PASS_SCENE)
+          {
+            auto *scenePass = static_cast<Ogre::CompositorPassSceneDef *>(
+                pass);
+            scenePass->mEnableForwardPlus = false;
+            scenePass->setLightVisibilityMask(0u);
+          }
+        }
+      }
+    }
+  }
+
   Ogre::TextureGpuManager *textureMgr =
     ogreRoot->getRenderSystem()->getTextureGpuManager();
   // create render texture
@@ -267,34 +303,52 @@ void Ogre2SegmentationCamera::PostRender()
   const auto bytesPerChannel = PixelUtil::BytesPerChannel(format);
   const auto bufferSize = len * channelCount * bytesPerChannel;
 
-  Ogre::Image2 image;
-  image.convertFromTexture(this->dataPtr->ogreSegmentationTexture, 0u, 0u);
-  Ogre::TextureBox box = image.getData(0);
+  // Read the RGBA texture back, reusing the same staging buffer every
+  // frame, unless the legacy readback is requested.
+  Ogre::Image2 legacyImage;
+  Ogre::TextureBox box;
+  const bool legacy = Ogre2UseLegacyReadback();
+  if (legacy)
+  {
+    legacyImage.convertFromTexture(this->dataPtr->ogreSegmentationTexture,
+        0u, 0u);
+    box = legacyImage.getData(0);
+  }
+  else
+  {
+    box = this->dataPtr->readback.DownloadAndMap(
+        this->dataPtr->ogreSegmentationTexture);
+  }
+  if (!box.data)
+  {
+    gzerr << "Segmentation camera: GPU readback failed; dropping frame"
+          << std::endl;
+    return;
+  }
 
   if (!this->dataPtr->buffer)
   {
     this->dataPtr->buffer = new uint8_t[bufferSize];
   }
 
-  uint8_t *bufferTmp = static_cast<uint8_t*>(box.data);
-
-  auto rawChannelCount = 4u;
-
+  // RGBA -> RGB
   for (unsigned int row = 0; row < height; ++row)
   {
-    unsigned int rawDataRowIdx = row * box.bytesPerRow / bytesPerChannel;
+    const uint8_t *src = static_cast<const uint8_t *>(box.data) +
+        row * box.bytesPerRow;
+    uint8_t *dst = this->dataPtr->buffer + row * width * channelCount;
     for (unsigned int column = 0; column < width; ++column)
     {
-      unsigned int idx = (row * width * channelCount) +
-          column * channelCount;
-      unsigned int rawIdx = rawDataRowIdx +
-          column * rawChannelCount;
-
-      this->dataPtr->buffer[idx] = bufferTmp[rawIdx];
-      this->dataPtr->buffer[idx + 1] = bufferTmp[rawIdx + 1];
-      this->dataPtr->buffer[idx + 2] = bufferTmp[rawIdx + 2];
+      dst[0] = src[0];
+      dst[1] = src[1];
+      dst[2] = src[2];
+      src += 4;
+      dst += 3;
     }
   }
+
+  if (!legacy)
+    this->dataPtr->readback.Unmap();
 
   this->dataPtr->newSegmentationFrame(
     this->dataPtr->buffer,
@@ -365,60 +419,63 @@ void Ogre2SegmentationCamera::LabelMapFromColoredBuffer(
   if (!this->dataPtr->buffer)
     return;
 
-  auto colorToLabel = this->dataPtr->materialSwitcher->ColorToLabel();
+  const auto &colorToLabel = this->dataPtr->materialSwitcher->ColorToLabel();
 
-  auto width = this->ImageWidth();
-  auto height = this->ImageHeight();
+  const auto width = this->ImageWidth();
+  const auto height = this->ImageHeight();
+  const uint8_t background = static_cast<uint8_t>(this->backgroundLabel);
 
-  for (uint32_t i = 0; i < height; ++i)
+  // Label map pixel for a color. Neighboring pixels almost always have the
+  // same color, so remember the last one instead of looking it up again.
+  int64_t lastColorId = -1;
+  std::array<uint8_t, 3> lastPixel{};
+  auto pixelForColor = [&](int64_t _colorId)
   {
-    for (uint32_t j = 0; j < width; ++j)
+    std::array<uint8_t, 3> pixel{background, background, background};
+    auto it = colorToLabel.find(_colorId);
+    if (it == colorToLabel.end())
+      return pixel;
+
+    // Labels outside 0-255 are clamped, as in the label maps rendered
+    // directly.
+    auto label8bit = [](int64_t _label)
     {
-      auto index = (i * width + j) * 3;
-      auto r = this->dataPtr->buffer[index];
-      auto g = this->dataPtr->buffer[index + 1];
-      auto b = this->dataPtr->buffer[index + 2];
-
-      // get color 24 bit unique id, we don't multiply it by 255 like before
-      // as they are not normalized we read it from the buffer in
-      // range [0-255] already
-      int64_t colorId = r * 256 * 256 + g * 256 + b;
-
-      // initialize the pixel with the background label value
-      _labelBuffer[index] = this->backgroundLabel;
-      _labelBuffer[index + 1] = this->backgroundLabel;
-      _labelBuffer[index + 2] = this->backgroundLabel;
-
-      // skip if not exist
-      auto it = colorToLabel.find(colorId);
-      if (it == colorToLabel.end())
-        continue;
-
-      int64_t label = it->second;
-
-      if (this->type == SegmentationType::ST_SEMANTIC)
-      {
-        uint8_t label8bit = label % 256;
-
-        _labelBuffer[index] = label8bit;
-        _labelBuffer[index + 1] = label8bit;
-        _labelBuffer[index + 2] = label8bit;
-      }
-      else if (this->type == SegmentationType::ST_PANOPTIC)
-      {
-        // get the label and instance counts from the composite label id
-        uint8_t label8bit = label / (256 * 256);
-        // get the rest 16 bit
-        uint16_t instanceCount = label % (256 * 256);
-        // composite that 16 bit count to two 8 bit channels
-        uint8_t instanceCount1 = instanceCount / 256;
-        uint8_t instanceCount2 = instanceCount % 256;
-
-        _labelBuffer[index + 2] = label8bit;
-        _labelBuffer[index + 1] = instanceCount1;
-        _labelBuffer[index] = instanceCount2;
-      }
+      return static_cast<uint8_t>(std::clamp<int64_t>(_label, 0, 255));
+    };
+    const int64_t key = it->second;
+    if (this->type == SegmentationType::ST_SEMANTIC)
+    {
+      const uint8_t label = label8bit(key);
+      pixel = {label, label, label};
     }
+    else if (this->type == SegmentationType::ST_PANOPTIC)
+    {
+      // the composite id is label * 65536 + instance (16 bit)
+      int64_t label = key / (256 * 256);
+      if (key < 0 && key % (256 * 256) != 0)
+        --label;
+      const auto instanceCount =
+          static_cast<uint16_t>(key - label * 256 * 256);
+      // composite that 16 bit count to two 8 bit channels
+      pixel = {static_cast<uint8_t>(instanceCount % 256),
+          static_cast<uint8_t>(instanceCount / 256), label8bit(label)};
+    }
+    return pixel;
+  };
+
+  const size_t count = static_cast<size_t>(width) * height * 3;
+  const uint8_t *src = this->dataPtr->buffer;
+  for (size_t index = 0; index < count; index += 3)
+  {
+    // color 24 bit unique id; the buffer holds [0-255] values
+    const int64_t colorId = src[index] * 256 * 256 + src[index + 1] * 256 +
+        src[index + 2];
+    if (colorId != lastColorId)
+    {
+      lastPixel = pixelForColor(colorId);
+      lastColorId = colorId;
+    }
+    std::memcpy(_labelBuffer + index, lastPixel.data(), 3);
   }
 }
 

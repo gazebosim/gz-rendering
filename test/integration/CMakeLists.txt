@@ -14,6 +14,7 @@ set(tests
   scene
   sensor_recreate
   segmentation_camera
+  segmentation_camera_accuracy
   shadows
   sky
   thermal_camera

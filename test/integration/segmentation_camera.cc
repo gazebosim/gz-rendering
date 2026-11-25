@@ -218,3 +218,83 @@ TEST_F(SegmentationCameraTest, SegmentationCameraBoxes)
   // Clean up
   engine->DestroyScene(scene);
 }
+
+//////////////////////////////////////////////////
+// A simulation removes a sensor and adds it again with the same name when
+// a model is removed and spawned again. The new camera must work, both in
+// the same scene and in a new scene.
+TEST_F(SegmentationCameraTest, RecreateWithSameName)
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+
+  const int width = 320;
+  const int height = 240;
+  // pixel at the center of the middle box
+  const auto middleIndex = static_cast<uint32_t>(
+      (height / 2 * width + width / 2) * 3);
+
+  // Creates the camera, renders a frame and checks the middle box label
+  auto createAndCheck = [&](rendering::ScenePtr _scene)
+  {
+    auto camera = _scene->CreateSegmentationCamera("SegmentationCamera");
+    EXPECT_NE(nullptr, camera);
+    if (!camera)
+      return camera;
+    camera->SetLocalPosition(0.0, 0.0, 0.0);
+    camera->SetLocalRotation(0.0, 0.0, 0.0);
+    camera->SetSegmentationType(SegmentationType::ST_SEMANTIC);
+    camera->EnableColoredMap(false);
+    camera->SetAspectRatio(static_cast<double>(width) / height);
+    camera->SetImageWidth(width);
+    camera->SetImageHeight(height);
+    camera->SetHFOV(GZ_PI / 2);
+    _scene->RootVisual()->AddChild(camera);
+
+    gz::common::ConnectionPtr connection =
+        camera->ConnectNewSegmentationFrame(
+            std::bind(OnNewSegmentationFrame,
+            std::placeholders::_1, std::placeholders::_2,
+            std::placeholders::_3, std::placeholders::_4,
+            std::placeholders::_5));
+    {
+      // Drop any earlier frame, so the checks below see this camera's
+      std::lock_guard<std::mutex> lock(g_mutex);
+      delete [] g_buffer;
+      g_buffer = nullptr;
+      g_counter = 0;
+    }
+    camera->Update();
+    std::lock_guard<std::mutex> lock(g_mutex);
+    EXPECT_EQ(1, g_counter);
+    EXPECT_NE(nullptr, g_buffer);
+    if (g_buffer)
+    {
+      EXPECT_EQ(2, g_buffer[middleIndex]);
+    }
+    return camera;
+  };
+
+  gz::rendering::ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  BuildScene(scene);
+  auto camera = createAndCheck(scene);
+  ASSERT_NE(nullptr, camera);
+
+  // same scene
+  scene->DestroySensor(camera);
+  camera = createAndCheck(scene);
+  ASSERT_NE(nullptr, camera);
+
+  // new scene
+  engine->DestroyScene(scene);
+  scene = engine->CreateScene("scene2");
+  ASSERT_NE(nullptr, scene);
+  BuildScene(scene);
+  camera = createAndCheck(scene);
+  ASSERT_NE(nullptr, camera);
+
+  // Clean up
+  delete [] g_buffer;
+  g_buffer = nullptr;
+  engine->DestroyScene(scene);
+}

@@ -17,6 +17,7 @@ set(tests
   shadows
   sky
   thermal_camera
+  thermal_camera_accuracy
   load_unload
   waves
   wide_angle_camera

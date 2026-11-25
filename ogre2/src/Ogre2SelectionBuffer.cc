@@ -158,8 +158,7 @@ Ogre2SelectionBuffer::~Ogre2SelectionBuffer()
   // reload the same material every time
   if (!this->dataPtr->selectionMaterial.isNull())
   {
-    ReleaseFromSharedFullscreenRects(this->dataPtr->selectionMaterial,
-        Ogre::MaterialManager::getSingleton().getByName("SelectionBuffer"));
+    ReleaseFromSharedFullscreenRects(this->dataPtr->selectionMaterial);
     Ogre::MaterialManager::getSingleton().remove(
         this->dataPtr->selectionMaterial->getName());
     this->dataPtr->selectionMaterial.setNull();

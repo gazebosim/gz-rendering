@@ -36,10 +36,9 @@ namespace rendering
 inline namespace GZ_RENDERING_VERSION_NAMESPACE {
 
 //////////////////////////////////////////////////
-void ReleaseFromSharedFullscreenRects(const Ogre::MaterialPtr &_material,
-    const Ogre::MaterialPtr &_replacement)
+void ReleaseFromSharedFullscreenRects(const Ogre::MaterialPtr &_material)
 {
-  if (_material.isNull() || _replacement.isNull())
+  if (_material.isNull())
     return;
 
   Ogre::Root *root = Ogre2RenderEngine::Instance()->OgreRoot();
@@ -55,9 +54,9 @@ void ReleaseFromSharedFullscreenRects(const Ogre::MaterialPtr &_material,
   {
     if (rect && rect->getMaterial() == _material)
     {
-      // _material is still referenced here, so this doesn't destroy it
-      _replacement->load();
-      rect->setMaterial(_replacement);
+      // Unlink the rectangle from the material's datablock. The next quad
+      // pass sets its own material on the rectangle before drawing with it.
+      rect->_setNullDatablock();
     }
   }
 }

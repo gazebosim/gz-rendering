@@ -67,6 +67,7 @@
 #include "gz/rendering/ogre2/Ogre2RenderTarget.hh"
 #include "gz/rendering/ogre2/Ogre2RenderTypes.hh"
 #include "gz/rendering/ogre2/Ogre2Scene.hh"
+#include "gz/rendering/ogre2/Ogre2Text.hh"
 #include "gz/rendering/ogre2/Ogre2ThermalCamera.hh"
 #include "gz/rendering/ogre2/Ogre2SegmentationCamera.hh"
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
@@ -1360,11 +1361,19 @@ FrustumVisualPtr Ogre2Scene::CreateFrustumVisualImpl(unsigned int _id,
 }
 
 //////////////////////////////////////////////////
-TextPtr Ogre2Scene::CreateTextImpl(unsigned int /*_id*/,
-    const std::string &/*_name*/)
+TextPtr Ogre2Scene::CreateTextImpl(unsigned int _id,
+    const std::string &_name)
 {
-  // TODO(anyone)
+#ifdef GZ_RENDERING_HAVE_OGRE2_OVERLAY
+  Ogre2TextPtr text(new Ogre2Text);
+  bool result = this->InitObject(text, _id, _name);
+  return (result) ? text : nullptr;
+#else
+  gzerr << "Ogre2 text support requires the Overlay component. "
+        << "Enable USE_OGRE2_OVERLAY to use text rendering."
+        << std::endl;
   return TextPtr();
+#endif
 }
 
 //////////////////////////////////////////////////

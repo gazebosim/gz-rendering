@@ -72,6 +72,7 @@
 #include "gz/rendering/ogre2/Ogre2Visual.hh"
 
 #include "Ogre2BoundingBoxMaterialSwitcher.hh"
+#include "Ogre2CompositorUtils.hh"
 #include "Ogre2GpuReadbackTicket.hh"
 
 using namespace gz;
@@ -662,12 +663,9 @@ void Ogre2BoundingBoxCamera::Destroy()
     this->dataPtr->ogreCompositorWorkspace = nullptr;
   }
 
-  if (!this->dataPtr->workspaceDefinition.empty())
-  {
-    ogreCompMgr->removeWorkspaceDefinition(
-        this->dataPtr->workspaceDefinition);
-    this->dataPtr->workspaceDefinition.clear();
-  }
+  RemoveWorkspaceDefinitionAndNodes(ogreCompMgr,
+      this->dataPtr->workspaceDefinition);
+  this->dataPtr->workspaceDefinition.clear();
 
   Ogre::SceneManager *ogreSceneManager;
   ogreSceneManager = this->scene->OgreSceneManager();

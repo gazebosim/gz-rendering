@@ -61,7 +61,10 @@ std::size_t CountMaterials(const std::string &_prefix)
 /// \brief Noise passes clone a material, which must be removed when the
 /// pass goes away. Otherwise every camera with noise that is created and
 /// destroyed leaks one.
-TEST(Ogre2GaussianNoisePass, GZ_UTILS_TEST_DISABLED_ON_WIN32(NoMaterialLeak))
+/// Linux only: on macOS the loaded engine plugin is a separate copy of the
+/// ogre2 library this test links to, and adding items to the scene fails.
+TEST(Ogre2GaussianNoisePass,
+     GZ_UTILS_TEST_ENABLED_ONLY_ON_LINUX(NoMaterialLeak))
 {
   RenderEngine *engine = rendering::engine("ogre2");
   if (!engine)

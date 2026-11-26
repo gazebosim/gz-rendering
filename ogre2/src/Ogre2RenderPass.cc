@@ -59,6 +59,12 @@ void Ogre2RenderPass::CreateRenderPass()
 }
 
 //////////////////////////////////////////////////
+bool Ogre2RenderPass::RequiresDepth() const
+{
+  return false;
+}
+
+//////////////////////////////////////////////////
 std::string Ogre2RenderPass::OgreCompositorNodeDefinitionName() const
 {
   return this->ogreCompositorNodeDefName;

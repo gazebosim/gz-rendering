@@ -96,7 +96,7 @@ endif()
 # Build the unit tests
 gz_build_tests(TYPE UNIT
                SOURCES ${gtest_sources}
-               LIB_DEPS ${ogre2_target}
+               LIB_DEPS ${ogre2_target} GzOGRE2::GzOGRE2
                ENVIRONMENT GZ_RENDERING_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX})
 
 install(DIRECTORY "media"  DESTINATION ${GZ_RENDERING_RELATIVE_RESOURCE_PATH}/ogre2)

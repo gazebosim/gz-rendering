@@ -2,4 +2,5 @@
 
 @piece( custom_ps_posExecution )
   @insertpiece( custom_ps_posExecution_solid_color )
+  @insertpiece( custom_ps_posExecution_customizations )
 @end

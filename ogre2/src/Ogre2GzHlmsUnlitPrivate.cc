@@ -17,6 +17,8 @@
 
 #include "Ogre2GzHlmsUnlitPrivate.hh"
 
+#include <algorithm>
+
 #include <gz/common/Console.hh>
 #include <gz/common/Filesystem.hh>
 #include <gz/common/Util.hh>
@@ -295,5 +297,19 @@ namespace Ogre
       common::joinPaths("Hlms", "Gz", "SphericalClipMinDistance"));
     _outLibraryFoldersPaths.push_back(
       common::joinPaths("Hlms", "Gz", "Pbs"));
+  }
+  /////////////////////////////////////////////////
+  void Ogre2GzHlmsUnlit::AddCustomization(HlmsListener *_listener)
+  {
+    this->customizations.push_back(_listener);
+  }
+
+  /////////////////////////////////////////////////
+  void Ogre2GzHlmsUnlit::RemoveCustomization(HlmsListener *_listener)
+  {
+    this->customizations.erase(
+        std::remove(this->customizations.begin(),
+                    this->customizations.end(), _listener),
+        this->customizations.end());
   }
 }  // namespace Ogre

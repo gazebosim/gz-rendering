@@ -218,6 +218,22 @@ namespace Ogre
     public: static void GetDefaultPaths(String &_outDataFolderPath,
                                         StringVector &_outLibraryFoldersPaths);
 
+    /// \brief Add a listener after the others: it gets every call
+
+    /// this Hlms forwards to its customizations
+
+    /// \param[in] _listener Listener, not owned
+
+    public: void AddCustomization(HlmsListener *_listener);
+
+
+    /// \brief Remove a listener added with AddCustomization
+
+    /// \param[in] _listener Listener
+
+    public: void RemoveCustomization(HlmsListener *_listener);
+
+
     /// \brief Contains additional customizations that are modular and
     /// implemented as listener-only
     private: std::vector<Ogre::HlmsListener*> customizations;

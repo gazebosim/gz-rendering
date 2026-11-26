@@ -3,10 +3,12 @@
 @piece( custom_vs_uniformDeclaration )
   @insertpiece( custom_vs_uniformDeclaration_solid_color )
   @insertpiece( custom_vs_uniformDeclaration_terra )
+  @insertpiece( custom_vs_uniformDeclaration_customizations )
 @end
 
 @piece( custom_vs_posExecution )
   @insertpiece( custom_vs_posExecution_solid_color )
   @insertpiece( custom_vs_posExecution_spherical_clip_min_distance )
   @insertpiece( custom_vs_posExecution_terra )
+  @insertpiece( custom_vs_posExecution_customizations )
 @end

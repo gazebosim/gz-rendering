@@ -110,7 +110,12 @@ gz_rendering_engine_libraries(
     }),
 )
 
-test_sources = glob(["src/*_TEST.cc"])
+# Ogre2HlmsCustomization_TEST renders through the ogre2 engine, which needs a
+# GPU and the engine's media: it runs with CMake only.
+test_sources = glob(
+    ["src/*_TEST.cc"],
+    exclude = ["src/Ogre2HlmsCustomization_TEST.cc"],
+)
 
 [
     cc_test(

@@ -20,6 +20,9 @@
   // pulled in by anybody (e.g., Boost).
   #include <Winsock2.h>
 #endif
+#include <algorithm>
+#include <array>
+#include <cctype>
 #include <locale>
 #include <sstream>
 
@@ -44,6 +47,7 @@
 #include "Ogre2GzHlmsPbsPrivate.hh"
 #include "Ogre2GzHlmsTerraPrivate.hh"
 #include "Ogre2GzHlmsUnlitPrivate.hh"
+#include "Ogre2MemoryArchive.hh"
 
 #ifdef OGRE_BUILD_RENDERSYSTEM_VULKAN
 #  include "vulkan/vulkan_core.h"
@@ -110,6 +114,83 @@ class GZ_RENDERING_OGRE2_HIDDEN
   /// \brief Custom Terra modifications
   public: Ogre::Ogre2GzHlmsTerra *gzHlmsTerra{nullptr};
 
+  /// \brief A customization added with AddHlmsCustomization
+  public: struct HlmsCustomization
+  {
+    /// \brief Its name
+    std::string name;
+
+    /// \brief Its listener, or nullptr
+    Ogre::HlmsListener *listener{nullptr};
+
+    /// \brief Its pieces, or nullptr
+    Ogre::Archive *pieces{nullptr};
+  };
+
+  /// \brief The customizations of one Hlms
+  public: struct HlmsCustomizations
+  {
+    /// \brief The Hlms' pieces library without the customizations' folders
+    Ogre::ArchiveVec library;
+
+    /// \brief The generated <hook>_customizations pieces, in the library
+    std::unique_ptr<gz::rendering::Ogre2MemoryArchive> archive;
+
+    /// \brief The customizations, in the order they were added
+    std::vector<HlmsCustomization> list;
+  };
+
+  /// \brief The customizations of each Hlms, by Ogre2HlmsType
+  public: std::array<HlmsCustomizations, 3> hlmsCustomizations;
+
+  /// \brief The Hlms of a type
+  /// \param[in] _type The type
+  /// \return The Hlms, nullptr before the engine is initialized
+  public: Ogre::Hlms *Hlms(gz::rendering::Ogre2HlmsType _type) const
+  {
+    switch (_type)
+    {
+      case gz::rendering::Ogre2HlmsType::PBS: return this->gzHlmsPbs;
+      case gz::rendering::Ogre2HlmsType::UNLIT: return this->gzHlmsUnlit;
+      case gz::rendering::Ogre2HlmsType::TERRA: return this->gzHlmsTerra;
+      default: return nullptr;
+    }
+  }
+
+  /// \brief Add a listener to the customizations of an Hlms
+  /// \param[in] _type The Hlms
+  /// \param[in] _listener The listener
+  /// \param[in] _add True to add it, false to remove it
+  public: void SetListener(gz::rendering::Ogre2HlmsType _type,
+                           Ogre::HlmsListener *_listener, bool _add)
+  {
+    switch (_type)
+    {
+      case gz::rendering::Ogre2HlmsType::PBS:
+        _add ? this->gzHlmsPbs->AddCustomization(_listener) :
+               this->gzHlmsPbs->RemoveCustomization(_listener);
+        break;
+      case gz::rendering::Ogre2HlmsType::UNLIT:
+        _add ? this->gzHlmsUnlit->AddCustomization(_listener) :
+               this->gzHlmsUnlit->RemoveCustomization(_listener);
+        break;
+      case gz::rendering::Ogre2HlmsType::TERRA:
+        _add ? this->gzHlmsTerra->AddCustomization(_listener) :
+               this->gzHlmsTerra->RemoveCustomization(_listener);
+        break;
+      default:
+        break;
+    }
+  }
+
+  /// \brief Write the <hook>_customizations pieces of an Hlms for its
+  /// customizations, and give the Hlms its library with their pieces
+  /// \param[in] _type The Hlms
+  /// \param[in] _reload True to reload the Hlms, false when it is not
+  /// created yet
+  public: void UpdateHlmsCustomizations(gz::rendering::Ogre2HlmsType _type,
+                                        bool _reload);
+
 #ifdef OGRE_BUILD_RENDERSYSTEM_VULKAN
   /// \brief Needed to receive an external Vulkan device from Qt
   /// and inject it into OgreNext.
@@ -134,6 +215,39 @@ using namespace rendering;
 
 namespace
 {
+  /// \brief Ogre's customization hooks that gz-rendering defines and that
+  /// customizations added with AddHlmsCustomization extend. Each inserts
+  /// <hook>_customizations; see media/Hlms/Gz/Pbs.
+  const std::array<const char *, 16> kCustomizationHooks = {
+    "custom_passBuffer", "custom_VStoPS",
+    "custom_vs_attributes", "custom_vs_uniformStructDeclaration",
+    "custom_vs_uniformDeclaration", "custom_vs_preExecution",
+    "custom_vs_preTransform", "custom_vs_posMaterialLoad",
+    "custom_vs_posExecution", "custom_ps_uniformStructDeclaration",
+    "custom_ps_uniformDeclaration", "custom_ps_functions",
+    "custom_ps_preExecution", "custom_ps_posMaterialLoad",
+    "custom_ps_posSampleNormal", "custom_ps_posExecution"};
+
+  /// \brief Name of the generated file of <hook>_customizations pieces
+  const char kCustomizationsFile[] = "500.GzCustomizationList_piece_all.any";
+
+  /// \brief Whether a name can name a customization
+  /// \param[in] _name The name
+  /// \return True if it can
+  bool ValidCustomizationName(const std::string &_name)
+  {
+    if (_name.empty() || _name == "customizations" ||
+        _name == "solid_color" || _name == "spherical_clip_min_distance" ||
+        _name == "terra")
+    {
+      return false;
+    }
+    return std::all_of(_name.begin(), _name.end(), [](unsigned char _c)
+        {
+          return std::isalnum(_c) || _c == '_';
+        });
+  }
+
   /// \brief Convert a double to a string that always uses '.' as the
   /// decimal separator. std::to_string follows the C locale, so it gives
   /// "1,000000" under a locale like de_DE, but OGRE expects "1.000000".
@@ -236,6 +350,17 @@ void Ogre2RenderEngine::Destroy()
       gzerr << "Error deleting ogre root " << std::endl;
     }
     this->ogreRoot = nullptr;
+  }
+
+  // Gone with the root: the Hlms and the archives they read
+  this->dataPtr->gzHlmsPbs = nullptr;
+  this->dataPtr->gzHlmsUnlit = nullptr;
+  this->dataPtr->gzHlmsTerra = nullptr;
+  for (auto &customizations : this->dataPtr->hlmsCustomizations)
+  {
+    customizations.list.clear();
+    customizations.library.clear();
+    customizations.archive.reset();
   }
 
   delete this->ogreLogManager;
@@ -963,6 +1088,18 @@ void Ogre2RenderEngine::RegisterHlms()
 
     archiveUnlitLibraryFolders.push_back(customizationsArchiveLibrary);
 
+    // The hooks customizations extend, and the list of those
+    archiveUnlitLibraryFolders.push_back(archiveManager.load(
+        rootHlmsFolder + common::joinPaths("Hlms", "Gz", "Pbs"), "FileSystem",
+        true));
+    auto &unlitCustomizations = this->dataPtr->hlmsCustomizations[
+        static_cast<size_t>(Ogre2HlmsType::UNLIT)];
+    unlitCustomizations.archive =
+        std::make_unique<Ogre2MemoryArchive>("GzHlmsCustomizationsUnlit");
+    archiveUnlitLibraryFolders.push_back(unlitCustomizations.archive.get());
+    unlitCustomizations.library = archiveUnlitLibraryFolders;
+    this->dataPtr->UpdateHlmsCustomizations(Ogre2HlmsType::UNLIT, false);
+
     // Create and register the unlit Hlms
     hlmsUnlit = OGRE_NEW Ogre::Ogre2GzHlmsUnlit(
       archiveUnlit, &archiveUnlitLibraryFolders,
@@ -1007,6 +1144,15 @@ void Ogre2RenderEngine::RegisterHlms()
 
     archivePbsLibraryFolders.push_back(customizationsArchiveLibrary);
 
+    // The list of the pieces customizations add to the hooks
+    auto &pbsCustomizations = this->dataPtr->hlmsCustomizations[
+        static_cast<size_t>(Ogre2HlmsType::PBS)];
+    pbsCustomizations.archive =
+        std::make_unique<Ogre2MemoryArchive>("GzHlmsCustomizationsPbs");
+    archivePbsLibraryFolders.push_back(pbsCustomizations.archive.get());
+    pbsCustomizations.library = archivePbsLibraryFolders;
+    this->dataPtr->UpdateHlmsCustomizations(Ogre2HlmsType::PBS, false);
+
     // Create and register
     hlmsPbs =
       OGRE_NEW Ogre::Ogre2GzHlmsPbs(archivePbs, &archivePbsLibraryFolders,
@@ -1042,6 +1188,15 @@ void Ogre2RenderEngine::RegisterHlms()
       archiveTerraLibraryFolders.push_back(archiveLibrary);
       ++libraryFolderPathIt;
     }
+
+    // The list of the pieces customizations add to the hooks
+    auto &terraCustomizations = this->dataPtr->hlmsCustomizations[
+        static_cast<size_t>(Ogre2HlmsType::TERRA)];
+    terraCustomizations.archive =
+        std::make_unique<Ogre2MemoryArchive>("GzHlmsCustomizationsTerra");
+    archiveTerraLibraryFolders.push_back(terraCustomizations.archive.get());
+    terraCustomizations.library = archiveTerraLibraryFolders;
+    this->dataPtr->UpdateHlmsCustomizations(Ogre2HlmsType::TERRA, false);
 
     // Create and register
     hlmsTerra = OGRE_NEW Ogre::Ogre2GzHlmsTerra(
@@ -1414,6 +1569,134 @@ Ogre2GzHlmsSphericalClipMinDistance& Ogre2RenderEngine::
 SphericalClipMinDistance()
 {
   return this->dataPtr->sphericalClipMinDistance;
+}
+
+/////////////////////////////////////////////////
+bool Ogre2RenderEngine::AddHlmsCustomization(Ogre2HlmsType _type,
+    const std::string &_name, Ogre::HlmsListener *_listener,
+    const std::string &_piecesFolder)
+{
+  if (!this->dataPtr->Hlms(_type))
+  {
+    gzerr << "Cannot add Hlms customization [" << _name << "]: the "
+          << "engine is not initialized." << std::endl;
+    return false;
+  }
+  if (!ValidCustomizationName(_name))
+  {
+    gzerr << "Invalid Hlms customization name [" << _name << "]: use "
+          << "letters, digits and underscores, and not a reserved name."
+          << std::endl;
+    return false;
+  }
+  auto &customizations =
+      this->dataPtr->hlmsCustomizations[static_cast<size_t>(_type)];
+  for (const auto &customization : customizations.list)
+  {
+    if (customization.name == _name)
+    {
+      gzerr << "Hlms customization [" << _name << "] already added."
+            << std::endl;
+      return false;
+    }
+  }
+
+  Ogre::Archive *pieces = nullptr;
+  if (!_piecesFolder.empty())
+  {
+    if (!common::isDirectory(_piecesFolder))
+    {
+      gzerr << "Hlms customization [" << _name << "]: no pieces folder ["
+            << _piecesFolder << "]." << std::endl;
+      return false;
+    }
+    try
+    {
+      pieces = Ogre::ArchiveManager::getSingleton().load(_piecesFolder,
+          "FileSystem", true);
+    }
+    catch (const Ogre::Exception &_e)
+    {
+      gzerr << "Hlms customization [" << _name << "]: cannot read ["
+            << _piecesFolder << "]: " << _e.getDescription() << std::endl;
+      return false;
+    }
+  }
+
+  customizations.list.push_back({_name, _listener, pieces});
+  if (_listener)
+    this->dataPtr->SetListener(_type, _listener, true);
+  this->dataPtr->UpdateHlmsCustomizations(_type, true);
+  return true;
+}
+
+/////////////////////////////////////////////////
+bool Ogre2RenderEngine::RemoveHlmsCustomization(Ogre2HlmsType _type,
+    const std::string &_name)
+{
+  if (!this->dataPtr->Hlms(_type))
+    return false;
+  auto &list =
+      this->dataPtr->hlmsCustomizations[static_cast<size_t>(_type)].list;
+  auto it = std::find_if(list.begin(), list.end(),
+      [&_name](const auto &_customization)
+      {
+        return _customization.name == _name;
+      });
+  if (it == list.end())
+    return false;
+
+  if (it->listener)
+    this->dataPtr->SetListener(_type, it->listener, false);
+  list.erase(it);
+  this->dataPtr->UpdateHlmsCustomizations(_type, true);
+  return true;
+}
+
+/////////////////////////////////////////////////
+void Ogre2RenderEnginePrivate::UpdateHlmsCustomizations(Ogre2HlmsType _type,
+    bool _reload)
+{
+  auto &customizations = this->hlmsCustomizations[static_cast<size_t>(_type)];
+
+  // <hook>_customizations: <hook>_<name> of each, in order
+  std::string pieces;
+  for (const char *hook : kCustomizationHooks)
+  {
+    pieces += std::string("@piece( ") + hook + "_customizations )\n";
+    for (const auto &customization : customizations.list)
+    {
+      pieces += std::string("  @insertpiece( ") + hook + "_" +
+          customization.name + " )\n";
+    }
+    pieces += "@end\n";
+  }
+  customizations.archive->SetFile(kCustomizationsFile, pieces);
+
+  if (!_reload)
+    return;
+
+  Ogre::ArchiveVec library = customizations.library;
+  for (const auto &customization : customizations.list)
+  {
+    if (customization.pieces &&
+        std::find(library.begin(), library.end(), customization.pieces) ==
+        library.end())
+    {
+      library.push_back(customization.pieces);
+    }
+  }
+  Ogre::Hlms *hlms = this->Hlms(_type);
+  try
+  {
+    hlms->reloadFrom(hlms->getDataFolder(), &library);
+  }
+  catch (const Ogre::Exception &_e)
+  {
+    gzerr << "Failed to reload Hlms [" << hlms->getTypeNameStr()
+          << "] with its customizations: " << _e.getDescription()
+          << std::endl;
+  }
 }
 
 /////////////////////////////////////////////////

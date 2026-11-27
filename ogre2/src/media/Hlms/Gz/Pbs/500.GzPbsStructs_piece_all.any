@@ -5,9 +5,11 @@
 @piece( custom_passBuffer )
   @insertpiece( custom_passBuffer_spherical_clip_min_distance )
   @insertpiece( custom_passBuffer_terra )
+  @insertpiece( custom_passBuffer_customizations )
 @end
 
 @piece( custom_VStoPS )
   @insertpiece( custom_VStoPS_solid_color )
   @insertpiece( custom_VStoPS_terra )
+  @insertpiece( custom_VStoPS_customizations )
 @end

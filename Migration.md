@@ -9,6 +9,20 @@ release will remove the deprecated code.
 
 ### Modifications
 
+* The ogre2 engine defines more of Ogre's Hlms customization hooks itself,
+  so that customizations added with
+  `Ogre2RenderEngine::AddHlmsCustomization` can extend them:
+  `custom_vs_attributes`, `custom_vs_uniformStructDeclaration`,
+  `custom_vs_preExecution`, `custom_vs_preTransform`,
+  `custom_vs_posMaterialLoad`, `custom_ps_uniformStructDeclaration`,
+  `custom_ps_uniformDeclaration`, `custom_ps_functions`,
+  `custom_ps_preExecution`, `custom_ps_posMaterialLoad` and
+  `custom_ps_posSampleNormal`, in the PBS, Unlit and Terra Hlms. Pieces that
+  defined one of these, or another hook gz-rendering defines, in those Hlms'
+  pieces library now fail with "piece already defined": add them with
+  `AddHlmsCustomization` and name them `<hook>_<name>` instead. The Unlit
+  Hlms also gets gz-rendering's `Hlms/Gz/Pbs` pieces.
+
 * `OgreVisual::SetVisible` and `Ogre2Visual::SetVisible` no longer let Ogre
   cascade the visibility to child visuals. They call `SetVisible` on each
   child visual instead, so overrides such as `BaseArrowVisual::SetVisible`

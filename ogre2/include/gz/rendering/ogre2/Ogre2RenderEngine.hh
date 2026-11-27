@@ -38,6 +38,7 @@ namespace Ogre
   class Root;
   class Window;
   class HlmsPbsTerraShadows;
+  class HlmsListener;
   class CompositorWorkspaceListener;
 }
 
@@ -50,6 +51,20 @@ namespace gz
     // forward declaration
     class Ogre2RenderEnginePrivate;
     class Ogre2GzHlmsSphericalClipMinDistance;
+
+    /// \brief An Hlms of the ogre2 render engine: the shader generator of a
+    /// kind of material. See Ogre2RenderEngine::AddHlmsCustomization.
+    enum class Ogre2HlmsType
+    {
+      /// \brief Physically based materials, which most visuals use
+      PBS = 0,
+
+      /// \brief Unlit materials, e.g. particles
+      UNLIT = 1,
+
+      /// \brief Terrain, i.e. heightmaps
+      TERRA = 2
+    };
 
     /// \brief Plugin for loading ogre render engine
     class GZ_RENDERING_OGRE2_VISIBLE Ogre2RenderEnginePlugin :
@@ -178,6 +193,61 @@ namespace gz
       /// \brief Retrieves Hlms customizations for tweaking them
       /// \return Ogre HLMS customizations
       public: Ogre2GzHlmsSphericalClipMinDistance &SphericalClipMinDistance();
+
+      /// \brief Extend the shaders an Hlms generates with pieces and an
+      /// Ogre::HlmsListener of your own, alongside gz-rendering's.
+      ///
+      /// Ogre lets a piece be defined only once, and gz-rendering defines
+      /// these customization hooks of Ogre's itself:
+      ///
+      ///   custom_passBuffer, custom_VStoPS,
+      ///   custom_vs_attributes, custom_vs_uniformStructDeclaration,
+      ///   custom_vs_uniformDeclaration, custom_vs_preExecution,
+      ///   custom_vs_preTransform, custom_vs_posMaterialLoad,
+      ///   custom_vs_posExecution, custom_ps_uniformStructDeclaration,
+      ///   custom_ps_uniformDeclaration, custom_ps_functions,
+      ///   custom_ps_preExecution, custom_ps_posMaterialLoad,
+      ///   custom_ps_posSampleNormal, custom_ps_posExecution
+      ///
+      /// So a customization named `_name` does not define a hook: it defines
+      /// `<hook>_<_name>`, e.g. `custom_ps_posExecution_underwater`, and
+      /// gz-rendering inserts that piece in the hook, after its own code and
+      /// after the customizations added before. Not every Hlms uses every
+      /// hook.
+      ///
+      /// The listener gets every call the Hlms forwards to gz-rendering's own
+      /// customizations, after them: e.g. preparePassHash to set properties,
+      /// and getPassBufferSize and preparePassBuffer to send data each pass.
+      /// Data for custom_passBuffer is written in the same order as the
+      /// pieces are inserted, so the listener writes exactly what its
+      /// `custom_passBuffer_<_name>` declares.
+      ///
+      /// Call it on the rendering thread once the engine is initialized.
+      /// The Hlms reloads its pieces, so its shaders are compiled again as
+      /// they are needed.
+      /// \param[in] _type The Hlms to extend.
+      /// \param[in] _name Name of the customization: letters, digits and
+      /// underscores, unique for the Hlms. "customizations" and the names of
+      /// gz-rendering's own customizations ("solid_color",
+      /// "spherical_clip_min_distance" and "terra") are reserved.
+      /// \param[in] _listener The listener, or nullptr for pieces only. Not
+      /// owned: it must stay alive until the customization is removed or
+      /// the engine is destroyed.
+      /// \param[in] _piecesFolder Folder with the piece files, named as
+      /// Ogre's (e.g. `500.Underwater_piece_ps.any`), or empty for a
+      /// listener only.
+      /// \return True if the customization was added.
+      public: bool AddHlmsCustomization(Ogre2HlmsType _type,
+                  const std::string &_name, Ogre::HlmsListener *_listener,
+                  const std::string &_piecesFolder);
+
+      /// \brief Remove a customization added with AddHlmsCustomization.
+      /// The Hlms reloads its pieces. Call it on the rendering thread.
+      /// \param[in] _type The Hlms it extends.
+      /// \param[in] _name Name of the customization.
+      /// \return True if it was there.
+      public: bool RemoveHlmsCustomization(Ogre2HlmsType _type,
+                  const std::string &_name);
 
       /// \internal
       /// \brief Sets the current rendering mode. See GzOgreRenderingMode

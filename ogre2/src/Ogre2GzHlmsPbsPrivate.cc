@@ -17,6 +17,8 @@
 
 #include "Ogre2GzHlmsPbsPrivate.hh"
 
+#include <algorithm>
+
 #include "Terra/Hlms/PbsListener/OgreHlmsPbsTerraShadows.h"
 
 #include <gz/common/Console.hh>
@@ -340,5 +342,19 @@ namespace Ogre
       common::joinPaths("Hlms", "Gz", "SphericalClipMinDistance"));
     _outLibraryFoldersPaths.push_back(
       common::joinPaths("Hlms", "Gz", "Pbs"));
+  }
+  /////////////////////////////////////////////////
+  void Ogre2GzHlmsPbs::AddCustomization(HlmsListener *_listener)
+  {
+    this->customizations.push_back(_listener);
+  }
+
+  /////////////////////////////////////////////////
+  void Ogre2GzHlmsPbs::RemoveCustomization(HlmsListener *_listener)
+  {
+    this->customizations.erase(
+        std::remove(this->customizations.begin(),
+                    this->customizations.end(), _listener),
+        this->customizations.end());
   }
 }  // namespace Ogre

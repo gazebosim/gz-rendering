@@ -1,0 +1,50 @@
+// Ogre's customization hooks that no other gz-rendering piece defines.
+// gz-rendering defines them so that the customizations added with
+// Ogre2RenderEngine::AddHlmsCustomization can extend them: Ogre lets a
+// piece be defined once. <hook>_customizations is generated at run time
+// and inserts <hook>_<name> of each customization, in the order they
+// were added.
+
+@piece( custom_vs_attributes )
+  @insertpiece( custom_vs_attributes_customizations )
+@end
+
+@piece( custom_vs_uniformStructDeclaration )
+  @insertpiece( custom_vs_uniformStructDeclaration_customizations )
+@end
+
+@piece( custom_vs_preExecution )
+  @insertpiece( custom_vs_preExecution_customizations )
+@end
+
+@piece( custom_vs_preTransform )
+  @insertpiece( custom_vs_preTransform_customizations )
+@end
+
+@piece( custom_vs_posMaterialLoad )
+  @insertpiece( custom_vs_posMaterialLoad_customizations )
+@end
+
+@piece( custom_ps_uniformStructDeclaration )
+  @insertpiece( custom_ps_uniformStructDeclaration_customizations )
+@end
+
+@piece( custom_ps_uniformDeclaration )
+  @insertpiece( custom_ps_uniformDeclaration_customizations )
+@end
+
+@piece( custom_ps_functions )
+  @insertpiece( custom_ps_functions_customizations )
+@end
+
+@piece( custom_ps_preExecution )
+  @insertpiece( custom_ps_preExecution_customizations )
+@end
+
+@piece( custom_ps_posMaterialLoad )
+  @insertpiece( custom_ps_posMaterialLoad_customizations )
+@end
+
+@piece( custom_ps_posSampleNormal )
+  @insertpiece( custom_ps_posSampleNormal_customizations )
+@end

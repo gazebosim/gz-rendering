@@ -54,6 +54,12 @@ namespace gz
     /// the next RenderPass. Note that the Ogre2RenderPass class provides the
     /// node definition only and the actual node creation work is done in the
     /// Ogre2RenderTarget class when the whole workspace is constructed.
+    ///
+    /// A render pass node has two input channels: 0, the result of the
+    /// previous node, and 1, the texture to write its own result to. It maps
+    /// its result to output channel 0 and its input to output channel 1. A
+    /// pass that returns true from RequiresDepth() gets a third input
+    /// channel, kDepthInputChannel, with the depth of the scene.
     class GZ_RENDERING_OGRE2_VISIBLE Ogre2RenderPass :
       public BaseRenderPass<Ogre2Object>
     {
@@ -82,6 +88,32 @@ namespace gz
 
       /// \brief Create the render pass using ogre compositor
       public: virtual void CreateRenderPass();
+
+      /// \brief Input channel of the compositor node that receives the depth
+      /// of the scene, for a pass that returns true from RequiresDepth().
+      public: static constexpr unsigned int kDepthInputChannel = 2u;
+
+      /// \brief Whether this pass reads the depth of the scene.
+      ///
+      /// When true, the camera's scene pass writes its depth to a texture of
+      /// its own, and that texture is connected to input channel
+      /// kDepthInputChannel of this pass's compositor node, whatever passes
+      /// come before it. The node definition must declare that channel. The
+      /// texture is the depth the scene was rendered with, resolved to one
+      /// sample when the camera uses anti-aliasing, and holds the hardware
+      /// depth `d` in its red channel. The depth along the camera's axis is
+      /// `B / (d - A)`, with `(A, B)` from
+      /// `Ogre::Camera::getProjectionParamsAB()`; that holds whether or not
+      /// the render system uses reverse depth. Pixels where nothing was drawn
+      /// keep the clear value, which maps to the far clip distance.
+      ///
+      /// Cameras and render windows provide the depth. Other sensors, e.g.
+      /// depth and wide angle cameras, do not, and leave such a pass out of
+      /// their chain with a warning. Cameras without such a pass render as
+      /// before.
+      /// \return True if the pass reads the depth of the scene. False by
+      /// default.
+      public: virtual bool RequiresDepth() const;
 
       /// \brief Name of the ogre compositor node definition
       protected: std::string ogreCompositorNodeDefName;

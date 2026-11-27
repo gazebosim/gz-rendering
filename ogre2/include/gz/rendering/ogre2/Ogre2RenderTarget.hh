@@ -174,6 +174,18 @@ namespace gz
       public: virtual void SetVisibilityMask(uint32_t _mask);
 
       /// \brief Update the render pass chain
+      /// \param[in] _workspace Workspace whose passes are chained
+      /// \param[in] _workspaceDefName Name of the workspace definition
+      /// \param[in] _baseNode Name of the node that renders the scene
+      /// \param[in] _finalNode Name of the node that writes the result
+      /// \param[in] _renderPasses The render passes, in order
+      /// \param[in] _recreateNodes True to recreate every node
+      /// \param[in] _ogreTextures The two textures the passes ping pong
+      /// between; the result is always left in the second
+      /// \param[in] _isRenderWindow True if the result goes to a window
+      /// \param[in] _baseNodeHasDepth True if the base node maps the depth of
+      /// the scene to output channel Ogre2RenderPass::kDepthInputChannel.
+      /// Passes that require the depth are left out of the chain otherwise.
       public: static void UpdateRenderPassChain(
           Ogre::CompositorWorkspace *_workspace,
           const std::string &_workspaceDefName,
@@ -181,7 +193,8 @@ namespace gz
           const std::vector<RenderPassPtr> &_renderPasses,
           bool _recreateNodes,
           Ogre::TextureGpu *(*_ogreTextures)[2],
-          bool _isRenderWindow);
+          bool _isRenderWindow,
+          bool _baseNodeHasDepth = false);
 
       /// \brief Update the background color
       protected: virtual void UpdateBackgroundColor();

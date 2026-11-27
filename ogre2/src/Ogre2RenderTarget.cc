@@ -81,6 +81,26 @@ class Ogre2RenderTargetCompositorListener :
 }
 }
 
+namespace
+{
+/// \brief Whether any of the passes reads the depth of the scene.
+/// \param[in] _passes The render passes of a render target.
+/// \return True if a pass returns true from RequiresDepth(), enabled or not,
+/// so that turning a pass on and off does not rebuild the compositor.
+bool PassesRequireDepth(
+    const std::vector<gz::rendering::RenderPassPtr> &_passes)
+{
+  for (const auto &pass : _passes)
+  {
+    auto *ogre2RenderPass =
+        dynamic_cast<gz::rendering::Ogre2RenderPass *>(pass.get());
+    if (ogre2RenderPass && ogre2RenderPass->RequiresDepth())
+      return true;
+  }
+  return false;
+}
+}
+
 /// \brief Private data class for Ogre2RenderTarget
 class gz::rendering::Ogre2RenderTargetPrivate
 {
@@ -95,6 +115,18 @@ class gz::rendering::Ogre2RenderTargetPrivate
 
   /// \brief Name of final rendering compositor node
   public: const std::string kFinalNodeName = "FinalComposition";
+
+  /// \brief Name of the texture the base node renders the depth of the
+  /// scene to, when a render pass reads it
+  public: const std::string kSceneDepthName = "sceneDepth";
+
+  /// \brief Name of that depth resolved to one sample, when the target uses
+  /// anti-aliasing
+  public: const std::string kSceneDepthResolvedName = "sceneDepthResolved";
+
+  /// \brief True if the base node maps the depth of the scene to output
+  /// channel Ogre2RenderPass::kDepthInputChannel
+  public: bool sceneDepth = false;
 
   /// \brief Name of shadow compositor node
   public: const std::string kShadowNodeName = "PbsMaterialsShadowNode";
@@ -169,17 +201,56 @@ void Ogre2RenderTarget::BuildCompositor()
     nodeDef->addTextureSourceName(
           "rt1", 1u, Ogre::TextureDefinitionBase::TEXTURE_INPUT);
 
+    // A render pass that reads the depth of the scene needs it in a texture
+    // of our own: the depth buffer the scene pass gets otherwise comes from
+    // a pool and cannot be read.
+    const bool sceneDepth = PassesRequireDepth(this->renderPasses);
+    const uint8_t fsaa = TargetFSAA();
+
     {
-      // Add a manually-defined RTV (based on an automatically generated one)
-      // so that we can perform an explicit MSAA resolve.
-      const Ogre::RenderTargetViewDef *rt0Def =
-          nodeDef->getRenderTargetViewDef( "rt0" );
+      // Add a manually-defined RTV so that we can perform an explicit MSAA
+      // resolve, and attach the depth texture when a pass reads it.
       Ogre::RenderTargetViewDef *rtvDef =
           nodeDef->addRenderTextureView( "rtv" );
 
-      *rtvDef = *rt0Def;
+      if (!sceneDepth)
+      {
+        *rtvDef = *nodeDef->getRenderTargetViewDef( "rt0" );
+      }
+      else
+      {
+        // Spelled out rather than copied from rt0's: that one is analysed
+        // when the pass is created, which takes the depth buffer from the
+        // pool whatever the RTV says.
+        Ogre::RenderTargetViewEntry colour;
+        colour.textureName = "rt0";
+        rtvDef->colourAttachments.push_back(colour);
 
-      const uint8_t fsaa = TargetFSAA();
+        Ogre::TextureDefinitionBase::TextureDefinition *depthDef =
+            nodeDef->addTextureDefinition(this->dataPtr->kSceneDepthName);
+        depthDef->format = Ogre::PFG_D32_FLOAT;
+        // Kept for the passes, so not discardable. With anti-aliasing it has
+        // the colour's samples and is resolved below, by a pass of our own:
+        // depth is not resolved by the hardware.
+        depthDef->textureFlags = Ogre::TextureFlags::RenderToTexture;
+        if (fsaa > 1u)
+        {
+          depthDef->fsaa = std::to_string(fsaa);
+          depthDef->textureFlags |= Ogre::TextureFlags::MsaaExplicitResolve;
+
+          Ogre::TextureDefinitionBase::TextureDefinition *resolvedDef =
+              nodeDef->addTextureDefinition(
+              this->dataPtr->kSceneDepthResolvedName);
+          resolvedDef->format = Ogre::PFG_R32_FLOAT;
+          resolvedDef->textureFlags = Ogre::TextureFlags::RenderToTexture;
+          resolvedDef->depthBufferId = Ogre::DepthBuffer::POOL_NO_DEPTH;
+          nodeDef->addRenderTextureView(
+              this->dataPtr->kSceneDepthResolvedName)->setForTextureDefinition(
+              this->dataPtr->kSceneDepthResolvedName, resolvedDef);
+        }
+        rtvDef->depthAttachment.textureName = this->dataPtr->kSceneDepthName;
+      }
+
       if (fsaa > 1u)
       {
         Ogre::TextureDefinitionBase::TextureDefinition *msaaDef =
@@ -248,8 +319,29 @@ void Ogre2RenderTarget::BuildCompositor()
       }
     }
 
+    if (sceneDepth && fsaa > 1u)
+    {
+      // Resolve the depth to one sample, the first, so that passes read it
+      // as a plain texture
+      Ogre::CompositorTargetDef *depthTargetDef =
+          nodeDef->addTargetPass(this->dataPtr->kSceneDepthResolvedName);
+      depthTargetDef->setNumPasses(1);
+      Ogre::CompositorPassQuadDef *passQuad =
+          static_cast<Ogre::CompositorPassQuadDef *>(
+          depthTargetDef->addPass(Ogre::PASS_QUAD));
+      passQuad->setAllLoadActions(Ogre::LoadAction::DontCare);
+      passQuad->mMaterialName = "Ogre/Resolve/1xFP32_Subsample0";
+      passQuad->addQuadTextureSource(0, this->dataPtr->kSceneDepthName);
+    }
+
     nodeDef->mapOutputChannel(0, "rt0");
     nodeDef->mapOutputChannel(1, "rt1");
+    if (sceneDepth)
+    {
+      nodeDef->mapOutputChannel(Ogre2RenderPass::kDepthInputChannel,
+          fsaa > 1u ? this->dataPtr->kSceneDepthResolvedName :
+          this->dataPtr->kSceneDepthName);
+    }
 
     // Final Composition
     std::string finalNodeDefName = wsDefName + "/" +
@@ -301,6 +393,13 @@ void Ogre2RenderTarget::BuildCompositor()
       workDef->connectExternal(2,  finalNodeDefName, 1);
     }
   }
+
+  // Whether the base node maps the depth of the scene, also when its
+  // definition was there already
+  this->dataPtr->sceneDepth =
+      ogreCompMgr->getNodeDefinition(wsDefName + "/" +
+      this->dataPtr->kBaseNodeName)->getNumOutputChannels() >
+      Ogre2RenderPass::kDepthInputChannel;
 
   Ogre::CompositorChannelVec externalTargets(2u);
   for (size_t i = 0u; i < 2u; ++i)
@@ -784,6 +883,15 @@ void Ogre2RenderTarget::UpdateBackgroundMaterial()
 //////////////////////////////////////////////////
 void Ogre2RenderTarget::UpdateRenderPassChain()
 {
+  // The base node writes the depth of the scene to a texture only while a
+  // pass reads it: rebuild the compositor when that changes.
+  if (this->ogreCompositorWorkspace &&
+      PassesRequireDepth(this->renderPasses) != this->dataPtr->sceneDepth)
+  {
+    this->RebuildCompositor();
+    this->renderPassDirty = true;
+  }
+
   UpdateRenderPassChain(this->ogreCompositorWorkspace,
       this->ogreCompositorWorkspaceDefName,
       this->ogreCompositorWorkspaceDefName + "/" +
@@ -793,7 +901,8 @@ void Ogre2RenderTarget::UpdateRenderPassChain()
       this->renderPasses,
       this->renderPassDirty,
       &this->dataPtr->ogreTexture,
-      this->IsRenderWindow());
+      this->IsRenderWindow(),
+      this->dataPtr->sceneDepth);
 
   this->renderPassDirty = false;
 }
@@ -804,7 +913,7 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
     const std::string &_baseNode, const std::string &_finalNode,
     const std::vector<RenderPassPtr> &_renderPasses,
     bool _recreateNodes, Ogre::TextureGpu *(*_ogreTextures)[2],
-    bool _isRenderWindow)
+    bool _isRenderWindow, bool _baseNodeHasDepth)
 {
   GZ_PROFILE("Ogre2RenderTarget::UpdateRenderPassChain");
   if (!_workspace || _workspaceDefName.empty() ||
@@ -828,11 +937,15 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
           _workspace->findNodeNoThrow(
           ogre2RenderPass->OgreCompositorNodeDefinitionName());
 
+      // A pass that reads the depth is never in a chain without it
+      const bool chained = ogre2RenderPass->IsEnabled() &&
+          (_baseNodeHasDepth || !ogre2RenderPass->RequiresDepth());
+
       // check if we need to create all nodes or just update the connections.
       // if node does not exist then it means it either has not been added to
       // the chain yet or it was removed because it was disabled.
       // In both cases, we need to recreate the nodes and connections
-      if (!node && ogre2RenderPass->IsEnabled())
+      if (!node && chained)
       {
         _recreateNodes = true;
       }
@@ -882,12 +995,34 @@ void Ogre2RenderTarget::UpdateRenderPassChain(
     ogre2RenderPass->CreateRenderPass();
     inNodeDefName = ogre2RenderPass->OgreCompositorNodeDefinitionName();
     // only connect passes that are enabled
-    if (!inNodeDefName.empty() && ogre2RenderPass->IsEnabled())
+    if (inNodeDefName.empty() || !ogre2RenderPass->IsEnabled())
+      continue;
+
+    if (!ogre2RenderPass->RequiresDepth())
     {
       workspaceDef->connect(outNodeDefName, inNodeDefName);
-      outNodeDefName = inNodeDefName;
-      ++numActiveNodes;
     }
+    else if (_baseNodeHasDepth)
+    {
+      // The image from the previous node, and the depth from the base node
+      workspaceDef->connect(outNodeDefName, 0u, inNodeDefName, 0u);
+      workspaceDef->connect(outNodeDefName, 1u, inNodeDefName, 1u);
+      workspaceDef->connect(_baseNode, Ogre2RenderPass::kDepthInputChannel,
+          inNodeDefName, Ogre2RenderPass::kDepthInputChannel);
+    }
+    else
+    {
+      static bool warned = false;
+      if (!warned)
+      {
+        gzwarn << "A render pass reads the depth of the scene, which this "
+               << "sensor does not provide: the pass is skipped." << std::endl;
+        warned = true;
+      }
+      continue;
+    }
+    outNodeDefName = inNodeDefName;
+    ++numActiveNodes;
   }
 
   workspaceDef->connectExternal(0, _baseNode, 0);

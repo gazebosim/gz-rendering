@@ -1,6 +1,7 @@
 set(TEST_TYPE "PERFORMANCE")
 
 set(tests
+  boundingbox_camera
   scene_factory
   segmentation_camera
   thermal_camera

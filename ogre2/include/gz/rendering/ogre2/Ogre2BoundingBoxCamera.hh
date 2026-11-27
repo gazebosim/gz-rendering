@@ -89,21 +89,25 @@ namespace gz
       // Documentation inherited
       public: virtual BoundingBoxType Type() const override;
 
-      /// \brief Create texture to hold ogre Ids to calculate the boundaries
-      /// of each ogre id mask
+      /// \brief Create the texture the objects are rendered into, each one
+      /// in a flat color that encodes its index (see
+      /// Ogre2BoundingBoxMaterialSwitcher), and the workspace that renders
+      /// it.
       public: void CreateBoundingBoxTexture();
 
       /// \brief Create dummy render texture. Needed to satisfy inheritance
       /// and to set image's dims
       public: void CreateRenderTexture();
 
-      /// \brief Compute the full bounding boxes by projecting all mesh vertices
-      /// of each object, then get the min & max of x & y to get the full bbox.
-      /// Check the visibility by looping over pixels of the ogre Ids map
+      /// \brief Compute the full bounding boxes of the objects visible in
+      /// the index image: the extent of each object's mesh vertices
+      /// projected to the image, clipped by the near plane and clamped to
+      /// the image. Vertices are cached per mesh, and an object's extent is
+      /// reused while neither the object nor the camera move.
       public: void FullBoundingBoxes();
 
-      /// \brief Compute the visible bounding boxes by looping over pixels of
-      /// the ogre Ids map, to get the boundaries of each unique ogre Id mask
+      /// \brief Compute the visible bounding boxes: the extent of each
+      /// object's pixels in the index image (see MarkVisibleBoxes).
       public: void VisibleBoundingBoxes();
 
       /// \brief Compute the 3D bounding boxes
@@ -150,8 +154,9 @@ namespace gz
       public: void ConvertToScreenCoord(Ogre::Vector3 &_minVertex,
           Ogre::Vector3 &_maxVertex) const;
 
-      /// \brief Mark the visible boxes by checking the ogre ids map and mark
-      /// the ogre id which appears in the map.
+      /// \brief Find which objects are visible in the index image, and the
+      /// extent of their pixels. Does nothing if they were already found on
+      /// the GPU this frame; otherwise scans the image read back to the CPU.
       public: void MarkVisibleBoxes();
 
       /// \brief Get a pointer to the render target.

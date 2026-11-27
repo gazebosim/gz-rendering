@@ -17,6 +17,8 @@
 
 #include <gtest/gtest.h>
 
+#include <array>
+
 #include "CommonRenderingTest.hh"
 
 #include "gz/rendering/Camera.hh"
@@ -28,8 +30,11 @@
 #include "gz/rendering/PixelFormat.hh"
 #include "gz/rendering/RenderPassSystem.hh"
 #include "gz/rendering/Scene.hh"
+#include "gz/rendering/ShaderParams.hh"
+#include "gz/rendering/ShaderPass.hh"
 #include "gz/rendering/WideAngleCamera.hh"
 
+#include <gz/common/Filesystem.hh>
 #include <gz/utils/ExtraTestMacros.hh>
 
 constexpr double DOUBLE_TOL = 1e-6;
@@ -55,6 +60,10 @@ using namespace rendering;
 /////////////////////////////////////////////////
 class RenderPassTest: public CommonRenderingTest
 {
+  /// \brief Path to the test media
+  public: const std::string TEST_MEDIA_PATH =
+          gz::common::joinPaths(std::string(PROJECT_SOURCE_PATH),
+                                "test", "media");
 };
 
 /////////////////////////////////////////////////
@@ -877,4 +886,131 @@ TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(LensFlareWideAnglePass))
   CHECK_RENDERPASS_SUPPORTED();
 
   TestLensFlare(this->engine, true);
+}
+
+/////////////////////////////////////////////////
+// A pass with shaders of the user's: its uniforms, its data texture and its
+// callback reach the image, and shaders that are missing or do not compile
+// disable the pass instead of failing the camera.
+TEST_F(RenderPassTest, GZ_UTILS_TEST_DISABLED_ON_WIN32(ShaderPass))
+{
+  CHECK_SUPPORTED_ENGINE("ogre2");
+  CHECK_RENDERPASS_SUPPORTED();
+  if (this->engine->GraphicsAPI() != GraphicsAPI::OPENGL)
+    GTEST_SKIP() << "Shader passes are GLSL, for OpenGL only";
+
+  RenderPassSystemPtr rpSystem = this->engine->RenderPassSystem();
+  ScenePtr scene = engine->CreateScene("scene");
+  ASSERT_NE(nullptr, scene);
+  scene->SetBackgroundColor(0.0, 0.0, 0.0);
+  VisualPtr root = scene->RootVisual();
+
+  constexpr unsigned int kSize = 32u;
+  CameraPtr camera = scene->CreateCamera();
+  ASSERT_NE(nullptr, camera);
+  camera->SetImageWidth(kSize);
+  camera->SetImageHeight(kSize);
+  root->AddChild(camera);
+
+  Image image = camera->CreateImage();
+  const unsigned int channels = PixelUtil::ChannelCount(camera->ImageFormat());
+  // The colour at a pixel
+  const auto at = [&](unsigned int _u, unsigned int _v)
+  {
+    const unsigned char *data = image.Data<unsigned char>();
+    const unsigned int i = (_v * kSize + _u) * channels;
+    return std::array<int, 3>{{data[i], data[i + 1], data[i + 2]}};
+  };
+  camera->Capture(image);
+  const std::array<int, 3> black{{0, 0, 0}};
+  ASSERT_EQ(black, at(kSize / 2, kSize / 2));
+
+  const std::string programs = common::joinPaths(
+      this->TEST_MEDIA_PATH, "materials", "programs");
+  ShaderPassPtr pass = std::dynamic_pointer_cast<ShaderPass>(
+      rpSystem->Create<ShaderPass>());
+  ASSERT_NE(nullptr, pass);
+  pass->SetShaders("", common::joinPaths(programs, "shader_pass_fs.glsl"));
+  EXPECT_EQ("", pass->VertexShader());
+  (*pass->FragmentShaderParams())["gain"] = 1.0f;
+  auto &tint = (*pass->FragmentShaderParams())["tint"];
+  tint.InitializeBuffer(3);
+  float none[3] = {0.0f, 0.0f, 0.0f};
+  tint.UpdateBuffer(none);
+  // A uniform the shader does not have: warned about, not fatal
+  (*pass->FragmentShaderParams())["nothing"] = 2.0f;
+  int frames = 0;
+  pass->SetPreRenderCallback([&frames](const CameraPtr &) { ++frames; });
+  camera->AddRenderPass(pass);
+
+  // No data texture yet: zeros, the image as it was
+  camera->Capture(image);
+  EXPECT_TRUE(pass->IsEnabled());
+  EXPECT_EQ(black, at(kSize / 2, kSize / 2));
+  EXPECT_EQ(1, frames);
+
+  // A tint
+  float red[3] = {1.0f, 0.0f, 0.0f};
+  tint.UpdateBuffer(red);
+  camera->Capture(image);
+  EXPECT_EQ((std::array<int, 3>{{255, 0, 0}}), at(kSize / 2, kSize / 2));
+  EXPECT_EQ(2, frames);
+
+  // The data texture: green on the left, blue on the right
+  tint.UpdateBuffer(none);
+  const unsigned char texels[8] = {0, 255, 0, 255, 0, 0, 255, 255};
+  EXPECT_FALSE(pass->SetTexture(nullptr, 2, 1, PF_R8G8B8A8));
+  EXPECT_FALSE(pass->SetTexture(texels, 2, 1, PF_R8G8B8));
+  ASSERT_TRUE(pass->SetTexture(texels, 2, 1, PF_R8G8B8A8));
+  camera->Capture(image);
+  const auto left = at(kSize / 4, kSize / 2);
+  const auto right = at(3 * kSize / 4, kSize / 2);
+  EXPECT_LT(left[0], 10);
+  EXPECT_GT(left[1], 200);
+  EXPECT_LT(left[2], 60);
+  EXPECT_LT(right[0], 10);
+  EXPECT_LT(right[1], 60);
+  EXPECT_GT(right[2], 200);
+
+  // Set from the callback, for the frame it is called for
+  pass->SetPreRenderCallback([&](const CameraPtr &_camera)
+  {
+    EXPECT_EQ(camera.get(), _camera.get());
+    (*pass->FragmentShaderParams())["gain"] = 0.0f;
+  });
+  camera->Capture(image);
+  EXPECT_EQ(black, at(kSize / 4, kSize / 2));
+  pass->SetPreRenderCallback(nullptr);
+  camera->RemoveRenderPass(pass);
+
+  // A shader that is missing: the pass is disabled and the camera renders
+  // without it
+  ShaderPassPtr missing = std::dynamic_pointer_cast<ShaderPass>(
+      rpSystem->Create<ShaderPass>());
+  missing->SetShaders("", common::joinPaths(programs,
+                                            "no_such_shader_fs.glsl"));
+  camera->AddRenderPass(missing);
+  camera->Capture(image);
+  EXPECT_FALSE(missing->IsEnabled());
+  EXPECT_EQ(black, at(kSize / 2, kSize / 2));
+  camera->RemoveRenderPass(missing);
+
+  // A shader that does not compile: Ogre compiles it when it is first drawn,
+  // and throws from that frame; from the next, the pass is disabled and the
+  // image is as without it
+  ShaderPassPtr broken = std::dynamic_pointer_cast<ShaderPass>(
+      rpSystem->Create<ShaderPass>());
+  broken->SetShaders("", common::joinPaths(programs,
+                                           "shader_pass_broken_fs.glsl"));
+  camera->AddRenderPass(broken);
+  EXPECT_ANY_THROW(camera->Capture(image));
+  for (int i = 0; i < 3; ++i)
+  {
+    EXPECT_NO_THROW(camera->Capture(image));
+    EXPECT_FALSE(broken->IsEnabled());
+    EXPECT_EQ(black, at(kSize / 2, kSize / 2));
+  }
+  camera->RemoveRenderPass(broken);
+
+  engine->DestroyScene(scene);
 }

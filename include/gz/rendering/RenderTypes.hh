@@ -95,6 +95,7 @@ namespace gz
     class SegmentationCamera;
     class Sensor;
     class ShaderParams;
+    class ShaderPass;
     class SpotLight;
     class SubMesh;
     class Text;
@@ -296,6 +297,10 @@ namespace gz
 
     /// \brief Shared pointer to ShaderParams
     typedef shared_ptr<ShaderParams> ShaderParamsPtr;
+
+    /// \typedef ShaderPassPtr
+    /// \brief Shared pointer to ShaderPass
+    typedef shared_ptr<ShaderPass> ShaderPassPtr;
 
     /// \typedef SpotLightPtr
     /// \brief Shared pointer to SpotLight
